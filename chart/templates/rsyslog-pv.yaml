@@ -1,0 +1,39 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: rsyslog-{{ template "integration-tmc-webui.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: rsyslog-{{ template "integration-tmc-webui.name" . }}
+    chart: {{ template "integration-tmc-webui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/rsyslog-{{ template "integration-tmc-webui.name" . }}/
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rsyslog-{{ template "integration-tmc-webui.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: rsyslog-{{ template "integration-tmc-webui.name" . }}
+    chart: {{ template "integration-tmc-webui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

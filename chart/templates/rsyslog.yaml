@@ -1,0 +1,87 @@
+{{ if .Values.rsyslog.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rsyslog-{{ template "integration-tmc-webui.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: rsyslog-{{ template "integration-tmc-webui.name" . }}
+    chart: {{ template "integration-tmc-webui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - name: tcp
+    port: 514
+    protocol: TCP
+  - name: udp
+    port: 514
+    protocol: UDP
+  clusterIP: None
+  selector:
+    app: rsyslog-{{ template "integration-tmc-webui.name" . }}
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rsyslog-{{ template "integration-tmc-webui.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: rsyslog-{{ template "integration-tmc-webui.name" . }}
+    chart: {{ template "integration-tmc-webui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: rsyslog-{{ template "integration-tmc-webui.name" . }}
+  serviceName: rsyslog-{{ template "integration-tmc-webui.name" . }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rsyslog-{{ template "integration-tmc-webui.name" . }}
+        chart: {{ template "integration-tmc-webui.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      containers:
+      - name: rsyslog
+        image: "{{ .Values.rsyslog.image.image }}:{{ .Values.rsyslog.image.tag }}"
+        imagePullPolicy: {{ .Values.rsyslog.image.pullPolicy }}
+        ports:
+        - name: tcp
+          containerPort: 514
+          protocol: TCP
+        - name: udp
+          containerPort: 514
+          protocol: UDP
+        
+        volumeMounts:
+        - name: logs
+          mountPath: /var/run/rsyslog/dev
+        
+        resources:
+{{ toYaml .Values.rsyslog.resources | indent 10 }}
+      volumes:
+      - name: logs
+        persistentVolumeClaim:
+          claimName: rsyslog-{{ template "integration-tmc-webui.name" . }}
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{ end }}

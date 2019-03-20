@@ -1,0 +1,56 @@
+{{ if .Values.dishleafnode.enabled }}
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dishleafnode-{{ template "integration-tmc-webui.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: dishleafnode-{{ template "integration-tmc-webui.name" . }}
+    chart: {{ template "integration-tmc-webui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  volumes:
+    - name: logs
+      persistentVolumeClaim:
+        claimName: rsyslog-{{ template "integration-tmc-webui.name" . }}
+  containers:
+  - name: dishleafnode
+    image: "{{ .Values.dishleafnode.image.registry }}/{{ .Values.dishleafnode.image.image }}:{{ .Values.dishleafnode.image.tag }}"
+    imagePullPolicy: {{ .Values.dishleafnode.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "/usr/local/bin/wait-for-it.sh databaseds-{{ template "integration-tmc-webui.name" . }}:10000 --timeout=30 --strict --
+             tango_admin --add-server DishLeafNode/test DishLeafNode ska_mid/tm_leaf_node/d0001 && \
+             tango_admin --add-property test/DishLeafNode/01 DishMasterFQDN mid_d0001/elt/master && \
+             sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py test"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+
+{{- with .Values.dishleafnode.env }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  restartPolicy: Always
+{{- with .Values.nodeSelector }}
+  nodeSelector:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.affinity }}
+  affinity:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+
+{{ end }}

@@ -11,7 +11,7 @@ deploy_on_integration_enviroment:
   - apt-add-repository --yes --update ppa:ansible/ansible 
   - apt-get -y install ansible git
   - git clone https://github.com/ska-telescope/ansible-playbooks.git
-  - cd ansible-playbook
+  - cd ansible-playbooks
   - echo "[integration]" >> hosts
   - echo "$ENVIRONMENT_ADDRESS" >> hosts
   - ansible-playbook -i hosts deploy_integrationenv.yml

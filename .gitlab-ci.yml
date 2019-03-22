@@ -1,0 +1,17 @@
+image: ubuntu:18.04
+
+before_script:
+    - apt-get update
+    - apt-get install -y bash python apt-transport-https ca-certificates curl software-properties-common
+
+deploy_on_integration_enviroment:
+  tags:
+  - docker-executor
+  script:  
+  - apt-add-repository --yes --update ppa:ansible/ansible 
+  - apt-get -y install ansible git
+  - git clone https://github.com/ska-telescope/ansible-playbooks.git
+  - cd ansible-playbook
+  - echo "[integration]" >> hosts
+  - echo "$ENVIRONMENT_ADDRESS" >> hosts
+  - ansible-playbook -i hosts deploy_integrationenv.yml

@@ -77,7 +77,7 @@ Helm Chart
 
 The Helm Chart based install of the Tango Examples relies on [Helm](https://docs.helm.sh/using_helm/#installing-helm) (surprise!).  The easiest way to install is using the install script:
 ```
-https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 ```
 
 Cleaning Up
@@ -92,7 +92,7 @@ rm -rf ~/.kube # local minikube configuration cache
 sudo rm -rf /var/lib/kubeadm.yaml /data/minikube /var/lib/minikube /var/lib/kubelet /etc/kubernetes
 ```
 
-Running the Tango Examples on Kubernetes
+Running the Integration TMC-WebJive on Kubernetes
 ----------------------------------------
 
 Note: your Xserver needs to allow TCP connections.  This will be different for each window manager, but on Ubuntu 18.04 using gdm3 it can be enabled by editing /etc/gdm3/custom.conf and adding:
@@ -109,121 +109,80 @@ The mode that we are using Helm in here is purely for templating - this avoids t
 
 On for the main event - we launch the Tango Example with:
 ```
-$ make deploy KUBE_NAMESPACE=test
+$ make deploy KUBE_NAMESPACE=integration
 ```
 
 This will give extensive output describing what has been deployed in the test namespace:
 ```
-NAME:   test
-LAST DEPLOYED: Tue Feb 19 17:42:07 2019
-NAMESPACE: test
-STATUS: DEPLOYED
+kubectl describe namespace integration || kubectl create namespace integration
+Name:         integration
+Labels:       <none>
+Annotations:  <none>
+Status:       Active
 
-RESOURCES:
-==> v1/Pod(related)
-NAME                             READY  STATUS   RESTARTS  AGE
-databaseds-integration-tmc-webui-0  1/1    Running  0         4s
-tangodb-integration-tmc-webui-0     1/1    Running  0         4s
+No resource quota.
 
-==> v1/PersistentVolume
-NAME                        CAPACITY  ACCESS MODES  RECLAIM POLICY  STATUS  CLAIM                            STORAGECLASS  REASON  AGE
-pogo-integration-tmc-webui     1Gi       RWO           Retain          Bound   test/tangodb-integration-tmc-webui  standard      4s
-tangodb-integration-tmc-webui  1Gi       RWO           Retain          Bound   test/pogo-integration-tmc-webui     standard      4s
-
-==> v1/PersistentVolumeClaim
-NAME                        STATUS  VOLUME                      CAPACITY  ACCESS MODES  STORAGECLASS  AGE
-pogo-integration-tmc-webui     Bound   tangodb-integration-tmc-webui  1Gi       RWO           standard      4s
-tangodb-integration-tmc-webui  Bound   pogo-integration-tmc-webui     1Gi       RWO           standard      4s
-
-==> v1/Service
-NAME                              TYPE       CLUSTER-IP      EXTERNAL-IP  PORT(S)          AGE
-databaseds-integration-tmc-webui     ClusterIP  None            <none>       10000/TCP        4s
-tango-example-integration-tmc-webui  NodePort   10.110.178.141  <none>       32678:32678/TCP  4s
-tangodb-integration-tmc-webui        ClusterIP  None            <none>       3306/TCP         4s
-
-==> v1/Pod
-NAME                              READY  STATUS   RESTARTS  AGE
-astor-integration-tmc-webui          1/1    Running  0         4s
-tango-example-integration-tmc-webui  1/1    Running  0         4s
-
-==> v1/StatefulSet
-NAME                           DESIRED  CURRENT  AGE
-databaseds-integration-tmc-webui  1        1        4s
-tangodb-integration-tmc-webui     1        1        4s
+No resource limits.
+persistentvolume/rsyslog-integration-tmc-webui created
+persistentvolumeclaim/rsyslog-integration-tmc-webui created
+persistentvolume/tangodb-integration-tmc-webui created
+persistentvolumeclaim/tangodb-integration-tmc-webui created
+service/databaseds-integration-tmc-webui created
+statefulset.apps/databaseds-integration-tmc-webui created
+service/rsyslog-integration-tmc-webui created
+statefulset.apps/rsyslog-integration-tmc-webui created
+service/tangodb-integration-tmc-webui created
+statefulset.apps/tangodb-integration-tmc-webui created
+pod/centralnode-integration-tmc-webui created
+pod/dishleafnode-integration-tmc-webui created
+pod/dishmaster-integration-tmc-webui created
+pod/jive-integration-tmc-webui created
+pod/subarraynode-integration-tmc-webui created
+pod/tangotest-integration-tmc-webui created
 ```
 
 Please wait patiently - it will take time for the Container images to download, and for the database to initialise.  After some time, you can check what is running with:
 ```
-watch kubectl get all,pv,pvc -n test
+watch kubectl get all,pv,pvc -n integration
 ```
 
 Which will give output like:
 ```
-Every 2.0s: kubectl get all,pv,pvc -n test                                                                                            dragon: Tue Feb 19 17:46:49 2019
+Every 2.0s: kubectl get all,pv,pvc -n integration                                                                                                                          osboxes: Fri Mar 22 13:02:40 2019
 
-NAME                                   READY   STATUS    RESTARTS   AGE
-pod/astor-integration-tmc-webui           1/1     Running   2          4m42s
-pod/databaseds-integration-tmc-webui-0    1/1     Running   3          4m42s
-pod/tango-example-integration-tmc-webui   1/1     Running   4          4m42s
-pod/tangodb-integration-tmc-webui-0       1/1     Running   0          4m42s
-pod/tiller-deploy-7c4f7db874-ppzz8     1/1     Running   0          11m
+NAME                                     READY   STATUS             RESTARTS   AGE
+pod/centralnode-integration-tmc-webui    0/1     Error              2          98s
+pod/databaseds-integration-tmc-webui-0   1/1     Running            1          98s
+pod/dishleafnode-integration-tmc-webui   0/1     CrashLoopBackOff   3          98s
+pod/dishmaster-integration-tmc-webui     1/1     Running            1          98s
+pod/jive-integration-tmc-webui           1/1     Running            2          98s
+pod/rsyslog-integration-tmc-webui-0      1/1     Running            0          98s
+pod/subarraynode-integration-tmc-webui   0/1     CrashLoopBackOff   2          98s
+pod/tangodb-integration-tmc-webui-0      1/1     Running            0          98s
+pod/tangotest-integration-tmc-webui      1/1     Running            1          98s
 
-NAME                                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
-service/databaseds-integration-tmc-webui      ClusterIP   None             <none>        10000/TCP         4m42s
-service/tango-example-integration-tmc-webui   NodePort    10.110.178.141   <none>        32678:32678/TCP   4m42s
-service/tangodb-integration-tmc-webui         ClusterIP   None             <none>        3306/TCP          4m42s
-service/tiller-deploy                      ClusterIP   10.109.201.50    <none>        44134/TCP         11m
+NAME                                       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)           AGE
+service/databaseds-integration-tmc-webui   ClusterIP   None         <none>        10000/TCP         99s
+service/rsyslog-integration-tmc-webui      ClusterIP   None         <none>        514/TCP,514/UDP   98s
+service/tangodb-integration-tmc-webui      ClusterIP   None         <none>        3306/TCP          98s
 
-NAME                            READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/tiller-deploy   1/1     1            1           11m
+NAME                                                READY   AGE
+statefulset.apps/databaseds-integration-tmc-webui   1/1     99s
+statefulset.apps/rsyslog-integration-tmc-webui      1/1     98s
+statefulset.apps/tangodb-integration-tmc-webui      1/1     98s
 
-NAME                                       DESIRED   CURRENT   READY   AGE
-replicaset.apps/tiller-deploy-7c4f7db874   1         1         1       11m
+NAME                                             CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                       STORAGECLASS   REASON   AGE
+persistentvolume/rsyslog-integration-tmc-webui   10Gi       RWO            Retain           Bound    integration/rsyslog-integration-tmc-webui   standard                99s
+persistentvolume/tangodb-integration-tmc-webui   1Gi        RWO            Retain           Bound    integration/tangodb-integration-tmc-webui   standard                99s
 
-NAME                                             READY   AGE
-statefulset.apps/databaseds-integration-tmc-webui   1/1     4m42s
-statefulset.apps/tangodb-integration-tmc-webui      1/1     4m42s
-
-NAME                                          CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                             STORAGECLASS   REASON   AGE
-persistentvolume/pogo-integration-tmc-webui      1Gi        RWO            Retain           Bound    test/tangodb-integration-tmc-webui   standard                4m42s
-persistentvolume/tangodb-integration-tmc-webui   1Gi        RWO            Retain           Bound    test/pogo-integration-tmc-webui      standard                4m42s
-
-NAME                                               STATUS   VOLUME                       CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-persistentvolumeclaim/pogo-integration-tmc-webui      Bound    tangodb-integration-tmc-webui   1Gi        RWO            standard       4m42s
-persistentvolumeclaim/tangodb-integration-tmc-webui   Bound    pogo-integration-tmc-webui      1Gi        RWO            standard       4m42s
-
+NAME                                                  STATUS   VOLUME                          CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+persistentvolumeclaim/rsyslog-integration-tmc-webui   Bound    rsyslog-integration-tmc-webui   10Gi       RWO            standard       99s
+persistentvolumeclaim/tangodb-integration-tmc-webui   Bound    tangodb-integration-tmc-webui   1Gi        RWO            standard       99s
 ```
 
-If everything goes according to plan, then the Tango Control System GUI will spring into life, and you will be able to navigate to the `PowerSupply` device to verify that the Tango Example is up an running.
+If everything goes according to plan, then the Tango Control System GUI will spring into life, and you will be able to navigate to the `DishMaster` device to verify that the Tango Example is up an running.
 
 To clean up the Helm Chart release:
 ```
-$make delete KUBE_NAMESPACE=test
-```
-
-Debugging with VSCode
----------------------
-
-It is also possible to invoke the python debugger - `ptvsd`.  This is done by passing the DEBUG flag:
-```
-$ make deploy KUBE_NAMESPACE=test REMOTE_DEBUG=true
-```
-
-This will kick off the tango-example with the debugger listening on port 32678, which is bound to a k8s Service NodePort of 32678.  To attach to the debugger, add an entry to launch.json  like the following, and execute:
-```
-...
-        {
-            "name": "Python: Remote 32678",
-            "type": "python",
-            "request": "attach",
-            "port": 32678,
-            "host": "0.0.0.0",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "."
-                }
-            ]
-        },
-...
+$make delete KUBE_NAMESPACE=integration
 ```

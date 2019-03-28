@@ -9,7 +9,7 @@ deploy_on_integration_enviroment:
   - docker-executor
   script:  
   - apt-add-repository --yes --update ppa:ansible/ansible 
-  - apt-get -y install ansible git
+  - apt-get -y install ansible git ssh
   - git clone https://github.com/ska-telescope/ansible-playbooks.git
   - cd ansible-playbooks
   - echo "[integration]" >> hosts

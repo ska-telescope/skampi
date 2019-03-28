@@ -12,7 +12,7 @@ deploy_on_integration_enviroment:
   - apt-get -y install ansible git ssh
   - git clone https://github.com/ska-telescope/ansible-playbooks.git
   - cd ansible-playbooks
-  - echo "[integration]" >> hosts
+  - echo "\n\n[integration]" >> hosts
   - echo "$ENVIRONMENT_ADDRESS" >> hosts
   - cat hosts
   - mkdir -p /root/.ssh

@@ -14,6 +14,7 @@ deploy_on_integration_enviroment:
   - cd ansible-playbooks
   - echo "[integration]" >> hosts
   - echo "$ENVIRONMENT_ADDRESS" >> hosts
+  - cat hosts
   - mkdir -p /root/.ssh
   - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
   - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub

@@ -20,4 +20,4 @@ deploy_on_integration_enviroment:
   - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
   - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -i hosts deploy_integrationenv.yml
+  - ansible-playbook -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml

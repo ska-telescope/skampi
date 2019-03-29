@@ -102,11 +102,37 @@ tangotest:
     tag: latest
     pullPolicy: IfNotPresent
 
+
 tmcprototype:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/tango-example
     image: tmcprototype
+    tag: latest
+    pullPolicy: IfNotPresent
+
+
+redis:
+  enabled: false
+  image: 
+    registry: redis
+    image: redis
+    tag: latest
+    pullPolicy: IfNotPresent
+
+webjive:
+  enabled: false
+  image:
+    registry: nexus.engageska-portugal.pt/webjive
+    image: webjive
+    tag: latest
+    pullPolicy: IfNotPresent
+
+tangogql:
+  enabled: false
+  image:
+    registry: nexus.engageska-portugal.pt/webjive
+    image: webjive
     tag: latest
     pullPolicy: IfNotPresent
 

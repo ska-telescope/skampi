@@ -1,0 +1,74 @@
+{{ if .Values.tangogql.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tangogql-{{ template "integration-tmc-webui.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: tangogql-{{ template "integration-tmc-webui.name" . }}
+    chart: {{ template "integration-tmc-webui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - name: tcp
+    port: 5004
+    protocol: TCP
+  clusterIP: None
+  selector:
+    app: tangogql-{{ template "integration-tmc-webui.name" . }}
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tangogql-{{ template "integration-tmc-webui.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: tangogql-{{ template "integration-tmc-webui.name" . }}
+    chart: {{ template "integration-tmc-webui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: tangogql-{{ template "integration-tmc-webui.name" . }}
+  serviceName: tangogql-{{ template "integration-tmc-webui.name" . }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tangogql-{{ template "integration-tmc-webui.name" . }}
+        chart: {{ template "integration-tmc-webui.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      containers:
+      - name: tangogql
+        image: "{{ .Values.tangogql.image.image }}:{{ .Values.tangogql.image.tag }}"
+        imagePullPolicy: {{ .Values.tangogql.image.pullPolicy }}
+        ports:
+        - name: tcp
+          containerPort: 5004
+          protocol: TCP
+        
+        resources:
+{{ toYaml .Values.tangogql.resources | indent 10 }}
+
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{ end }}

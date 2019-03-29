@@ -121,7 +121,7 @@ redis:
 webjive:
   enabled: false
   image:
-    registry: nexus.engageska-portugal.pt/webjive
+    registry: nexus.engageska-portugal.pt/ska-docker
     image: webjive
     tag: latest
     pullPolicy: IfNotPresent
@@ -129,7 +129,7 @@ webjive:
 tangogql:
   enabled: false
   image:
-    registry: nexus.engageska-portugal.pt/tangogql
+    registry: nexus.engageska-portugal.pt/ska-docker
     image: tangogql
     tag: latest
     pullPolicy: IfNotPresent

@@ -9,9 +9,15 @@ deploy_on_integration_enviroment:
   - docker-executor
   script:  
   - apt-add-repository --yes --update ppa:ansible/ansible 
-  - apt-get -y install ansible git
+  - apt-get -y install ansible git ssh
   - git clone https://github.com/ska-telescope/ansible-playbooks.git
   - cd ansible-playbooks
-  - echo "[integration]" >> hosts
+  - echo -e "\n\n[integration]" >> hosts
   - echo "$ENVIRONMENT_ADDRESS" >> hosts
-  - ansible-playbook -i hosts deploy_integrationenv.yml
+  - cat hosts
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
+  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
+  - ansible-playbook -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml

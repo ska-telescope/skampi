@@ -48,8 +48,15 @@ spec:
     spec:
       containers:
       - name: tangogql
-        image: "{{ .Values.tangogql.image.image }}:{{ .Values.tangogql.image.tag }}"
+        image: "{{ .Values.tangogql.image.registry }}/{{ .Values.tangogql.image.image }}:{{ .Values.tangogql.image.tag }}"
         imagePullPolicy: {{ .Values.tangogql.image.pullPolicy }}
+        command:
+          - /bin/bash -c "source activate graphql && adev runserver tangogql/aioserver.py --app-factory=dev_run --port=5004"
+        env:
+          - name: LOG_PATH
+            value: "/var/log/tangogql"
+          - name: PYTHONUNBUFFERED
+            value: 1
         ports:
         - name: tcp
           containerPort: 5004

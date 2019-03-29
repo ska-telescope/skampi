@@ -48,7 +48,7 @@ spec:
     spec:
       containers:
       - name: webjive
-        image: "{{ .Values.webjive.image.image }}:{{ .Values.webjive.image.tag }}"
+        image: "{{ .Values.webjive.image.registry }}/{{ .Values.webjive.image.image }}:{{ .Values.webjive.image.tag }}"
         imagePullPolicy: {{ .Values.webjive.image.pullPolicy }}
         ports:
         - name: tcp

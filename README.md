@@ -181,8 +181,6 @@ persistentvolumeclaim/rsyslog-integration-tmc-webui   Bound    rsyslog-integrati
 persistentvolumeclaim/tangodb-integration-tmc-webui   Bound    tangodb-integration-tmc-webui   1Gi        RWO            standard       4m35s
 ```
 
-If everything goes according to plan, then the Tango Control System GUI will spring into life, and you will be able to navigate to the `TMCPrototype` devices to verify them.
-
 To clean up the Helm Chart release:
 ```
 $make delete KUBE_NAMESPACE=integration

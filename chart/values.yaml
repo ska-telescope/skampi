@@ -111,11 +111,9 @@ tmcprototype:
     tag: latest
     pullPolicy: IfNotPresent
 
-
 redis:
   enabled: false
   image: 
-    registry: redis
     image: redis
     tag: latest
     pullPolicy: IfNotPresent

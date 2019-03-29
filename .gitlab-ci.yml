@@ -15,9 +15,9 @@ deploy_on_integration_enviroment:
   - echo -e "\n\n[integration]" >> hosts
   - echo "$ENVIRONMENT_ADDRESS  ansible_user=$ENVIRONMENT_USER" >> hosts
   - cat hosts
-  - mkdir -p /home/ubuntu/.ssh
-  - echo "$CONTAINER_PRIVATE_KEY" >> /home/ubuntu/.ssh/id_rsa
-  - echo "$CONTAINER_PUBLIC_KEY" >> /home/ubuntu/.ssh/id_rsa.pub
-  - chmod 400 /home/ubuntu/.ssh/id_rsa /home/ubuntu/.ssh/id_rsa.pub
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts deploy_integrationenv.yml
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml

@@ -31,7 +31,7 @@ configuration:
       },
       {
         "class": "SubarrayNode",
-        "serverName": "SubarrayNode/test",
+        "serverName": "SubarrayNode/test1",
         "name": "ska_mid/tm_subarray_node/1",
         "properties": [{
           "name": "DishLeafNodePrefix", 
@@ -40,7 +40,7 @@ configuration:
       },
       {
         "class": "SubarrayNode",
-        "serverName": "SubarrayNode/test",
+        "serverName": "SubarrayNode/test2",
         "name": "ska_mid/tm_subarray_node/2",
         "properties": [{
           "name": "DishLeafNodePrefix", 

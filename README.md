@@ -149,33 +149,36 @@ Which will give output like:
 Every 2.0s: kubectl get all,pv,pvc -n integration                                                                                        osboxes: Fri Mar 29 09:25:05 2019
 
 NAME                                     READY   STATUS     RESTARTS   AGE
-pod/databaseds-integration-tmc-webui-0   1/1     Running    1          44s
-pod/jive-integration-tmc-webui           1/1     Running    1          44s
-pod/rsyslog-integration-tmc-webui-0      1/1     Running    0          44s
-pod/tangodb-integration-tmc-webui-0      1/1     Running    0          44s
-pod/tangotest-integration-tmc-webui      1/1     Running    1          44s
-pod/tmcprototype-integration-tmc-webui   0/5     Init:0/1   0          44s
+Every 2.0s: kubectl get all,pv,pvc -n integration                                                                                        osboxes: Fri Mar 29 10:06:13 2019
+
+NAME                                     READY   STATUS             RESTARTS   AGE
+pod/databaseds-integration-tmc-webui-0   1/1     Running            1          4m35s
+pod/jive-integration-tmc-webui           1/1     Running            1          4m35s
+pod/rsyslog-integration-tmc-webui-0      1/1     Running            0          4m35s
+pod/tangodb-integration-tmc-webui-0      1/1     Running            0          4m35s
+pod/tangotest-integration-tmc-webui      1/1     Running            1          4m35s
+pod/tmcprototype-integration-tmc-webui   4/5     CrashLoopBackOff   5          4m35s
 
 NAME                                       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)           AGE
-service/databaseds-integration-tmc-webui   ClusterIP   None         <none>        10000/TCP         44s
-service/rsyslog-integration-tmc-webui      ClusterIP   None         <none>        514/TCP,514/UDP   44s
-service/tangodb-integration-tmc-webui      ClusterIP   None         <none>        3306/TCP          44s
+service/databaseds-integration-tmc-webui   ClusterIP   None         <none>        10000/TCP         4m35s
+service/rsyslog-integration-tmc-webui      ClusterIP   None         <none>        514/TCP,514/UDP   4m35s
+service/tangodb-integration-tmc-webui      ClusterIP   None         <none>        3306/TCP          4m35s
 
 NAME                                                READY   AGE
-statefulset.apps/databaseds-integration-tmc-webui   1/1     44s
-statefulset.apps/rsyslog-integration-tmc-webui      1/1     44s
-statefulset.apps/tangodb-integration-tmc-webui      1/1     44s
+statefulset.apps/databaseds-integration-tmc-webui   1/1     4m35s
+statefulset.apps/rsyslog-integration-tmc-webui      1/1     4m35s
+statefulset.apps/tangodb-integration-tmc-webui      1/1     4m35s
 
 NAME                                             CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                       STORAGECLASS   REASON   A
 GE
 persistentvolume/rsyslog-integration-tmc-webui   10Gi       RWO            Retain           Bound    integration/rsyslog-integration-tmc-webui   standard                4
-4s
+m35s
 persistentvolume/tangodb-integration-tmc-webui   1Gi        RWO            Retain           Bound    integration/tangodb-integration-tmc-webui   standard                4
-4s
+m35s
 
 NAME                                                  STATUS   VOLUME                          CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-persistentvolumeclaim/rsyslog-integration-tmc-webui   Bound    rsyslog-integration-tmc-webui   10Gi       RWO            standard       44s
-persistentvolumeclaim/tangodb-integration-tmc-webui   Bound    tangodb-integration-tmc-webui   1Gi        RWO            standard       44s
+persistentvolumeclaim/rsyslog-integration-tmc-webui   Bound    rsyslog-integration-tmc-webui   10Gi       RWO            standard       4m35s
+persistentvolumeclaim/tangodb-integration-tmc-webui   Bound    tangodb-integration-tmc-webui   1Gi        RWO            standard       4m35s
 ```
 
 If everything goes according to plan, then the Tango Control System GUI will spring into life, and you will be able to navigate to the `TMCPrototype` devices to verify them.

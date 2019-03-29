@@ -123,6 +123,7 @@ Status:       Active
 No resource quota.
 
 No resource limits.
+configmap/tango-script created
 persistentvolume/rsyslog-integration-tmc-webui created
 persistentvolumeclaim/rsyslog-integration-tmc-webui created
 persistentvolume/tangodb-integration-tmc-webui created
@@ -133,12 +134,9 @@ service/rsyslog-integration-tmc-webui created
 statefulset.apps/rsyslog-integration-tmc-webui created
 service/tangodb-integration-tmc-webui created
 statefulset.apps/tangodb-integration-tmc-webui created
-pod/centralnode-integration-tmc-webui created
-pod/dishleafnode-integration-tmc-webui created
-pod/dishmaster-integration-tmc-webui created
 pod/jive-integration-tmc-webui created
-pod/subarraynode-integration-tmc-webui created
 pod/tangotest-integration-tmc-webui created
+pod/tmcprototype-integration-tmc-webui created
 ```
 
 Please wait patiently - it will take time for the Container images to download, and for the database to initialise.  After some time, you can check what is running with:
@@ -148,39 +146,39 @@ watch kubectl get all,pv,pvc -n integration
 
 Which will give output like:
 ```
-Every 2.0s: kubectl get all,pv,pvc -n integration                                                                                                                          osboxes: Fri Mar 22 13:02:40 2019
+Every 2.0s: kubectl get all,pv,pvc -n integration                                                                                        osboxes: Fri Mar 29 09:25:05 2019
 
-NAME                                     READY   STATUS             RESTARTS   AGE
-pod/centralnode-integration-tmc-webui    0/1     Error              2          98s
-pod/databaseds-integration-tmc-webui-0   1/1     Running            1          98s
-pod/dishleafnode-integration-tmc-webui   0/1     CrashLoopBackOff   3          98s
-pod/dishmaster-integration-tmc-webui     1/1     Running            1          98s
-pod/jive-integration-tmc-webui           1/1     Running            2          98s
-pod/rsyslog-integration-tmc-webui-0      1/1     Running            0          98s
-pod/subarraynode-integration-tmc-webui   0/1     CrashLoopBackOff   2          98s
-pod/tangodb-integration-tmc-webui-0      1/1     Running            0          98s
-pod/tangotest-integration-tmc-webui      1/1     Running            1          98s
+NAME                                     READY   STATUS     RESTARTS   AGE
+pod/databaseds-integration-tmc-webui-0   1/1     Running    1          44s
+pod/jive-integration-tmc-webui           1/1     Running    1          44s
+pod/rsyslog-integration-tmc-webui-0      1/1     Running    0          44s
+pod/tangodb-integration-tmc-webui-0      1/1     Running    0          44s
+pod/tangotest-integration-tmc-webui      1/1     Running    1          44s
+pod/tmcprototype-integration-tmc-webui   0/5     Init:0/1   0          44s
 
 NAME                                       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)           AGE
-service/databaseds-integration-tmc-webui   ClusterIP   None         <none>        10000/TCP         99s
-service/rsyslog-integration-tmc-webui      ClusterIP   None         <none>        514/TCP,514/UDP   98s
-service/tangodb-integration-tmc-webui      ClusterIP   None         <none>        3306/TCP          98s
+service/databaseds-integration-tmc-webui   ClusterIP   None         <none>        10000/TCP         44s
+service/rsyslog-integration-tmc-webui      ClusterIP   None         <none>        514/TCP,514/UDP   44s
+service/tangodb-integration-tmc-webui      ClusterIP   None         <none>        3306/TCP          44s
 
 NAME                                                READY   AGE
-statefulset.apps/databaseds-integration-tmc-webui   1/1     99s
-statefulset.apps/rsyslog-integration-tmc-webui      1/1     98s
-statefulset.apps/tangodb-integration-tmc-webui      1/1     98s
+statefulset.apps/databaseds-integration-tmc-webui   1/1     44s
+statefulset.apps/rsyslog-integration-tmc-webui      1/1     44s
+statefulset.apps/tangodb-integration-tmc-webui      1/1     44s
 
-NAME                                             CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                       STORAGECLASS   REASON   AGE
-persistentvolume/rsyslog-integration-tmc-webui   10Gi       RWO            Retain           Bound    integration/rsyslog-integration-tmc-webui   standard                99s
-persistentvolume/tangodb-integration-tmc-webui   1Gi        RWO            Retain           Bound    integration/tangodb-integration-tmc-webui   standard                99s
+NAME                                             CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                       STORAGECLASS   REASON   A
+GE
+persistentvolume/rsyslog-integration-tmc-webui   10Gi       RWO            Retain           Bound    integration/rsyslog-integration-tmc-webui   standard                4
+4s
+persistentvolume/tangodb-integration-tmc-webui   1Gi        RWO            Retain           Bound    integration/tangodb-integration-tmc-webui   standard                4
+4s
 
 NAME                                                  STATUS   VOLUME                          CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-persistentvolumeclaim/rsyslog-integration-tmc-webui   Bound    rsyslog-integration-tmc-webui   10Gi       RWO            standard       99s
-persistentvolumeclaim/tangodb-integration-tmc-webui   Bound    tangodb-integration-tmc-webui   1Gi        RWO            standard       99s
+persistentvolumeclaim/rsyslog-integration-tmc-webui   Bound    rsyslog-integration-tmc-webui   10Gi       RWO            standard       44s
+persistentvolumeclaim/tangodb-integration-tmc-webui   Bound    tangodb-integration-tmc-webui   1Gi        RWO            standard       44s
 ```
 
-If everything goes according to plan, then the Tango Control System GUI will spring into life, and you will be able to navigate to the `DishMaster` device to verify that the Tango Example is up an running.
+If everything goes according to plan, then the Tango Control System GUI will spring into life, and you will be able to navigate to the `TMCPrototype` devices to verify them.
 
 To clean up the Helm Chart release:
 ```

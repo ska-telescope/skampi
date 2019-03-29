@@ -22,7 +22,7 @@ spec:
 
   initContainers:
   - name: devices
-    image: nexus.engageska-portugal.pt/ska-docker/tango-itango:latest
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: IfNotPresent
     command: ["python3", "/app/tango-script.py"]
     env:

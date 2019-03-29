@@ -13,7 +13,7 @@ deploy_on_integration_enviroment:
   - git clone https://github.com/ska-telescope/ansible-playbooks.git
   - cd ansible-playbooks
   - echo -e "\n\n[integration]" >> hosts
-  - echo "$ENVIRONMENT_ADDRESS" >> hosts
+  - echo "$ENVIRONMENT_ADDRESS  ansible_user=$ENVIRONMENT_USER" >> hosts
   - cat hosts
   - mkdir -p /root/.ssh
   - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa

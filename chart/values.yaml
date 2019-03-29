@@ -129,8 +129,8 @@ webjive:
 tangogql:
   enabled: false
   image:
-    registry: nexus.engageska-portugal.pt/webjive
-    image: webjive
+    registry: nexus.engageska-portugal.pt/tangogql
+    image: tangogql
     tag: latest
     pullPolicy: IfNotPresent
 

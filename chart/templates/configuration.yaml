@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tango-script
+data:
+  tango-script.py: |
+    #!/usr/bin/env python
+    from tango import Database, DbDevInfo
+    from time import sleep
+    import json
+    
+    timeSleep = 30
+    for x in range(10):
+      try:
+        print ("Connecting to the databaseds")
+        db = Database()
+      except:
+        print ("Could not connect to the databaseds. Retry after " + str(timeSleep) + " seconds.")
+        sleep(timeSleep)
+
+    print("Connected to the databaseds")
+    print({{ .Values.configuration.devices | quote }})
+    json_devices = json.loads({{ .Values.configuration.devices | quote }})
+    for device in json_devices:
+      dev_info = DbDevInfo()
+      dev_info._class = device["class"]
+      dev_info.server = device["serverName"]
+      dev_info.name = device["name"]
+      print("Addind device " + dev_info.name)
+      db.add_device(dev_info)
+      print("Device " + dev_info.name + "added")
+      for property in device["properties"]:
+        print("Addind property " + property["name"])
+        db.put_device_property(dev_info.name, { property["name"]:property["value"]})
+        print("Added property " + property["name"] + "with value " + property["value"])

@@ -1,0 +1,134 @@
+{{ if .Values.tmcprototype.enabled }}
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tmcprototype-{{ template "integration-tmc-webui.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: tmcprototype-{{ template "integration-tmc-webui.name" . }}
+    chart: {{ template "integration-tmc-webui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  volumes:
+    - name: logs
+      persistentVolumeClaim:
+        claimName: rsyslog-{{ template "integration-tmc-webui.name" . }}
+    - name: script
+      configMap:
+        name: tango-script
+
+  initContainers:
+  - name: devices
+    image: nexus.engageska-portugal.pt/ska-docker/tango-itango:latest
+    imagePullPolicy: IfNotPresent
+    command: ["python3", "/app/tango-script.py"]
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+    volumeMounts:
+      - name: script
+        mountPath: /app
+        readOnly: true
+
+  containers:
+  - name: dishmaster
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+            /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py test"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+
+  - name: dishleafnode
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py test"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+
+  - name: subarraynode1
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py test1"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+
+  - name: subarraynode2
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py test2"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+
+  - name: centralnode
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/CentralNode/CentralNode/CentralNode.py test"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+
+{{- with .Values.tmcprototype.env }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  restartPolicy: Always
+{{- with .Values.nodeSelector }}
+  nodeSelector:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.affinity }}
+  affinity:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+
+{{ end }}

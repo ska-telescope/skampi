@@ -5,7 +5,7 @@ BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
 # find IP addresses of this machine, setting THIS_HOST to the first address found
 THIS_HOST := $(shell ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
 DISPLAY := $(THIS_HOST):0
-XAUTHORITY ?= ${XAUTHORITY}
+XAUTHORITYx ?= ${XAUTHORITY}
 KUBE_NAMESPACE ?= default
 HELM_RELEASE = test
 
@@ -20,7 +20,7 @@ REMOTE_DEBUG ?= false
 
 vars: ## Display variables - pass in DISPLAY and XAUTHORITY
 	@echo "DISPLAY: $(DISPLAY)"
-	@echo "XAUTHORITY: $(XAUTHORITY)"
+	@echo "XAUTHORITY: $(XAUTHORITYx)"
 	@echo "Namespace: $(KUBE_NAMESPACE)"
 
 k8s: ## Which kubernetes are we connected to
@@ -54,7 +54,7 @@ deploy: namespace  ## deploy the helm chart
 				 --namespace $(KUBE_NAMESPACE) \
 	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITY)" \
+	             --set xauthority="$(XAUTHORITYx)" \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) apply -f -
 
 show: ## show the helm chart
@@ -62,7 +62,7 @@ show: ## show the helm chart
 				 --namespace $(KUBE_NAMESPACE) \
 	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITY)" \
+	             --set xauthority="$(XAUTHORITYx)" \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)"
 
 delete: ## delete the helm chart release
@@ -70,7 +70,7 @@ delete: ## delete the helm chart release
 				 --namespace $(KUBE_NAMESPACE) \
 	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITY)" \
+	             --set xauthority="$(XAUTHORITYx)" \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) delete -f -
 
 poddescribe: ## describe Pods executed from Helm chart

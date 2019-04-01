@@ -4,10 +4,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: itango-{{ template "integration-tmc-webui.name" . }}
+  name: itango-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: itango-{{ template "integration-tmc-webui.name" . }}
+    app: itango-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
     chart: {{ template "integration-tmc-webui.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -18,7 +18,7 @@ spec:
     imagePullPolicy: {{ .Values.itango.image.pullPolicy }}
     command:
       - /usr/local/bin/wait-for-it.sh
-      - databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+      - databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
       - --timeout=30
       - --strict
       - --
@@ -27,7 +27,7 @@ spec:
       # - /venv/bin/itango3
     env:
     - name: TANGO_HOST
-      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
   restartPolicy: Always
 {{- with .Values.nodeSelector }}
   nodeSelector:

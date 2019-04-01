@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: tango-script
+  name: "tango-config-script-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}"
 data:
   tango-script.py: |
     #!/usr/bin/env python
@@ -20,8 +20,11 @@ data:
         sleep(timeSleep)
 
     print("Connected to the databaseds")
-    print({{ .Values.configuration.devices | quote }})
-    json_devices = json.loads({{ .Values.configuration.devices | quote }})
+    with open('/app/devices.json', 'r') as file:
+      jsonDevices = file.read().replace('\n', '')
+
+    print(jsonDevices)
+    json_devices = json.loads(jsonDevices)
     for device in json_devices:
       dev_info = DbDevInfo()
       dev_info._class = device["class"]
@@ -34,3 +37,5 @@ data:
         print("Addind property " + property["name"])
         db.put_device_property(dev_info.name, { property["name"]:property["value"]})
         print("Added property " + property["name"] + "with value " + property["value"])
+
+{{ (tpl (.Files.Glob "data/devices.json").AsConfig . ) | indent 2  }}

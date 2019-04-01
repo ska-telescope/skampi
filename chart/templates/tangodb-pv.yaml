@@ -2,10 +2,10 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: tangodb-{{ template "integration-tmc-webui.name" . }}
+  name: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tangodb-{{ template "integration-tmc-webui.name" . }}
+    app: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
     chart: {{ template "integration-tmc-webui.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -16,17 +16,17 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /data/tangodb-{{ template "integration-tmc-webui.name" . }}/
+    path: /data/tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}/
 
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: tangodb-{{ template "integration-tmc-webui.name" . }}
+  name: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tangodb-{{ template "integration-tmc-webui.name" . }}
+    app: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
     chart: {{ template "integration-tmc-webui.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}

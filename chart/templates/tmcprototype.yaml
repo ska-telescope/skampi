@@ -4,10 +4,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: tmcprototype-{{ template "integration-tmc-webui.name" . }}
+  name: tmcprototype-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tmcprototype-{{ template "integration-tmc-webui.name" . }}
+    app: tmcprototype-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
     chart: {{ template "integration-tmc-webui.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -15,10 +15,10 @@ spec:
   volumes:
     - name: logs
       persistentVolumeClaim:
-        claimName: rsyslog-{{ template "integration-tmc-webui.name" . }}
+        claimName: rsyslog-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
     - name: script
       configMap:
-        name: tango-script
+        name: "tango-config-script-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}"
 
   initContainers:
   - name: devices
@@ -27,7 +27,7 @@ spec:
     command: ["python3", "/app/tango-script.py"]
     env:
     - name: TANGO_HOST
-      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
     volumeMounts:
       - name: script
         mountPath: /app
@@ -48,7 +48,7 @@ spec:
             /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py test"
     env:
     - name: TANGO_HOST
-      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
 
   - name: dishleafnode
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
@@ -64,7 +64,7 @@ spec:
              /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py test"
     env:
     - name: TANGO_HOST
-      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
 
   - name: subarraynode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
@@ -80,7 +80,7 @@ spec:
              /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py test1"
     env:
     - name: TANGO_HOST
-      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
 
   - name: subarraynode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
@@ -96,7 +96,7 @@ spec:
              /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py test2"
     env:
     - name: TANGO_HOST
-      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
 
   - name: centralnode
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
@@ -112,7 +112,7 @@ spec:
              /venv/bin/python /app/tmcprototype/CentralNode/CentralNode/CentralNode.py test"
     env:
     - name: TANGO_HOST
-      value: databaseds-{{ template "integration-tmc-webui.name" . }}:10000
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
 
 {{- with .Values.tmcprototype.env }}
 {{ toYaml . | indent 4 }}

@@ -11,7 +11,7 @@ kubectl apply -f dashboard-adminuser.yaml
 
 // to access the dashboard it is needed a secret token
 kubectl -n kube-system get secret
-kubectl -n kube-system describe secret default-token-l6b52 // to access the defaults
+kubectl -n kube-system describe secret *token* // default generally called default-token-*****
 
 kubectl proxy
 ```

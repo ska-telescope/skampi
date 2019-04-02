@@ -17,6 +17,9 @@ spec:
   - name: webjive-http
     port: 8081
     protocol: TCP
+  - name: tangogql-tcp
+    port: 5004
+    protocol: TCP
   selector:
     app: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
 
@@ -36,6 +39,10 @@ spec:
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
            servicePort: 8081
+        - path: /gql/*
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
 
 ---
 apiVersion: apps/v1

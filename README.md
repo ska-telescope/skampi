@@ -1,13 +1,13 @@
 
-Tango Example on Kubernetes
+TM Integration on Kubernetes
 ===========================
 
-The following are a set of instructions of running the Tango examples on Kubernetes, and has been tested  on minikube v0.34.1 with k8s v1.13.3 on Ubuntu 18.04.
+The following are a set of instructions of running the TMC prototype and the Webjive application on Kubernetes, and has been tested on minikube v0.34.1 with k8s v1.13.3 on Ubuntu 18.04.
 
 Minikube
 ========
 
-Using [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/) enables us to create a single node stand alone Kubernetes cluster for testing purposes.  If you already have a cluster at your disposal, then you can skip forward to 'Running the Tango Examples on Kubernetes'.
+Using [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/) enables us to create a single node stand alone Kubernetes cluster for testing purposes.  If you already have a cluster at your disposal, then you can skip forward to 'Running the TM Integration on Kubernetes'.
 
 The generic installation instructions are available at https://kubernetes.io/docs/tasks/tools/install-minikube/.
 
@@ -75,7 +75,7 @@ coredns-86c58d9df4-5ztg8           1/1     Running   0          3m24s
 Helm Chart
 ----------
 
-The Helm Chart based install of the Tango Examples relies on [Helm](https://docs.helm.sh/using_helm/#installing-helm) (surprise!).  The easiest way to install is using the install script:
+The Helm Chart based install of the TM Integration relies on [Helm](https://docs.helm.sh/using_helm/#installing-helm) (surprise!).  The easiest way to install is using the install script:
 ```
 curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 ```
@@ -92,7 +92,7 @@ rm -rf ~/.kube # local minikube configuration cache
 sudo rm -rf /var/lib/kubeadm.yaml /data/minikube /var/lib/minikube /var/lib/kubelet /etc/kubernetes
 ```
 
-Running the Integration TMC-WebJive on Kubernetes
+Running the TM Integration on Kubernetes
 ----------------------------------------
 
 Note: your Xserver needs to allow TCP connections.  This will be different for each window manager, but on Ubuntu 18.04 using gdm3 it can be enabled by editing /etc/gdm3/custom.conf and adding:
@@ -103,11 +103,11 @@ DisallowTCP=false
 In order for these changes to take effect you will need to restart X (it's just easier to reboot...).
 
 
-Once the Helm client is installed (from above) and TCP based Xserver connections are enabled, change to the k8s/ directory.  The basic configuration for each component of the Tango Example is held in the `values.yaml` file.
+Once the Helm client is installed (from above) and TCP based Xserver connections are enabled, change to the k8s/ directory.  The basic configuration for each component of the TM Integration is held in the `values.yaml` file.
 
 The mode that we are using Helm in here is purely for templating - this avoids the need to install the Tiller process on the Kubernetes cluster, and we don't need to be concerend about making it secure (requires TLS and the setup of a CA).
 
-On for the main event - we launch the Tango Example with:
+On for the main event - we launch the TM Integration with:
 ```
 $ make deploy KUBE_NAMESPACE=integration
 ```

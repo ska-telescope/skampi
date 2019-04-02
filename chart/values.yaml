@@ -80,7 +80,7 @@ redis:
     pullPolicy: IfNotPresent
 
 webjive:
-  enabled: false
+  enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: webjive

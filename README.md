@@ -34,12 +34,12 @@ $ sudo -E minikube start --vm-driver=none --extra-config=kubelet.resolv-conf=/va
 ⚠️  For more information, see:
 👉  https://github.com/kubernetes/minikube/blob/master/docs/vmdriver-none.md
 
-⚠️  kubectl and minikube configuration will be stored in /home/piers
+⚠️  kubectl and minikube configuration will be stored in /home/ubuntu
 ⚠️  To use kubectl or minikube commands as your own user, you may
 ⚠️  need to relocate them. For example, to overwrite your own settings:
 
-    ▪ sudo mv /home/piers/.kube /home/piers/.minikube $HOME
-    ▪ sudo chown -R $USER /home/piers/.kube /home/piers/.minikube
+    ▪ sudo mv /home/ubuntu/.kube /home/ubuntu/.minikube $HOME
+    ▪ sudo chown -R $USER /home/ubuntu/.kube /home/ubuntu/.minikube
 
 💡  This can also be done automatically by setting the env var CHANGE_MINIKUBE_NONE_USER=true
 🔥  Creating none VM (CPUs=2, Memory=2048MB, Disk=20000MB) ...
@@ -123,20 +123,22 @@ Status:       Active
 No resource quota.
 
 No resource limits.
-configmap/tango-script created
-persistentvolume/rsyslog-integration-tmc-webui created
-persistentvolumeclaim/rsyslog-integration-tmc-webui created
-persistentvolume/tangodb-integration-tmc-webui created
-persistentvolumeclaim/tangodb-integration-tmc-webui created
-service/databaseds-integration-tmc-webui created
-statefulset.apps/databaseds-integration-tmc-webui created
-service/rsyslog-integration-tmc-webui created
-statefulset.apps/rsyslog-integration-tmc-webui created
-service/tangodb-integration-tmc-webui created
-statefulset.apps/tangodb-integration-tmc-webui created
-pod/jive-integration-tmc-webui created
-pod/tangotest-integration-tmc-webui created
-pod/tmcprototype-integration-tmc-webui created
+configmap/tango-config-script-integration-tmc-webui-test created
+persistentvolume/rsyslog-integration-tmc-webui-test created
+persistentvolumeclaim/rsyslog-integration-tmc-webui-test created
+persistentvolume/tangodb-integration-tmc-webui-test created
+persistentvolumeclaim/tangodb-integration-tmc-webui-test created
+service/databaseds-integration-tmc-webui-test created
+statefulset.apps/databaseds-integration-tmc-webui-test created
+service/rsyslog-integration-tmc-webui-test created
+statefulset.apps/rsyslog-integration-tmc-webui-test created
+service/tangodb-integration-tmc-webui-test created
+statefulset.apps/tangodb-integration-tmc-webui-test created
+service/webjive-integration-tmc-webui-test created
+ingress.extensions/webjive-integration-tmc-webui-test created
+statefulset.apps/webjive-integration-tmc-webui-test created
+pod/tangotest-integration-tmc-webui-test created
+pod/tmcprototype-integration-tmc-webui-test created
 ```
 
 Please wait patiently - it will take time for the Container images to download, and for the database to initialise.  After some time, you can check what is running with:
@@ -146,39 +148,38 @@ watch kubectl get all,pv,pvc -n integration
 
 Which will give output like:
 ```
-Every 2.0s: kubectl get all,pv,pvc -n integration                                                                                        osboxes: Fri Mar 29 09:25:05 2019
+Every 2.0s: kubectl get all,pv,pvc -n integration           osboxes: Fri Mar 29 09:25:05 2019
 
-NAME                                     READY   STATUS     RESTARTS   AGE
-Every 2.0s: kubectl get all,pv,pvc -n integration                                                                                        osboxes: Fri Mar 29 10:06:13 2019
+NAME                                          READY   STATUS             RESTARTS   AGE
+pod/databaseds-integration-tmc-webui-test-0   1/1     Running            3          117s
+pod/rsyslog-integration-tmc-webui-test-0      1/1     Running            0          117s
+pod/tangodb-integration-tmc-webui-test-0      1/1     Running            0          117s
+pod/tangotest-integration-tmc-webui-test      1/1     Running            2          117s
+pod/tmcprototype-integration-tmc-webui-test   4/5     CrashLoopBackOff   2          117s
+pod/webjive-integration-tmc-webui-test-0      4/4     Running            0          117s
 
-NAME                                     READY   STATUS             RESTARTS   AGE
-pod/databaseds-integration-tmc-webui-0   1/1     Running            1          4m35s
-pod/jive-integration-tmc-webui           1/1     Running            1          4m35s
-pod/rsyslog-integration-tmc-webui-0      1/1     Running            0          4m35s
-pod/tangodb-integration-tmc-webui-0      1/1     Running            0          4m35s
-pod/tangotest-integration-tmc-webui      1/1     Running            1          4m35s
-pod/tmcprototype-integration-tmc-webui   4/5     CrashLoopBackOff   5          4m35s
+NAME                                            TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)           AGE
+service/databaseds-integration-tmc-webui-test   ClusterIP   None           <none>        10000/TCP         117s
+service/rsyslog-integration-tmc-webui-test      ClusterIP   None           <none>        514/TCP,514/UDP   117s
+service/tangodb-integration-tmc-webui-test      ClusterIP   None           <none>        3306/TCP          117s
+service/webjive-integration-tmc-webui-test      NodePort    10.100.50.64   <none>        8081:31171/TCP    117s
 
-NAME                                       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)           AGE
-service/databaseds-integration-tmc-webui   ClusterIP   None         <none>        10000/TCP         4m35s
-service/rsyslog-integration-tmc-webui      ClusterIP   None         <none>        514/TCP,514/UDP   4m35s
-service/tangodb-integration-tmc-webui      ClusterIP   None         <none>        3306/TCP          4m35s
+NAME                                                     READY   AGE
+statefulset.apps/databaseds-integration-tmc-webui-test   1/1     117s
+statefulset.apps/rsyslog-integration-tmc-webui-test      1/1     117s
+statefulset.apps/tangodb-integration-tmc-webui-test      1/1     117s
+statefulset.apps/webjive-integration-tmc-webui-test      1/1     117s
 
-NAME                                                READY   AGE
-statefulset.apps/databaseds-integration-tmc-webui   1/1     4m35s
-statefulset.apps/rsyslog-integration-tmc-webui      1/1     4m35s
-statefulset.apps/tangodb-integration-tmc-webui      1/1     4m35s
+NAME                                                  CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                            STORAGECLASS   REASON   AGE
+persistentvolume/rsyslog-integration-tmc-webui-test   10Gi       RWO            Retain           Bound    integration/rsyslog-integration-tmc-webui-test   standard                117s
+persistentvolume/tangodb-integration-tmc-webui-test   1Gi        RWO            Retain           Bound    integration/tangodb-integration-tmc-webui-test   standard                117s
 
-NAME                                             CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                       STORAGECLASS   REASON   A
-GE
-persistentvolume/rsyslog-integration-tmc-webui   10Gi       RWO            Retain           Bound    integration/rsyslog-integration-tmc-webui   standard                4
-m35s
-persistentvolume/tangodb-integration-tmc-webui   1Gi        RWO            Retain           Bound    integration/tangodb-integration-tmc-webui   standard                4
-m35s
+NAME                                                       STATUS   VOLUME                               CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+persistentvolumeclaim/rsyslog-integration-tmc-webui-test   Bound    rsyslog-integration-tmc-webui-test   10Gi       RWO            standard       117s
+persistentvolumeclaim/tangodb-integration-tmc-webui-test   Bound    tangodb-integration-tmc-webui-test   1Gi        RWO            standard       117s
 
-NAME                                                  STATUS   VOLUME                          CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-persistentvolumeclaim/rsyslog-integration-tmc-webui   Bound    rsyslog-integration-tmc-webui   10Gi       RWO            standard       4m35s
-persistentvolumeclaim/tangodb-integration-tmc-webui   Bound    tangodb-integration-tmc-webui   1Gi        RWO            standard       4m35s
+NAME                                                    HOSTS             ADDRESS         PORTS   AGE
+ingress.extensions/webjive-integration-tmc-webui-test   integration.ska   193.204.1.157   80      117s
 ```
 
 To clean up the Helm Chart release:

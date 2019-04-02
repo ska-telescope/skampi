@@ -15,14 +15,29 @@ spec:
   type: NodePort
   ports:
   - name: webjive-http
-    port: 80
+    port: 8081
     protocol: TCP
-    targetPort: 8081
   selector:
     app: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
 
 ---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: integration.ska
+      http:
+        paths:
+        - path: /*
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 8081
 
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

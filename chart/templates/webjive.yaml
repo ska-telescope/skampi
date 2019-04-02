@@ -62,10 +62,6 @@ spec:
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
-      volumes:
-      - name: tangogql-logs
-        emptyDir: {}
-      
       initContainers:
       - name: waitdatabaseds
         image: nexus.engageska-portugal.pt/ska-docker/tango-itango:latest
@@ -123,7 +119,10 @@ spec:
         
         resources:
 {{ toYaml .Values.webjive.resources | indent 10 }}
-
+      volumes:
+      - name: tangogql-logs
+        persistentVolumeClaim:
+          claimName: rsyslog-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

@@ -19,6 +19,7 @@ download:
   tags: 
   - docker-executor
   script:
+  - rm -f ansible-playbook
   - git clone https://github.com/ska-telescope/ansible-playbooks.git
   - cd ansible-playbooks
   - echo -e "\n\n[integration]" >> hosts

@@ -3,7 +3,6 @@ image: ubuntu:18.04
 cache:
   paths: 
     - ansible-playbooks/
-    - /root/.ssh
 
 before_script:
     - apt-get update
@@ -25,16 +24,18 @@ download:
   - echo -e "\n\n[integration]" >> hosts
   - echo "$ENVIRONMENT_ADDRESS  ansible_user=$ENVIRONMENT_USER" >> hosts
   - cat hosts
-  - mkdir -p /root/.ssh
-  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
-  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
-  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
+  
 
 deploy:
   stage: deploy
   tags:
   - docker-executor
   script:  
+  - cd ansible-playbooks
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
   - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml
 
@@ -43,6 +44,11 @@ stop_namespace_and_deploy:
   tags:
   - docker-executor
   script: 
+  - cd ansible-playbooks
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
   - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "stop_integrated_system='yes'"
   when: manual
@@ -52,6 +58,11 @@ remove_cluster_and_deploy:
   tags:
   - docker-executor
   script: 
+  - cd ansible-playbooks
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
   - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "remove_cluster='yes'"
   when: manual

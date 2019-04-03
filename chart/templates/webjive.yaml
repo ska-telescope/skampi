@@ -32,7 +32,7 @@ metadata:
       nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: integration.ska
+    - host: integration.engageska-portugal.pt
       http:
         paths:
         - path: /*

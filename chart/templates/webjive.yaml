@@ -12,13 +12,15 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
   - name: webjive-http
     port: 8081
+    targetPort: webjive-http
     protocol: TCP
   - name: tangogql-tcp
     port: 5004
+    targetPort: tangogql-tcp
     protocol: TCP
   selector:
     app: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
@@ -29,20 +31,23 @@ kind: Ingress
 metadata:
   name: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
   annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: true
+    nginx.ingress.kubernetes.io/ssl-redirect: false
 spec:
   rules:
     - host: integration.engageska-portugal.pt
       http:
         paths:
-        - path: /*
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 8081
-        - path: /gql/*
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
+          - path: /gql/
+            backend:
+              serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+              servicePort: 5004
+          - path: /
+            backend:
+              serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+              servicePort: 8081
 
 ---
 apiVersion: apps/v1
@@ -80,7 +85,7 @@ spec:
           - --strict
           - --
           - echo "Databaseds ready for use."
-      
+
       containers:
       - name: webjive
         image: "{{ .Values.webjive.image.registry }}/{{ .Values.webjive.image.image }}:{{ .Values.webjive.image.tag }}"
@@ -90,13 +95,13 @@ spec:
           containerPort: 8081
           protocol: TCP
 
-      - name: dummyauthserver
-        image: "{{ .Values.dummyauthserver.image.registry }}/{{ .Values.dummyauthserver.image.image }}:{{ .Values.dummyauthserver.image.tag }}"
-        imagePullPolicy: {{ .Values.dummyauthserver.image.pullPolicy }}
-        ports:
-        - name: authserver-tcp
-          containerPort: 5000
-          protocol: TCP
+      # - name: dummyauthserver
+      #   image: "{{ .Values.dummyauthserver.image.registry }}/{{ .Values.dummyauthserver.image.image }}:{{ .Values.dummyauthserver.image.tag }}"
+      #   imagePullPolicy: {{ .Values.dummyauthserver.image.pullPolicy }}
+      #   ports:
+      #   - name: authserver-tcp
+      #     containerPort: 5000
+      #     protocol: TCP
 
       - name: tangogql
         image: "{{ .Values.tangogql.image.registry }}/{{ .Values.tangogql.image.image }}:{{ .Values.tangogql.image.tag }}"
@@ -123,7 +128,7 @@ spec:
         - name: redis-tcp
           containerPort: 6379
           protocol: TCP
-        
+
         resources:
 {{ toYaml .Values.webjive.resources | indent 10 }}
       volumes:

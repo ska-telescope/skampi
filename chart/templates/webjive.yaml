@@ -31,10 +31,7 @@ kind: Ingress
 metadata:
   name: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/x-forwarded-prefix: true
-    nginx.ingress.kubernetes.io/ssl-redirect: false
 spec:
   rules:
     - host: integration.engageska-portugal.pt
@@ -95,13 +92,13 @@ spec:
           containerPort: 8081
           protocol: TCP
 
-      # - name: dummyauthserver
-      #   image: "{{ .Values.dummyauthserver.image.registry }}/{{ .Values.dummyauthserver.image.image }}:{{ .Values.dummyauthserver.image.tag }}"
-      #   imagePullPolicy: {{ .Values.dummyauthserver.image.pullPolicy }}
-      #   ports:
-      #   - name: authserver-tcp
-      #     containerPort: 5000
-      #     protocol: TCP
+      - name: dummyauthserver
+        image: "{{ .Values.dummyauthserver.image.registry }}/{{ .Values.dummyauthserver.image.image }}:{{ .Values.dummyauthserver.image.tag }}"
+        imagePullPolicy: {{ .Values.dummyauthserver.image.pullPolicy }}
+        ports:
+        - name: authserver-tcp
+          containerPort: 5000
+          protocol: TCP
 
       - name: tangogql
         image: "{{ .Values.tangogql.image.registry }}/{{ .Values.tangogql.image.image }}:{{ .Values.tangogql.image.tag }}"

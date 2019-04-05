@@ -23,6 +23,12 @@ spec:
   - name: dashboards-tcp
     port: 3012
     protocol: TCP
+  - name: authserver-tcp
+    port: 8080
+    protocol: TCP
+  - name: mongodb
+    port: 27017
+    protocol: TCP
   selector:
     app: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
 
@@ -41,14 +47,26 @@ spec:
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
            servicePort: 80
-        - path: /*
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
-        - path: /*
+        - path: /dashboards/*
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
            servicePort: 3012
+        - path: /auth/*
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 8080
+        - path: /testdb/db/*
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+        - path: /testdb/graphiql/*
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+        - path: /testdb/socket/*
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
 
 ---
 apiVersion: apps/v1
@@ -112,7 +130,7 @@ spec:
         imagePullPolicy: {{ .Values.dashboards.image.pullPolicy }}
         env:
           - name: MONGO_HOST
-            value: "mongodb://mongodb/dashboards"
+            value: "mongodb://localhost/dashboards"
           - name: SECRET
             value: "s3cr3t"
         ports:
@@ -149,6 +167,10 @@ spec:
       - name: mongodb
         image: "{{ .Values.mongodb.image.image }}:{{ .Values.mongodb.image.tag }}"
         imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
+        ports:
+        - name: mongodb
+          containerPort: 27017
+          protocol: TCP
         
         resources:
 {{ toYaml .Values.webjive.resources | indent 10 }}

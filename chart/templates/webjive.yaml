@@ -15,10 +15,13 @@ spec:
   type: NodePort
   ports:
   - name: webjive-http
-    port: 8081
+    port: 80
     protocol: TCP
   - name: tangogql-tcp
     port: 5004
+    protocol: TCP
+  - name: dashboards-tcp
+    port: 3012
     protocol: TCP
   selector:
     app: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
@@ -37,11 +40,15 @@ spec:
         - path: /*
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 8081
-        - path: /gql/*
+           servicePort: 80
+        - path: /*
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
            servicePort: 5004
+        - path: /*
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 3012
 
 ---
 apiVersion: apps/v1
@@ -86,15 +93,31 @@ spec:
         imagePullPolicy: {{ .Values.webjive.image.pullPolicy }}
         ports:
         - name: webjive-http
-          containerPort: 8081
+          containerPort: 80
           protocol: TCP
 
-      - name: dummyauthserver
-        image: "{{ .Values.dummyauthserver.image.registry }}/{{ .Values.dummyauthserver.image.image }}:{{ .Values.dummyauthserver.image.tag }}"
-        imagePullPolicy: {{ .Values.dummyauthserver.image.pullPolicy }}
+      - name: authserver
+        image: "{{ .Values.authserver.image.registry }}/{{ .Values.authserver.image.image }}:{{ .Values.authserver.image.tag }}"
+        imagePullPolicy: {{ .Values.authserver.image.pullPolicy }}
         ports:
         - name: authserver-tcp
-          containerPort: 5000
+          containerPort: 8080
+          protocol: TCP
+        env:
+          - name: SECRET
+            value: "s3cr3t"
+
+      - name: dashboards
+        image: "{{ .Values.dashboards.image.registry }}/{{ .Values.dashboards.image.image }}:{{ .Values.dashboards.image.tag }}"
+        imagePullPolicy: {{ .Values.dashboards.image.pullPolicy }}
+        env:
+          - name: MONGO_HOST
+            value: "mongodb://mongodb/dashboards"
+          - name: SECRET
+            value: "s3cr3t"
+        ports:
+        - name: dashboards-tcp
+          containerPort: 3012
           protocol: TCP
 
       - name: tangogql
@@ -122,6 +145,10 @@ spec:
         - name: redis-tcp
           containerPort: 6379
           protocol: TCP
+
+      - name: mongodb
+        image: "{{ .Values.mongodb.image.image }}:{{ .Values.mongodb.image.tag }}"
+        imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
         
         resources:
 {{ toYaml .Values.webjive.resources | indent 10 }}

@@ -66,10 +66,18 @@ tmcprototype:
     tag: latest
     pullPolicy: Always
 
-dummyauthserver:
+webjive:
+  enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: dummy_authserver
+    image: webjive-develop_webjive
+    tag: latest
+    pullPolicy: Always
+
+authserver:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: webjive-develop_auth
     tag: latest
     pullPolicy: Always
 
@@ -79,18 +87,23 @@ redis:
     tag: latest
     pullPolicy: IfNotPresent
 
-webjive:
-  enabled: true
+mongodb:
+  image: 
+    image: mongo
+    tag: 3.6-stretch
+    pullPolicy: IfNotPresent
+
+dashboards:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive
+    image: webjive-develop_dashboards
     tag: latest
     pullPolicy: Always
 
 tangogql:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: tangogql
+    image: webjive-develop_tangogql
     tag: latest
     pullPolicy: Always
 

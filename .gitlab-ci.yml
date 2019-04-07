@@ -40,7 +40,7 @@ deploy:
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
   - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml
 
-stop_namespace:
+stop_system:
   stage: deploy 
   tags:
   - docker-executor
@@ -52,6 +52,20 @@ stop_namespace:
   - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
   - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "deploy='no' stop_integrated_system='yes' install_ska_docker='no'"
+  when: manual
+
+start_system:
+  stage: deploy 
+  tags:
+  - docker-executor
+  script: 
+  - cd ansible-playbooks
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
+  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "deploy='no' start_integrated_system='yes' install_ska_docker='no'"
   when: manual
 
 remove_cluster:

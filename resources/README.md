@@ -19,3 +19,13 @@ kubectl proxy
 More information on https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
 
 It is also included an example of graphql query for the webjive application. The graphQl Engine is available in the following path of the integration web server: /gql/graphiql/
+
+Traefik (wip)
+========
+
+kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-rbac.yaml
+kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-ds.yaml
+kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/ui.yaml
+kubectl delete -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/ui.yaml
+echo "$(minikube ip) traefik-ui.minikube" | sudo tee -a /etc/hosts

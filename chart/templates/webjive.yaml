@@ -36,37 +36,73 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: webjive-tangogql-nw-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
   annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+      nginx.ingress.kubernetes.io/app-root: /graphiql
 spec:
   rules:
     - http:
         paths:
-        - path: /*
+        - path: /testdb/(.*)
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+        - path: /testdb/db/(.*)
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+        - path: /testdb/graphiql/(.*)
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+        - path: /testdb/socket/(.*)
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webjive-tangogql-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /gql/(.*)
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /(.*)
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
            servicePort: 80
-        - path: /dashboards/*
+        - path: /dashboards/(.*)
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
            servicePort: 3012
-        - path: /auth/*
+        - path: /auth/(.*)
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
            servicePort: 8080
-        - path: /testdb/db/*
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
-        - path: /testdb/graphiql/*
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
-        - path: /testdb/socket/*
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
+
+
 
 ---
 apiVersion: apps/v1

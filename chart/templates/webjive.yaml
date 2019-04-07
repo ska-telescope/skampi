@@ -93,6 +93,10 @@ spec:
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
            servicePort: 80
+        - path: /testdb/dashboard/(.*)
+          backend:
+           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           servicePort: 80
         - path: /dashboards/(.*)
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}

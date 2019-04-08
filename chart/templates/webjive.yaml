@@ -12,13 +12,14 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
   - name: webjive-http
     port: 80
     protocol: TCP
   - name: tangogql-tcp
     port: 5004
+    targetPort: tangogql-tcp
     protocol: TCP
   - name: dashboards-tcp
     port: 3012
@@ -131,7 +132,7 @@ spec:
           - --strict
           - --
           - echo "Databaseds ready for use."
-      
+
       containers:
       - name: webjive
         image: "{{ .Values.webjive.image.registry }}/{{ .Values.webjive.image.image }}:{{ .Values.webjive.image.tag }}"
@@ -198,7 +199,7 @@ spec:
         - name: mongodb
           containerPort: 27017
           protocol: TCP
-        
+
         resources:
 {{ toYaml .Values.webjive.resources | indent 10 }}
       volumes:

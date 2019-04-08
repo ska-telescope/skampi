@@ -73,20 +73,51 @@ delete: ## delete the helm chart release
 	             --set xauthority="$(XAUTHORITYx)" \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) delete -f -
 
+
 poddescribe: ## describe Pods executed from Helm chart
 	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(HELM_RELEASE) -o=name`; \
-	do echo "-------------------"; \
-	echo "Describe for $$i"; \
-	kubectl -n $(KUBE_NAMESPACE) describe $$i; \
+	do echo "---------------------------------------------------"; \
+	echo "Describe for $${i}"; \
+	echo kubectl -n $(KUBE_NAMESPACE) describe $${i}; \
+	echo "---------------------------------------------------"; \
+	kubectl -n $(KUBE_NAMESPACE) describe $${i}; \
+	echo "---------------------------------------------------"; \
+	echo ""; echo ""; echo ""; \
 	done
 
 podlogs: ## show Helm chart POD logs
 	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(HELM_RELEASE) -o=name`; \
-	do echo "-------------------"; \
-	echo "Logs for $$i"; \
-	kubectl -n $(KUBE_NAMESPACE) logs $$i; \
+	do \
+	echo "---------------------------------------------------"; \
+	echo "Logs for $${i}"; \
+	echo kubectl -n $(KUBE_NAMESPACE) logs $${i}; \
+	echo kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"; \
+	echo "---------------------------------------------------"; \
+	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"`; do \
+	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
+	echo "initContainer: $${j}"; echo "$${RES}"; \
+	echo "---------------------------------------------------";\
+	done; \
+	echo "Main Pod logs for $${i}"; \
+	echo "---------------------------------------------------"; \
+	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.containers[*].name}"`; do \
+	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
+	echo "Container: $${j}"; echo "$${RES}"; \
+	echo "---------------------------------------------------";\
+	done; \
+	echo "---------------------------------------------------"; \
+	echo ""; echo ""; echo ""; \
 	done
+
+localip:  ## set local Minikube IP in /etc/hosts file for apigateway
+	@new_ip=`minikube ip` && \
+	existing_ip=`grep integration.engageska-portugal.pt /etc/hosts || true` && \
+	echo "New IP is: $${new_ip}" && \
+	echo "Existing IP: $${existing_ip}" && \
+	if [ -z "$${existing_ip}" ]; then echo "$${new_ip} integration.engageska-portugal.pt" | sudo tee -a /etc/hosts; \
+	else sudo perl -i -ne "s/\d+\.\d+.\d+\.\d+/$${new_ip}/ if /integration.engageska-portugal.pt/; print" /etc/hosts; fi && \
+	echo "/etc/hosts is now: " `grep integration.engageska-portugal.pt /etc/hosts`
+
 
 help:   ## show this help.
 	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-

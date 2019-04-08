@@ -59,12 +59,12 @@ tangotest:
     pullPolicy: IfNotPresent
 
 tmcprototype:
-  enabled: true
+  enabled: false
   image:
     registry: nexus.engageska-portugal.pt/tango-example
     image: tmcprototype
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
 webjive:
   enabled: true
@@ -79,10 +79,10 @@ authserver:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: webjive-develop_auth
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
 redis:
-  image: 
+  image:
     image: redis
     tag: latest
     pullPolicy: IfNotPresent
@@ -98,14 +98,14 @@ dashboards:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: webjive-develop_dashboards
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
 tangogql:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: webjive-develop_tangogql
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
 jive:
   enabled: false

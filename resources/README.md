@@ -20,12 +20,21 @@ More information on https://kubernetes.io/docs/tasks/access-application-cluster/
 
 It is also included an example of graphql query for the webjive application. The graphQl Engine is available in the following path of the integration web server: /gql/graphiql/
 
-Traefik (wip)
-========
-
+Traefik
+=============
+```
+# Install traefik with dashboard
 kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-rbac.yaml
-kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-ds.yaml
 kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-deployment.yaml
 kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/ui.yaml
-kubectl delete -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/ui.yaml
 echo "$(minikube ip) traefik-ui.minikube" | sudo tee -a /etc/hosts
+```
+
+Ingress controller commands
+===========================
+```
+# The controller is in the kube-system namespace
+kubectl get pods -n kube-system
+kubectl logs -n kube-system *nginx-ingress-controller-name*
+kubectl exec -it -n kube-system *nginx-ingress-controller-name* cat /etc/nginx/nginx.conf
+```

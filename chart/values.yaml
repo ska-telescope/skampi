@@ -59,7 +59,7 @@ tangotest:
     pullPolicy: IfNotPresent
 
 tmcprototype:
-  enabled: false
+  enabled: true
   image:
     registry: nexus.engageska-portugal.pt/tango-example
     image: tmcprototype

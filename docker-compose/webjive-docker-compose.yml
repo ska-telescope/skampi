@@ -1,0 +1,73 @@
+version: "3"
+
+services:
+  database:
+    image: nexus.engageska-portugal.pt/ska-docker/tango-db:latest
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=tango
+      - MYSQL_USER=tango
+      - MYSQL_PASSWORD=tango
+    volumes:
+      - tangodb:/var/lib/mysql
+  control-system:
+    image: nexus.engageska-portugal.pt/ska-docker/tango-cpp:latest
+    container_name: databaseds
+    hostname: databaseds
+    depends_on:
+      - tangodb
+    environment:
+      - ORB_PORT=10000
+      - MYSQL_HOST=tangodb:3306
+      - MYSQL_DATABASE=tango
+      - MYSQL_USER=tango
+      - MYSQL_PASSWORD=tango
+      - TANGO_HOST=databaseds:10000
+    entrypoint:
+      - /usr/local/bin/wait-for-it.sh
+      - tangodb:3306
+      - --timeout=30
+      - --strict
+      - --
+      - /usr/local/bin/DataBaseds
+      - "2"
+      - -ORBendPoint
+      - giop:tcp::10000
+  tangogql:
+    image: nexus.engageska-portugal.pt/ska-docker/webjive-develop_tangogql:latest
+    restart: always
+    environment:
+      - TANGO_HOST=control-system:10000
+    labels:
+      - "traefik.frontend.rule=Host:localhost; PathPrefix: /testdb/db, /testdb/socket, /testdb/graphiql; ReplacePathRegex: ^/testdb/((?:db|socket|graphiql.*?)/?)/?$$ /$$1"
+      - "traefik.port=5004"
+  webjive:
+    image: nexus.engageska-portugal.pt/ska-docker/webjive-develop_webjive:latest
+    labels:
+      - "traefik.frontend.rule=Host:localhost"
+      - "traefik.port=80"
+  auth:
+    image: nexus.engageska-portugal.pt/ska-docker/webjive-develop_auth:latest
+    environment:
+      - SECRET=s3cr3t
+    labels:
+      - "traefik.frontend.rule=Host:localhost; PathPrefixStrip: /auth"
+      - "traefik.port=8080"
+  dashboards:
+    image: nexus.engageska-portugal.pt/ska-docker/webjive-develop_dashboards:latest
+    environment:
+      - MONGO_HOST=mongodb://mongodb/dashboards
+      - SECRET=s3cr3t
+    labels:
+      - "traefik.frontend.rule=Host:localhost; PathPrefix: /dashboards"
+      - "traefik.port=3012"
+  mongodb:
+    image: mongo:3.6-stretch
+  traefik:
+    image: traefik:1.7-alpine
+    command: --docker
+    ports:
+      - 22484:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

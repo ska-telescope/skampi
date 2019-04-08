@@ -12,14 +12,13 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - name: webjive-http
     port: 80
     protocol: TCP
   - name: tangogql-tcp
     port: 5004
-    targetPort: tangogql-tcp
     protocol: TCP
   - name: dashboards-tcp
     port: 3012
@@ -37,64 +36,50 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: webjive-tangogql-nw-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
   annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /$1
-      nginx.ingress.kubernetes.io/app-root: /graphiql
+    kubernetes.io/ingress.class: traefik
 spec:
   rules:
     - http:
         paths:
-        - path: /testdb/(.*)
+        - path: /*
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
-        - path: /testdb/db/(.*)
+           servicePort: 80
+        - path: /dashboards/*
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
-        - path: /testdb/graphiql/(.*)
+           servicePort: 3012
+        - path: /auth/*
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
-        - path: /testdb/socket/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
+           servicePort: 8080
 
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: webjive-tangogql-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
   annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    kubernetes.io/ingress.class: traefik
+    # traefik.frontend.rule.type: "ReplacePathRegex: ^/testdb/((?:db|socket|graphiql.*?)/?)/?$$ /$$1"
 spec:
   rules:
     - http:
         paths:
-        - path: /(.*)
+        - path: /testdb/db
           backend:
            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 80
-        - path: /testdb/dashboard
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 80
-        - path: /testdb/dashboard/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 80
-        - path: /dashboards/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 3012
-        - path: /auth/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 8080
-
-
+           servicePort: 5004
+        # - path: /testdb/graphiql
+        #   backend:
+        #    serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+        #    servicePort: 5004
+        # - path: /testdb/socket
+        #   backend:
+        #    serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+        #    servicePort: 5004
 
 ---
 apiVersion: apps/v1
@@ -132,7 +117,7 @@ spec:
           - --strict
           - --
           - echo "Databaseds ready for use."
-
+      
       containers:
       - name: webjive
         image: "{{ .Values.webjive.image.registry }}/{{ .Values.webjive.image.image }}:{{ .Values.webjive.image.tag }}"
@@ -199,13 +184,13 @@ spec:
         - name: mongodb
           containerPort: 27017
           protocol: TCP
-
+        
         resources:
 {{ toYaml .Values.webjive.resources | indent 10 }}
       volumes:
       - name: tangogql-logs
         persistentVolumeClaim:
-          claimName: rsyslog-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+          claimName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

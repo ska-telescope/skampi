@@ -58,6 +58,8 @@ spec:
             value: "{{ .Values.tangodb.db.user }}"
           - name: MYSQL_PASSWORD
             value: "{{ .Values.tangodb.db.password }}"
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "1"
         ports:
         - name: mysql
           containerPort: 3306

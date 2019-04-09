@@ -1,0 +1,52 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webjive-tangogql-nw-integration-tmc-webui-test-traefik
+  annotations:
+      kubernetes.io/ingress.class: traefik
+      traefik.ingress.kubernetes.io/request-modifier: "ReplacePathRegex: /testdb/((db|socket|graphiql).*?) /$1"
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /testdb/db
+          backend:
+           serviceName: webjive-integration-tmc-webui-test
+           servicePort: 5004
+        - path: /testdb/socket
+          backend:
+           serviceName: webjive-integration-tmc-webui-test
+           servicePort: 5004
+        - path: /testdb/graphiql
+          backend:
+           serviceName: webjive-integration-tmc-webui-test
+           servicePort: 5004
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webjive-integration-tmc-webui-test-traefik
+  annotations:
+      kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /testdb/dashboards
+          backend:
+           serviceName: webjive-integration-tmc-webui-test
+           servicePort: 3012
+        - path: /testdb/auth
+          backend:
+           serviceName: webjive-integration-tmc-webui-test
+           servicePort: 8080
+        - path: /testdb
+          backend:
+           serviceName: webjive-integration-tmc-webui-test
+           servicePort: 80
+        - path: /
+          backend:
+            serviceName: webjive-integration-tmc-webui-test
+            servicePort: 80

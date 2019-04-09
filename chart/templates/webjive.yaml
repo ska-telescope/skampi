@@ -86,6 +86,10 @@ metadata:
   annotations:
       nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
+  tls:
+  - hosts:
+    - integration.engageska-portugal.pt
+    secretName: integration-tls
   rules:
     - http:
         paths:

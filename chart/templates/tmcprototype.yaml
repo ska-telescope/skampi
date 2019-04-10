@@ -23,7 +23,7 @@ spec:
   initContainers:
   - name: devices
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
     command: ["python3", "/app/tango-script.py"]
     env:
     - name: TANGO_HOST

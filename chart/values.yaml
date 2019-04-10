@@ -64,7 +64,7 @@ tmcprototype:
     registry: nexus.engageska-portugal.pt/tango-example
     image: tmcprototype
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
 webjive:
   enabled: true

@@ -102,6 +102,13 @@ DisallowTCP=false
 ```
 In order for these changes to take effect you will need to restart X (it's just easier to reboot...).
 
+Change the file /etc/kubernetes/addons/ingress-dp.yaml in order to set the nginx-ingress-controller to version 0.24.0:
+```
+...
+      containers:
+      - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.24.0
+....
+```
 
 Once the Helm client is installed (from above) and TCP based Xserver connections are enabled, change to the k8s/ directory.  The basic configuration for each component of the TM Integration is held in the `values.yaml` file.
 

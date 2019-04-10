@@ -36,7 +36,7 @@ spec:
   containers:
   - name: dishmaster
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
     volumeMounts:
     - name: logs
       mountPath: /logs
@@ -52,7 +52,7 @@ spec:
 
   - name: dishleafnode
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
     volumeMounts:
     - name: logs
       mountPath: /logs
@@ -68,7 +68,7 @@ spec:
 
   - name: subarraynode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
     volumeMounts:
     - name: logs
       mountPath: /logs
@@ -84,7 +84,7 @@ spec:
 
   - name: subarraynode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
     volumeMounts:
     - name: logs
       mountPath: /logs
@@ -100,7 +100,7 @@ spec:
 
   - name: centralnode
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
     volumeMounts:
     - name: logs
       mountPath: /logs

@@ -118,6 +118,11 @@ localip:  ## set local Minikube IP in /etc/hosts file for apigateway
 	else sudo perl -i -ne "s/\d+\.\d+.\d+\.\d+/$${new_ip}/ if /integration.engageska-portugal.pt/; print" /etc/hosts; fi && \
 	echo "/etc/hosts is now: " `grep integration.engageska-portugal.pt /etc/hosts`
 
+mkcerts:  ## Make dummy certificates for integration.engageska-portugal.pt and Ingress
+	openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
+	   -keyout chart/data/tls.key \
+		 -out chart/data/tls.crt \
+		 -subj "/CN=integration.engageska-portugal.pt/O=Integration"
 
 help:   ## show this help.
 	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

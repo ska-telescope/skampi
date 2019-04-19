@@ -16,25 +16,18 @@ spec:
     - name: logs
       persistentVolumeClaim:
         claimName: rsyslog-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-    - name: script
-      configMap:
-        name: "tango-config-script-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}"
 
   initContainers:
   - name: devices
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    command: ["python3", "/app/tango-script.py"]
+    command: ["python3", "/app/tmcprototype/addDevicesAndProperties.py"]
     env:
     - name: TANGO_HOST
       value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
-    volumeMounts:
-      - name: script
-        mountPath: /app
-        readOnly: true
 
   containers:
-  - name: dishmaster
+  - name: dishmaster1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
     volumeMounts:
@@ -45,12 +38,12 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
-            /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py test"
+            /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 01"
     env:
     - name: TANGO_HOST
       value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
 
-  - name: dishleafnode
+  - name: dishmaster2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
     volumeMounts:
@@ -61,7 +54,103 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
-             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py test"
+            /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 02"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
+
+  - name: dishmaster3
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+            /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 03"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
+
+  - name: dishmaster4
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+            /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 04"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
+
+  - name: dishleafnode1
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
+
+  - name: dishleafnode2
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 02"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
+
+  - name: dishleafnode3
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 03"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
+
+  - name: dishleafnode4
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 04"
     env:
     - name: TANGO_HOST
       value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
@@ -77,7 +166,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
-             /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py test1"
+             /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py sa1"
     env:
     - name: TANGO_HOST
       value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
@@ -93,7 +182,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
-             /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py test2"
+             /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py sa2"
     env:
     - name: TANGO_HOST
       value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
@@ -109,7 +198,43 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
-             /venv/bin/python /app/tmcprototype/CentralNode/CentralNode/CentralNode.py test"
+             /venv/bin/python /app/tmcprototype/CentralNode/CentralNode/CentralNode.py 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
+
+  - name: tm-alarmhandler
+    image: "{{ .Values.tmalarmhandler.image.registry }}/{{ .Values.tmalarmhandler.image.image }}:{{ .Values.tmalarmhandler.image.tag }}"
+    imagePullPolicy: {{ .Values.tmalarmhandler.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "./app/alarmhandler-srv 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
+
+  - name: configure-alarms
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tmcprototype/TMAlarmHandler/configure_alarms.py"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000
+
+  - name: conf-polling-events
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tmcprototype/configurePollingAndEvents.py"
     env:
     - name: TANGO_HOST
       value: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:10000

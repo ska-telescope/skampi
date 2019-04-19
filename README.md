@@ -150,7 +150,7 @@ pod/tmcprototype-integration-tmc-webui-test created
 
 Please wait patiently - it will take time for the Container images to download, and for the database to initialise.  After some time, you can check what is running with:
 ```
-watch kubectl get all,pv,pvc -n integration
+watch kubectl get all,pv,pvc,ingress -n integration
 ```
 
 Which will give output like:

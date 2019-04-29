@@ -27,93 +27,8 @@ spec:
   - name: authserver-tcp
     port: 8080
     protocol: TCP
-  - name: mongodb
-    port: 27017
-    protocol: TCP
   selector:
     app: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: tls-secret-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-type: kubernetes.io/tls
-data:
-{{ (tpl (.Files.Glob "data/tls.*").AsSecrets . ) | indent 2  }}
-
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: webjive-tangogql-nw-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-  annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /$1
-      nginx.ingress.kubernetes.io/app-root: /graphiql
-spec:
-  tls:
-    - hosts:
-      - integration.engageska-portugal.pt
-      secretName: tls-secret-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-  rules:
-    - host: integration.engageska-portugal.pt
-      http:
-        paths:
-        - path: /testdb/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
-        - path: /testdb/db/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
-        - path: /testdb/graphiql/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
-        - path: /testdb/socket/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 5004
-
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-  annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /$1
-spec:
-  tls:
-    - hosts:
-      - integration.engageska-portugal.pt
-      secretName: tls-secret-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-  rules:
-    - host: integration.engageska-portugal.pt
-      http:
-        paths:
-        - path: /(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 80
-        - path: /testdb/dashboard
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 80
-        - path: /testdb/dashboard/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 80
-        - path: /dashboards/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 3012
-        - path: /auth/(.*)
-          backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-           servicePort: 8080
-
-
 
 ---
 apiVersion: apps/v1
@@ -150,7 +65,12 @@ spec:
           - --timeout=30
           - --strict
           - --
-          - echo "Databaseds ready for use."
+          - /usr/local/bin/wait-for-it.sh
+          - mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:27017
+          - --timeout=30
+          - --strict
+          - --
+          - echo "Databaseds/Mongodb ready for use."
 
       containers:
       - name: webjive
@@ -177,7 +97,7 @@ spec:
         imagePullPolicy: {{ .Values.dashboards.image.pullPolicy }}
         env:
           - name: MONGO_HOST
-            value: "mongodb://localhost/dashboards"
+            value: "mongodb://mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}:27017/dashboards"
           - name: SECRET
             value: "s3cr3t"
         ports:
@@ -209,14 +129,6 @@ spec:
         ports:
         - name: redis-tcp
           containerPort: 6379
-          protocol: TCP
-
-      - name: mongodb
-        image: "{{ .Values.mongodb.image.image }}:{{ .Values.mongodb.image.tag }}"
-        imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
-        ports:
-        - name: mongodb
-          containerPort: 27017
           protocol: TCP
 
         resources:

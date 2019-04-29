@@ -23,11 +23,8 @@ It is also included an example of graphql query for the webjive application. The
 Traefik
 =============
 ```
-# Install traefik with dashboard
-kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-rbac.yaml
-kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/traefik-deployment.yaml
-kubectl apply -f https://raw.githubusercontent.com/containous/traefik/v1.7/examples/k8s/ui.yaml
-echo "$(minikube ip) traefik-ui.minikube" | sudo tee -a /etc/hosts
+# Install traefik controller
+kubectl apply -f traefik-minikube.yaml
 ```
 
 Ingress controller commands

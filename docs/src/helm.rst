@@ -5,6 +5,7 @@ Helm is a tool for managing Kubernetes charts. Charts are packages of pre-config
 The chart for this integration is composed by:
 
 .. code-block:: console
+
 	Chart.yaml          # A YAML file containing information about the chart
 	LICENSE             # OPTIONAL: A plain text file containing the license for the chart
 	README.md           # OPTIONAL: A human-readable README file
@@ -15,6 +16,7 @@ The chart for this integration is composed by:
 						# will generate valid Kubernetes manifest files.
 
 .. code-block:: jaml
+
 	# Chart.yaml
 	apiVersion: v1
 	appVersion: "1.0"
@@ -23,6 +25,7 @@ The chart for this integration is composed by:
 	version: 0.1.0
 
 .. code-block:: jaml
+
 	# example of values
 	tmcprototype:
 	  enabled: true

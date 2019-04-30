@@ -3,6 +3,7 @@ Helm
 Helm is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources.
 
 The chart for this integration is composed by:
+
 .. code-block:: console
 	Chart.yaml          # A YAML file containing information about the chart
 	LICENSE             # OPTIONAL: A plain text file containing the license for the chart

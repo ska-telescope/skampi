@@ -2,7 +2,7 @@ Helm templates
 ====================
 
 K8s Concepts
-------------
+============
 The following are key concepts to understand the project: 
 
 * Pod: https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/
@@ -16,7 +16,7 @@ The following are key concepts to understand the project:
 
 
 Templates
----------
+=========
 
 The following files composes the templates for the generation of valid kubernetes manifest files: 
 

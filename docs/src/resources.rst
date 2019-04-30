@@ -4,7 +4,7 @@ Available resources
 In the repository there is a folder called "resources" which is a collection of resources used for testing and for configuration. 
 
 +----------------------+-------------------------------------------------------+
-| File		           | Description                                           |
+| File                 | Description                                           |
 +======================+=======================================================+
 | configuration.yaml   | First version of the configuration script used by the |
 |                      | tmc-prototype to configure the database. It reads the |

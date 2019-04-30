@@ -14,6 +14,10 @@ The following are key concepts to understand the project:
 * PersistentVolume: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 * PersistentVolumeClaim: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
 
+KubeCtl references
+==================
+Overview: https://kubernetes.io/docs/reference/kubectl/overview/
+Cheat Sheet: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
 Templates
 =========

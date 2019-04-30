@@ -7,9 +7,6 @@ The chart for this integration is composed by:
 .. code-block:: console
 
    Chart.yaml          # A YAML file containing information about the chart
-   LICENSE             # OPTIONAL: A plain text file containing the license for the chart
-   README.md           # OPTIONAL: A human-readable README file
-   requirements.yaml   # OPTIONAL: A YAML file listing dependencies for the chart
    values.yaml         # The default configuration values for this chart
    charts/             # A directory containing any charts upon which this chart depends.
    templates/          # A directory of templates that, when combined with values,

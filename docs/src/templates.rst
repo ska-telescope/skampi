@@ -62,6 +62,7 @@ Template files follow the standard conventions for writing Go templates (see the
 
 K8s Tags
 --------
+Below there are the main tags that constitute every object in the k8s integration. 
 
 Metadata tag
 ^^^^^^^^^^^^

@@ -7,7 +7,6 @@ The following lines are the commands to run to create it:
 ```
 // create dashboard and add an admin user:
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended/kubernetes-dashboard.yaml
-kubectl apply -f dashboard-adminuser.yaml
 
 // to access the dashboard it is needed a secret token
 kubectl -n kube-system get secret

@@ -31,3 +31,6 @@ The chart for this integration is composed by:
        image: tmcprototype
        tag: latest
        pullPolicy: Always
+
+More information available `here <https://helm.sh/docs/>`_. 
+Helm Glossare here <https://helm.sh/docs/glossary/>`_. 

@@ -87,7 +87,7 @@ authserver:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: webjive-develop_auth
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
 redis:
   image:
@@ -106,14 +106,14 @@ dashboards:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: webjive-develop_dashboards
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
 tangogql:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: webjive-develop_tangogql
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
 jive:
   enabled: false

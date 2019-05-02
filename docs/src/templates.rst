@@ -1,10 +1,11 @@
-Helm templates
+TM integration
 ==============
 
 K8s Concepts
 ------------
 The following are key concepts to understand the project: 
 
+* Namespace: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#when-to-use-multiple-namespaces
 * Pod: https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/
 * Service: https://kubernetes.io/docs/concepts/services-networking/service/
 * StatefulSet: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
@@ -19,10 +20,10 @@ KubeCtl references
 Overview: https://kubernetes.io/docs/reference/kubectl/overview/
 Cheat Sheet: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
-Templates
----------
+K8s Templates
+-------------
 
-The following files composes the templates for the generation of valid kubernetes manifest files: 
+Template files follow the standard conventions for writing Go templates (see the `documentation <https://golang.org/pkg/text/template/>`_ for details). The following files composes the templates for the generation of valid kubernetes manifest files: 
 
 * tangodb.yaml: define a k8s service for maria db and a statefulset attached to it
 * databaseds.yaml: define a k8s service for the device server Databaseds and a statefulset attached to it
@@ -59,3 +60,30 @@ The following files composes the templates for the generation of valid kubernete
 * webjive-pv.yaml: define a PersistentVolume and a PersistentVolumeClaim for the database service (webjive.yaml)
 
 
+K8s Tags
+--------
+
+#Metadata tag
+Every yaml file has a metadata tag which specify some important information like:
+* name: a string that uniquely identifies this object within the current namespace (see the identifiers docs). This value is used in the path when retrieving an individual object.
+* namespace: a namespace is a DNS compatible label that objects are subdivided into.
+* `labels <https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/>`_: a map of string keys and values that can be used to organize and categorize objects
+	* app: unique name (equals to name above) 
+    * chart: name of the chart
+    * release and heritage: used by helm for install/upgrade
+
+#Spec tag
+Every yaml file has a spec tag which is used to set all the parameters for a specific object. For instance, in `databaseds.yaml <https://github.com/ska-telescope/k8s-integration/blob/master/chart/templates/databaseds.yaml>`_ the StatefulSet object specifies that the label 'app' should match with a specific value and that the related service is the one specified in the tag 'serviceName'. 
+
+.. code-block:: console
+
+  selector:
+    matchLabels:
+      app: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  serviceName: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+
+#initContainers tag
+A Pod can have multiple Containers running apps within it, but it can also have one or more Init Containers, which are run before the app Containers are started. Check `documentation <https://kubernetes.io/docs/concepts/workloads/pods/init-containers/>`_ for more information.
+
+#containers tag
+The containers tag includes the containers that form the specific pod or object whithin k8s. 

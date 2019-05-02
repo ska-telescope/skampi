@@ -55,9 +55,9 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # General information about the project.
-project = 'SKA Docker Images'
-copyright = '2018, Stewart Williams'
-author = 'Stewart Williams'
+project = 'TM Integration with K8s'
+copyright = '2019, Matteo Di Carlo'
+author = 'Matteo Di Carlo'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -105,7 +105,7 @@ html_context = {
     'theme_logo_only': True,
     'display_github': True,  # Integrate GitHub
     'github_user': 'ska-telescope',  # Username
-    'github_repo': 'ska-docker',  # Repo name
+    'github_repo': 'k8s-integration',  # Repo name
     'github_version': 'master',  # Version
     'conf_py_path': '/docs/src/',  # Path in the checkout to the docs root
 }

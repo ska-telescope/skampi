@@ -54,6 +54,11 @@ This project contains a Makefile which defines the following targets:
 | help            | Show the help summary                                               |
 +-----------------+---------------------------------------------------------------------+
 
+Ansible
+-------
+
+It is possible to setup a local integration environment using the ansible playbook available `here <https://github.com/ska-telescope/ansible-playbooks#integration-environment>`_.
+
 
 .. toctree::
    :maxdepth: 1

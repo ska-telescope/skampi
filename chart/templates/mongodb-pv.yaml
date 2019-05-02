@@ -1,0 +1,42 @@
+{{ if .Values.webjive.enabled }}
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+    chart: {{ template "integration-tmc-webui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}/
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+    chart: {{ template "integration-tmc-webui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+{{ end }}

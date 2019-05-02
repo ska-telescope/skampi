@@ -136,7 +136,7 @@ spec:
       volumes:
       - name: tangogql-logs
         persistentVolumeClaim:
-          claimName: rsyslog-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+          claimName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

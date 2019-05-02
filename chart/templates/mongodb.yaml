@@ -54,10 +54,16 @@ spec:
         - name: mongodb
           containerPort: 27017
           protocol: TCP
-        
+        volumeMounts:
+        - name: mongodbdata
+          mountPath: /data/db
+
         resources:
 {{ toYaml .Values.rsyslog.resources | indent 10 }}
-
+      volumes:
+      - name: mongodbdata
+        persistentVolumeClaim:
+          claimName: mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

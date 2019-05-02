@@ -11,10 +11,12 @@ This project defines the integration between the TMC prototype (https://github.c
    templates
    resources
 
-Readme File
-===========
 
-.. mdinclude:: ../../README.md
+.. toctree::
+   :maxdepth: 2
+   :caption: Readme:
+
+   README
 
 
 Indices and tables

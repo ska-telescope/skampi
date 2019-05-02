@@ -54,7 +54,9 @@ This project contains a Makefile which defines the following targets:
 | help            | Show the help summary                                               |
 +-----------------+---------------------------------------------------------------------+
 
-Readme File
------------
 
-.. mdinclude:: ../../resources/README.md
+.. toctree::
+   :maxdepth: 1
+   :caption: Readme File:
+
+   resources-readme

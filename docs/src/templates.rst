@@ -63,7 +63,8 @@ Template files follow the standard conventions for writing Go templates (see the
 K8s Tags
 --------
 
-#Metadata tag
+Metadata tag
+^^^^^^^^^^^^
 Every yaml file has a metadata tag which specify some important information like:
 * name: a string that uniquely identifies this object within the current namespace (see the identifiers docs). This value is used in the path when retrieving an individual object.
 * namespace: a namespace is a DNS compatible label that objects are subdivided into.
@@ -72,7 +73,8 @@ Every yaml file has a metadata tag which specify some important information like
     * chart: name of the chart
     * release and heritage: used by helm for install/upgrade
 
-#Spec tag
+Spec
+^^^^
 Every yaml file has a spec tag which is used to set all the parameters for a specific object. For instance, in `databaseds.yaml <https://github.com/ska-telescope/k8s-integration/blob/master/chart/templates/databaseds.yaml>`_ the StatefulSet object specifies that the label 'app' should match with a specific value and that the related service is the one specified in the tag 'serviceName'. 
 
 .. code-block:: console
@@ -82,8 +84,11 @@ Every yaml file has a spec tag which is used to set all the parameters for a spe
       app: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
   serviceName: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
 
-#initContainers tag
+initContainers
+^^^^^^^^^^^^^^
 A Pod can have multiple Containers running apps within it, but it can also have one or more Init Containers, which are run before the app Containers are started. Check `documentation <https://kubernetes.io/docs/concepts/workloads/pods/init-containers/>`_ for more information.
 
-#containers tag
+containers
+^^^^^^^^^^
+
 The containers tag includes the containers that form the specific pod or object whithin k8s. 

@@ -1,4 +1,8 @@
 
+
+[![Documentation Status](https://readthedocs.org/projects/ska-docker/badge/?version=latest)](https://developer.skatelescope.org/projects/k8s-integration/en/latest/?badge=latest)
+
+
 TM Integration on Kubernetes
 ===========================
 

@@ -21,7 +21,7 @@ In the repository there is a folder called "resources" which is a collection of 
 +-----------------------+-------------------------------------------------------+
 
 Makefile targets
-================
+----------------
 This project contains a Makefile which defines the following targets:
 
 +-----------------+---------------------------------------------------------------------+
@@ -55,6 +55,6 @@ This project contains a Makefile which defines the following targets:
 +-----------------+---------------------------------------------------------------------+
 
 Readme File
-===========
+-----------
 
 .. mdinclude:: ../../resources/README.md

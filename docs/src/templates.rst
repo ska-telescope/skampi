@@ -1,8 +1,8 @@
 Helm templates
-====================
+==============
 
 K8s Concepts
-============
+------------
 The following are key concepts to understand the project: 
 
 * Pod: https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/
@@ -15,12 +15,12 @@ The following are key concepts to understand the project:
 * PersistentVolumeClaim: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
 
 KubeCtl references
-==================
+------------------
 Overview: https://kubernetes.io/docs/reference/kubectl/overview/
 Cheat Sheet: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
 Templates
-=========
+---------
 
 The following files composes the templates for the generation of valid kubernetes manifest files: 
 

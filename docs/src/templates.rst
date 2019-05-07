@@ -45,6 +45,7 @@ Template files follow the standard conventions for writing Go templates (see the
 	* subarraynode1 
 	* subarraynode2 
 	* centralnode 
+* tmcalarm.yaml: define a k8s pod for the tmc-prototype alarm handler; it contains the following device servers: 
 	* tm-alarmhandler
 	* configure-alarms 
 	* conf-polling-events
@@ -67,6 +68,7 @@ Below there are the main tags that constitute every object in the k8s integratio
 Metadata tag
 ^^^^^^^^^^^^
 Every yaml file has a metadata tag which specify some important information like:
+
 * name: a string that uniquely identifies this object within the current namespace (see the identifiers docs). This value is used in the path when retrieving an individual object.
 * namespace: a namespace is a DNS compatible label that objects are subdivided into.
 * `labels <https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/>`_: a map of string keys and values that can be used to organize and categorize objects

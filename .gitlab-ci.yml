@@ -32,6 +32,7 @@ lint:
   stage: lint
   tags:
   - docker-executor
+  allow_failure: true
   script:
   - cd ansible-playbooks
   - rm -rf k8s-integration

@@ -36,8 +36,8 @@ lint:
   script:
   - cd ansible-playbooks
   - rm -rf k8s-integration
-  - git clone --branch ST-201 https://github.com/ska-telescope/k8s-integration.git
-  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='no' install_helm='yes' multiple_charts='no' directory='k8s-integration/chart'"
+  - git clone https://github.com/ska-telescope/k8s-integration.git
+  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='yes' multiple_charts='no' directory='k8s-integration/chart'"
 
 deploy:
   stage: deploy
@@ -50,7 +50,7 @@ deploy:
   - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
   - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='true'"
+  - ansible-playbook -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='true'"
 
 stop_system:
   stage: lifecycle 

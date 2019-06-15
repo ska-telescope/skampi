@@ -36,7 +36,7 @@ lint:
   - cd ansible-playbooks
   - rm -rf k8s-integration
   - git clone https://github.com/ska-telescope/k8s-integration.git
-  - ansible-playbook helm-linting.yml --extra-vars "install_helm='yes' multiple_charts='no' directory='k8s-integration/chart'"
+  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='no' install_helm='yes' multiple_charts='no' directory='k8s-integration/chart'"
 
 deploy:
   stage: deploy

@@ -49,7 +49,7 @@ deploy:
   - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
   - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='true'"
 
 stop_system:
   stage: lifecycle 
@@ -76,7 +76,7 @@ start_system:
   - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
   - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "deploy='no' start_integrated_system='yes' install_ska_docker='no'"
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='true' deploy='no' start_integrated_system='yes' install_ska_docker='no'"
   when: manual
 
 logs:

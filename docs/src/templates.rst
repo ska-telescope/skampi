@@ -84,8 +84,8 @@ Every yaml file has a spec tag which is used to set all the parameters for a spe
 
   selector:
     matchLabels:
-      app: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-  serviceName: databaseds-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+      app: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  serviceName: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
 
 initContainers
 ^^^^^^^^^^^^^^

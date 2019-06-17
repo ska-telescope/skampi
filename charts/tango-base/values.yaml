@@ -1,4 +1,4 @@
-# Default values for integration-tmc-webui.
+# Default values for tango-base.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -34,14 +34,6 @@ databaseds:
       cpu: 200m     # 200m = 0.2 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
 
-rsyslog:
-  enabled: true
-  image:
-    registry: registry.hub.docker.com/u/
-    image: jumanjiman/rsyslog
-    tag: latest
-    pullPolicy: IfNotPresent
-
 itango:
   enabled: false
   image:
@@ -57,63 +49,6 @@ tangotest:
     image: tango-java
     tag: latest
     pullPolicy: IfNotPresent
-
-tmcprototype:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/tango-example
-    image: tmcprototype
-    tag: latest
-    pullPolicy: Always
-
-tmalarmhandler:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/tango-example
-    image: tmalarmhandler
-    tag: latest
-    pullPolicy: Always
-
-webjive:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive-develop_webjive
-    tag: latest
-    pullPolicy: Always
-
-authserver:
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive-develop_auth
-    tag: latest
-    pullPolicy: Always
-
-redis:
-  image:
-    image: redis
-    tag: latest
-    pullPolicy: IfNotPresent
-
-mongodb:
-  image: 
-    image: mongo
-    tag: 3.6-stretch
-    pullPolicy: IfNotPresent
-
-dashboards:
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive-develop_dashboards
-    tag: latest
-    pullPolicy: Always
-
-tangogql:
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive-develop_tangogql
-    tag: latest
-    pullPolicy: Always
 
 jive:
   enabled: false

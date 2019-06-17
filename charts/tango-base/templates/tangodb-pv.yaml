@@ -2,11 +2,11 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-    chart: {{ template "integration-tmc-webui.chart" . }}
+    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tango-base.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -16,18 +16,18 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /data/webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}/
+    path: /data/tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}/
 
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-    chart: {{ template "integration-tmc-webui.chart" . }}
+    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tango-base.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:

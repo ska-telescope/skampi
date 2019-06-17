@@ -2,11 +2,11 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: rsyslog-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: rsyslog-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: rsyslog-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-    chart: {{ template "integration-tmc-webui.chart" . }}
+    app: rsyslog-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tmc-proto.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -16,18 +16,18 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /data/rsyslog-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}/
+    path: /data/rsyslog-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}/
 
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: rsyslog-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: rsyslog-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: rsyslog-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-    chart: {{ template "integration-tmc-webui.chart" . }}
+    app: rsyslog-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tmc-proto.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:

@@ -11,7 +11,8 @@ before_script:
     - apt-get -y install ansible git ssh
 
 stages:
-  - download 
+  - download
+  - lint
   - deploy
   - lifecycle
 
@@ -27,6 +28,16 @@ download:
   - echo "$ENVIRONMENT_ADDRESS  ansible_user=$ENVIRONMENT_USER" >> hosts
   - cat hosts
   
+lint:
+  stage: lint
+  tags:
+  - docker-executor
+  allow_failure: true
+  script:
+  - cd ansible-playbooks
+  - rm -rf k8s-integration
+  - git clone https://github.com/ska-telescope/k8s-integration.git
+  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='yes' multiple_charts='no' directory='k8s-integration/chart'"
 
 deploy:
   stage: deploy
@@ -39,7 +50,7 @@ deploy:
   - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
   - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml
+  - ansible-playbook -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='yes' throw_errors='yes'"
 
 stop_system:
   stage: lifecycle 
@@ -66,7 +77,7 @@ start_system:
   - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
   - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "deploy='no' start_integrated_system='yes' install_ska_docker='no'"
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='true' deploy='no' start_integrated_system='yes' install_ska_docker='no'"
   when: manual
 
 logs:

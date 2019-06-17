@@ -3,11 +3,11 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: mongodb-{{ template "webjive.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-    chart: {{ template "integration-tmc-webui.chart" . }}
+    app: mongodb-{{ template "webjive.name" . }}-{{ .Release.Name }}
+    chart: {{ template "webjive.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -17,18 +17,18 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /data/mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}/
+    path: /data/mongodb-{{ template "webjive.name" . }}-{{ .Release.Name }}/
 
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: mongodb-{{ template "webjive.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: mongodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-    chart: {{ template "integration-tmc-webui.chart" . }}
+    app: mongodb-{{ template "webjive.name" . }}-{{ .Release.Name }}
+    chart: {{ template "webjive.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:

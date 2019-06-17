@@ -1,0 +1,43 @@
+# Default values for tmc-proto.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+display: ":0"
+xauthority: "~/.Xauthority"
+
+rsyslog:
+  enabled: true
+  image:
+    registry: registry.hub.docker.com/u/
+    image: jumanjiman/rsyslog
+    tag: latest
+    pullPolicy: IfNotPresent
+
+tmcprototype:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/tango-example
+    image: tmcprototype
+    tag: latest
+    pullPolicy: Always
+
+tmalarmhandler:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/tango-example
+    image: tmalarmhandler
+    tag: latest
+    pullPolicy: Always
+
+dsconfig:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: latest
+    pullPolicy: IfNotPresent
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

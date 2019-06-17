@@ -1,0 +1,869 @@
+{
+    "servers": {
+        "CbfTestMaster": {
+            "test": {
+                "CbfTestMaster": {
+                    "mid_csp_cbf/sub_elt/master": {}
+                }
+            }
+        }, 
+        "CentralNode": {
+            "01": {
+                "CentralNode": {
+                    "ska_mid/tm_central/central_node": {
+                        "attribute_properties": {
+                            "subarray1HealthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarray2HealthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "telescopeHealthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "CspMasterLeafNodeFQDN": [
+                                "ska_mid/tm_leaf_node/csp_master"
+                            ], 
+                            "NumDishes": [
+                                "4"
+                            ], 
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "telescopehealthstate", 
+                                "3000"
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        "CspMaster": {
+            "01": {
+                "CspMaster": {
+                    "mid_csp/elt/master": {
+                        "properties": {
+                            "CspMidCbf": [
+                                "mid_csp_cbf/sub_elt/master"
+                            ], 
+                            "CspMidPss": [
+                                "mid_csp_pss/sub_elt/master"
+                            ], 
+                            "CspMidPst": [
+                                "mid_csp_pst/sub_elt/master"
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        "CspMasterLeafNode": {
+            "01": {
+                "CspMasterLeafNode": {
+                    "ska_mid/tm_leaf_node/csp_master": {
+                        "attribute_properties": {
+                            "cspHealthState": {
+                                "__root_att": [
+                                    "mid_csp/elt/master/healthState"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "CspMasterFQDN": [
+                                "mid_csp/elt/master"
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        "DataBaseds": {
+            "2": {
+                "DataBase": {
+                    "sys/database/2": {}
+                }
+            }
+        }, 
+        "DishLeafNode": {
+            "01": {
+                "DishLeafNode": {
+                    "ska_mid/tm_leaf_node/d0001": {
+                        "attribute_properties": {
+                            "dishHealthState": {
+                                "__root_att": [
+                                    "mid_d0001/elt/master/healthState"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "DishMasterFQDN": [
+                                "mid_d0001/elt/master"
+                            ], 
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "TrackDuration": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "activitymessage", 
+                                "1000", 
+                                "healthstate", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }, 
+            "02": {
+                "DishLeafNode": {
+                    "ska_mid/tm_leaf_node/d0002": {
+                        "attribute_properties": {
+                            "dishHealthState": {
+                                "__root_att": [
+                                    "mid_d0002/elt/master/healthState"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "DishMasterFQDN": [
+                                "mid_d0002/elt/master"
+                            ], 
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "TrackDuration": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "activitymessage", 
+                                "1000", 
+                                "healthstate", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }, 
+            "03": {
+                "DishLeafNode": {
+                    "ska_mid/tm_leaf_node/d0003": {
+                        "attribute_properties": {
+                            "dishHealthState": {
+                                "__root_att": [
+                                    "mid_d0003/elt/master/healthState"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "DishMasterFQDN": [
+                                "mid_d0003/elt/master"
+                            ], 
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "TrackDuration": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "activitymessage", 
+                                "1000", 
+                                "healthstate", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }, 
+            "04": {
+                "DishLeafNode": {
+                    "ska_mid/tm_leaf_node/d0004": {
+                        "attribute_properties": {
+                            "dishHealthState": {
+                                "__root_att": [
+                                    "mid_d0004/elt/master/healthState"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "DishMasterFQDN": [
+                                "mid_d0004/elt/master"
+                            ], 
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "TrackDuration": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "activitymessage", 
+                                "1000", 
+                                "healthstate", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        "DishMaster": {
+            "01": {
+                "DishMaster": {
+                    "mid_d0001/elt/master": {
+                        "attribute_properties": {
+                            "ConfiguredBand": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "WindSpeed": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "achievedPointing": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "desiredPointing": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "dishMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "pointingState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "pointingstate", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "dishmode", 
+                                "1000", 
+                                "capturing", 
+                                "1000", 
+                                "configuredband", 
+                                "1000", 
+                                "desiredpointing", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "achievedpointing", 
+                                "1000", 
+                                "windspeed", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }, 
+            "02": {
+                "DishMaster": {
+                    "mid_d0002/elt/master": {
+                        "attribute_properties": {
+                            "ConfiguredBand": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "WindSpeed": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "achievedPointing": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "desiredPointing": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "dishMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "pointingState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "pointingstate", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "desiredpointing", 
+                                "1000", 
+                                "dishmode", 
+                                "1000", 
+                                "configuredband", 
+                                "1000", 
+                                "capturing", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "achievedpointing", 
+                                "1000", 
+                                "windspeed", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }, 
+            "03": {
+                "DishMaster": {
+                    "mid_d0003/elt/master": {
+                        "attribute_properties": {
+                            "ConfiguredBand": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "WindSpeed": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "achievedPointing": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "desiredPointing": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "dishMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "pointingState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "pointingstate", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "desiredpointing", 
+                                "1000", 
+                                "dishmode", 
+                                "1000", 
+                                "configuredband", 
+                                "1000", 
+                                "capturing", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "achievedpointing", 
+                                "1000", 
+                                "windspeed", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }, 
+            "04": {
+                "DishMaster": {
+                    "mid_d0004/elt/master": {
+                        "attribute_properties": {
+                            "ConfiguredBand": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "WindSpeed": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "achievedPointing": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "desiredPointing": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "dishMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "pointingState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "pointingstate", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "desiredpointing", 
+                                "1000", 
+                                "dishmode", 
+                                "1000", 
+                                "configuredband", 
+                                "1000", 
+                                "capturing", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "achievedpointing", 
+                                "1000", 
+                                "windspeed", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        "SubarrayNode": {
+            "sa1": {
+                "SubarrayNode": {
+                    "ska_mid/tm_subarray_node/1": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "obsMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "obsState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "receptorIDList": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "DishLeafNodePrefix": [
+                                "ska_mid/tm_leaf_node/d"
+                            ], 
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "obsstate", 
+                                "1000", 
+                                "obsmode", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "activitymessage", 
+                                "1000", 
+                                "receptoridlist", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }, 
+            "sa2": {
+                "SubarrayNode": {
+                    "ska_mid/tm_subarray_node/2": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "obsMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "obsState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "receptorIDList": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "DishLeafNodePrefix": [
+                                "ska_mid/tm_leaf_node/d"
+                            ], 
+                            "SkaLevel": [
+                                "1"
+                            ], 
+                            "polled_attr": [
+                                "obsstate", 
+                                "1000", 
+                                "obsmode", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "activitymessage", 
+                                "1000", 
+                                "receptoridlist", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }
+        }, 
+        "TangoAccessControl": {
+            "1": {
+                "TangoAccessControl": {
+                    "sys/access_control/1": {}
+                }
+            }
+        }, 
+        "TangoTest": {
+            "test": {
+                "TangoTest": {
+                    "sys/tg_test/1": {}
+                }
+            }
+        }, 
+        "alarmhandler-srv": {
+            "01": {
+                "AlarmHandler": {
+                    "ska_mid/tm_alarmhandler/tmalarmhandler": {
+                        "attribute_properties": {
+                            "alertdish1windspeed": {
+                                "enabled": [
+                                    "1"
+                                ], 
+                                "formula": [
+                                    "(mid_d0001/elt/master/WindSpeed > 10)"
+                                ], 
+                                "group": [
+                                    "gr_all"
+                                ], 
+                                "message": [
+                                    "Dish1 Wind speed exceeded"
+                                ], 
+                                "off_command": [
+                                    ""
+                                ], 
+                                "off_delay": [
+                                    "0"
+                                ], 
+                                "on_command": [
+                                    "mid_d0001/elt/master/SetStowMode"
+                                ], 
+                                "on_delay": [
+                                    "0"
+                                ], 
+                                "priority": [
+                                    "fault"
+                                ], 
+                                "shlvd_time": [
+                                    "2"
+                                ], 
+                                "tag": [
+                                    "alertdish1windspeed"
+                                ]
+                            }, 
+                            "alertdish2windspeed": {
+                                "enabled": [
+                                    "1"
+                                ], 
+                                "formula": [
+                                    "(mid_d0002/elt/master/WindSpeed > 10)"
+                                ], 
+                                "group": [
+                                    "gr_all"
+                                ], 
+                                "message": [
+                                    "Dish2 Wind speed exceeded"
+                                ], 
+                                "off_command": [
+                                    ""
+                                ], 
+                                "off_delay": [
+                                    "0"
+                                ], 
+                                "on_command": [
+                                    "mid_d0002/elt/master/SetStowMode"
+                                ], 
+                                "on_delay": [
+                                    "0"
+                                ], 
+                                "priority": [
+                                    "fault"
+                                ], 
+                                "shlvd_time": [
+                                    "2"
+                                ], 
+                                "tag": [
+                                    "alertdish2windspeed"
+                                ]
+                            }, 
+                            "alertdish3windspeed": {
+                                "enabled": [
+                                    "1"
+                                ], 
+                                "formula": [
+                                    "(mid_d0003/elt/master/WindSpeed > 10)"
+                                ], 
+                                "group": [
+                                    "gr_all"
+                                ], 
+                                "message": [
+                                    "Dish3 Wind speed exceeded"
+                                ], 
+                                "off_command": [
+                                    ""
+                                ], 
+                                "off_delay": [
+                                    "0"
+                                ], 
+                                "on_command": [
+                                    "mid_d0003/elt/master/SetStowMode"
+                                ], 
+                                "on_delay": [
+                                    "0"
+                                ], 
+                                "priority": [
+                                    "fault"
+                                ], 
+                                "shlvd_time": [
+                                    "2"
+                                ], 
+                                "tag": [
+                                    "alertdish3windspeed"
+                                ]
+                            }, 
+                            "alertdish4windspeed": {
+                                "enabled": [
+                                    "1"
+                                ], 
+                                "formula": [
+                                    "(mid_d0004/elt/master/WindSpeed > 10)"
+                                ], 
+                                "group": [
+                                    "gr_all"
+                                ], 
+                                "message": [
+                                    "Dish4 Wind speed exceeded"
+                                ], 
+                                "off_command": [
+                                    ""
+                                ], 
+                                "off_delay": [
+                                    "0"
+                                ], 
+                                "on_command": [
+                                    "mid_d0004/elt/master/SetStowMode"
+                                ], 
+                                "on_delay": [
+                                    "0"
+                                ], 
+                                "priority": [
+                                    "fault"
+                                ], 
+                                "shlvd_time": [
+                                    "2"
+                                ], 
+                                "tag": [
+                                    "alertdish4windspeed"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "AlarmList": [
+                                "alertdish4windspeed", 
+                                "alertdish3windspeed", 
+                                "alertdish2windspeed", 
+                                "alertdish1windspeed"
+                            ], 
+                            "SkaLevel": [
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

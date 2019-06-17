@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: tls-secret-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
 type: kubernetes.io/tls
 data:
 {{ (tpl (.Files.Glob "data/tls.*").AsSecrets . ) | indent 2  }}
@@ -12,7 +12,7 @@ data:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: webjive-tangogql-ing-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: webjive-tangogql-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
   annotations:
       kubernetes.io/ingress.class: traefik
       traefik.ingress.kubernetes.io/request-modifier: "ReplacePathRegex: /testdb/((db|socket|graphiql).*?) /$1"
@@ -20,29 +20,29 @@ spec:
   tls:
     - hosts:
       - integration.engageska-portugal.pt
-      secretName: tls-secret-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+      secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
     - host: integration.engageska-portugal.pt
     - http:
         paths:
         - path: /testdb/db
           backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
            servicePort: 5004
         - path: /testdb/socket
           backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
            servicePort: 5004
         - path: /testdb/graphiql
           backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
            servicePort: 5004
 
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: webjive-authserver-ing-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: webjive-authserver-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
   annotations:
       kubernetes.io/ingress.class: traefik
       traefik.ingress.kubernetes.io/request-modifier: "ReplacePathRegex: /auth/((login|user).*?) /$1"
@@ -50,64 +50,64 @@ spec:
   tls:
     - hosts:
       - integration.engageska-portugal.pt
-      secretName: tls-secret-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+      secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
     - host: integration.engageska-portugal.pt
     - http:
         paths:
         - path: /auth
           backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
            servicePort: 8080
 
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: webjive-main-ing-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: webjive-main-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
   annotations:
       kubernetes.io/ingress.class: traefik
 spec:
   tls:
     - hosts:
       - integration.engageska-portugal.pt
-      secretName: tls-secret-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+      secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
     - host: integration.engageska-portugal.pt
     - http:
         paths:
         - path: /
           backend:
-            serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+            serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
             servicePort: 80
         - path: /testdb
           backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
            servicePort: 80
         - path: /testdb/dashboard
           backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
            servicePort: 80
 
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: webjive-dashboard-ing-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: webjive-dashboard-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
   annotations:
       kubernetes.io/ingress.class: traefik
 spec:
   tls:
     - hosts:
       - integration.engageska-portugal.pt
-      secretName: tls-secret-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+      secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
     - host: integration.engageska-portugal.pt
     - http:
         paths:
         - path: /dashboards
           backend:
-           serviceName: webjive-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
            servicePort: 3012
         
 {{ end }}

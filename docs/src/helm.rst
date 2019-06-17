@@ -17,8 +17,8 @@ The chart for this integration is composed by:
    # Chart.yaml
    apiVersion: v1
    appVersion: "1.0"
-   description: A Helm chart for deploying the SKA Integration TMC-WEBUI on Kubernetes
-   name: integration-tmc-webui
+   description: A Helm chart for deploying the Tango-Base on Kubernetes
+   name: tango-base
    version: 0.1.0
 
 .. code-block:: console

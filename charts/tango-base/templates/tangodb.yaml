@@ -4,11 +4,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-    chart: {{ template "integration-tmc-webui.chart" . }}
+    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tango-base.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -17,31 +17,31 @@ spec:
     port: 3306
   clusterIP: None
   selector:
-    app: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
 
 ---
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-    chart: {{ template "integration-tmc-webui.chart" . }}
+    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tango-base.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-  serviceName: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+      app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  serviceName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
-        chart: {{ template "integration-tmc-webui.chart" . }}
+        app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+        chart: {{ template "tango-base.chart" . }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
@@ -71,7 +71,7 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: tangodb-{{ template "integration-tmc-webui.name" . }}-{{ .Release.Name }}
+          claimName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

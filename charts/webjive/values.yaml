@@ -1,0 +1,61 @@
+# Default values for webjive.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+display: ":0"
+xauthority: "~/.Xauthority"
+
+itango:
+  enabled: false
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-itango
+    tag: latest
+    pullPolicy: IfNotPresent
+
+webjive:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: webjive-develop_webjive
+    tag: latest
+    pullPolicy: Always
+
+authserver:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: webjive-develop_auth
+    tag: latest
+    pullPolicy: Always
+
+redis:
+  image:
+    image: redis
+    tag: latest
+    pullPolicy: IfNotPresent
+
+mongodb:
+  image: 
+    image: mongo
+    tag: 3.6-stretch
+    pullPolicy: IfNotPresent
+
+dashboards:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: webjive-develop_dashboards
+    tag: latest
+    pullPolicy: Always
+
+tangogql:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: webjive-develop_tangogql
+    tag: latest
+    pullPolicy: Always
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

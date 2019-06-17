@@ -100,6 +100,9 @@ delete_namespace: ## delete the kubernetes namespace
 	kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
 	fi
 
+
+poddescribe: describe
+
 describe: ## describe Pods executed from Helm chart
 	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(HELM_RELEASE) -o=name`; \
 	do echo "---------------------------------------------------"; \

@@ -35,9 +35,7 @@ lint:
   allow_failure: true
   script:
   - cd ansible-playbooks
-  - rm -rf k8s-integration
-  - git clone https://github.com/ska-telescope/k8s-integration.git
-  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='yes' multiple_charts='yes' directory='k8s-integration/charts'"
+  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='yes' multiple_charts='yes' directory='../charts'"
 
 deploy:
   stage: deploy

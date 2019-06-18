@@ -1,0 +1,64 @@
+---
+- name: resolve platform specific vars
+  include_vars: '{{ kvm_vars }}'
+  with_first_found:
+    - files:
+        - '{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml'
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+      skip: true
+      paths:
+        - '{{ role_path }}/../../vars'
+  loop_control:
+    loop_var: kvm_vars
+
+- name: install kvm2 OS pkg dependencies
+  become: yes
+  become_user: root
+  with_items: '{{ minikube_kvm2_pkgs|default([]) }}'
+  loop_control:
+    loop_var: kvm2_pkg
+  package:
+    name: '{{ kvm2_pkg }}'
+    state: present
+
+- name: ensure target directory
+  file:
+    path: '{{ minikube_install_dir }}'
+    state: directory
+    mode: '0755'
+
+- name: RedHat/Debian configuration for Driver
+  block:
+    - name: download docker-machine-driver-kvm2
+      get_url:
+        url: '{{ minikube_kvm2_driver_url }}'
+        dest: '{{ minikube_install_dir }}/{{ minikube_kvm2_name }}-{{ minikube_version }}'
+        mode: 0755
+
+    - name: link installed docker-machine-driver-kvm2
+      file:
+        src: '{{ minikube_install_dir }}/{{ minikube_kvm2_name }}-{{ minikube_version }}'
+        dest: '{{ minikube_install_dir }}/{{ minikube_kvm2_name }}'
+        state: link
+  when: '"RedHat" or "Debian" in ansible_os_family'
+
+- name: Darwin configuration for Driver
+  block:
+    - name: Install hyperkit for MacOS
+      package:
+        name: 'hyperkit'
+        state: present
+
+    - name: download docker-machine-driver-hyperkit
+      get_url:
+        url: '{{ minikube_hyperkit_driver_url }}'
+        dest: '{{ minikube_install_dir }}/{{ minikube_hyperkit_name }}-{{ minikube_version }}'
+        mode: 0755
+
+    - name: link installed docker-machine-driver-hyperkit
+      file:
+        src: '{{ minikube_install_dir }}/{{ minikube_hyperkit_name }}-{{ minikube_version }}'
+        dest: '{{ minikube_install_dir }}/{{ minikube_hyperkit_name }}'
+        state: link
+  when: '"Darwin" == ansible_os_family'

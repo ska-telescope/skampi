@@ -1,0 +1,33 @@
+---
+- name: resolve platform specific vars
+  include_vars: '{{ docker_vars }}'
+  with_first_found:
+    - files:
+        - '{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml'
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+      skip: true
+      paths:
+        - '{{ role_path }}/../../vars'
+  loop_control:
+    loop_var: docker_vars
+
+- name: ensure target directory
+  file:
+    path: '{{ minikube_install_dir }}'
+    state: directory
+    mode: '0755'
+
+- name: download kubectl
+  become: yes
+  get_url:
+    url: '{{ kubectl_url }}'
+    dest: '{{ minikube_install_dir }}/{{ kubectl_name }}-{{ kubectl_version }}'
+    mode: 0755
+
+- name: link installed kubectl
+  become: yes
+  file:
+    src: '{{ minikube_install_dir }}/{{ kubectl_name }}-{{ kubectl_version }}'
+    dest: '{{ minikube_install_dir }}/{{ kubectl_name }}'
+    state: link

@@ -1,0 +1,94 @@
+#
+
+- file:
+    path:
+      - /var/lib/apt/lists/lock
+      - /var/cache/apt/archives/lock
+      - /var/lib/dpkg/lock
+    state: absent
+
+- name: Install apt-transport-https
+  apt:
+    name:
+    - apt-transport-https
+    - curl
+    update_cache: yes
+
+- name: Add kubectl GPG
+  apt_key: url=https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+- name: Add sources.list.d/kubernetes.list
+  shell: |
+    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" |  tee -a /etc/apt/sources.list.d/kubernetes.list
+
+- name: Install kubectl
+  apt:
+    name:
+    - kubectl
+    update_cache: yes
+
+- name: Check if minikube is installed
+  stat:
+    path: /usr/local/bin/minikube
+  register: minikube_installed
+
+- name: Install minikube
+  become_user: "{{ ansible_user }}"
+  shell: |
+    curl -kLo minikube https://storage.googleapis.com/minikube/releases/v0.35.0/minikube-linux-amd64 && chmod +x minikube
+  when: minikube_installed.stat.exists == false
+
+- name: Move minikube
+  shell: |
+    mv minikube /usr/local/bin/
+  when: minikube_installed.stat.exists == false
+
+- name: Check if /etc/gdm3 exists
+  stat:
+    path: /etc/gdm3
+  register: gdm3Dir
+
+- name: Creates directory /etc/gdm3
+  file:
+    path: /etc/gdm3
+    state: directory
+  when: gdm3Dir.stat.exists == false
+
+- name: Copy /etc/gdm3/custom.conf
+  copy:
+    src: "{{playbook_dir}}/roles/integration/files/custom.conf"
+    dest: /etc/gdm3/custom.conf
+    mode: 0755
+    force: yes
+
+- name: Remove cluster
+  become_user: "{{ ansible_user }}"
+  shell: |
+    sudo -E minikube delete
+  when:
+  - remove_cluster == 'yes'
+  - minikube_installed.stat.exists == true
+
+- name: Start minikube
+  become_user: "{{ ansible_user }}"
+  shell: |
+    sudo -E minikube start --vm-driver=none --extra-config=kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf
+    sudo -E minikube addons enable ingress
+
+- name: Setting on minukube
+  shell: |
+    chown -R {{ ansible_user }} /home/{{ ansible_user }}/.minikube
+    chgrp -R {{ ansible_user }} /home/{{ ansible_user }}/.minikube
+    chown -R {{ ansible_user }} /home/{{ ansible_user }}/.kube
+    chgrp -R {{ ansible_user }} /home/{{ ansible_user }}/.kube
+
+- name: Install helm
+  shell: |
+    curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+
+- name: Copy /etc/kubernetes/addons/ingress-dp.yaml
+  copy:
+    src: "{{playbook_dir}}/roles/integration/files/ingress-dp.yaml"
+    dest: /etc/kubernetes/addons/ingress-dp.yaml
+    mode: 0755
+    force: yes

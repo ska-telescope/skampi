@@ -1,0 +1,32 @@
+---
+# core software versions to deploy
+kubectl_version: 'v1.14.3'
+kvm2_driver_version: 'v1.1.1'
+minikube_version: 'v1.1.1'
+helm_version: v2.14.0
+calico_version: v3.7
+
+# Minikube and kvm2 source
+minikube_mirror: https://github.com/kubernetes/minikube/releases/download
+minikube_install_dir: /usr/local/bin
+
+# vars for kvm2
+minikube_kvm2_name: docker-machine-driver-kvm2
+minikube_kvm2_driver_url: '{{ minikube_mirror }}/{{ minikube_version }}/{{ minikube_kvm2_name }}'
+
+# vars for hyperkit
+minikube_hyperkit_name: docker-machine-driver-hyperkit
+minikube_hyperkit_driver_url: '{{ minikube_mirror }}/{{ minikube_version }}/{{ minikube_hyperkit_name }}'
+
+# kubectl vars
+kubectl_name: kubectl
+kubectl_mirror: https://storage.googleapis.com/kubernetes-release/release
+
+# Calico vars
+calico_etcd_url: 'https://docs.projectcalico.org/{{ calico_version }}/getting-started/kubernetes/installation/hosted/etcd.yaml'
+calico_resource_yaml: 'https://docs.projectcalico.org/{{ calico_version }}/getting-started/kubernetes/installation/hosted/calico.yaml'
+
+# Helm vars
+helm_name: helm
+helm_mirror: https://kubernetes-helm.storage.googleapis.com
+tiller_url: https://github.com/rimusz/helm-tiller

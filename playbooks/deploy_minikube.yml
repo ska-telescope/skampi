@@ -1,0 +1,35 @@
+---
+
+- name: Add kvm2 driver
+  hosts:
+    - development
+  become: yes
+  roles:
+    - role: driver
+      when: use_driver|bool
+
+- name: Install Docker
+  hosts:
+    - development
+  roles:
+    - docker
+
+- name: Deploy minikube
+  hosts:
+    - development
+  become: yes
+  roles:
+    - kubectl
+    - minikube
+
+- name: Install helm
+  hosts:
+    - development
+  roles:
+    - helm
+
+- name: Launch Kubernetes
+  hosts:
+    - development
+  roles:
+    - k8s

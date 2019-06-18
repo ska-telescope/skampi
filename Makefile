@@ -9,6 +9,18 @@ XAUTHORITYx ?= ${XAUTHORITY}
 KUBE_NAMESPACE ?= default
 HELM_RELEASE = test
 HELM_CHART ?= tango-base
+INGRESS_HOST ?= k8s-integration.minikube.local
+
+# Vagrant
+VAGRANT_VERSION = 2.2.4
+V_BOX ?= ubuntu/bionic64
+V_DISK_SIZE ?=  50GB
+V_MEMORY ?=  4096
+V_CPUS ?=  2
+V_IP ?= 172.200.0.25
+
+# Minikube
+DRIVER ?= false
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -110,20 +122,76 @@ podlogs: ## show Helm chart POD logs
 	echo ""; echo ""; echo ""; \
 	done
 
-localip:  ## set local Minikube IP in /etc/hosts file for apigateway
+localip:  ## set local Minikube IP in /etc/hosts file for Ingress $(INGRESS_HOST)
 	@new_ip=`minikube ip` && \
-	existing_ip=`grep integration.engageska-portugal.pt /etc/hosts || true` && \
+	existing_ip=`grep $(INGRESS_HOST) /etc/hosts || true` && \
 	echo "New IP is: $${new_ip}" && \
 	echo "Existing IP: $${existing_ip}" && \
-	if [ -z "$${existing_ip}" ]; then echo "$${new_ip} integration.engageska-portugal.pt" | sudo tee -a /etc/hosts; \
-	else sudo perl -i -ne "s/\d+\.\d+.\d+\.\d+/$${new_ip}/ if /integration.engageska-portugal.pt/; print" /etc/hosts; fi && \
-	echo "/etc/hosts is now: " `grep integration.engageska-portugal.pt /etc/hosts`
+	if [ -z "$${existing_ip}" ]; then echo "$${new_ip} $(INGRESS_HOST)" | sudo tee -a /etc/hosts; \
+	else sudo perl -i -ne "s/\d+\.\d+.\d+\.\d+/$${new_ip}/ if /$(INGRESS_HOST)/; print" /etc/hosts; fi && \
+	echo "/etc/hosts is now: " `grep $(INGRESS_HOST) /etc/hosts`
 
-#mkcerts:  ## Make dummy certificates for integration.engageska-portugal.pt and Ingress
-#	openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
-#	   -keyout chart/data/tls.key \
-#		 -out chart/data/tls.crt \
-#		 -subj "/CN=integration.engageska-portugal.pt/O=Integration"
+vagrant_install:  ## install vagrant and vagrant-disksize on Ubuntu
+	@VER=`vagrant version 2>/dev/null | grep Installed | awk '{print $$3}' | sed 's/\./ /g'` && \
+	echo "VER: $${VER}" && \
+	MAJ=`echo $${VER} | awk '{print $$1}'` && \
+	echo "MAJOR: $${MAJ}" && \
+	MIN=`echo $${VER} | awk '{print $$2}'` && \
+	echo "MINOR: $${MIN}" && \
+	if [ "0$${MAJ}" -ge "2" ] || [ "0$${MIN}" -ge "1" ]; then \
+	  echo "Vagrant is OK - "`vagrant version`; \
+	else \
+	  cd /tmp/ && wget https://releases.hashicorp.com/vagrant/$(VAGRANT_VERSION)/vagrant_$(VAGRANT_VERSION)_x86_64.deb && \
+	   sudo dpkg -i /tmp/vagrant_$(VAGRANT_VERSION)_x86_64.deb && \
+	  rm -f /tmp/vagrant_$(VAGRANT_VERSION)_x86_64.deb; \
+	fi
+	@vagrant plugin list | grep vagrant-disksize >/dev/null; RES=$$? && \
+	if [ "$${RES}" -eq "1" ]; then \
+	  vagrant plugin install vagrant-disksize; \
+	fi
+	@vagrant plugin list
 
-help:   ## show this help.
-	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+vagrant_env:  ## vagrant box settings
+	@echo "V_BOX: $(V_BOX)"
+	@echo "V_DISK_SIZE: $(V_DISK_SIZE)"
+	@echo "V_MEMORY: $(V_MEMORY)"
+	@echo "V_CPUS: $(V_CPUS)"
+	@echo "V_IP: $(V_IP)"
+
+vagrant_up: vagrant_env  ## startup minikube in vagrant
+	V_BOX=$(V_BOX) \
+	V_DISK_SIZE=$(V_DISK_SIZE) \
+	V_MEMORY=$(V_MEMORY) \
+	V_CPUS=$(V_CPUS) \
+	V_IP=$(V_IP) \
+		vagrant up
+
+vagrant_down: vagrant_env  ## destroy vagrant instance
+	V_BOX=$(V_BOX) \
+	V_DISK_SIZE=$(V_DISK_SIZE) \
+	V_MEMORY=$(V_MEMORY) \
+	V_CPUS=$(V_CPUS) \
+	V_IP=$(V_IP) \
+		vagrant destroy -f
+
+vagrantip:  ## set Vagrant Minikube IP in /etc/hosts file for Ingress $(INGRESS_HOST)
+	@existing_ip=`grep $(INGRESS_HOST) /etc/hosts || true` && \
+	echo "New IP is: $(V_IP)" && \
+	echo "Existing IP: $${existing_ip}" && \
+	if [ -z "$${existing_ip}" ]; then echo "$(V_IP) $(INGRESS_HOST)" | sudo tee -a /etc/hosts; \
+	else sudo perl -i -ne "s/\d+\.\d+.\d+\.\d+/$(V_IP)/ if /$(INGRESS_HOST)/; print" /etc/hosts; fi && \
+	echo "/etc/hosts is now: " `grep $(INGRESS_HOST) /etc/hosts`
+
+minikube:  ## Ansible playbook for install and launching Minikube
+	PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ANSIBLE_CONFIG='playbooks/ansible-local.cfg' \
+	ansible-playbook --inventory=playbooks/hosts \
+					 -v \
+	                 --limit=development \
+					 --extra-vars='{"use_driver": $(DRIVER)}' \
+					 playbooks/deploy_minikube.yml
+
+help:  ## show this help.
+	@echo "make targets:"
+	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ": .*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@echo ""; echo "make vars (+defaults):"
+	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

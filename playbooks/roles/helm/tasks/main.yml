@@ -1,0 +1,74 @@
+---
+- name: resolve platform specific vars
+  include_vars: '{{ docker_vars }}'
+  with_first_found:
+    - files:
+        - '{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml'
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+      skip: true
+      paths:
+        - '{{ role_path }}/../../vars'
+  loop_control:
+    loop_var: docker_vars
+
+- name: set facts for helm
+  set_fact:
+    "user_home": "{{ lookup('env','HOME') }}"
+
+- name: Check if helm is installed
+  stat:
+    path: '{{ minikube_install_dir }}/{{ helm_name }}'
+  register: helm_installed
+
+- name: Check if tiller plugin is installed
+  stat:
+    path: '{{ user_home }}/.helm/plugins/helm-tiller'
+  register: tiller_installed
+
+- name: ensure target directory
+  file:
+    path: '{{ minikube_install_dir }}'
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Install Helm
+  block:
+    - name: download Helm
+      unarchive:
+        src: '{{ helm_url }}'
+        dest: '/tmp/'
+        remote_src: yes
+      become: yes
+
+    - name: Move helm into place
+      command: 'mv /tmp/{{ minikube_platform }}/{{ helm_name }} {{ minikube_install_dir }}/{{ helm_name }}-{{ helm_version }}'
+      args:
+        creates: '{{ minikube_install_dir }}/{{ helm_name }}-{{ helm_version }}'
+      become: yes
+
+    - name: link installed helm
+      file:
+        src: '{{ minikube_install_dir }}/{{ helm_name }}-{{ helm_version }}'
+        dest: '{{ minikube_install_dir }}/{{ helm_name }}'
+        state: link
+      become: yes
+
+    - name: Initialise Helm
+      shell: "helm init --client-only"
+      args:
+        executable: /bin/bash
+
+    - name: Tidy up Helm tmp
+      file:
+        path: '/tmp/{{ minikube_platform }}'
+        state: absent
+      become: yes
+  when: helm_installed.stat.exists == false
+
+- name: Install tiller plugin
+  shell: "helm plugin install {{ tiller_url }}"
+  args:
+    executable: /bin/bash
+  when: tiller_installed.stat.exists == false

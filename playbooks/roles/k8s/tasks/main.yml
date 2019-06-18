@@ -1,0 +1,162 @@
+---
+- name: resolve platform specific vars
+  include_vars: '{{ docker_vars }}'
+  with_first_found:
+    - files:
+        - '{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml'
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+      skip: true
+      paths:
+        - '{{ role_path }}/../../vars'
+  loop_control:
+    loop_var: docker_vars
+
+- name: set facts for minikube
+  set_fact:
+    "user_home": "{{ lookup('env','HOME') }}"
+    "minikube_check": !unsafe >-
+      minikube status --format "host: {{.Host}} kubelet: {{.Kubelet}} apiserver: {{.APIServer}} kubectl: {{.Kubeconfig}}"
+    "minikube_driver": "{{ 'none' if not use_driver else ('hyperkit' if ansible_os_family == 'Darwin' else 'kvm2') }}"
+
+# host: Running kubelet: Running apiserver: Running kubectl: Correctly Configured: pointing to minikube-vm
+- name: After minikube configuration, we check minikube status
+  shell: "{{ minikube_check }}"
+  args:
+    executable: /bin/bash
+  register: starting_minikube_status
+  ignore_errors: yes
+
+- name: Install Minikube
+  block:
+    - name: Setup the directory for storing Minikube and kubectl configuration.
+      file:
+        path: "{{ user_home }}/.kube"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      become: true
+      become_method: sudo
+      become_flags: '-E -S -n'
+
+    - name: Create empty file(config) under directory.
+      file:
+        path: "{{ user_home }}/.kube/config"
+        state: touch
+        mode: "0640"
+      become: true
+      become_method: sudo
+      become_flags: '-E -S -n'
+
+    - name: set minikube environment
+      blockinfile:
+        dest: "{{ user_home }}/{{ rcfile }}"
+        create: yes
+        block: |
+          export MINIKUBE_WANTUPDATENOTIFICATION=false
+          export MINIKUBE_WANTREPORTERRORPROMPT=false
+          export MINIKUBE_HOME=$HOME
+          export CHANGE_MINIKUBE_NONE_USER=true
+          export KUBECONFIG=$HOME/.kube/config
+        marker: "# {mark} ANSIBLE MANAGED BLOCK for minikube"
+      with_items:
+        - .profile
+        - .bashrc
+      loop_control:
+        loop_var: rcfile
+
+    # - name: Start Minikube with option vm-driver=none and no Calico
+    #   shell: >
+    #     minikube start
+    #     --extra-config=kubelet.resolv-conf=/run/systemd/resolve/resolv.conf
+    #     --vm-driver={{ minikube_driver }}
+    #   environment:
+    #     MINIKUBE_WANTUPDATENOTIFICATION: false
+    #     MINIKUBE_WANTREPORTERRORPROMPT: false
+    #     MINIKUBE_HOME: "{{ user_home }}"
+    #     CHANGE_MINIKUBE_NONE_USER: true
+    #     KUBECONFIG: "{{ user_home }}/.kube/config"
+    #   become: true
+    #   become_method: sudo
+    #   become_flags: '-E -S -n'
+
+    - name: Start Minikube with option vm-driver=none and with Calico
+      shell: >
+        minikube start
+        --extra-config=kubelet.network-plugin=cni
+        --extra-config=kubelet.resolv-conf={{ minikube_resolver }}
+        --extra-config=kubeadm.pod-network-cidr=10.200.0.0/16
+        --network-plugin=cni
+        --vm-driver={{ minikube_driver }}
+      environment:
+        MINIKUBE_WANTUPDATENOTIFICATION: false
+        MINIKUBE_WANTREPORTERRORPROMPT: false
+        MINIKUBE_HOME: "{{ user_home }}"
+        CHANGE_MINIKUBE_NONE_USER: true
+        KUBECONFIG: "{{ user_home }}/.kube/config"
+      become: true
+      become_method: sudo
+      become_flags: '-E -S -n'
+
+      # host: Running kubelet: Running apiserver: Running kubectl: Correctly Configured: pointing to minikube-vm
+    - name: After minikube configuration, we check minikube status
+      shell: "{{ minikube_check }}"
+      args:
+        executable: /bin/bash
+      register: minikube_status
+      until: "'minikube-vm' and 'host: Running' and 'kubelet: Running' and 'apiserver: Running' in minikube_status.stdout"
+      delay: 30
+      retries: 10
+
+    - name: Launch calico etcd (sleep to make sure service is allocated for etcd endpoint lookup)
+      shell: 'kubectl apply -f {{ calico_etcd_url }} && sleep 3'
+      args:
+        executable: /bin/bash
+
+    - name: Get the etcd endpoint
+      shell: "kubectl get service -o json --namespace=kube-system calico-etcd | jq  -r .spec.clusterIP"
+      args:
+        executable: /bin/bash
+      register: etcd_endpoints_check
+
+    - name: set etcd_endpoint fact
+      set_fact:
+        "etcd_endpoint": "{{ etcd_endpoints_check.stdout }}"
+
+    - name: Get the calico resource definition
+      get_url:
+        url: '{{ calico_resource_yaml }}'
+        dest: '/tmp/calico.yaml'
+
+    - name: Configure calico to point to our etcd
+      lineinfile:
+        path: /tmp/calico.yaml
+        regexp: '^(.*?)etcd_endpoints: "http://<ETCD_IP>:<ETCD_PORT>"'
+        line: '\1etcd_endpoints: "http://{{ etcd_endpoint }}:6666"'
+        backrefs: yes
+
+    - name: Launch calico
+      shell: 'kubectl apply -f /tmp/calico.yaml'
+      args:
+        executable: /bin/bash
+
+    - name: Tidy up Calico tmp
+      file:
+        path: '/tmp/calico.yaml'
+        state: absent
+      become: yes
+
+  when: "not ('minikube-vm' and 'host: Running' and 'kubelet: Running' and 'apiserver: Running' in starting_minikube_status.stdout)"
+
+- name: Enable Ingress Controller
+  shell: minikube addons enable ingress
+  environment:
+    MINIKUBE_WANTUPDATENOTIFICATION: false
+    MINIKUBE_WANTREPORTERRORPROMPT: false
+    MINIKUBE_HOME: "{{ user_home }}"
+    CHANGE_MINIKUBE_NONE_USER: true
+    KUBECONFIG: "{{ user_home }}/.kube/config"
+  become: true
+  become_method: sudo
+  become_flags: '-E -S -n'

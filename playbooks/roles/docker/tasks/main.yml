@@ -1,0 +1,104 @@
+---
+- name: resolve platform specific vars
+  include_vars: '{{ docker_vars }}'
+  with_first_found:
+    - files:
+        - '{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml'
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+      skip: true
+      paths:
+        - '{{ role_path }}/../../vars'
+  loop_control:
+    loop_var: docker_vars
+
+- name: set fact
+  set_fact:
+    "user_to_add": "{{ lookup('env','USER') }}"
+
+- name: Debian package control for Docker
+  block:
+    - name: Add docker download apt key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add docker download apt source
+      lineinfile:
+        line: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable'
+        dest: /etc/apt/sources.list.d/docker.list
+        create: yes
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+  when: ansible_os_family == "Debian"
+  become: true
+
+- name: RedHat configuration for Docker
+  block:
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: remove wrong packages for Docker
+      dnf:
+        name: '{{ docker_pkg }}'
+        state: absent
+      with_items: '{{ docker_uninstall_pkgs|default([]) }}'
+      loop_control:
+        loop_var: docker_pkg
+
+    - name: add RedHat repository control
+      dnf:
+        name: 'dnf-plugins-core'
+        state: present
+
+    - name: Add Docker Yum repository
+      become: yes
+      get_url:
+        url: '{{ docker_yum_repo_url }}'
+        dest: '/etc/yum.repos.d/docker.repo'
+        mode: 0644
+
+  when: ansible_os_family == "RedHat"
+  become: true
+
+- name: Install docker CE
+  with_items: '{{ docker_pkgs|default([]) }}'
+  loop_control:
+    loop_var: docker_pkg
+  package:
+    name: '{{ docker_pkg }}'
+    state: present
+  become: true
+
+- name: Add ubuntu user to docker group
+  user:
+    name: "{{ user_to_add }}"
+    append: yes
+    groups: docker
+  become: true
+
+- name: Create /etc/systemd/system/docker.service.d
+  file:
+    path: "/etc/systemd/system/docker.service.d"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  when: '"RedHat" or "Debian" in ansible_os_family'
+
+- name: Configure docker server
+  template: src="{{ ansible_os_family }}-docker.conf.j2" dest="/etc/systemd/system/docker.service.d/docker.conf"
+  notify:
+    - restart and docker
+  become: true
+  when: '"RedHat" or "Debian" in ansible_os_family'
+
+- meta: flush_handlers

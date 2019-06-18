@@ -1,0 +1,31 @@
+---
+- name: resolve platform specific vars
+  include_vars: '{{ docker_vars }}'
+  with_first_found:
+    - files:
+        - '{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml'
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+      skip: true
+      paths:
+        - '{{ role_path }}/../../vars'
+  loop_control:
+    loop_var: docker_vars
+
+- name: ensure target directory
+  file:
+    path: '{{ minikube_install_dir }}'
+    state: directory
+    mode: '0755'
+
+- name: download minikube
+  get_url:
+    url: '{{ minikube_url }}'
+    dest: '{{ minikube_install_target }}'
+    mode: 0755
+
+- name: link installed minikube
+  file:
+    src: '{{ minikube_install_target }}'
+    dest: '{{ minikube_install_dir }}/minikube'
+    state: link

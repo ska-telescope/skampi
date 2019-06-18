@@ -8,7 +8,7 @@ DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
 KUBE_NAMESPACE ?= default
 HELM_RELEASE = test
-HELM_CHART != tango-base
+HELM_CHART ?= tango-base
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false

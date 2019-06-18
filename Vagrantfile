@@ -23,6 +23,7 @@ Vagrant.configure("2") do |config|
        ansible.config_file = "playbooks/ansible-local.cfg"
        ansible.limit = "development"
        ansible.playbook = "playbooks/deploy_minikube.yml"
-       ansible.extra_vars = { use_driver: false }
+       ansible.extra_vars = { use_driver: false, use_nginx: false }
      end
  end
+

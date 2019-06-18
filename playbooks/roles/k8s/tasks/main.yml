@@ -14,10 +14,29 @@
 
 - name: set facts for minikube
   set_fact:
+    "minikube_use_nginx": "{{ use_nginx|bool }}"
     "user_home": "{{ lookup('env','HOME') }}"
     "minikube_check": !unsafe >-
       minikube status --format "host: {{.Host}} kubelet: {{.Kubelet}} apiserver: {{.APIServer}} kubectl: {{.Kubeconfig}}"
     "minikube_driver": "{{ 'none' if not use_driver else ('hyperkit' if ansible_os_family == 'Darwin' else 'kvm2') }}"
+
+- name: Tidy up previous Minikube
+  become: true
+  file:
+    path: "{{ kfile }}"
+    state: absent
+  with_items:
+    - "{{ user_home }}/.kube"
+    - /var/lib/kubeadm.yaml
+    - /data/minikube
+    - /var/lib/minikube
+    - /var/lib/kubelet
+    - /etc/kubernetes
+    - /etc/cni
+    - /opt/cni
+    - /var/lib/calico
+  loop_control:
+    loop_var: kfile
 
 # host: Running kubelet: Running apiserver: Running kubectl: Correctly Configured: pointing to minikube-vm
 - name: After minikube configuration, we check minikube status
@@ -149,7 +168,7 @@
 
   when: "not ('minikube-vm' and 'host: Running' and 'kubelet: Running' and 'apiserver: Running' in starting_minikube_status.stdout)"
 
-- name: Enable Ingress Controller
+- name: Enable default NGINX Ingress Controller
   shell: minikube addons enable ingress
   environment:
     MINIKUBE_WANTUPDATENOTIFICATION: false
@@ -160,3 +179,48 @@
   become: true
   become_method: sudo
   become_flags: '-E -S -n'
+  when: "minikube_use_nginx"
+
+- name: Activate Traefik Ingress Controller
+  block:
+
+    - name: Get the ingress status
+      shell: "minikube addons list | grep ingress"
+      args:
+        executable: /bin/bash
+      register: ingress_check
+
+    - name: set etcd_endpoint fact
+      set_fact:
+        "ingress_state": "{{ ingress_check.stdout }}"
+
+    - name: Disable default NGINX Ingress Controller
+      shell: minikube addons disable ingress
+      environment:
+        MINIKUBE_WANTUPDATENOTIFICATION: false
+        MINIKUBE_WANTREPORTERRORPROMPT: false
+        MINIKUBE_HOME: "{{ user_home }}"
+        CHANGE_MINIKUBE_NONE_USER: true
+        KUBECONFIG: "{{ user_home }}/.kube/config"
+      become: true
+      become_method: sudo
+      become_flags: '-E -S -n'
+      when: '"enabled" in ingress_state'
+
+    - name: Copy up Traefik template
+      copy:
+        src: files/traefik-minikube.yaml
+        dest: /tmp/traefik-minikube.yaml
+
+    - name: Launch Traefik
+      shell: 'kubectl apply -f /tmp/traefik-minikube.yaml'
+      args:
+        executable: /bin/bash
+
+    - name: Tidy up Traefik tmp
+      file:
+        path: '/tmp/traefik-minikube.yaml'
+        state: absent
+      become: yes
+
+  when: "not minikube_use_nginx"

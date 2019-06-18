@@ -21,6 +21,7 @@ V_IP ?= 172.200.0.25
 
 # Minikube
 DRIVER ?= false
+USE_NGINX ?= false
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -187,7 +188,7 @@ minikube:  ## Ansible playbook for install and launching Minikube
 	ansible-playbook --inventory=playbooks/hosts \
 					 -v \
 	                 --limit=development \
-					 --extra-vars='{"use_driver": $(DRIVER)}' \
+					 --extra-vars='{"use_driver": $(DRIVER), "use_nginx": $(USE_NGINX)}' \
 					 playbooks/deploy_minikube.yml
 
 help:  ## show this help.

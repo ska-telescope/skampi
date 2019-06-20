@@ -93,6 +93,15 @@ delete: ## delete the helm chart release
 	             --set xauthority="$(XAUTHORITYx)" \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) delete -f -
 
+deploy_all: namespace  ## deploy ALL of the helm chart
+	@for i in charts/*; do \
+	helm template $$i --name $(HELM_RELEASE) \
+				 --namespace $(KUBE_NAMESPACE) \
+	             --tiller-namespace $(KUBE_NAMESPACE) \
+	             --set display="$(DISPLAY)" \
+	             --set xauthority="$(XAUTHORITYx)" \
+	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) apply -f - ; \
+	done
 
 poddescribe: ## describe Pods executed from Helm chart
 	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(HELM_RELEASE) -o=name`; \

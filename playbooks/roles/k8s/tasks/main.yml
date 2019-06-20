@@ -20,13 +20,11 @@
       minikube status --format "host: {{.Host}} kubelet: {{.Kubelet}} apiserver: {{.APIServer}} kubectl: {{.Kubeconfig}}"
     "minikube_driver": "{{ 'none' if not use_driver else ('hyperkit' if ansible_os_family == 'Darwin' else 'kvm2') }}"
 
-# host: Running kubelet: Running apiserver: Running kubectl: Correctly Configured: pointing to minikube-vm
-- name: After minikube configuration, we check minikube status
-  shell: "{{ minikube_check }}"
+- name: Before minikube configuration, we check minikube status
+  shell: "{{ minikube_check }} | grep 'host: '"
   args:
     executable: /bin/bash
   register: starting_minikube_status
-  ignore_errors: yes
 
 - name: Install Minikube
   block:
@@ -86,21 +84,6 @@
         - .bashrc
       loop_control:
         loop_var: rcfile
-
-    # - name: Start Minikube with option vm-driver=none and no Calico
-    #   shell: >
-    #     minikube start
-    #     --extra-config=kubelet.resolv-conf=/run/systemd/resolve/resolv.conf
-    #     --vm-driver={{ minikube_driver }}
-    #   environment:
-    #     MINIKUBE_WANTUPDATENOTIFICATION: false
-    #     MINIKUBE_WANTREPORTERRORPROMPT: false
-    #     MINIKUBE_HOME: "{{ user_home }}"
-    #     CHANGE_MINIKUBE_NONE_USER: true
-    #     KUBECONFIG: "{{ user_home }}/.kube/config"
-    #   become: true
-    #   become_method: sudo
-    #   become_flags: '-E -S -n'
 
     - name: Start Minikube with option vm-driver={{ minikube_driver }} and with Calico
       shell: >

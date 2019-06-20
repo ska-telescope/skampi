@@ -14,13 +14,15 @@ INGRESS_HOST ?= k8s-integration.minikube.local
 # Vagrant
 VAGRANT_VERSION = 2.2.4
 V_BOX ?= ubuntu/bionic64
-V_DISK_SIZE ?=  50GB
-V_MEMORY ?=  4096
-V_CPUS ?=  2
-V_IP ?= 172.200.0.25
+V_GUI ?= false
+V_DISK_SIZE ?=  32GB
+V_MEMORY ?=  8192
+V_CPUS ?=  4
+# V_IP ?= 172.200.0.25
+V_IP ?= 172.16.0.92
 
 # Minikube
-DRIVER ?= false
+DRIVER ?= true
 USE_NGINX ?= false
 
 # activate remote debugger for VSCode (ptvsd)
@@ -28,6 +30,10 @@ REMOTE_DEBUG ?= false
 
 # define overides for above variables in here
 -include PrivateRules.mak
+
+# Format the disk size for minikube - 999g
+FORMATTED_DISK_SIZE = $(shell echo $(V_DISK_SIZE) | sed 's/[^0-9]*//g')g
+
 
 .PHONY: vars k8s apply logs rm show deploy delete ls podlogs launch-tiller tiller-acls namespace help
 .DEFAULT_GOAL := help
@@ -45,7 +51,7 @@ k8s: ## Which kubernetes are we connected to
 	@kubectl version
 	@echo ""
 	@echo "Helm version:"
-	@helm version --tiller-namespace $(KUBE_NAMESPACE)
+	@helm version --client
 
 apply: ## apply resource descriptor k8s.yml
 	kubectl apply -n $(KUBE_NAMESPACE) -f k8s.yml
@@ -154,6 +160,7 @@ vagrant_install:  ## install vagrant and vagrant-disksize on Ubuntu
 
 vagrant_env:  ## vagrant box settings
 	@echo "V_BOX: $(V_BOX)"
+	@echo "V_GUI: $(V_GUI)"
 	@echo "V_DISK_SIZE: $(V_DISK_SIZE)"
 	@echo "V_MEMORY: $(V_MEMORY)"
 	@echo "V_CPUS: $(V_CPUS)"
@@ -165,6 +172,7 @@ vagrant_up: vagrant_env  ## startup minikube in vagrant
 	V_MEMORY=$(V_MEMORY) \
 	V_CPUS=$(V_CPUS) \
 	V_IP=$(V_IP) \
+	V_GUI=$(V_GUI) \
 		vagrant up
 
 vagrant_down: vagrant_env  ## destroy vagrant instance
@@ -173,6 +181,7 @@ vagrant_down: vagrant_env  ## destroy vagrant instance
 	V_MEMORY=$(V_MEMORY) \
 	V_CPUS=$(V_CPUS) \
 	V_IP=$(V_IP) \
+	V_GUI=$(V_GUI) \
 		vagrant destroy -f
 
 vagrantip:  ## set Vagrant Minikube IP in /etc/hosts file for Ingress $(INGRESS_HOST)
@@ -188,7 +197,7 @@ minikube:  ## Ansible playbook for install and launching Minikube
 	ansible-playbook --inventory=playbooks/hosts \
 					 -v \
 	                 --limit=development \
-					 --extra-vars='{"use_driver": $(DRIVER), "use_nginx": $(USE_NGINX)}' \
+					 --extra-vars='{"use_driver": $(DRIVER), "use_nginx": $(USE_NGINX), "minikube_disk_size": $(FORMATTED_DISK_SIZE), "minikube_memory": $(V_MEMORY), "minikube_cpus": $(V_CPUS)}' \
 					 playbooks/deploy_minikube.yml
 
 help:  ## show this help.

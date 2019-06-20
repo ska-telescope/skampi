@@ -5,6 +5,9 @@ kvm2_driver_version: 'v1.1.1'
 minikube_version: 'v1.1.1'
 helm_version: v2.14.0
 calico_version: v3.7
+minikube_disk_size: 32g
+minikube_memory: 8192
+minikube_cpus: 4
 
 # Minikube and kvm2 source
 minikube_mirror: https://github.com/kubernetes/minikube/releases/download

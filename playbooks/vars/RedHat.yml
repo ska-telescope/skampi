@@ -1,6 +1,6 @@
 ---
 # RedHat package dependencies for kvm2
-minikube_kvm2_pkgs:
+minikube_driver_pkgs:
   - libvirt-daemon-kvm
   - qemu-kvm
 

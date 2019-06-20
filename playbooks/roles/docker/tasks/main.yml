@@ -75,14 +75,18 @@
   package:
     name: '{{ docker_pkg }}'
     state: present
-  become: true
+  become: "{{ 'true' if not ansible_os_family == 'Darwin' else 'false' }}"
 
-- name: Add ubuntu user to docker group
+- name: OS
+  debug: var=ansible_os_family
+
+- name: Add current user to docker group
   user:
     name: "{{ user_to_add }}"
     append: yes
     groups: docker
   become: true
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
 
 - name: Create /etc/systemd/system/docker.service.d
   file:
@@ -92,13 +96,13 @@
     group: root
     mode: "0755"
   become: true
-  when: '"RedHat" or "Debian" in ansible_os_family'
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
 
 - name: Configure docker server
   template: src="{{ ansible_os_family }}-docker.conf.j2" dest="/etc/systemd/system/docker.service.d/docker.conf"
   notify:
     - restart and docker
   become: true
-  when: '"RedHat" or "Debian" in ansible_os_family'
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
 
 - meta: flush_handlers

@@ -1,6 +1,6 @@
 ---
 - name: resolve platform specific vars
-  include_vars: '{{ kvm_vars }}'
+  include_vars: '{{ driver_vars }}'
   with_first_found:
     - files:
         - '{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml'
@@ -10,16 +10,16 @@
       paths:
         - '{{ role_path }}/../../vars'
   loop_control:
-    loop_var: kvm_vars
+    loop_var: driver_vars
 
-- name: install kvm2 OS pkg dependencies
-  become: yes
+- name: install Driver OS pkg dependencies
+  become: "{{ 'no' if ansible_os_family == 'Darwin' else 'yes' }}"
   become_user: root
-  with_items: '{{ minikube_kvm2_pkgs|default([]) }}'
+  with_items: '{{ minikube_driver_pkgs|default([]) }}'
   loop_control:
-    loop_var: kvm2_pkg
+    loop_var: driver_pkg
   package:
-    name: '{{ kvm2_pkg }}'
+    name: '{{ driver_pkg }}'
     state: present
 
 - name: ensure target directory
@@ -41,24 +41,28 @@
         src: '{{ minikube_install_dir }}/{{ minikube_kvm2_name }}-{{ minikube_version }}'
         dest: '{{ minikube_install_dir }}/{{ minikube_kvm2_name }}'
         state: link
-  when: '"RedHat" or "Debian" in ansible_os_family'
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
 
 - name: Darwin configuration for Driver
   block:
-    - name: Install hyperkit for MacOS
-      package:
-        name: 'hyperkit'
-        state: present
-
     - name: download docker-machine-driver-hyperkit
       get_url:
         url: '{{ minikube_hyperkit_driver_url }}'
         dest: '{{ minikube_install_dir }}/{{ minikube_hyperkit_name }}-{{ minikube_version }}'
-        mode: 0755
+        owner: root
+        group: wheel
+        mode: '4755'
 
     - name: link installed docker-machine-driver-hyperkit
       file:
         src: '{{ minikube_install_dir }}/{{ minikube_hyperkit_name }}-{{ minikube_version }}'
         dest: '{{ minikube_install_dir }}/{{ minikube_hyperkit_name }}'
         state: link
-  when: '"Darwin" == ansible_os_family'
+
+    - name: fix up docker-machine-driver-hyperkit permissions
+      file:
+        path: '{{ minikube_install_dir }}/{{ minikube_hyperkit_name }}'
+        owner: root
+        group: wheel
+        mode: '4755'
+  when: ansible_os_family == "Darwin"

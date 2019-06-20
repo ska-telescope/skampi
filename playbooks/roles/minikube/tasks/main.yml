@@ -23,6 +23,7 @@
     url: '{{ minikube_url }}'
     dest: '{{ minikube_install_target }}'
     mode: 0755
+    validate_certs: "{{ 'no' if ansible_os_family == 'Darwin' else 'yes' }}"
 
 - name: link installed minikube
   file:

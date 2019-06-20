@@ -6,24 +6,24 @@ BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
 THIS_HOST := $(shell ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
-KUBE_NAMESPACE ?= default
-HELM_RELEASE = test
-HELM_CHART ?= tango-base
-INGRESS_HOST ?= k8s-integration.minikube.local
+KUBE_NAMESPACE ?= default  ## Kubernetes Namespace to use
+HELM_RELEASE ?= test  ## Helm Chart release name
+HELM_CHART ?= tango-base  ## Helm Chart to install (see ./charts)
+INGRESS_HOST ?= k8s-integration.minikube.local ## Ingress HTTP hostname
 
 # Vagrant
 VAGRANT_VERSION = 2.2.4
-V_BOX ?= ubuntu/bionic64
-V_GUI ?= false
-V_DISK_SIZE ?=  32GB
-V_MEMORY ?=  8192
-V_CPUS ?=  4
+V_BOX ?= ubuntu/bionic64  ## Vagrant Box
+V_GUI ?= false  ## Vagrant enable GUI
+V_DISK_SIZE ?=  32GB  ## Vagrant/Minikube disk size allocaiton in GB
+V_MEMORY ?=  8192  ## Vagrant/Minikube memory allocation in MB
+V_CPUS ?=  4  ## Vagrant/Minikube no. CPU allocation
 # V_IP ?= 172.200.0.25
-V_IP ?= 172.16.0.92
+V_IP ?= 172.16.0.92  ## Vagrant private network IP
 
 # Minikube
-DRIVER ?= true
-USE_NGINX ?= false
+DRIVER ?= true  ## Run Minikube via 'kvm2' driver (true) or 'none' (false)
+USE_NGINX ?= false  ## Use NGINX as the Ingress Controller
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false

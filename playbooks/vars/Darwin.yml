@@ -1,7 +1,13 @@
 ---
+minikube_driver_pkgs:
+  - xhyve
+  - docker-machine-driver-xhyve
+  - hyperkit
 
 docker_pkgs:
   - docker
+  - docker-compose
+  - docker-machine
   - make
   - jq
   - git

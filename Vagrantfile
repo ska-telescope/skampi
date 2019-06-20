@@ -1,8 +1,8 @@
 # setup defaults
 vbox = ENV['V_BOX'] || "ubuntu/bionic64"
-vsize = ENV['V_DISK_SIZE'] || "50GB"
-vmem = (ENV['V_MEMORY'] || 4096).to_i
-vcpus = (ENV['V_CPUS'] || 2).to_i
+vsize = ENV['V_DISK_SIZE'] || "42GB"
+vmem = (ENV['V_MEMORY'] || 8192).to_i
+vcpus = (ENV['V_CPUS'] || 4).to_i
 vip = ENV['V_IP'] || "172.16.0.92"
 gui = (if ENV['V_GUI'] == 'true' then true else false end) || false
 

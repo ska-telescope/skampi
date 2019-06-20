@@ -20,24 +20,6 @@
       minikube status --format "host: {{.Host}} kubelet: {{.Kubelet}} apiserver: {{.APIServer}} kubectl: {{.Kubeconfig}}"
     "minikube_driver": "{{ 'none' if not use_driver else ('hyperkit' if ansible_os_family == 'Darwin' else 'kvm2') }}"
 
-- name: Tidy up previous Minikube
-  become: true
-  file:
-    path: "{{ kfile }}"
-    state: absent
-  with_items:
-    - "{{ user_home }}/.kube"
-    - /var/lib/kubeadm.yaml
-    - /data/minikube
-    - /var/lib/minikube
-    - /var/lib/kubelet
-    - /etc/kubernetes
-    - /etc/cni
-    - /opt/cni
-    - /var/lib/calico
-  loop_control:
-    loop_var: kfile
-
 # host: Running kubelet: Running apiserver: Running kubectl: Correctly Configured: pointing to minikube-vm
 - name: After minikube configuration, we check minikube status
   shell: "{{ minikube_check }}"
@@ -48,16 +30,35 @@
 
 - name: Install Minikube
   block:
+    - name: Tidy up previous Minikube
+      become: true
+      file:
+        path: "{{ kfile }}"
+        state: absent
+      with_items:
+        - "{{ user_home }}/.kube"
+        - /var/lib/kubeadm.yaml
+        - /data/minikube
+        - /var/lib/minikube
+        - /var/lib/kubelet
+        - /etc/kubernetes
+        - /etc/cni
+        - /opt/cni
+        - /var/lib/calico
+      loop_control:
+        loop_var: kfile
+
     - name: Setup the directory for storing Minikube and kubectl configuration.
       file:
         path: "{{ user_home }}/.kube"
         state: directory
         owner: root
-        group: root
+        group: "{{ 'wheel' if ansible_os_family == 'Darwin' else 'root' }}"
         mode: "0755"
       become: true
       become_method: sudo
       become_flags: '-E -S -n'
+      when: "minikube_driver == 'none'"
 
     - name: Create empty file(config) under directory.
       file:
@@ -67,6 +68,7 @@
       become: true
       become_method: sudo
       become_flags: '-E -S -n'
+      when: "minikube_driver == 'none'"
 
     - name: set minikube environment
       blockinfile:
@@ -100,9 +102,11 @@
     #   become_method: sudo
     #   become_flags: '-E -S -n'
 
-    - name: Start Minikube with option vm-driver=none and with Calico
+    - name: Start Minikube with option vm-driver={{ minikube_driver }} and with Calico
       shell: >
-        minikube start
+        minikube start  --disk-size  {{ minikube_disk_size }}
+        --memory  {{ minikube_memory }}
+        --cpus {{ minikube_cpus }}
         --extra-config=kubelet.network-plugin=cni
         --extra-config=kubelet.resolv-conf={{ minikube_resolver }}
         --extra-config=kubeadm.pod-network-cidr=10.200.0.0/16
@@ -114,7 +118,7 @@
         MINIKUBE_HOME: "{{ user_home }}"
         CHANGE_MINIKUBE_NONE_USER: true
         KUBECONFIG: "{{ user_home }}/.kube/config"
-      become: true
+      become: "{{ 'true' if minikube_driver == 'none' else 'false' }}"
       become_method: sudo
       become_flags: '-E -S -n'
 

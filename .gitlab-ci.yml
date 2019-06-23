@@ -5,6 +5,8 @@ cache:
     - ansible-playbooks/
 
 before_script:
+    - export DEBIAN_FRONTEND=readline
+    - export RUNLEVEL=1
     - apt-get update
     - apt-get install -y bash python apt-transport-https ca-certificates curl software-properties-common
     - apt-add-repository --yes --update ppa:ansible/ansible 

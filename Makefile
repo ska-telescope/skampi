@@ -48,31 +48,36 @@ rm: ## delete applied resources
 	kubectl delete -n $(KUBE_NAMESPACE) -f k8s.yml
 
 namespace: ## create the kubernetes namespace
-	kubectl describe namespace $(KUBE_NAMESPACE) || kubectl create namespace $(KUBE_NAMESPACE)
+	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
+  K_DESC=$$? ; \
+  if [ $$K_DESC -eq 0 ] ; \
+  then kubectl describe namespace $(KUBE_NAMESPACE) ; \
+  else kubectl create namespace $(KUBE_NAMESPACE); \
+  fi
 
 deploy: namespace  ## deploy the helm chart
 	@helm template charts/$(HELM_CHART)/ --name $(HELM_RELEASE) \
 				 --namespace $(KUBE_NAMESPACE) \
-	             --tiller-namespace $(KUBE_NAMESPACE) \
-	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITYx)" \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) apply -f -
+				 --tiller-namespace $(KUBE_NAMESPACE) \
+				 --set display="$(DISPLAY)" \
+				 --set xauthority="$(XAUTHORITYx)" \
+				 --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) apply -f -
 
 show: ## show the helm chart
 	@helm template charts/$(HELM_CHART)/ --name $(HELM_RELEASE) \
 				 --namespace $(KUBE_NAMESPACE) \
-	             --tiller-namespace $(KUBE_NAMESPACE) \
-	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITYx)" \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)"
+				 --tiller-namespace $(KUBE_NAMESPACE) \
+				 --set display="$(DISPLAY)" \
+				 --set xauthority="$(XAUTHORITYx)" \
+				 --set tangoexample.debug="$(REMOTE_DEBUG)"
 
 delete: ## delete the helm chart release
 	@helm template charts/$(HELM_CHART)/ --name $(HELM_RELEASE) \
 				 --namespace $(KUBE_NAMESPACE) \
-	             --tiller-namespace $(KUBE_NAMESPACE) \
-	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITYx)" \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) delete -f -
+				 --tiller-namespace $(KUBE_NAMESPACE) \
+				 --set display="$(DISPLAY)" \
+				 --set xauthority="$(XAUTHORITYx)" \
+				 --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) delete -f -
 
 
 poddescribe: ## describe Pods executed from Helm chart

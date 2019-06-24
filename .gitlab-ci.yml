@@ -7,23 +7,23 @@ cache:
 before_script:
     - export DEBIAN_FRONTEND=readline
     - export RUNLEVEL=1
-    - apt-get update
-    - apt-get install -y bash python apt-transport-https ca-certificates curl software-properties-common
-    - apt-add-repository --yes --update ppa:ansible/ansible 
-    - printf "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d 
-    - apt-get -y install ansible git ssh
 
 stages:
-  - download
+  - build
   - lint
   - deploy
   - lifecycle
 
-download:
-  stage: download
+build:
+  stage: build
   tags: 
   - docker-executor
   script:
+  - apt-get update
+  - apt-get install -y bash python apt-transport-https ca-certificates curl software-properties-common
+  - apt-add-repository --yes --update ppa:ansible/ansible 
+  - printf "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d 
+  - apt-get -y install ansible git ssh
   - rm -rf ansible-playbooks
   - git clone https://github.com/ska-telescope/ansible-playbooks.git
   - cd ansible-playbooks

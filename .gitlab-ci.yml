@@ -11,7 +11,7 @@ before_script:
     - apt-get install -y bash python apt-transport-https ca-certificates curl software-properties-common
     - apt-add-repository --yes --update ppa:ansible/ansible 
     - printf "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d 
-    - apt-get -y install ansible git ssh
+    - apt-get -y install ansible git ssh python-apt
 
 stages:
   - build

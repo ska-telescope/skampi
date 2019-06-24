@@ -10,6 +10,7 @@ KUBE_NAMESPACE ?= default  ## Kubernetes Namespace to use
 HELM_RELEASE ?= test  ## Helm Chart release name
 HELM_CHART ?= tango-base  ## Helm Chart to install (see ./charts)
 INGRESS_HOST ?= integration.engageska-portugal.pt ## Ingress HTTP hostname
+USE_NGINX ?= false  ## Use NGINX as the Ingress Controller
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -74,6 +75,7 @@ deploy: namespace mkcerts  ## deploy the helm chart
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
+				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) apply -f -
 
 show: mkcerts  ## show the helm chart
@@ -83,6 +85,7 @@ show: mkcerts  ## show the helm chart
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
+				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)"
 
 delete: ## delete the helm chart release
@@ -92,6 +95,7 @@ delete: ## delete the helm chart release
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
+				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) delete -f -
 
 deploy_all: namespace mkcerts  ## deploy ALL of the helm chart
@@ -101,6 +105,8 @@ deploy_all: namespace mkcerts  ## deploy ALL of the helm chart
 	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
+				 --set ingress.hostname=$(INGRESS_HOST) \
+				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) apply -f - ; \
 	done
 
@@ -112,6 +118,7 @@ delete_all: ## delete ALL of the helm chart release
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
+				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) delete -f - ; \
 	done
 

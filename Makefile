@@ -9,21 +9,7 @@ XAUTHORITYx ?= ${XAUTHORITY}
 KUBE_NAMESPACE ?= default  ## Kubernetes Namespace to use
 HELM_RELEASE ?= test  ## Helm Chart release name
 HELM_CHART ?= tango-base  ## Helm Chart to install (see ./charts)
-INGRESS_HOST ?= k8s-integration.minikube.local ## Ingress HTTP hostname
-
-# Vagrant
-VAGRANT_VERSION = 2.2.4
-V_BOX ?= ubuntu/bionic64  ## Vagrant Box
-V_GUI ?= false  ## Vagrant enable GUI
-V_DISK_SIZE ?=  32GB  ## Vagrant/Minikube disk size allocaiton in GB
-V_MEMORY ?=  8192  ## Vagrant/Minikube memory allocation in MB
-V_CPUS ?=  4  ## Vagrant/Minikube no. CPU allocation
-# V_IP ?= 172.200.0.25
-V_IP ?= 172.16.0.92  ## Vagrant private network IP
-
-# Minikube
-DRIVER ?= true  ## Run Minikube via 'kvm2' driver (true) or 'none' (false)
-USE_NGINX ?= false  ## Use NGINX as the Ingress Controller
+INGRESS_HOST ?= integration.engageska-portugal.pt ## Ingress HTTP hostname
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -31,11 +17,7 @@ REMOTE_DEBUG ?= false
 # define overides for above variables in here
 -include PrivateRules.mak
 
-# Format the disk size for minikube - 999g
-FORMATTED_DISK_SIZE = $(shell echo $(V_DISK_SIZE) | sed 's/[^0-9]*//g')g
-
-
-.PHONY: vars k8s apply logs rm show deploy delete ls podlogs launch-tiller tiller-acls namespace help
+.PHONY: vars k8s apply logs rm show deploy deploy_all delete ls podlogs namespace help
 .DEFAULT_GOAL := help
 
 vars: ## Display variables - pass in DISPLAY and XAUTHORITY
@@ -69,20 +51,33 @@ rm: ## delete applied resources
 namespace: ## create the kubernetes namespace
 	kubectl describe namespace $(KUBE_NAMESPACE) || kubectl create namespace $(KUBE_NAMESPACE)
 
-deploy: namespace  ## deploy the helm chart
+mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
+	@if [ ! -f charts/webjive/data/tls.key ]; then \
+	CN=`echo "$(INGRESS_HOST)" | tr -d '[:space:]'`; \
+	openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
+	   -keyout charts/webjive/data/tls.key \
+		 -out charts/webjive/data/tls.crt \
+		 -subj "/CN=$${CN}/O=Minikube"; \
+	else \
+	echo "SSL cert already exits in charts/webjive/data ... skipping"; \
+	fi
+
+deploy: namespace mkcerts  ## deploy the helm chart
 	@helm template charts/$(HELM_CHART)/ --name $(HELM_RELEASE) \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
+				 --set ingress.hostname=$(INGRESS_HOST) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) apply -f -
 
-show: ## show the helm chart
+show: mkcerts  ## show the helm chart
 	@helm template charts/$(HELM_CHART)/ --name $(HELM_RELEASE) \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
+				 --set ingress.hostname=$(INGRESS_HOST) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)"
 
 delete: ## delete the helm chart release
@@ -91,9 +86,10 @@ delete: ## delete the helm chart release
 	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
+				 --set ingress.hostname=$(INGRESS_HOST) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) delete -f -
 
-deploy_all: namespace  ## deploy ALL of the helm chart
+deploy_all: namespace mkcerts  ## deploy ALL of the helm chart
 	@for i in charts/*; do \
 	helm template $$i --name $(HELM_RELEASE) \
 				 --namespace $(KUBE_NAMESPACE) \
@@ -101,6 +97,17 @@ deploy_all: namespace  ## deploy ALL of the helm chart
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) apply -f - ; \
+	done
+
+delete_all: ## delete ALL of the helm chart release
+	@for i in charts/*; do \
+	helm template $$i --name $(HELM_RELEASE) \
+				 --namespace $(KUBE_NAMESPACE) \
+	             --tiller-namespace $(KUBE_NAMESPACE) \
+	             --set display="$(DISPLAY)" \
+	             --set xauthority="$(XAUTHORITYx)" \
+				 --set ingress.hostname=$(INGRESS_HOST) \
+	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) delete -f - ; \
 	done
 
 poddescribe: ## describe Pods executed from Helm chart
@@ -146,68 +153,6 @@ localip:  ## set local Minikube IP in /etc/hosts file for Ingress $(INGRESS_HOST
 	if [ -z "$${existing_ip}" ]; then echo "$${new_ip} $(INGRESS_HOST)" | sudo tee -a /etc/hosts; \
 	else sudo perl -i -ne "s/\d+\.\d+.\d+\.\d+/$${new_ip}/ if /$(INGRESS_HOST)/; print" /etc/hosts; fi && \
 	echo "/etc/hosts is now: " `grep $(INGRESS_HOST) /etc/hosts`
-
-vagrant_install:  ## install vagrant and vagrant-disksize on Ubuntu
-	@VER=`vagrant version 2>/dev/null | grep Installed | awk '{print $$3}' | sed 's/\./ /g'` && \
-	echo "VER: $${VER}" && \
-	MAJ=`echo $${VER} | awk '{print $$1}'` && \
-	echo "MAJOR: $${MAJ}" && \
-	MIN=`echo $${VER} | awk '{print $$2}'` && \
-	echo "MINOR: $${MIN}" && \
-	if [ "0$${MAJ}" -ge "2" ] || [ "0$${MIN}" -ge "1" ]; then \
-	  echo "Vagrant is OK - "`vagrant version`; \
-	else \
-	  cd /tmp/ && wget https://releases.hashicorp.com/vagrant/$(VAGRANT_VERSION)/vagrant_$(VAGRANT_VERSION)_x86_64.deb && \
-	   sudo dpkg -i /tmp/vagrant_$(VAGRANT_VERSION)_x86_64.deb && \
-	  rm -f /tmp/vagrant_$(VAGRANT_VERSION)_x86_64.deb; \
-	fi
-	@vagrant plugin list | grep vagrant-disksize >/dev/null; RES=$$? && \
-	if [ "$${RES}" -eq "1" ]; then \
-	  vagrant plugin install vagrant-disksize; \
-	fi
-	@vagrant plugin list
-
-vagrant_env:  ## vagrant box settings
-	@echo "V_BOX: $(V_BOX)"
-	@echo "V_GUI: $(V_GUI)"
-	@echo "V_DISK_SIZE: $(V_DISK_SIZE)"
-	@echo "V_MEMORY: $(V_MEMORY)"
-	@echo "V_CPUS: $(V_CPUS)"
-	@echo "V_IP: $(V_IP)"
-
-vagrant_up: vagrant_env  ## startup minikube in vagrant
-	V_BOX=$(V_BOX) \
-	V_DISK_SIZE=$(V_DISK_SIZE) \
-	V_MEMORY=$(V_MEMORY) \
-	V_CPUS=$(V_CPUS) \
-	V_IP=$(V_IP) \
-	V_GUI=$(V_GUI) \
-		vagrant up
-
-vagrant_down: vagrant_env  ## destroy vagrant instance
-	V_BOX=$(V_BOX) \
-	V_DISK_SIZE=$(V_DISK_SIZE) \
-	V_MEMORY=$(V_MEMORY) \
-	V_CPUS=$(V_CPUS) \
-	V_IP=$(V_IP) \
-	V_GUI=$(V_GUI) \
-		vagrant destroy -f
-
-vagrantip:  ## set Vagrant Minikube IP in /etc/hosts file for Ingress $(INGRESS_HOST)
-	@existing_ip=`grep $(INGRESS_HOST) /etc/hosts || true` && \
-	echo "New IP is: $(V_IP)" && \
-	echo "Existing IP: $${existing_ip}" && \
-	if [ -z "$${existing_ip}" ]; then echo "$(V_IP) $(INGRESS_HOST)" | sudo tee -a /etc/hosts; \
-	else sudo perl -i -ne "s/\d+\.\d+.\d+\.\d+/$(V_IP)/ if /$(INGRESS_HOST)/; print" /etc/hosts; fi && \
-	echo "/etc/hosts is now: " `grep $(INGRESS_HOST) /etc/hosts`
-
-minikube:  ## Ansible playbook for install and launching Minikube
-	PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ANSIBLE_CONFIG='playbooks/ansible-local.cfg' \
-	ansible-playbook --inventory=playbooks/hosts \
-					 -v \
-	                 --limit=development \
-					 --extra-vars='{"use_driver": $(DRIVER), "use_nginx": $(USE_NGINX), "minikube_disk_size": $(FORMATTED_DISK_SIZE), "minikube_memory": $(V_MEMORY), "minikube_cpus": $(V_CPUS)}' \
-					 playbooks/deploy_minikube.yml
 
 help:  ## show this help.
 	@echo "make targets:"

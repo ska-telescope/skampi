@@ -5,9 +5,12 @@ cache:
     - ansible-playbooks/
 
 before_script:
+    - export DEBIAN_FRONTEND=readline
+    - export RUNLEVEL=1
     - apt-get update
     - apt-get install -y bash python apt-transport-https ca-certificates curl software-properties-common
     - apt-add-repository --yes --update ppa:ansible/ansible 
+    - printf "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d 
     - apt-get -y install ansible git ssh
 
 stages:
@@ -25,7 +28,7 @@ download:
   - git clone https://github.com/ska-telescope/ansible-playbooks.git
   - cd ansible-playbooks
   - echo -e "\n\n[integration]" >> hosts
-  - echo "$ENVIRONMENT_ADDRESS  ansible_user=$ENVIRONMENT_USER" >> hosts
+  - echo "$ENVIRONMENT_ADDRESS ansible_user=$ENVIRONMENT_USER" >> hosts
   - cat hosts
   
 lint:

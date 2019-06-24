@@ -49,7 +49,12 @@ rm: ## delete applied resources
 	kubectl delete -n $(KUBE_NAMESPACE) -f k8s.yml
 
 namespace: ## create the kubernetes namespace
-	kubectl describe namespace $(KUBE_NAMESPACE) || kubectl create namespace $(KUBE_NAMESPACE)
+	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
+  K_DESC=$$? ; \
+  if [ $$K_DESC -eq 0 ] ; \
+  then kubectl describe namespace $(KUBE_NAMESPACE) ; \
+  else kubectl create namespace $(KUBE_NAMESPACE); \
+  fi
 
 mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
 	@if [ ! -f charts/webjive/data/tls.key ]; then \

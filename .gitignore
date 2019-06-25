@@ -6,3 +6,4 @@
 /docs/build
 /PrivateRules.mak
 /tmp
+ansible-playbooks

@@ -123,6 +123,12 @@ On for the main event - we launch the TM Integration with:
 $ make deploy KUBE_NAMESPACE=integration
 ```
 
+And then the respective charts with:
+```
+$ make deploy KUBE_NAMESPACE=integration HELM_CHART=tmc-proto
+$ make deploy KUBE_NAMESPACE=integration HELM_CHART=webjive
+```
+
 This will give extensive output describing what has been deployed in the test namespace:
 ```
 kubectl describe namespace integration || kubectl create namespace integration

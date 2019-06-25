@@ -8,6 +8,139 @@ type: kubernetes.io/tls
 data:
 {{ (tpl (.Files.Glob "data/tls.*").AsSecrets . ) | indent 2  }}
 
+{{ if .Values.ingress.nginx }}
+
+# Use NGINX
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webjive-tangogql-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    {{- range $key, $value := .Values.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+{{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+      - {{ tpl .Values.ingress.hostname . }}
+      secretName: {{ tpl .Values.ingress.tls.secretname . }}
+{{ end }}
+  rules:
+    - host: {{ tpl .Values.ingress.hostname . }}
+      http:
+        paths:
+        - path: /testdb/(.*)
+          backend:
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+        - path: /testdb/(db.*)
+          backend:
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+        - path: /testdb/(graphiql.*)
+          backend:
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+        - path: /testdb/(socket.*)
+          backend:
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           servicePort: 5004
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webjive-authserver-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    {{- range $key, $value := .Values.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+{{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+      - {{ tpl .Values.ingress.hostname . }}
+      secretName: {{ tpl .Values.ingress.tls.secretname . }}
+{{ end }}
+  rules:
+    - host: {{ tpl .Values.ingress.hostname . }}
+      http:
+        paths:
+        - path: /auth/(.*)
+          backend:
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           servicePort: 8080
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webjive-main-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    {{- range $key, $value := .Values.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+{{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+      - {{ tpl .Values.ingress.hostname . }}
+      secretName: {{ tpl .Values.ingress.tls.secretname . }}
+{{ end }}
+  rules:
+    - host: {{ tpl .Values.ingress.hostname . }}
+      http:
+        paths:
+        - path: /(testdb)
+          backend:
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           servicePort: 80
+        - path: /(static.*)
+          backend:
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           servicePort: 80
+        - path: /(testdb/dashboard)
+          backend:
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           servicePort: 80
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webjive-dashboard-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    {{- range $key, $value := .Values.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+{{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+      - {{ tpl .Values.ingress.hostname . }}
+      secretName: {{ tpl .Values.ingress.tls.secretname . }}
+{{ end }}
+  rules:
+    - host: {{ tpl .Values.ingress.hostname . }}
+      http:
+        paths:
+        - path: /(dashboards.*)
+          backend:
+           serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           servicePort: 3012
+
+{{ else }}
+# use Traefik as default
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -109,5 +242,6 @@ spec:
           backend:
            serviceName: webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}
            servicePort: 3012
-        
+{{ end }}
+
 {{ end }}

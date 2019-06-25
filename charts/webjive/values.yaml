@@ -54,6 +54,23 @@ tangogql:
     tag: latest
     pullPolicy: Always
 
+# Configure Ingress resource that allow you to access the Tango REST API
+ingress:
+  enabled: true
+  nginx: false
+  hostname: integration.engageska-portugal.pt
+
+  # Ingress annotations
+  annotations: {}
+
+  # Ingress TLS configuration
+  #
+  tls:
+    enabled: true
+    secretname: "tls-secret-{{ template \"webjive.name\" . }}-{{ .Release.Name }}"
+    hostname: "{{ .Values.ingress.hostname }}"
+
+
 nodeSelector: {}
 
 affinity: {}

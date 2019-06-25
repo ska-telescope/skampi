@@ -39,7 +39,8 @@ lint:
   script:
   - cd ansible-playbooks
   - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='yes' multiple_charts='yes' directory='../charts'"
-  - ANSIBLE_STDOUT_CALLBACK=json_cb ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='no' multiple_charts='yes' directory='../charts'" >> helm-linting-results.json
+  - export ANSIBLE_STDOUT_CALLBACK=json
+  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='no' multiple_charts='yes' directory='../charts'" >> helm-linting-results.json
 
 deploy:
   stage: deploy

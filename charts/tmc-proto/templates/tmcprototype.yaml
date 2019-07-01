@@ -39,7 +39,7 @@ spec:
       - --timeout=30
       - --strict
       - --
-      - json2tango -w -a data/configuration.json
+      - json2tango -w -a -u data/configuration.json
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000

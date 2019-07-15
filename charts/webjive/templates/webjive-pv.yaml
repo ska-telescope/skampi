@@ -14,7 +14,7 @@ spec:
   capacity:
     storage: 1Gi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   hostPath:
     path: /data/webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}/
 
@@ -33,7 +33,7 @@ metadata:
 spec:
   storageClassName: standard
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi

@@ -47,7 +47,7 @@ spec:
     spec:
       initContainers:
       - name: waitdatabaseds
-        image: nexus.engageska-portugal.pt/ska-docker/tango-itango:latest
+        image: nexus.engageska-portugal.pt/ska-telescope/oet:latest
         imagePullPolicy: IfNotPresent
         command:
           - /usr/local/bin/wait-for-it.sh
@@ -55,27 +55,18 @@ spec:
           - --timeout=30
           - --strict
           - --
-          - /usr/local/bin/wait-for-it.sh
-          - mongodb-{{ template "oet.name" . }}-{{ .Release.Name }}:27017
-          - --timeout=30
-          - --strict
-          - --
-          - echo "Databaseds/Mongodb ready for use."
+          - /venv/bin/itango3
+          - --profile=ska
 
       containers:
       - name: oet
         image: "{{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}"
         imagePullPolicy: {{ .Values.oet.image.pullPolicy }}
         ports:
-        - name: oet-http
+        - name: oet-ssh
           containerPort: 22
           protocol: TCP
         resources:
-{{ toYaml .Values.oet.resources | indent 10 }}
-      volumes:
-      - name: tangogql-logs
-        persistentVolumeClaim:
-          claimName: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

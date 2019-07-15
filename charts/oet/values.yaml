@@ -6,7 +6,7 @@ display: ":0"
 xauthority: "~/.Xauthority"
 
 oet:
-  enabled: false
+  enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet

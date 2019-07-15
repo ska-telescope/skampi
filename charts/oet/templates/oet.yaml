@@ -55,13 +55,15 @@ spec:
           - --timeout=30
           - --strict
           - --
+          - /venv/bin/itango3
+          - --profile=ska
 
       containers:
       - name: oet
         image: "{{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}"
         imagePullPolicy: {{ .Values.oet.image.pullPolicy }}
         ports:
-        - name: oet-http
+        - name: oet-ssh
           containerPort: 22
           protocol: TCP
         resources:

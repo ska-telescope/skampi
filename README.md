@@ -3,13 +3,12 @@
 [![Documentation Status](https://readthedocs.org/projects/ska-docker/badge/?version=latest)](https://developer.skatelescope.org/projects/k8s-integration/en/latest/?badge=latest)
 
 
-TM Integration on Kubernetes
-===========================
+# TM Integration on Kubernetes
+
+## Ubuntu 18.04
+
 
 The following are a set of instructions of running the TMC prototype and the Webjive application on Kubernetes, and has been tested on minikube v0.34.1 with k8s v1.13.3 on Ubuntu 18.04.
-
-Minikube
-========
 
 Using [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/) enables us to create a single node stand alone Kubernetes cluster for testing purposes.  If you already have a cluster at your disposal, then you can skip forward to 'Running the TM Integration on Kubernetes'.
 
@@ -203,3 +202,217 @@ To clean up the Helm Chart release:
 ```
 $make delete KUBE_NAMESPACE=integration
 ```
+
+
+## macOS Mojave
+
+The following are a set of instructions of running the TMC prototype on macOS Mojave.
+
+### Prequisites:
+
+- **helm**
+    ```
+    helm version
+
+    Client: &version.Version{SemVer:"v2.14.1", GitCommit:"5270352a09c7e8b6e8c9593002a73535276507c0", GitTreeState:"clean"}
+    Server: &version.Version{SemVer:"v2.14.1", GitCommit:"5270352a09c7e8b6e8c9593002a73535276507c0", GitTreeState:"clean"}
+    ```
+
+- **tiller**
+    ```
+    tiller -version
+
+    v2.14.1
+    ```
+
+- **docker-for-desktop**
+    ```
+    docker version
+
+    Client: Docker Engine - Community
+    Version:           18.09.2
+    API version:       1.39
+    Go version:        go1.10.8
+    Git commit:        6247962
+    Built:             Sun Feb 10 04:12:39 2019
+    OS/Arch:           darwin/amd64
+    Experimental:      false
+
+    Server: Docker Engine - Community
+    Engine:
+    Version:          18.09.2
+    API version:      1.39 (minimum version 1.12)
+    Go version:       go1.10.6
+    Git commit:       6247962
+    Built:            Sun Feb 10 04:13:06 2019
+    OS/Arch:          linux/amd64
+    Experimental:     true
+    ```
+
+- **minikube**
+    ```
+    minikube version
+
+    minikube version: v1.2.0
+    ```
+
+    - minikube is set as the context
+        ```
+        kubectl config get-contexts
+
+        CURRENT   NAME                 CLUSTER                      AUTHINFO             NAMESPACE
+                docker-for-desktop   docker-for-desktop-cluster   docker-for-desktop
+        *         minikube             minikube                     minikube
+        ```
+
+    - If it's not:
+        ```
+        kubectl config use-context minikube
+        ```
+
+### Deployment:
+
+#### Clean up and reset minikube
+
+```
+minikube stop
+
+✋  Stopping "minikube" in virtualbox ...
+🛑  "minikube" stopped.
+
+minikube delete
+
+🔥  Deleting "minikube" from virtualbox ...
+💔  The "minikube" cluster has been deleted.
+```
+
+#### Start minikube
+
+```
+minikube start --extra-config=kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf
+
+😄  minikube v1.2.0 on darwin (amd64)
+💡  Tip: Use 'minikube start -p <name>' to create a new cluster, or 'minikube delete' to delete this one.
+🔄  Restarting existing virtualbox VM for "minikube" ...
+⌛  Waiting for SSH access ...
+🐳  Configuring environment for Kubernetes v1.15.0 on Docker 18.09.6
+    ▪ kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf
+🔄  Relaunching Kubernetes v1.15.0 using kubeadm ...
+⌛  Verifying: apiserver proxy etcd scheduler controller dns
+🏄  Done! kubectl is now configured to use "minikube"
+```
+
+#### init helm
+
+```
+helm init  --upgrade
+
+$HELM_HOME has been configured at /Users/johanventer/.helm.
+
+Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
+
+Please note: by default, Tiller is deployed with an insecure 'allow unauthenticated users' policy.
+To prevent this, run `helm init` with the --tiller-tls-verify flag.
+For more information on securing your installation see: https://docs.helm.sh/using_helm/#securing-your-helm-installation
+```
+
+### Deploy charts
+
+```
+make deploy_all KUBE_NAMESPACE=integration
+
+Name:         integration
+Labels:       <none>
+Annotations:  <none>
+Status:       Active
+
+No resource quota.
+
+No resource limits.
+SSL cert already exits in charts/webjive/data ... skipping
+persistentvolume/tangodb-tango-base-test unchanged
+persistentvolumeclaim/tangodb-tango-base-test unchanged
+service/databaseds-tango-base-test unchanged
+statefulset.apps/databaseds-tango-base-test unchanged
+service/tangodb-tango-base-test unchanged
+statefulset.apps/tangodb-tango-base-test unchanged
+pod/tangotest-tango-base-test unchanged
+configmap/tests-mutation-json-tests-test unchanged
+configmap/tango-startup-test-script-tests-test unchanged
+pod/startup-tests-test configured
+configmap/tmc-proto-configuration-json-tmc-proto-test unchanged
+pod/tmcprototype-tmc-proto-test configured
+persistentvolume/rsyslog-tmc-proto-test unchanged
+persistentvolumeclaim/rsyslog-tmc-proto-test unchanged
+service/rsyslog-tmc-proto-test unchanged
+statefulset.apps/rsyslog-tmc-proto-test configured
+secret/tls-secret-webjive-test unchanged
+ingress.extensions/webjive-tangogql-ing-webjive-test unchanged
+ingress.extensions/webjive-authserver-ing-webjive-test unchanged
+ingress.extensions/webjive-main-ing-webjive-test unchanged
+ingress.extensions/webjive-dashboard-ing-webjive-test unchanged
+persistentvolume/mongodb-webjive-test unchanged
+persistentvolumeclaim/mongodb-webjive-test unchanged
+persistentvolume/webjive-webjive-test unchanged
+persistentvolumeclaim/webjive-webjive-test unchanged
+persistentvolume/webjive-webjive-test unchanged
+persistentvolumeclaim/webjive-webjive-test unchanged
+service/mongodb-webjive-test unchanged
+statefulset.apps/mongodb-webjive-test configured
+service/webjive-webjive-test unchanged
+statefulset.apps/webjive-webjive-test configured
+```
+
+### Set up traefik
+
+```
+kubectl apply -f ./resources/traefik-minikube.yaml
+
+clusterrole.rbac.authorization.k8s.io/traefik-ingress-controller created
+clusterrolebinding.rbac.authorization.k8s.io/traefik-ingress-controller created
+serviceaccount/traefik-ingress-controller created
+daemonset.extensions/traefik-ingress-controller created
+service/traefik-ingress-service created
+```
+
+### Wait for pods to start
+```
+watch kubectl get all,pv,pvc,ingress -n integration
+```
+
+### Update hosts to set up local networking
+
+```
+make localip
+
+New IP is: 192.168.99.XX
+Existing IP:
+192.168.99.XX integration.engageska-portugal.pt
+/etc/hosts is now:  192.168.99.XX integration.engageska-portugal.pt
+```
+
+Sometimes the hosts file does not update fast enough after applying this step.
+
+To confirm that you are indeed pointing to a running system either:
+
+- Clear the `hosts` cache
+    ```
+    sudo dscacheutil -flushcache
+    ```
+    Browse to
+    ```
+    https://integration.engageska-portugal.pt/testdb
+    ```
+
+    OR
+
+- Point your browser to the cluser `minikube` IP
+    ```
+    minikube ip
+
+    192.168.99.XX
+    ```
+    Browse to
+    ```
+    https://192.168.99.XX/testdb
+    ```

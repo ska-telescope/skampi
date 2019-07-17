@@ -14,7 +14,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: oet-ssh
+  - name: oet-cssh
     port: 22
     protocol: TCP
   selector:
@@ -47,25 +47,28 @@ spec:
     spec:
       initContainers:
       - name: waitdatabaseds
-        image: nexus.engageska-portugal.pt/ska-telescope/oet:latest
-        imagePullPolicy: IfNotPresent
+        image: nexus.engageska-portugal.pt/ska-telescope/oet-ssh:latest
+        imagePullPolicy: Always
         command:
           - /usr/local/bin/wait-for-it.sh
           - databaseds-tango-base-{{ .Release.Name }}:10000
           - --timeout=30
           - --strict
           - --
-          - /venv/bin/itango3
-          - --profile=ska
-
+          - echo "Tango environment is now available"; done;
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ .Release.Name }}:10000
       containers:
       - name: oet
         image: "{{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}"
         imagePullPolicy: {{ .Values.oet.image.pullPolicy }}
         ports:
-        - name: oet-ssh
+        - name: oet-cssh
           containerPort: 22
           protocol: TCP
+          command:
+          - /usr/sbin/sshd -D
         resources:
 {{- with .Values.nodeSelector }}
       nodeSelector:

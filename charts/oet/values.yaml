@@ -9,7 +9,7 @@ oet:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
-    image: oet
+    image: oet-ssh
     tag: latest
     pullPolicy: IfNotPresent
 

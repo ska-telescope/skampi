@@ -1,88 +1,46 @@
-{{ if .Values.oet.enabled }}
-
+apiVersion: v1
+kind: Pod
+metadata:
+ name: oet-ssh
+ labels:
+  run: ssh
+spec:
+ initContainers:
+  - name: waitdatabaseds
+    image: "{{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}"
+    imagePullPolicy: Always
+    command:
+      - /usr/local/bin/wait-for-it.sh
+      - databaseds-tango-base-{{ .Release.Name }}:10000
+      - --timeout=30
+      - --strict
+      - --
+      - echo "Tango environment is now available"; done;
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+ containers:
+ - name: sshcheck
+   image: "{{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}"
+   imagePullPolicy: Always
+   ports:
+    - containerPort: 22
+   env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+ restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-    run: ssh
+ name: oet-ssh
+ labels:
+  run: ssh
 spec:
-  type: NodePort
-  ports:
-  - name: oet-cssh
-    port: 22
-    protocol: TCP
-  selector:
-    app: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
-
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  selector:
-    matchLabels:
-      app: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
-  serviceName: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
-        chart: {{ template "oet.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
-        run: ssh
-    spec:
-      initContainers:
-      - name: waitdatabaseds
-        image: nexus.engageska-portugal.pt/ska-telescope/oet-ssh:latest
-        imagePullPolicy: Always
-        command:
-          - /usr/local/bin/wait-for-it.sh
-          - databaseds-tango-base-{{ .Release.Name }}:10000
-          - --timeout=30
-          - --strict
-          - --
-          - echo "Tango environment is now available"; done;
-        env:
-        - name: TANGO_HOST
-          value: databaseds-tango-base-{{ .Release.Name }}:10000
-      containers:
-      - name: oet
-        image: "{{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}"
-        imagePullPolicy: {{ .Values.oet.image.pullPolicy }}
-        ports:
-        - name: oet-cssh
-          containerPort: 22
-          protocol: TCP
-        selector:
-          run: ssh
-        resources:
-{{- with .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-{{- end }}
-{{- with .Values.affinity }}
-      affinity:
-{{ toYaml . | indent 8 }}
-{{- end }}
-{{- with .Values.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-{{- end }}
-
-{{ end }}
+ type: NodePort
+ ports:
+ - port: 2022
+   targetPort: 22
+   protocol: TCP
+ selector:
+  run: ssh

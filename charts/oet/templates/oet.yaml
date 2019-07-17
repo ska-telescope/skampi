@@ -1,10 +1,31 @@
+{{ if .Values.oet.enabled }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: oet-ssh
+ labels:
+  run: ssh
+spec:
+ type: NodePort
+ ports:
+ - port: 2022
+   targetPort: 22
+   protocol: TCP
+ selector:
+  run: ssh
+
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
- name: "environment-oet-{{ template "oet.name" . }}-{{ .Release.Name }}"
- data:
-    environment.sh: |
-      export TANGO_HOST=databaseds-tango-base-{{ .Release.Name }}:10000
+  name: "environment-oet-{{ template "oet.name" . }}-{{ .Release.Name }}"
+data:
+   environment: |
+     TANGO_HOST=databaseds-tango-base-{{ .Release.Name }}:10000
+---
+apiVersion: v1
 kind: Pod
 metadata:
  name: oet-ssh
@@ -26,21 +47,8 @@ spec:
       value: databaseds-tango-base-{{ .Release.Name }}:10000
    volumeMounts:
       - name: environment
-        mountPath: /etc/profile.d
+        mountPath: /home/tango/.ssh
         readOnly: true
  restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
- name: oet-ssh
- labels:
-  run: ssh
-spec:
- type: NodePort
- ports:
- - port: 2022
-   targetPort: 22
-   protocol: TCP
- selector:
-  run: ssh
+
+{{ end }}

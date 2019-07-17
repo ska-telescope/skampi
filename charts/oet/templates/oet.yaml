@@ -11,6 +11,7 @@ metadata:
     chart: {{ template "oet.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    run: ssh
 spec:
   type: NodePort
   ports:
@@ -44,6 +45,7 @@ spec:
         chart: {{ template "oet.chart" . }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
+        run: ssh
     spec:
       initContainers:
       - name: waitdatabaseds
@@ -67,8 +69,8 @@ spec:
         - name: oet-cssh
           containerPort: 22
           protocol: TCP
-        command:
-        - /usr/sbin/sshd -D
+        selector:
+          run: ssh
         resources:
 {{- with .Values.nodeSelector }}
       nodeSelector:

@@ -11,7 +11,7 @@ oet:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet-ssh
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
 nodeSelector: {}
 

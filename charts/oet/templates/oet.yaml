@@ -1,24 +1,20 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: "environment-oet-{{ template "oet.name" . }}-{{ .Release.Name }}"
+ data:
+    environment.sh: |
+      export TANGO_HOST=databaseds-tango-base-{{ .Release.Name }}:10000
 kind: Pod
 metadata:
  name: oet-ssh
  labels:
   run: ssh
 spec:
- initContainers:
-  - name: waitdatabaseds
-    image: "{{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}"
-    imagePullPolicy: Always
-    command:
-      - /usr/local/bin/wait-for-it.sh
-      - databaseds-tango-base-{{ .Release.Name }}:10000
-      - --timeout=30
-      - --strict
-      - --
-      - echo "Tango environment is now available"; done;
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
+ volumes:
+  - name: environment
+    configMap:
+      name: "environment-oet-{{ template "oet.name" . }}-{{ .Release.Name }}"
  containers:
  - name: sshcheck
    image: "{{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}"
@@ -28,6 +24,10 @@ spec:
    env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
+   volumeMounts:
+      - name: environment
+        mountPath: /etc/profile.d
+        readOnly: true
  restartPolicy: Always
 ---
 apiVersion: v1

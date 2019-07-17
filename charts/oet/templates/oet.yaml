@@ -67,8 +67,8 @@ spec:
         - name: oet-cssh
           containerPort: 22
           protocol: TCP
-          command:
-          - /usr/sbin/sshd -D
+        command:
+        - /usr/sbin/sshd -D
         resources:
 {{- with .Values.nodeSelector }}
       nodeSelector:

@@ -6,7 +6,10 @@ kind: Service
 metadata:
  name: oet-ssh
  labels:
-  run: ssh
+  app: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
+  chart: {{ template "oet.chart" . }}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
 spec:
  type: NodePort
  ports:
@@ -30,7 +33,10 @@ kind: Pod
 metadata:
  name: oet-ssh
  labels:
-  run: ssh
+   app: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
+   chart: {{ template "oet.chart" . }}
+   release: {{ .Release.Name }}
+   heritage: {{ .Release.Service }}
 spec:
  volumes:
   - name: environment
@@ -50,5 +56,17 @@ spec:
         mountPath: /home/tango/.ssh
         readOnly: true
  restartPolicy: Always
+{{- with .Values.nodeSelector }}
+       nodeSelector:	
+{{ toYaml . | indent 8 }}	
+{{- end }}	
+{{- with .Values.affinity }}	
+      affinity:	
+{{ toYaml . | indent 8 }}	
+{{- end }}	
+{{- with .Values.tolerations }}	
+      tolerations:	
+{{ toYaml . | indent 8 }}	
+{{- end }}
 
 {{ end }}

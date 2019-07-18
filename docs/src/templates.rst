@@ -27,6 +27,7 @@ Template files follow the standard conventions for writing Go templates (see the
 
 * tangodb.yaml: define a k8s service for maria db and a statefulset attached to it
 * databaseds.yaml: define a k8s service for the device server Databaseds and a statefulset attached to it
+* oet.yaml: define a K8s service for the observation execution tool command line interface. 
 * itango.yaml: define a k8s pod for interacting with other containers (for local testing purpose)
 * jive.yaml: define a k8s pod for interacting with the tango jive tool (for local development purpose)
 * logviewer.yaml: define a k8s pod for interacting with the tango logviewer tool  (for local development purpose)

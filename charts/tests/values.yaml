@@ -3,8 +3,8 @@ replicaCount: 1
 itango:
   enabled: false
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-itango
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: oet-ssh
     tag: latest
     pullPolicy: IfNotPresent
 

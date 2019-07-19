@@ -6,6 +6,7 @@ kind: Service
 metadata:
  name: oet-ssh
  labels:
+  run: ssh
   app: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
   chart: {{ template "oet.chart" . }}
   release: {{ .Release.Name }}
@@ -33,6 +34,7 @@ kind: Pod
 metadata:
  name: oet-ssh
  labels:
+   run: ssh
    app: oet-{{ template "oet.name" . }}-{{ .Release.Name }}
    chart: {{ template "oet.chart" . }}
    release: {{ .Release.Name }}

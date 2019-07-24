@@ -3,15 +3,15 @@
 [![Documentation Status](https://readthedocs.org/projects/ska-docker/badge/?version=latest)](https://developer.skatelescope.org/projects/k8s-integration/en/latest/?badge=latest)
 
 
-TM Integration on Kubernetes
+SKA Integration on Kubernetes
 ===========================
 
-The following are a set of instructions of running the TMC prototype and the Webjive application on Kubernetes, and has been tested on minikube v0.34.1 with k8s v1.13.3 on Ubuntu 18.04.
+The following are a set of instructions of running the SKA application on Kubernetes, and has been tested on minikube v0.34.1 with k8s v1.13.3 on Ubuntu 18.04.
 
 Minikube
 ========
 
-Using [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/) enables us to create a single node stand alone Kubernetes cluster for testing purposes.  If you already have a cluster at your disposal, then you can skip forward to 'Running the TM Integration on Kubernetes'.
+Using [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/) enables us to create a single node stand alone Kubernetes cluster for testing purposes.  If you already have a cluster at your disposal, then you can skip forward to 'Running the SKA Integration on Kubernetes'.
 
 The generic installation instructions are available at https://kubernetes.io/docs/tasks/tools/install-minikube/.
 
@@ -79,7 +79,7 @@ coredns-86c58d9df4-5ztg8           1/1     Running   0          3m24s
 Helm Chart
 ----------
 
-The Helm Chart based install of the TM Integration relies on [Helm](https://docs.helm.sh/using_helm/#installing-helm) (surprise!).  The easiest way to install is using the install script:
+The Helm Chart based install of the SKA Integration relies on [Helm](https://docs.helm.sh/using_helm/#installing-helm) (surprise!).  The easiest way to install is using the install script:
 ```
 curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
 ```
@@ -96,7 +96,7 @@ rm -rf ~/.kube # local minikube configuration cache
 sudo rm -rf /var/lib/kubeadm.yaml /data/minikube /var/lib/minikube /var/lib/kubelet /etc/kubernetes
 ```
 
-Running the TM Integration on Kubernetes
+Running the SKA Integration on Kubernetes
 ----------------------------------------
 
 Note: your Xserver needs to allow TCP connections.  This will be different for each window manager, but on Ubuntu 18.04 using gdm3 it can be enabled by editing /etc/gdm3/custom.conf and adding:
@@ -114,17 +114,18 @@ Change the file /etc/kubernetes/addons/ingress-dp.yaml in order to set the nginx
 ....
 ```
 
-Once the Helm client is installed (from above) and TCP based Xserver connections are enabled, change to the k8s/ directory.  The basic configuration for each component of the TM Integration is held in the `values.yaml` file.
+Once the Helm client is installed (from above) and TCP based Xserver connections are enabled, change to the k8s/ directory.  The basic configuration for each component of the Integration is held in the `values.yaml` file of each chart.
 
 The mode that we are using Helm in here is purely for templating - this avoids the need to install the Tiller process on the Kubernetes cluster, and we don't need to be concerend about making it secure (requires TLS and the setup of a CA).
 
-On for the main event - we launch the TM Integration with:
+On for the main event - we launch the Integration with:
 ```
-$ make deploy KUBE_NAMESPACE=integration
+$ make deploy_all KUBE_NAMESPACE=integration
 ```
 
-And then the respective charts with:
+Or we can launch each chart separately with:
 ```
+$ make deploy KUBE_NAMESPACE=integration HELM_CHART=tango-base
 $ make deploy KUBE_NAMESPACE=integration HELM_CHART=tmc-proto
 $ make deploy KUBE_NAMESPACE=integration HELM_CHART=webjive
 ```
@@ -201,5 +202,5 @@ ingress.extensions/webjive-integration-tmc-webui-test   integration.ska   193.20
 
 To clean up the Helm Chart release:
 ```
-$make delete KUBE_NAMESPACE=integration
+$make delete_all KUBE_NAMESPACE=integration
 ```

@@ -177,6 +177,70 @@ spec:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
 
+  - name: cspsubarrayleafnode
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/CspSubarrayLeafNode/CspSubarrayLeafNode/CspSubarrayLeafNode.py 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: cspmasterleafnode
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/CspMasterLeafNode/CspMasterLeafNode/CspMasterLeafNode.py 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: sdpsubarrayleafnode
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/SdpSubarrayLeafNode/SdpSubarrayLeafNode/SdpSubarrayLeafNode.py 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: sdpmasterleafnode
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             /venv/bin/python /app/tmcprototype/SdpMasterLeafNode/SdpMasterLeafNode/SdpMasterLeafNode.py 01 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
   - name: subarraynode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}

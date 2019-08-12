@@ -1,3 +1,5 @@
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,7 +9,7 @@ metadata:
     app: {{ .Release.Name }}-sdp-master
     chart: {{ template "sdp-prototype.chart" . }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }} 
+    heritage: {{ .Release.Service }}
 spec:
   replicas: 1
   selector:
@@ -25,7 +27,7 @@ spec:
       - env:
         - name: TANGO_HOST
           value: databaseds-tango-base-{{ .Release.Name }}:10000
-        image: skaorca/tangods_sdp_master:latest
+        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master:latest
         imagePullPolicy: Always
         name: master
         resources: {}

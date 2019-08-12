@@ -1,3 +1,6 @@
+{{ if .Values.helm_deploy.enbled }}
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -71,3 +74,5 @@ rules:
 - apiGroups: [""]
   resources: ["pods/portforward"]
   verbs: ["create"]
+
+{{ end }}

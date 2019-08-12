@@ -1,3 +1,6 @@
+{{ if .Values.workflow.testdeploy.enabled }}
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,3 +35,5 @@ spec:
 {{- if index .Values "workflow" "testdeploy" "direct-kube-deploy" }}
       serviceAccountName: {{ include "sdp-prototype.fullname" . }}-testdeploy
 {{- end }}
+
+{{ end }}

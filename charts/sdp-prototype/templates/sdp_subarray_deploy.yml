@@ -1,3 +1,5 @@
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,7 +27,7 @@ spec:
       - env:
         - name: TANGO_HOST
           value: databaseds-tango-base-{{ .Release.Name }}:10000
-        image: skaorca/tangods_sdp_subarray:latest
+        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:latest
         imagePullPolicy: Always
         name: subarray
         resources: {}

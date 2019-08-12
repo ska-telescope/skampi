@@ -45,13 +45,16 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
 {{/* Init container to wait for configuration database availability */}}
+{{- define "sdp-prototype.etcd-host" -}}
+{{ include "sdp-prototype.fullname" . }}-etcd-client.{{ .Release.Namespace }}.svc.cluster.local
+{{- end -}}
 {{- define "sdp-prototype.wait-for-etcd" -}}
 - image: quay.io/coreos/etcd:v{{ .Values.etcd.version }}
   name: {{ .Chart.Name }}-wait-for-etcd
   command: ["/bin/sh", "-c", "while ( ! etcdctl endpoint health ); do sleep 1; done"]
   env:
   - name: ETCDCTL_ENDPOINTS
-    value: "http://{{ include "sdp-prototype.fullname" . }}-etcd-client.default.svc.cluster.local:2379"
+    value: "http://{{ include "sdp-prototype.etcd-host" . }}:2379"
   - name: ETCDCTL_API
     value: "3"
 {{- end -}}

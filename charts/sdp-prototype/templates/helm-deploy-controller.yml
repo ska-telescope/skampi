@@ -24,7 +24,7 @@ spec:
         name: helm-deploy
         env:
         - name: SDP_CONFIG_HOST
-          value: {{ include "sdp-prototype.fullname" . }}-etcd-client.default.svc.cluster.local
+          value: {{ include "sdp-prototype.etcd-host" . }}
         - name: SDP_CHART_REPO
           value: "{{ .Values.helm_deploy.chart_repo.url }}"
         - name: SDP_CHART_REPO_REF

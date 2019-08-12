@@ -7,9 +7,10 @@ To connect to the configuration database:
    $ pip install -U ska-sdp-config
    $ sdpcfg ls /pb/
 
-Note that unless Kubernetes is configured to expose NodePort
-deployments locally, you will also need to set SDP_CONFIG_HOST
-(e.g. use "minikube service {{ include "sdp-prototype.fullname" . }}-etcd-nodeport" for Minikube.)
+Note that unless Kubernetes is installed locally (e.g. using Docker),
+you will also need to set SDP_CONFIG_HOST. For instance for Minikube:
+
+   $ export SDP_CONFIG_HOST=`minikube ip`
 
 {{- if index .Values "tango-base" "itango" "enabled" }}
 

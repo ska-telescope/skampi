@@ -25,7 +25,7 @@ spec:
         name: {{ .Chart.Name }}
         env:
         - name: SDP_CONFIG_HOST
-          value: {{ include "sdp-prototype.fullname" . }}-etcd-client.default.svc.cluster.local
+          value: {{ include "sdp-prototype.etcd-host" . }}
         {{- with .Values.workflow.testdask.resources }}
         resources:
           {{- toYaml . | nindent 10 }}

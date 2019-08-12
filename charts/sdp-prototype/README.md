@@ -57,7 +57,7 @@ chance it will fail.
 
 At this point you should be able to deploy
 
-    $ cd [sdp-prototype]/deploy/charts
+    $ cd [k8s-integration]/charts
     $ helm install sdp-prototype -n sdp-prototype
 
 You can again watch the fireworks using `kubectl`:
@@ -117,12 +117,10 @@ This will allow you to connect with the `sdpcfg` utility:
 
 Which correctly shows that the configuration is currently empty.
 
-### Start a deployment test workflow
+### Start a test dask workflow
+Assuming the configuration is prepared as explained in the previous section, we can now add a processing block to the configuration:
 
-Assuming the configuration is prepared as explained in the previous
-section, we can now add a processing block to the configuration:
-
-    $ sdpcfg process realtime:testdeploy:0.0.7
+    $ sdpcfg process realtime:testdask:0.0.1
     OK, pb_id = realtime-20190807-0000
     $ sdpcfg ls values -R /
     Keys with / prefix:
@@ -149,6 +147,8 @@ Notice that the workflow was claimed immediately by one of the
 containers.
 
 ### Use it to add a deployment
+
+We can instead create a test deployment, by changing "`sdpcfg process realtime:testdask:0.0.1`" to `sdpcfg process realtime:testdeploy:0.0.7`.
 
 The special property of the deployment test workflow is that it will
 create deployments automatically depending on workflow parameters. It

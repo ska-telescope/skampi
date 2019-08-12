@@ -1,0 +1,88 @@
+{{ if .Values.tangodb.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tango-base.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  clusterIP: None
+  selector:
+    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tango-base.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  serviceName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+        chart: {{ template "tango-base.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      containers:
+      - name: tangodb
+        image: "{{ .Values.tangodb.image.registry }}/{{ .Values.tangodb.image.image }}:{{ .Values.tangodb.image.tag }}"
+        imagePullPolicy: {{ .Values.tangodb.image.pullPolicy }}
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "{{ .Values.tangodb.db.rootpw }}"
+          - name: MYSQL_DATABASE
+            value: "{{ .Values.tangodb.db.db }}"
+          - name: MYSQL_USER
+            value: "{{ .Values.tangodb.db.user }}"
+          - name: MYSQL_PASSWORD
+            value: "{{ .Values.tangodb.db.password }}"
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "1"
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+        resources:
+{{ toYaml .Values.tangodb.resources | indent 10 }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{ end }}

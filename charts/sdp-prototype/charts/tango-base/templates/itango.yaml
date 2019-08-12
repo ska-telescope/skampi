@@ -1,0 +1,45 @@
+{{ if .Values.itango.enabled }}
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: itango-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: itango-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tango-base.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  containers:
+  - name: itango
+    image: "{{ .Values.itango.image.registry }}/{{ .Values.itango.image.image }}:{{ .Values.itango.image.tag }}"
+    imagePullPolicy: {{ .Values.itango.image.pullPolicy }}
+    command:
+      - /usr/local/bin/wait-for-it.sh
+      - databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}:10000
+      - --timeout=30
+      - --strict
+      - --
+      - sleep
+      - infinity
+      # - /venv/bin/itango3
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}:10000
+  restartPolicy: Always
+{{- with .Values.nodeSelector }}
+  nodeSelector:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.affinity }}
+  affinity:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+
+{{ end }}

@@ -1,0 +1,19 @@
+
+SKA SDP prototype deployed!
+
+To connect to the configuration database:
+
+   $ export SDP_CONFIG_PORT=`kubectl get service {{ include "sdp-prototype.fullname" . }}-etcd-nodeport -o jsonpath="{..nodePort}"`
+   $ pip install -U ska-sdp-config
+   $ sdpcfg ls /pb/
+
+Note that unless Kubernetes is configured to expose NodePort
+deployments locally, you will also need to set SDP_CONFIG_HOST
+(e.g. use "minikube service {{ include "sdp-prototype.fullname" . }}-etcd-nodeport" for Minikube.)
+
+{{- if index .Values "tango-base" "itango" "enabled" }}
+
+To connect to the Tango interface via iTango, use:
+
+    $ kubectl exec -it itango-tango-base-{{ .Release.Name }} /venv/bin/itango3
+{{- end }}

@@ -122,6 +122,11 @@ Assuming the configuration is prepared as explained in the previous section, we 
 
     $ sdpcfg process realtime:testdask:0.0.1
     OK, pb_id = realtime-20190807-0000
+
+### Use it to add a deployment
+
+We can instead create a test deployment, by changing "`sdpcfg process realtime:testdask:0.0.1`" to `sdpcfg process realtime:testdeploy:0.0.7`.
+
     $ sdpcfg ls values -R /
     Keys with / prefix:
     /pb/realtime-20190807-0000 = {
@@ -143,12 +148,7 @@ Assuming the configuration is prepared as explained in the previous section, we 
       "pid": 6
     }
 
-Notice that the workflow was claimed immediately by one of the
-containers.
-
-### Use it to add a deployment
-
-We can instead create a test deployment, by changing "`sdpcfg process realtime:testdask:0.0.1`" to `sdpcfg process realtime:testdeploy:0.0.7`.
+Notice that the workflow was claimed immediately by one of the containers. 
 
 The special property of the deployment test workflow is that it will
 create deployments automatically depending on workflow parameters. It

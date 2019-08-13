@@ -162,6 +162,10 @@ have to ask as follows:
     NAME                                           READY   STATUS    RESTARTS   AGE
     realtime-20190807-0000-mysql-89f658f78-mfstr   1/1     Running   0          6m20s
 
+If you are getting a `KeyError: 'EDITOR'`, try running `export EDITOR=vi` or `=nano` or the common editor of your choice.
+
+If you wish to verify that one of our test workflows is in fact doing something, do `kubectl logs <hostname>` where <hostname> has the host name of the deployed workflow. At the time of writing, this only works on dask workflows. 
+
 ### Cleaning up
 
 Finally, let us remove the processing block from the configuration:

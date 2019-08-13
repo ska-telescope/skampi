@@ -39,7 +39,25 @@ database (i.e. etcd) via a NodePort service. For Docker Desktop, this
 should automatically expose the port on localhost, you just need to
 find out which one:
 
-    $ kubectl get service sdp-prototype-etcd-nodeport -n integration
+```
+$ kubectl get service -n integration
+```
+
+This will return something like:
+```
+NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                             AGE
+databaseds-tango-base-test         ClusterIP   None             <none>        10000/TCP                           4m
+etcd-restore-operator              ClusterIP   10.109.184.11    <none>        19999/TCP                           4m3s
+mongodb-webjive-test               ClusterIP   None             <none>        27017/TCP                           3m50s
+oet-ssh                            NodePort    10.106.154.234   <none>        2022:31887/TCP                      4m2s
+rsyslog-tmc-proto-test             ClusterIP   None             <none>        514/TCP,514/UDP                     3m57s
+tangodb-tango-base-test            ClusterIP   None             <none>        3306/TCP                            4m
+test-sdp-prototype-etcd-nodeport   ClusterIP   None             <none>        2379/TCP,2380/TCP                   3m50s
+```
+
+Then take the deployment name and run: 
+
+    $ kubectl get service test-sdp-prototype-etcd-nodeport -n integration
     NAME                          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
     sdp-prototype-etcd-nodeport   NodePort   10.97.188.221   <none>        2379:32234/TCP   3h56m
 

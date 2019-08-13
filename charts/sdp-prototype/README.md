@@ -20,66 +20,14 @@ you need to specify it on the command line:
 
     $ minikube --mem 4096 ...
 
-### Helm
-
-Furthermore you will need to install the Helm utility. It is available
-from most typical package managers, see [Using
-Helm](https://helm.sh/docs/using_helm/). Note that for the moment we
-are using Helm version 2, as at the time of writing version 3 is in
-early alpha.
-
-Once you have it available, you will typically need to initialise it
-(this will create the "Tiller" controller):
-
-    $ helm init
-
 Deploying SDP
 -------------
 
-### Creating etcd-operator
-
-We are not creating an etcd cluster ourselves, but instead leave it to
-"operator" that needs to be installed first. Simply execute:
-
-    $ helm install stable/etcd-operator -n etcd
-
-If you now execute:
-
-    $ kubectl get pod --watch
-
-You should eventually see an pod called
-`etcdop-etcd-operator-etcd-operator-[...]` in "Running" state (yes,
-Helm is exceedingly redundant with its names). If not wait a bit, if
-you try to go to the next step before this has completed there's a
-chance it will fail.
-
 ### Deploy the prototype
 
-At this point you should be able to deploy
-
-    $ cd [k8s-integration]/charts
-    $ helm install sdp-prototype -n sdp-prototype
-
-You can again watch the fireworks using `kubectl`:
-
-    $ kubectl get pod --watch
-
-Pods asocciated with Tango might go down a couple times before they
-start correctly, this seems to be normal. You can check the logs of
-pods (copy the full name from `kubectl` output) to verify that they
-are doing okay:
-
-    $ kubectl logs sdp-prototype-workflow-testdeploy-[...]
-    INFO:main:Waiting for processing block...
-    $ kubectl logs sdp-prototype-helm-[...]
-    ...
-    INFO:main:Found 0 existing deployments.
-    $ kubectl logs sdp-protoype-sdp-master-[...]
-    ...
-    Ready to accept request
-
-Just to name a few. If it's looking like this, there's a good chance
-everything deployed correctly.
+```
+$ make deploy_all KUBE_NAMESPACE=integration
+```
 
 Testing it out
 --------------
@@ -91,7 +39,7 @@ database (i.e. etcd) via a NodePort service. For Docker Desktop, this
 should automatically expose the port on localhost, you just need to
 find out which one:
 
-    $ kubectl get service sdp-prototype-etcd-nodeport
+    $ kubectl get service sdp-prototype-etcd-nodeport -n integration
     NAME                          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
     sdp-prototype-etcd-nodeport   NodePort   10.97.188.221   <none>        2379:32234/TCP   3h56m
 
@@ -104,7 +52,7 @@ For Minikube, you need to set both `SDP_CONFIG_HOST` and
 `SDP_CONFIG_PORT`, but you can easily query both using
 `minikube service`:
 
-    $ minikube service --url sdp-prototype-etcd-nodeport
+    $ minikube service --url sdp-prototype-etcd-nodeport -n integration
     http://192.168.39.45:32234
     $ export SDP_CONFIG_HOST=192.168.39.45
     $ export SDP_CONFIG_PORT=32234

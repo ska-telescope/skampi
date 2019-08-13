@@ -442,12 +442,12 @@
               },
               "cspsubarrayHealthState": {
                 "__root_att": [
-                  "mid_csp/elt/subarray01/healthState"
+                  "mid_csp/elt/subarray_01/healthState"
                 ]
               },
               "cspsubarrayObsState": {
                 "__root_att": [
-                  "mid_csp/elt/subarray01/obsState"
+                  "mid_csp/elt/subarray_01/obsState"
                 ]
               },
               "healthState": {
@@ -464,7 +464,7 @@
             },
             "properties": {
               "CspSubarrayNodeFQDN": [
-                "mid_csp/elt/subarray01"
+                "mid_csp/elt/subarray_01"
               ],
               "SkaLevel": [
                 "3"

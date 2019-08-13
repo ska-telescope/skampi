@@ -182,7 +182,7 @@ Accessing Tango
 By default the chart installs the iTango shell pod from the tango-base
 chart. You can access it as follows:
 
-    $ kubectl exec -it itango-tango-base-sdp-prototype /venv/bin/itango3 -n integration
+    $ kubectl exec -it itango-tango-base-test /venv/bin/itango3 -n integration
 
 You should be able to query the SDP Tango devices:
 

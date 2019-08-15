@@ -14,7 +14,7 @@ metadata:
   name: sdp-devices-sane-dsconfig-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 data:
-  sdp-devices.json:
+  sane-dsconfig.sh:
 {{ (tpl (.Files.Glob "data/sane-dsconfig.sh").AsConfig . ) | indent 2  }}
 ---
 apiVersion: apps/v1

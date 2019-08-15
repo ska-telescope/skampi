@@ -7,9 +7,16 @@ metadata:
 data:
   sdp-devices.json:
 {{ (tpl (.Files.Glob "data/sdp-devices.json").AsConfig . ) | indent 2  }}
-
 ---
-
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sdp-devices-sane-dsconfig-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  sdp-devices.json:
+{{ (tpl (.Files.Glob "data/sane-dsconfig.sh").AsConfig . ) | indent 2  }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,6 +44,9 @@ spec:
         - name: configuration
           configMap:
             name: sdp-devices-configuration-json-{{ .Release.Name }}
+        - name: sane-dsconfig
+          configMap:
+            name: sdp-devices-sane-dsconfig-{{ .Release.Name }}
       initContainers:
         - name: dsconfig
           image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
@@ -47,13 +57,17 @@ spec:
             - --timeout=30
             - --strict
             - --
-            - /bin/sh -c "json2tango -w -a -u data/sdp-devices.json; RET=$?; if \[ $RET == 2 \]; then exit 0; else exit $RET; fi"
+            - /bin/bash
+            - script/sane-dsconfig.sh -w -a -u data/sdp-devices.json
           env:
             - name: TANGO_HOST
               value: databaseds-tango-base-{{ .Release.Name }}:10000
           volumeMounts:
             - name: configuration
               mountPath: data
+              readOnly: true
+            - name: sane-dsconfig
+              mountPath: script
               readOnly: true
       containers:
       - name: sdp-master

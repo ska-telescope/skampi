@@ -47,7 +47,7 @@ spec:
             - --timeout=30
             - --strict
             - --
-            - json2tango -w -a -u data/sdp-devices.json
+            - /bin/sh -c "json2tango -w -a -u data/sdp-devices.json; RET=$?; if \[ $RET == 2 \]; then exit 0; else exit $RET; fi"
           env:
             - name: TANGO_HOST
               value: databaseds-tango-base-{{ .Release.Name }}:10000

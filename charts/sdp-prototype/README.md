@@ -39,7 +39,25 @@ database (i.e. etcd) via a NodePort service. For Docker Desktop, this
 should automatically expose the port on localhost, you just need to
 find out which one:
 
-    $ kubectl get service sdp-prototype-etcd-nodeport -n integration
+```
+$ kubectl get service -n integration
+```
+
+This will return something like:
+```
+NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                             AGE
+databaseds-tango-base-test         ClusterIP   None             <none>        10000/TCP                           4m
+etcd-restore-operator              ClusterIP   10.109.184.11    <none>        19999/TCP                           4m3s
+mongodb-webjive-test               ClusterIP   None             <none>        27017/TCP                           3m50s
+oet-ssh                            NodePort    10.106.154.234   <none>        2022:31887/TCP                      4m2s
+rsyslog-tmc-proto-test             ClusterIP   None             <none>        514/TCP,514/UDP                     3m57s
+tangodb-tango-base-test            ClusterIP   None             <none>        3306/TCP                            4m
+test-sdp-prototype-etcd-nodeport   ClusterIP   None             <none>        2379/TCP,2380/TCP                   3m50s
+```
+
+Then take the deployment name and run: 
+
+    $ kubectl get service test-sdp-prototype-etcd-nodeport -n integration
     NAME                          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
     sdp-prototype-etcd-nodeport   NodePort   10.97.188.221   <none>        2379:32234/TCP   3h56m
 
@@ -144,6 +162,10 @@ have to ask as follows:
     NAME                                           READY   STATUS    RESTARTS   AGE
     realtime-20190807-0000-mysql-89f658f78-mfstr   1/1     Running   0          6m20s
 
+If you are getting a `KeyError: 'EDITOR'`, try running `export EDITOR=vi` or `=nano` or the common editor of your choice.
+
+If you wish to verify that one of our test workflows is in fact doing something, do `kubectl logs <hostname>` where <hostname> has the host name of the deployed workflow. At the time of writing, this only works on dask workflows. 
+
 ### Cleaning up
 
 Finally, let us remove the processing block from the configuration:
@@ -160,7 +182,7 @@ Accessing Tango
 By default the chart installs the iTango shell pod from the tango-base
 chart. You can access it as follows:
 
-    $ kubectl exec -it itango-tango-base-sdp-prototype /venv/bin/itango3
+    $ kubectl exec -it itango-tango-base-test /venv/bin/itango3 -n integration
 
 You should be able to query the SDP Tango devices:
 

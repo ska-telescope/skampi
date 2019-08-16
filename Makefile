@@ -59,7 +59,7 @@ namespace: ## create the kubernetes namespace
 
 .PHONY: deploy_etcd delete_etcd
 deploy_etcd: ## deploy etcd-operator into namespace
-	if ! kubectl get pod -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.labels.app}' \
+	@if ! kubectl get pod -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.labels.app}' \
 	     | grep -q etcd-operator; then \
 		helm fetch stable/etcd-operator --untar && \
 		helm template etcd-operator -n etc-operator --namespace $(KUBE_NAMESPACE) \
@@ -72,7 +72,7 @@ deploy_etcd: ## deploy etcd-operator into namespace
 	fi
 
 delete_etcd: ## Remove etcd-operator from namespace
-	if kubectl get pod -n $(KUBE_NAMESPACE) \
+	@if kubectl get pod -n $(KUBE_NAMESPACE) \
                    -o jsonpath='{.items[*].metadata.labels.app}' \
 	   | grep -q etcd-operator; then \
 		helm fetch stable/etcd-operator --untar && \

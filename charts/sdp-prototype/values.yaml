@@ -1,7 +1,7 @@
 
 # Helm deployment controller
 helm_deploy:
-  enbled: true
+  enabled: true
   container: pw410/helm-deploy
   version: 0.0.5
   replicas: 1
@@ -14,6 +14,14 @@ helm_deploy:
 etcd:
   version: "3.3"
   replicas: 1
+
+# ds config
+dsconfig:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: latest
+    pullPolicy: IfNotPresent
 
 # Workflow deployments
 workflow:
@@ -32,6 +40,17 @@ workflow:
     replicas: 2
     resources: {}
     imagePullPolicy: IfNotPresent
+
+# Parameters for sub-chart
+tango-base:
+  tangotest:
+    enabled: false
+  itango:
+    enabled: true
+  jive:
+    enabled: false
+  logviewer:
+    enabled: false
 
 nameOverride: ""
 fullnameOverride: ""

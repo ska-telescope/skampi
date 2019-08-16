@@ -61,6 +61,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+            retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
             /venv/bin/python /app/csplmc/CspMaster/CspMaster/CspMaster.py csp"
     env:
     - name: TANGO_HOST
@@ -77,6 +78,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+            retry --max=20 -- tango_admin --ping-device mid_csp/elt/master &&\
             /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub1"
     env:
     - name: TANGO_HOST
@@ -93,6 +95,10 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
             /venv/bin/python /app/tangods/CbfMaster/CbfMaster/CbfMaster.py master"
     env:
     - name: TANGO_HOST

@@ -2,7 +2,7 @@ apiVersion: v1
 appVersion: "1.0"
 name: sdp-prototype
 description: helm chart to deploy the SDP Prototype on Kubernetes
-version: 0.2.0
+version: 0.2.1
 home: https://developer.skatelescope.org/projects/sdp-prototype/
 sources:
 - https://github.com/ska-telescope/sdp-prototype
@@ -12,3 +12,5 @@ maintainers:
   email: pw410@cam.ac.uk
 - name: vla22
   email: vla22@mrao.cam.ac.uk
+- name: Benjamin Mort
+  email: ben.mort@gmail.com

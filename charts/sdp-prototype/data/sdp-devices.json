@@ -44,12 +44,6 @@
                                     "1"
                                 ]
                             },
-                            "obsMode": {
-                                "abs_change": [
-                                    "-1",
-                                    "1"
-                                ]
-                            },
                             "obsState": {
                                 "abs_change": [
                                     "-1",
@@ -63,6 +57,9 @@
                             }
                         },
                         "properties": {
+                            "Version": [
+                                "0.5.8"
+                            ],
                             "SkaLevel": [
                                 "2"
                             ],
@@ -76,11 +73,7 @@
                                 "obsstate",
                                 "1000",
                                 "receiveaddresses",
-                                "1000",
-                                "activeprocessingblocks",
-                                "1000",
-                                "testmode",
-                                "2000"
+                                "1000"
                             ]
                         }
                     }

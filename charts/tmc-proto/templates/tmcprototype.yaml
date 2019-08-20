@@ -125,6 +125,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device mid_d0001/elt/master &&\
              /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 01"
     env:
     - name: TANGO_HOST
@@ -141,6 +142,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device mid_d0002/elt/master &&\
              /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 02"
     env:
     - name: TANGO_HOST
@@ -157,6 +159,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device mid_d0003/elt/master &&\
              /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 03"
     env:
     - name: TANGO_HOST
@@ -173,6 +176,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device mid_d0004/elt/master &&\
              /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 04"
     env:
     - name: TANGO_HOST
@@ -189,6 +193,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_01 &&\
              /venv/bin/python /app/tmcprototype/CspSubarrayLeafNode/CspSubarrayLeafNode/CspSubarrayLeafNode.py 01"
     env:
     - name: TANGO_HOST
@@ -205,6 +210,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
              /venv/bin/python /app/tmcprototype/CspMasterLeafNode/CspMasterLeafNode/CspMasterLeafNode.py 01"
     env:
     - name: TANGO_HOST
@@ -221,6 +227,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_1 &&\
              /venv/bin/python /app/tmcprototype/SdpSubarrayLeafNode/SdpSubarrayLeafNode/SdpSubarrayLeafNode.py 01"
     env:
     - name: TANGO_HOST
@@ -237,6 +244,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device mid_sdp/elt/master &&\
              /venv/bin/python /app/tmcprototype/SdpMasterLeafNode/SdpMasterLeafNode/SdpMasterLeafNode.py 01 01"
     env:
     - name: TANGO_HOST
@@ -253,6 +261,12 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0001 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0002 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0003 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_subarray01 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray01 &&\
              /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py sa1"
     env:
     - name: TANGO_HOST
@@ -269,6 +283,12 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0001 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0002 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0003 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_subarray01 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray01 &&\
              /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py sa2"
     env:
     - name: TANGO_HOST
@@ -285,6 +305,10 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_master &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_master &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/1 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/2 &&\
              /venv/bin/python /app/tmcprototype/CentralNode/CentralNode/CentralNode.py 01"
     env:
     - name: TANGO_HOST

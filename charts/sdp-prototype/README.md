@@ -202,14 +202,29 @@ and changing attributes and issuing commands:
 
     In [3]: d.obsState
     Out[3]: <obsState.IDLE: 0>
+    
     In [4]: d.state()
     Out[4]: tango._tango.DevState.OFF
+    
     In [5]: d.adminMode = 'ONLINE'
-    
     In [6]: d.AssignResources('')
-    
     In [7]: d.state()
     Out[7]: tango._tango.DevState.ON
+    
     In [8]: d.obsState
     Out[8]: <obsState.IDLE: 0>
+    
+    In [9]: %run scripts/load_config.py      
+    In [10]: d.Configure(sdp_config)
+    In [11]: d.obsState
+    Out[11]: <obsState.READY: 2>
+    
+    In [12]: d.StartScan()
+    In [13]: d.obsState
+    Out[13]: <obsState.SCANNING: 3>
+    
+    In [14]: d.EndScan()
+    In [15]: d.obsState
+    Out[15]: <obsState.READY: 2>
+
 

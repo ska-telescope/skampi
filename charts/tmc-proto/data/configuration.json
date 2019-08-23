@@ -114,7 +114,7 @@
                                 "ska_mid/tm_leaf_node/sdp_subarray01"
                             ],
                             "CspSubarrayNodeFQDN": [
-                                "mid_csp/elt/subarray01"
+                                "mid_csp/elt/subarray_01"
                             ],
                             "SdpSubarrayNodeFQDN": [
                                 "mid_sdp/elt/subarray_1"
@@ -191,7 +191,7 @@
                                 "ska_mid/tm_leaf_node/sdp_subarray01"
                             ],
                             "CspSubarrayNodeFQDN": [
-                                "mid_csp/elt/subarray01"
+                                "mid_csp/elt/subarray_01"
                             ],
                             "SdpSubarrayNodeFQDN": [
                                 "mid_sdp/elt/subarray_1"

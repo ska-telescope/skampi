@@ -53,7 +53,7 @@ deploy:
   - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
   - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='no' throw_errors='no'"
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='no' throw_errors='no'"
 
 stop_system:
   stage: lifecycle 

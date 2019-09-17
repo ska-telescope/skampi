@@ -61,10 +61,11 @@ namespace: ## create the kubernetes namespace
 deploy_etcd: ## deploy etcd-operator into namespace
 	@if ! kubectl get pod -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.labels.app}' \
 	     | grep -q etcd-operator; then \
-		helm fetch stable/etcd-operator --untar && \
-		helm template etcd-operator -n etc-operator --namespace $(KUBE_NAMESPACE) \
+		TMP=`mktemp -d`; \
+		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
+		helm template $$TMP/etcd-operator -n etc-operator --namespace $(KUBE_NAMESPACE) \
 		| kubectl apply -n $(KUBE_NAMESPACE) -f -; \
-		rm -rf etcd-operator; \
+		rm -rf $$TMP; \
 		while ! kubectl api-resources --api-group=etcd.database.coreos.com \
 		        | grep -q etcdcluster; do \
 			echo Waiting for etcd CRD to become available...; sleep 1; \
@@ -75,10 +76,11 @@ delete_etcd: ## Remove etcd-operator from namespace
 	@if kubectl get pod -n $(KUBE_NAMESPACE) \
                    -o jsonpath='{.items[*].metadata.labels.app}' \
 	   | grep -q etcd-operator; then \
-		helm fetch stable/etcd-operator --untar && \
+		TMP=`mktemp -d`; \
+		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
 		helm template etcd-operator -n etc-operator \
 		| kubectl delete -n $(KUBE_NAMESPACE) -f -; \
-		rm -rf etcd-operator; \
+		rm -rf $$TMP; \
 	fi
 
 mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress

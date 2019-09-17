@@ -35,7 +35,7 @@ databaseds:
       memory: 256Mi # 256Mi = 0.25 GB mem
 
 itango:
-  enabled: false
+  enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-itango

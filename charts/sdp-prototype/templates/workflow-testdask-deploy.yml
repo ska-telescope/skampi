@@ -1,0 +1,37 @@
+{{ if .Values.workflow.testdask.enabled }}
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sdp-prototype.fullname" . }}-workflow-testdask
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "sdp-prototype.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.workflow.testdask.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      initContainers:
+      {{ include "sdp-prototype.wait-for-etcd" . | nindent 6 }}
+      containers:
+      - image: {{ .Values.workflow.testdask.container }}:{{ .Values.workflow.testdask.version }}
+        imagePullPolicy: {{ .Values.workflow.testdask.imagePullPolicy }}
+        name: {{ .Chart.Name }}
+        env:
+        - name: SDP_CONFIG_HOST
+          value: {{ include "sdp-prototype.etcd-host" . }}
+        {{- with .Values.workflow.testdask.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+{{ end }}

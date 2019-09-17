@@ -1,0 +1,93 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sdp-devices-configuration-json-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  sdp-devices.json:
+{{ (tpl (.Files.Glob "data/sdp-devices.json").AsConfig . ) | indent 2  }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sdp-devices-sane-dsconfig-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  sane-dsconfig.sh:
+{{ (tpl (.Files.Glob "data/sane-dsconfig.sh").AsConfig . ) | indent 2  }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sdp-prototype-devices-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: sdp-prototype-devices-{{ .Release.Name }}
+    chart: {{ template "sdp-prototype.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sdp-prototype-devices-{{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: sdp-prototype-devices-{{ .Release.Name }}
+        chart: {{ template "sdp-prototype.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      volumes:
+        - name: configuration
+          configMap:
+            name: sdp-devices-configuration-json-{{ .Release.Name }}
+        - name: sane-dsconfig
+          configMap:
+            name: sdp-devices-sane-dsconfig-{{ .Release.Name }}
+      initContainers:
+        - name: dsconfig
+          image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
+          imagePullPolicy: {{ .Values.dsconfig.image.pullPolicy }}
+          command:
+            - /usr/local/bin/wait-for-it.sh
+            - databaseds-tango-base-{{ .Release.Name }}:10000
+            - --timeout=30
+            - --strict
+            - --
+            - /bin/bash
+            - script/sane-dsconfig.sh -w -a -u data/sdp-devices.json
+          env:
+            - name: TANGO_HOST
+              value: databaseds-tango-base-{{ .Release.Name }}:10000
+          volumeMounts:
+            - name: configuration
+              mountPath: data
+              readOnly: true
+            - name: sane-dsconfig
+              mountPath: script
+              readOnly: true
+      containers:
+      - name: sdp-master
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ .Release.Name }}:10000
+        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master:0.2.1
+        imagePullPolicy: Always
+        resources: {}
+      - name: sdp-subarray
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ .Release.Name }}:10000
+        - name: TOGGLE_CONFIG_DB
+          value: "0"
+        - name: TOGGLE_CBF_OUTPUT_LINK
+          value: "0"
+        - name: SDP_CONFIG_HOST
+          value: {{ include "sdp-prototype.etcd-host" . }}
+        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.12
+        imagePullPolicy: Always
+        resources: {}
+

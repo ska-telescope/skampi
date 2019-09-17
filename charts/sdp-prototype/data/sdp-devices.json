@@ -1,0 +1,84 @@
+{
+    "servers": {
+        "SdpMaster": {
+            "1": {
+                "SdpMaster": {
+                    "mid_sdp/elt/master": {
+                        "attribute_properties": {
+                            "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "storageLoggingLevel": {
+                                "__value": [
+                                    "5"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "polled_attr": [
+                                "healthstate",
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "SdpSubarray": {
+            "1": {
+                "SdpSubarray": {
+                    "mid_sdp/elt/subarray_1": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "obsState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "storageLoggingLevel": {
+                                "__value": [
+                                    "5"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "Version": [
+                                "0.5.8"
+                            ],
+                            "SkaLevel": [
+                                "2"
+                            ],
+                            "polled_attr": [
+                                "adminmode",
+                                "1000",
+                                "healthstate",
+                                "1000",
+                                "obsmode",
+                                "1000",
+                                "obsstate",
+                                "1000",
+                                "receiveaddresses",
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

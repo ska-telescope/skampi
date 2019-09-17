@@ -4,6 +4,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
 type: kubernetes.io/tls
 data:
 {{ (tpl (.Files.Glob "data/tls.*").AsSecrets . ) | indent 2  }}
@@ -16,6 +17,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: webjive-tangogql-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
   annotations:
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/rewrite-target: /$1
@@ -55,6 +57,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: webjive-authserver-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
   annotations:
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/rewrite-target: /$1
@@ -82,6 +85,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: webjive-main-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
   annotations:
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/rewrite-target: /$1
@@ -117,6 +121,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: webjive-dashboard-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
   annotations:
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/rewrite-target: /$1
@@ -146,6 +151,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: webjive-tangogql-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
   annotations:
       kubernetes.io/ingress.class: traefik
       traefik.ingress.kubernetes.io/request-modifier: "ReplacePathRegex: /testdb/((db|socket|graphiql).*?) /$1"
@@ -176,6 +182,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: webjive-authserver-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
   annotations:
       kubernetes.io/ingress.class: traefik
       traefik.ingress.kubernetes.io/request-modifier: "ReplacePathRegex: /auth/((login|user).*?) /$1"
@@ -198,6 +205,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: webjive-main-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
   annotations:
       kubernetes.io/ingress.class: traefik
 spec:
@@ -227,6 +235,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: webjive-dashboard-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
   annotations:
       kubernetes.io/ingress.class: traefik
 spec:

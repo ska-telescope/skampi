@@ -1,0 +1,43 @@
+# Default values for csp-proto.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+display: ":0"
+xauthority: "~/.Xauthority"
+
+rsyslog:
+  enabled: true
+  image:
+    registry: registry.hub.docker.com/u/
+    image: jumanjiman/rsyslog
+    tag: latest
+    pullPolicy: IfNotPresent
+
+csplmc:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: csplmc
+    tag: 0.1.0
+    pullPolicy: Always
+
+midcbfmcs:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: mid-cbf-mcs
+    tag: 0.1.0
+    pullPolicy: Always
+
+dsconfig:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: latest
+    pullPolicy: IfNotPresent
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

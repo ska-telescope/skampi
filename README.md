@@ -129,6 +129,7 @@ $ make deploy KUBE_NAMESPACE=integration HELM_CHART=tango-base
 $ make deploy KUBE_NAMESPACE=integration HELM_CHART=tmc-proto
 $ make deploy KUBE_NAMESPACE=integration HELM_CHART=webjive
 ```
+etc.
 
 This will give extensive output describing what has been deployed in the test namespace:
 ```
@@ -199,6 +200,12 @@ persistentvolumeclaim/tangodb-integration-tmc-webui-test   Bound    tangodb-inte
 NAME                                                    HOSTS             ADDRESS         PORTS   AGE
 ingress.extensions/webjive-integration-tmc-webui-test   integration.ska   193.204.1.157   80      117s
 ```
+
+If you find that sdp-prototype containers are failing, check whether there is a `test-sdp-prototype-etcd` pod running. If there is not, try running
+```
+$ make deploy_all KUBE_NAMESPACE=integration
+```
+again. 
 
 To clean up the Helm Chart release:
 ```

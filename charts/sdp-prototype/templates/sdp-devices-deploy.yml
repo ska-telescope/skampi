@@ -87,7 +87,7 @@ spec:
           value: "0"
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp-prototype.etcd-host" . }}
-        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.12
+        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.15
         imagePullPolicy: Always
         resources: {}
 

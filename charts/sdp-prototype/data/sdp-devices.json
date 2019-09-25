@@ -1,8 +1,8 @@
 {
     "servers": {
-        "SdpMaster": {
+        "SDPMaster": {
             "1": {
-                "SdpMaster": {
+                "SDPMaster": {
                     "mid_sdp/elt/master": {
                         "attribute_properties": {
                             "healthState": {
@@ -27,9 +27,9 @@
                 }
             }
         },
-        "SdpSubarray": {
+        "SDPSubarray": {
             "1": {
-                "SdpSubarray": {
+                "SDPSubarray": {
                     "mid_sdp/elt/subarray_1": {
                         "attribute_properties": {
                             "adminMode": {
@@ -39,6 +39,12 @@
                                 ]
                             },
                             "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "obsMode": {
                                 "abs_change": [
                                     "-1",
                                     "1"
@@ -57,9 +63,6 @@
                             }
                         },
                         "properties": {
-                            "Version": [
-                                "0.5.8"
-                            ],
                             "SkaLevel": [
                                 "2"
                             ],
@@ -73,7 +76,69 @@
                                 "obsstate",
                                 "1000",
                                 "receiveaddresses",
-                                "1000"
+                                "1000",
+                                "activeprocessingblocks",
+                                "1000",
+                                "testmode",
+                                "2000"
+                            ]
+                        }
+                    }
+                }
+            },
+            "2": {
+                "SDPSubarray": {
+                    "mid_sdp/elt/subarray_2": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "obsMode": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "obsState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "storageLoggingLevel": {
+                                "__value": [
+                                    "5"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "SkaLevel": [
+                                "2"
+                            ],
+                            "polled_attr": [
+                                "adminmode",
+                                "1000",
+                                "healthstate",
+                                "1000",
+                                "obsmode",
+                                "1000",
+                                "obsstate",
+                                "1000",
+                                "receiveaddresses",
+                                "1000",
+                                "activeprocessingblocks",
+                                "1000",
+                                "testmode",
+                                "2000"
                             ]
                         }
                     }

@@ -55,6 +55,18 @@ deploy:
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
   - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='no' throw_errors='no'"
 
+deploy to cluster:
+  stage: deploy
+  tags:
+  - docker-executor
+  script:  
+  - kubectl apply -f resources/traefik-minikube.yaml
+  - make deploy_all KUBE_NAMESPACE=integration 
+  - kubectl get all,pv,pvc,ingress -n integration
+  environment:
+    name: test
+    url: http://kubernetes.engageska-portugal.pt/testdb
+
 stop_system:
   stage: lifecycle 
   tags:

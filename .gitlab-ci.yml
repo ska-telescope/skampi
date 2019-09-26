@@ -59,13 +59,13 @@ deploy to cluster:
   stage: deploy
   tags:
   - docker-executor
+  allow_failure: true
   script:  
   - kubectl apply -f resources/traefik-minikube.yaml
   - make deploy_all KUBE_NAMESPACE=integration 
   - kubectl get all,pv,pvc,ingress -n integration
   environment:
     name: test
-    url: http://kubernetes.engageska-portugal.pt/testdb
 
 stop_system:
   stage: lifecycle 

@@ -5,13 +5,13 @@ cache:
     - ansible-playbooks/
 
 stages:
-  - build
+  - download
   - lint
   - deploy
   - lifecycle
 
-build:
-  stage: build
+download playbook:
+  stage: download
   tags: 
   - docker-executor
   script:
@@ -48,7 +48,6 @@ deploy minikube:
 
 deploy k8s-cluster:
   stage: deploy
-  allow_failure: true
   tags:
   - docker-executor
   script:  
@@ -57,3 +56,4 @@ deploy k8s-cluster:
   - kubectl get all,pv,pvc,ingress -n integration
   environment:
     name: test
+    url: http://kubernetes.engageska-portugal.pt/testdb

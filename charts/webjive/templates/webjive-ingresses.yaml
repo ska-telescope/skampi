@@ -158,10 +158,10 @@ metadata:
 spec:
   tls:
     - hosts:
-      - integration.engageska-portugal.pt
+      - {{ tpl .Values.ingress.hostname . }}
       secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
-    - host: integration.engageska-portugal.pt
+    - host: {{ tpl .Values.ingress.hostname . }}
     - http:
         paths:
         - path: /testdb/db
@@ -189,10 +189,10 @@ metadata:
 spec:
   tls:
     - hosts:
-      - integration.engageska-portugal.pt
+      - {{ tpl .Values.ingress.hostname . }}
       secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
-    - host: integration.engageska-portugal.pt
+    - host: {{ tpl .Values.ingress.hostname . }}
     - http:
         paths:
         - path: /auth
@@ -211,10 +211,10 @@ metadata:
 spec:
   tls:
     - hosts:
-      - integration.engageska-portugal.pt
+      - {{ tpl .Values.ingress.hostname . }}
       secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
-    - host: integration.engageska-portugal.pt
+    - host: {{ tpl .Values.ingress.hostname . }}
     - http:
         paths:
         - path: /
@@ -241,10 +241,10 @@ metadata:
 spec:
   tls:
     - hosts:
-      - integration.engageska-portugal.pt
+      - {{ tpl .Values.ingress.hostname . }}
       secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
-    - host: integration.engageska-portugal.pt
+    - host: {{ tpl .Values.ingress.hostname . }}
     - http:
         paths:
         - path: /dashboards

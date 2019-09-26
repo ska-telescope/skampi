@@ -57,8 +57,6 @@ deploy:
 
 deploy to cluster:
   stage: deploy
-  tags:
-  - docker-executor
   allow_failure: true
   script:  
   - kubectl apply -f resources/traefik-minikube.yaml

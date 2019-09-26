@@ -49,9 +49,6 @@ deploy:
 deploy to cluster:
   stage: deploy
   allow_failure: true
-  before_script: 
-  - apt-get update
-  - apt-get install -y make
   tags:
   - docker-executor
   image: dtzar/helm-kubectl

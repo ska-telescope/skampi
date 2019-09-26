@@ -58,6 +58,9 @@ deploy:
 deploy to cluster:
   stage: deploy
   allow_failure: true
+  tags:
+  - docker-executor
+  image: dtzar/helm-kubectl
   script:  
   - kubectl apply -f resources/traefik-minikube.yaml
   - make deploy_all KUBE_NAMESPACE=integration 

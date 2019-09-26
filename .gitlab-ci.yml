@@ -33,7 +33,7 @@ lint:
   - export ANSIBLE_STDOUT_CALLBACK=json
   - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='no' multiple_charts='yes' directory='../charts'" >> helm-linting-results.json
 
-deploy:
+deploy minikube:
   stage: deploy
   tags:
   - docker-executor
@@ -46,70 +46,14 @@ deploy:
   - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
   - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='no' throw_errors='no'"
 
-deploy to cluster:
+deploy k8s-cluster:
   stage: deploy
   allow_failure: true
   tags:
   - docker-executor
   script:  
   - kubectl apply -f resources/traefik-minikube.yaml
-  - make deploy_all KUBE_NAMESPACE=integration 
+  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=kubernetes.engageska-portugal.pt
   - kubectl get all,pv,pvc,ingress -n integration
   environment:
     name: test
-
-stop_system:
-  stage: lifecycle 
-  tags:
-  - docker-executor
-  script: 
-  - cd ansible-playbooks
-  - mkdir -p /root/.ssh
-  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
-  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
-  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
-  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "deploy='no' stop_integrated_system='yes' install_ska_docker='no'"
-  when: manual
-
-start_system:
-  stage: lifecycle 
-  tags:
-  - docker-executor
-  script: 
-  - cd ansible-playbooks
-  - mkdir -p /root/.ssh
-  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
-  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
-  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
-  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='no' deploy='no' start_integrated_system='yes' install_ska_docker='no'"
-  when: manual
-
-logs:
-  stage: lifecycle 
-  tags:
-  - docker-executor
-  script: 
-  - cd ansible-playbooks
-  - mkdir -p /root/.ssh
-  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
-  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
-  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
-  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "deploy='no'  start_integrated_system='no' logs='yes' install_ska_docker='no'"
-  when: manual
-
-remove_cluster:
-  stage: lifecycle
-  tags:
-  - docker-executor
-  script: 
-  - cd ansible-playbooks
-  - mkdir -p /root/.ssh
-  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
-  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
-  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
-  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "deploy='no' remove_cluster='yes' start_integrated_system='no' install_ska_docker='no'"
-  when: manual

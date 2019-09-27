@@ -74,7 +74,7 @@ spec:
         env:
         - name: TANGO_HOST
           value: databaseds-tango-base-{{ .Release.Name }}:10000
-        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master:0.2.1
+        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master:0.2.3
         imagePullPolicy: Always
         resources: {}
       - name: sdp-subarray
@@ -87,7 +87,7 @@ spec:
           value: "0"
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp-prototype.etcd-host" . }}
-        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.12
+        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.16
         imagePullPolicy: Always
         resources: {}
 

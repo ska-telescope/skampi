@@ -19,7 +19,7 @@ csplmc:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: csplmc
     tag: 0.1.4
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
 midcbfmcs:
   enabled: true
@@ -27,7 +27,7 @@ midcbfmcs:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: mid-cbf-mcs
     tag: 0.1.2
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
 dsconfig:
   image:

@@ -78,7 +78,8 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=20 -- tango_admin --ping-device mid_csp/elt/master &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_01 &&\
             /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub1"
     env:
     - name: TANGO_HOST
@@ -99,6 +100,10 @@ spec:
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/01 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/02 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/03 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/04 &&\
             /venv/bin/python /app/tangods/CbfMaster/CbfMaster/CbfMaster.py master"
     env:
     - name: TANGO_HOST
@@ -115,6 +120,7 @@ spec:
     args:
       - -c
       - "sudo ln -sf /logs/log /dev/log && \
+            retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
             /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-01"
     env:
     - name: TANGO_HOST

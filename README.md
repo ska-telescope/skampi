@@ -1,6 +1,6 @@
 
 
-[![Documentation Status](https://readthedocs.org/projects/ska-docker/badge/?version=latest)](https://developer.skatelescope.org/projects/k8s-integration/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/ska-docker/badge/?version=latest)](https://developer.skatelescope.org/projects/skampi/en/latest/?badge=latest)
 
 
 SKA Integration on Kubernetes

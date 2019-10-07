@@ -1204,6 +1204,37 @@
             }
         },
 
+        "hdbppes-srv": {
+            "01": {
+                "HdbEventSubscriber": {
+                    "archiving/hdbpp/eventsubscriber01": {
+                        "attribute_properties": {},
+                        "properties": {
+                            "CheckPeriodicTimeoutDelay": ["5"],
+                            "PollingThreadPeriod": ["3"],
+                            "LibConfiguration": ["host=archiver-maria-db","libname=libhdb++mysql.so.6","dbname=hdbpp","port=3307", "user=tango", "password=tango"],
+                            "polled_attr": []
+                        }
+                    }
+                }
+            }
+        },
+        "hdbppcm-srv": {
+            "01": {
+                "HdbConfigurationManager": {
+                    "archiving/hdbpp/confmanager01": {
+                        "attribute_properties": {},
+                        "properties": {
+                            "ArchiverList": ["archiving/hdbpp/eventsubscriber01"],
+                            "MaxSearchSize": ["1000"],
+                            "LibConfiguration": ["host=archiver-maria-db","libname=libhdb++mysql.so.6","dbname=hdbpp","port=3307", "user=tango", "password=tango"],
+                            "polled_attr": []
+                        }
+                    }
+                }
+            }
+        },
+
         "TangoAccessControl": {
             "1": {
                 "TangoAccessControl": {

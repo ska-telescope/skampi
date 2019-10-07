@@ -29,6 +29,9 @@ spec:
     - name: configuration
       configMap:
         name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
+    - name: archiverdata
+      persistentVolumeClaim:
+        claimName: archiverdata
 
   initContainers:
   - name: dsconfig
@@ -360,6 +363,70 @@ spec:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
 
+  - name: hdbpp-es
+      image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+      imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+      command:
+        - sh
+      args:
+        - -c
+        - sleep 20
+        - wait-for-it.sh
+        - databaseds-tango-base-{{ .Release.Name }}:10000
+        - --timeout=30
+        - --strict
+        - --
+        - hdbppes-srv 01
+      env:
+      - name: TANGO_HOST
+        value: databaseds-tango-base-{{ .Release.Name }}:10000
+      - name: HdbManager
+        value: archiving/hdbpp/confmanager01
+
+  - name: hdbpp-cm
+      image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+      imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+      command:
+        - sh
+      args:
+        - -c
+        - sleep 20
+        - wait-for-it.sh
+        - databaseds-tango-base-{{ .Release.Name }}:10000
+        - --timeout=30
+        - --strict
+        - --
+        - hdbppcm-srv 01
+      env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ .Release.Name }}:10000
+        - name: HdbManager
+          value: archiving/hdbpp/confmanager01
+
+  - name: archiver-maria-db
+      image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+      imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+      volumeMounts:
+        - name: archiverdata
+          mountPath: /var/lib/mysql
+      command:
+        - sh
+      args:
+        - -c
+        - sleep 20
+        - wait-for-it.sh
+        - databaseds-tango-base-{{ .Release.Name }}:10000
+        - --timeout=30
+        - --strict
+        - --
+        - hdbppcm-srv 01
+      env:
+        - name: MYSQL_DATABASE
+          value: hdbpp
+        - name: MYSQL_USER
+          value: tango
+        - name: MYSQL_PASSWORD
+          value: tango
 
 {{- with .Values.tmcprototype.env }}
 {{ toYaml . | indent 4 }}

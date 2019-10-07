@@ -370,13 +370,13 @@ spec:
         - sh
       args:
         - -c
-        - sleep 20
-        - wait-for-it.sh
-        - databaseds-tango-base-{{ .Release.Name }}:10000
-        - --timeout=30
-        - --strict
-        - --
-        - hdbppes-srv 01
+        - "sleep 20 && \
+        wait-for-it.sh \
+        databaseds-tango-base-{{ .Release.Name }}:10000 \
+        --timeout=30 \
+        --strict \
+        -- \
+        hdbppes-srv 01"
       env:
       - name: TANGO_HOST
         value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -390,13 +390,13 @@ spec:
         - sh
       args:
         - -c
-        - sleep 20
-        - wait-for-it.sh
-        - databaseds-tango-base-{{ .Release.Name }}:10000
-        - --timeout=30
-        - --strict
-        - --
-        - hdbppcm-srv 01
+        - "sleep 20 && \
+        wait-for-it.sh \
+        databaseds-tango-base-{{ .Release.Name }}:10000 \
+        --timeout=30 \
+        --strict \
+        -- \
+        hdbppcm-srv 01"
       env:
         - name: TANGO_HOST
           value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -413,13 +413,13 @@ spec:
         - sh
       args:
         - -c
-        - sleep 20
-        - wait-for-it.sh
-        - databaseds-tango-base-{{ .Release.Name }}:10000
-        - --timeout=30
-        - --strict
-        - --
-        - hdbppcm-srv 01
+        - "sleep 20 && \
+        wait-for-it.sh \
+        databaseds-tango-base-{{ .Release.Name }}:10000 \
+        --timeout=30 \
+        --strict \
+        -- \
+        hdbppcm-srv 01"
       env:
         - name: MYSQL_DATABASE
           value: hdbpp

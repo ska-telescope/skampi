@@ -37,11 +37,12 @@ dsconfig:
     pullPolicy: IfNotPresent
 
 archiver:
+  enabled: true
   image:
     registry: nexus.engageska-portugal.pt/tango-example
     image: archiver
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
 nodeSelector: {}
 

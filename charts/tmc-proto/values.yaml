@@ -43,6 +43,15 @@ archiver:
     image: archiver
     tag: latest
     pullPolicy: IfNotPresent
+  db:
+    rootpw: secret
+    db: hdbpp
+    user: tango
+    passowrd: tango
+  resources:
+    requests:
+      cpu: 200m     # 200m = 0.2 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
 
 nodeSelector: {}
 

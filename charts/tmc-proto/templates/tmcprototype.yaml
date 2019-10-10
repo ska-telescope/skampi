@@ -387,20 +387,6 @@ spec:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
 
-  - name: archiver-maria-db
-    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
-    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
-    volumeMounts:
-      - name: archiverdata
-        mountPath: /var/lib/mysql
-    env:
-    - name: MYSQL_DATABASE
-      value: hdbpp
-    - name: MYSQL_USER
-      value: tango
-    - name: MYSQL_PASSWORD
-      value: tango
-
 {{- with .Values.tmcprototype.env }}
 {{ toYaml . | indent 4 }}
 {{- end }}

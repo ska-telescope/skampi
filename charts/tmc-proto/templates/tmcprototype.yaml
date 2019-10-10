@@ -185,7 +185,7 @@ spec:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
 
-  - name: cspsubarrayleafnode
+  - name: cspsubarrayleafnode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
     volumeMounts:
@@ -198,6 +198,23 @@ spec:
       - "sudo ln -sf /logs/log /dev/log && \
              retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_01 &&\
              /venv/bin/python /app/tmcprototype/CspSubarrayLeafNode/CspSubarrayLeafNode/CspSubarrayLeafNode.py 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+   
+  - name: cspsubarrayleafnode2
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_02 &&\
+             /venv/bin/python /app/tmcprototype/CspSubarrayLeafNode/CspSubarrayLeafNode/CspSubarrayLeafNode.py 02"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -219,7 +236,7 @@ spec:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
 
-  - name: sdpsubarrayleafnode
+  - name: sdpsubarrayleafnode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
     volumeMounts:
@@ -232,6 +249,23 @@ spec:
       - "sudo ln -sf /logs/log /dev/log && \
              retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_1 &&\
              /venv/bin/python /app/tmcprototype/SdpSubarrayLeafNode/SdpSubarrayLeafNode/SdpSubarrayLeafNode.py 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: sdpsubarrayleafnode2
+    image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
+    imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
+    volumeMounts:
+    - name: logs
+      mountPath: /logs
+    command:
+      - sh
+    args:
+      - -c
+      - "sudo ln -sf /logs/log /dev/log && \
+             retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_2 &&\
+             /venv/bin/python /app/tmcprototype/SdpSubarrayLeafNode/SdpSubarrayLeafNode/SdpSubarrayLeafNode.py 02"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -290,8 +324,8 @@ spec:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0002 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0003 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
-             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_subarray01 &&\
-             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray01 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_subarray02 &&\
+             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray02 &&\
              /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py sa2"
     env:
     - name: TANGO_HOST
@@ -385,3 +419,4 @@ spec:
 {{- end }}
 
 {{ end }}
+

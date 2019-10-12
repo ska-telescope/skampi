@@ -1,0 +1,39 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tmc-proto.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}/
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tmc-proto.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

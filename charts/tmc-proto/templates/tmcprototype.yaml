@@ -23,15 +23,12 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   volumes:
-    - name: logs
-      persistentVolumeClaim:
-        claimName: rsyslog-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
-    - name: configuration
-      configMap:
-        name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
-    - name: archiverdata
-      persistentVolumeClaim:
-        claimName: archiverdata
+  - name: logs
+    persistentVolumeClaim:
+      claimName: rsyslog-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+  - name: configuration
+    configMap:
+      name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
 
   initContainers:
   - name: dsconfig
@@ -363,29 +360,29 @@ spec:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
 
-  - name: hdbpp-cm
-    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
-    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
-    command:
-      - sh
-    args:
-      - -c
-      - "./usr/local/bin/hdbppcm-srv 01"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: hdbpp-es
-    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
-    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
-    command:
-      - sh
-    args:
-      - -c
-      - "./usr/local/bin/hdbppes-srv 01"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
+#  - name: hdbpp-cm
+#    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+#    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+#    command:
+#      - sh
+#    args:
+#      - -c
+#      - "./usr/local/bin/hdbppcm-srv 01"
+#    env:
+#    - name: TANGO_HOST
+#      value: databaseds-tango-base-{{ .Release.Name }}:10000
+#
+#  - name: hdbpp-es
+#    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+#    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+#    command:
+#      - sh
+#    args:
+#      - -c
+#      - "./usr/local/bin/hdbppes-srv 01"
+#    env:
+#    - name: TANGO_HOST
+#      value: databaseds-tango-base-{{ .Release.Name }}:10000
 
 {{- with .Values.tmcprototype.env }}
 {{ toYaml . | indent 4 }}

@@ -1,4 +1,4 @@
-{{ if .Values.tmcprototype.enabled }}
+{{ if .Values.archiver.enabled }}
 ---
 
 apiVersion: v1
@@ -13,8 +13,8 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   ports:
-  - name: mysql
-    port: 3306
+  - name: archiver-maria-db-port
+    port: 3307
   clusterIP: None
   selector:
     app: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
@@ -35,7 +35,7 @@ spec:
   selector:
     matchLabels:
       app: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
-  serviceName: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+  serviceName: archiver-maria-db
   replicas: 1
   template:
     metadata:
@@ -61,17 +61,17 @@ spec:
           - name: MYSQL_ALLOW_EMPTY_PASSWORD
             value: "1"
         ports:
-        - name: mysql
-          containerPort: 3306
+        - name: archiver-maria-db-port
+          containerPort: 3307
         volumeMounts:
-        - name: archiverdata
+        - name: data
           mountPath: /var/lib/mysql
         resources:
 {{ toYaml .Values.archiver.resources | indent 10 }}
       volumes:
-      - name: archiverdata
+      - name: data
         persistentVolumeClaim:
-          claimName: archiverdata
+          claimName: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

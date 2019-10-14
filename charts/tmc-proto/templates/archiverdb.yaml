@@ -35,7 +35,7 @@ spec:
   selector:
     matchLabels:
       app: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
-  serviceName: archiver-maria-db
+  serviceName: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
   replicas: 1
   template:
     metadata:
@@ -46,7 +46,7 @@ spec:
         heritage: {{ .Release.Service }}
     spec:
       containers:
-      - name: archiverdb
+      - name: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
         image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
         imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
         env:

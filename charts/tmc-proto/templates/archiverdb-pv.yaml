@@ -16,7 +16,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /data/archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}/
+    path: /data/archiverdb/
 
 ---
 

@@ -2,9 +2,9 @@ image: nexus.engageska-portugal.pt/ska-docker/deploy:latest
 
 stages:
   - lint
+  - clean
   - deploy
-  - lifecycle
-  
+
 lint:
   stage: lint
   tags:
@@ -12,6 +12,40 @@ lint:
   allow_failure: true
   script:
   - make lint_all
+
+clean test: 
+  stage: clean
+  tags:
+  - docker-executor
+  script:
+  - make delete_all KUBE_NAMESPACE=integration
+  environment:
+    name: test
+  when: manual
+
+clean test: 
+  stage: clean
+  tags:
+  - docker-executor
+  script:
+  - make delete_all KUBE_NAMESPACE=integration
+  environment:
+    name: test
+  only:
+    refs:
+      - schedules
+
+clean staging: 
+  stage: clean
+  tags:
+  - docker-executor
+  script:
+  - make delete_all KUBE_NAMESPACE=staging
+  environment:
+    name: staging
+  only:
+    refs:
+      - schedules
 
 deploy test:
   stage: deploy
@@ -27,16 +61,6 @@ deploy test:
     refs:
       - master
 
-clean test: 
-  stage: lifecycle
-  tags:
-  - docker-executor
-  script:
-  - make delete_all KUBE_NAMESPACE=integration
-  environment:
-    name: test
-  when: manual
-
 deploy staging:
   stage: deploy
   tags:
@@ -50,15 +74,3 @@ deploy staging:
   only:
     refs:
       - staging
-
-clean staging: 
-  stage: lifecycle
-  tags:
-  - docker-executor
-  script:
-  - make delete_all KUBE_NAMESPACE=staging
-  environment:
-    name: staging
-  only:
-    refs:
-      - schedules

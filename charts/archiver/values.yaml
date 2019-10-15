@@ -1,0 +1,36 @@
+# Default values for tmc-proto.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+display: ":0"
+xauthority: "~/.Xauthority"
+
+archiver:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/tango-example
+    image: archiver
+    tag: latest
+    pullPolicy: IfNotPresent
+  db:
+    rootpw: secret
+    db: hdbpp
+    user: tango
+    passowrd: tango
+  resources:
+    requests:
+      cpu: 200m     # 200m = 0.2 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
+
+dsconfig:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: latest
+    pullPolicy: IfNotPresent
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

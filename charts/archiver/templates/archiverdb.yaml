@@ -4,49 +4,49 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+  name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tmc-proto.chart" . }}
+    app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   ports:
-  - name: archiver-maria-db-port
+  - name: archiverdb-port
     port: 3307
   clusterIP: None
   selector:
-    app: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+    app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
 
 ---
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+  name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tmc-proto.chart" . }}
+    app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
-  serviceName: archiver-maria-db
+      app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  serviceName: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
-        chart: {{ template "tmc-proto.chart" . }}
+        app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+        chart: {{ template "archiver.chart" . }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
       containers:
-      - name: archiverdb
+      - name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
         image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
         imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
         env:
@@ -60,8 +60,10 @@ spec:
             value: "{{ .Values.archiver.db.password }}"
           - name: MYSQL_ALLOW_EMPTY_PASSWORD
             value: "1"
+          - name: TANGO_HOST
+            value: databaseds-tango-base-{{ .Release.Name }}:10000
         ports:
-        - name: archiver-maria-db-port
+        - name: archiverdb-port
           containerPort: 3307
         volumeMounts:
         - name: data
@@ -71,7 +73,7 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: archiverdb-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+          claimName: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

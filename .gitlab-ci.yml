@@ -33,7 +33,7 @@ delete staging:
   tags:
   - docker-executor
   script:
-  - make delete_all KUBE_NAMESPACE=staging
+  - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
   environment:
     name: staging
   only:
@@ -61,7 +61,7 @@ deploy staging:
   tags:
   - docker-executor
   script:  
-  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
   - kubectl get all,pv,pvc,ingress -n staging
   environment:
     name: staging
@@ -91,7 +91,7 @@ delete-and-deploy staging:
   - docker-executor
   script:
   - make delete_all KUBE_NAMESPACE=staging
-  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
   environment:
     name: staging
     url: http://kubernetes.engageska-portugal.pt/testdb

@@ -14,17 +14,7 @@ lint:
   script:
   - make lint_all
 
-clean test: 
-  stage: clean
-  tags:
-  - docker-executor
-  script:
-  - make delete_all KUBE_NAMESPACE=integration
-  environment:
-    name: test
-  when: manual
-
-clean test: 
+delete test: 
   stage: clean
   tags:
   - docker-executor
@@ -35,15 +25,14 @@ clean test:
   only:
     refs:
       - schedules
+      - master
 
-delete-and-deploy staging: 
+delete staging: 
   stage: clean
   tags:
   - docker-executor
   script:
   - make delete_all KUBE_NAMESPACE=staging
-  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt
-  - kubectl get all,pv,pvc,ingress -n staging
   environment:
     name: staging
   only:
@@ -85,7 +74,26 @@ delete-and-deploy test:
   - docker-executor
   script:
   - make delete_all KUBE_NAMESPACE=integration
-  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt
+  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   environment:
     name: test
+    url: http://integration.engageska-portugal.pt/testdb
   when: manual
+  only:
+    refs:
+      - master
+
+delete-and-deploy staging: 
+  stage: lifecycle
+  tags:
+  - docker-executor
+  script:
+  - make delete_all KUBE_NAMESPACE=staging
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt
+  environment:
+    name: staging
+    url: http://kubernetes.engageska-portugal.pt/testdb
+  when: manual
+  only:
+    refs:
+      - staging

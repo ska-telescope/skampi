@@ -76,12 +76,13 @@ deploy staging:
     refs:
       - staging
 
-clean test: 
+delete-and-deploy test: 
   stage: lifecycle
   tags:
   - docker-executor
   script:
   - make delete_all KUBE_NAMESPACE=integration
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt
   environment:
     name: test
   when: manual

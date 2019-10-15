@@ -36,17 +36,20 @@ clean test:
     refs:
       - schedules
 
-clean staging: 
+delete-and-deploy staging: 
   stage: clean
   tags:
   - docker-executor
   script:
   - make delete_all KUBE_NAMESPACE=staging
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt
+  - kubectl get all,pv,pvc,ingress -n staging
   environment:
     name: staging
   only:
     refs:
       - schedules
+      - staging
 
 deploy test:
   stage: deploy

@@ -24,8 +24,9 @@ delete test:
     name: test
   only:
     refs:
-      - schedules
       - master
+    variables:
+      - $DELETE == "true"
 
 delete staging: 
   stage: clean
@@ -37,8 +38,9 @@ delete staging:
     name: staging
   only:
     refs:
-      - schedules
       - staging
+    variables:
+      - $DELETE == "true"
 
 deploy test:
   stage: deploy

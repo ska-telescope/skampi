@@ -24,6 +24,9 @@ Traefik
 ```
 # Install traefik controller
 kubectl apply -f traefik-minikube.yaml
+
+# or Install using tiller
+helm install stable/traefik --name traefik0 --namespace kube-system --set externalIP=xxx.xxx.xxx.xxx
 ```
 
 Ingress controller commands

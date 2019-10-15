@@ -36,18 +36,12 @@ k8s: ## Which kubernetes are we connected to
 	@echo "Helm version:"
 	@helm version --client
 
-apply: ## apply resource descriptor k8s.yml
-	kubectl apply -n $(KUBE_NAMESPACE) -f k8s.yml
-
 logs: ## POD logs for descriptor
 	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l group=example -o=name`; \
 	do echo "-------------------"; \
 	echo "Logs for $$i"; \
 	kubectl -n $(KUBE_NAMESPACE) logs $$i; \
 	done
-
-rm: ## delete applied resources
-	kubectl delete -n $(KUBE_NAMESPACE) -f k8s.yml
 
 namespace: ## create the kubernetes namespace
 	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
@@ -56,6 +50,14 @@ namespace: ## create the kubernetes namespace
   then kubectl describe namespace $(KUBE_NAMESPACE) ; \
   else kubectl create namespace $(KUBE_NAMESPACE); \
   fi
+
+lint_all:  ## lint ALL of the helm chart
+	@for i in charts/*; do \
+	cd $$i; pwd; helm lint ; \
+	done
+
+lint:  ## lint the HELM_CHART of the helm chart
+	cd charts/$(HELM_CHART); pwd; helm lint;
 
 .PHONY: deploy_etcd delete_etcd
 deploy_etcd: ## deploy etcd-operator into namespace

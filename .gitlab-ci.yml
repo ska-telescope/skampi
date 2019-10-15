@@ -1,26 +1,9 @@
 image: nexus.engageska-portugal.pt/ska-docker/deploy:latest
 
-cache:
-  paths: 
-    - ansible-playbooks/
-
 stages:
-  - download
   - lint
   - deploy
   - lifecycle
-
-download playbook:
-  stage: download
-  tags: 
-  - docker-executor
-  script:
-  - rm -rf ansible-playbooks
-  - git clone https://github.com/ska-telescope/ansible-playbooks.git
-  - cd ansible-playbooks
-  - echo -e "\n\n[integration]" >> hosts
-  - echo "$ENVIRONMENT_ADDRESS ansible_user=$ENVIRONMENT_USER" >> hosts
-  - cat hosts
   
 lint:
   stage: lint
@@ -28,32 +11,54 @@ lint:
   - docker-executor
   allow_failure: true
   script:
-  - cd ansible-playbooks
-  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='yes' multiple_charts='yes' directory='../charts'"
-  - export ANSIBLE_STDOUT_CALLBACK=json
-  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='no' multiple_charts='yes' directory='../charts'" >> helm-linting-results.json
+  - make lint_all
 
-deploy minikube:
+deploy test:
   stage: deploy
   tags:
   - docker-executor
-  script:  
-  - cd ansible-playbooks
-  - mkdir -p /root/.ssh
-  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
-  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
-  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
-  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
-  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='no' throw_errors='no'"
-
-deploy k8s-cluster:
-  stage: deploy
-  tags:
-  - docker-executor
-  script:  
-  #- helm install stable/traefik --name traefik0 --namespace kube-system --set externalIP=192.168.93.47
-  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=kubernetes.engageska-portugal.pt
+  script:
+  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   - kubectl get all,pv,pvc,ingress -n integration
   environment:
     name: test
+    url: http://integration.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - master
+
+clean test: 
+  stage: lifecycle
+  tags:
+  - docker-executor
+  script:
+  - make delete_all KUBE_NAMESPACE=integration
+  environment:
+    name: test
+  when: manual
+
+deploy staging:
+  stage: deploy
+  tags:
+  - docker-executor
+  script:  
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt
+  - kubectl get all,pv,pvc,ingress -n staging
+  environment:
+    name: staging
     url: http://kubernetes.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - staging
+
+clean staging: 
+  stage: lifecycle
+  tags:
+  - docker-executor
+  script:
+  - make delete_all KUBE_NAMESPACE=staging
+  environment:
+    name: staging
+  only:
+    refs:
+      - schedules

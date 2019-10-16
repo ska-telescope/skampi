@@ -47,17 +47,17 @@ spec:
     spec:
       containers:
       - name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
-        image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+        image: "{{ .Values.hdbppdb.image.registry }}/{{ .Values.hdbppdb.image.image }}:{{ .Values.hdbppdb.image.tag }}"
         imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
         env:
           - name: MYSQL_ROOT_PASSWORD
-            value: "{{ .Values.archiver.db.rootpw }}"
+            value: "{{ .Values.hdbppdb.db.rootpw }}"
           - name: MYSQL_DATABASE
-            value: "{{ .Values.archiver.db.db }}"
+            value: "{{ .Values.hdbppdb.db.db }}"
           - name: MYSQL_USER
-            value: "{{ .Values.archiver.db.user }}"
+            value: "{{ .Values.hdbppdb.db.user }}"
           - name: MYSQL_PASSWORD
-            value: "{{ .Values.archiver.db.password }}"
+            value: "{{ .Values.hdbppdb.db.password }}"
           - name: MYSQL_ALLOW_EMPTY_PASSWORD
             value: "1"
           - name: TANGO_HOST

@@ -18,7 +18,7 @@ download playbook:
   - rm -rf ansible-playbooks
   - git clone https://github.com/ska-telescope/ansible-playbooks.git
   - cd ansible-playbooks
-  - echo -e "\n\n[integration]" >> hosts
+  - echo -e "\n\n[integration]" > hosts
   - echo "$ENVIRONMENT_ADDRESS ansible_user=$ENVIRONMENT_USER" >> hosts
   - cat hosts
   

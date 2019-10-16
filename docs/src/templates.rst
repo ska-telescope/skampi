@@ -1,5 +1,5 @@
-TM integration
-==============
+SKAMPI - SKA Mvp Prototype Integration 
+======================================
 
 K8s Concepts
 ------------

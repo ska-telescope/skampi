@@ -8,7 +8,7 @@
                         "properties": {
                             "CheckPeriodicTimeoutDelay": ["5"],
                             "PollingThreadPeriod": ["3"],
-                            "LibConfiguration": ["host=archiverdb-archiver-test","libname=libhdb++mysql.so.6","dbname=hdbpp","port=3307", "user=tango", "password=tango"],
+                            "LibConfiguration": ["host=archiverdb-archiver-test","libname=libhdb++mysql.so.6","dbname=hdbpp","port=3306", "user=tango", "password=tango"],
                             "polled_attr": []
                         }
                     }
@@ -24,7 +24,7 @@
                         "properties": {
                             "ArchiverList": ["archiving/hdbpp/eventsubscriber01"],
                             "MaxSearchSize": ["1000"],
-                            "LibConfiguration": ["host=archiverdb-archiver-test","libname=libhdb++mysql.so.6","dbname=hdbpp","port=3307", "user=tango", "password=tango"],
+                            "LibConfiguration": ["host=archiverdb-archiver-test","libname=libhdb++mysql.so.6","dbname=hdbpp","port=3306", "user=tango", "password=tango"],
                             "polled_attr": []
                         }
                     }

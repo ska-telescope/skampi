@@ -14,7 +14,7 @@ metadata:
 spec:
   ports:
   - name: archiverdb-port
-    port: 3307
+    port: 3306
   clusterIP: None
   selector:
     app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
@@ -64,7 +64,7 @@ spec:
             value: databaseds-tango-base-{{ .Release.Name }}:10000
         ports:
         - name: archiverdb-port
-          containerPort: 3307
+          containerPort: 3306
         volumeMounts:
         - name: data
           mountPath: /var/lib/mysql

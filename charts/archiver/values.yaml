@@ -9,7 +9,9 @@ archiver:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/tango-example
-    image: archiver
+    image: tabgo-db
+#    registry: nexus.engageska-portugal.pt/tango-example
+#    image: archiver
     tag: latest
     pullPolicy: IfNotPresent
   db:

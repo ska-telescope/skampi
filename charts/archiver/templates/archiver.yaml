@@ -49,20 +49,20 @@ spec:
         mountPath: data
         readOnly: true
 
-  - name: initdb
-    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
-    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
-    command:
-      - /usr/local/bin/wait-for-it.sh
-      - archiverdb-archiver-base-{{ .Release.Name }}:3306
-      - --timeout=30
-      - --strict
-      - --
-      - data/initdb.sh
-    volumeMounts:
-      - name: configuration
-        mountPath: data
-        readOnly: true
+#  - name: initdb
+#    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+#    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+#    command:
+#      - /usr/local/bin/wait-for-it.sh
+#      - archiverdb-archiver-base-{{ .Release.Name }}:3306
+#      - --timeout=30
+#      - --strict
+#      - --
+#      - data/initdb.sh
+#    volumeMounts:
+#      - name: configuration
+#        mountPath: data
+#        readOnly: true
 
   containers:
   - name: hdbpp-cm

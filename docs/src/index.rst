@@ -9,6 +9,7 @@ This project defines the integration between the TMC prototype (https://github.c
 
    helm
    templates
+   environments
    resources
 
 

@@ -9,10 +9,11 @@ metadata:
 data: 
   configuration.json: 
 {{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
-  create_hdb++.sql:
-{{ (tpl (.Files.Glob "data/create_hdb++.sql").AsConfig . ) | indent 2  }}
   initdb.sh:
 {{ (tpl (.Files.Glob "data/initdb.sh").AsConfig . ) | indent 2  }}
+  create_hdbpp.sql:
+{{ (tpl (.Files.Glob "data/create_hdbpp.sql").AsConfig . ) | indent 2  }}
+
 ---
 apiVersion: v1
 kind: Pod
@@ -29,6 +30,9 @@ spec:
   - name: configuration
     configMap:
       name: "archiver-configuration-json-{{ template "archiver.name" . }}-{{ .Release.Name }}"
+  - name: hdbpp-db-config
+    hostPath:
+      path: ./data
 
   initContainers:
   - name: dsconfig
@@ -45,25 +49,36 @@ spec:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
     volumeMounts:
-      - name: configuration
-        mountPath: data
-        readOnly: true
+    - name: configuration 
+      mountPath: data
+      readOnly: true
 
-  - name: inithdbppdb
-    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
-    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+  - name: confighdbpp
+    image: "{{ .Values.confighdbpp.image.registry }}/{{ .Values.confighdbpp.image.image }}:{{ .Values.confighdbpp.image.tag }}"
+    imagePullPolicy: {{ .Values.confighdbpp.image.pullPolicy }}
     command:
+#      - /bin/bash
+#    args:
+#     command:
+#      - -c
       - /usr/local/bin/wait-for-it.sh
-      - archiverdb-archiver-base-{{ .Release.Name }}:3306
+      - archiverdb-archiver-{{ .Release.Name }}:3306
       - --timeout=30
       - --strict
       - --
       - data/initdb.sh
-    volumeMounts:
-      - name: configuration
-        mountPath: data
-        readOnly: true
 
+#      - /usr/local/bin/wait-for-it.sh
+#      - archiverdb-archiver-{{ .Release.Name }}:3306
+#      - --timeout=30
+#      - --strict
+#      - --
+#      - data/initdb.sh
+    volumeMounts:
+    - name: configuration #hdbpp-db-config
+      mountPath: data
+      readOnly: true
+      
   containers:
   - name: hdbpp-cm
     image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"

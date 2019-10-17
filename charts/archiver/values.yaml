@@ -46,6 +46,13 @@ dsconfig:
     tag: latest
     pullPolicy: IfNotPresent
 
+confighdbpp:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: ska-python-buildenv
+    tag: 0.1.0
+    pullPolicy: IfNotPresent
+
 nodeSelector: {}
 
 affinity: {}

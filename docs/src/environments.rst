@@ -19,12 +19,12 @@ A trigger example is the following one:
     tags: 
     - docker-executor 
     script: 
-        - curl -X POST -F token=$SKAMPI_TOKEN -F ref=$SKAMPI_TARGET_BRANCH https://gitlab.com/api/v4/projects/$SKAMPI_PROJ_ID/trigger/pipeline
+        - curl -X POST -F token=$SKAMPI_TOKEN -F ref=$SKAMPI_TARGET_BRANCH -F "variables[HELM_CHART]=tmc-proto" https://gitlab.com/api/v4/projects/$SKAMPI_PROJ_ID/trigger/pipeline
 
 This will make obtain the following advantages:
 
 * A successful commit (that is the pipeline succeeded) in a sub-project repository (like the tmc-prototype) starts the deployment in the integration environment for all the containers defined in the helm chart. 
-* Update of the integration environment happens continuously
+* Update of the integration environment happens continuously (only the chart specified in the HELM_CHART variable passed with the trigger will be reset)
 * Teams won’t care about releases
 
 Staging environment
@@ -32,3 +32,5 @@ Staging environment
 In the staging environment, the helm chart pull policy for the docker images must be “IfNotPresent” and the image tag must be a specific version. The pipeline of the SKAMPI repository will be triggered by a change in an helm chart. 
 
 The branch for this environment is the staging. 
+
+It is scheduled every day at 02:00 UTC a delete and deploy job in order to clean the environment and redeploy it all. 

@@ -32,7 +32,8 @@ spec:
       name: "archiver-configuration-json-{{ template "archiver.name" . }}-{{ .Release.Name }}"
   - name: hdbpp-db-config
     hostPath:
-      path: ./data
+      path: /data/archiverdb-config/
+      type: Directory
 
   initContainers:
   - name: dsconfig
@@ -57,16 +58,16 @@ spec:
     image: "{{ .Values.confighdbpp.image.registry }}/{{ .Values.confighdbpp.image.image }}:{{ .Values.confighdbpp.image.tag }}"
     imagePullPolicy: {{ .Values.confighdbpp.image.pullPolicy }}
     command:
-#      - /bin/bash
-#    args:
+      - /bin/bash
+    args:
 #     command:
 #      - -c
-      - /usr/local/bin/wait-for-it.sh
-      - archiverdb-archiver-{{ .Release.Name }}:3306
-      - --timeout=30
-      - --strict
-      - --
-      - data/initdb.sh
+#      - /usr/local/bin/wait-for-it.sh
+#      - archiverdb-archiver-{{ .Release.Name }}:3306
+#      - --timeout=30
+#      - --strict
+#      - --
+      - /hdb-config-data/initdb.sh
 
 #      - /usr/local/bin/wait-for-it.sh
 #      - archiverdb-archiver-{{ .Release.Name }}:3306
@@ -75,9 +76,9 @@ spec:
 #      - --
 #      - data/initdb.sh
     volumeMounts:
-    - name: configuration #hdbpp-db-config
-      mountPath: data
-      readOnly: true
+    - name: hdbpp-db-config
+      mountPath: /hdb-config-data
+      readOnly: false
       
   containers:
   - name: hdbpp-cm

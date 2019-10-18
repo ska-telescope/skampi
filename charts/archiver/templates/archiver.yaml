@@ -56,7 +56,8 @@ spec:
     command:
       - /bin/bash
     args:
-      - /data/initdb.sh
+      - mysql -h archiverdb-archiver-test -u root < /data/create_hdbpp.sql
+#      - /data/initdb.sh
     volumeMounts:
     - name: configuration 
       mountPath: data

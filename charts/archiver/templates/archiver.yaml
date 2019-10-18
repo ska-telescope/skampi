@@ -9,8 +9,6 @@ metadata:
 data: 
   configuration.json: 
 {{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
-  initdb.sh:
-{{ (tpl (.Files.Glob "data/initdb.sh").AsConfig . ) | indent 2  }}
   create_hdbpp.sql:
 {{ (tpl (.Files.Glob "data/create_hdbpp.sql").AsConfig . ) | indent 2  }}
 

@@ -54,10 +54,10 @@ spec:
     image: "{{ .Values.confighdbpp.image.registry }}/{{ .Values.confighdbpp.image.image }}:{{ .Values.confighdbpp.image.tag }}"
     imagePullPolicy: {{ .Values.confighdbpp.image.pullPolicy }}
     command:
-      - /bin/bash
+      - sh
     args:
-      - mysql -h archiverdb-archiver-test -u root < /data/create_hdbpp.sql
-#      - /data/initdb.sh
+      - -c
+      - "mysql -h archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }} -u root -psecret < data/create_hdbpp.sql"
     volumeMounts:
     - name: configuration 
       mountPath: data

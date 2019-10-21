@@ -69,7 +69,7 @@ spec:
       - sh
     args:
       - -c
-      - "./usr/local/bin/hdbppcm-srv 01 -v5"
+      - "./usr/local/bin/hdbppcm-srv 01"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -81,7 +81,7 @@ spec:
       - sh
     args:
       - -c
-      - "./usr/local/bin/hdbppes-srv 01 -v5"
+      - "./usr/local/bin/hdbppes-srv 01"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000

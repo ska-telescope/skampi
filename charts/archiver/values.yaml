@@ -25,8 +25,8 @@ archiver:
 hdbppdb:
   enabled: true
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-db
+    registry: nexus.engageska-portugal.pt/tango-example
+    image: mariadb_hdbpp
     tag: latest
     pullPolicy: IfNotPresent
   db:

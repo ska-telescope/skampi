@@ -54,9 +54,6 @@ deploy test:
   environment:
     name: test
     url: http://integration.engageska-portugal.pt/testdb
-  only:
-    refs:
-      - master
 
 deploy staging:
   stage: deploy

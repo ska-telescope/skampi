@@ -50,7 +50,6 @@ deploy test:
   - if [ -n "$HELM_CHART" ]; then make delete KUBE_NAMESPACE=integration; fi;
   - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   - kubectl get all,pv,pvc,ingress -n integration
-  - kubectl get pods -n integration
   environment:
     name: test
     url: http://integration.engageska-portugal.pt/testdb
@@ -62,7 +61,6 @@ deploy staging:
   script:  
   - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
   - kubectl get all,pv,pvc,ingress -n staging
-  - kubectl get pods -n integration
   environment:
     name: staging
     url: http://kubernetes.engageska-portugal.pt/testdb

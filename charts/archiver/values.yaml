@@ -49,8 +49,16 @@ dsconfig:
 confighdbpp:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-db #ska-python-buildenv
+    image: tango-db
     tag: latest
+    pullPolicy: IfNotPresent
+
+
+attr-config:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: ska-python-buildenv
+    tag: 0.1.0
     pullPolicy: IfNotPresent
 
 nodeSelector: {}

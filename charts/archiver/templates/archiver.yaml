@@ -11,6 +11,8 @@ data:
 {{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
   create_hdbpp.sql:
 {{ (tpl (.Files.Glob "data/create_hdbpp.sql").AsConfig . ) | indent 2  }}
+  attribute_fqdn.txt:
+{{ (tpl (.Files.Glob "data/attribute_fqdn.txt").AsConfig . ) | indent 2 }}
 
 ---
 apiVersion: v1
@@ -55,7 +57,7 @@ spec:
       - sh
     args:
       - -c
-      - "mysql -h archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }} -u root -psecret < data/create_hdbpp.sql"
+      - "mysql -h archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }} -u root -p secret < data/create_hdbpp.sql"
     volumeMounts:
     - name: configuration 
       mountPath: data
@@ -82,6 +84,25 @@ spec:
     args:
       - -c
       - "./usr/local/bin/hdbppes-srv 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: attr-config
+    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+    command:
+      - /bin/bash
+    args:
+      - -c
+      - wait-for-it.sh ${TANGO_HOST}
+      - --timeout=30
+      - --strict
+      - /venv/bin/python
+      - data/configure_hdbpp.py
+      - --cm=tango://${TANGO_HOST}/archiving/hdbpp/confmanager01
+      - --es=tango://${TANGO_HOST}/archiving/hdbpp/eventsubscriber01
+      - --attrfile=data/attribute_fqdn.txt
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000

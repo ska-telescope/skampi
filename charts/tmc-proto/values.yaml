@@ -21,6 +21,14 @@ tmcprototype:
     tag: latest
     pullPolicy: Always
 
+subarrayFault:
+  enabled: false
+  image:
+    registry: nexus.engageska-portugal.pt/tango-example
+    image: tmcprototype
+    tag: latest
+    pullPolicy: Always
+
 tmalarmhandler:
   enabled: true
   image:

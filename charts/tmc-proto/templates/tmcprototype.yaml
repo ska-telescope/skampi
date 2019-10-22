@@ -198,7 +198,7 @@ spec:
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
-   
+
   - name: cspsubarrayleafnode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}

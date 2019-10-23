@@ -1,4 +1,4 @@
-# Default values for tmc-proto.
+# Default values for HDB++ Archiver.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -28,7 +28,7 @@ hdbppdb:
     registry: nexus.engageska-portugal.pt/tango-example
     image: mariadb_hdbpp
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   db:
     rootpw: secret
     db: hdbpp
@@ -53,8 +53,15 @@ confighdbpp:
     tag: latest
     pullPolicy: IfNotPresent
 
+hdbppviewer:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/tango-example
+    image: hdbpp-viewer
+    tag: latest
+    pullPolicy: Always
 
-attr-config:
+attrconfig:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: ska-python-buildenv

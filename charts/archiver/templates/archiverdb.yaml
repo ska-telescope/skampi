@@ -1,4 +1,4 @@
-{{ if .Values.archiver.enabled }}
+{{ if .Values.hdbppdb.enabled }}
 ---
 
 apiVersion: v1

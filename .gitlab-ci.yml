@@ -50,7 +50,7 @@ deploy test:
   - if [ -n "$HELM_CHART" ]; then make delete KUBE_NAMESPACE=integration; fi;
   - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   - kubectl get all,pv,pvc,ingress -n integration
-  - ./resources/smoketest.sh
+  - ./scripts/smoketest.sh
   environment:
     name: test
     url: http://integration.engageska-portugal.pt/testdb

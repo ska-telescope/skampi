@@ -54,19 +54,6 @@ spec:
     - name: configuration 
       mountPath: data
       readOnly: true
-
-#  - name: confighdbpp
-#    image: "{{ .Values.confighdbpp.image.registry }}/{{ .Values.confighdbpp.image.image }}:{{ .Values.confighdbpp.image.tag }}"
-#    imagePullPolicy: {{ .Values.confighdbpp.image.pullPolicy }}
-#    command:
-#      - sh
-#    args:
-#      - -c
-#      - "mysql -h archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }} -u root -p secret < data/create_hdbpp.sql"
-#    volumeMounts:
-#    - name: configuration
-#      mountPath: data
-#      readOnly: true
       
   containers:
   - name: hdbpp-cm

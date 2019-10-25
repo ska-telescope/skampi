@@ -1,7 +1,7 @@
-K8s TM Integration
-==================
+SKAMPI - SKA Mvp Prototype Integration
+======================================
 
-This project defines the integration between the TMC prototype (https://github.com/ska-telescope/tmc-prototype) and the Webjive application (https://github.com/ska-telescope/ska-engineering-ui-compose-utils) on Kubernetes.
+This project defines the integration between various component repository on Kubernetes.
 
 .. toctree::
    :maxdepth: 2
@@ -9,6 +9,7 @@ This project defines the integration between the TMC prototype (https://github.c
 
    helm
    templates
+   environments
    resources
 
 

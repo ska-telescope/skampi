@@ -1,20 +1,33 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:latest
+image: ubuntu:18.04
+
+cache:
+  paths:
+    - ansible-playbooks/
+
+before_script:
+    - export DEBIAN_FRONTEND=readline
+    - export RUNLEVEL=1
+    - apt-get update
+    - apt-get install -y bash python apt-transport-https ca-certificates curl software-properties-common
+    - apt-add-repository --yes --update ppa:ansible/ansible
+    - printf "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d
+    - apt-get -y install ansible git ssh python-apt
 
 stages:
+  - build
   - lint
-  - clean
   - deploy
   - lifecycle
 
-download playbook:
-  stage: download
-  tags: 
+build:
+  stage: build
+  tags:
   - docker-executor
   script:
   - rm -rf ansible-playbooks
   - git clone https://github.com/ska-telescope/ansible-playbooks.git
   - cd ansible-playbooks
-  - echo -e "\n\n[integration]" > hosts
+  - echo -e "\n\n[integration]" >> hosts
   - echo "$ENVIRONMENT_ADDRESS ansible_user=$ENVIRONMENT_USER" >> hosts
   - cat hosts
 
@@ -24,91 +37,76 @@ lint:
   - docker-executor
   allow_failure: true
   script:
-  - make lint_all
+  - cd ansible-playbooks
+  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='yes' multiple_charts='yes' directory='../charts'"
+  - export ANSIBLE_STDOUT_CALLBACK=json
+  - ansible-playbook helm-linting.yml --extra-vars "throw_errors='yes' install_helm='no' multiple_charts='yes' directory='../charts'" >> helm-linting-results.json
 
-delete test: 
-  stage: clean
-  tags:
-  - docker-executor
-  script:
-  - make delete_all KUBE_NAMESPACE=integration
-  environment:
-    name: test
-  only:
-    refs:
-      - master
-    variables:
-      - $DELETE == "true"
-
-delete staging: 
-  stage: clean
-  tags:
-  - docker-executor
-  script:
-  - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
-  environment:
-    name: staging
-  only:
-    refs:
-      - staging
-    variables:
-      - $DELETE == "true"
-
-deploy test:
+deploy:
   stage: deploy
   tags:
   - docker-executor
   script:
-  - if [ -n "$HELM_CHART" ]; then make delete KUBE_NAMESPACE=integration; fi;
-  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
-  - kubectl get all,pv,pvc,ingress -n integration
-  environment:
-    name: test
-    url: http://integration.engageska-portugal.pt/testdb
-  only:
-    refs:
-      - master
+  - cd ansible-playbooks
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
+  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='no' throw_errors='no'"
 
-deploy staging:
-  stage: deploy
-  tags:
-  - docker-executor
-  script:  
-  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
-  - kubectl get all,pv,pvc,ingress -n staging
-  environment:
-    name: staging
-    url: http://kubernetes.engageska-portugal.pt/testdb
-  only:
-    refs:
-      - staging
-
-delete-and-deploy test: 
+stop_system:
   stage: lifecycle
   tags:
   - docker-executor
   script:
-  - make delete_all KUBE_NAMESPACE=integration
-  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
-  environment:
-    name: test
-    url: http://integration.engageska-portugal.pt/testdb
+  - cd ansible-playbooks
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
+  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "deploy='no' stop_integrated_system='yes' install_ska_docker='no'"
   when: manual
-  only:
-    refs:
-      - master
 
-delete-and-deploy staging: 
+start_system:
   stage: lifecycle
   tags:
   - docker-executor
   script:
-  - make delete_all KUBE_NAMESPACE=staging
-  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
-  environment:
-    name: staging
-    url: http://kubernetes.engageska-portugal.pt/testdb
+  - cd ansible-playbooks
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
+  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "helm_lint='no' deploy='no' start_integrated_system='yes' install_ska_docker='no'"
   when: manual
-  only:
-    refs:
-      - staging
+
+logs:
+  stage: lifecycle
+  tags:
+  - docker-executor
+  script:
+  - cd ansible-playbooks
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
+  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "deploy='no'  start_integrated_system='no' logs='yes' install_ska_docker='no'"
+  when: manual
+
+remove_cluster:
+  stage: lifecycle
+  tags:
+  - docker-executor
+  script:
+  - cd ansible-playbooks
+  - mkdir -p /root/.ssh
+  - echo "$CONTAINER_PRIVATE_KEY" >> /root/.ssh/id_rsa
+  - echo "$CONTAINER_PUBLIC_KEY" >> /root/.ssh/id_rsa.pub
+  - chmod 400 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
+  - ssh -o StrictHostKeyChecking=no $ENVIRONMENT_USER@$ENVIRONMENT_ADDRESS date
+  - ansible-playbook -vvv -i hosts -u $ENVIRONMENT_USER deploy_integrationenv.yml --extra-vars "deploy='no' remove_cluster='yes' start_integrated_system='no' install_ska_docker='no'"
+  when: manual

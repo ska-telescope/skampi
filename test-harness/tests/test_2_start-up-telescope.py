@@ -10,16 +10,6 @@ from time import sleep
 
 def test_init():    
   print("Init start-up-telescope")
-  timeSleep = 30
-  for x in range(10):
-    try:
-      print ("Connecting to the databaseds")
-      db = Database()
-      break
-    except:
-      print ("Could not connect to the databaseds. Retry after " + str(timeSleep) + " seconds.")
-      sleep(timeSleep)
-  print("Connected to the databaseds")
 
 def test_start_up_telescope():
   jsonLogin={"username":"user1","password":"abc123"}

@@ -42,7 +42,8 @@ k8s_test = tar -c test-harness/ | \
 		make TANGO_HOST=databaseds-$(HELM_CHART)-$(HELM_RELEASE):10000 $1; \
 		mkdir build; \
 		mv -f setup_py_test.stdout build; \
-		mv -f htmlcov/report.json build; \
+		mv -f report.json build; \
+		mv -f report.xml build; \
 		tar -czvf /tmp/build.tgz build; \
 		echo '~~~~BOUNDARY~~~~'; \
 		cat /tmp/build.tgz | base64; \

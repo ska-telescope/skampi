@@ -1,0 +1,20 @@
+{{ if .Values.ingress.enabled }}
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: kibana
+spec:
+  rules:
+  - host: {{ tpl .Values.ingress.hostname . }}
+    http:
+      paths:
+      - path: /kibana/(.*)
+        backend:
+          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+          servicePort: 5601
+
+{{ end }}

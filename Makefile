@@ -3,7 +3,7 @@ MAKEPATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
 
 # find IP addresses of this machine, setting THIS_HOST to the first address found
-THIS_HOST := $(shell ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
+THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
 KUBE_NAMESPACE ?= default## Kubernetes Namespace to use

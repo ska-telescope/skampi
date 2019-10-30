@@ -3,16 +3,34 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+  name: kibana-ing-{{ template "logging.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
     service: kibana
+  annotations:
+    kubernetes.io/ingress.class: nginx
 spec:
   rules:
   - host: {{ tpl .Values.ingress.hostname . }}
     http:
       paths:
-      - path: /kibana/(.*)
+      - path: /app/kibana
+        backend:
+          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+          servicePort: 5601
+      - path: /bundles
+        backend:
+          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+          servicePort: 5601
+      - path: /plugins
+        backend:
+          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+          servicePort: 5601
+      - path: /api
+        backend:
+          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+          servicePort: 5601
+      - path: /ui
         backend:
           serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
           servicePort: 5601

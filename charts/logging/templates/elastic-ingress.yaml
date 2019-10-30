@@ -1,4 +1,7 @@
-{{ if .Values.ingress.enabled }}
+{{ if .Values.elastic.enabled }}
+
+{{ if .Values.ingress.nginx }}
+# nginx
 
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -18,4 +21,30 @@ spec:
         backend:
           serviceName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
           servicePort: 9200
+
+{{ else }}
+# traefik
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: elastic-ing-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: elastic
+  annotations:
+      kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: {{ tpl .Values.ingress.hostname . }}
+    - http:
+        paths:
+        - path: /elastic
+          backend:
+            serviceName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+            servicePort: 9200
+
+
+{{ end }}
+
 {{ end }}

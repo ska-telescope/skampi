@@ -1,4 +1,8 @@
-{{ if .Values.ingress.enabled }}
+{{ if .Values.kibana.enabled }}
+
+
+{{ if .Values.ingress.nginx }}
+# nginx
 
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -34,5 +38,53 @@ spec:
         backend:
           serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
           servicePort: 5601
+      - path: /app/monitoring
+        backend:
+          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+          servicePort: 5601
+
+{{ else }}
+# traefik
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kibana-ing-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: kibana
+  annotations:
+      kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: {{ tpl .Values.ingress.hostname . }}
+    - http:
+        paths:
+        - path: /app/kibana
+          backend:
+            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+            servicePort: 5601
+        - path: /bundles
+          backend:
+            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+            servicePort: 5601
+        - path: /plugins
+          backend:
+            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+            servicePort: 5601
+        - path: /api
+          backend:
+            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+            servicePort: 5601
+        - path: /ui
+          backend:
+            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+            servicePort: 5601
+        - path: /app/monitoring
+          backend:
+            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+            servicePort: 5601
+
+{{ end }}
 
 {{ end }}

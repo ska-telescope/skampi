@@ -34,12 +34,13 @@ metadata:
     service: elastic
   annotations:
       kubernetes.io/ingress.class: traefik
+      traefik.frontend.rule.type: PathPrefixStrip
 spec:
   rules:
     - host: {{ tpl .Values.ingress.hostname . }}
     - http:
         paths:
-        - path: /elastic
+        - path: /elasticsearch
           backend:
             serviceName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
             servicePort: 9200

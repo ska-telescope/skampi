@@ -15,7 +15,7 @@ fluentd:
   enabled: true
   image:
     image: fluent/fluentd-kubernetes-daemonset
-    tag: v1.3-debian-elasticsearch
+    tag: v1-debian-forward
     pullPolicy: IfNotPresent
 
 kibana:
@@ -29,4 +29,8 @@ kibana:
 ingress:
   enabled: true
   nginx: false
+  hostname: integration.engageska-portugal.pt
+
+logstash:
+  enabled: true
   hostname: integration.engageska-portugal.pt

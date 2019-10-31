@@ -29,14 +29,10 @@ spec:
       - name: fluentd
         image: "{{ .Values.fluentd.image.image }}:{{ .Values.fluentd.image.tag }}"
         env:
-          - name:  FLUENT_ELASTICSEARCH_HOST
-            value: "elastic-{{ template "logging.name" . }}-{{ .Release.Name }}"
-          - name:  FLUENT_ELASTICSEARCH_PORT
-            value: "9200"
-          - name: FLUENT_ELASTICSEARCH_SCHEME
-            value: "http"
-          - name: FLUENT_UID
-            value: "0"
+          - name:  FLUENT_FOWARD_HOST
+            value: "logstash-{{ template "logging.name" . }}-{{ .Release.Name }}"
+          - name:  FLUENT_FOWARD_PORT
+            value: "5044"
         volumeMounts:
         - name: varlog
           mountPath: /var/log

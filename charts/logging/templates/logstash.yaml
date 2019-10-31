@@ -1,0 +1,88 @@
+{{ if .Values.logstash.enabled }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-configmap-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: logstash
+data:
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    path.config: /usr/share/logstash/pipeline
+  logstash.conf: |
+    input {
+      tcp {
+        codec => fluent
+        port => 24114
+      }
+    }
+    filter {
+      if [message] =~ /^\{.*\}$/ {
+        json {
+          source => "message"
+        }
+      }
+    }
+    output {
+        elasticsearch {
+            hosts => [ "http://elastic-{{ template "logging.name" . }}-{{ .Release.Name }}:9200" ]
+        }
+    }
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: logstash-deployment-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: logstash
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+      - name: logstash-{{ template "logging.name" . }}-{{ .Release.Name }}
+        image: docker.elastic.co/logstash/logstash:6.3.0
+        ports:
+        - containerPort: 5044
+        volumeMounts:
+          - name: logstash-config-volume
+            mountPath: /usr/share/logstash/config
+          - name: logstash-pipeline-volume
+            mountPath: /usr/share/logstash/pipeline
+      volumes:
+      - name: logstash-config-volume
+        configMap:
+          name: logstash-configmap-{{ template "logging.name" . }}-{{ .Release.Name }}
+          items:
+            - key: logstash.yml
+              path: logstash.yml
+      - name: logstash-pipeline-volume
+        configMap:
+          name: logstash-configmap-{{ template "logging.name" . }}-{{ .Release.Name }}
+          items:
+            - key: logstash.conf
+              path: logstash.conf
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: logstash-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: logstash
+spec:
+  selector:
+    app: logstash
+  ports:
+  - protocol: TCP
+    port: 5044
+    targetPort: 5044
+  type: ClusterIP
+
+{{ end }}

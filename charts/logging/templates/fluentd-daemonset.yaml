@@ -1,6 +1,6 @@
 {{ if .Values.fluentd.enabled }}
 
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: fluentd-{{ template "logging.name" . }}-{{ .Release.Name }}
@@ -10,6 +10,9 @@ metadata:
     version: v1
     kubernetes.io/cluster-service: "true"
 spec:
+  selector:
+    matchLabels:
+      k8s-app: fluentd-logging
   template:
     metadata:
       labels:

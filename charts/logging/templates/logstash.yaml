@@ -31,7 +31,7 @@ data:
         }
     }
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: logstash-deployment-{{ template "logging.name" . }}-{{ .Release.Name }}
@@ -39,6 +39,9 @@ metadata:
   labels:
     service: logstash
 spec:
+  selector:
+    matchLabels:
+      app: logstash
   replicas: 1
   template:
     metadata:

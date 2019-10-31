@@ -12,12 +12,13 @@ metadata:
     service: elastic
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
   - host: {{ tpl .Values.ingress.hostname . }}
     http:
       paths:
-      - path: /elastic
+      - path: /elasticsearch/(.*)
         backend:
           serviceName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
           servicePort: 9200

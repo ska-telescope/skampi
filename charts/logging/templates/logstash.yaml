@@ -15,7 +15,7 @@ data:
     input {
       tcp {
         codec => fluent
-        port => 24114
+        port => 5044
       }
     }
     filter {

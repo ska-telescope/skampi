@@ -29,10 +29,12 @@ spec:
       - name: fluentd
         image: "{{ .Values.fluentd.image.image }}:{{ .Values.fluentd.image.tag }}"
         env:
-          - name:  FLUENT_FOWARD_HOST
+          - name:  SYSLOG_HOST
             value: "logstash-{{ template "logging.name" . }}-{{ .Release.Name }}"
-          - name:  FLUENT_FOWARD_PORT
+          - name:  SYSLOG_PORT
             value: "5044"
+          - name:  SYSLOG_PROTOCOL
+            value: "tcp"
         volumeMounts:
         - name: varlog
           mountPath: /var/log

@@ -15,7 +15,7 @@ fluentd:
   enabled: true
   image:
     image: fluent/fluentd-kubernetes-daemonset
-    tag: v1-debian-forward
+    tag: v1-debian-syslog
     pullPolicy: IfNotPresent
 
 kibana:

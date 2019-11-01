@@ -13,17 +13,11 @@ data:
     path.config: /usr/share/logstash/pipeline
   logstash.conf: |
     input {
-      tcp {
-        codec => fluent
+      syslog {
         port => 5044
       }
     }
     filter {
-      if [message] =~ /^\{.*\}$/ {
-        json {
-          source => "message"
-        }
-      }
     }
     output {
         elasticsearch {
@@ -51,6 +45,8 @@ spec:
       containers:
       - name: logstash-{{ template "logging.name" . }}-{{ .Release.Name }}
         image: docker.elastic.co/logstash/logstash:6.3.0
+        command: ["/bin/bash"]
+        args: ["-c", "bin/logstash-plugin install logstash-input-syslog ; bin/logstash-plugin install logstash-output-elasticsearch ; /usr/local/bin/docker-entrypoint"]
         ports:
         - containerPort: 5044
         volumeMounts:

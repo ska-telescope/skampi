@@ -18,6 +18,24 @@ data:
       }
     }
     filter {
+      grok {
+        match => { "message" => "^%{SPACE:spaces}stream:stdout%{SPACE:spaces}docker:%{DATA:docker}%{SPACE:spaces}kubernetes:%{GREEDYDATA:kubernetes}%{SPACE:spaces}$"}
+      }
+      grok {
+        match => { "message" => "^%{INT:version}\|%{DATA:log_timestamp}\|%{DATA:thread_id}\|%{DATA:function}\|%{DATA:line_loc}\|%{WORD:severity}\|%{DATA:tags}\|%{DATA:log_message}$"}
+      }
+      mutate {
+        gsub => [
+          "docker", "=>", ":",
+          "kubernetes", "=>", ":"
+        ]
+      }
+      json {
+        source => "docker"
+      }
+      json {
+        source => "kubernetes"
+      }
     }
     output {
         elasticsearch {
@@ -46,7 +64,7 @@ spec:
       - name: logstash-{{ template "logging.name" . }}-{{ .Release.Name }}
         image: docker.elastic.co/logstash/logstash:6.3.0
         command: ["/bin/bash"]
-        args: ["-c", "bin/logstash-plugin install logstash-input-syslog ; bin/logstash-plugin install logstash-output-elasticsearch ; /usr/local/bin/docker-entrypoint"]
+        args: ["-c", "bin/logstash-plugin install logstash-input-syslog logstash-output-elasticsearch logstash-filter-grok logstash-filter-json  ; /usr/local/bin/docker-entrypoint"]
         ports:
         - containerPort: 5044
         volumeMounts:

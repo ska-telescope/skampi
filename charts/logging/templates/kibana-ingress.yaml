@@ -18,31 +18,10 @@ spec:
   - host: {{ tpl .Values.ingress.hostname . }}
     http:
       paths:
-      - path: /app/kibana
+      - path: "{{ .Values.kibana.baseUrl }}"
         backend:
           serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
           servicePort: 5601
-      - path: /bundles
-        backend:
-          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
-          servicePort: 5601
-      - path: /plugins
-        backend:
-          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
-          servicePort: 5601
-      - path: /api
-        backend:
-          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
-          servicePort: 5601
-      - path: /ui
-        backend:
-          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
-          servicePort: 5601
-      - path: /app/monitoring
-        backend:
-          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
-          servicePort: 5601
-
 {{ else }}
 # traefik
 
@@ -60,31 +39,10 @@ spec:
     - host: {{ tpl .Values.ingress.hostname . }}
     - http:
         paths:
-        - path: /app/kibana
+        - path: "{{ .Values.kibana.baseUrl }}"
           backend:
             serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
             servicePort: 5601
-        - path: /bundles
-          backend:
-            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
-            servicePort: 5601
-        - path: /plugins
-          backend:
-            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
-            servicePort: 5601
-        - path: /api
-          backend:
-            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
-            servicePort: 5601
-        - path: /ui
-          backend:
-            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
-            servicePort: 5601
-        - path: /app/monitoring
-          backend:
-            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
-            servicePort: 5601
-
 {{ end }}
 
 {{ end }}

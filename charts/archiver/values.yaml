@@ -1,20 +1,37 @@
-# Default values for tango-base.
+# Default values for HDB++ Archiver.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 display: ":0"
 xauthority: "~/.Xauthority"
 
-tangodb:
+archiver:
   enabled: true
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-db
+    registry: nexus.engageska-portugal.pt/tango-example
+    image: archiver
     tag: latest
     pullPolicy: IfNotPresent
   db:
     rootpw: secret
-    db: tango
+    db: hdbpp
+    user: tango
+    passowrd: tango
+  resources:
+    requests:
+      cpu: 200m     # 200m = 0.2 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
+
+hdbppdb:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/tango-example
+    image: mariadb_hdbpp
+    tag: latest
+    pullPolicy: Always
+  db:
+    rootpw: secret
+    db: hdbpp
     user: tango
     password: tango
   resources:
@@ -22,48 +39,33 @@ tangodb:
       cpu: 200m     # 200m = 0.2 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
 
-databaseds:
-  enabled: true
+dsconfig:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-cpp
-    tag: latest
-    pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 200m     # 200m = 0.2 CPU
-      memory: 256Mi # 256Mi = 0.25 GB mem
-
-itango:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-itango
+    image: tango-dsconfig
     tag: latest
     pullPolicy: IfNotPresent
 
-tangotest:
-  enabled: true
+confighdbpp:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-java
+    image: tango-db
     tag: latest
     pullPolicy: IfNotPresent
 
-jive:
+hdbppviewer:
   enabled: true
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-java
+    registry: nexus.engageska-portugal.pt/tango-example
+    image: hdbpp-viewer
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
-logviewer:
-  enabled: false
+attrconfig:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-java
-    tag: latest
+    image: ska-python-buildenv
+    tag: 0.1.0
     pullPolicy: IfNotPresent
 
 nodeSelector: {}

@@ -18,8 +18,8 @@ tmcprototype:
   image:
     registry: nexus.engageska-portugal.pt/tango-example
     image: tmcprototype
-    tag: 0.1.3
-    pullPolicy: IfNotPresent
+    tag: latest
+    pullPolicy: Always
 
 tmalarmhandler:
   enabled: true
@@ -35,6 +35,23 @@ dsconfig:
     image: tango-dsconfig
     tag: latest
     pullPolicy: IfNotPresent
+
+archiver:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/tango-example
+    image: archiver
+    tag: latest
+    pullPolicy: IfNotPresent
+  db:
+    rootpw: secret
+    db: hdbpp
+    user: tango
+    passowrd: tango
+  resources:
+    requests:
+      cpu: 200m     # 200m = 0.2 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
 
 nodeSelector: {}
 

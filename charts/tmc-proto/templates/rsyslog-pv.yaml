@@ -14,7 +14,7 @@ spec:
   capacity:
     storage: 10Gi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   hostPath:
     path: /data/rsyslog-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}/
 
@@ -33,7 +33,7 @@ metadata:
 spec:
   storageClassName: standard
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi

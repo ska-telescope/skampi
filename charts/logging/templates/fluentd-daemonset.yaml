@@ -33,8 +33,8 @@ spec:
             value: "logstash-{{ template "logging.name" . }}-{{ .Release.Name }}"
           - name:  SYSLOG_PORT
             value: "5044"
-          - name:  SYSLOG_PROTOCOL
-            value: "tcp"
+          - name: FLUENTD_SYSTEMD_CONF
+            value: disable
         volumeMounts:
         - name: varlog
           mountPath: /var/log

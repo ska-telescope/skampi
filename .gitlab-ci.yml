@@ -51,6 +51,7 @@ deploy test environment:
   - if [ -n "$HELM_CHART" ]; then make delete KUBE_NAMESPACE=integration; fi;
   - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   - kubectl get all,pv,pvc,ingress -n integration
+  retry: 2
   environment:
     name: test
     url: http://integration.engageska-portugal.pt/testdb
@@ -74,10 +75,12 @@ deploy staging environment:
 
 k8s_test test environment:
   stage: test
+  retry: 2
   tags:
   - docker-executor
   script:
-  - make k8s_test KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
+  - make k8s_test KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt && [ -f "build/report.xml" ]
+  - ./scripts/smoketest.sh
   environment:
     name: test
     url: http://integration.engageska-portugal.pt/testdb
@@ -92,10 +95,11 @@ k8s_test test environment:
 
 k8s_test staging environment:
   stage: test
+  retry: 2
   tags:
   - docker-executor
   script:  
-  - make k8s_test KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
+  - make k8s_test KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging && [ -f "build/report.xml" ]
   environment:
     name: staging
     url: http://kubernetes.engageska-portugal.pt/testdb

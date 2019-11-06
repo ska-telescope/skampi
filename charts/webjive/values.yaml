@@ -18,7 +18,7 @@ webjive:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: webjive-develop_webjive
-    tag: 0.1.3
+    tag: latest
     pullPolicy: Always
 
 authserver:
@@ -51,7 +51,7 @@ tangogql:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: webjive-develop_tangogql
-    tag: 0.1.4
+    tag: latest
     pullPolicy: Always
 
 # Configure Ingress resource that allow you to access the Tango REST API

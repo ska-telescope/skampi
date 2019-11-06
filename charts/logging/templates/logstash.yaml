@@ -12,7 +12,7 @@ data:
     http.host: "0.0.0.0"
     path.config: /usr/share/logstash/pipeline
   logstash.conf: 
-{{ (tpl (.Files.Glob "config/logstash.conf").AsConfig .) | indent 2 }}
+{{ (tpl (.Files.Glob "configs/logstash.conf").AsConfig .) | indent 2 }}
 ---
 apiVersion: apps/v1
 kind: Deployment

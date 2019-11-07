@@ -21,6 +21,7 @@ delete test environment:
   - docker-executor
   script:
   - make delete_all KUBE_NAMESPACE=integration
+  - kubectl delete namespace integration
   environment:
     name: test
   only:
@@ -31,10 +32,12 @@ delete test environment:
 
 delete staging environment:
   stage: clean
+  retry: 2
   tags:
   - docker-executor
   script:
   - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
+  - kubectl delete namespace staging
   environment:
     name: staging
   only:
@@ -61,6 +64,7 @@ deploy test environment:
 
 deploy staging environment:
   stage: deploy
+  retry: 2
   tags:
   - docker-executor
   script:
@@ -79,8 +83,8 @@ k8s_test test environment:
   tags:
   - docker-executor
   script:
-  - make k8s_test KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt && [ -f "build/report.xml" ]
   - ./scripts/smoketest.sh
+  - make k8s_test KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt && [ -f "build/report.xml" ]
   environment:
     name: test
     url: http://integration.engageska-portugal.pt/testdb
@@ -118,6 +122,7 @@ delete-and-deploy test environment:
   - docker-executor
   script:
   - make delete_all KUBE_NAMESPACE=integration
+  - kubectl delete namespace integration
   - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   environment:
     name: test
@@ -132,7 +137,8 @@ delete-and-deploy staging environment:
   tags:
   - docker-executor
   script:
-  - make delete_all KUBE_NAMESPACE=staging
+  - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
+  - kubectl delete namespace staging
   - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
   environment:
     name: staging

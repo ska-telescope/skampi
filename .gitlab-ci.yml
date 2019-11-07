@@ -79,6 +79,7 @@ k8s_test test environment:
   tags:
   - docker-executor
   script:
+  - ./scripts/smoketest.sh
   - make k8s_test KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt && [ -f "build/report.xml" ]
   - ./scripts/smoketest.sh
   environment:

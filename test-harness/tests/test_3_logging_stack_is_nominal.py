@@ -8,7 +8,7 @@ from pyhelm import ChartBuilder
 INGRESS_HOSTNAME="kibana-logging-sarao"
 
 def test_kibana_should_be_accessible_via_ingress():
-    url = f"http://{INGRESS_HOSTNAME}/app/kibana"
+    url = "http://{}/app/kibana".format(INGRESS_HOSTNAME)
     res = requests.get(url)
 
     assert res.status_code == 200

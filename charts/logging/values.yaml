@@ -17,6 +17,8 @@ fluentd:
     image: fluent/fluentd-kubernetes-daemonset
     tag: v1-debian-syslog
     pullPolicy: IfNotPresent
+  livenessProbe:
+    enabled: true
 
 kibana:
   enabled: true

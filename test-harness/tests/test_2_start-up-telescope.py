@@ -13,13 +13,13 @@ def test_init():
 
 def test_start_up_telescope():
   jsonLogin={"username":"user1","password":"abc123"}
-  url = 'http://webjive-webjive-test:8080/login' 
+  url = 'http://webjive-webjive-sarao:8080/login' 
   r = requests.post(url=url, json=jsonLogin)
   webjive_jwt = r.cookies.get_dict()['webjive_jwt']
     
   cookies = {'webjive_jwt': webjive_jwt}
 
-  url = 'http://webjive-webjive-test:5004/db' 
+  url = 'http://webjive-webjive-sarao:5004/db' 
   with open('files/mutation.json', 'r') as file:
     mutation = file.read().replace('\n', '')
 

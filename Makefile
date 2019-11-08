@@ -39,7 +39,7 @@ k8s_test = tar -c test-harness/ | \
 		--image-pull-policy=IfNotPresent \
 		--image=$(IMAGE_TO_TEST) -- \
 		/bin/bash -c "tar xv --strip-components 1 --warning=all && \
-		make TANGO_HOST=databaseds-$(HELM_CHART)-$(HELM_RELEASE):10000 $1 && \
+		make TANGO_HOST=databaseds-tango-base-$(HELM_RELEASE):10000 $1 && \
 		mkdir build && \
 		mv -f setup_py_test.stdout build && \
 		mv -f report.json build && \

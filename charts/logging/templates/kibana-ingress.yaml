@@ -13,12 +13,13 @@ metadata:
     service: kibana
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
   - host: {{ tpl .Values.ingress.hostname . }}
     http:
       paths:
-      - path: "{{ .Values.kibana.baseUrl }}"
+      - path: "{{ .Values.kibana.baseUrl }}/(.*)"
         backend:
           serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
           servicePort: 5601
@@ -33,13 +34,14 @@ metadata:
   labels:
     service: kibana
   annotations:
-      kubernetes.io/ingress.class: traefik
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
     - host: {{ tpl .Values.ingress.hostname . }}
-    - http:
+      http:
         paths:
-        - path: "{{ .Values.kibana.baseUrl }}"
+        - path: "{{ .Values.kibana.baseUrl }}/?(.*)"
           backend:
             serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
             servicePort: 5601

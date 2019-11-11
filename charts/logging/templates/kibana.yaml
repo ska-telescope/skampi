@@ -25,15 +25,13 @@ spec:
           value: "true"
         - name: SERVER_BASEPATH
           value: "{{ .Values.kibana.baseUrl }}"
-        - name: SERVER_REWRITEBASEPATH
-          value: "true"
         ports:
         - name: kibana-http
           containerPort: 5601
           protocol: TCP
         readinessProbe:
           httpGet:
-            path: "{{ .Values.kibana.baseUrl }}/api/status"
+            path: "/api/status"
             port: 5601
           initialDelaySeconds: 5
           timeoutSeconds: 10

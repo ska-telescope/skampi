@@ -27,11 +27,11 @@ kibana:
     image: kibana/kibana
     tag: 6.5.4
     pullPolicy: IfNotPresent
-  baseUrl: /app/kibana
+  baseUrl: /kibana
 
 ingress:
   enabled: true
-  nginx: false
+  nginx: true
   hostname: integration.engageska-portugal.pt
 
 logstash:

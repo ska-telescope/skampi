@@ -31,12 +31,6 @@ spec:
         - name: kibana-http
           containerPort: 5601
           protocol: TCP
-        livenessProbe:
-          httpGet:
-            path: "{{ .Values.kibana.baseUrl }}/api/status"
-            port: 5601
-          initialDelaySeconds: 5
-          timeoutSeconds: 10
         readinessProbe:
           httpGet:
             path: "{{ .Values.kibana.baseUrl }}/api/status"

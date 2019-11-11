@@ -4,8 +4,8 @@
 
 
 elastic:
-   enabled: true
-   image:
+  enabled: true
+  image:
     registry: docker.elastic.co
     image: elasticsearch/elasticsearch
     tag: 6.5.4

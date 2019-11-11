@@ -1,3 +1,4 @@
+{{ if .Values.elastic.enabled }}
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -37,3 +38,4 @@ spec:
   resources:
     requests:
       storage: 10Gi
+{{ end }}

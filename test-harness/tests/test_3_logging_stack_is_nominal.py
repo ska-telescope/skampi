@@ -2,8 +2,6 @@ import pytest
 import requests
 import json
 
-from pyhelm import ChartBuilder
-
 #TODO parametise and get this from k8s config somehow
 INGRESS_HOSTNAME="kibana-logging-sarao"
 

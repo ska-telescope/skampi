@@ -1,5 +1,15 @@
 image: nexus.engageska-portugal.pt/ska-docker/deploy:latest
 
+variables:
+  debug_before_stages: "deploy"
+  debug_before_cmd: "kubectl get all --all-namespaces"
+  debug_after_stages: "deploy"
+  debug_after_cmd: ""
+
+default:
+  before_script: (echo $DEBUG_BEFORE_STAGES | grep -q $CI_JOB_STAGE) && $DEBUG_BEFORE_CMD
+  after_script: (echo $DEBUG_AFTER_STAGES | grep -q $CI_JOB_STAGE) && $DEBUG_AFTER_CMD
+
 stages:
   - lint
   - clean

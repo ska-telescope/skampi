@@ -4,11 +4,13 @@
 BASEURL="git@gitlab.com:ska-telescope/" #SSH
 REPOPATH=$1
 REPOURL="${BASEURL}$1.git"
-git clone "$REPOURL"
 if [ -d "$REPOPATH" ]; then
-  echo 1
+  exit 1
 else
-  echo 0
+  git clone "$REPOURL"
+  if [ -d "$REPOPATH" ]; then
+    exit 1
+  fi
+  exit 0
 fi
 
-echo $REPOPATH

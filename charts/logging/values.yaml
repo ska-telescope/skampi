@@ -27,7 +27,7 @@ kibana:
     image: kibana/kibana
     tag: 6.5.4
     pullPolicy: IfNotPresent
-  baseUrl: /kibana
+  basePath: /kibana
 
 ingress:
   enabled: true

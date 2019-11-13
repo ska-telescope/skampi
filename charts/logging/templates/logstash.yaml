@@ -67,10 +67,12 @@ metadata:
 spec:
   selector:
     app: logstash
+  type: NodePort
   ports:
   - protocol: TCP
     port: 5044
     targetPort: 5044
-  type: ClusterIP
+    nodePort: 30123
+  
 
 {{ end }}

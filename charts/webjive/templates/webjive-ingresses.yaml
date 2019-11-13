@@ -162,7 +162,7 @@ spec:
       secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
     - host: {{ tpl .Values.ingress.hostname . }}
-    - http:
+      http:
         paths:
         - path: /testdb/db
           backend:
@@ -193,7 +193,7 @@ spec:
       secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
     - host: {{ tpl .Values.ingress.hostname . }}
-    - http:
+      http:
         paths:
         - path: /auth
           backend:
@@ -215,7 +215,7 @@ spec:
       secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
     - host: {{ tpl .Values.ingress.hostname . }}
-    - http:
+      http:
         paths:
         - path: /
           backend:
@@ -245,7 +245,7 @@ spec:
       secretName: tls-secret-{{ template "webjive.name" . }}-{{ .Release.Name }}
   rules:
     - host: {{ tpl .Values.ingress.hostname . }}
-    - http:
+      http:
         paths:
         - path: /dashboards
           backend:

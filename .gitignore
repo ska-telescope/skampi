@@ -1,3 +1,6 @@
+__pycache__
+docstatus
+.idea
 .vscode/
 venv/
 credentials.json

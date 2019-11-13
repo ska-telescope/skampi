@@ -1,13 +1,13 @@
-import schedule
-import time
-import requests
-from github import Github
+# import schedule
+# import time
+# import requests
+# from github import Github
 import gitlab
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+# import gspread
+# from oauth2client.service_account import ServiceAccountCredentials
 import subprocess
-import os
-import pprint
+# import os
+# import pprint
 
 
 class Repository:
@@ -20,8 +20,9 @@ class Repository:
     def set_gitlab(self, gitlab):
         self.gitlab = gitlab
 
-    def set_folder_exists(self, truth):
-        self.docs_folder_exists = truth
+    def set_folder_exists(self):
+        if subprocess.call(["./docstatus/git-clone.sh", self.name]):
+            self.docs_folder_exists = True
 
 
 class GitLabRepo:
@@ -50,9 +51,8 @@ def gitlab_repositories():
 
 if __name__ == '__main__':
 
-    # gitlabRepos = gitlab_repositories()
+    gitlabRepos = gitlab_repositories()
 
-    gitlabRepos = [GitLabRepo("tmp", "me")]
     repos = []
 
     for labRepo in gitlabRepos:
@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     for repo in repos:
         print("Repo Name: " + repo.name)
-        repo.set_folder_exists(subprocess.call(["./docstatus/git-clone.sh", repo.name]))
+        repo.set_folder_exists()
     #
     # scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     # creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json',

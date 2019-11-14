@@ -19,19 +19,20 @@ class Repository:
         self.gitlab = gitlab_repo
         self.docs_folder_exists = False
 
-    def set_gitlab(self, gitlab):
-        self.gitlab = gitlab
+    def set_gitlab(self, gitlab_repo):
+        self.gitlab = gitlab_repo
 
     def set_folder_exists(self):
-        if subprocess.call(["./docstatus/git-clone.sh", self.name]):
+        if subprocess.call(["./docstatus/git-clone.sh", self.gitlab.path]):
             self.docs_folder_exists = True
 
 
 class GitLabRepo:
-    def __init__(self, name, creator, mirror=None):
+    def __init__(self, name, creator, path, mirror=None):
         self.name = name
-        self.mirror = mirror
         self.creator = creator
+        self.path = path
+        self.mirror = mirror
 
 
 def gitlab_repositories():
@@ -46,7 +47,7 @@ def gitlab_repositories():
     result = []
     for project in projects:
         creator = gl.users.get(project.creator_id).username
-        result.append(GitLabRepo(project.name, project.mirror, creator))
+        result.append(GitLabRepo(project.name, creator, project.path, project.mirror))
 
     return result
 
@@ -85,11 +86,11 @@ if __name__ == '__main__':
             cell_list[0].value = repo.name
             cell_list[1].value = "TBD"
             cell_list[2].value = repo.docs_folder_exists
-            cell_list[3].value = repo.gitlab.mirror
-            cell_list[4].value = str(repo.gitlab.creator)
-            cell_list[5].value = ""
+            # cell_list[3].value = repo.gitlab.mirror
+            cell_list[3].value = str(repo.gitlab.creator)
+            # cell_list[5].value = ""
 
-            print(str(repo.name) + "\t\t\t\t github: NO \t || gtilab: YES \t || \t admins: " + str(repo.gitlab.creator))
+            # print(str(repo.name) + "\t\t\t\t github: NO \t || gtilab: YES \t || \t admins: " + str(repo.gitlab.creator))
 
         # Update in batch
         sheet.update_cells(cell_list)

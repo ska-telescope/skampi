@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+#github = "*"
 astroid = "==2.3.0"
 certifi = "==2019.9.11"
 chardet = "==3.0.4"
@@ -22,18 +23,16 @@ six = "==1.12.0"
 typed-ast = "==1.2.0"
 urllib3 = "==1.25.6"
 wrapt = "==1.11.2"
-python-gitlab = "*"
 Deprecated = "==1.2.6"
 Flask = "==1.1.1"
 Jinja2 = "==2.10.1"
 MarkupSafe = "==1.1.1"
-PyGithub = "==1.43.8"
+#PyGithub = "==1.43.8"
 PyJWT = "==1.7.1"
 Werkzeug = "==0.16.0"
+python-gitlab = "*"
 gspread = "*"
 oauth2client = "*"
-pytest = "*"
-gitlab = "*"
 
 [requires]
 python_version = "3.6"

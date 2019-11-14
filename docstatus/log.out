@@ -1,0 +1,656 @@
+ $ python docstatus.py
+Repo Name: tangosnmp
+Your configuration specifies to merge with the ref 'refs/heads/master'
+from the remote, but no such ref was fetched.
+Repo Name: dspsr-test
+Already up to date.
+Repo Name: web-maxiv-tangogql
+Already up to date.
+Repo Name: webjive auth
+Cloning into 'docstatus/webjive auth'...
+The project you were looking for could not be found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Repo Name: ska-rfi-monitoring-processing
+Already up to date.
+Repo Name: dashboard-repo
+Already up to date.
+Repo Name: dependencies-manager
+Already up to date.
+Repo Name: jira-groovy-scripts
+Already up to date.
+Repo Name: container-survey-report
+Already up to date.
+Repo Name: container-orchestration-chart-examples
+Already up to date.
+Repo Name: SEP_Pipeline_Imaging
+Already up to date.
+Repo Name: ska-engineering-ui-compose-utils
+Already up to date.
+Repo Name: tangogql
+Already up to date.
+Repo Name: jira-tools
+Already up to date.
+Repo Name: low-cbf-tools
+Already up to date.
+Repo Name: low-cbf-model
+Already up to date.
+Repo Name: C_DFT
+Already up to date.
+Repo Name: C_Degridder
+Already up to date.
+Repo Name: CUDA_Deconvolution
+Cloning into 'docstatus/CUDA_Deconvolution'...
+remote: Enumerating objects: 52, done.
+remote: Total 52 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (52/52), 30.83 MiB | 444.00 KiB/s, done.
+Resolving deltas: 100% (21/21), done.
+Repo Name: CUDA_Solver
+Cloning into 'docstatus/CUDA_Solver'...
+remote: Enumerating objects: 18, done.
+remote: Total 18 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (18/18), 16.75 KiB | 5.58 MiB/s, done.
+Resolving deltas: 100% (7/7), done.
+Repo Name: CUDA_GC
+Cloning into 'docstatus/CUDA_GC'...
+remote: Enumerating objects: 30, done.
+remote: Counting objects: 100% (30/30), done.
+remote: Compressing objects: 100% (13/13), done.
+remote: Total 45 (delta 17), reused 30 (delta 17)
+Receiving objects: 100% (45/45), 25.47 KiB | 5.09 MiB/s, done.
+Resolving deltas: 100% (23/23), done.
+Repo Name: CUDA_Degridder
+Cloning into 'docstatus/CUDA_Degridder'...
+remote: Enumerating objects: 32, done.
+remote: Total 32 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (32/32), 31.34 KiB | 118.00 KiB/s, done.
+Resolving deltas: 100% (14/14), done.
+Repo Name: CUDA_DFT
+Cloning into 'docstatus/CUDA_DFT'...
+remote: Enumerating objects: 164, done.
+remote: Total 164 (delta 0), reused 0 (delta 0) 323.00 KiB/s
+Receiving objects: 100% (164/164), 1.14 MiB | 370.00 KiB/s, done.
+Resolving deltas: 100% (63/63), done.
+Repo Name: CUDA_Gridder
+Cloning into 'docstatus/CUDA_Gridder'...
+remote: Enumerating objects: 53, done.
+remote: Total 53 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (53/53), 25.58 KiB | 93.00 KiB/s, done.
+Resolving deltas: 100% (18/18), done.
+Repo Name: CUDA_InverseDFT
+Cloning into 'docstatus/CUDA_InverseDFT'...
+remote: Enumerating objects: 34, done.
+packet_write_wait: Connection to 35.231.145.151 port 22: Broken pipe
+fatal: The remote end hung up unexpectedly
+fatal: early EOF
+fatal: index-pack failed
+Repo Name: pogo
+Cloning into 'docstatus/pogo'...
+remote: Enumerating objects: 60, done.
+remote: Counting objects: 100% (60/60), done.
+remote: Compressing objects: 100% (47/47), done.
+remote: Total 11305 (delta 20), reused 0 (delta 0)
+Receiving objects: 100% (11305/11305), 8.52 MiB | 219.00 KiB/s, done.
+Resolving deltas: 100% (6396/6396), done.
+Repo Name: archiver
+Cloning into 'docstatus/archiver'...
+remote: Enumerating objects: 171, done.
+remote: Total 171 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (171/171), 81.53 KiB | 151.00 KiB/s, done.
+Resolving deltas: 100% (82/82), done.
+Repo Name: Sensitivity Calculator
+Cloning into 'docstatus/Sensitivity Calculator'...
+The project you were looking for could not be found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Repo Name: templates-repository
+Cloning into 'docstatus/templates-repository'...
+remote: Enumerating objects: 13, done.
+remote: Counting objects: 100% (13/13), done.
+remote: Compressing objects: 100% (9/9), done.
+remote: Total 13 (delta 2), reused 0 (delta 0)
+Receiving objects: 100% (13/13), done.
+Resolving deltas: 100% (2/2), done.
+Repo Name: katpoint
+Cloning into 'docstatus/katpoint'...
+remote: Enumerating objects: 73, done.
+remote: Counting objects: 100% (73/73), done.
+remote: Compressing objects: 100% (73/73), done.
+remote: Total 2458 (delta 47), reused 0 (delta 0)
+Receiving objects: 100% (2458/2458), 2.57 MiB | 267.00 KiB/s, done.
+Resolving deltas: 100% (1742/1742), done.
+Repo Name: sim-mid-surface
+Cloning into 'docstatus/sim-mid-surface'...
+remote: Enumerating objects: 134, done.
+remote: Counting objects: 100% (134/134), done.
+remote: Compressing objects: 100% (38/38), done.
+remote: Total 876 (delta 61), reused 120 (delta 57)
+Receiving objects: 100% (876/876), 58.72 MiB | 414.00 KiB/s, done.
+Resolving deltas: 100% (402/402), done.
+Checking out files: 100% (337/337), done.
+Repo Name: sim-mid-pointing
+Cloning into 'docstatus/sim-mid-pointing'...
+remote: Enumerating objects: 6, done.
+remote: Counting objects: 100% (6/6), done.
+remote: Compressing objects: 100% (6/6), done.
+Receiving objects:  90% (5604/6207), 1.06 GiB | 449.00 KiB/s
+ $ python docstatus.py
+Repo Name: tangosnmp
+Your configuration specifies to merge with the ref 'refs/heads/master'
+from the remote, but no such ref was fetched.
+Repo Name: dspsr-test
+Already up to date.
+Repo Name: web-maxiv-tangogql
+Already up to date.
+Repo Name: webjive auth
+Cloning into 'docstatus/webjive auth'...
+The project you were looking for could not be found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Repo Name: ska-rfi-monitoring-processing
+Already up to date.
+Repo Name: dashboard-repo
+Already up to date.
+Repo Name: dependencies-manager
+Already up to date.
+Repo Name: jira-groovy-scripts
+Already up to date.
+Repo Name: container-survey-report
+Already up to date.
+Repo Name: container-orchestration-chart-examples
+Already up to date.
+Repo Name: SEP_Pipeline_Imaging
+Already up to date.
+Repo Name: ska-engineering-ui-compose-utils
+Already up to date.
+Repo Name: tangogql
+Already up to date.
+Repo Name: jira-tools
+Already up to date.
+Repo Name: low-cbf-tools
+Already up to date.
+Repo Name: low-cbf-model
+Already up to date.
+Repo Name: C_DFT
+Already up to date.
+Repo Name: C_Degridder
+Already up to date.
+Repo Name: CUDA_Deconvolution
+Cloning into 'docstatus/CUDA_Deconvolution'...
+remote: Enumerating objects: 52, done.
+remote: Total 52 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (52/52), 30.83 MiB | 444.00 KiB/s, done.
+Resolving deltas: 100% (21/21), done.
+Repo Name: CUDA_Solver
+Cloning into 'docstatus/CUDA_Solver'...
+remote: Enumerating objects: 18, done.
+remote: Total 18 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (18/18), 16.75 KiB | 5.58 MiB/s, done.
+Resolving deltas: 100% (7/7), done.
+Repo Name: CUDA_GC
+Cloning into 'docstatus/CUDA_GC'...
+remote: Enumerating objects: 30, done.
+remote: Counting objects: 100% (30/30), done.
+remote: Compressing objects: 100% (13/13), done.
+remote: Total 45 (delta 17), reused 30 (delta 17)
+Receiving objects: 100% (45/45), 25.47 KiB | 5.09 MiB/s, done.
+Resolving deltas: 100% (23/23), done.
+Repo Name: CUDA_Degridder
+Cloning into 'docstatus/CUDA_Degridder'...
+remote: Enumerating objects: 32, done.
+remote: Total 32 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (32/32), 31.34 KiB | 118.00 KiB/s, done.
+Resolving deltas: 100% (14/14), done.
+Repo Name: CUDA_DFT
+Cloning into 'docstatus/CUDA_DFT'...
+remote: Enumerating objects: 164, done.
+remote: Total 164 (delta 0), reused 0 (delta 0) 323.00 KiB/s
+Receiving objects: 100% (164/164), 1.14 MiB | 370.00 KiB/s, done.
+Resolving deltas: 100% (63/63), done.
+Repo Name: CUDA_Gridder
+Cloning into 'docstatus/CUDA_Gridder'...
+remote: Enumerating objects: 53, done.
+remote: Total 53 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (53/53), 25.58 KiB | 93.00 KiB/s, done.
+Resolving deltas: 100% (18/18), done.
+Repo Name: CUDA_InverseDFT
+Cloning into 'docstatus/CUDA_InverseDFT'...
+remote: Enumerating objects: 34, done.
+packet_write_wait: Connection to 35.231.145.151 port 22: Broken pipe
+fatal: The remote end hung up unexpectedly
+fatal: early EOF
+fatal: index-pack failed
+Repo Name: pogo
+Cloning into 'docstatus/pogo'...
+remote: Enumerating objects: 60, done.
+remote: Counting objects: 100% (60/60), done.
+remote: Compressing objects: 100% (47/47), done.
+remote: Total 11305 (delta 20), reused 0 (delta 0)
+Receiving objects: 100% (11305/11305), 8.52 MiB | 219.00 KiB/s, done.
+Resolving deltas: 100% (6396/6396), done.
+Repo Name: archiver
+Cloning into 'docstatus/archiver'...
+remote: Enumerating objects: 171, done.
+remote: Total 171 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (171/171), 81.53 KiB | 151.00 KiB/s, done.
+Resolving deltas: 100% (82/82), done.
+Repo Name: Sensitivity Calculator
+Cloning into 'docstatus/Sensitivity Calculator'...
+The project you were looking for could not be found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Repo Name: templates-repository
+Cloning into 'docstatus/templates-repository'...
+remote: Enumerating objects: 13, done.
+remote: Counting objects: 100% (13/13), done.
+remote: Compressing objects: 100% (9/9), done.
+remote: Total 13 (delta 2), reused 0 (delta 0)
+Receiving objects: 100% (13/13), done.
+Resolving deltas: 100% (2/2), done.
+Repo Name: katpoint
+Cloning into 'docstatus/katpoint'...
+remote: Enumerating objects: 73, done.
+remote: Counting objects: 100% (73/73), done.
+remote: Compressing objects: 100% (73/73), done.
+remote: Total 2458 (delta 47), reused 0 (delta 0)
+Receiving objects: 100% (2458/2458), 2.57 MiB | 267.00 KiB/s, done.
+Resolving deltas: 100% (1742/1742), done.
+Repo Name: sim-mid-surface
+Cloning into 'docstatus/sim-mid-surface'...
+remote: Enumerating objects: 134, done.
+remote: Counting objects: 100% (134/134), done.
+remote: Compressing objects: 100% (38/38), done.
+remote: Total 876 (delta 61), reused 120 (delta 57)
+Receiving objects: 100% (876/876), 58.72 MiB | 414.00 KiB/s, done.
+Resolving deltas: 100% (402/402), done.
+Checking out files: 100% (337/337), done.
+Repo Name: sim-mid-pointing
+Cloning into 'docstatus/sim-mid-pointing'...
+remote: Enumerating objects: 6, done.
+remote: Counting objects: 100% (6/6), done.
+remote: Compressing objects: 100% (6/6), done.
+remote: Total 6207 (delta 2), reused 0 (delta 0)
+Receiving objects: 100% (6207/6207), 1.34 GiB | 383.00 KiB/s, done.
+Resolving deltas: 100% (2211/2211), done.
+Checking out files: 100% (3547/3547), done.
+Repo Name: sim-lowlevel-rfi
+Cloning into 'docstatus/sim-lowlevel-rfi'...
+remote: Enumerating objects: 35, done.
+remote: Counting objects: 100% (35/35), done.
+remote: Compressing objects: 100% (33/33), done.
+remote: Total 1394 (delta 10), reused 0 (delta 0)
+Receiving objects: 100% (1394/1394), 9.96 MiB | 577.00 KiB/s, done.
+Resolving deltas: 100% (132/132), done.
+Repo Name: sim-low-imaging
+Cloning into 'docstatus/sim-low-imaging'...
+remote: Enumerating objects: 189, done.
+remote: Counting objects: 100% (189/189), done.
+remote: Compressing objects: 100% (140/140), done.
+remote: Total 355 (delta 85), reused 86 (delta 36)
+Receiving objects: 100% (355/355), 3.07 MiB | 467.00 KiB/s, done.
+Resolving deltas: 100% (159/159), done.
+Repo Name: sim-low-beams
+Cloning into 'docstatus/sim-low-beams'...
+remote: Enumerating objects: 47, done.
+remote: Total 47 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (47/47), 98.22 KiB | 123.00 KiB/s, done.
+Resolving deltas: 100% (21/21), done.
+Repo Name: sim-eor-osm
+Cloning into 'docstatus/sim-eor-osm'...
+remote: Enumerating objects: 49, done.
+remote: Total 49 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (49/49), 3.24 MiB | 485.00 KiB/s, done.
+Resolving deltas: 100% (17/17), done.
+Repo Name: sim-datasets
+Cloning into 'docstatus/sim-datasets'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 10 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (10/10), 5.88 KiB | 5.88 MiB/s, done.
+Resolving deltas: 100% (1/1), done.
+Repo Name: delay-testing
+Cloning into 'docstatus/delay-testing'...
+remote: Enumerating objects: 32, done.
+remote: Total 32 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (32/32), 7.20 KiB | 7.20 MiB/s, done.
+Resolving deltas: 100% (11/11), done.
+Repo Name: ci-metrics-utilities
+Cloning into 'docstatus/ci-metrics-utilities'...
+remote: Enumerating objects: 22, done.
+remote: Counting objects: 100% (22/22), done.
+remote: Compressing objects: 100% (22/22), done.
+remote: Total 37 (delta 9), reused 0 (delta 0)
+Receiving objects: 100% (37/37), 9.83 KiB | 4.92 MiB/s, done.
+Resolving deltas: 100% (11/11), done.
+Repo Name: image-compression
+Cloning into 'docstatus/image-compression'...
+remote: Enumerating objects: 89, done.
+remote: Total 89 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (89/89), 21.40 KiB | 80.00 KiB/s, done.
+Resolving deltas: 100% (31/31), done.
+Repo Name: Astro-Accelerate
+Cloning into 'docstatus/Astro-Accelerate'...
+remote: Enumerating objects: 8979, done.
+remote: Counting objects: 100% (8979/8979), done.
+remote: Compressing objects: 100% (2595/2595), done.
+remote: Total 8979 (delta 6358), reused 8917 (delta 6306)
+Receiving objects: 100% (8979/8979), 5.35 MiB | 494.00 KiB/s, done.
+Resolving deltas: 100% (6358/6358), done.
+Repo Name: repos-info-2-sheets
+Cloning into 'docstatus/repos-info-2-sheets'...
+remote: Enumerating objects: 68, done.
+remote: Counting objects: 100% (68/68), done.
+remote: Compressing objects: 100% (55/55), done.
+remote: Total 68 (delta 17), reused 38 (delta 6)
+Receiving objects: 100% (68/68), 90.53 KiB | 170.00 KiB/s, done.
+Resolving deltas: 100% (17/17), done.
+Repo Name: SDC1 scoring
+Cloning into 'docstatus/SDC1 scoring'...
+The project you were looking for could not be found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Repo Name: dspsr-build
+Cloning into 'docstatus/dspsr-build'...
+remote: Enumerating objects: 69, done.
+remote: Counting objects: 100% (69/69), done.
+remote: Compressing objects: 100% (35/35), done.
+remote: Total 69 (delta 38), reused 60 (delta 32)
+Receiving objects: 100% (69/69), 7.37 KiB | 3.68 MiB/s, done.
+Resolving deltas: 100% (38/38), done.
+Repo Name: cmake-modules
+Cloning into 'docstatus/cmake-modules'...
+remote: Enumerating objects: 55, done.
+remote: Counting objects: 100% (55/55), done.
+remote: Compressing objects: 100% (27/27), done.
+remote: Total 55 (delta 29), reused 53 (delta 27)
+Receiving objects: 100% (55/55), 7.13 KiB | 3.57 MiB/s, done.
+Resolving deltas: 100% (29/29), done.
+Repo Name: ska-tango-benchmarks
+Cloning into 'docstatus/ska-tango-benchmarks'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (3/3), done.
+Repo Name: cpp_build_base
+Cloning into 'docstatus/cpp_build_base'...
+remote: Enumerating objects: 14, done.
+remote: Total 14 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (14/14), 5.15 KiB | 5.15 MiB/s, done.
+Resolving deltas: 100% (4/4), done.
+Repo Name: daliuge-pbc
+Cloning into 'docstatus/daliuge-pbc'...
+remote: Enumerating objects: 153, done.
+remote: Total 153 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (153/153), 56.85 KiB | 201.00 KiB/s, done.
+Resolving deltas: 100% (76/76), done.
+Repo Name: dspsr-docker
+Cloning into 'docstatus/dspsr-docker'...
+remote: Enumerating objects: 89, done.
+remote: Counting objects: 100% (89/89), done.
+remote: Compressing objects: 100% (48/48), done.
+remote: Total 89 (delta 43), reused 73 (delta 35)
+Receiving objects: 100% (89/89), 10.37 KiB | 10.37 MiB/s, done.
+Resolving deltas: 100% (43/43), done.
+Repo Name: yanda-docker
+Cloning into 'docstatus/yanda-docker'...
+remote: Enumerating objects: 152, done.
+remote: Counting objects: 100% (152/152), done.
+remote: Compressing objects: 100% (84/84), done.
+remote: Total 152 (delta 75), reused 136 (delta 66)
+Receiving objects: 100% (152/152), 19.54 KiB | 1000.00 KiB/s, done.
+Resolving deltas: 100% (75/75), done.
+Repo Name: cdm-shared-library
+Cloning into 'docstatus/cdm-shared-library'...
+remote: Enumerating objects: 1164, done.
+remote: Counting objects: 100% (1164/1164), done.
+remote: Compressing objects: 100% (670/670), done.
+remote: Total 1164 (delta 554), reused 1084 (delta 478)
+Receiving objects: 100% (1164/1164), 310.73 KiB | 295.00 KiB/s, done.
+Resolving deltas: 100% (554/554), done.
+Repo Name: sdp-par-model
+Cloning into 'docstatus/sdp-par-model'...
+remote: Enumerating objects: 5521, done.
+remote: Counting objects: 100% (5521/5521), done.
+remote: Compressing objects: 100% (1647/1647), done.
+remote: Total 5521 (delta 3896), reused 5482 (delta 3866)
+Receiving objects: 100% (5521/5521), 16.99 MiB | 470.00 KiB/s, done.
+Resolving deltas: 100% (3896/3896), done.
+Repo Name: sdp-prototype
+Cloning into 'docstatus/sdp-prototype'...
+remote: Enumerating objects: 4065, done.
+remote: Counting objects: 100% (4065/4065), done.
+remote: Compressing objects: 100% (1626/1626), done.
+remote: Total 4065 (delta 2306), reused 4039 (delta 2283)
+Receiving objects: 100% (4065/4065), 2.74 MiB | 289.00 KiB/s, done.
+Resolving deltas: 100% (2306/2306), done.
+Repo Name: mid-cbf-mcs
+Cloning into 'docstatus/mid-cbf-mcs'...
+remote: Enumerating objects: 1279, done.
+remote: Counting objects: 100% (1279/1279), done.
+remote: Compressing objects: 100% (494/494), done.
+remote: Total 1279 (delta 775), reused 1254 (delta 750)
+Receiving objects: 100% (1279/1279), 690.43 KiB | 329.00 KiB/s, done.
+Resolving deltas: 100% (775/775), done.
+Repo Name: csp-lmc-prototype
+Cloning into 'docstatus/csp-lmc-prototype'...
+remote: Enumerating objects: 968, done.
+remote: Total 968 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (968/968), 409.30 KiB | 364.00 KiB/s, done.
+Resolving deltas: 100% (597/597), done.
+Repo Name: webjive
+Cloning into 'docstatus/webjive'...
+remote: Enumerating objects: 6, done.
+remote: Counting objects: 100% (6/6), done.
+remote: Compressing objects: 100% (6/6), done.
+remote: Total 10775 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (10775/10775), 2.76 MiB | 259.00 KiB/s, done.
+Resolving deltas: 100% (7216/7216), done.
+Repo Name: observation-execution-tool
+Cloning into 'docstatus/observation-execution-tool'...
+remote: Enumerating objects: 2327, done.
+remote: Counting objects: 100% (2327/2327), done.
+remote: Compressing objects: 100% (1617/1617), done.
+remote: Total 2327 (delta 698), reused 2266 (delta 642)
+Receiving objects: 100% (2327/2327), 9.83 MiB | 428.00 KiB/s, done.
+Resolving deltas: 100% (698/698), done.
+Repo Name: GitLab OSS - Ultimate or Gold for open source projects
+Cloning into 'docstatus/GitLab OSS - Ultimate or Gold for open source projects'...
+The project you were looking for could not be found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Repo Name: skampi
+Cloning into 'docstatus/skampi'...
+remote: Enumerating objects: 2327, done.
+remote: Counting objects: 100% (2327/2327), done.
+remote: Compressing objects: 100% (797/797), done.
+remote: Total 2327 (delta 1511), reused 2287 (delta 1474)
+Receiving objects: 100% (2327/2327), 415.26 KiB | 102.00 KiB/s, done.
+Resolving deltas: 100% (1511/1511), done.
+Repo Name: lmc-base-classes
+Cloning into 'docstatus/lmc-base-classes'...
+remote: Enumerating objects: 6824, done.
+remote: Counting objects: 100% (6824/6824), done.
+remote: Compressing objects: 100% (1986/1986), done.
+remote: Total 6824 (delta 4600), reused 6774 (delta 4566)
+Receiving objects: 100% (6824/6824), 1.67 MiB | 244.00 KiB/s, done.
+Resolving deltas: 100% (4600/4600), done.
+Repo Name: tmc-prototype
+Cloning into 'docstatus/tmc-prototype'...
+remote: Enumerating objects: 6916, done.
+remote: Counting objects: 100% (6916/6916), done.
+remote: Compressing objects: 100% (2017/2017), done.
+remote: Total 6916 (delta 4856), reused 6845 (delta 4808)
+Receiving objects: 100% (6916/6916), 2.63 MiB | 238.00 KiB/s, done.
+Resolving deltas: 100% (4856/4856), done.
+Repo Name: dish-master
+Cloning into 'docstatus/dish-master'...
+remote: Enumerating objects: 31, done.
+remote: Counting objects: 100% (31/31), done.
+remote: Compressing objects: 100% (31/31), done.
+remote: Total 271 (delta 11), reused 0 (delta 0)
+Receiving objects: 100% (271/271), 163.63 KiB | 283.00 KiB/s, done.
+Resolving deltas: 100% (130/130), done.
+Repo Name: ska-react-webapp-skeleton
+Cloning into 'docstatus/ska-react-webapp-skeleton'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 321 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (321/321), 329.44 KiB | 244.00 KiB/s, done.
+Resolving deltas: 100% (160/160), done.
+Repo Name: ansible-playbooks
+Cloning into 'docstatus/ansible-playbooks'...
+remote: Enumerating objects: 130, done.
+remote: Counting objects: 100% (130/130), done.
+remote: Compressing objects: 100% (109/109), done.
+remote: Total 1229 (delta 18), reused 112 (delta 11)00 KiB/s
+Receiving objects: 100% (1229/1229), 6.12 MiB | 337.00 KiB/s, done.
+Resolving deltas: 100% (582/582), done.
+Repo Name: ska-skeleton-test-ci
+Cloning into 'docstatus/ska-skeleton-test-ci'...
+remote: Enumerating objects: 482, done.
+remote: Counting objects: 100% (482/482), done.
+remote: Compressing objects: 100% (246/246), done.
+remote: Total 482 (delta 239), reused 455 (delta 222) KiB/s
+Receiving objects: 100% (482/482), 163.24 KiB | 204.00 KiB/s, done.
+Resolving deltas: 100% (239/239), done.
+Repo Name: SKA CI Dashboard
+Cloning into 'docstatus/SKA CI Dashboard'...
+The project you were looking for could not be found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Repo Name: tango-example
+Cloning into 'docstatus/tango-example'...
+remote: Enumerating objects: 1126, done.
+remote: Counting objects: 100% (1126/1126), done.
+remote: Compressing objects: 100% (489/489), done.
+remote: Total 1126 (delta 639), reused 1078 (delta 598)
+Receiving objects: 100% (1126/1126), 300.55 KiB | 231.00 KiB/s, done.
+Resolving deltas: 100% (639/639), done.
+Repo Name: dspsr
+Cloning into 'docstatus/dspsr'...
+remote: Enumerating objects: 35348, done.
+remote: Counting objects: 100% (35348/35348), done.
+remote: Compressing objects: 100% (12257/12257), done.
+remote: Total 35348 (delta 23094), reused 35150 (delta 22923)
+Receiving objects: 100% (35348/35348), 40.97 MiB | 207.00 KiB/s, done.
+Resolving deltas: 100% (23094/23094), done.
+Repo Name: developer.skatelescope.org
+Cloning into 'docstatus/developer.skatelescope.org'...
+remote: Enumerating objects: 103, done.
+remote: Counting objects: 100% (103/103), done.
+remote: Compressing objects: 100% (58/58), done.
+remote: Total 1715 (delta 54), reused 77 (delta 43)
+Receiving objects: 100% (1715/1715), 10.93 MiB | 131.00 KiB/s, done.
+Resolving deltas: 100% (1115/1115), done.
+Repo Name: ska-python-skeleton
+Cloning into 'docstatus/ska-python-skeleton'...
+The project you were looking for could not be found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Repo Name: ska-docker
+Cloning into 'docstatus/ska-docker'...
+remote: Enumerating objects: 1963, done.
+remote: Counting objects: 100% (1963/1963), done.
+remote: Compressing objects: 100% (671/671), done.
+remote: Total 1963 (delta 1227), reused 1904 (delta 1197)
+Receiving objects: 100% (1963/1963), 365.23 KiB | 216.00 KiB/s, done.
+Resolving deltas: 100% (1227/1227), done.
+Repo Name: srisk
+Cloning into 'docstatus/srisk'...
+remote: Enumerating objects: 3687, done.
+remote: Counting objects: 100% (3687/3687), done.
+remote: Compressing objects: 100% (2621/2621), done.
+remote: Total 3687 (delta 769), reused 3687 (delta 769)
+Receiving objects: 100% (3687/3687), 22.28 MiB | 59.00 KiB/s, done.
+Resolving deltas: 100% (769/769), done.
+tangosnmp                                github: NO      || gtilab: YES          ||      admins: False
+dspsr-test                               github: NO      || gtilab: YES          ||      admins: False
+web-maxiv-tangogql                               github: NO      || gtilab: YES          ||      admins: True
+webjive auth                             github: NO      || gtilab: YES          ||      admins: True
+ska-rfi-monitoring-processing                            github: NO      || gtilab: YES          ||      admins: True
+dashboard-repo                           github: NO      || gtilab: YES          ||      admins: True
+dependencies-manager                             github: NO      || gtilab: YES          ||      admins: False
+jira-groovy-scripts                              github: NO      || gtilab: YES          ||      admins: False
+container-survey-report                          github: NO      || gtilab: YES          ||      admins: False
+container-orchestration-chart-examples                           github: NO      || gtilab: YES          ||      admins: False
+SEP_Pipeline_Imaging                             github: NO      || gtilab: YES          ||      admins: False
+ska-engineering-ui-compose-utils                                 github: NO      || gtilab: YES          ||      admins: False
+tangogql                                 github: NO      || gtilab: YES          ||      admins: False
+jira-tools                               github: NO      || gtilab: YES          ||      admins: False
+low-cbf-tools                            github: NO      || gtilab: YES          ||      admins: False
+low-cbf-model                            github: NO      || gtilab: YES          ||      admins: False
+C_DFT                            github: NO      || gtilab: YES          ||      admins: False
+C_Degridder                              github: NO      || gtilab: YES          ||      admins: False
+CUDA_Deconvolution                               github: NO      || gtilab: YES          ||      admins: False
+CUDA_Solver                              github: NO      || gtilab: YES          ||      admins: False
+CUDA_GC                          github: NO      || gtilab: YES          ||      admins: False
+CUDA_Degridder                           github: NO      || gtilab: YES          ||      admins: False
+CUDA_DFT                                 github: NO      || gtilab: YES          ||      admins: False
+CUDA_Gridder                             github: NO      || gtilab: YES          ||      admins: False
+CUDA_InverseDFT                          github: NO      || gtilab: YES          ||      admins: False
+pogo                             github: NO      || gtilab: YES          ||      admins: False
+archiver                                 github: NO      || gtilab: YES          ||      admins: False
+Sensitivity Calculator                           github: NO      || gtilab: YES          ||      admins: False
+templates-repository                             github: NO      || gtilab: YES          ||      admins: False
+katpoint                                 github: NO      || gtilab: YES          ||      admins: False
+sim-mid-surface                          github: NO      || gtilab: YES          ||      admins: False
+sim-mid-pointing                                 github: NO      || gtilab: YES          ||      admins: False
+sim-lowlevel-rfi                                 github: NO      || gtilab: YES          ||      admins: False
+sim-low-imaging                          github: NO      || gtilab: YES          ||      admins: False
+sim-low-beams                            github: NO      || gtilab: YES          ||      admins: False
+sim-eor-osm                              github: NO      || gtilab: YES          ||      admins: False
+sim-datasets                             github: NO      || gtilab: YES          ||      admins: False
+delay-testing                            github: NO      || gtilab: YES          ||      admins: False
+ci-metrics-utilities                             github: NO      || gtilab: YES          ||      admins: False
+image-compression                                github: NO      || gtilab: YES          ||      admins: False
+Astro-Accelerate                                 github: NO      || gtilab: YES          ||      admins: True
+repos-info-2-sheets                              github: NO      || gtilab: YES          ||      admins: False
+SDC1 scoring                             github: NO      || gtilab: YES          ||      admins: False
+dspsr-build                              github: NO      || gtilab: YES          ||      admins: False
+cmake-modules                            github: NO      || gtilab: YES          ||      admins: False
+ska-tango-benchmarks                             github: NO      || gtilab: YES          ||      admins: False
+cpp_build_base                           github: NO      || gtilab: YES          ||      admins: False
+daliuge-pbc                              github: NO      || gtilab: YES          ||      admins: True
+dspsr-docker                             github: NO      || gtilab: YES          ||      admins: False
+yanda-docker                             github: NO      || gtilab: YES          ||      admins: False
+cdm-shared-library                               github: NO      || gtilab: YES          ||      admins: False
+sdp-par-model                            github: NO      || gtilab: YES          ||      admins: False
+sdp-prototype                            github: NO      || gtilab: YES          ||      admins: False
+mid-cbf-mcs                              github: NO      || gtilab: YES          ||      admins: False
+csp-lmc-prototype                                github: NO      || gtilab: YES          ||      admins: False
+webjive                          github: NO      || gtilab: YES          ||      admins: True
+observation-execution-tool                               github: NO      || gtilab: YES          ||      admins: False
+GitLab OSS - Ultimate or Gold for open source projects                           github: NO      || gtilab: YES          ||      admins: False
+skampi                           github: NO      || gtilab: YES          ||      admins: False
+lmc-base-classes                                 github: NO      || gtilab: YES          ||      admins: False
+tmc-prototype                            github: NO      || gtilab: YES          ||      admins: False
+dish-master                              github: NO      || gtilab: YES          ||      admins: False
+ska-react-webapp-skeleton                                github: NO      || gtilab: YES          ||      admins: False
+ansible-playbooks                                github: NO      || gtilab: YES          ||      admins: False
+ska-skeleton-test-ci                             github: NO      || gtilab: YES          ||      admins: True
+SKA CI Dashboard                                 github: NO      || gtilab: YES          ||      admins: False
+tango-example                            github: NO      || gtilab: YES          ||      admins: False
+dspsr                            github: NO      || gtilab: YES          ||      admins: True
+developer.skatelescope.org                               github: NO      || gtilab: YES          ||      admins: False
+ska-python-skeleton                              github: NO      || gtilab: YES          ||      admins: False
+ska-docker                               github: NO      || gtilab: YES          ||      admins: False
+srisk                            github: NO      || gtilab: YES          ||      admins: True

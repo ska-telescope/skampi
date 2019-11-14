@@ -76,42 +76,22 @@ if __name__ == '__main__':
 
     sheet = google_sheet(1)
 
-    # index = 2
-    # for repo in repos:
-    #     # Select a range
-    #     cell_list = sheet.range('A' + str(index) + ':F' + str(index))
-    #
-    #     if (repo.github is not None and repo.gitlab is not None):
-    #         cell_list[0].value = repo.name
-    #         cell_list[1].value = True
-    #         cell_list[2].value = True
-    #         cell_list[3].value = repo.gitlab.mirror
-    #         cell_list[4].value = str(repo.github.mantainers)
-    #         cell_list[5].value = str(repo.github.teams)
-    #
-    #         print(str(repo.name) + "\t\t\t\t github: YES \t || gtilab: YES \t || \t admins: " + str(
-    #             repo.github.mantainers))
-    #     elif (repo.github is not None):
-    #         cell_list[0].value = repo.name
-    #         cell_list[1].value = False
-    #         cell_list[2].value = True
-    #         cell_list[3].value = False
-    #         cell_list[4].value = str(repo.github.mantainers)
-    #         cell_list[5].value = str(repo.github.teams)
-    #
-    #         print(str(repo.name) + "\t\t\t\t github: YES \t || gtilab: NO \t || \t admins: " + str(
-    #             repo.github.mantainers))
-    #     elif (repo.gitlab is not None):
-    #         cell_list[0].value = repo.name
-    #         cell_list[1].value = True
-    #         cell_list[2].value = False
-    #         cell_list[3].value = repo.gitlab.mirror
-    #         cell_list[4].value = str(repo.gitlab.creator)
-    #         cell_list[5].value = ""
-    #
-    #         print(str(repo.name) + "\t\t\t\t github: NO \t || gtilab: YES \t || \t admins: " + str(repo.gitlab.creator))
-    #
-    #         # Update in batch
-    #     sheet.update_cells(cell_list)
-    #
-    #     index = index + 1
+    index = 2
+    for repo in repos:
+        # Select a range
+        cell_list = sheet.range('A' + str(index) + ':F' + str(index))
+
+        if repo.gitlab is not None:
+            cell_list[0].value = repo.name
+            cell_list[1].value = "TBD"
+            cell_list[2].value = repo.docs_folder_exists
+            cell_list[3].value = repo.gitlab.mirror
+            cell_list[4].value = str(repo.gitlab.creator)
+            cell_list[5].value = ""
+
+            print(str(repo.name) + "\t\t\t\t github: NO \t || gtilab: YES \t || \t admins: " + str(repo.gitlab.creator))
+
+        # Update in batch
+        sheet.update_cells(cell_list)
+
+        index = index + 1

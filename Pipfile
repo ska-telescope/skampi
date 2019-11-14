@@ -32,6 +32,8 @@ PyJWT = "==1.7.1"
 Werkzeug = "==0.16.0"
 gspread = "*"
 oauth2client = "*"
+pytest = "*"
+gitlab = "*"
 
 [requires]
 python_version = "3.6"

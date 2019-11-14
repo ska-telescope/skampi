@@ -3,9 +3,11 @@
 # import requests
 # from github import Github
 import gitlab
-# import gspread
-# from oauth2client.service_account import ServiceAccountCredentials
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 import subprocess
+
+
 # import os
 # import pprint
 
@@ -49,6 +51,16 @@ def gitlab_repositories():
     return result
 
 
+def google_sheet(id):
+    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json',
+                                                             scope)  # to get credentials: https://gspread.readthedocs.io/en/latest/oauth2.html
+    client = gspread.authorize(creds)
+    worksheet = client.open_by_key(
+        '1A_mCbsg1sbqcJ_3ly66pqwWfWU6eEoEd5i3cbj3FMSk').get_worksheet(id)  # https://docs.google.com/spreadsheets/d/HERES-THE-ID/edit#gid=0
+    return worksheet
+
+
 if __name__ == '__main__':
 
     gitlabRepos = gitlab_repositories()
@@ -61,14 +73,9 @@ if __name__ == '__main__':
     for repo in repos:
         print("Repo Name: " + repo.name)
         repo.set_folder_exists()
-    #
-    # scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    # creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json',
-    #                                                          scope)  # to get credentials: https://gspread.readthedocs.io/en/latest/oauth2.html
-    # client = gspread.authorize(creds)
-    # sheet = client.open_by_key(
-    #     '1avnRJx_HIHoexkPpkYqi8D7n5X0g20aS7WpHPTUMY1Y').sheet1  # https://docs.google.com/spreadsheets/d/HERES-THE-ID/edit#gid=0
-    #
+
+    sheet = google_sheet(1)
+
     # index = 2
     # for repo in repos:
     #     # Select a range

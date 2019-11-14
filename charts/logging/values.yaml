@@ -43,5 +43,12 @@ logstash:
     pullPolicy: IfNotPresent
   hostname: integration.engageska-portugal.pt
 
+tests:
+  image:
+    image: ska-docker/ska-python-buildenv
+    registry: nexus.engageska-portugal.pt
+    tag: 0.1.0
+    pullPolicy: IfNotPresent
+
 demo_mode:
   enabled: true

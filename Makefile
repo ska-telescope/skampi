@@ -116,9 +116,11 @@ deploy_etcd: ## deploy etcd-operator into namespace
 		helm template $$TMP/etcd-operator -n etc-operator --namespace $(KUBE_NAMESPACE) \
 		| kubectl apply -n $(KUBE_NAMESPACE) -f -; \
 		rm -rf $$TMP; \
+		n ?= 5; \
 		while ! kubectl api-resources --api-group=etcd.database.coreos.com \
-		        | grep -q etcdcluster; do \
+		        | grep -q etcdcluster || [ $${n} -gt 0 ]; do \
 			echo Waiting for etcd CRD to become available...; sleep 1; \
+			n=`expr $$n - 1`; \
 		done \
 	fi
 

@@ -10,7 +10,7 @@ def test_init():
 def test_archiver():
   config_mngr_devproxy = DeviceProxy("archiving/hdbpp/confmanager01")
   #evt_sub_devproxy = DeviceProxy("archiving/hdbpp/eventsubscriber01")
-  result = config_mngr_devproxy.command_inout("AttributeStatus","tango://databaseds-tango-base-test:10000/mid_d0001/elt/master/WindSpeed")
+  result = config_mngr_devproxy.command_inout("AttributeStatus","mid_d0001/elt/master/WindSpeed")
   print(result)
   assert 1
 

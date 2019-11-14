@@ -38,14 +38,12 @@ metadata:
     service: elastic
   annotations:
     kubernetes.io/ingress.class: traefik
-    traefik.frontend.rule.type: PathPrefixStrip
-    traefik.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
     - host: {{ tpl .Values.ingress.hostname . }}
-    - http:
+      http:
         paths:
-        - path: /elasticsearch/?(.*)
+        - path: /elasticsearch
           backend:
             serviceName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
             servicePort: 9200

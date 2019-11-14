@@ -44,6 +44,7 @@ logstash:
   hostname: integration.engageska-portugal.pt
 
 tests:
+  enabled: true
   image:
     image: ska-docker/ska-python-buildenv
     registry: nexus.engageska-portugal.pt

@@ -1,4 +1,7 @@
+import os
+
 from elasticsearch import Elasticsearch
+
 
 KUBE_NAMESPACE = 'SARAO'
 
@@ -16,10 +19,10 @@ def test_fluentd_ingests_pod_stdout_into_elastic():
     # act / initiate action under test
     _ = [print(msg) for msg in log_messages]
 
-    # assert expected behaviour
-    # connect to elastic and search for messages?
-    elastic_host = os.env.get('ELASTIC_LOGGING_{}_PORT_9200_TCP_ADDR'.format(KUBE_NAMESPACE))
-    elastic_port = os.env.get('ELASTIC_LOGGING_{}_SERVICE_PORT'.format(KUBE_NAMESPACE))
+    # assert expected behaviour:
+    # connect to elastic and search for messages
+    elastic_host = os.environ.get('ELASTIC_LOGGING_{}_PORT_9200_TCP_ADDR'.format(KUBE_NAMESPACE))
+    elastic_port = os.environ.get('ELASTIC_LOGGING_{}_SERVICE_PORT'.format(KUBE_NAMESPACE))
 
     host_details = {
         'host': elastic_host, 
@@ -45,5 +48,6 @@ def test_fluentd_ingests_pod_stdout_into_elastic():
 
 
 def test_logstash_ingests_rsyslog_messages_into_elastic():
+    # TODO write this test
     pass
 

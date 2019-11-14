@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: logstash-{{ template "logging.name" . }}-{{ .Release.Name }}
-        image: docker.elastic.co/logstash/logstash:6.3.0
+        image: "{{ .Values.logstash.image.registry }}/{{ .Values.logstash.image.image }}:{{ .Values.logstash.image.tag }}"
         command: ["/bin/bash"]
         args: ["-c", "bin/logstash-plugin install logstash-input-syslog logstash-output-elasticsearch logstash-filter-grok logstash-filter-json  ; /usr/local/bin/docker-entrypoint"]
         ports:
@@ -67,10 +67,12 @@ metadata:
 spec:
   selector:
     app: logstash
+  type: NodePort
   ports:
   - protocol: TCP
     port: 5044
     targetPort: 5044
-  type: ClusterIP
+    nodePort: 30123
+  
 
 {{ end }}

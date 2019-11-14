@@ -8,7 +8,7 @@ elastic:
   image:
     registry: docker.elastic.co
     image: elasticsearch/elasticsearch
-    tag: 6.5.4
+    tag: 7.4.2
     pullPolicy: IfNotPresent
 
 fluentd:
@@ -25,9 +25,9 @@ kibana:
   image:
     registry: docker.elastic.co
     image: kibana/kibana
-    tag: 6.5.4
+    tag: 7.4.2
     pullPolicy: IfNotPresent
-  baseUrl: /kibana
+  basePath: /kibana
 
 ingress:
   enabled: true
@@ -36,4 +36,12 @@ ingress:
 
 logstash:
   enabled: true
+  image:
+    registry: docker.elastic.co
+    image: logstash/logstash
+    tag: 7.4.2
+    pullPolicy: IfNotPresent
   hostname: integration.engageska-portugal.pt
+
+demo_mode:
+  enabled: true

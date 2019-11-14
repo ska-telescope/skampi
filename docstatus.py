@@ -42,7 +42,7 @@ def gitlab_repositories():
 
     group = gl.groups.get(3180705)
 
-    projects = group.projects.list(all=True)
+    projects = group.projects.list(all=True, order_by="name", sort="asc")
 
     result = []
     for project in projects:

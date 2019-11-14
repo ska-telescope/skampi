@@ -122,7 +122,6 @@ deploy_etcd: ## deploy etcd-operator into namespace
         	echo Waiting for etcd CRD to become available...; sleep 1; \
             n=`expr $$n - 1` || true; \
         done \
-
 	fi
 
 delete_etcd: ## Remove etcd-operator from namespace

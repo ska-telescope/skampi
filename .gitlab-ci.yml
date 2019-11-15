@@ -108,11 +108,6 @@ smoketest test environment:
   only:
     refs:
       - master
-  artifacts:
-    name: "report.json"
-    paths: ['build/report.json']
-    reports:
-      junit: build/report.xml
 
 k8s_test staging environment:
   stage: test

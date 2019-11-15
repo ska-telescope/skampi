@@ -130,7 +130,7 @@ delete_etcd: ## Remove etcd-operator from namespace
 	   | grep -q etcd-operator; then \
 		TMP=`mktemp -d`; \
 		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
-		helm template etcd-operator -n etc-operator \
+		helm template $$TMP/etcd-operator -n etc-operator \
 		| kubectl delete -n $(KUBE_NAMESPACE) -f -; \
 		rm -rf $$TMP; \
 	fi

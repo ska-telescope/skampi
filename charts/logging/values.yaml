@@ -1,0 +1,55 @@
+# Default values for logging.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+elastic:
+  enabled: true
+  image:
+    registry: docker.elastic.co
+    image: elasticsearch/elasticsearch
+    tag: 7.4.2
+    pullPolicy: IfNotPresent
+
+fluentd:
+  enabled: true
+  image:
+    image: fluent/fluentd-kubernetes-daemonset
+    tag: v1-debian-syslog
+    pullPolicy: IfNotPresent
+  livenessProbe:
+    enabled: true
+
+kibana:
+  enabled: true
+  image:
+    registry: docker.elastic.co
+    image: kibana/kibana
+    tag: 7.4.2
+    pullPolicy: IfNotPresent
+  basePath: /kibana
+
+ingress:
+  enabled: true
+  nginx: true
+  hostname: integration.engageska-portugal.pt
+
+logstash:
+  enabled: true
+  image:
+    registry: docker.elastic.co
+    image: logstash/logstash
+    tag: 7.4.2
+    pullPolicy: IfNotPresent
+  hostname: integration.engageska-portugal.pt
+
+tests:
+  enabled: false
+  image:
+    image: ska-docker/ska-python-buildenv
+    registry: nexus.engageska-portugal.pt
+    tag: 0.1.0
+    pullPolicy: IfNotPresent
+
+demo_mode:
+  enabled: true

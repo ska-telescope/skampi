@@ -1,0 +1,56 @@
+{{ if .Values.elastic.enabled }}
+
+{{ if .Values.ingress.nginx }}
+# nginx
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: elastic-ing-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: elastic
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - host: {{ tpl .Values.ingress.hostname . }}
+    http:
+      paths:
+      - path: /elasticsearch/?(.*)
+        backend:
+          serviceName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+          servicePort: 9200
+      - path: "/{{ .Values.kibana.baseUrl }}/elasticsearch/?(.*)"
+        backend:
+          serviceName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+          servicePort: 9200
+{{ else }}
+# traefik
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: elastic-ing-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: elastic
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: {{ tpl .Values.ingress.hostname . }}
+      http:
+        paths:
+        - path: /elasticsearch
+          backend:
+            serviceName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+            servicePort: 9200
+        - path: "/{{ .Values.kibana.baseUrl }}/elasticsearch/?(.*)"
+          backend:
+            serviceName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+            servicePort: 9200
+{{ end }}
+
+{{ end }}

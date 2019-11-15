@@ -1,0 +1,40 @@
+{{ if .Values.kibana.enabled }}
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      run: kibana
+  template:
+    metadata:
+      labels:
+        run: kibana
+    spec:
+      containers:
+      - name: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+        image: "{{ .Values.kibana.image.registry }}/{{ .Values.kibana.image.image }}:{{ .Values.kibana.image.tag }}"
+        env:
+        - name: ELASTICSEARCH_HOSTS
+          value: http://elastic-{{ template "logging.name" . }}-{{ .Release.Name }}:9200
+        - name: XPACK_SECURITY_ENABLED
+          value: "true"
+        - name: SERVER_BASEPATH
+          value: {{ .Values.kibana.basePath }}
+        - name: SERVER_REWRITEBASEPATH
+          value: "true"
+        ports:
+        - name: kibana-http
+          containerPort: 5601
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: "{{ .Values.kibana.basePath }}/api/status"
+            port: 5601
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
+{{ end }}

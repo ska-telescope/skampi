@@ -33,16 +33,21 @@ spec:
       - name: xauthority
         mountPath: /tmp/.Xauthority
         readOnly: true
-      - name: data
-        mountPath: /usr/src/
+      - name: src
+        mountPath: {{ .Values.vscode.srcPath }}
+      - name: ext
+        mountPath: /root/.vscode/
   volumes:
   - hostPath:
       path: {{ .Values.xauthority }}
       type: File
     name: xauthority
   - hostPath:
-      path: /usr/src/
-    name: data
+      path: {{ .Values.vscode.srcPath }}
+    name: src
+  - hostPath:
+      path: {{ .Values.vscode.extPath }}
+    name: ext
   restartPolicy: Never
 {{- with .Values.nodeSelector }}
   nodeSelector:

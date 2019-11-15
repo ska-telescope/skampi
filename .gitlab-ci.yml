@@ -48,6 +48,42 @@ k8s_test test environment:
   - make k8s_test KUBE_NAMESPACE=ncra INGRESS_HOST=ncra.engageska-portugal.pt HELM_RELEASE=ncra && [ -f "build/report.xml" ]
   environment:
     name: test
+    url: http://integration.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - master
+  artifacts:
+    name: "report.json"
+    paths: ['build/report.json']
+    reports:
+      junit: build/report.xml
+
+smoketest test environment:
+  stage: test
+  tags:
+  - docker-executor
+  script:
+  - ./scripts/smoketest.sh
+  environment:
+    name: test
+    url: http://integration.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - master
+
+k8s_test staging environment:
+  stage: test
+  retry: 2
+  tags:
+  - docker-executor
+  script:  
+  - make k8s_test KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging && [ -f "build/report.xml" ]
+  environment:
+    name: staging
+    url: http://kubernetes.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - staging
   artifacts:
     name: "report.json"
     paths: ['build/report.json']

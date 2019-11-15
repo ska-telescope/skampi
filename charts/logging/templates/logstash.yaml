@@ -13,6 +13,25 @@ data:
     path.config: /usr/share/logstash/pipeline
   logstash.conf: 
 {{ (tpl (.Files.Glob "configs/logstash.conf").AsConfig .) | indent 2 }}
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: logstash-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: logstash
+spec:
+  selector:
+    app: logstash
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 5044
+    targetPort: 5044
+    nodePort: 30123
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -56,23 +75,4 @@ spec:
           items:
             - key: logstash.conf
               path: logstash.conf
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: logstash-{{ template "logging.name" . }}-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    service: logstash
-spec:
-  selector:
-    app: logstash
-  type: NodePort
-  ports:
-  - protocol: TCP
-    port: 5044
-    targetPort: 5044
-    nodePort: 30123
-  
-
 {{ end }}

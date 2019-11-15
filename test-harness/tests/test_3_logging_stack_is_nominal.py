@@ -25,7 +25,7 @@ def requests_retry_session(retries=3,
     return session
 
 #TODO parametise and get this from k8s config somehow
-HOSTNAME = "kibana-logging-integration"
+HOSTNAME = "kibana-logging-test"
 BASE_PATH = "/kibana"
 
 def test_kibana_should_be_accessible_via_ingress():

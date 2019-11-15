@@ -74,7 +74,7 @@ delete-and-deploy test environment:
   - make delete_all KUBE_NAMESPACE=sarao HELM_RELEASE=sarao
   - make deploy_all KUBE_NAMESPACE=sarao INGRESS_HOST=sarao.engageska-portugal.pt HELM_RELEASE=sarao
   - sleep 5m 
-  - kubectl logs -n sarao logstash-deployment-logging-sarao
+  - kubectl logs -n sarao deployment.apps/logstash-deployment-logging-sarao
   - kubectl logs -n sarao deployment.apps/kibana-logging-sarao
   - kubectl logs -n sarao deployment.apps/elastic-logging-sarao
   environment:

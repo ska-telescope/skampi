@@ -83,8 +83,25 @@ k8s_test test environment:
   tags:
   - docker-executor
   script:
-  #- ./scripts/smoketest.sh
   - make k8s_test KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt && [ -f "build/report.xml" ]
+  environment:
+    name: test
+    url: http://integration.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - master
+  artifacts:
+    name: "report.json"
+    paths: ['build/report.json']
+    reports:
+      junit: build/report.xml
+
+smoketest test environment:
+  stage: test
+  tags:
+  - docker-executor
+  script:
+  - ./scripts/smoketest.sh
   environment:
     name: test
     url: http://integration.engageska-portugal.pt/testdb

@@ -49,9 +49,6 @@ k8s_test test environment:
   environment:
     name: test
     url: http://integration.engageska-portugal.pt/testdb
-  only:
-    refs:
-      - master
   artifacts:
     name: "report.json"
     paths: ['build/report.json']

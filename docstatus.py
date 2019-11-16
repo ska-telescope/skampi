@@ -18,6 +18,7 @@ class Repository:
         self.name = name
         self.gitlab = gitlab_repo
         self.docs_folder_exists = False
+        self.readme_exists = False
 
     def set_gitlab(self, gitlab_repo):
         self.gitlab = gitlab_repo
@@ -25,6 +26,9 @@ class Repository:
     def set_folder_exists(self):
         if subprocess.call(["./docstatus/git-clone.sh", self.gitlab.path]):
             self.docs_folder_exists = True
+    def set_readme_exists(self):
+        if subprocess.call(["./docstatus/check-readme.sh", self.gitlab.path]):
+            self.readme_exists = True
 
 
 class GitLabRepo:
@@ -74,6 +78,7 @@ if __name__ == '__main__':
     for repo in repos:
         print("Repo Name: " + repo.name)
         repo.set_folder_exists()
+        repo.set_readme_exists()
 
     sheet = google_sheet(1)
 
@@ -86,8 +91,9 @@ if __name__ == '__main__':
             cell_list[0].value = repo.name
             cell_list[1].value = "TBD"
             cell_list[2].value = repo.docs_folder_exists
+            cell_list[3].value = repo.readme_exists
             # cell_list[3].value = repo.gitlab.mirror
-            cell_list[3].value = str(repo.gitlab.creator)
+            cell_list[4].value = str(repo.gitlab.creator)
             # cell_list[5].value = ""
 
             # print(str(repo.name) + "\t\t\t\t github: NO \t || gtilab: YES \t || \t admins: " + str(repo.gitlab.creator))

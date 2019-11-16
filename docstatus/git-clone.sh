@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#BASEURL="https://gitlab.com/ska-telescope/" #HTTPS
-BASEURL="git@gitlab.com:ska-telescope/" #SSH
+BASEURL="https://gitlab.com/ska-telescope/" #HTTPS
+#BASEURL="git@gitlab.com:ska-telescope/" #SSH
 REPOPATH="docstatus/repos/$1"
 DOCSPATH="$REPOPATH/docs"
 REPOURL="${BASEURL}$1.git"

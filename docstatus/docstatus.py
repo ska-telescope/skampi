@@ -35,7 +35,7 @@ class GitLabRepo:
         self.mirror = mirror
 
 
-def gitlab_repositories():
+def list_gitlab_repositories():
     # private token or personal token authentication
     gl = gitlab.Gitlab('https://gitlab.com',
                        private_token='MX_2Q5yUqYvHWexVYaxu')  # get your token  here: https://gitlab.com/profile/personal_access_tokens
@@ -62,18 +62,20 @@ def google_sheet(id):
     return worksheet
 
 
+def update_sheet(sheet_id, gitlab_repo_list=None, google_sheet_list=None, readthedocs_list=None):
+    pass
+
+
 if __name__ == '__main__':
 
-    gitlabRepos = gitlab_repositories()
+    gitlabRepos = list_gitlab_repositories()
 
     repos = []
 
     for labRepo in gitlabRepos:
         repos.append(Repository(labRepo.name, gitlab_repo=labRepo))
-
-    for repo in repos:
-        print("Repo Name: " + repo.name)
-        repo.set_folder_exists()
+        print("Repo Name: " + labRepo.name)
+        labRepo.set_folder_exists()
 
     sheet = google_sheet(1)
 

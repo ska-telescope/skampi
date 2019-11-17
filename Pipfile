@@ -33,6 +33,9 @@ Werkzeug = "==0.16.0"
 python-gitlab = "*"
 gspread = "*"
 oauth2client = "*"
+slumber = "*"
+simplejson = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.6"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REPOPATH="docstatus/repos/$1"
-DOCPATH="$REPOPATH/docs/Readme.md"
+DOCPATH="$REPOPATH/docs/src/README.md"
 
 if [ -L "$DOCPATH" ]; then
     echo "=> Readme File exists!"

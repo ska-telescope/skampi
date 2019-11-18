@@ -33,6 +33,8 @@ def test_archiver():
       # Start Attribute archiving
       conf_manager_proxy.command_inout("AttributeStart", attribute)
 
+  print("ArchiverList", conf_manager_proxy.read_attribute("ArchiverList"))
+  print("AttributeList", evt_subscriber_device_proxy.read_attribute("AttributeList"))
   # Check status of Attribute Archiving in Configuration Manager
   result_config_manager = conf_manager_proxy.command_inout("AttributeStatus",attribute)
 

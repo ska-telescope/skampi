@@ -34,7 +34,7 @@ spec:
     - name: HDB_TYPE
       value: "mysql"
     - name: HDB_MYSQL_HOST
-      value: "archiverdb-archiver-test"
+      value: "archiverdb-archiver-ncra"
     - name: HDB_MYSQL_PORT
       value: "3306"
     - name: HDB_USER

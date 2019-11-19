@@ -73,9 +73,10 @@ if __name__ == '__main__':
     repos = []
 
     for labRepo in gitlabRepos:
-        repos.append(Repository(labRepo.name, gitlab_repo=labRepo))
         print("Repo Name: " + labRepo.name)
-        labRepo.set_folder_exists()
+        repo = Repository(labRepo.name, gitlab_repo=labRepo)
+        repo.set_folder_exists()
+        repos.append(repo)
 
     sheet = google_sheet(1)
 

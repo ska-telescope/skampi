@@ -6,6 +6,8 @@ REPOPATH="../../repos/$1"
 DOCSPATH="$REPOPATH/docs"
 REPOURL="${BASEURL}$1.git"
 
+pwd
+
 if [ ! -d "$REPOPATH" ]; then
   git clone "$REPOURL" "$REPOPATH"
   if [ -d "$DOCSPATH" ]; then

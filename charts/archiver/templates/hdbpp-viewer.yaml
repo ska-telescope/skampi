@@ -17,12 +17,12 @@ spec:
     image: "{{ .Values.hdbppviewer.image.registry }}/{{ .Values.hdbppviewer.image.image }}:{{ .Values.hdbppviewer.image.tag }}"
     imagePullPolicy: {{ .Values.hdbppviewer.image.pullPolicy }}
     command:
-      - wait-for-it.sh
-      - databaseds-tango-base-{{ .Release.Name }}:10000
-      - --timeout=120
-      - --strict
-      - --
-      - ./hdbpp_viewer/configure_hdbppViewer
+      - sh
+    args:
+      - -c
+      - "retry --max=20 -- tango_admin --ping-device archiving/hdbpp/eventsubscriber01 &&\
+          retry --max=20 -- tango_admin --ping-device archiving/hdbpp/confmanager01 &&\
+          ./hdbpp_viewer/configure_hdbppViewer"
 
     env:
     - name: XAUTHORITY

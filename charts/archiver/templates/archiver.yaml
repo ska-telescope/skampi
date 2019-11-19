@@ -84,29 +84,6 @@ spec:
     - name: HdbManager
       value: "archiving/hdbpp/confmanager01"
 
-  - name: attrconfig
-    image: "{{ .Values.attrconfig.image.registry }}/{{ .Values.attrconfig.image.image }}:{{ .Values.attrconfig.image.tag }}"
-    imagePullPolicy: {{ .Values.attrconfig.image.pullPolicy }}
-
-    command:
-      - wait-for-it.sh
-      - databaseds-tango-base-{{ .Release.Name }}:10000
-      - --timeout=30
-      - --strict
-      - --
-      - /venv/bin/python
-      - data/configure_hdbpp.py
-      - --cm=archiving/hdbpp/confmanager01
-      - --es=archiving/hdbpp/eventsubscriber01
-      - --attrfile=data/attribute_fqdn.txt
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-    volumeMounts:
-      - name: configurehdbpp
-        mountPath: /app/data
-        readOnly: true
-
 {{- with .Values.archiver.env }}
 {{ toYaml . | indent 4 }}
 {{- end }}

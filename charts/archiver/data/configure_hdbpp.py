@@ -3,6 +3,7 @@
 import sys, getopt
 import json
 from tango import DeviceProxy, DevFailed
+from time import sleep
 
 def cm_configure_attributes():
     configure_success_count = 0
@@ -81,11 +82,21 @@ for opt, arg in opts:
     elif  opt in ("-a", "--attrfile"):
         attr_list_file = arg
 
-try:
-    # create device proxies
-    conf_manager_proxy = DeviceProxy(conf_manager_device_fqdn)
-    evt_subscriber_proxy = DeviceProxy(evt_subscriber_device_fqdn)
 
+
+timeSleep = 30
+for x in range(10):
+    try:
+        print ("create device proxies")
+         # create device proxies
+        conf_manager_proxy = DeviceProxy(conf_manager_device_fqdn)
+        evt_subscriber_proxy = DeviceProxy(evt_subscriber_device_fqdn)
+        break
+    except:
+        print ("Could not connect to device proxies. Retry after " + str(timeSleep) + " seconds.")
+        sleep(timeSleep)
+
+try:
     # configure attribute
     configure_success_count, configure_fail_count, already_configured_count, total_attrib_count = cm_configure_attributes()
     print("Configured successfully: ", configure_success_count, "Failed: ", configure_fail_count,

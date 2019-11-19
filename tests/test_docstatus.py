@@ -47,6 +47,3 @@ def test_connect_readthedocs():
     rtd = ReadtheDocs()
     assert rtd.base().json()['projects'] == 'https://readthedocs.org/api/v3/projects/'
 
-
-def test_set_users():
-

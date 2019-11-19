@@ -1,0 +1,14 @@
+[
+"mid_d0001/elt/master/WindSpeed",
+"mid_d0001/elt/master/achievedPointing",
+"mid_d0001/elt/master/desiredPointing",
+"mid_d0002/elt/master/WindSpeed",
+"mid_d0002/elt/master/achievedPointing",
+"mid_d0002/elt/master/desiredPointing",
+"mid_d0003/elt/master/WindSpeed",
+"mid_d0003/elt/master/achievedPointing",
+"mid_d0003/elt/master/desiredPointing",
+"mid_d0004/elt/master/WindSpeed",
+"mid_d0004/elt/master/achievedPointing",
+"mid_d0004/elt/master/desiredPointing"
+]

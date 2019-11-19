@@ -1,0 +1,69 @@
+{{ if .Values.hdbppviewer.enabled }}
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hdbppviewer-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: hdbppviewer-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  containers:
+  - name: hdbppviewer
+    image: "{{ .Values.hdbppviewer.image.registry }}/{{ .Values.hdbppviewer.image.image }}:{{ .Values.hdbppviewer.image.tag }}"
+    imagePullPolicy: {{ .Values.hdbppviewer.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "retry --max=20 -- tango_admin --ping-device archiving/hdbpp/eventsubscriber01 &&\
+          retry --max=20 -- tango_admin --ping-device archiving/hdbpp/confmanager01 &&\
+          ./hdbpp_viewer/configure_hdbppViewer"
+
+    env:
+    - name: XAUTHORITY
+      value: "/tmp/.Xauthority"
+    - name: DISPLAY
+      value: "{{ .Values.display }}"
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+    - name: HDB_TYPE
+      value: "mysql"
+    - name: HDB_MYSQL_HOST
+      value: "archiverdb-archiver-ncra"
+    - name: HDB_MYSQL_PORT
+      value: "3306"
+    - name: HDB_USER
+      value: "tango"
+    - name: HDB_PASSWORD
+      value: "tango"
+    - name: HDB_NAME
+      value : "hdbpp"
+    volumeMounts:
+      - name: xauthority
+        mountPath: /tmp/.Xauthority
+        readOnly: true
+  volumes:
+  - hostPath:
+      path: {{ .Values.xauthority }}
+      type: File
+    name: xauthority
+  restartPolicy: Always
+{{- with .Values.nodeSelector }}
+  nodeSelector:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.affinity }}
+  affinity:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+
+{{ end }}

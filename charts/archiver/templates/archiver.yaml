@@ -1,0 +1,105 @@
+{{ if .Values.archiver.enabled }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "archiver-configuration-json-{{ template "archiver.name" . }}-{{ .Release.Name }}"
+  namespace: {{ .Release.Namespace }}
+data: 
+  configuration.json: 
+{{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
+  create_hdbpp.sql:
+{{ (tpl (.Files.Glob "data/create_hdbpp.sql").AsConfig . ) | indent 2  }}
+  attribute_fqdn.txt:
+{{ (tpl (.Files.Glob "data/attribute_fqdn.txt").AsConfig . ) | indent 2 }}
+  configure_hdbpp.py:
+{{ (tpl (.Files.Glob "data/configure_hdbpp.py").AsConfig . ) | indent 2 }}
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: archiver-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: archiver-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  volumes:
+  - name: configuration
+    configMap:
+      name: "archiver-configuration-json-{{ template "archiver.name" . }}-{{ .Release.Name }}"
+  - name: configurehdbpp
+    configMap:
+      name: "archiver-configuration-json-{{ template "archiver.name" . }}-{{ .Release.Name }}"
+
+  initContainers:
+  - name: dsconfig
+    image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
+    imagePullPolicy: {{ .Values.dsconfig.image.pullPolicy }}
+    command:
+      - /usr/local/bin/wait-for-it.sh
+      - databaseds-tango-base-{{ .Release.Name }}:10000
+      - --timeout=30
+      - --strict
+      - --
+      - json2tango -w -a -u data/configuration.json
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+    volumeMounts:
+    - name: configuration 
+      mountPath: data
+      readOnly: true
+      
+  containers:
+  - name: hdbpp-cm
+    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "./usr/local/bin/hdbppcm-srv 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+    - name: HdbManager
+      value: "archiving/hdbpp/confmanager01"
+
+  - name: hdbpp-es
+    image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+    imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "./usr/local/bin/hdbppes-srv 01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+    - name: HdbManager
+      value: "archiving/hdbpp/confmanager01"
+
+{{- with .Values.archiver.env }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  restartPolicy: Always
+{{- with .Values.nodeSelector }}
+  nodeSelector:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.affinity }}
+  affinity:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+
+{{ end }}
+

@@ -12,5 +12,5 @@ spec:
      - "bin/bash"
      - "-c"
      - |
-         while true; do echo "1|$(date "+%Y-%m-%dT%T.%6NZ")||testpackage.testmodule.TestDevice.test_fn|test.py#1    |INFO    |is-tango:yes,devicename:testDevice| Regular information should be logged like this FYI" | tee /dev/stderr; sleep 1; done
+        while true; do echo "1|$(date "+%Y-%m-%dT%T.%6NZ")|INFO||testpackage.testmodule.TestDevice.test_fn|test.py#1|tango-device:my/dev/name|Regular information should be logged like this FYI" | tee /dev/stderr; sleep 1; done
 {{ end }}

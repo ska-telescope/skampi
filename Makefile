@@ -47,10 +47,7 @@ k8s_test = kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- rm -f
 # run the test function
 # save the status
 # clean out build dir
-# print the logs minus the base64 encoded payload
-# pull out the base64 payload and unpack build/ dir
-# base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
-# clean up the run to completion container
+# retrieve the new build dir
 # exit the saved status
 k8s_test: ## test the application on K8s
 	$(call k8s_test,test); \

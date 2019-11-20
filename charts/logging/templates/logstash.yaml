@@ -30,7 +30,7 @@ spec:
   - protocol: TCP
     port: 5044
     targetPort: 5044
-    nodePort: 30123
+#    nodePort: 30123
 
 ---
 apiVersion: apps/v1

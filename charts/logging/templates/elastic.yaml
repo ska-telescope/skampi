@@ -31,6 +31,10 @@ spec:
         image: "{{ .Values.elastic.image.registry }}/{{ .Values.elastic.image.image }}:{{ .Values.elastic.image.tag }}"
         imagePullPolicy: {{ .Values.elastic.image.pullPolicy }}
         env:
+        - name: path.data
+          value: /usr/share/elasticsearch/data
+        - name: path.logs
+          value: /usr/share/elasticsearch/data
         - name: discovery.type
           value: single-node
         ports:

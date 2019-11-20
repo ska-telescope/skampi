@@ -37,7 +37,7 @@ k8s_test = kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- rm -f
 		kubectl cp test-harness/ $(KUBE_NAMESPACE)/$(TEST_RUNNER):/app/test-harness && \
 		kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- \
 		/bin/bash -c "cd /app/test-harness && \
-		make TANGO_HOST=databaseds-tango-base-$(HELM_RELEASE):10000 $1 && \
+		make HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=databaseds-tango-base-$(HELM_RELEASE):10000 $1 && \
 		mkdir build && \
 		mv -f setup_py_test.stdout build && \
 		mv -f report.json build && \

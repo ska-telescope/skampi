@@ -52,4 +52,4 @@ tests:
     pullPolicy: IfNotPresent
 
 demo_mode:
-  enabled: true
+  enabled: false

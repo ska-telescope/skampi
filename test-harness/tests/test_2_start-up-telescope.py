@@ -11,15 +11,15 @@ from time import sleep
 def test_init():    
   print("Init start-up-telescope")
 
-def test_start_up_telescope():
+def test_start_up_telescope(run_context):
   jsonLogin={"username":"user1","password":"abc123"}
-  url = 'http://webjive-webjive-test:8080/login' 
+  url = 'http://webjive-webjive-{}:8080/login'.format(run_context.HELM_RELEASE)
   r = requests.post(url=url, json=jsonLogin)
   webjive_jwt = r.cookies.get_dict()['webjive_jwt']
     
   cookies = {'webjive_jwt': webjive_jwt}
 
-  url = 'http://webjive-webjive-test:5004/db' 
+  url = 'http://webjive-webjive-{}:5004/db'.format(run_context.HELM_RELEASE)
   with open('files/mutation.json', 'r') as file:
     mutation = file.read().replace('\n', '')
 

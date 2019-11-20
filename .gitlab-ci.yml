@@ -6,6 +6,7 @@ stages:
   - deploy
   - test
   - lifecycle
+  - debug
 
 lint:
   stage: lint
@@ -159,3 +160,32 @@ delete-and-deploy staging environment:
   only:
     refs:
       - staging
+
+run-debug-cmd:
+  stage: debug
+  variables:
+    DEBUG_CMD: echo noop
+  tags:
+  - docker-executor
+  script:
+  - /bin/sh -exc "$DEBUG_CMD"
+  when: manual
+  allow_failure: true
+
+print-debug-info:
+  stage: debug
+  variables:
+    KUBE_NAMESPACE: integration
+  tags:
+  - docker-executor
+  script:
+  - kubectl describe ingresses --all-namespaces
+  - kubectl describe -n kube-system pod $(kubectl get pod -n kube-system | grep traefik | cut -d\  -f1)
+  - kubectl logs --tail=100 -n kube-system  $(kubectl get pod -n kube-system | grep traefik | cut -d\  -f1)
+  - kubectl get pods -n $KUBE_NAMESPACE -o name | xargs -I{}  sh -c 'echo && echo {}  && kubectl logs --tail=100 -n $KUBE_NAMESPACE {}'
+  - kubectl logs --tail=100 -n $KUBE_NAMESPACE $(kubectl get pod -n $KUBE_NAMESPACE   | grep fluentd | head -n 1  | cut -d\  -f1)
+  - kubectl get all --all-namespaces
+  environment:
+    name: test
+  when: manual
+  allow_failure: true

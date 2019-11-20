@@ -5,4 +5,4 @@ repos
 venv/
 credentials.json
 localEnv.txt
-readthedocs/conf.py
+conf.py

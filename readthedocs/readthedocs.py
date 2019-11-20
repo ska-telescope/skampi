@@ -1,6 +1,6 @@
 import json
 
-from readthedocs import conf
+import conf
 import requests
 
 

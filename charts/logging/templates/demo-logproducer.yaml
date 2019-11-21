@@ -2,15 +2,22 @@
 apiVersion: v1
 kind: Pod
 metadata:
- name: logme
+ name: demo-logproducer-{{ template "logging.fullname" . }}-{{ .Release.Name }}
  namespace: {{ .Release.Namespace }}
 spec:
  containers:
- - name: gen
+ - name: stdout-logproducer
    image: centos:7
    command:
      - "bin/bash"
      - "-c"
      - |
-        while true; do echo "1|$(date "+%Y-%m-%dT%T.%6NZ")|INFO||testpackage.testmodule.TestDevice.test_fn|test.py#1|tango-device:my/dev/name|Regular information should be logged like this FYI" | tee /dev/stderr; sleep 1; done
+        while true; do echo "1|$(date "+%Y-%m-%dT%T.%6NZ")|DEBUG||demo.stdout.logproducer|logproducer.py#1|tango-device:my/dev/name|A log line from stdout." | tee /dev/stderr; sleep 1; done
+ - name: syslog-logproducer
+   image: centos:7
+   command:
+     - "bin/bash"
+     - "-c"
+     - |
+        while true; do logger -T -n {{ .Release.Namespace }} -P 30123 "1|$(date "+%Y-%m-%dT%T.%6NZ")|DEBUG||demo.syslog.logproducer|test.py#1|tango-device:my/dev/name|A log line from rsyslog." | tee /dev/stderr; sleep 1; done
 {{ end }}

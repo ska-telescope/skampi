@@ -33,9 +33,10 @@ spec:
             value: "logstash-{{ template "logging.name" . }}-{{ .Release.Name }}"
           - name:  SYSLOG_PORT
             value: "5044"
-          - name: FLUENTD_SYSTEMD_CONF
-            value: disable
         volumeMounts:
+        - name: journal
+          mountPath: /var/log/journal
+          readOnly: true
         - name: varlog
           mountPath: /var/log
         - name: varlibdockercontainers
@@ -76,5 +77,8 @@ spec:
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
+      - name: journal
+        hostPath:
+          path: /run/log/journal
 
 {{ end }}

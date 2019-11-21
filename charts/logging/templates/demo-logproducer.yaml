@@ -19,5 +19,5 @@ spec:
      - "bin/bash"
      - "-c"
      - |
-        while true; do logger -T -n {{ .Release.Namespace }} -P 30123 "1|$(date "+%Y-%m-%dT%T.%6NZ")|DEBUG||demo.syslog.logproducer|test.py#1|tango-device:my/dev/name|A log line from rsyslog." | tee /dev/stderr; sleep 1; done
+        while true; do logger -T -n {{ .Release.Namespace }}.engageska-portugal.pt -P 30123 "1|$(date "+%Y-%m-%dT%T.%6NZ")|DEBUG||demo.syslog.logproducer|test.py#1|tango-device:my/dev/name|A log line from rsyslog." | tee /dev/stderr; sleep 1; done
 {{ end }}

@@ -34,7 +34,7 @@ spec:
           - name:  SYSLOG_PORT
             value: "5044"
           - name: FLUENTD_SYSTEMD_CONF
-            value: enable
+            value: disable
         volumeMounts:
         - name: varlog
           mountPath: /var/log

@@ -53,6 +53,7 @@ deploy test environment:
   - docker-executor
   script:
   - if [ -n "$HELM_CHART" ]; then make delete KUBE_NAMESPACE=integration; fi;
+  - helm init --client-only
   - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   - kubectl get all,pv,pvc,ingress -n integration
   retry: 2
@@ -69,6 +70,7 @@ deploy staging environment:
   tags:
   - docker-executor
   script:  
+  - helm init --client-only
   - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
   - kubectl get all,pv,pvc,ingress -n staging
   environment:

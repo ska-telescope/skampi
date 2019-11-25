@@ -96,7 +96,7 @@ class ReadthedocsProject():
         return result
 
 
-def list_of_projects(non_sub_only=False):
+def list_of_readthedocs_projects(non_sub_only=False):
     readthedocs = ReadtheDocs()
 
     projects = []

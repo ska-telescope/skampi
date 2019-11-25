@@ -10,6 +10,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 # import pprint
 
 from repositories.repositories import Repository, list_gitlab_repositories
+    # def set_readme_exists(self):
+    #     if subprocess.call(["./docstatus/check-readme.sh", self.gitlab.path]):
+    #         self.readme_exists = True
 
 
 def google_sheet(id):
@@ -36,7 +39,7 @@ if __name__ == '__main__':
         print("Repo Name: " + labRepo.name)
         repo = Repository(labRepo.name, gitlab_repo=labRepo)
         repo.set_folder_exists()
-        repos.append(repo)
+        repo.set_readme_exists()
 
     sheet = google_sheet(1)
 
@@ -49,8 +52,9 @@ if __name__ == '__main__':
             cell_list[0].value = repo.name
             cell_list[1].value = "TBD"
             cell_list[2].value = repo.docs_folder_exists
+            cell_list[3].value = repo.readme_exists
             # cell_list[3].value = repo.gitlab.mirror
-            cell_list[3].value = str(repo.gitlab.creator)
+            cell_list[4].value = str(repo.gitlab.creator)
             # cell_list[5].value = ""
 
             # print(str(repo.name) + "\t\t\t\t github: NO \t || gtilab: YES \t || \t admins: " + str(repo.gitlab.creator))

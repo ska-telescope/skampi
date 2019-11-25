@@ -6,3 +6,5 @@ venv/
 credentials.json
 localEnv.txt
 conf.py
+docstatus/repos
+.python-version

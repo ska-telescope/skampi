@@ -2,54 +2,14 @@
 # import time
 # import requests
 # from github import Github
-import gitlab
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import subprocess
 
 
 # import os
 # import pprint
 
-
-class Repository:
-
-    def __init__(self, name, gitlab_repo=None):
-        self.name = name
-        self.gitlab = gitlab_repo
-        self.docs_folder_exists = False
-
-    def set_gitlab(self, gitlab_repo):
-        self.gitlab = gitlab_repo
-
-    def set_folder_exists(self):
-        if subprocess.call(["./docstatus/git-clone.sh", self.gitlab.path]):
-            self.docs_folder_exists = True
-
-
-class GitLabRepo:
-    def __init__(self, name, creator, path, mirror=None):
-        self.name = name
-        self.creator = creator
-        self.path = path
-        self.mirror = mirror
-
-
-def list_gitlab_repositories():
-    # private token or personal token authentication
-    gl = gitlab.Gitlab('https://gitlab.com',
-                       private_token='MX_2Q5yUqYvHWexVYaxu')  # get your token  here: https://gitlab.com/profile/personal_access_tokens
-
-    group = gl.groups.get(3180705)
-
-    projects = group.projects.list(all=True, order_by="name", sort="asc")
-
-    result = []
-    for project in projects:
-        creator = gl.users.get(project.creator_id).username
-        result.append(GitLabRepo(project.name, creator, project.path, project.mirror))
-
-    return result
+from repositories.repositories import Repository, list_gitlab_repositories
 
 
 def google_sheet(id):

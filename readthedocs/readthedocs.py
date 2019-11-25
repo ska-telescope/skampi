@@ -140,7 +140,7 @@ if __name__ == '__main__':
     rtdp = ReadthedocsProject("My Mac", programming_language="py",
                               repo_url="https://github.com/thermostatix/mymac/tree/master")
     print(rtdp.create_project())
-    make_subprojects()
+    make_subprojects(parent="devdeveloperskatelescopeorg", project_slugs=['my-mac'])
 
     # var = rtdp.explanation()
     # print(json.dumps(var))

@@ -10,9 +10,6 @@ from oauth2client.service_account import ServiceAccountCredentials
 # import pprint
 
 from repositories.repositories import Repository, list_gitlab_repositories
-    # def set_readme_exists(self):
-    #     if subprocess.call(["./docstatus/check-readme.sh", self.gitlab.path]):
-    #         self.readme_exists = True
 
 
 def google_sheet(id):

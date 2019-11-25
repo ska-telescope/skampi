@@ -1,6 +1,7 @@
 import schedule
 import time
 import requests
+import subprocess
 from github import Github
 import gitlab
 import gspread
@@ -17,6 +18,10 @@ class Repository:
 
     def set_gitlab(self, gitlab):
         self.gitlab = gitlab
+
+    def set_readme_exists(self):
+        if subprocess.call(["./docstatus/check-readme.sh", self.gitlab.path]):
+            self.readme_exists = True
 
 
 class GitHubRepo:

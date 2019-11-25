@@ -3,9 +3,9 @@
 Test archiver
 """
 from tango import DeviceProxy, DevFailed
-import json
+from time import sleep
 
-def test_init():    
+def test_init():
   print("Init test archiver")
 
 def test_archiver():
@@ -14,35 +14,44 @@ def test_archiver():
   conf_manager_proxy = DeviceProxy(config_manager_device_fqdn)
   evt_subscriber_device_proxy = DeviceProxy(evt_subscriber_device_fqdn)
   attribute = "mid_d0001/elt/master/WindSpeed"
+  sleep(1)
+
   # SetAttributeName
   conf_manager_proxy.write_attribute("SetAttributeName", attribute)
+  sleep(1)
   # SetArchiver
   conf_manager_proxy.write_attribute("SetArchiver", evt_subscriber_device_fqdn)
+  sleep(1)
   # SetStrategy
   conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
+  sleep(1)
   # SetPollingPeriod
   conf_manager_proxy.write_attribute("SetPollingPeriod", 1000)
+  sleep(1)
   # SetEventPeriod
   conf_manager_proxy.write_attribute("SetPeriodEvent", 3000)
+  sleep(1)
+
   try:
     # Add Attribute for archiving
     conf_manager_proxy.command_inout("AttributeAdd")
+    sleep(1)
   except DevFailed as df:
     str_df = str(df)
-    if "reason = Already archived" in str_df:
-      # Start Attribute archiving
-      conf_manager_proxy.command_inout("AttributeStart", attribute)
+    print("Exception: ", str_df)
 
-  print("ArchiverList", conf_manager_proxy.read_attribute("ArchiverList"))
-  print("AttributeList", evt_subscriber_device_proxy.read_attribute("AttributeList"))
   # Check status of Attribute Archiving in Configuration Manager
   result_config_manager = conf_manager_proxy.command_inout("AttributeStatus",attribute)
-
   # Check status of Attribute Archiving in Event Subscriber
   result_evt_subscriber = evt_subscriber_device_proxy.command_inout("AttributeStatus", attribute)
 
   assert "Archiving          : Started" in result_config_manager
   assert "Archiving          : Started" in result_evt_subscriber
-  conf_manager_proxy.command_inout("AttributeRemove", attribute)
 
-
+  try:
+    # Remove Attribute for archiving
+    conf_manager_proxy.command_inout("AttributeRemove", attribute)
+    sleep(1)
+  except DevFailed as df:
+    str_df = str(df)
+    print("Exception: ", str_df)

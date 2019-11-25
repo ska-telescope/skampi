@@ -79,6 +79,6 @@ spec:
           path: /var/lib/docker/containers
       - name: journal
         hostPath:
-          path: /run/log/journal
+          path: /var/log/journal
 
 {{ end }}

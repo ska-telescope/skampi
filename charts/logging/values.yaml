@@ -41,7 +41,6 @@ logstash:
     image: logstash/logstash
     tag: 7.4.2
     pullPolicy: IfNotPresent
-  hostname: integration.engageska-portugal.pt
 
 tests:
   enabled: false

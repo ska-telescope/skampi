@@ -4,7 +4,7 @@ import conf
 import requests
 
 
-class ReadtheDocs():
+class ReadtheDocs:
     def __init__(self, token=conf.readthedocs_token):
         self.headers = {"Authorization": "Token " + token}
         self.base_url = "https://readthedocs.org/api/v3/"
@@ -38,7 +38,7 @@ class ReadtheDocs():
         return response
 
 
-class ReadthedocsProject():
+class ReadthedocsProject:
     def __init__(self, name, repo_url, slug="", url="", language="en", programming_language="words"):
         self.slug = slug
         self.name = name
@@ -73,16 +73,16 @@ class ReadthedocsProject():
 
         rtd = ReadtheDocs()
 
+        # Construct the Payload
         body = {"name": self.name}
-
         repodetails = {"url": self.repo_url, "type": "git"}
         body["repository"] = repodetails
-
         body["programming_language"] = self.programming_language
         body["language"] = self.language
 
         payload = json.dumps(body)
 
+        #Projects URL
         url = rtd.base_url + 'projects/'
 
         # specify JSON app type
@@ -90,7 +90,12 @@ class ReadthedocsProject():
         response = requests.request("POST", url, data=payload, headers=rtd.headers)
 
         if response.status_code == 201:
-            result = response.text
+            result = json.loads(response.text)
+            self.slug = result['slug']
+            self.url = result['repository']['url']
+            self.language= result['language']['code']
+            self.programming_language = result['programming_language']['code']
+
         else:
             result = response.reason
         return result

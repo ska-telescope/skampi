@@ -36,6 +36,7 @@ oauth2client = "*"
 slumber = "*"
 simplejson = "*"
 pytest = "*"
+sphinx = "*"
 
 [requires]
 python_version = "3.6"

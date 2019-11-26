@@ -2,66 +2,20 @@ import subprocess
 from github import Github
 import gitlab
 
-
-class Repository:
-
-    def __init__(self, name, github=None, gitlab=None):
-        self.name = name
-        self.github = github
-        self.gitlab = gitlab
-
-    def set_gitlab(self, gitlab):
-        self.gitlab = gitlab
-
-    def set_readme_exists(self):
-        if subprocess.call(["./docstatus/check-readme.sh", self.gitlab.path]):
-            self.readme_exists = True
-
-
-class GitHubRepo:
-    def __init__(self, name):
-        self.name = name
-        self.mantainers = []
-        self.teams = []
-
-    def __str__(self):
-        return "Name: " + str(self.name) + " || " + "Mantainers: " + str(self.mantainers)
-
-    def add_maintainers(self, mantainers):
-        for m in mantainers:
-            if not m.login in self.mantainers:
-                self.mantainers.append(m.login)
-
-    def add_team(self, team):
-        self.teams.append(team)
-
-
 class GitLabRepo:
-    def __init__(self, name, path, creator=None, mirror=None):
+    def __init__(self, name=None, path=None, creator=None, mirror=None):
         self.name = name
         self.mirror = mirror
         self.creator = creator
         self.path = path
 
-
-def github_repositories():
-    # using username and password
-    g = Github("dfsn@ua.pt", "Slbbenfica94")  # put credentials here
-
-    teams = g.get_organization("ska-telescope").get_teams()
-
-    repos = {}
-    for team in teams:
-        for repo in team.get_repos():
-            if repos.get(repo.name) == None:
-                repos[repo.name] = GitHubRepo(repo.name)
-                repos.get(repo.name).add_maintainers(team.get_members("maintainer"))
-                repos.get(repo.name).add_team(team.name)
-            else:
-                repos.get(repo.name).add_maintainers(team.get_members("maintainer"))
-                repos.get(repo.name).add_team(team.name)
-
-    return repos
+    def toDB(self):
+        return {
+            "_id": self.path,
+            "name": self.name,
+            "creator": self.creator,
+            "mirror": self.mirror
+        }
 
 
 def list_gitlab_repositories():
@@ -80,6 +34,7 @@ def list_gitlab_repositories():
 
     return result
 
+
 def list_ska_users():
     # private token or personal token authentication
     gl = gitlab.Gitlab('https://gitlab.com',
@@ -87,7 +42,6 @@ def list_ska_users():
 
     # developer.skatelescope.org project ID
     return gl.projects.get(9070656).members.all(all=True)
-
 
 def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None]):
     # private token or personal token authentication
@@ -110,11 +64,3 @@ def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None]):
             member.save()
 
     return project
-
-
-if __name__ == '__main__':
-    # print(name for name in list_gitlab_repositories())
-
-    project = create_gitlab_repo("Test AutoRepo")
-
-    print(project)

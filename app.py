@@ -9,6 +9,10 @@ client = MongoClient('mongodb://localhost:27018/')
 db = client.SKA
 
 
+@app.route("/gl/project/create", methods=['POST'])
+def
+
+
 @app.route("/db/repos/update", methods=['POST'])
 def update_repos():
     repos = list_gitlab_repositories()

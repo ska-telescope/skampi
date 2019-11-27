@@ -1,3 +1,5 @@
+import subprocess
+
 class Repository:
 
     def __init__(self, name, github=None, gitlab=None):

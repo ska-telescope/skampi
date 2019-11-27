@@ -6,11 +6,11 @@ metadata:
   name: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    service: kibana
+    service: kibana-{{ .Release.Namespace }}
 spec:
   type: NodePort
   selector:
-    run: kibana
+    run: kibana-{{ .Release.Namespace }}
   ports:
   - port: 5601
     targetPort: 5601

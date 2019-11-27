@@ -9,11 +9,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      run: kibana
+      run: kibana-{{ .Release.Namespace }}
   template:
     metadata:
       labels:
-        run: kibana
+        run: kibana-{{ .Release.Namespace }}
     spec:
       containers:
       - name: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}

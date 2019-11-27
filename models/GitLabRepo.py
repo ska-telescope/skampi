@@ -1,6 +1,6 @@
 import subprocess
-from github import Github
 import gitlab
+
 
 class GitLabRepo:
     def __init__(self, name=None, path=None, creator=None, mirror=None):
@@ -9,7 +9,7 @@ class GitLabRepo:
         self.creator = creator
         self.path = path
 
-    def toDB(self):
+    def to_database(self):
         return {
             "_id": self.path,
             "name": self.name,
@@ -23,7 +23,7 @@ def list_gitlab_repositories():
     gl = gitlab.Gitlab('https://gitlab.com',
                        private_token='MX_2Q5yUqYvHWexVYaxu')  # get your token  here: https://gitlab.com/profile/personal_access_tokens
 
-    group = gl.groups.get(3180705) #Group ID of ska-telescope
+    group = gl.groups.get(3180705)  # Group ID of ska-telescope
 
     projects = group.projects.list(all=True, order_by="name", sort="asc")
 
@@ -42,6 +42,7 @@ def list_ska_users():
 
     # developer.skatelescope.org project ID
     return gl.projects.get(9070656).members.all(all=True)
+
 
 def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None]):
     # private token or personal token authentication

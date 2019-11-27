@@ -38,6 +38,7 @@ pytest = "*"
 pygithub = "*"
 conf = "*"
 flask-pymongo = "*"
+pymongo = "*"
 
 [requires]
 python_version = "3.6"

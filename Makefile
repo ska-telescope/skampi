@@ -59,6 +59,35 @@ k8s_test: ## test the application on K8s
 # shim to support both helm v2 and v3
 helm_args_shim = $(shell helm version | grep -q Version:\"v3\. && echo $(HELM_RELEASE) || echo --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE))
 
+# ensure tillerless-helm is installed:
+# tiller is provided locally as a helm plugin instead of on the cluster
+helm_init:
+	@echo "+++ Checking your helm version."
+	@if helm version 2> /dev/null | grep -q SemVer:\"v2\. && ! helm plugin list | grep -q tiller ; then \
+		echo "+++ Detected helm v2 and no tiller. Installing local tiller plugin."; \
+		helm plugin install https://github.com/rimusz/helm-tiller; \
+	else \
+		echo "+++ Everything seems fine." ;\
+	fi
+
+# deploys the chart via helm + helm tiller plugin
+helm_deploy: 
+	@helm tiller start-ci $(KUBE_NAMESPACE)
+	$(eval $(shell helm tiller env))
+	@helm install $(helm_args_shim) charts/$(HELM_CHART) \
+		--namespace $(KUBE_NAMESPACE) \
+		--set display="$(DISPLAY)" \
+		--set xauthority="$(XAUTHORITYx)" \
+		--set ingress.hostname=$(INGRESS_HOST) \
+		--set ingress.nginx=$(USE_NGINX) \
+		--set tangoexample.debug="$(REMOTE_DEBUG)"
+
+helm:
+	@helm tiller start-ci $(KUBE_NAMESPACE)
+	$(eval $(shell helm tiller env))
+	@helm $(HELM_CMD)
+
+
 vars: ## Display variables - pass in DISPLAY and XAUTHORITY
 	@echo "DISPLAY: $(DISPLAY)"
 	@echo "XAUTHORITY: $(XAUTHORITYx)"
@@ -80,7 +109,7 @@ logs: ## POD logs for descriptor
 	echo "Logs for $$i"; \
 	kubectl -n $(KUBE_NAMESPACE) logs $$i; \
 	done
-
+   
 namespace: ## create the kubernetes namespace
 	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
   K_DESC=$$? ; \

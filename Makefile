@@ -57,7 +57,7 @@ k8s_test: ## test the application on K8s
 	  exit $$status
 
 # shim to support both helm v2 and v3
-helm_cmd_shim = $(shell helm version | grep -q Version:\"v3\. && echo helm template $(HELM_RELEASE) || helm template --name $(HELM_RELEASE) --tiler-namespace $(KUBE_NAMESPACE))
+helm_args_shim = $(shell helm version | grep -q Version:\"v3\. && echo $(HELM_RELEASE) || echo --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE))
 
 vars: ## Display variables - pass in DISPLAY and XAUTHORITY
 	@echo "DISPLAY: $(DISPLAY)"
@@ -137,7 +137,7 @@ mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
 	fi
 
 deploy: namespace mkcerts  ## deploy the helm chart
-	@$(helm_cmd_shim) charts/$(HELM_CHART)/ \
+	@helm template $(helm_args_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \

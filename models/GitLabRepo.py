@@ -46,7 +46,7 @@ def list_ska_users():
 def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None]):
     gl = SKAGitLab()
 
-    project = gl.projects.create({'name': name, 'namespace_id': group_id})
+    project = gl.projects.create({'name': name, 'namespace_id': group_id, 'visibility': "public"})
 
     # Share project with SKA Reporters group:
     project.share(6051772, gitlab.REPORTER_ACCESS)

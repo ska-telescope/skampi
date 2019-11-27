@@ -30,7 +30,7 @@ spec:
   - protocol: TCP
     port: 5044
     targetPort: 5044
-    nodePort: 30123 # TODO a strategy to dynamically choose a port to avoid conflicts
+    nodePort: {{ .Values.logstash.nodePort }} # TODO a strategy to dynamically choose a port to avoid conflicts
 
 ---
 apiVersion: apps/v1

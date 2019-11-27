@@ -57,8 +57,11 @@ def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None]):
     # Add maintainer users
     if maintainer_ids[0] is not None:
         for user_id in maintainer_ids:
-            member = project.members.get(user_id)
-            member.access_level = gitlab.MAINTAINER_ACCESS
-            member.save()
+            try:
+                member = project.members.create({'user_id': user_id, 'access_level': gitlab.MAINTAINER_ACCESS})
+            except Exception as e:
+                print(e)
+                print("User ID: " + str(user_id))
+                print("Project: " + str(project.id))
 
     return project

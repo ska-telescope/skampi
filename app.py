@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask, request, abort, jsonify
 from models.GitLabRepo import list_gitlab_repositories, list_ska_users, create_gitlab_repo
 import json
 from models.User import User
@@ -15,7 +15,12 @@ def create_repo():
         abort(400)
     name = request.json['project_name']
     maintainer_ids = request.json['maintainer_ids']
-    project = create_gitlab_repo(name, maintainer_ids=maintainer_ids)  # Group ID is ska-telescope - hardcoded
+    if 'group_id' in request.json:
+        project = create_gitlab_repo(name, request.json['group_id'], maintainer_ids)
+    else:
+        project = create_gitlab_repo(name, maintainer_ids=maintainer_ids)  # Group ID is ska-telescope - hardcoded
+
+    return jsonify(project._attrs)
 
 
 @app.route("/db/repos/update", methods=['POST'])

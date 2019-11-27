@@ -18,10 +18,13 @@ class GitLabRepo:
         }
 
 
+class SKAGitLab(gitlab.Gitlab):
+    def __init__(self):
+        gitlab.Gitlab.__init__(self, 'https://gitlab.com', private_token='MX_2Q5yUqYvHWexVYaxu')
+
+
 def list_gitlab_repositories():
-    # private token or personal token authentication
-    gl = gitlab.Gitlab('https://gitlab.com',
-                       private_token='MX_2Q5yUqYvHWexVYaxu')  # get your token  here: https://gitlab.com/profile/personal_access_tokens
+    gl = SKAGitLab()
 
     group = gl.groups.get(3180705)  # Group ID of ska-telescope
 
@@ -36,18 +39,12 @@ def list_gitlab_repositories():
 
 
 def list_ska_users():
-    # private token or personal token authentication
-    gl = gitlab.Gitlab('https://gitlab.com',
-                       private_token='MX_2Q5yUqYvHWexVYaxu')  # get your token  here: https://gitlab.com/profile/personal_access_tokens
-
-    # developer.skatelescope.org project ID
-    return gl.projects.get(9070656).members.all(all=True)
+    gl = SKAGitLab()
+    return gl.projects.get(9070656).members.all(all=True)  # developer.skatelescope.org project ID
 
 
 def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None]):
-    # private token or personal token authentication
-    gl = gitlab.Gitlab('https://gitlab.com',
-                       private_token='MX_2Q5yUqYvHWexVYaxu')  # get your token  here: https://gitlab.com/profile/personal_access_tokens
+    gl = SKAGitLab()
 
     project = gl.projects.create({'name': name, 'namespace_id': group_id})
 

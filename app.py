@@ -1,5 +1,5 @@
-from flask import Flask
-from models.GitLabRepo import list_gitlab_repositories, list_ska_users
+from flask import Flask, request, abort
+from models.GitLabRepo import list_gitlab_repositories, list_ska_users, create_gitlab_repo
 import json
 from models.User import User
 from pymongo import MongoClient
@@ -10,7 +10,12 @@ db = client.SKA
 
 
 @app.route("/gl/project/create", methods=['POST'])
-def
+def create_repo():
+    if not request.json or all(x not in request.json for x in ['project_name', 'maintainer_ids']):
+        abort(400)
+    name = request.json['project_name']
+    maintainer_ids = request.json['maintainer_ids']
+    project = create_gitlab_repo(name, maintainer_ids=maintainer_ids)  # Group ID is ska-telescope - hardcoded
 
 
 @app.route("/db/repos/update", methods=['POST'])
@@ -23,7 +28,7 @@ def update_repos():
         except Exception as e:
             print(e)
             return str(e), 400
-    return "Ok"
+    return response.status  # let's see if that gives more useful feedback
 
 
 @app.route("/db/users/update", methods=['POST'])

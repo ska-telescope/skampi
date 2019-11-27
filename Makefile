@@ -56,6 +56,9 @@ k8s_test: ## test the application on K8s
 	  kubectl cp $(KUBE_NAMESPACE)/$(TEST_RUNNER):/app/test-harness/build/ build/; \
 	  exit $$status
 
+# shim to support both helm v2 and v3
+helm_cmd_shim = $(shell helm version | grep -q Version:\"v3\. && echo helm template $(HELM_RELEASE) || helm template --name $(HELM_RELEASE) --tiler-namespace $(KUBE_NAMESPACE))
+
 vars: ## Display variables - pass in DISPLAY and XAUTHORITY
 	@echo "DISPLAY: $(DISPLAY)"
 	@echo "XAUTHORITY: $(XAUTHORITYx)"
@@ -134,9 +137,8 @@ mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
 	fi
 
 deploy: namespace mkcerts  ## deploy the helm chart
-	@helm template charts/$(HELM_CHART)/ --name $(HELM_RELEASE) \
+	@$(helm_cmd_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
-	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
@@ -146,7 +148,6 @@ deploy: namespace mkcerts  ## deploy the helm chart
 show: mkcerts  ## show the helm chart
 	@helm template charts/$(HELM_CHART)/ --name $(HELM_RELEASE) \
 				 --namespace $(KUBE_NAMESPACE) \
-	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \

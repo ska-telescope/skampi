@@ -21,7 +21,7 @@ class GitHubRepo:
 
 def github_repositories():
     # using username and password
-    g = Github("dfsn@ua.pt", "Slbbenfica94")  # put credentials here
+    g = Github("mail", "pass")  # put credentials here
 
     teams = g.get_organization("ska-telescope").get_teams()
 

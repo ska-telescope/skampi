@@ -142,10 +142,10 @@ if __name__ == '__main__':
     # pp.pprint(readthedocs.get_projects_for_user)
 
     # make_subproject()
-    rtdp = ReadthedocsProject("My Mac", programming_language="py",
-                              repo_url="https://github.com/thermostatix/mymac.git")
+    rtdp = ReadthedocsProject("Test Project", programming_language="py",
+                              repo_url="https://github.com/ska-telescope/test-project.git")
     print(rtdp.create_project())
-    make_subprojects(parent="devdeveloperskatelescopeorg", project_slugs=['my-mac'])
+    make_subprojects(parent="devdeveloperskatelescopeorg", project_slugs=['test-project'])
 
     # var = rtdp.explanation()
     # print(json.dumps(var))

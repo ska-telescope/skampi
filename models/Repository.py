@@ -1,11 +1,13 @@
 import subprocess
 
+
 class Repository:
 
     def __init__(self, name, github=None, gitlab=None):
         self.name = name
         self.github = github
         self.gitlab = gitlab
+        self.readme_exists = None
 
     def set_gitlab(self, gitlab):
         self.gitlab = gitlab

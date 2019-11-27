@@ -1,5 +1,6 @@
 from flask import Flask, request, abort, jsonify
 from models.GitLabRepo import list_gitlab_repositories, list_ska_users, create_gitlab_repo
+from models.ReadtheDocsProject import ReadtheDocs, ReadthedocsProject
 import json
 from models.User import User
 from pymongo import MongoClient
@@ -7,6 +8,34 @@ from pymongo import MongoClient
 app = Flask(__name__)
 client = MongoClient('mongodb://localhost:27018/')
 db = client.SKA
+
+
+@app.route("/rtd/project/import", methods=['POST'])
+def import_docs():
+    test_list = ['name_with_namespace',
+                 'repository']
+    if not request.json or all(x not in request.json for x in test_list):
+        abort(400)
+    if 'programming_language' not in request.json:
+        prog_lang = "py"
+    else:
+        prog_lang = request.json['programming_language']
+    if 'language' not in request.json:
+        lang = "en"
+    else:
+        lang = request.json['language']
+
+    if 'test' in request.json:
+        test_sub = True
+
+    readthedocs_project = ReadthedocsProject(name=request.json['name_with_namespace'],
+                                             repo_url=request.json['repository'],
+                                             language=lang, programming_language=prog_lang).create_project(test_sub)
+
+    #TODO: Add parameters to choose a blank project, templated only with docs folder & minimal Pipfile,
+    # or full ska-skeleton clone. Implement cloning of choice
+
+    return readthedocs_project
 
 
 @app.route("/gl/project/create", methods=['POST'])

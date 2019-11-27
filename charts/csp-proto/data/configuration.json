@@ -153,7 +153,12 @@
                                 "__root_att": [
                                     "mid_csp_cbf/sub_elt/subarray_01/outputLinksDistribution"
                                 ]
-                            } 
+                            },
+                            "injectFailConfigure": {
+                                "__root_att": [
+                                    "mid_csp_cbf/sub_elt/subarray_01/injectFailConfigure"
+                                ]
+                            }
                         }, 
                         "properties": {
                             "CspMaster": [
@@ -218,6 +223,11 @@
                             "cbfOutputLink": {
                                 "__root_att": [
                                     "mid_csp_cbf/sub_elt/subarray_02/outputLinksDistribution"
+                                ]
+                            },
+                            "injectFailConfigure": {
+                                "__root_att": [
+                                    "mid_csp_cbf/sub_elt/subarray_02/injectFailConfigure"
                                 ]
                             }
                         },

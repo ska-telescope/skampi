@@ -90,7 +90,7 @@ spec:
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp-prototype.etcd-host" . }}
         args: ["1", "-v4"]
-        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.16
+        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.16-test-0.1.0
         imagePullPolicy: IfNotPresent
         resources: {}
       - name: sdp-subarray-2
@@ -106,6 +106,6 @@ spec:
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp-prototype.etcd-host" . }}
         args: ["2", "-v4"]
-        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.16
+        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.16-test-0.1.0
         imagePullPolicy: IfNotPresent
         resources: {}

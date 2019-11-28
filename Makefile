@@ -19,7 +19,7 @@ REMOTE_DEBUG ?= false
 # define overides for above variables in here
 -include PrivateRules.mak
 
-.PHONY: vars k8s apply logs rm show deploy deploy_all delete ls podlogs namespace help helm_init helm_deploy helm
+.PHONY: vars k8s apply logs rm show deploy deploy_all delete ls podlogs namespace help helm_init helm_deploy helm_delete helm_test helm
 .DEFAULT_GOAL := help
 
 #

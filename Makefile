@@ -59,6 +59,7 @@ k8s_test: ## test the application on K8s
 
 helm_is_v2 = $(strip $(shell helm version 2> /dev/null | grep SemVer:\"v2\.))
 helm_install_shim = $(if $(helm_is_v2), --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE), $(HELM_RELEASE))
+helm_delete_shim = $(if $(helm_is_v2), $(HELM_RELEASE) --purge, $(HELM_RELEASE))
 
 # start the third-party tiller plugin if helmv2
 define tiller-plugin-wrapper
@@ -106,7 +107,7 @@ helm_test: ## tests a released helm chart. will deploy it if it isn't already th
 
 helm_delete:
 	$(tiller-plugin-wrapper)
-	@helm delete $(HELM_RELEASE) --purge
+	@helm delete $(helm_delete_shim)
 
 helm:
 	$(tiller-plugin-wrapper)

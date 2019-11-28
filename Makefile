@@ -93,7 +93,7 @@ helm_deploy:
 
 helm_delete:
 	$(tiller-plugin-wrapper)
-	@helm delete $(HELM_RELEASE)
+	@helm delete $(HELM_RELEASE) --purge
 
 helm:
 	$(tiller-plugin-wrapper)

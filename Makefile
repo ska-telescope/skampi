@@ -59,6 +59,15 @@ k8s_test: ## test the application on K8s
 # shim to support both helm v2 and v3
 helm_args_shim = $(shell helm version | grep -q Version:\"v3\. && echo $(HELM_RELEASE) || echo --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE))
 
+# start the third-party tiller plugin if helmv2
+define tiller-plugin-wrapper
+$(if $(shell helm version 2> /dev/null | grep SemVer:\"v2\.), 
+	@echo "+++ helmv2 detected. Starting third-party tiller plugin."
+	@helm tiller start-ci $(KUBE_NAMESPACE)
+	$(eval $(shell helm tiller env))
+)
+endef
+
 # ensure tillerless-helm is installed:
 # tiller is provided locally as a helm plugin instead of on the cluster
 helm_init:
@@ -83,13 +92,11 @@ helm_deploy:
 		--set tangoexample.debug="$(REMOTE_DEBUG)"
 
 helm_delete:
-	@helm tiller start-ci $(KUBE_NAMESPACE)
-	$(eval $(shell helm tiller env))
+	$(tiller-plugin-wrapper)
 	@helm delete $(HELM_RELEASE)
 
 helm:
-	@helm tiller start-ci $(KUBE_NAMESPACE)
-	$(eval $(shell helm tiller env))
+	$(tiller-plugin-wrapper)
 	@helm $(HELM_CMD)
 
 

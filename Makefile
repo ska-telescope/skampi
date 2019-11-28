@@ -64,8 +64,6 @@ helm_install_shim = $(if $(helm_is_v2), --name $(HELM_RELEASE) --tiller-namespac
 helm_delete_shim = $(if $(helm_is_v2), $(HELM_RELEASE) --purge, $(HELM_RELEASE))
 helm_test_shim = $(if $(helm_is_v2), $(HELM_RELEASE) --logs --cleanup, $(HELM_RELEASE))
 
-helm_release_is_deployed = $(strip $(shell helm list -q | grep $(HELM_RELEASE)))
-
 # start the third-party tiller plugin if helmv2
 define tiller-plugin-wrapper
 $(if $(helm_is_v2), 
@@ -110,7 +108,6 @@ helm_deploy:
 # usage: make helm_test HELM_RELEASE=mytest HELM_CHART=logging
 helm_test: 
 	$(tiller-plugin-wrapper)
-	$(if $(helm_release_is_deployed),,$(call helm-install,$(HELM_CHART)))
 	@helm test $(helm_test_shim)
 
 # deletes a deployed/released chart

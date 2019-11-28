@@ -57,12 +57,12 @@ k8s_test: ## test the application on K8s
 	  exit $$status
 
 
-helm_is_v2 = $(strip $(shell helm version | grep SemVer:\"v2\.))
+helm_is_v2 = $(strip $(shell helm version 2> /dev/null | grep SemVer:\"v2\.))
 helm_install_shim = $(if $(helm_is_v2), --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE), $(HELM_RELEASE))
 
 # start the third-party tiller plugin if helmv2
 define tiller-plugin-wrapper
-$(if $(shell helm version 2> /dev/null | grep SemVer:\"v2\.), 
+$(if $(helm_is_v2), 
 	@echo "+++ helmv2 detected. Starting third-party tiller plugin."
 	@helm tiller start-ci $(KUBE_NAMESPACE)
 	$(eval $(shell helm tiller env))
@@ -87,7 +87,7 @@ endef
 # tiller is provided locally as a helm plugin instead of on the cluster
 helm_init:
 	@echo "+++ Checking your helm version."
-	@if helm version 2> /dev/null | grep -q SemVer:\"v2\. && ! helm plugin list | grep -q tiller ; then \
+	@if [ -n '$(helm_is_v2)' ] && ! helm plugin list | grep -q tiller ; then \
 		echo "+++ Detected helm v2 and no tiller. Installing local tiller plugin."; \
 		helm plugin install https://github.com/rimusz/helm-tiller; \
 	else \

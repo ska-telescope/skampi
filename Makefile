@@ -57,6 +57,7 @@ k8s_test: ## test the application on K8s
 	  exit $$status
 
 
+# stuff for backwards compatibility with helm v2
 helm_is_v2 = $(strip $(shell helm version 2> /dev/null | grep SemVer:\"v2\.))
 helm_install_shim = $(if $(helm_is_v2), --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE), $(HELM_RELEASE))
 helm_delete_shim = $(if $(helm_is_v2), $(HELM_RELEASE) --purge, $(HELM_RELEASE))
@@ -87,7 +88,7 @@ define helm-install
 		--set tests.enabled=true
 endef
 
-# ensure tillerless-helm is installed:
+# ensure third-party tiller plugin is installed for helm v2:
 # tiller is provided locally as a helm plugin instead of on the cluster
 helm_init:
 	@echo "+++ Checking your helm version."
@@ -98,20 +99,27 @@ helm_init:
 		echo "+++ Everything seems fine." ;\
 	fi
 
-# deploys the chart via helm + helm tiller plugin
+# deploys/releases a chart via helm
+# usage make deploy_helm HELM_RELEASE=demo HELM_CHART=logging
 helm_deploy: 
 	$(tiller-plugin-wrapper)
 	$(call helm-install,$(HELM_CHART))
 
-helm_test: ## tests a released helm chart. will deploy it if it isn't already there
+# tests a released helm chart. will deploy it if it isn't already there
+# usage: make helm_test HELM_RELEASE=mytest HELM_CHART=logging
+helm_test: 
 	$(tiller-plugin-wrapper)
 	$(if $(helm_release_is_deployed),,$(call helm-install,$(HELM_CHART)))
 	@helm test $(helm_test_shim)
 
+# deletes a deployed/released chart
+# usage: make helm_delete HELM_RELEASE=test
 helm_delete:
 	$(tiller-plugin-wrapper)
 	@helm delete $(helm_delete_shim)
 
+# wrapper for helm commands
+# usage: make helm HELM_CMD="ls --all"
 helm:
 	$(tiller-plugin-wrapper)
 	@helm $(HELM_CMD)

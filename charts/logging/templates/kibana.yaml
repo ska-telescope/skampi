@@ -25,6 +25,10 @@ spec:
           value: "true"
         - name: SERVER_BASEPATH
           value: {{ .Values.kibana.basePath }}
+        - name: SERVER_HOST
+          value: "0.0.0.0"
+        - name: SERVER_NAME
+          value: "kibana-{{ template "logging.name" . }}-{{ .Release.Name }}"
         - name: SERVER_REWRITEBASEPATH
           value: "true"
         ports:

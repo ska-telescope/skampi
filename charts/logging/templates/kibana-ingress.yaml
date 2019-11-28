@@ -35,6 +35,7 @@ metadata:
     service: kibana
   annotations:
     kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/request-modifier: "ReplacePathRegex: ^/kibana/(.*) /kibana/$1"
 spec:
   rules:
     - host: {{ tpl .Values.ingress.hostname . }}

@@ -68,6 +68,20 @@ $(if $(shell helm version 2> /dev/null | grep SemVer:\"v2\.),
 )
 endef
 
+# deploy a helm chart
+# usage: $(call helm-install, "logging")
+define helm-install
+@echo "+++ Deploying chart $(HELM_CHART) as release $(HELM_RELEASE)."
+	@helm install $(helm_args_shim) charts/$(HELM_CHART) \
+		--namespace $(KUBE_NAMESPACE) \
+		--set display="$(DISPLAY)" \
+		--set xauthority="$(XAUTHORITYx)" \
+		--set ingress.hostname=$(INGRESS_HOST) \
+		--set ingress.nginx=$(USE_NGINX) \
+		--set tangoexample.debug="$(REMOTE_DEBUG)" \
+		--set tests.enabled=true
+endef
+
 # ensure tillerless-helm is installed:
 # tiller is provided locally as a helm plugin instead of on the cluster
 helm_init:
@@ -82,13 +96,7 @@ helm_init:
 # deploys the chart via helm + helm tiller plugin
 helm_deploy: 
 	$(tiller-plugin-wrapper)
-	@helm install $(helm_args_shim) charts/$(HELM_CHART) \
-		--namespace $(KUBE_NAMESPACE) \
-		--set display="$(DISPLAY)" \
-		--set xauthority="$(XAUTHORITYx)" \
-		--set ingress.hostname=$(INGRESS_HOST) \
-		--set ingress.nginx=$(USE_NGINX) \
-		--set tangoexample.debug="$(REMOTE_DEBUG)"
+	$(call helm-install,$(HELM_CHART))
 
 helm_delete:
 	$(tiller-plugin-wrapper)

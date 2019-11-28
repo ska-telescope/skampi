@@ -98,6 +98,11 @@ helm_deploy:
 	$(tiller-plugin-wrapper)
 	$(call helm-install,$(HELM_CHART))
 
+helm_test: ## tests a released helm chart. will deploy it if it isn't already there
+	$(tiller-plugin-wrapper)
+	$(if $(shell helm list -q | grep -q $(HELM_RELEASE) || echo release not deployed), $(call helm-install,$(HELM_CHART)))
+	@helm test $(HELM_RELEASE) --logs --cleanup
+
 helm_delete:
 	$(tiller-plugin-wrapper)
 	@helm delete $(HELM_RELEASE) --purge

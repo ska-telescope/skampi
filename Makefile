@@ -61,7 +61,7 @@ k8s_test: ## test the application on K8s
 helm_is_v2 = $(strip $(shell helm version 2> /dev/null | grep SemVer:\"v2\.))
 helm_install_shim = $(if $(helm_is_v2), --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE), $(HELM_RELEASE))
 helm_delete_shim = $(if $(helm_is_v2), $(HELM_RELEASE) --purge, $(HELM_RELEASE))
-helm_test_shim = $(if $(helm_is_v2), $(HELM_RELEASE) --logs, --cleanup, $(HELM_RELEASE))
+helm_test_shim = $(if $(helm_is_v2), $(HELM_RELEASE) --logs --cleanup, $(HELM_RELEASE))
 
 helm_release_is_deployed = $(strip $(shell helm list -q | grep $(HELM_RELEASE)))
 

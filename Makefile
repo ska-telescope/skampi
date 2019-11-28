@@ -82,6 +82,11 @@ helm_deploy:
 		--set ingress.nginx=$(USE_NGINX) \
 		--set tangoexample.debug="$(REMOTE_DEBUG)"
 
+helm_delete:
+	@helm tiller start-ci $(KUBE_NAMESPACE)
+	$(eval $(shell helm tiller env))
+	@helm delete $(HELM_RELEASE)
+
 helm:
 	@helm tiller start-ci $(KUBE_NAMESPACE)
 	$(eval $(shell helm tiller env))

@@ -81,8 +81,7 @@ helm_init:
 
 # deploys the chart via helm + helm tiller plugin
 helm_deploy: 
-	@helm tiller start-ci $(KUBE_NAMESPACE)
-	$(eval $(shell helm tiller env))
+	$(tiller-plugin-wrapper)
 	@helm install $(helm_args_shim) charts/$(HELM_CHART) \
 		--namespace $(KUBE_NAMESPACE) \
 		--set display="$(DISPLAY)" \

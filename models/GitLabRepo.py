@@ -43,10 +43,20 @@ def list_ska_users():
     return gl.projects.get(9070656).members.all(all=True)  # developer.skatelescope.org project ID
 
 
-def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None]):
+def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None], template=None):
     gl = SKAGitLab()
 
-    project = gl.projects.create({'name': name, 'namespace_id': group_id, 'visibility': "public"})
+    params = {'name': name, 'namespace_id': group_id, 'visibility': "public"}
+    if template:
+        params['use_custom_template'] = True
+        params['group_with_project_templates_id'] = 5901724
+        params['template_name'] = template
+        # if template == 'ska-python-skeleton':
+        #     params['template_name'] = 9070627
+        # if template == 'cpp-template':
+        #     params['template_name'] = 13540781
+
+    project = gl.projects.create(params)
 
     # Share project with SKA Reporters group:
     project.share(6051772, gitlab.REPORTER_ACCESS)
@@ -64,4 +74,14 @@ def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None]):
                 print("User ID: " + str(user_id))
                 print("Project: " + str(project.id))
 
-    return project
+    if template:
+        clone_ska_python_skeleton()
+
+    result = project._attrs
+
+    return result
+
+
+def clone_ska_python_skeleton():
+    pass
+

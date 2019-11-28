@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, url_for
 from models.GitLabRepo import list_gitlab_repositories, list_ska_users, create_gitlab_repo
 from models.ReadtheDocsProject import ReadtheDocs, ReadthedocsProject
 import json
@@ -27,29 +27,40 @@ def import_docs():
 
     if 'test' in request.json:
         test_sub = True
+    else:
+        test_sub = False
 
     readthedocs_project = ReadthedocsProject(name=request.json['name_with_namespace'],
                                              repo_url=request.json['repository'],
                                              language=lang, programming_language=prog_lang).create_project(test_sub)
-
-    #TODO: Add parameters to choose a blank project, templated only with docs folder & minimal Pipfile,
-    # or full ska-skeleton clone. Implement cloning of choice
 
     return readthedocs_project
 
 
 @app.route("/gl/project/create", methods=['POST'])
 def create_repo():
+
     if not request.json or all(x not in request.json for x in ['project_name', 'maintainer_ids']):
         abort(400)
     name = request.json['project_name']
     maintainer_ids = request.json['maintainer_ids']
-    if 'group_id' in request.json:
-        project = create_gitlab_repo(name, request.json['group_id'], maintainer_ids)
-    else:
-        project = create_gitlab_repo(name, maintainer_ids=maintainer_ids)  # Group ID is ska-telescope - hardcoded
 
-    return jsonify(project._attrs)
+    if 'template' in request.json:
+        template = request.json['template']
+    else:
+        template = None
+
+    if 'group_id' in request.json:
+        result = create_gitlab_repo(name, request.json['group_id'], maintainer_ids)
+    else:
+        result = create_gitlab_repo(name, maintainer_ids=maintainer_ids, template=template)  # Group ID is ska-telescope - hardcoded
+
+    next_urls = {'import_readthedocs': url_for(import_docs)}
+    # next_urls['clone_repo'] = url_for(import_docs)
+
+    result['api_links'] = next_urls
+
+    return jsonify(result)
 
 
 @app.route("/db/repos/update", methods=['POST'])

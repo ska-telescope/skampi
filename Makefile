@@ -56,6 +56,10 @@ k8s_test: ## test the application on K8s
 	  kubectl cp $(KUBE_NAMESPACE)/$(TEST_RUNNER):/app/test-harness/build/ build/; \
 	  exit $$status
 
+
+helm_is_v2 = $(strip $(shell helm version | grep SemVer:\"v2\.))
+helm_install_shim = $(if $(helm_is_v2), --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE), $(HELM_RELEASE))
+
 # shim to support both helm v2 and v3
 helm_args_shim = $(shell helm version | grep -q Version:\"v3\. && echo $(HELM_RELEASE) || echo --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE))
 
@@ -71,8 +75,8 @@ endef
 # deploy a helm chart
 # usage: $(call helm-install, "logging")
 define helm-install
-@echo "+++ Deploying chart $(HELM_CHART) as release $(HELM_RELEASE)."
-	@helm install $(helm_args_shim) charts/$(HELM_CHART) \
+	@echo "+++ Deploying chart '$(HELM_CHART)' as release '$(HELM_RELEASE)'."
+	@helm install $(helm_install_shim) charts/$(HELM_CHART) \
 		--namespace $(KUBE_NAMESPACE) \
 		--set display="$(DISPLAY)" \
 		--set xauthority="$(XAUTHORITYx)" \

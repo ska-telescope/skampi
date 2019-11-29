@@ -51,10 +51,6 @@ def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None], template=N
         params['use_custom_template'] = True
         params['group_with_project_templates_id'] = 5901724
         params['template_name'] = template
-        # if template == 'ska-python-skeleton':
-        #     params['template_name'] = 9070627
-        # if template == 'cpp-template':
-        #     params['template_name'] = 13540781
 
     project = gl.projects.create(params)
 

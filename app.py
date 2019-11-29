@@ -1,6 +1,6 @@
 from flask import Flask, request, abort, jsonify, url_for
 from models.GitLabRepo import list_gitlab_repositories, list_ska_users, create_gitlab_repo
-from models.ReadtheDocsProject import ReadtheDocs, ReadthedocsProject
+from models.ReadtheDocsProject import ReadtheDocs, ReadthedocsProject, create_readthedocs_project
 import json
 from models.User import User
 from pymongo import MongoClient
@@ -12,29 +12,12 @@ db = client.SKA
 
 @app.route("/rtd/project/import", methods=['POST'])
 def import_docs():
-    test_list = ['name_with_namespace',
-                 'repository']
+    test_list = ['name_with_namespace', 'repository']
+
     if not request.json or all(x not in request.json for x in test_list):
         abort(400)
-    if 'programming_language' not in request.json:
-        prog_lang = "py"
-    else:
-        prog_lang = request.json['programming_language']
-    if 'language' not in request.json:
-        lang = "en"
-    else:
-        lang = request.json['language']
 
-    if 'test' in request.json:
-        test_sub = True
-    else:
-        test_sub = False
-
-    readthedocs_project = ReadthedocsProject(name=request.json['name_with_namespace'],
-                                             repo_url=request.json['repository'],
-                                             language=lang, programming_language=prog_lang).create_project(test_sub)
-
-    return readthedocs_project
+    return create_readthedocs_project(request.json)
 
 
 @app.route("/gl/project/create", methods=['POST'])
@@ -55,7 +38,7 @@ def create_repo():
     else:
         result = create_gitlab_repo(name, maintainer_ids=maintainer_ids, template=template)  # Group ID is ska-telescope - hardcoded
 
-    next_urls = {'import_readthedocs': url_for(import_docs)}
+    next_urls = {'import_readthedocs': url_for('import_docs', _external=True)}
     # next_urls['clone_repo'] = url_for(import_docs)
 
     result['api_links'] = next_urls

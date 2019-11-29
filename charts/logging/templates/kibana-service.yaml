@@ -8,7 +8,7 @@ metadata:
   labels:
     service: kibana-{{ .Release.Namespace }}
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     run: kibana-{{ .Release.Namespace }}
   ports:

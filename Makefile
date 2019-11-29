@@ -109,11 +109,20 @@ helm_init:
 	fi
 
 # deploys/releases a chart via helm
-# usage make deploy_helm HELM_RELEASE=demo HELM_CHART=logging
+# usage make helm_deploy HELM_RELEASE=demo HELM_CHART=logging
 helm_deploy: 
 	$(tiller-plugin-startup)
 	@echo "+++ Deploying chart '$(HELM_CHART)' as release '$(HELM_RELEASE)'."
 	@$(call helm_install_cmd,$(HELM_CHART))
+	$(tiller-plugin-teardown)
+
+# deploy all the charts
+# usage: make helm_deploy_all
+CHARTS := $(shell cd charts/ && ls -d *)
+helm_deploy_all:
+	$(tiller-plugin-startup)
+	@echo "+++ Deploying chart '$(HELM_CHART)'."
+	$(foreach chrt,$(CHARTS),$(call helm_install_cmd,$(chrt));)
 	$(tiller-plugin-teardown)
 
 # tests a released helm chart. will deploy it if it isn't already there

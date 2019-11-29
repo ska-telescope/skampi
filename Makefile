@@ -73,6 +73,12 @@ $(if $(helm_is_v2),
 )
 endef
 
+define tiller-plugin-teardown
+$(if $(helm_is_v2),
+	@helm tiller stop
+)
+endef
+
 # deploy a helm chart
 # usage: $(call helm-install, "logging")
 define helm-install
@@ -103,24 +109,28 @@ helm_init:
 helm_deploy: 
 	$(tiller-plugin-wrapper)
 	$(call helm-install,$(HELM_CHART))
+	$(tiller-plugin-teardown)
 
 # tests a released helm chart. will deploy it if it isn't already there
 # usage: make helm_test HELM_RELEASE=mytest HELM_CHART=logging
 helm_test: 
 	$(tiller-plugin-wrapper)
 	@helm test $(helm_test_shim)
+	$(tiller-plugin-teardown)
 
 # deletes a deployed/released chart
 # usage: make helm_delete HELM_RELEASE=test
 helm_delete:
 	$(tiller-plugin-wrapper)
 	@helm delete $(helm_delete_shim)
+	$(tiller-plugin-teardown)
 
 # wrapper for helm commands
 # usage: make helm HELM_CMD="ls --all"
 helm:
 	$(tiller-plugin-wrapper)
 	@helm $(HELM_CMD)
+	$(tiller-plugin-teardown)
 
 
 vars: ## Display variables - pass in DISPLAY and XAUTHORITY

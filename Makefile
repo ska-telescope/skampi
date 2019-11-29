@@ -144,6 +144,13 @@ helm_delete:
 	@$(call helm_delete_cmd,$(HELM_RELEASE))
 	$(tiller-plugin-teardown)
 
+# deletes all releases specified by KUBE_NAMESPACE and then HELM_RELEASE
+# usage: make helm_delete_all KUBE_NAMESPACE=test HELM_RELEASE=demo
+helm_delete_all: delete_etcd
+	$(tiller-plugin-startup)
+	helm delete $$(helm ls -q --namespace=$(KUBE_NAMESPACE)) $(if $(helm_is_v2),--purge)
+	$(tiller-plugin-teardown)
+
 # wrapper for helm commands
 # usage: make helm HELM_CMD="ls --all"
 helm:

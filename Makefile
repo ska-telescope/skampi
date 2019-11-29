@@ -121,9 +121,14 @@ helm_deploy:
 CHARTS := $(shell cd charts/ && ls -d *)
 helm_deploy_all:
 	$(tiller-plugin-startup)
-	@echo "+++ Deploying chart '$(HELM_CHART)'."
 	$(foreach chrt,$(CHARTS),$(call helm_install_cmd,$(chrt));)
 	$(tiller-plugin-teardown)
+
+helm_ls:
+	$(tiller-plugin-startup)
+	@helm ls
+	$(tiller-plugin-teardown)
+
 
 # tests a released helm chart. will deploy it if it isn't already there
 # usage: make helm_test HELM_RELEASE=mytest HELM_CHART=logging

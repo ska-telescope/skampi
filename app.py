@@ -25,23 +25,13 @@ def create_repo():
 
     if not request.json or all(x not in request.json for x in ['project_name', 'maintainer_ids']):
         abort(400)
-    name = request.json['project_name']
-    maintainer_ids = request.json['maintainer_ids']
 
-    if 'template' in request.json:
-        template = request.json['template']
-    else:
-        template = None
-
-    if 'group_id' in request.json:
-        result = create_gitlab_repo(name, request.json['group_id'], maintainer_ids)
-    else:
-        result = create_gitlab_repo(name, maintainer_ids=maintainer_ids, template=template)  # Group ID is ska-telescope - hardcoded
+    result = create_gitlab_repo(request.json)
 
     next_urls = {'import_readthedocs': url_for('import_docs', _external=True)}
     # next_urls['clone_repo'] = url_for(import_docs)
 
-    result['api_links'] = next_urls
+    result['_api_links'] = next_urls
 
     return jsonify(result)
 
@@ -56,7 +46,7 @@ def update_repos():
         except Exception as e:
             print(e)
             return str(e), 400
-    return response.status  # let's see if that gives more useful feedback
+    return response.status  #TODO: Only last reponse to be returned - probably OK but let's discuss later
 
 
 @app.route("/db/users/update", methods=['POST'])

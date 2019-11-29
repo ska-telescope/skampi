@@ -43,7 +43,16 @@ def list_ska_users():
     return gl.projects.get(9070656).members.all(all=True)  # developer.skatelescope.org project ID
 
 
-def create_gitlab_repo(name, group_id=3180705, maintainer_ids=[None], template=None):
+def create_gitlab_repo(parameters):
+    group_id = 3180705
+    name = parameters['project_name']
+    maintainer_ids = parameters['maintainer_ids']
+
+    if 'template' in parameters:
+        template = parameters['template']
+    else:
+        template = None
+
     gl = SKAGitLab()
 
     params = {'name': name, 'namespace_id': group_id, 'visibility': "public"}

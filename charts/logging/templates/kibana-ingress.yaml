@@ -20,7 +20,7 @@ spec:
       paths:
       - path: {{ .Values.kibana.basePath }}
         backend:
-          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+          serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}
           servicePort: 5601
 
 {{ else }}
@@ -32,7 +32,7 @@ metadata:
   name: kibana-ing-{{ template "logging.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    service: kibana
+    service: kibana-{{ .Release.Namespace }}
   annotations:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/request-modifier: "ReplacePathRegex: ^/kibana/(.*) /kibana/$1"
@@ -43,7 +43,7 @@ spec:
         paths:
         - path: {{ .Values.kibana.basePath }}
           backend:
-            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+            serviceName: kibana-{{ template "logging.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}
             servicePort: 5601
 {{ end }}
 

@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+  name: kibana-{{ template "logging.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
     service: kibana-{{ .Release.Namespace }}

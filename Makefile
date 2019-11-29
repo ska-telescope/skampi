@@ -61,11 +61,29 @@ k8s_test: ## test the application on K8s
 HELM_TILLER_PLUGIN := https://github.com/rimusz/helm-tiller
 helm_is_v2 = $(strip $(shell helm version 2> /dev/null | grep SemVer:\"v2\.))
 helm_install_shim = $(if $(helm_is_v2), --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE), $(HELM_RELEASE))
-helm_delete_shim = $(if $(helm_is_v2), $(HELM_RELEASE) --purge, $(HELM_RELEASE))
-helm_test_shim = $(if $(helm_is_v2), $(HELM_RELEASE) --logs --cleanup, $(HELM_RELEASE))
+
+# helm command to install a chart
+# usage: $(call helm_install_cmd,$(HELM_CHART))
+helm_install_cmd = helm install $(if helm_is_v2,,$(HELM_RELEASE)) charts/$1 \
+		   	$(if helm_is_v2,--name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE)) \
+			--namespace="$(KUBE_NAMESPACE)" \
+			--set display="$(DISPLAY)" \
+			--set xauthority="$(XAUTHORITYx)" \
+			--set ingress.hostname="$(INGRESS_HOST)" \
+			--set ingress.nginx="$(USE_NGINX)" \
+			--set tangoexample.debug="$(REMOTE_DEBUG)" \
+			--set tests.enabled=true
+
+# helm command to test a release
+# usage: $(call helm_test_cmd,$(HELM_RELEASE))
+helm_test_cmd = helm test $1 $(if helm_is_v2,--logs --cleanup)
+
+# helm command to delete a release
+# usage: $(call helm_test_cmd,$(HELM_RELEASE))
+helm_delete_cmd = helm delete $1 $(if helm_is_v2,--purge)
 
 # start the third-party tiller plugin if helmv2
-define tiller-plugin-wrapper
+define tiller-plugin-startup
 $(if $(helm_is_v2), 
 	@echo "+++ helmv2 detected. Starting third-party tiller plugin."
 	@helm tiller start-ci $(KUBE_NAMESPACE)
@@ -77,20 +95,6 @@ define tiller-plugin-teardown
 $(if $(helm_is_v2),
 	@helm tiller stop
 )
-endef
-
-# deploy a helm chart
-# usage: $(call helm-install, "logging")
-define helm-install
-	@echo "+++ Deploying chart '$(HELM_CHART)' as release '$(HELM_RELEASE)'."
-	@helm install $(helm_install_shim) charts/$(HELM_CHART) \
-		--namespace $(KUBE_NAMESPACE) \
-		--set display="$(DISPLAY)" \
-		--set xauthority="$(XAUTHORITYx)" \
-		--set ingress.hostname=$(INGRESS_HOST) \
-		--set ingress.nginx=$(USE_NGINX) \
-		--set tangoexample.debug="$(REMOTE_DEBUG)" \
-		--set tests.enabled=true
 endef
 
 # ensure third-party tiller plugin is installed for helm v2:
@@ -107,28 +111,29 @@ helm_init:
 # deploys/releases a chart via helm
 # usage make deploy_helm HELM_RELEASE=demo HELM_CHART=logging
 helm_deploy: 
-	$(tiller-plugin-wrapper)
-	$(call helm-install,$(HELM_CHART))
+	$(tiller-plugin-startup)
+	@echo "+++ Deploying chart '$(HELM_CHART)' as release '$(HELM_RELEASE)'."
+	@$(call helm_install_cmd,$(HELM_CHART))
 	$(tiller-plugin-teardown)
 
 # tests a released helm chart. will deploy it if it isn't already there
 # usage: make helm_test HELM_RELEASE=mytest HELM_CHART=logging
 helm_test: 
-	$(tiller-plugin-wrapper)
-	@helm test $(helm_test_shim)
+	$(tiller-plugin-startup)
+	@$(call helm_test_cmd,$(HELM_RELEASE))
 	$(tiller-plugin-teardown)
 
 # deletes a deployed/released chart
 # usage: make helm_delete HELM_RELEASE=test
 helm_delete:
-	$(tiller-plugin-wrapper)
-	@helm delete $(helm_delete_shim)
+	$(tiller-plugin-startup)
+	@$(call helm_delete_cmd,$(HELM_RELEASE))
 	$(tiller-plugin-teardown)
 
 # wrapper for helm commands
 # usage: make helm HELM_CMD="ls --all"
 helm:
-	$(tiller-plugin-wrapper)
+	$(tiller-plugin-startup)
 	@helm $(HELM_CMD)
 	$(tiller-plugin-teardown)
 

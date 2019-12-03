@@ -27,6 +27,9 @@ spec:
       volumeMounts:
         - name: e2e-test-volume
           mountPath: /tests
+      env:
+      - name: HELM_RELEASE
+        value: {{ .Release.Name }}
   volumes:
     - name: e2e-test-volume
       configMap:

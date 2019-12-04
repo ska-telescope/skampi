@@ -2,6 +2,7 @@ image: nexus.engageska-portugal.pt/ska-docker/deploy:latest
 
 before_script:
   - helm init --client-only
+  - make helm_init #TODO bake this into docker-executor
 
 stages:
   - lint

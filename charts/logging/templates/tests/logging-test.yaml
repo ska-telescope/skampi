@@ -17,8 +17,6 @@ kind: Pod
 metadata:
   name: "e2e-test-{{ template "logging.fullname" .}}"
   namespace: {{ .Release.Namespace }}
-  annotations:
-    "helm.sh/hook": test-success
 spec:
   containers:
     - name: "e2e-test-{{ template "logging.fullname" .}}"
@@ -27,9 +25,6 @@ spec:
       volumeMounts:
         - name: e2e-test-volume
           mountPath: /tests
-      env:
-      - name: HELM_RELEASE
-        value: {{ .Release.Name }}
   volumes:
     - name: e2e-test-volume
       configMap:

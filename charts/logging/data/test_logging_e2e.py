@@ -1,16 +1,11 @@
-import pytest
 import os
-import subprocess
 
 from elasticsearch import Elasticsearch
 
 
-@pytest.fixture(scope="session")
-def helm_release():
-    assert os.environ.get('HELM_RELEASE')
-    return os.environ.get('HELM_RELEASE').strip().replace('-', '_').upper()
+KUBE_NAMESPACE = 'SARAO'
 
-def test_fluentd_ingests_pod_stdout_into_elastic(helm_release):
+def test_fluentd_ingests_pod_stdout_into_elastic():
     # arrange/ test setup
     log_messages = [
         "1|2019-12-31T23:42.526Z|INFO||testpackage.testmodule.TestDevice.test_fn|test.py#1|demo:yes| Regular information should be logged like this FYI",
@@ -22,17 +17,18 @@ def test_fluentd_ingests_pod_stdout_into_elastic(helm_release):
 
     
     # act / initiate action under test
-    _ = [subprocess.Popen(['echo "{}"'.format(msg)], shell=True) for msg in log_messages]
+    _ = [print(msg) for msg in log_messages]
 
     # assert expected behaviour:
     # connect to elastic and search for messages
-    elastic_host = os.environ.get('ELASTIC_LOGGING_{}_SERVICE_HOST'.format(helm_release))
-    elastic_port = os.environ.get('ELASTIC_LOGGING_{}_SERVICE_PORT'.format(helm_release))
+    elastic_host = os.environ.get('ELASTIC_LOGGING_{}_PORT_9200_TCP_ADDR'.format(KUBE_NAMESPACE))
+    elastic_port = os.environ.get('ELASTIC_LOGGING_{}_SERVICE_PORT'.format(KUBE_NAMESPACE))
 
     host_details = {
         'host': elastic_host, 
-        'port': elastic_port
-    }                                                                                              
+        'port': elastic_port, 
+        'url_prefix': 'elasticsearch'}                                                                                              
+
     es = Elasticsearch([host_details])
 
     query_body = { 
@@ -44,11 +40,11 @@ def test_fluentd_ingests_pod_stdout_into_elastic(helm_release):
     }
 
     result = es.search( 
-        index="logstash*", 
+        index="log*", 
         body=query_body 
     )
 
-    assert len(result.get('hits').get('hits')) > 0
+    assert len(result.get('hits')) > 0
 
 
 def test_logstash_ingests_rsyslog_messages_into_elastic():

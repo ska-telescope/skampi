@@ -2,7 +2,6 @@ image: nexus.engageska-portugal.pt/ska-docker/deploy:latest
 
 before_script:
   - helm init --client-only
-  - make helm_init #TODO bake this into docker-executor
 
 stages:
   - lint
@@ -25,7 +24,7 @@ delete test environment:
   tags:
   - docker-executor
   script:
-  - make helm_delete_all KUBE_NAMESPACE=integration
+  - make delete_all KUBE_NAMESPACE=integration
   - kubectl delete namespace integration
   environment:
     name: test
@@ -41,7 +40,7 @@ delete staging environment:
   tags:
   - docker-executor
   script:
-  - make helm_delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
+  - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
   - kubectl delete namespace staging
   environment:
     name: staging
@@ -56,8 +55,8 @@ deploy test environment:
   tags:
   - docker-executor
   script:
-  - if [ -n "$HELM_CHART" ]; then make helm_delete KUBE_NAMESPACE=integration; fi;
-  - make helm_deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
+  - if [ -n "$HELM_CHART" ]; then make delete KUBE_NAMESPACE=integration; fi;
+  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   - kubectl get all,pv,pvc,ingress -n integration
   retry: 2
   environment:
@@ -73,7 +72,7 @@ deploy staging environment:
   tags:
   - docker-executor
   script:  
-  - make helm_deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
   - kubectl get all,pv,pvc,ingress -n staging
   environment:
     name: staging
@@ -138,9 +137,9 @@ delete-and-deploy test environment:
   tags:
   - docker-executor
   script:
-  - make helm_delete_all KUBE_NAMESPACE=integration
+  - make delete_all KUBE_NAMESPACE=integration
   - kubectl delete namespace integration
-  - make helm_deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
+  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   environment:
     name: test
     url: http://integration.engageska-portugal.pt/testdb
@@ -154,9 +153,9 @@ delete-and-deploy staging environment:
   tags:
   - docker-executor
   script:
-  - make helm_delete_all KUBE_NAMESPACE=staging
+  - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
   - kubectl delete namespace staging
-  - make helm_deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
   environment:
     name: staging
     url: http://kubernetes.engageska-portugal.pt/testdb

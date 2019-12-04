@@ -33,7 +33,6 @@ metadata:
     service: elastic
   annotations:
     kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/rule-type: PathPrefixStrip
 spec:
   rules:
     - host: {{ tpl .Values.ingress.hostname . }}

@@ -64,8 +64,9 @@ helm_install_shim = $(if $(helm_is_v2), --name $(HELM_RELEASE) --tiller-namespac
 
 # helm command to install a chart
 # usage: $(call helm_install_cmd,$(HELM_CHART))
+FULL_RELEASE_NAME := $(HELM_CHART)-$(HELM_RELEASE)
 helm_install_cmd = helm install $(if helm_is_v2,,$(HELM_RELEASE)) charts/$1 \
-		   	$(if helm_is_v2,--name $1-$(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE)) \
+		   	$(if helm_is_v2,--name $(FULL_RELEASE_NAME) --tiller-namespace $(KUBE_NAMESPACE)) \
 			--namespace="$(KUBE_NAMESPACE)" \
 			--set display="$(DISPLAY)" \
 			--set xauthority="$(XAUTHORITYx)" \
@@ -75,12 +76,12 @@ helm_install_cmd = helm install $(if helm_is_v2,,$(HELM_RELEASE)) charts/$1 \
 			--set tests.enabled=true
 
 # helm command to test a release
-# usage: $(call helm_test_cmd,$(HELM_RELEASE))
-helm_test_cmd = helm test $1 $(if helm_is_v2,--logs --cleanup)
+# usage: $(call helm_test_cmd)
+helm_test_cmd = helm test $(FULL_RELEASE_NAME) $(if helm_is_v2,--logs --cleanup)
 
 # helm command to delete a release
-# usage: $(call helm_test_cmd,$(HELM_RELEASE))
-helm_delete_cmd = helm delete $1 $(if helm_is_v2,--purge)
+# usage: $(call helm_test_cmd)
+helm_delete_cmd = helm delete $(FULL_RELEASE_NAME) $(if helm_is_v2,--purge)
 
 # start the third-party tiller plugin if helmv2
 define tiller-plugin-startup
@@ -134,14 +135,14 @@ helm_ls:
 # usage: make helm_test HELM_RELEASE=mytest HELM_CHART=logging
 helm_test: 
 	$(tiller-plugin-startup)
-	@$(call helm_test_cmd,$(HELM_RELEASE))
+	@$(call helm_test_cmd)
 	$(tiller-plugin-teardown)
 
 # deletes a deployed/released chart
 # usage: make helm_delete HELM_RELEASE=test
 helm_delete:
 	$(tiller-plugin-startup)
-	@$(call helm_delete_cmd,$(HELM_RELEASE))
+	@$(call helm_delete_cmd)
 	$(tiller-plugin-teardown)
 
 # deletes all releases specified by KUBE_NAMESPACE and then HELM_RELEASE

@@ -48,6 +48,8 @@ spec:
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
+        - name: fluentd-config
+          mountPath: /fluentd/etc/conf.d
 
 {{- if .Values.fluentd.livenessProbe.enabled }}
         livenessProbe:
@@ -87,5 +89,8 @@ spec:
       - name: journal
         hostPath:
           path: /var/log/journal
+      - name: fluentd-config
+        configMap:
+          name: fluentd-configmap-{{ template "logging.name" . }}-{{ .Release.Name }}
 
 {{ end }}

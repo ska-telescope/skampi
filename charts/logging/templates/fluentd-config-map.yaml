@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-configmap-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  ska.conf: |
+    <filter docker.systemd>
+      @type kubernetes_metadata
+      use_journal true
+    </filter>

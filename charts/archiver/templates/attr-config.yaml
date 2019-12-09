@@ -1,0 +1,70 @@
+{{ if .Values.archiver.enabled }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "attrconfig-configuration-{{ template "archiver.name" . }}-{{ .Release.Name }}"
+  namespace: {{ .Release.Namespace }}
+data:
+  attribute_fqdn.txt:
+{{ (tpl (.Files.Glob "data/attribute_fqdn.txt").AsConfig . ) | indent 2 }}
+  configure_hdbpp.py:
+{{ (tpl (.Files.Glob "data/configure_hdbpp.py").AsConfig . ) | indent 2 }}
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: attrconfig-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: attrconfig-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  volumes:
+    - name: configureattrconfig
+      configMap:
+        name: "attrconfig-configuration-{{ template "archiver.name" . }}-{{ .Release.Name }}"
+  containers:
+  - name: attrconfig
+    image: "{{ .Values.attrconfig.image.registry }}/{{ .Values.attrconfig.image.image }}:{{ .Values.attrconfig.image.tag }}"
+    imagePullPolicy: {{ .Values.attrconfig.image.pullPolicy }}
+
+    command:
+      - sh
+    args:
+      - -c
+      - "retry --max=20 -- tango_admin --ping-device archiving/hdbpp/eventsubscriber01 &&\
+      retry --max=20 -- tango_admin --ping-device archiving/hdbpp/confmanager01 &&\
+      /venv/bin/python data/configure_hdbpp.py --cm=archiving/hdbpp/confmanager01 \
+      --es=archiving/hdbpp/eventsubscriber01 --attrfile=data/attribute_fqdn.txt"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+    volumeMounts:
+      - name: configureattrconfig
+        mountPath: /app/data
+        readOnly: true
+
+{{- with .Values.archiver.env }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  restartPolicy: OnFailure
+{{- with .Values.nodeSelector }}
+  nodeSelector:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.affinity }}
+  affinity:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+
+{{ end }}
+

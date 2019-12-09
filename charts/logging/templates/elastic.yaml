@@ -1,0 +1,75 @@
+{{ if .Values.elastic.enabled }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      component: elasticsearch
+  template:
+    metadata:
+      labels:
+        component: elasticsearch
+    spec:
+      initContainers:
+      - name: setdatadirpermissions
+        image: "{{ .Values.elastic.image.registry }}/{{ .Values.elastic.image.image }}:{{ .Values.elastic.image.tag }}"
+        imagePullPolicy: {{ .Values.elastic.image.pullPolicy }}
+        command:
+          - sh
+          - -c
+          - 'chown 1000:1000 /usr/share/elasticsearch/data' 
+        volumeMounts:
+        - name: elastic-data
+          mountPath: /usr/share/elasticsearch/data
+
+      containers:
+      - name: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+        image: "{{ .Values.elastic.image.registry }}/{{ .Values.elastic.image.image }}:{{ .Values.elastic.image.tag }}"
+        imagePullPolicy: {{ .Values.elastic.image.pullPolicy }}
+        env:
+        - name: path.data
+          value: /usr/share/elasticsearch/data
+        - name: path.logs
+          value: /usr/share/elasticsearch/data
+        - name: discovery.type
+          value: single-node
+        ports:
+        - containerPort: 9200
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: elastic-data
+          mountPath: /usr/share/elasticsearch/data
+        readinessProbe:
+          httpGet:
+            path: /_cluster/health
+            port: 9200
+          initialDelaySeconds: 15
+          periodSeconds: 5
+      volumes:
+      - name: elastic-data
+        persistentVolumeClaim:
+          claimName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: elasticsearch
+spec:
+  type: NodePort
+  selector:
+    component: elasticsearch
+  ports:
+  - port: 9200
+    targetPort: 9200
+
+{{ end }}

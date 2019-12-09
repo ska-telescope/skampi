@@ -1,0 +1,38 @@
+{{ if .Values.testrunner.enabled }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-runner-{{ template "tests.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: test-runner-{{ template "tests.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tests.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  containers:
+  - name: runner-container
+    image: "{{ .Values.testrunner.image.registry }}/{{ .Values.testrunner.image.image }}:{{ .Values.testrunner.image.tag }}"
+    imagePullPolicy: {{ .Values.testrunner.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "sleep infinity"
+
+  restartPolicy: OnFailure
+{{- with .Values.nodeSelector }}
+  nodeSelector:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.affinity }}
+  affinity:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+
+{{ end }}

@@ -9,3 +9,11 @@ data:
       @type kubernetes_metadata
       use_journal true
     </filter>
+
+    <match kubelet>
+      @type null
+    </match>
+
+    <match bootkube>
+      @type null
+    </match>

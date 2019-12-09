@@ -42,9 +42,6 @@ deploy test environment:
   retry: 2
   environment:
     name: test
-  only:
-    refs:
-      - master
 
 k8s_test test environment:
   stage: test

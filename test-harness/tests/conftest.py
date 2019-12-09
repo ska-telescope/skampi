@@ -1,6 +1,7 @@
 import os
 import pytest
 
+from tango import DeviceProxy
 from collections import namedtuple
 
 """
@@ -29,3 +30,17 @@ def run_context():
 
     return RunContext(*values)
 
+@pytest.fixture(scope="session")
+def create_centralnode_proxy():
+    centralnode_proxy = DeviceProxy("ska_mid/tm_central/central_node")
+    return centralnode_proxy
+
+@pytest.fixture(scope="class")
+def create_subarray1_proxy():
+    subarray1_proxy = DeviceProxy("ska_mid/tm_subarray_node/1")
+    return subarray1_proxy
+
+@pytest.fixture(scope="class")
+def create_subarray2_proxy():
+    subarray2_proxy = DeviceProxy("ska_mid/tm_subarray_node/2")
+    return subarray2_proxy

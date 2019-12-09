@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   ska.conf: |
+    # journald
     <filter docker.systemd>
       @type kubernetes_metadata
       use_journal true
@@ -17,3 +18,37 @@ data:
     <match bootkube>
       @type null
     </match>
+
+    <filter docker.systemd>
+      @type record_transformer
+      enable_ruby true
+      <record>
+        kubernetes_namespace ${record["kubernetes"]["namespace_name"]}
+      </record>
+    </filter>
+
+    <filter docker.systemd>
+      @type grep
+      <regexp>
+        key kubernetes_namespace
+        pattern /{{ .Release.Namespace }}/
+      </regexp>
+    </filter>
+
+
+    # syslog
+    <filter kubernetes.**>
+      @type record_transformer
+      enable_ruby true
+      <record>
+        kubernetes_namespace ${record["kubernetes"]["namespace_name"]}
+      </record>
+    </filter>
+
+    <filter kubernetes.**>
+      @type grep
+      <regexp>
+        key kubernetes_namespace
+        pattern /{{ .Release.Namespace }}/
+      </regexp>
+    </filter>

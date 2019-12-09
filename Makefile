@@ -157,7 +157,6 @@ show: mkcerts  ## show the helm chart
 delete: ## delete the helm chart release
 	@helm template $(helm_args_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
-	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
@@ -168,7 +167,6 @@ deploy_all: namespace mkcerts deploy_etcd  ## deploy ALL of the helm chart
 	@for i in charts/*; do \
 	helm template $(helm_args_shim) $$i \
 				 --namespace $(KUBE_NAMESPACE) \
-	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \

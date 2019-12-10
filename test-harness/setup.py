@@ -43,6 +43,7 @@ setup(
         'pytest-cov',
         'pytest-json-report',
         'pycodestyle',
+        'pytest-bdd',
     ],
     extras_require={
         'dev':  ['prospector[with_pyroma]', 'yapf', 'isort']

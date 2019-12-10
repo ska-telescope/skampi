@@ -18,7 +18,7 @@ def test_something(run_context):
 """
 @pytest.fixture(scope="session")
 def run_context():
-    ENV_VARS = ['HELM_RELEASE'] # list of required environment vars
+    ENV_VARS = ['HELM_RELEASE', 'KUBE_NAMESPACE'] # list of required environment vars
 
     RunContext = namedtuple('RunContext', ENV_VARS)
     values = list()

@@ -9,3 +9,4 @@ conf.py
 docstatus/repos
 .python-version
 build
+.pytest_cache

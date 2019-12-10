@@ -4,9 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pycodestyle = "*"
 
 [packages]
-#github = "*"
 astroid = "==2.3.0"
 certifi = "==2019.9.11"
 chardet = "==3.0.4"
@@ -38,6 +38,10 @@ simplejson = "*"
 pytest = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
+pygithub = "*"
+conf = "*"
+flask-pymongo = "*"
+pymongo = "*"
 
 [requires]
 python_version = "3.6"

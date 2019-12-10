@@ -1,0 +1,1 @@
+docker run -d -p 27018:27017 --name SKA-mongodb mongo

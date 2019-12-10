@@ -2,14 +2,13 @@ import pytest
 from elasticsearch import Elasticsearch
 
 
-@pytest.mark.skip("Unblock pipeline for now.")
 def test_logging_namespace(run_context):
     """Test that we only get logs from our namespace"""
 
     ES_HOST = "elastic-logging-{}".format(run_context.HELM_RELEASE)
     ES_PORT = "9200"
     NAMESPACE = run_context.KUBE_NAMESPACE
-    INDEX_MATCH = "lo*"
+    INDEX_MATCH = "lo*-*"
 
     es = Elasticsearch(["{}:{}".format(ES_HOST, ES_PORT)],
                        use_ssl=False,
@@ -54,7 +53,7 @@ def test_logging_namespace(run_context):
     }
 
     res = es.search(index=last_index, body=search_namespace)
-    assert res['hits']['total']['value'], ("Found no matches for namesapace [{}] using"
-                                           " index [{}]".format(NAMESPACE, INDEX_MATCH))
+    assert res['hits']['total']['value'], ("Found no matches for namespace [{}] using"
+                                           " index [{}]".format(NAMESPACE, last_index))
     res = es.search(index=last_index, body=search_not_namespace)
     assert not res['hits']['total']['value'], "Found matches on other namespaces"

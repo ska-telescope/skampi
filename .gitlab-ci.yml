@@ -8,6 +8,7 @@ stages:
   - clean
   - deploy
   - test
+  - post_test
   - lifecycle
   - debug
 
@@ -192,3 +193,17 @@ print-debug-info:
     name: test
   when: manual
   allow_failure: true
+
+.xray_report:
+  stage: post_test
+  tags:
+  - docker-executor
+  script:
+    - 'curl -X POST -H "Content-type: application/json" --fail
+         -H "Auhtorization: Basic $JIRA_AUTH"
+         --data @cucumber.json
+         htts://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
+  when: always
+  only: [master]
+  retry: 2
+

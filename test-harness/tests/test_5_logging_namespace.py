@@ -8,7 +8,7 @@ def test_logging_namespace(run_context):
     ES_HOST = "elastic-logging-{}".format(run_context.HELM_RELEASE)
     ES_PORT = "9200"
     NAMESPACE = run_context.KUBE_NAMESPACE
-    INDEX_MATCH = "log*"
+    INDEX_MATCH = "lo*"
 
     es = Elasticsearch(["{}:{}".format(ES_HOST, ES_PORT)],
                        use_ssl=False,

@@ -11,6 +11,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  serviceAccountName: testrunner-{{ template "tests.name" . }}-{{ .Release.Name }}
   containers:
   - name: runner-container
     image: "{{ .Values.testrunner.image.registry }}/{{ .Values.testrunner.image.image }}:{{ .Values.testrunner.image.tag }}"

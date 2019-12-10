@@ -26,6 +26,24 @@ def requests_retry_session(retries=3,
     session.mount('https://', adapter)
     return session
 
+
+def test_elasticsearch_is_receiving_requests_via_configured_ingress(run_context, k8s_api):
+    ingress = k8s_api.extensions_v1_beta1.read_namespaced_ingress(
+            "elastic-ing-logging-{}".format(run_context.HELM_RELEASE),
+            run_context.KUBE_NAMESPACE)
+
+    es_location = "{hostname}{prefix_path}".format(
+            hostname=ingress.spec.rules[0].host,
+            prefix_path=ingress.spec.rules[0].http.paths[0].path)
+    
+    es_health_url = "http://{}/_cluster/health".format(es_location)
+    
+    res = requests_retry_session().get(es_health_url)
+
+    assert res.status_code == 200
+    assert res.json()["status"] == "yellow" # TODO change to green once we have a quorum
+
+
 @pytest.mark.skip("Unblock pipeline for now.")
 def test_kibana_should_be_accessible_via_ingress(run_context):
     HOSTNAME = "kibana-logging-{}".format(run_context.HELM_RELEASE)

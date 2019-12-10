@@ -1,6 +1,6 @@
 .PHONY: helm_init helm_deploy helm_delete helm_test helm helm_deploy_all helm_delete_all
 
-HELM_RELEASE ?= $(shell make helm_ls | grep $(HELM_CHART) | cut -f1)
+HELM_RELEASE ?= test # $(shell make helm_ls | grep $(HELM_CHART) | cut -f1)
 
 # stuff for backwards compatibility with helm v2
 HELM_TILLER_PLUGIN := https://github.com/rimusz/helm-tiller

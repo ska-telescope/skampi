@@ -1,11 +1,11 @@
 .PHONY: helm_init helm_deploy helm_delete helm_test helm helm_deploy_all helm_delete_all
 
-HELM_RELEASE ?= test # $(shell make helm_ls | grep $(HELM_CHART) | cut -f1)
+HELM_RELEASE ?= $(shell make helm_ls | grep $(HELM_CHART) | cut -f1)
 
 # stuff for backwards compatibility with helm v2
 HELM_TILLER_PLUGIN := https://github.com/rimusz/helm-tiller
 helm_is_v2 = $(strip $(shell helm version 2> /dev/null | grep SemVer:\"v2\.))
-helm_install_shim = $(if $(helm_is_v2),--tiller-namespace $(KUBE_NAMESPACE),$(HELM_RELEASE))
+helm_install_shim = $(if $(helm_is_v2),--name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE),$(HELM_RELEASE))
 
 # helm command to install a chart
 # usage: $(call helm_install_cmd,$(HELM_CHART))

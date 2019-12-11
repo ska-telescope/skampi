@@ -5,7 +5,9 @@ A reimplementation of some of the basic tests in this directory, implemented usi
 
 from tango import Database, DeviceProxy
 from time import sleep
-from pytest_bdd import given, when, then
+from pytest_bdd import scenario, given, when, then
+
+scenarios('./1.feature')
 
 @given("A set of tango devices")
 def list_devices():

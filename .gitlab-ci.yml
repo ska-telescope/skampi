@@ -100,6 +100,10 @@ k8s_test test environment:
     paths: ['build/report.json']
     reports:
       junit: build/report.xml
+  artifacts:
+    name: "cucumber.json"
+    paths: ['build/cucumber.json']
+   
 
 smoketest test environment:
   stage: test

@@ -4,8 +4,8 @@ services:
     build:
       context: app
       dockerfile: Dockerfile
-    container_name: flask
-    image: digitalocean.com/flask-python:3.6
+    container_name: FlaskApp
+    image: digitalocean.com/FlaskApp-python:3.6
     restart: unless-stopped
     environment:
       APP_ENV: "prod"

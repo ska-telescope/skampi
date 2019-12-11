@@ -1,8 +1,7 @@
 from flask import Flask, request, abort, jsonify, url_for
-from models.GitLabRepo import list_gitlab_repositories, list_ska_users, create_gitlab_repo
-from models.ReadtheDocsProject import ReadtheDocs, ReadthedocsProject, create_readthedocs_project
-import json
-from models.User import User
+from FlaskApp.models.GitLabRepo import list_gitlab_repositories, list_ska_users, create_gitlab_repo
+from FlaskApp.models.ReadtheDocsProject import create_readthedocs_project
+from FlaskApp.models.User import User
 from pymongo import MongoClient
 
 app = Flask(__name__)

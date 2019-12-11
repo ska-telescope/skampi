@@ -43,7 +43,10 @@ setup(
         'pytest-cov',
         'pytest-json-report',
         'pycodestyle',
-        'pytest-bdd',
+        'pytest-bdd'
+        'elasticsearch',
+        'kubernetes'
+        test-harness/setup.py
     ],
     extras_require={
         'dev':  ['prospector[with_pyroma]', 'yapf', 'isort']

@@ -2,6 +2,7 @@ import os
 import pytest
 
 from collections import namedtuple
+from kubernetes import config, client
 
 """
 RunContext is a metadata object to access values from the environment, 
@@ -18,7 +19,7 @@ def test_something(run_context):
 """
 @pytest.fixture(scope="session")
 def run_context():
-    ENV_VARS = ['HELM_RELEASE'] # list of required environment vars
+    ENV_VARS = ['HELM_RELEASE', 'KUBE_NAMESPACE', 'TANGO_HOST'] # list of required environment vars
 
     RunContext = namedtuple('RunContext', ENV_VARS)
     values = list()
@@ -29,3 +30,18 @@ def run_context():
 
     return RunContext(*values)
 
+
+"""
+Client that provides access to the Kubernetes API from the namespace the test 
+runner pod is running in. 
+
+https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+
+"""
+@pytest.fixture(scope="session")
+def k8s_api():
+    config.load_incluster_config()
+
+    KubernetesApi = namedtuple("KubernetesApi", ["v1", "extensions_v1_beta1"])
+
+    return KubernetesApi(client.CoreV1Api(), client.ExtensionsV1beta1Api())

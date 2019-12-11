@@ -51,7 +51,7 @@ tangotest:
     pullPolicy: IfNotPresent
 
 jive:
-  enabled: true
+  enabled: false
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-java

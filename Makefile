@@ -7,6 +7,7 @@ THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
 KUBE_NAMESPACE ?= default## Kubernetes Namespace to use
+HELM_RELEASE ?= test## Helm release name 
 HELM_CHART ?= tango-base## Helm Chart to install (see ./charts)
 HELM_CHART_TEST ?= tests## Helm Chart to install (see ./charts)
 INGRESS_HOST ?= integration.engageska-portugal.pt ## Ingress HTTP hostname

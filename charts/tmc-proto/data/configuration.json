@@ -22,6 +22,12 @@
                                     "1"
                                 ]
                             },
+                            "subarray3HealthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
                             "telescopeHealthState": {
                                 "abs_change": [
                                     "-1",
@@ -40,7 +46,7 @@
                                 "ska_mid/tm_leaf_node/d"
                             ],
                             "TMMidSubarrayNodes": [
-                                "ska_mid/tm_subarray_node/1", "ska_mid/tm_subarray_node/2"
+                                "ska_mid/tm_subarray_node/1", "ska_mid/tm_subarray_node/2", "ska_mid/tm_subarray_node/3"
                             ],
                             "NumDishes": [
                                 "4"
@@ -52,6 +58,8 @@
                                 "subarray1healthstate",
                                 "1000",
                                 "subarray2healthstate",
+                                "1000",
+                                "subarray3healthstate",
                                 "1000",
                                 "activitymessage",
                                 "1000",
@@ -205,6 +213,88 @@
                             ],
                             "SdpSubarrayFQDN": [
                                 "mid_sdp/elt/subarray_2"
+                            ],
+                            "SkaLevel": [
+                                "2"
+                            ],
+                            "polled_attr": [
+                                "activitymessage",
+                                "1000",
+                                "adminmode",
+                                "1000",
+                                "healthstate",
+                                "1000",
+                                "obsmode",
+                                "1000",
+                                "obsstate",
+                                "1000",
+                                "receptoridlist",
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            },
+            "sa3": {
+                "SubarrayNode": {
+                    "ska_mid/tm_subarray_node/3": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "obsMode": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "obsState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "receptorIDList": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "simulationMode": {
+                                "__value": [
+                                    "true"
+                                ]
+                            },
+                            "storageLoggingLevel": {
+                                "__value": [
+                                    "5"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "CspSubarrayLNFQDN": [
+                                "ska_mid/tm_leaf_node/csp_subarray03"
+                            ],
+                            "DishLeafNodePrefix": [
+                                "ska_mid/tm_leaf_node/d"
+                            ],
+                            "SdpSubarrayLNFQDN": [
+                                "ska_mid/tm_leaf_node/sdp_subarray03"
+                            ],
+                            "CspSubarrayFQDN": [
+                                "mid_csp/elt/subarray_03"
+                            ],
+                            "SdpSubarrayFQDN": [
+                                "mid_sdp/elt/subarray_3"
                             ],
                             "SkaLevel": [
                                 "2"
@@ -552,6 +642,56 @@
                         }
                     }
                 }
+            },
+            "03": {
+                "CspSubarrayLeafNode": {
+                    "ska_mid/tm_leaf_node/csp_subarray03": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "cspsubarrayHealthState": {
+                                "__root_att": [
+                                    "mid_csp/elt/subarray_03/healthState"
+                                ]
+                            },
+                            "cspSubarrayObsState": {
+                                "__root_att": [
+                                    "mid_csp/elt/subarray_03/obsState"
+                                ]
+                            },
+                            "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "storageLoggingLevel": {
+                                "__value": [
+                                    "5"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "CspSubarrayFQDN": [
+                                "mid_csp/elt/subarray_03"],
+                            "SkaLevel": [
+                                "3"
+                            ],
+                            "polled_attr": [
+                                "adminmode",
+                                "1000",
+                                "healthstate",
+                                "1000",
+                                "delayModel",
+                                "1000"
+                            ]
+                        }
+                    }
+                }
             }
         },
         "SdpMasterLeafNode": {
@@ -666,6 +806,51 @@
                         "properties": {
                             "SdpSubarrayFQDN": [
                                 "mid_sdp/elt/subarray_2"
+                            ],
+                            "SkaLevel": [
+                                "3"
+                            ],
+                            "polled_attr": [
+                                "activitymessage",
+                                "1000",
+                                "healthstate",
+                                "1000",
+                                "receiveAddresses",
+                                "1000"
+                            ]
+                        }
+                    }
+                }
+            },
+            "03": {
+                "SdpSubarrayLeafNode": {
+                    "ska_mid/tm_leaf_node/sdp_subarray03": {
+                        "attribute_properties": {
+                            "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "sdpSubarrayHealthState": {
+                                "__root_att": [
+                                    "mid_sdp/elt/subarray_3/healthState"
+                                ]
+                            },
+                            "sdpSubarrayObsState": {
+                                "__root_att": [
+                                    "mid_sdp/elt/subarray_3/obsState"
+                                ]
+                            },
+                            "storageLoggingLevel": {
+                                "__value": [
+                                    "5"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "SdpSubarrayFQDN": [
+                                "mid_sdp/elt/subarray_3"
                             ],
                             "SkaLevel": [
                                 "3"

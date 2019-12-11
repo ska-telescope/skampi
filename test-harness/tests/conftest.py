@@ -44,3 +44,8 @@ def create_subarray1_proxy():
 def create_subarray2_proxy():
     subarray2_proxy = DeviceProxy("ska_mid/tm_subarray_node/2")
     return subarray2_proxy
+
+@pytest.fixture(scope="class")
+def create_subarray3_proxy():
+    subarray3_proxy = DeviceProxy("ska_mid/tm_subarray_node/3")
+    return subarray3_proxy

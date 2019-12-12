@@ -28,9 +28,6 @@ delete test environment:
   - kubectl delete namespace ncra
   environment:
     name: test
-  only:
-    variables:
-      - $DELETE == "true"
 
 deploy test environment:
   stage: deploy

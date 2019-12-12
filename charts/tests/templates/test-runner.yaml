@@ -11,6 +11,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  serviceAccountName: testrunner-{{ template "tests.name" . }}-{{ .Release.Name }}
   containers:
   - name: runner-container
     image: "{{ .Values.testrunner.image.registry }}/{{ .Values.testrunner.image.image }}:{{ .Values.testrunner.image.tag }}"
@@ -20,6 +21,14 @@ spec:
     args:
       - -c
       - "sleep infinity"
+    env:
+    - name: KUBE_NAMESPACE
+      value: {{ .Release.Namespace }}
+    - name: HELM_RELEASE
+      value: {{ .Release.Name }}
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000 
+      
 
   restartPolicy: OnFailure
 {{- with .Values.nodeSelector }}

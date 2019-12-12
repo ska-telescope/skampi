@@ -29,10 +29,16 @@ spec:
       - name: fluentd
         image: "{{ .Values.fluentd.image.image }}:{{ .Values.fluentd.image.tag }}"
         env:
-          - name:  SYSLOG_HOST
-            value: "logstash-{{ template "logging.name" . }}-{{ .Release.Name }}"
-          - name:  SYSLOG_PORT
-            value: "5044"
+          - name:  FLUENT_ELASTICSEARCH_HOST
+            value: "elastic-{{ template "logging.name" . }}-{{ .Release.Name }}"
+          - name:  FLUENT_ELASTICSEARCH_PORT
+            value: "9200"
+          - name:  FLUENT_ELASTICSEARCH_SCHEME
+            value: "http"
+          - name: FLUENT_ELASTICSEARCH_USER
+            value: none
+          - name: FLUENT_ELASTICSEARCH_PASSWORD
+            value: none
         volumeMounts:
         - name: journal
           mountPath: /var/log/journal
@@ -42,6 +48,9 @@ spec:
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
+        - name: fluentd-config
+          mountPath: /fluentd/etc/conf.d
+
 {{- if .Values.fluentd.livenessProbe.enabled }}
         livenessProbe:
           initialDelaySeconds: 600
@@ -80,5 +89,8 @@ spec:
       - name: journal
         hostPath:
           path: /var/log/journal
+      - name: fluentd-config
+        configMap:
+          name: fluentd-configmap-{{ template "logging.name" . }}-{{ .Release.Name }}
 
 {{ end }}

@@ -7,7 +7,7 @@ THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
 KUBE_NAMESPACE ?= default## Kubernetes Namespace to use
-HELM_RELEASE ?= test## Helm Chart release name
+HELM_RELEASE ?= test## Helm release name 
 HELM_CHART ?= tango-base## Helm Chart to install (see ./charts)
 HELM_CHART_TEST ?= tests## Helm Chart to install (see ./charts)
 INGRESS_HOST ?= integration.engageska-portugal.pt ## Ingress HTTP hostname
@@ -19,29 +19,34 @@ REMOTE_DEBUG ?= false
 # define overides for above variables in here
 -include PrivateRules.mak
 
-.PHONY: vars k8s apply logs rm show deploy deploy_all delete ls podlogs namespace help
+.PHONY: vars k8s apply logs rm show deploy deploy_all delete ls podlogs namespace help 
 .DEFAULT_GOAL := help
+
+# include makefile targets that wrap helm
+-include helm.mk
 
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
 IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-itango
 # Test runner - pod always running for testing purposes
-TEST_RUNNER = test-runner-$(HELM_CHART_TEST)-$(HELM_RELEASE)
+TEST_RUNNER = $(shell kubectl get pod -n $(KUBE_NAMESPACE) | grep test-runner | cut -d\  -f1)
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
 # capture the output of the test in a build folder inside the container 
 # 
+TANGO_HOST = $(shell kubectl get pods | grep tangod | cut -d\  -f1)
 k8s_test = kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- rm -fr /app/test-harness && \
 		kubectl cp test-harness/ $(KUBE_NAMESPACE)/$(TEST_RUNNER):/app/test-harness && \
 		kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- \
 		/bin/bash -c "cd /app/test-harness && \
-		make HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=databaseds-tango-base-$(HELM_RELEASE):10000 $1 && \
+		make $1 && \
 		mkdir build && \
 		mv -f setup_py_test.stdout build && \
 		mv -f report.json build && \
-		mv -f report.xml build" \
+		mv -f report.xml build && \
+		mv -f cucumber.json build" \
 		2>&1
 
 # run the test function
@@ -56,8 +61,6 @@ k8s_test: ## test the application on K8s
 	  kubectl cp $(KUBE_NAMESPACE)/$(TEST_RUNNER):/app/test-harness/build/ build/; \
 	  exit $$status
 
-# shim to support both helm v2 and v3
-helm_args_shim = $(shell helm version | grep -q Version:\"v3\. && echo $(HELM_RELEASE) || echo --name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE))
 
 vars: ## Display variables - pass in DISPLAY and XAUTHORITY
 	@echo "DISPLAY: $(DISPLAY)"
@@ -103,7 +106,7 @@ deploy_etcd: ## deploy etcd-operator into namespace
 	     | grep -q etcd-operator; then \
 		TMP=`mktemp -d`; \
 		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
-		helm template $(helm_args_shim) $$TMP/etcd-operator -n etc-operator --namespace $(KUBE_NAMESPACE) \
+		helm template $(helm_install_shim) $$TMP/etcd-operator -n etc-operator --namespace $(KUBE_NAMESPACE) \
 		| kubectl apply -n $(KUBE_NAMESPACE) -f -; \
 		rm -rf $$TMP; \
 		n=5; \
@@ -120,7 +123,7 @@ delete_etcd: ## Remove etcd-operator from namespace
 	   | grep -q etcd-operator; then \
 		TMP=`mktemp -d`; \
 		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
-		helm template $(helm_args_shim) $$TMP/etcd-operator -n etc-operator \
+		helm template $(helm_install_shim) $$TMP/etcd-operator -n etc-operator \
 		| kubectl delete -n $(KUBE_NAMESPACE) -f -; \
 		rm -rf $$TMP; \
 	fi
@@ -137,7 +140,7 @@ mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
 	fi
 
 deploy: namespace mkcerts  ## deploy the helm chart
-	@helm template $(helm_args_shim) charts/$(HELM_CHART)/ \
+	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
@@ -146,7 +149,7 @@ deploy: namespace mkcerts  ## deploy the helm chart
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl apply -f -
 
 show: mkcerts  ## show the helm chart
-	@helm template $(helm_args_shim) charts/$(HELM_CHART)/ \
+	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
@@ -155,9 +158,8 @@ show: mkcerts  ## show the helm chart
 	             --set tangoexample.debug="$(REMOTE_DEBUG)"
 
 delete: ## delete the helm chart release
-	@helm template $(helm_args_shim) charts/$(HELM_CHART)/ \
+	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
-	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
@@ -166,9 +168,8 @@ delete: ## delete the helm chart release
 
 deploy_all: namespace mkcerts deploy_etcd  ## deploy ALL of the helm chart
 	@for i in charts/*; do \
-	helm template $(helm_args_shim) $$i \
+	helm template $(helm_install_shim) $$i \
 				 --namespace $(KUBE_NAMESPACE) \
-	             --tiller-namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
@@ -178,7 +179,7 @@ deploy_all: namespace mkcerts deploy_etcd  ## deploy ALL of the helm chart
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
 	@for i in charts/*; do \
-	helm template $(helm_args_shim) $$i \
+	helm template $(helm_install_shim) $$i \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \

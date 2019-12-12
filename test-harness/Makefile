@@ -12,7 +12,7 @@ all: test
 # The following steps copy across useful output to this volume which can
 # then be extracted to form the CI summary for the test procedure.
 test:
-	HELM_RELEASE=$(HELM_RELEASE) python setup.py test | tee setup_py_test.stdout
+	python setup.py test | tee setup_py_test.stdout
 	if [ -d /build ]; then \
 		mv setup_py_test.stdout /build; \
 		mv htmlcov /build; \

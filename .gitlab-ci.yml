@@ -203,7 +203,7 @@ xray_report:
   script:
     - 'curl -X POST -H "Content-type: application/json" --fail
          -H "Authorization: Basic $JIRA_AUTH"
-         --data @cucumber.json
+         --data @build/cucumber.json
          https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
   when: always
   only: [master]

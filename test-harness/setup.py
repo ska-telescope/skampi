@@ -43,6 +43,7 @@ setup(
         'pytest-cov',
         'pytest-json-report',
         'pycodestyle',
+        'pytest-bdd',
         'elasticsearch',
         'kubernetes'
     ],

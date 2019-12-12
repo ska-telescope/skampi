@@ -27,10 +27,10 @@ def devices_list():
     # flatten the list of lists
     device_classes = list(itertools.chain.from_iterable(device_classes_lists))
  
-    # remove tango-specifc "dogfood" devices
+    # we only want fully qualified device names for DeviceProxy
     device_names = [ 
             device_name for device_name in device_classes 
-            if "dserver" not in device_name ]
+            if "/" in device_name ]
 
     return device_names
 

@@ -96,7 +96,7 @@ k8s_test test environment:
     refs:
       - master
   artifacts:
-    name: "$CI_PROJECT_NAME-CI_JOB_ID"
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths: 
       - "build/"
     reports:

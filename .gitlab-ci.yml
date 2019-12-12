@@ -204,7 +204,7 @@ xray_report:
     - 'curl -X POST -H "Content-type: application/json" --fail
          -H "Authorization: Basic $JIRA_AUTH"
          --data @cucumber.json
-         htts://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
+         https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
   when: always
   only: [master]
   retry: 2

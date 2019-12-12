@@ -7,7 +7,9 @@ from tango import Database, DeviceProxy
 from time import sleep
 from pytest_bdd import scenario, given, when, then
 
-scenarios('./1.feature')
+@scenario("./1.feature", "Test Tango setup")
+def test_tango_setup():
+    pass
 
 @given("A set of tango devices")
 def list_devices():
@@ -33,5 +35,6 @@ def check_list():
     i += 1
     print("Total number of active devices " + str(count) + ".")
 
-@then("The number of active devices should be more than 50"
+@then("The number of active devices should be more than 50")
+def assert_count():
     assert count > 50

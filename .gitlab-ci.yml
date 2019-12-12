@@ -196,7 +196,7 @@ print-debug-info:
   when: manual
   allow_failure: true
 
-.xray_report:
+xray_report:
   stage: post_test
   tags:
   - docker-executor

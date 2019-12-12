@@ -24,21 +24,62 @@ delete test environment:
   tags:
   - docker-executor
   script:
-  - make delete_all KUBE_NAMESPACE=ncra HELM_RELEASE=ncra INGRESS_HOST=ncra.engageska-portugal.pt
-  - kubectl delete namespace ncra
+  - make delete_all KUBE_NAMESPACE=integration
+  - kubectl delete namespace integration
   environment:
     name: test
+  only:
+    refs:
+      - master
+    variables:
+      - $DELETE == "true"
+
+delete staging environment:
+  stage: clean
+  retry: 2
+  tags:
+  - docker-executor
+  script:
+  - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
+  - kubectl delete namespace staging
+  environment:
+    name: staging
+  only:
+    refs:
+      - staging
+    variables:
+      - $DELETE == "true"
 
 deploy test environment:
   stage: deploy
   tags:
   - docker-executor
   script:
-  - make deploy_all KUBE_NAMESPACE=ncra HELM_RELEASE=ncra INGRESS_HOST=ncra.engageska-portugal.pt
-  - kubectl get all,pv,pvc,ingress -n ncra
+  - if [ -n "$HELM_CHART" ]; then make delete KUBE_NAMESPACE=integration; fi;
+  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
+  - kubectl get all,pv,pvc,ingress -n integration
   retry: 2
   environment:
     name: test
+    url: http://integration.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - master
+
+deploy staging environment:
+  stage: deploy
+  retry: 2
+  tags:
+  - docker-executor
+  script:
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
+  - kubectl get all,pv,pvc,ingress -n staging
+  environment:
+    name: staging
+    url: http://kubernetes.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - staging
 
 k8s_test test environment:
   stage: test
@@ -46,19 +87,98 @@ k8s_test test environment:
   tags:
   - docker-executor
   script:
-  - make k8s_test KUBE_NAMESPACE=ncra HELM_RELEASE=ncra INGRESS_HOST=ncra.engageska-portugal.pt && [ -f "build/report.xml" ]
+  - make k8s_test KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt && [ -f "build/report.xml" ]
   environment:
     name: test
+    url: http://integration.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - master
   artifacts:
     name: "report.json"
     paths: ['build/report.json']
     reports:
       junit: build/report.xml
 
+smoketest test environment:
+  stage: test
+  tags:
+  - docker-executor
+  script:
+  - ./scripts/smoketest.sh
+  environment:
+    name: test
+    url: http://integration.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - master
+
+k8s_test staging environment:
+  stage: test
+  retry: 2
+  tags:
+  - docker-executor
+  script:
+  - make k8s_test KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging && [ -f "build/report.xml" ]
+  environment:
+    name: staging
+    url: http://kubernetes.engageska-portugal.pt/testdb
+  only:
+    refs:
+      - staging
+  artifacts:
+    name: "report.json"
+    paths: ['build/report.json']
+    reports:
+      junit: build/report.xml
+
+delete-and-deploy test environment:
+  stage: lifecycle
+  tags:
+  - docker-executor
+  script:
+  - make delete_all KUBE_NAMESPACE=integration
+  - kubectl delete namespace integration
+  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
+  environment:
+    name: test
+    url: http://integration.engageska-portugal.pt/testdb
+  when: manual
+  only:
+    refs:
+      - master
+
+delete-and-deploy staging environment:
+  stage: lifecycle
+  tags:
+  - docker-executor
+  script:
+  - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
+  - kubectl delete namespace staging
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
+  environment:
+    name: staging
+    url: http://kubernetes.engageska-portugal.pt/testdb
+  when: manual
+  only:
+    refs:
+      - staging
+
+run-debug-cmd:
+  stage: debug
+  variables:
+    DEBUG_CMD: echo noop
+  tags:
+  - docker-executor
+  script:
+  - /bin/sh -exc "$DEBUG_CMD"
+  when: manual
+  allow_failure: true
+
 print-debug-info:
   stage: debug
   variables:
-    KUBE_NAMESPACE: ncra
+    KUBE_NAMESPACE: integration
   tags:
   - docker-executor
   script:

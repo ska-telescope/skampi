@@ -2,40 +2,37 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sdp-devices-configuration-json-{{ .Release.Name }}
+  name: {{ include "sdp-prototype.fullname" . }}-tangods-configuration
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "sdp-prototype.labels" . | indent 4 }}
 data:
   sdp-devices.json:
 {{ (tpl (.Files.Glob "data/sdp-devices.json").AsConfig . ) | indent 2  }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: sdp-devices-sane-dsconfig-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
-data:
   sane-dsconfig.sh:
 {{ (tpl (.Files.Glob "data/sane-dsconfig.sh").AsConfig . ) | indent 2  }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sdp-prototype-devices-{{ .Release.Name }}
+  name: {{ include "sdp-prototype.fullname" . }}-tangods
   namespace: {{ .Release.Namespace }}
   labels:
-    app: sdp-prototype-devices-{{ .Release.Name }}
-    chart: {{ template "sdp-prototype.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ include "sdp-prototype.labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sdp-prototype-devices-{{ .Release.Name }}
+      app: {{ .Release.Name }}-tangods
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   template:
     metadata:
       labels:
-        app: sdp-prototype-devices-{{ .Release.Name }}
+        app: {{ .Release.Name }}-tangods
         chart: {{ template "sdp-prototype.chart" . }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
@@ -43,11 +40,11 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: sdp-devices-configuration-json-{{ .Release.Name }}
-        - name: sane-dsconfig
-          configMap:
-            name: sdp-devices-sane-dsconfig-{{ .Release.Name }}
+            name: {{ include "sdp-prototype.fullname" . }}-tangods-configuration
       initContainers:
+{{- if index .Values "feature" "config-db" }}
+{{ include "sdp-prototype.wait-for-etcd" . | nindent 8 }}
+{{- end }}
         - name: dsconfig
           image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
           imagePullPolicy: {{ .Values.dsconfig.image.pullPolicy }}
@@ -58,7 +55,7 @@ spec:
             - --strict
             - --
             - /bin/bash
-            - script/sane-dsconfig.sh -w -a -u data/sdp-devices.json
+            - data/sane-dsconfig.sh -w -a -u data/sdp-devices.json
           env:
             - name: TANGO_HOST
               value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -66,46 +63,49 @@ spec:
             - name: configuration
               mountPath: data
               readOnly: true
-            - name: sane-dsconfig
-              mountPath: script
-              readOnly: true
       containers:
       - name: sdp-master
         env:
         - name: TANGO_HOST
           value: databaseds-tango-base-{{ .Release.Name }}:10000
-        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master:0.2.3
-        imagePullPolicy: IfNotPresent
+        - name: TOGGLE_AUTO_REGISTER
+          value: "0"
+        image: {{ .Values.tangods.master.image }}:{{ .Values.tangods.master.version }}
+        imagePullPolicy: {{ .Values.tangods.master.imagePullPolicy }}
         resources: {}
       - name: sdp-subarray-1
-        env:
-        - name: TANGO_HOST
-          value: databaseds-tango-base-{{ .Release.Name }}:10000
-        - name: TOGGLE_CONFIG_DB
-          value: "0"
-        - name: TOGGLE_CBF_OUTPUT_LINK
-          value: "0"
-        - name: TOGGLE_AUTO_REGISTER
-          value: "0"
-        - name: SDP_CONFIG_HOST
-          value: {{ include "sdp-prototype.etcd-host" . }}
         args: ["1", "-v4"]
-        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.16
-        imagePullPolicy: IfNotPresent
+        image: {{ .Values.tangods.subarray.image }}:{{ .Values.tangods.subarray.version }}
+        imagePullPolicy: {{ .Values.tangods.subarray.imagePullPolicy }}
         resources: {}
-      - name: sdp-subarray-2
         env:
         - name: TANGO_HOST
           value: databaseds-tango-base-{{ .Release.Name }}:10000
         - name: TOGGLE_CONFIG_DB
-          value: "0"
+          value: {{ quote (index .Values "feature" "config-db") }}
         - name: TOGGLE_CBF_OUTPUT_LINK
-          value: "0"
+          value: {{ quote (index .Values "feature" "cbf-output-link") }}
         - name: TOGGLE_AUTO_REGISTER
           value: "0"
+{{- if index .Values "feature" "config-db" }}
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp-prototype.etcd-host" . }}
+{{- end }}
+      - name: sdp-subarray-2
         args: ["2", "-v4"]
-        image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray:0.5.16
-        imagePullPolicy: IfNotPresent
+        image: {{ .Values.tangods.subarray.image }}:{{ .Values.tangods.subarray.version }}
+        imagePullPolicy: {{ .Values.tangods.subarray.imagePullPolicy }}
         resources: {}
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ .Release.Name }}:10000
+        - name: TOGGLE_CONFIG_DB
+          value: {{ quote (index .Values "feature" "config-db") }}
+        - name: TOGGLE_CBF_OUTPUT_LINK
+          value: {{ quote (index .Values "feature" "cbf-output-link") }}
+        - name: TOGGLE_AUTO_REGISTER
+          value: "0"
+{{- if index .Values "feature" "config-db" }}
+        - name: SDP_CONFIG_HOST
+          value: {{ include "sdp-prototype.etcd-host" . }}
+{{- end }}

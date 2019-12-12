@@ -1,0 +1,30 @@
+apiVersion: "etcd.database.coreos.com/v1beta2"
+kind: "EtcdCluster"
+metadata:
+  name: {{ include "sdp-prototype.fullname" . }}-etcd
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "sdp-prototype.labels" . | indent 4 }}
+spec:
+  size: {{ .Values.etcd.replicas }}
+  version: "{{ .Values.etcd.version }}"
+  pod:
+    antiAffinity: false
+    nodeSelector: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sdp-prototype.fullname" . }}-etcd-nodeport
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "sdp-prototype.labels" . | indent 4 }}
+spec:
+  type: NodePort
+  selector:
+    etcd_cluster: {{ include "sdp-prototype.fullname" . }}-etcd
+    app: etcd
+  ports:
+  - protocol: TCP
+    port: 2379
+    targetPort: 2379

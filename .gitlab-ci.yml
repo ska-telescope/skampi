@@ -27,6 +27,7 @@ delete test environment:
   script:
   - make delete_all KUBE_NAMESPACE=integration
   - kubectl delete namespace integration
+  - kubectl delete namespace integration-sdp
   environment:
     name: test
   only:
@@ -43,6 +44,7 @@ delete staging environment:
   script:
   - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
   - kubectl delete namespace staging
+  - kubectl delete namespace staging-sdp
   environment:
     name: staging
   only:
@@ -142,6 +144,7 @@ delete-and-deploy test environment:
   script:
   - make delete_all KUBE_NAMESPACE=integration
   - kubectl delete namespace integration
+  - kubectl delete namespace integration-sdp
   - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   environment:
     name: test
@@ -158,6 +161,7 @@ delete-and-deploy staging environment:
   script:
   - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
   - kubectl delete namespace staging
+  - kubectl delete namespace staging-sdp
   - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
   environment:
     name: staging

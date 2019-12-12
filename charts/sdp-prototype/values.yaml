@@ -1,13 +1,21 @@
 
+# Feature toggles
+feature:
+  # Tango devices connect to configuration DB?
+  config-db: "1"
+  cbf-output-link: "0"
+
 # Helm deployment controller
 helm_deploy:
-  enabled: true
-  container: pw410/helm-deploy
-  version: 0.0.5
+  image: nexus.engageska-portugal.pt/sdp-prototype/helm-deploy
+  version: 0.2.0
+  imagePullPolicy: IfNotPresent
   replicas: 1
+  namespace: sdp
   chart_repo:
-    url: https://github.com/ska-telescope/sdp-prototype.git
+    url: https://gitlab.com/ska-telescope/sdp-prototype.git
     ref: master
+    path: deploy/charts
     refresh: 300
 
 # Configuration database
@@ -23,22 +31,23 @@ dsconfig:
     tag: latest
     pullPolicy: IfNotPresent
 
-# Workflow deployments
-workflow:
-  testdeploy:
-    enabled: true
-    container: pw410/workflow-testdeploy
-    version: 0.0.7
-    replicas: 2
+# Processing controller
+processing_controller:
+    image: nexus.engageska-portugal.pt/sdp-prototype/processing-controller
+    version: 0.2.8
+    replicas: 1
     resources: {}
-    # Allow direct Kubernetes deployments? Should be deprecated
-    direct-kube-deploy: false
-  testdask:
-    enabled: true
-    container: pw410/workflow-testdask
-    version: 0.0.1
-    replicas: 2
-    resources: {}
+    imagePullPolicy: IfNotPresent
+
+# Tango devices
+tangods:
+  master:
+    image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master
+    version: 0.2.6
+    imagePullPolicy: IfNotPresent
+  subarray:
+    image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray
+    version: 0.5.19
     imagePullPolicy: IfNotPresent
 
 # Parameters for sub-chart

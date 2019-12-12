@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sdp-prototype.fullname" . }}-helm-deploy
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "sdp-prototype.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.helm_deploy.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}-helm-deploy
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}-helm-deploy
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      initContainers:
+      {{ include "sdp-prototype.wait-for-etcd" . | nindent 6 }}
+      containers:
+      - image: {{ .Values.helm_deploy.image }}:{{ .Values.helm_deploy.version }}
+        imagePullPolicy: {{ .Values.helm_deploy.imagePullPolicy }}
+        name: helm-deploy
+        env:
+        - name: SDP_CONFIG_HOST
+          value: {{ include "sdp-prototype.etcd-host" . }}
+        - name: SDP_HELM_NAMESPACE
+          value: {{ quote .Values.helm_deploy.namespace }}
+        - name: SDP_CHART_REPO
+          value: "{{ .Values.helm_deploy.chart_repo.url }}"
+        - name: SDP_CHART_REPO_REF
+          value: "{{ .Values.helm_deploy.chart_repo.ref }}"
+        - name: SDP_CHART_REPO_PATH
+          value: "{{ .Values.helm_deploy.chart_repo.path }}"
+        - name: SDP_CHART_REPO_REFRESH
+          value: "{{ .Values.helm_deploy.chart_repo.refresh }}"
+      serviceAccountName: {{ include "sdp-prototype.fullname" . }}-helm
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "sdp-prototype.fullname" . }}-helm
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "sdp-prototype.labels" . | indent 4 }}
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "sdp-prototype.fullname" . }}-helm
+  namespace: {{ .Values.helm_deploy.namespace }}
+  labels:
+{{ include "sdp-prototype.labels" . | indent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "sdp-prototype.fullname" . }}-helm
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "sdp-prototype.fullname" . }}-helm
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "sdp-prototype.fullname" . }}-helm-global
+  labels:
+{{ include "sdp-prototype.labels" . | indent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "sdp-prototype.fullname" . }}-helm
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "sdp-prototype.fullname" . }}-helm-global
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "sdp-prototype.fullname" . }}-helm
+  namespace: {{ .Values.helm_deploy.namespace }}
+  labels:
+{{ include "sdp-prototype.labels" . | indent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["list", "get"]
+- apiGroups: ["", "batch", "apps"]
+  resources: ["deployments", "jobs", "pods", "configmaps",
+              "persistentvolumeclaims", "services", "secrets"]
+  verbs: ["list", "get", "watch", "create", "update", "patch", "delete"]
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "sdp-prototype.fullname" . }}-helm-global
+  labels:
+{{ include "sdp-prototype.labels" . | indent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["persistentvolumes"]
+  verbs: ["list", "get", "watch", "create", "update", "patch", "delete"]

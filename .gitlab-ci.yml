@@ -204,7 +204,7 @@ print-debug-info:
   - docker-executor
   script:
     - 'curl -X POST -H "Content-type: application/json" --fail
-         -H "Auhtorization: Basic $JIRA_AUTH"
+         -H "Authorization: Basic $JIRA_AUTH"
          --data @cucumber.json
          htts://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
   when: always

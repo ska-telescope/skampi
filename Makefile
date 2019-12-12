@@ -46,7 +46,8 @@ k8s_test = kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- rm -f
 		mv -f setup_py_test.stdout build && \
 		mv -f report.json build && \
 		mv -f report.xml build && \
-		mv -f cucumber.json build" \
+		mv -f cucumber.json build && \
+		mv -f pytest-logs.txt build" \
 		2>&1
 
 # run the test function

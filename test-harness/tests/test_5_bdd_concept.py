@@ -3,6 +3,7 @@
 A reimplementation of some of the basic tests in this directory, implemented using a bdd (Behaviour Driven Design) style. Currently, this is done by copy-paste of parts of the tests; it could reasonably be refactored to call the other functions more directly. However, I (vla22) wanted to partition the existing functions in a particular way, to fit better with the BDD style.
 """
 import itertools
+import logging
 
 from tango import Database, DeviceProxy
 from time import sleep
@@ -40,14 +41,14 @@ def running_devices_count(devices_list):
 
     for device_name in devices_list:
         try:
-            print("Connecting to '{}'...\r\n".format(device_name))
+            logging.info("Connecting to '{}'...".format(device_name))
             device_client = DeviceProxy(device_name)
         except Exception as e:
             devices_list.remove(device_name) # remove inactive device
-            print ("Could not connect to the '{}' Device.\r\n".format(device_name))
-            print (e)
+            logging.warning("Could not connect to the '{}' Device.".format(device_name))
+            logging.debug(e)
 
-    print("Total number of active devices {}.".format(len(devices_list)))
+    logging.info("Total number of active devices {}.".format(len(devices_list)))
 
 
 @then("The number of active devices should be more than 50")

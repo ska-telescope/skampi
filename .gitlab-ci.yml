@@ -96,13 +96,11 @@ k8s_test test environment:
     refs:
       - master
   artifacts:
-    name: "report.json"
-    paths: ['build/report.json']
+    name: "$CI_PROJECT_NAME-CI_JOB_ID"
+    paths: 
+      - "build/"
     reports:
       junit: build/report.xml
-  artifacts:
-    name: "cucumber.json"
-    paths: ['build/cucumber.json']
    
 
 smoketest test environment:

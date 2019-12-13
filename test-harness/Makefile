@@ -15,9 +15,9 @@ all: test
 # exit with same exit code as test run
 test:
 	@mkdir -p build
-	python setup.py test | tee setup_py_test.stdout
-	@status=$$?
-	@$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;)
-	@exit $$status
+	python setup.py test | tee setup_py_test.stdout; \
+		status=$$?; \
+		$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
+		exit $$status
 
 .PHONY: all test

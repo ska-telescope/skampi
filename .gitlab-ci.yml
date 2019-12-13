@@ -101,6 +101,7 @@ k8s_test test environment:
       - "build/"
     reports:
       junit: build/report.xml
+    when: always
    
 
 smoketest test environment:

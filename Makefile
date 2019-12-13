@@ -40,7 +40,7 @@ TANGO_HOST = $(shell kubectl get pods | grep tangod | cut -d\  -f1)
 k8s_test = kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- rm -fr /app/test-harness && \
 		kubectl cp test-harness/ $(KUBE_NAMESPACE)/$(TEST_RUNNER):/app/test-harness && \
 		kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- \
-		/bin/bash -c "cd /app/test-harness && \ make $1" 2>&1
+		/bin/bash -c "cd /app/test-harness && make $1" 2>&1
 
 # run the test function
 # save the status

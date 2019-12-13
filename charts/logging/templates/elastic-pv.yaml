@@ -12,6 +12,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   storageClassName: standard
+  persistentVolumeReclaimPolicy: Delete
   capacity:
     storage: 10Gi
   accessModes:

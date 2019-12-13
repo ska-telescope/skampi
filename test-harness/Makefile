@@ -17,6 +17,10 @@ test:
 		mv setup_py_test.stdout /build; \
 		mv htmlcov /build; \
 		mv coverage.xml /build; \
+		mv -f report.json build; \
+		mv -f report.xml build; \
+		mv -f cucumber.json build; \
+		mv -f pytest-logs.txt build \
 	fi;
 
 .PHONY: all test

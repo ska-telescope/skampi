@@ -14,11 +14,12 @@ in the settings. Alternatively, you can install
 [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/).
 
 Note that on both Windows and Mac, this will run containers within a
-VM that has limited resources. You might want to increase this to at
-least 3 GB. For Docker this can be found in the settings, for Minikube
-you need to specify it on the command line:
+VM that has limited resources. You should increase the memory to at
+least 8 GB and the disk size to at least 32 GB. For Docker this can
+be found in the settings, for Minikube you need to specify it on the
+command line:
 
-    $ minikube --mem 4096 ...
+    $ minikube --memory=8192m --disk-size=32768m ...
 
 Deploying SDP
 -------------
@@ -70,7 +71,7 @@ For Minikube, you need to set both `SDP_CONFIG_HOST` and
 `SDP_CONFIG_PORT`, but you can easily query both using
 `minikube service`:
 
-    $ minikube service --url sdp-prototype-etcd-nodeport -n integration
+    $ minikube service --url test-sdp-prototype-etcd-nodeport -n integration
     http://192.168.39.45:32234
     $ export SDP_CONFIG_HOST=192.168.39.45
     $ export SDP_CONFIG_PORT=32234
@@ -83,88 +84,84 @@ This will allow you to connect with the `sdpcfg` utility:
 
 Which correctly shows that the configuration is currently empty.
 
-### Start a test dask workflow
-Assuming the configuration is prepared as explained in the previous section, we can now add a processing block to the configuration:
 
-    $ sdpcfg process realtime:testdask:0.0.1
-    OK, pb_id = realtime-20190807-0000
+### Start a workflow
 
-### Use it to add a deployment
+Assuming the configuration is prepared as explained in the previous
+section, we can now add a processing block to the configuration:
 
-We can instead create a test deployment, by changing "`sdpcfg process realtime:testdask:0.0.1`" to `sdpcfg process realtime:testdeploy:0.0.7`.
+    $ sdpcfg process realtime:testdask:0.1.0
+    OK, pb_id = realtime-20191121-0000
 
-    $ sdpcfg ls values -R /
-    Keys with / prefix:
-    /pb/realtime-20190807-0000 = {
+The processing block is created with the `/pb` prefix in the
+configuration:
+
+    $ sdpcfg ls values -R /pb
+    Keys with /pb prefix:
+    /pb/realtime-20191121-0000 = {
       "parameters": {},
-      "pb_id": "realtime-20190807-0000",
+      "pb_id": "realtime-20191121-0000",
       "sbi_id": null,
       "scan_parameters": {},
       "workflow": {
-        "id": "testdeploy",
+        "id": "testdask",
         "type": "realtime",
-        "version": "0.0.7"
+        "version": "0.1.0"
       }
     }
-    /pb/realtime-20190807-0000/owner = {
+    /pb/realtime-20191121-0000/owner = {
       "command": [
-        "dummy_workflow.py"
+        "testdask.py",
+        "realtime-20191121-0000"
       ],
-      "hostname": "sdp-prototype-workflow-testdeploy-[...]",
-      "pid": 6
+      "hostname": "realtime-20191121-0000-workflow-7bf947687f-9h9gz",
+      "pid": 1
     }
 
-Notice that the workflow was claimed immediately by one of the containers. 
-
-The special property of the deployment test workflow is that it will
-create deployments automatically depending on workflow parameters. It
-even watches the processing block parameters and will add deployments
-while it is running. Let's try this out:
-
-    $ sdpcfg edit /pb/realtime-[...]
-
-At this point an editor should open with the processing block
-information formatted as YAML. Change the "`parameters: {}`" line to
-read as follows:
-
-    parameters:
-      mysql:
-        type: helm
-        args:
-          chart: stable/mysql
-
-This will cause the workflow to deploy a new mysql instance, as we can
-easily check:
+The processing block is detected by the processing controller which
+deploys the workflow. The workflow in turn deploys the execution engines
+(in this case, Dask). The deployments are requested by creating entries
+with `/deploy` prefix in the configuration, where they are detected by
+the Helm deployer which actually makes the deployments:
 
     $ sdpcfg ls values -R /deploy
     Keys with /deploy prefix:
-    /deploy/realtime-20190807-0000-mysql = {
+    /deploy/realtime-20191121-0000-dask = {
       "args": {
-        "chart": "stable/mysql"
+        "chart": "stable/dask",
+        "values": {
+          "jupyter.enabled": "false",
+          "scheduler.serviceType": "ClusterIP",
+          "worker.replicas": 2
+        }
       },
-      "deploy_id": "realtime-20190807-0000-mysql",
+      "deploy_id": "realtime-20191121-0000-dask",
+      "type": "helm"
+    }
+    /deploy/realtime-20191121-0000-workflow = {
+      "args": {
+        "chart": "workflow",
+        "values": {
+          "env.SDP_CONFIG_HOST": "sdp-prototype-etcd-client.default.svc.cluster.local",
+          "env.SDP_HELM_NAMESPACE": "sdp",
+          "pb_id": "realtime-20191121-0000",
+          "wf_image": "nexus.engageska-portugal.pt/sdp-prototype/workflow-testdask:0.1.0"
+        }
+      },
+      "deploy_id": "realtime-20191121-0000-workflow",
       "type": "helm"
     }
 
-This causes Helm to get called, so you should be able to check:
+The deployments associated with the processing block have been created
+in the `integration-sdp` namespace, so to view the created pods we have
+to ask as follows:
 
-    $ helm list
-    NAME                        	REVISION	UPDATED                 	STATUS  	CHART              	APP VERSION	NAMESPACE
-    etcd                        	1       	Wed Aug  7 12:35:47 2019	DEPLOYED	etcd-operator-0.8.4	0.9.3      	default  
-    realtime-20190807-0000-mysql	1       	Wed Aug  7 13:45:33 2019	DEPLOYED	mysql-1.3.0        	5.7.14     	sdp-helm 
-    sdp-prototype               	1       	Wed Aug  7 13:38:42 2019	DEPLOYED	sdp-prototype-0.2.0	1.0        	default
-
-Note the deployment associated with the processing block. Note that it
-was deployed into the name space `sdp-helm`, so to view the created pod we
-have to ask as follows:
-
-    $ kubectl get pod -n sdp-helm
-    NAME                                           READY   STATUS    RESTARTS   AGE
-    realtime-20190807-0000-mysql-89f658f78-mfstr   1/1     Running   0          6m20s
-
-If you are getting a `KeyError: 'EDITOR'`, try running `export EDITOR=vi` or `=nano` or the common editor of your choice.
-
-If you wish to verify that one of our test workflows is in fact doing something, do `kubectl logs <hostname>` where <hostname> has the host name of the deployed workflow. At the time of writing, this only works on dask workflows. 
+    $ kubectl get pod -n integration-sdp
+    NAME                                                    READY   STATUS    RESTARTS   AGE
+    realtime-20191121-0000-dask-scheduler-6c7cc64c7-jfczn   1/1     Running   0          113s
+    realtime-20191121-0000-dask-worker-7cb8cdf6bd-mtc9w     1/1     Running   3          113s
+    realtime-20191121-0000-dask-worker-7cb8cdf6bd-tdzkp     1/1     Running   3          113s
+    realtime-20191121-0000-workflow-7bf947687f-9h9gz        1/1     Running   0          118s
 
 ### Cleaning up
 
@@ -182,7 +179,7 @@ Accessing Tango
 By default the chart installs the iTango shell pod from the tango-base
 chart. You can access it as follows:
 
-    $ kubectl exec -it itango-tango-base-test /venv/bin/itango3 -n integration
+    $ kubectl exec -it itango-tango-base-sdp-prototype /venv/bin/itango3
 
 You should be able to query the SDP Tango devices:
 
@@ -214,17 +211,15 @@ and changing attributes and issuing commands:
     In [8]: d.obsState
     Out[8]: <obsState.IDLE: 0>
     
-    In [9]: %run scripts/load_config.py      
-    In [10]: d.Configure(sdp_config)
-    In [11]: d.obsState
-    Out[11]: <obsState.READY: 2>
+    In [9]: d.Configure('{ "configure": { "id": "xyz", "sbiId": "xyz", "workflow": { "type": "realtime", "version": "0.1.0", "id": "vis_receive" }, "parameters": {}, "scanParameters": { "1": {} } } }')
+    In [10]: d.obsState
+    Out[10]: <obsState.READY: 2>
     
-    In [12]: d.StartScan()
-    In [13]: d.obsState
-    Out[13]: <obsState.SCANNING: 3>
+    In [11]: d.StartScan()
+    In [12]: d.obsState
+    Out[12]: <obsState.SCANNING: 3>
     
-    In [14]: d.EndScan()
-    In [15]: d.obsState
-    Out[15]: <obsState.READY: 2>
-
+    In [13]: d.EndScan()
+    In [14]: d.obsState
+    Out[14]: <obsState.READY: 2>
 

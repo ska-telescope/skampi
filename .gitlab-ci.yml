@@ -104,7 +104,6 @@ k8s_test test environment:
     reports:
       junit: build/report.xml
     when: always
-   
 
 smoketest test environment:
   stage: test
@@ -138,40 +137,6 @@ k8s_test staging environment:
     reports:
       junit: build/report.xml
 
-delete-and-deploy test environment:
-  stage: lifecycle
-  tags:
-  - docker-executor
-  script:
-  - make delete_all KUBE_NAMESPACE=integration
-  - kubectl delete namespace integration
-  - kubectl delete namespace integration-sdp
-  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
-  environment:
-    name: test
-    url: http://integration.engageska-portugal.pt/testdb
-  when: manual
-  only:
-    refs:
-      - master
-
-delete-and-deploy staging environment:
-  stage: lifecycle
-  tags:
-  - docker-executor
-  script:
-  - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
-  - kubectl delete namespace staging
-  - kubectl delete namespace staging-sdp
-  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
-  environment:
-    name: staging
-    url: http://kubernetes.engageska-portugal.pt/testdb
-  when: manual
-  only:
-    refs:
-      - staging
-
 run-debug-cmd:
   stage: debug
   variables:
@@ -190,16 +155,19 @@ print-debug-info:
   tags:
   - docker-executor
   script:
-  - kubectl describe ingresses --all-namespaces
-  - kubectl describe -n kube-system pod $(kubectl get pod -n kube-system | grep traefik | cut -d\  -f1)
-  - kubectl logs --tail=100 -n kube-system  $(kubectl get pod -n kube-system | grep traefik | cut -d\  -f1)
-  - make podlogs KUBE_NAMESPACE=$KUBE_NAMESPACE
-  - kubectl logs --tail=100 -n $KUBE_NAMESPACE $(kubectl get pod -n $KUBE_NAMESPACE | grep fluentd | head -n 1  | cut -d\  -f1)
-  - kubectl get all --all-namespaces
+  - mkdir .public
+  - kubectl describe ingresses --all-namespaces > .public/ingresses-all-namespaces.txt
+  - kubectl describe -n kube-system pod $(kubectl get pod -n kube-system | grep traefik | cut -d\  -f1) > .public/describe-traefik.txt
+  - kubectl logs --tail=100 -n kube-system  $(kubectl get pod -n kube-system | grep traefik | cut -d\  -f1) > .public/logs-traefik.txt
+  - make podlogs KUBE_NAMESPACE=$KUBE_NAMESPACE > .public/podlogs.txt
+  - kubectl logs --tail=100 -n $KUBE_NAMESPACE $(kubectl get pod -n $KUBE_NAMESPACE | grep fluentd | head -n 1  | cut -d\  -f1) > .public/fluentd.txt
+  - kubectl get all --all-namespaces > .public/get-all-namespaces.txt
+  - mv .public public
   environment:
     name: test
-  when: manual
-  allow_failure: true
+  artifacts:
+    paths:
+    - public
 
 xray_report:
   stage: post_test

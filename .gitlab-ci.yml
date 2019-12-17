@@ -36,7 +36,7 @@ delete test environment:
     variables:
       - $DELETE == "true"
 
-delete staging environment: 
+delete staging environment:
   stage: clean
   retry: 2
   tags:
@@ -74,7 +74,7 @@ deploy staging environment:
   retry: 2
   tags:
   - docker-executor
-  script:  
+  script:
   - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
   - kubectl get all,pv,pvc,ingress -n staging
   environment:
@@ -124,7 +124,7 @@ k8s_test staging environment:
   retry: 2
   tags:
   - docker-executor
-  script:  
+  script:
   - make k8s_test KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging && [ -f "build/report.xml" ]
   environment:
     name: staging
@@ -155,7 +155,7 @@ delete-and-deploy test environment:
     refs:
       - master
 
-delete-and-deploy staging environment: 
+delete-and-deploy staging environment:
   stage: lifecycle
   tags:
   - docker-executor

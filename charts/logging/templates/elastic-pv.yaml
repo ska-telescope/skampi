@@ -51,7 +51,7 @@ spec:
   volumes:
   - name: vol
     hostPath:
-	  path: /data/elastic-{{ template "logging.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
+      path: /data/elastic-{{ template "logging.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
   containers:
   - name: pv-recycler
     image: "k8s.gcr.io/busybox"

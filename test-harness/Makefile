@@ -5,18 +5,19 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
+TEST_ARTIFACTS = setup_py_test.stdout htmlcov coverage.xml report.xml report.json cucumber.json pytest-logs.txt
+
 all: test
 
-# wait for the device to be available before beginning the test
-# A temporary volume is mounted at /build when 'make test' is executing.
-# The following steps copy across useful output to this volume which can
-# then be extracted to form the CI summary for the test procedure.
+# create the build directory
+# execute the python tests
+# copy TEST_ARTIFACTS into build directory
+# exit with same exit code as test run
 test:
-	python setup.py test | tee setup_py_test.stdout
-	if [ -d /build ]; then \
-		mv setup_py_test.stdout /build; \
-		mv htmlcov /build; \
-		mv coverage.xml /build; \
-	fi;
+	@mkdir -p build
+	python setup.py test | tee setup_py_test.stdout; \
+		status=$$?; \
+		$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
+		exit $$status
 
 .PHONY: all test

@@ -35,7 +35,7 @@ ingress:
   hostname: integration.engageska-portugal.pt
 
 logstash:
-  enabled: true
+  enabled: false
   image:
     registry: docker.elastic.co
     image: logstash/logstash

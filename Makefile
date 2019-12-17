@@ -7,7 +7,8 @@ THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
 KUBE_NAMESPACE ?= default## Kubernetes Namespace to use
-HELM_RELEASE ?= test## Helm release name 
+KUBE_NAMESPACE_SDP ?= $(KUBE_NAMESPACE)-sdp ## Kubernetes Namespace to use for SDP dynamic deployments
+HELM_RELEASE ?= test## Helm release name
 HELM_CHART ?= tango-base## Helm Chart to install (see ./charts)
 HELM_CHART_TEST ?= tests## Helm Chart to install (see ./charts)
 INGRESS_HOST ?= integration.engageska-portugal.pt ## Ingress HTTP hostname
@@ -19,7 +20,7 @@ REMOTE_DEBUG ?= false
 # define overides for above variables in here
 -include PrivateRules.mak
 
-.PHONY: vars k8s apply logs rm show deploy deploy_all delete ls podlogs namespace help 
+.PHONY: vars k8s apply logs rm show deploy deploy_all delete ls podlogs namespace namespace_sdp help
 .DEFAULT_GOAL := help
 
 # include makefile targets that wrap helm
@@ -40,14 +41,7 @@ TANGO_HOST = $(shell kubectl get pods | grep tangod | cut -d\  -f1)
 k8s_test = kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- rm -fr /app/test-harness && \
 		kubectl cp test-harness/ $(KUBE_NAMESPACE)/$(TEST_RUNNER):/app/test-harness && \
 		kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- \
-		/bin/bash -c "cd /app/test-harness && \
-		make $1 && \
-		mkdir build && \
-		mv -f setup_py_test.stdout build && \
-		mv -f report.json build && \
-		mv -f report.xml build && \
-		mv -f cucumber.json build" \
-		2>&1
+		/bin/bash -c "cd /app/test-harness && make $1" 2>&1
 
 # run the test function
 # save the status
@@ -92,6 +86,14 @@ namespace: ## create the kubernetes namespace
   else kubectl create namespace $(KUBE_NAMESPACE); \
   fi
 
+namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
+	@kubectl describe namespace $(KUBE_NAMESPACE_SDP) > /dev/null 2>&1 ; \
+ 	K_DESC=$$? ; \
+	if [ $$K_DESC -eq 0 ] ; \
+	then kubectl describe namespace $(KUBE_NAMESPACE_SDP) ; \
+	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
+	fi
+
 lint_all:  ## lint ALL of the helm chart
 	@for i in charts/*; do \
 	cd $$i; pwd; helm lint ; \
@@ -103,29 +105,23 @@ lint:  ## lint the HELM_CHART of the helm chart
 .PHONY: deploy_etcd delete_etcd
 deploy_etcd: ## deploy etcd-operator into namespace
 	@if ! kubectl get pod -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.labels.app}' \
-	     | grep -q etcd-operator; then \
-		TMP=`mktemp -d`; \
-		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
-		helm template $(helm_install_shim) $$TMP/etcd-operator -n etc-operator --namespace $(KUBE_NAMESPACE) \
+		| grep -q etcd-operator; then \
+		helm template $(helm_install_shim) stable/etcd-operator -n etc-operator \
 		| kubectl apply -n $(KUBE_NAMESPACE) -f -; \
-		rm -rf $$TMP; \
 		n=5; \
-        while ! kubectl api-resources --api-group=etcd.database.coreos.com \
-           | grep -q etcdcluster && [ $${n} -gt 0 ]; do \
+    	while ! kubectl api-resources --api-group=etcd.database.coreos.com \
+        	| grep -q etcdcluster && [ $${n} -gt 0 ]; do \
         	echo Waiting for etcd CRD to become available...; sleep 1; \
-            n=`expr $$n - 1` || true; \
-        done \
+        	n=`expr $$n - 1` || true; \
+		done \
 	fi
 
 delete_etcd: ## Remove etcd-operator from namespace
 	@if kubectl get pod -n $(KUBE_NAMESPACE) \
-                   -o jsonpath='{.items[*].metadata.labels.app}' \
-	   | grep -q etcd-operator; then \
-		TMP=`mktemp -d`; \
-		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
-		helm template $(helm_install_shim) $$TMP/etcd-operator -n etc-operator \
+        		-o jsonpath='{.items[*].metadata.labels.app}' \
+		| grep -q etcd-operator; then \
+		helm template $(helm_install_shim) stable/etcd-operator -n etc-operator \
 		| kubectl delete -n $(KUBE_NAMESPACE) -f -; \
-		rm -rf $$TMP; \
 	fi
 
 mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
@@ -139,14 +135,15 @@ mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
 	echo "SSL cert already exits in charts/webjive/data ... skipping"; \
 	fi
 
-deploy: namespace mkcerts  ## deploy the helm chart
+deploy: namespace namespace_sdp mkcerts  ## deploy the helm chart
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl apply -f -
+	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl apply -f -
 
 show: mkcerts  ## show the helm chart
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
@@ -155,7 +152,8 @@ show: mkcerts  ## show the helm chart
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)"
+	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP)
 
 delete: ## delete the helm chart release
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
@@ -164,9 +162,10 @@ delete: ## delete the helm chart release
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl delete -f -
+	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl delete -f -
 
-deploy_all: namespace mkcerts deploy_etcd  ## deploy ALL of the helm chart
+deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the helm chart
 	@for i in charts/*; do \
 	helm template $(helm_install_shim) $$i \
 				 --namespace $(KUBE_NAMESPACE) \
@@ -174,7 +173,8 @@ deploy_all: namespace mkcerts deploy_etcd  ## deploy ALL of the helm chart
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl apply -f - ; \
+	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl apply -f - ; \
 	done
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
@@ -185,7 +185,8 @@ delete_all: delete_etcd ## delete ALL of the helm chart release
 	             --set xauthority="$(XAUTHORITYx)" \
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl delete -f - ; \
+	             --set tangoexample.debug="$(REMOTE_DEBUG)"  \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl delete -f - ; \
 	done
 
 poddescribe: ## describe Pods executed from Helm chart

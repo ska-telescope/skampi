@@ -106,7 +106,9 @@ lint:  ## lint the HELM_CHART of the helm chart
 deploy_etcd: ## deploy etcd-operator into namespace
 	@if ! kubectl get pod -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.labels.app}' \
 		| grep -q etcd-operator; then \
-		helm template $(helm_install_shim) stable/etcd-operator -n etc-operator \
+		TMP=`mktemp -d`; \
+		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
+		helm template $(helm_install_shim) $$TMP/etcd-operator -n etc-operator --namespace $(KUBE_NAMESPACE) \
 		| kubectl apply -n $(KUBE_NAMESPACE) -f -; \
 		n=5; \
     	while ! kubectl api-resources --api-group=etcd.database.coreos.com \
@@ -120,7 +122,9 @@ delete_etcd: ## Remove etcd-operator from namespace
 	@if kubectl get pod -n $(KUBE_NAMESPACE) \
         		-o jsonpath='{.items[*].metadata.labels.app}' \
 		| grep -q etcd-operator; then \
-		helm template $(helm_install_shim) stable/etcd-operator -n etc-operator \
+		TMP=`mktemp -d`; \
+		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
+		helm template $(helm_install_shim) $$TMP/etcd-operator -n etc-operator \
 		| kubectl delete -n $(KUBE_NAMESPACE) -f -; \
 	fi
 

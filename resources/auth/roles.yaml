@@ -1,0 +1,25 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: integration # a Role is valid per namespace
+  name: integration-role
+rules:
+- apiGroups: [""]  # "" indicates the core API group
+  resources: ["*"] # all resources
+  verbs: ["*"] # all verbs
+---
+apiVersion: rbac.authorization.k8s.io/v1
+# This role binding allows "matteo" to work in the "integration" namespace.
+kind: RoleBinding
+metadata:
+  name: integration-binding
+  namespace: integration
+subjects:
+- kind: User
+  name: matteo # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role #this must be Role or ClusterRole
+  name: integration-role # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io

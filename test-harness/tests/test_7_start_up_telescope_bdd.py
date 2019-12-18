@@ -24,7 +24,6 @@ def config_location(run_context):
   url = 'http://webjive-webjive-{}:5004/db'.format(run_context.HELM_RELEASE)
   with open('files/mutation.json', 'r') as file:
     mutation = file.read().replace('\n', '')
-  r = requests.post(url=url, 
   jsonMutation = json.loads(mutation)
   r = requests.post(url=url, json=jsonMutation, cookies=cookies)
   return r

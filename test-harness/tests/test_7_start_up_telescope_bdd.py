@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"A reimplementation of test 2, the telescope startup test, using Behaviour Driven Design (BDD).
+""" A reimplementation of test 2, the telescope startup test, using Behaviour Driven Design (BDD).
 """
 
 from pytest_bdd import scenario, given, when, then

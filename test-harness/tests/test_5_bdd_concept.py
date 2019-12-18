@@ -32,24 +32,22 @@ def devices_list():
             device_name for device_name in device_classes 
             if "/" in device_name ]
 
-    return device_names
-
-
-@when("I check the number of active devices")
-def running_devices_count(devices_list):
     active_devices = []
 
-    for device_name in devices_list:
+    for name in device_names:
         try:
-            logging.info("Connecting to '{}'...".format(device_name))
-            device_client = DeviceProxy(device_name)
+            logging.info("Connecting to '{}'...".format(name))
+            device_client = DeviceProxy(name)
         except Exception as e:
-            devices_list.remove(device_name) # remove inactive device
-            logging.warning("Could not connect to the '{}' Device.".format(device_name))
+            device_name.remove(name) # remove inactive device
+            logging.warning("Could not connect to the '{}' Device.".format(name))
             logging.debug(e)
 
-    logging.info("Total number of active devices {}.".format(len(devices_list)))
+    return device_names
 
+@when("I check the number of active devices")
+def count_me(devices_list):
+    logging.info("Total number of active devices {}.".format(len(devices_list)))
 
 @then("The number of active devices should be more than 50")
 def assert_count(devices_list):

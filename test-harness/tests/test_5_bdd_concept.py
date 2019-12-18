@@ -4,6 +4,7 @@ A reimplementation of some of the basic tests in this directory, implemented usi
 """
 import itertools
 import logging
+import pytest
 
 from tango import Database, DeviceProxy
 from time import sleep

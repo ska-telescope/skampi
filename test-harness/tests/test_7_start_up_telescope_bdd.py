@@ -7,6 +7,7 @@ import requests
 import json
 import sys
 import logging
+import pytest
 
 @scenario("./1.feature", "Telescope startup")
 def telescope_start():

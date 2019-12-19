@@ -1,22 +1,23 @@
 ---
-Remote: origin
-TargetBranch: master
-LintConf: ./ci/lintconf.yaml
-ChartYamlSchema: ./ci/chart_schema.yaml
-ValidateMaintainers: false
-ValidateChartSchema: false
-ValidateYaml: false
-CheckVersionIncrement: false
-ProcessAllCharts: false
-Charts: []
-ChartRepos: []
-ChartDirs: 
+remote: origin
+target-branch: master
+lint-conf: ./ci/lintconf.yaml
+chart-yaml-schema: ./ci/chart_schema.yaml
+validate-maintainers: true
+validate-chart-schema: true
+validate-yaml: true
+check-version-increment: false
+process-all-charts: false
+charts: []
+chart-repos: []
+chart-dirs: 
   - charts
-ExcludedCharts:
+excluded-charts:
   - tests
-HelmExtraArgs: --timeout=300
-HelmRepoExtraArgs: []
-Debug: true
-Upgrade: false
-SkipMissingValues: false
-Namespace: ci
+helm-extra-args: --timeout=300
+helm-repo-extra-args: []
+debug: true
+upgrade: false
+skip-missing-values: false
+namespace: ci
+release-label: chart-testing

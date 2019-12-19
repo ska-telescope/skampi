@@ -25,7 +25,7 @@ ct-lint:
   allow_failure: true
   before_script:
   script:
-  - ct lint --all
+  - ct lint --config ci/ct.yaml --all
 
 helm-template-tests:
   stage: static_analysis

@@ -44,7 +44,7 @@ logstash:
   nodePort: 30123
 
 tests:
-  enabled: false
+  enabled: true
   image:
     image: ska-docker/ska-python-buildenv
     registry: nexus.engageska-portugal.pt

@@ -1,10 +1,8 @@
 image: nexus.engageska-portugal.pt/ska-docker/deploy:latest
 
-before_script:
-  - helm init --client-only
-
 stages:
-  - lint
+  - static_analysis
+  - unit_test
   - clean
   - deploy
   - test
@@ -12,13 +10,45 @@ stages:
   - lifecycle
   - debug
 
-lint:
-  stage: lint
+helm-lint:
+  stage: static_analysis
   tags:
   - docker-executor
   allow_failure: true
   script:
   - make lint_all
+
+ct-lint:
+  stage: static_analysis
+  tags:
+  - docker-executor
+  allow_failure: true
+  before_script:
+  script:
+  - ct lint --all
+
+helm-template-tests:
+  stage: static_analysis
+  tags:
+  - docker-executor
+  allow_failure: false
+  script:
+  - make template_tests
+
+ct-test:
+  stage: unit_test
+  tags:
+  - docker-executor
+  allow_failure: true
+  script:
+  - helm tiller start-ci
+  - $(helm tiller env)
+  - ct install --config ci/ct.yaml --release-label $CI_COMMIT_REF_SLUG --build-id $CI_JOB_ID
+  environment:
+    name: test
+  except:
+    refs:
+      - master
 
 delete test environment:
   stage: clean

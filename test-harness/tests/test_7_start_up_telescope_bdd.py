@@ -29,18 +29,15 @@ def config_location(run_context):
   r = requests.post(url=url, json=jsonMutation, cookies=cookies)
   return r
 
+@when("the configuration file is passed to webjive")
 @pytest.fixture
 def parse_config(config_location):
-
   """ Webjive has already processed the config - this isn't strictly true, and I need to rewrite the .feature file.
   """
-  parsed = json.loads(r.text)
+  parsed = json.loads(config_location.text)
+  logging.info(json.dumps(parsed, indent=4, sort_keys=True))
   return parsed
-
-@when("the configuration file is passed to webjive")
-def print_config(parse_config):
-  log.info(json.dumps(parsed, indent=4, sort_keys=True))
 
 @then("the telescope is configured")
 def test_config(parse_config):
-  assert parsed['data']['executeCommand']['ok'] == True
+  assert parse_config['data']['executeCommand']['ok'] == True

@@ -34,7 +34,7 @@ def devices_list():
     return device_names
 
 @when("I check the number of active devices")
-def running_devices_count(devices_list)
+def running_devices_count(devices_list):
     active_devices = []
     for device_name in devices_list:
         try:

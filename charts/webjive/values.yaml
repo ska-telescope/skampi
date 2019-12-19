@@ -35,7 +35,7 @@ redis:
     pullPolicy: IfNotPresent
 
 mongodb:
-  image: 
+  image:
     image: mongo
     tag: 3.6-stretch
     pullPolicy: IfNotPresent

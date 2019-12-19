@@ -3,7 +3,7 @@ remote: origin
 target-branch: master
 lint-conf: ./ci/lintconf.yaml
 chart-yaml-schema: ./ci/chart_schema.yaml
-validate-maintainers: true
+validate-maintainers: false
 validate-chart-schema: true
 validate-yaml: true
 check-version-increment: false

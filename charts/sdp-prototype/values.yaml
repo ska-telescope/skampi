@@ -1,4 +1,3 @@
-
 # Feature toggles
 feature:
   # Tango devices connect to configuration DB?
@@ -33,11 +32,11 @@ dsconfig:
 
 # Processing controller
 processing_controller:
-    image: nexus.engageska-portugal.pt/sdp-prototype/processing-controller
-    version: 0.2.8
-    replicas: 1
-    resources: {}
-    imagePullPolicy: IfNotPresent
+  image: nexus.engageska-portugal.pt/sdp-prototype/processing-controller
+  version: 0.2.8
+  replicas: 1
+  resources: {}
+  imagePullPolicy: IfNotPresent
 
 # Tango devices
 tangods:

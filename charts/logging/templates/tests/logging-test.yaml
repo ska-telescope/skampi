@@ -17,6 +17,8 @@ kind: Pod
 metadata:
   name: "e2e-test-{{ template "logging.fullname" .}}"
   namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": test-success
 spec:
   containers:
     - name: "e2e-test-{{ template "logging.fullname" .}}"

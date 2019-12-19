@@ -39,24 +39,4 @@ spec:
   resources:
     requests:
       storage: 10Gi
-
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: pv-recycler
-  namespace: default
-spec:
-  restartPolicy: Never
-  volumes:
-  - name: vol
-    hostPath:
-      path: /data/elastic-{{ template "logging.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
-  containers:
-  - name: pv-recycler
-    image: "k8s.gcr.io/busybox"
-    command: ["/bin/sh", "-c", "test -e /scrub && rm -rf /scrub/..?* /scrub/.[!.]* /scrub/*  && test -z \"$(ls -A /scrub)\" || exit 1"]
-    volumeMounts:
-    - name: vol
-      mountPath: /scrub
 {{ end }}

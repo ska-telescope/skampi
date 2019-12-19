@@ -1,6 +1,5 @@
 .PHONY: template_tests
 
-CHART_TESTING_TOOL = https://github.com/helm/chart-testing/releases/download/v2.4.0/chart-testing_2.4.0_linux_amd64.tar.gz
 
 template_tests:
 	rc=0; \

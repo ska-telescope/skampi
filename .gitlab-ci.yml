@@ -46,9 +46,6 @@ ct-test:
   - ct install --config ci/ct.yaml --release-label $CI_COMMIT_REF_SLUG --build-id $CI_JOB_ID
   environment:
     name: test
-  except:
-    refs:
-      - master
 
 delete test environment:
   stage: clean

@@ -4,7 +4,6 @@ A reimplementation of some of the basic tests in this directory, implemented usi
 """
 import itertools
 import logging
-import pytest
 
 from tango import Database, DeviceProxy
 from time import sleep
@@ -32,22 +31,20 @@ def devices_list():
     device_names = [ 
             device_name for device_name in device_classes 
             if "/" in device_name ]
-
-    active_devices = []
-
-    for name in device_names:
-        try:
-            logging.info("Connecting to '{}'...".format(name))
-            device_client = DeviceProxy(name)
-        except Exception as e:
-            device_name.remove(name) # remove inactive device
-            logging.warning("Could not connect to the '{}' Device.".format(name))
-            logging.debug(e)
-
     return device_names
 
 @when("I check the number of active devices")
-def count_me(devices_list):
+def running_devices_count(devices_list)
+    active_devices = []
+    for device_name in devices_list:
+        try:
+            logging.info("Connecting to '{}'...".format(device_name))
+            device_client = DeviceProxy(device_name)
+        except Exception as e:
+            device_name.remove(device_name) # remove inactive device
+            logging.warning("Could not connect to the '{}' Device.".format(device_name))
+            logging.debug(e)
+
     logging.info("Total number of active devices {}.".format(len(devices_list)))
 
 @then("The number of active devices should be more than 50")

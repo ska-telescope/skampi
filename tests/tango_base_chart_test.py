@@ -20,14 +20,15 @@ HELM_INSTALL_CMD = "helm install charts/{} --namespace ci --wait"
 def tango_base_release():
     # setup
     chart_name = "tango-base"
-    helm_release = _helm_install(chart_name)
+    cmd_stdout = _run_helm_cmd(HELM_INSTALL_CMD.format(chart_name))
+    helm_release = _parse_helm_release_name_from(cmd_stdout)
 
     # yield fixture
     Release = collections.namedtuple('Release', ['name', 'chart'])
     yield Release(helm_release, chart_name)
 
     # teardown
-    _helm_delete(helm_release)
+    _run_helm_cmd(HELM_DELETE_CMD.format(helm_release))
 
 
 @pytest.mark.no_deploy()
@@ -55,16 +56,6 @@ def test_tangodb_pod_should_have_mysql_server_running(tango_base_release):
 def _connect_to_pod(pod_name, namespace="ci"):
     host = testinfra.get_host("kubectl://{}?namespace={}".format(pod_name, namespace))
     return host
-
-
-def _helm_delete(helm_release, enable_tiller_plugin=True):
-    return _run_helm_cmd(HELM_DELETE_CMD.format(helm_release))
-
-
-def _helm_install(chart="tango-base", enable_tiller_plugin=True):
-    cmd_stdout = _run_helm_cmd(HELM_INSTALL_CMD.format(chart), enable_tiller_plugin)
-
-    return _parse_helm_release_name_from(cmd_stdout)
 
 
 def _run_helm_cmd(helm_cmd, enable_tiller_plugin):
@@ -99,7 +90,7 @@ def _env_vars_from(databaseds_statefulset):
 
 
 def _helm_template(chart, release_name, template):
-    _run_helm_cmd(HELM_TEMPLATE_CMD.format(release_name, template, chart))
+    return _run_helm_cmd(HELM_TEMPLATE_CMD.format(release_name, template, chart))
 
 
 def _parse_yaml_resources(yaml_string):

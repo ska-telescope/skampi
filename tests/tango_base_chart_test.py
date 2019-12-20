@@ -7,6 +7,14 @@ import yaml
 
 from io import StringIO
 
+HELM_TEMPLATE_CMD = "helm template --name {} -x templates/{} charts/{}"
+
+HELM_DELETE_CMD = "helm delete {} --purge"
+
+HELM_TILLER_PREFIX = "helm tiller run -- "
+
+HELM_INSTALL_CMD = "helm install charts/{} --namespace ci --wait"
+
 
 @pytest.fixture(scope="session")
 def tango_base_release():
@@ -19,7 +27,7 @@ def tango_base_release():
     yield Release(helm_release, chart_name)
 
     # teardown
-    _helm_delete(helm_release, 'helm tiller run -- ')
+    _helm_delete(helm_release)
 
 
 @pytest.mark.no_deploy()
@@ -49,20 +57,39 @@ def _connect_to_pod(pod_name, namespace="ci"):
     return host
 
 
-def _helm_delete(helm_release, helm_cmd_prefix):
-    helm_delete_cmd = "helm delete {} --purge".format(helm_release)
-    del_result = subprocess.run((helm_cmd_prefix + helm_delete_cmd).split(), stdout=subprocess.PIPE,
-                                encoding="utf8", check=True)
+def _helm_delete(helm_release, enable_tiller_plugin=True):
+    return _run_helm_cmd(HELM_DELETE_CMD.format(helm_release))
 
 
-def _helm_install(chart="tango-base"):
-    helm_install_cmd = "helm install charts/{} --namespace ci --wait".format(chart)
-    helm_tiller_prefix = "helm tiller run -- "
-    wrapped_cmd = (helm_tiller_prefix + helm_install_cmd).split()
-    result = subprocess.run(wrapped_cmd, stdout=subprocess.PIPE, encoding="utf8", check=True)
-    release_name_line = ''.join(l for l in result.stdout.split('\n') if l.startswith('NAME:'))
+def _helm_install(chart="tango-base", enable_tiller_plugin=True):
+    cmd_stdout = _run_helm_cmd(HELM_INSTALL_CMD.format(chart), enable_tiller_plugin)
+
+    return _parse_helm_release_name_from(cmd_stdout)
+
+
+def _run_helm_cmd(helm_cmd, enable_tiller_plugin):
+    if enable_tiller_plugin is True:
+        deploy_cmd = _prefix_cmd_with_tiller_run(helm_cmd)
+    else:
+        deploy_cmd = helm_cmd.split()
+    cmd_stdout = _run_subprocess(deploy_cmd)
+    return cmd_stdout
+
+
+def _prefix_cmd_with_tiller_run(helm_cmd):
+    deploy_cmd = (HELM_TILLER_PREFIX + helm_cmd).split()
+    return deploy_cmd
+
+
+def _parse_helm_release_name_from(stdout):
+    release_name_line = ''.join(l for l in stdout.split('\n') if l.startswith('NAME:'))
     release_name = release_name_line.split().pop()
     return release_name
+
+
+def _run_subprocess(shell_cmd):
+    result = subprocess.run(shell_cmd, stdout=subprocess.PIPE, encoding="utf8", check=True)
+    return result.stdout
 
 
 def _env_vars_from(databaseds_statefulset):
@@ -72,10 +99,8 @@ def _env_vars_from(databaseds_statefulset):
 
 
 def _helm_template(chart, release_name, template):
-    helm_template_cmd = "helm template --name {} -x templates/{} charts/{}".format(release_name, template,
-                                                                                   chart)
-    result = subprocess.run(helm_template_cmd.split(), stdout=subprocess.PIPE, encoding="utf8")
-    return result.stdout
+    _run_helm_cmd(HELM_TEMPLATE_CMD.format(release_name, template, chart))
+
 
 def _parse_yaml_resources(yaml_string):
     template_objects = yaml.safe_load_all(StringIO(yaml_string))

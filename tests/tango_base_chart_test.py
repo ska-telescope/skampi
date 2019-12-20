@@ -24,24 +24,36 @@ def test_databaseds_resource_definition_should_have_TANGO_HOST_set_to_its_own_ho
 @pytest.mark.chart_deploy()
 def test_tangodb_pod_should_have_mysql_server_running():
     # setup
-    helm_install_cmd = "helm install charts/tango-base --namespace ci --wait"
-    helm_tiller_prefix = "helm tiller run -- "
-
-    result = subprocess.run((helm_tiller_prefix + helm_install_cmd).split(), stdout=subprocess.PIPE, encoding="utf8")
-    release_name_line = ''.join(l for l in result.stdout.split('\n') if l.startswith('NAME:'))
-    release_name = release_name_line.split().pop()
+    chart_name = "tango-base"
+    helm_release = _helm_install(chart_name)
 
     # test
     try:
-        host = testinfra.get_host("kubectl://tangodb-tango-base-{}-0?namespace=ci".format(release_name))
+        pod_name = "tangodb-{}-{}-0".format(chart_name, helm_release)
+        host = testinfra.get_host("kubectl://{}?namespace=ci".format(pod_name))
         mysqld_proc = host.process.get(command="mysqld")
         assert mysqld_proc is not None
 
     finally:
         # teardown
-        helm_delete_cmd = "helm delete {} --purge".format(release_name)
-        del_result = subprocess.run((helm_tiller_prefix + helm_delete_cmd).split(), stdout=subprocess.PIPE,
-                                    encoding="utf8", check=True)
+        _helm_delete(helm_release, "helm tiller run -- ")
+
+
+def _helm_delete(helm_release, helm_cmd_prefix):
+    helm_delete_cmd = "helm delete {} --purge".format(helm_release)
+    del_result = subprocess.run((helm_cmd_prefix + helm_delete_cmd).split(), stdout=subprocess.PIPE,
+                                encoding="utf8", check=True)
+
+
+def _helm_install(chart="tango-base"):
+    helm_install_cmd = "helm install charts/{} --namespace ci --wait".format(chart)
+    helm_tiller_prefix = "helm tiller run -- "
+    wrapped_cmd = (helm_tiller_prefix + helm_install_cmd).split()
+    result = subprocess.run(wrapped_cmd, stdout=subprocess.PIPE, encoding="utf8")
+    release_name_line = ''.join(l for l in result.stdout.split('\n') if l.startswith('NAME:'))
+    release_name = release_name_line.split().pop()
+    return release_name
+
 
 def _env_vars_from(databaseds_statefulset):
     databaseds_statefulset = [r for r in databaseds_statefulset if r['kind'] == 'StatefulSet'].pop()

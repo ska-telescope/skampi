@@ -26,6 +26,9 @@ REMOTE_DEBUG ?= false
 # include makefile targets that wrap helm
 -include helm.mk
 
+# include makefile targets for testing
+-include test.mk
+
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #

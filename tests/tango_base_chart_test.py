@@ -30,13 +30,18 @@ def test_tangodb_pod_should_have_mysql_server_running():
     # test
     try:
         pod_name = "tangodb-{}-{}-0".format(chart_name, helm_release)
-        host = testinfra.get_host("kubectl://{}?namespace=ci".format(pod_name))
+        host = _connect_to_pod(pod_name)
         mysqld_proc = host.process.get(command="mysqld")
         assert mysqld_proc is not None
 
     finally:
         # teardown
         _helm_delete(helm_release, "helm tiller run -- ")
+
+
+def _connect_to_pod(pod_name, namespace="ci"):
+    host = testinfra.get_host("kubectl://{}?namespace={}".format(pod_name, namespace))
+    return host
 
 
 def _helm_delete(helm_release, helm_cmd_prefix):
@@ -49,7 +54,7 @@ def _helm_install(chart="tango-base"):
     helm_install_cmd = "helm install charts/{} --namespace ci --wait".format(chart)
     helm_tiller_prefix = "helm tiller run -- "
     wrapped_cmd = (helm_tiller_prefix + helm_install_cmd).split()
-    result = subprocess.run(wrapped_cmd, stdout=subprocess.PIPE, encoding="utf8")
+    result = subprocess.run(wrapped_cmd, stdout=subprocess.PIPE, encoding="utf8", check=True)
     release_name_line = ''.join(l for l in result.stdout.split('\n') if l.startswith('NAME:'))
     release_name = release_name_line.split().pop()
     return release_name

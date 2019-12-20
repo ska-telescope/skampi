@@ -1,10 +1,25 @@
-import pytest
 import subprocess
+import collections
 
+import pytest
 import testinfra
 import yaml
 
 from io import StringIO
+
+
+@pytest.fixture(scope="session")
+def tango_base_release():
+    # setup
+    chart_name = "tango-base"
+    helm_release = _helm_install(chart_name)
+
+    # yield fixture
+    Release = collections.namedtuple('Release', ['name', 'chart'])
+    yield Release(helm_release, chart_name)
+
+    # teardown
+    _helm_delete(helm_release, 'helm tiller run -- ')
 
 
 @pytest.mark.no_deploy()
@@ -22,21 +37,11 @@ def test_databaseds_resource_definition_should_have_TANGO_HOST_set_to_its_own_ho
     assert expected_env_var in env_vars
 
 @pytest.mark.chart_deploy()
-def test_tangodb_pod_should_have_mysql_server_running():
-    # setup
-    chart_name = "tango-base"
-    helm_release = _helm_install(chart_name)
-
-    # test
-    try:
-        pod_name = "tangodb-{}-{}-0".format(chart_name, helm_release)
+def test_tangodb_pod_should_have_mysql_server_running(tango_base_release):
+        pod_name = "tangodb-{}-{}-0".format(tango_base_release.chart, tango_base_release.name)
         host = _connect_to_pod(pod_name)
         mysqld_proc = host.process.get(command="mysqld")
         assert mysqld_proc is not None
-
-    finally:
-        # teardown
-        _helm_delete(helm_release, "helm tiller run -- ")
 
 
 def _connect_to_pod(pod_name, namespace="ci"):

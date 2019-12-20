@@ -1,9 +1,11 @@
+import pytest
 import subprocess
 import yaml
 
 from io import StringIO
 
 
+@pytest.mark.no_deploy()
 def test_databaseds_resource_definition_should_have_TANGO_HOST_set_to_its_own_hostname():
     a_release_name = 'any-release'
     helm_templated_defs = _helm_template('tango-base', a_release_name, 'databaseds.yaml')

@@ -35,6 +35,16 @@ helm-template-tests:
   script:
   - make template_tests
 
+helm-pytest:
+  stage: static_analysis
+  tags:
+  - docker-executor
+  allow_failure: false
+  before_script:
+    - pip install -r test-requirements.txt
+  script:
+  - pytest -m no_deploy
+
 ct-test:
   stage: unit_test
   tags:

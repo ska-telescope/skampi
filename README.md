@@ -21,7 +21,7 @@ On Ubuntu 18.04 for desktop based development, the most straight forward install
 
 The latest version of minikube is found here  https://github.com/kubernetes/minikube/releases .  Scroll down to the section for Linux, which will have instructions like:
 ```
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.34.1/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/v1.2.0/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
 ```
 
 Now we need to bootstrap minikube so that we have a running cluster based on kvm:
@@ -105,14 +105,6 @@ Note: your Xserver needs to allow TCP connections.  This will be different for e
 DisallowTCP=false
 ```
 In order for these changes to take effect you will need to restart X (it's just easier to reboot...).
-
-Change the file /etc/kubernetes/addons/ingress-dp.yaml in order to set the nginx-ingress-controller to version 0.24.0:
-```
-...
-      containers:
-      - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.24.0
-....
-```
 
 Once the Helm client is installed (from above) and TCP based Xserver connections are enabled, change to the k8s/ directory.  The basic configuration for each component of the Integration is held in the `values.yaml` file of each chart.
 

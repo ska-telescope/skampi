@@ -4,10 +4,10 @@ import pytest
 import testinfra
 import yaml
 
-from tests.testsupport.helm import ChartDeployment, HelmTestAdaptor
+from tests.testsupport.helm import ChartDeployment
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def tango_base_release(helm_adaptor):
     tango_base_release = ChartDeployment("tango-base", helm_adaptor) # setup
     yield tango_base_release # yield fixture
@@ -18,7 +18,7 @@ def tango_base_release(helm_adaptor):
 def test_databaseds_resource_definition_should_have_TANGO_HOST_set_to_its_own_hostname(helm_adaptor):
     chart = 'tango-base'
     a_release_name = 'any-release'
-    helm_templated_defs = HelmTestAdaptor(False).template(chart, a_release_name, 'databaseds.yaml')
+    helm_templated_defs = helm_adaptor.template(chart, a_release_name, 'databaseds.yaml')
     k8s_resources = _parse_yaml_resources(helm_templated_defs)
     env_vars = _env_vars_from(k8s_resources)
 

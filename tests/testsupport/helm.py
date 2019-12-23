@@ -2,15 +2,16 @@ import subprocess
 
 
 class HelmTestAdaptor(object):
-    HELM_TEMPLATE_CMD = "helm template --name {} -x templates/{} charts/{}"
+    HELM_TEMPLATE_CMD = "helm template --namespace {} --name {} -x templates/{} charts/{}"
     HELM_DELETE_CMD = "helm delete {} --purge"
-    HELM_INSTALL_CMD = "helm install charts/{} --namespace ci --wait"
+    HELM_INSTALL_CMD = "helm install charts/{} --namespace {} --wait"
 
-    def __init__(self, use_tiller_plugin):
+    def __init__(self, use_tiller_plugin, test_namespace):
         self.use_tiller_plugin = use_tiller_plugin
+        self.namespace = test_namespace
 
     def install(self, chart):
-        cmd = self._wrap_tiller(self.HELM_INSTALL_CMD.format(chart))
+        cmd = self._wrap_tiller(self.HELM_INSTALL_CMD.format(chart, self.namespace))
         return self._run_subprocess(cmd.split())
 
     def delete(self, helm_release):
@@ -18,7 +19,7 @@ class HelmTestAdaptor(object):
         return self._run_subprocess(cmd.split())
 
     def template(self, chart_name, release_name, template):
-        cmd = self.HELM_TEMPLATE_CMD.format(release_name, template, chart_name)
+        cmd = self.HELM_TEMPLATE_CMD.format(self.namespace, release_name, template, chart_name)
         return self._run_subprocess(cmd.split())
 
     def _wrap_tiller(self, helm_cmd):

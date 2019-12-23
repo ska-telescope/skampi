@@ -47,7 +47,7 @@ helm-pytest:
   before_script:
     - *sideload_pytest
   script:
-  - pytest -m no_deploy
+  - make template_pytests
 
 ct-test:
   stage: unit_test
@@ -71,7 +71,7 @@ chart-pytest:
     - helm tiller start-ci
     - $(helm tiller env)
   script:
-    - pytest -m chart_deploy
+    - make chart_pytests
   environment:
     name: test
 

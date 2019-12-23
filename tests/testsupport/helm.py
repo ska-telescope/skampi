@@ -10,21 +10,24 @@ class HelmTestAdaptor(object):
         self.use_tiller_plugin = use_tiller_plugin
 
     def install(self, chart):
-        return self._run_cmd(self.HELM_INSTALL_CMD.format(chart))
+        cmd = self._wrap_tiller(self.HELM_INSTALL_CMD.format(chart))
+        return self._run_subprocess(cmd.split())
 
     def delete(self, helm_release):
-        return self._run_cmd(self.HELM_DELETE_CMD.format(helm_release))
+        cmd = self._wrap_tiller(self.HELM_DELETE_CMD.format(helm_release))
+        return self._run_subprocess(cmd.split())
 
     def template(self, chart_name, release_name, template):
-        return self._run_cmd(self.HELM_TEMPLATE_CMD.format(release_name, template, chart_name))
+        cmd = self.HELM_TEMPLATE_CMD.format(release_name, template, chart_name)
+        return self._run_subprocess(cmd.split())
 
-    def _run_cmd(self, helm_cmd):
+    def _wrap_tiller(self, helm_cmd):
         if self.use_tiller_plugin is True:
-            cli_cmd = self.__prefix_cmd_with_tiller_run(helm_cmd).split()
+            cli_cmd = self.__prefix_cmd_with_tiller_run(helm_cmd)
         else:
-            cli_cmd = helm_cmd.split()
+            cli_cmd = helm_cmd
 
-        return self._run_subprocess(cli_cmd)
+        return cli_cmd
 
     @staticmethod
     def _run_subprocess(shell_cmd):

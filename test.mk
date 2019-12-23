@@ -1,5 +1,7 @@
 .PHONY: template_tests
 
+TEST_NAMESPACE?=
+PYTEST_ARGS?=$(if $(CI),--test-namespace=$(TEST_NAMESPACE),--use-tiller-plugin)
 
 template_tests:
 	rc=0; \
@@ -10,7 +12,7 @@ template_tests:
 	exit $$rc
 
 template_pytests:
-	pytest -m no_deploy $(if $(CI),,--use-tiller-plugin)
+	pytest -m no_deploy $(PYTEST_ARGS)
 
 chart_pytests:
-	pytest -m chart_deploy $(if $(CI),,--use-tiller-plugin)
+	pytest -m chart_deploy $(PYTEST_ARGS)

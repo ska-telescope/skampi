@@ -47,7 +47,7 @@ helm-pytest:
   before_script:
     - *sideload_pytest
   script:
-  - make template_pytests
+  - make template_pytests TEST_NAMESPACE=ci-$CI_JOB_ID
 
 ct-test:
   stage: unit_test
@@ -71,7 +71,7 @@ chart-pytest:
     - helm tiller start-ci
     - $(helm tiller env)
   script:
-    - make chart_pytests
+    - make chart_pytests TEST_NAMESPACE=ci-$CI_JOB_ID
   environment:
     name: test
 

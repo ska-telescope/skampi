@@ -1,34 +1,31 @@
-import collections
+from io import StringIO
 
 import pytest
 import testinfra
 import yaml
 
-from io import StringIO
-
-from tests.testsupport.helm import HelmTestAdaptor
+from tests.testsupport.helm import HelmTestAdaptor, ChartDeployment
 
 
 @pytest.fixture(scope="session")
 def tango_base_release():
     # setup
     chart_name = "tango-base"
-    use_tiller_plugin = True
-    helm_test_adaptor = HelmTestAdaptor(chart_name, use_tiller_plugin)
-    release_name = helm_test_adaptor.deploy_chart()
+    helm_test_adaptor = HelmTestAdaptor(True)
+    tango_base_release = ChartDeployment(chart_name, helm_test_adaptor)
 
     # yield fixture
-    Release = collections.namedtuple('Release', ['name', 'chart'])
-    yield Release(release_name, chart_name)
+    yield tango_base_release
 
-    # teardown
-    helm_test_adaptor.undeploy_chart(release_name)
+    #teardown
+    tango_base_release.delete()
 
 
 @pytest.mark.no_deploy()
 def test_databaseds_resource_definition_should_have_TANGO_HOST_set_to_its_own_hostname():
+    chart = 'tango-base'
     a_release_name = 'any-release'
-    helm_templated_defs =  HelmTestAdaptor('tango-base', False).render_template(a_release_name, 'databaseds.yaml')
+    helm_templated_defs =  HelmTestAdaptor(False).template(chart, a_release_name, 'databaseds.yaml')
     k8s_resources = _parse_yaml_resources(helm_templated_defs)
     env_vars = _env_vars_from(k8s_resources)
 
@@ -39,9 +36,10 @@ def test_databaseds_resource_definition_should_have_TANGO_HOST_set_to_its_own_ho
 
     assert expected_env_var in env_vars
 
+
 @pytest.mark.chart_deploy()
 def test_tangodb_pod_should_have_mysql_server_running(tango_base_release):
-        pod_name = "tangodb-{}-{}-0".format(tango_base_release.chart, tango_base_release.name)
+        pod_name = "tangodb-{}-{}-0".format(tango_base_release.chart_name, tango_base_release.release_name)
         host = _connect_to_pod(pod_name)
         mysqld_proc = host.process.get(command="mysqld")
         assert mysqld_proc is not None

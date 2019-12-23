@@ -6,32 +6,25 @@ class HelmTestAdaptor(object):
     HELM_DELETE_CMD = "helm delete {} --purge"
     HELM_INSTALL_CMD = "helm install charts/{} --namespace ci --wait"
 
-    def __init__(self, chart_name, use_tiller_plugin):
-        self.chart_name = chart_name
+    def __init__(self, use_tiller_plugin):
         self.use_tiller_plugin = use_tiller_plugin
 
-    def deploy_chart(self):
-        cmd_stdout = self.run_cmd(self.HELM_INSTALL_CMD.format(self.chart_name))
-        return self._parse_helm_release_name_from(cmd_stdout)
+    def install(self, chart):
+        return self._run_cmd(self.HELM_INSTALL_CMD.format(chart))
 
-    def undeploy_chart(self, helm_release):
-        self.run_cmd(self.HELM_DELETE_CMD.format(helm_release))
+    def delete(self, helm_release):
+        return self._run_cmd(self.HELM_DELETE_CMD.format(helm_release))
 
-    def render_template(self, release_name, template):
-        return self.run_cmd(HelmTestAdaptor.HELM_TEMPLATE_CMD.format(release_name, template, self.chart_name))
+    def template(self, chart_name, release_name, template):
+        return self._run_cmd(self.HELM_TEMPLATE_CMD.format(release_name, template, chart_name))
 
-    def _parse_helm_release_name_from(self, stdout):
-        release_name_line = ''.join(l for l in stdout.split('\n') if l.startswith('NAME:'))
-        release_name = release_name_line.split().pop()
-        return release_name
-
-    def run_cmd(self, helm_cmd):
+    def _run_cmd(self, helm_cmd):
         if self.use_tiller_plugin is True:
-            deploy_cmd = self.prefix_cmd_with_tiller_run(helm_cmd)
+            cli_cmd = self.__prefix_cmd_with_tiller_run(helm_cmd).split()
         else:
-            deploy_cmd = helm_cmd.split()
-        cmd_stdout = self._run_subprocess(deploy_cmd)
-        return cmd_stdout
+            cli_cmd = helm_cmd.split()
+
+        return self._run_subprocess(cli_cmd)
 
     @staticmethod
     def _run_subprocess(shell_cmd):
@@ -39,7 +32,29 @@ class HelmTestAdaptor(object):
         return result.stdout
 
     @staticmethod
-    def prefix_cmd_with_tiller_run(helm_cmd):
+    def __prefix_cmd_with_tiller_run(helm_cmd):
         HELM_TILLER_PREFIX = "helm tiller run -- "
-        deploy_cmd = (HELM_TILLER_PREFIX + helm_cmd).split()
+        deploy_cmd = (HELM_TILLER_PREFIX + helm_cmd)
         return deploy_cmd
+
+
+class ChartDeployment(object):
+    def __init__(self, chart, helm_adaptor):
+        self.__helm_adaptor = helm_adaptor
+
+        try:
+            stdout = self.__helm_adaptor.install(chart)
+
+            self.chart_name = chart
+            self.release_name = self._parse_release_name_from(stdout)
+        except Exception as e:
+            raise RuntimeError('!!! Failed to deploy helm chart.', e)
+
+    def delete(self):
+        assert self.release_name is not None
+        self.__helm_adaptor.delete(self.release_name)
+
+    @staticmethod
+    def _parse_release_name_from(stdout):
+        release_name_line = ''.join(l for l in stdout.split('\n') if l.startswith('NAME:'))
+        return release_name_line.split().pop()

@@ -8,10 +8,10 @@ from tests.testsupport.helm import HelmTestAdaptor, ChartDeployment
 
 
 @pytest.fixture(scope="session")
-def tango_base_release():
+def tango_base_release(pytestconfig):
     # setup
     chart_name = "tango-base"
-    helm_test_adaptor = HelmTestAdaptor(True)
+    helm_test_adaptor = HelmTestAdaptor(pytestconfig.getoption("--use-tiller-plugin"))
     tango_base_release = ChartDeployment(chart_name, helm_test_adaptor)
 
     # yield fixture

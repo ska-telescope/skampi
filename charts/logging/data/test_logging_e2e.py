@@ -55,9 +55,3 @@ def test_fluentd_ingests_pod_stdout_into_elastic():
 
     assert len(result.get('hits')) > 0
 
-
-@pytest.mark.skip()
-def test_logstash_ingests_rsyslog_messages_into_elastic():
-    # TODO write this test
-    pass
-

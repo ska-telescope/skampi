@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:latest
+image: nexus.engageska-portugal.pt/ska-docker/deploy:0.1.4
 
 stages:
   - static_analysis

@@ -23,9 +23,6 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   volumes:
-  - name: logs
-    persistentVolumeClaim:
-      claimName: rsyslog-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
   - name: configuration
     configMap:
       name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
@@ -53,15 +50,11 @@ spec:
   - name: dishmaster1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 01"
+      - " /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 01"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -69,15 +62,11 @@ spec:
   - name: dishmaster2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 02"
+      - "/venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 02"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -85,15 +74,11 @@ spec:
   - name: dishmaster3
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 03"
+      - "/venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 03"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -101,15 +86,11 @@ spec:
   - name: dishmaster4
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 04"
+      - "/venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 04"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -117,15 +98,12 @@ spec:
   - name: dishleafnode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_d0001/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_d0001/elt/master &&\
              /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 01"
     env:
     - name: TANGO_HOST
@@ -134,15 +112,12 @@ spec:
   - name: dishleafnode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_d0002/elt/master &&\
+      - " retry --max=10 -- tango_admin --ping-device mid_d0002/elt/master &&\
              /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 02"
     env:
     - name: TANGO_HOST
@@ -151,15 +126,12 @@ spec:
   - name: dishleafnode3
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_d0003/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_d0003/elt/master &&\
              /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 03"
     env:
     - name: TANGO_HOST
@@ -168,15 +140,11 @@ spec:
   - name: dishleafnode4
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_d0004/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_d0004/elt/master &&\
              /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 04"
     env:
     - name: TANGO_HOST
@@ -185,15 +153,12 @@ spec:
   - name: cspsubarrayleafnode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_01 &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_01 &&\
              /venv/bin/python /app/tmcprototype/CspSubarrayLeafNode/CspSubarrayLeafNode/CspSubarrayLeafNode.py 01"
     env:
     - name: TANGO_HOST
@@ -202,15 +167,12 @@ spec:
   - name: cspsubarrayleafnode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_02 &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_02 &&\
              /venv/bin/python /app/tmcprototype/CspSubarrayLeafNode/CspSubarrayLeafNode/CspSubarrayLeafNode.py 02"
     env:
     - name: TANGO_HOST
@@ -219,15 +181,12 @@ spec:
   - name: cspsubarrayleafnode3
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_03 &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_03 &&\
              /venv/bin/python /app/tmcprototype/CspSubarrayLeafNode/CspSubarrayLeafNode/CspSubarrayLeafNode.py 03"
     env:
     - name: TANGO_HOST
@@ -236,15 +195,12 @@ spec:
   - name: cspmasterleafnode
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
              /venv/bin/python /app/tmcprototype/CspMasterLeafNode/CspMasterLeafNode/CspMasterLeafNode.py 01"
     env:
     - name: TANGO_HOST
@@ -253,15 +209,12 @@ spec:
   - name: sdpsubarrayleafnode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_1 &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_1 &&\
              /venv/bin/python /app/tmcprototype/SdpSubarrayLeafNode/SdpSubarrayLeafNode/SdpSubarrayLeafNode.py 01"
     env:
     - name: TANGO_HOST
@@ -270,15 +223,12 @@ spec:
   - name: sdpsubarrayleafnode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_2 &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_2 &&\
              /venv/bin/python /app/tmcprototype/SdpSubarrayLeafNode/SdpSubarrayLeafNode/SdpSubarrayLeafNode.py 02"
     env:
     - name: TANGO_HOST
@@ -287,15 +237,12 @@ spec:
   - name: sdpsubarrayleafnode3
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_3 &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_3 &&\
              /venv/bin/python /app/tmcprototype/SdpSubarrayLeafNode/SdpSubarrayLeafNode/SdpSubarrayLeafNode.py 03"
     env:
     - name: TANGO_HOST
@@ -304,15 +251,12 @@ spec:
   - name: sdpmasterleafnode
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device mid_sdp/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/master &&\
              /venv/bin/python /app/tmcprototype/SdpMasterLeafNode/SdpMasterLeafNode/SdpMasterLeafNode.py 01 01"
     env:
     - name: TANGO_HOST
@@ -321,15 +265,12 @@ spec:
   - name: subarraynode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0001 &&\
+      - "retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0001 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0002 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0003 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
@@ -343,15 +284,12 @@ spec:
   - name: subarraynode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0001 &&\
+      - "retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0001 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0002 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0003 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
@@ -365,15 +303,12 @@ spec:
   - name: subarraynode3
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0001 &&\
+      - "retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0001 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0002 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0003 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
@@ -387,15 +322,12 @@ spec:
   - name: centralnode
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: {{ .Values.tmcprototype.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
+
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-             retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_master &&\
+      - "retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_master &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_master &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/1 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/2 &&\

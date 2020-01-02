@@ -20,12 +20,16 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="session")
-def infratests_context(pytestconfig):
+def test_namespace(pytestconfig):
+    return pytestconfig.getoption("--test-namespace")
+
+
+@pytest.fixture(scope="session")
+def infratests_context(pytestconfig, test_namespace):
     InfraTestContext = namedtuple('InfraTestContext', ['helm_adaptor'])
 
     # collect options
     use_tiller_plugin = pytestconfig.getoption("--use-tiller-plugin")
-    test_namespace = pytestconfig.getoption("--test-namespace")
     markers = pytestconfig.getoption("-m")
 
     # no need to manage a cluster if no deployment tests are included

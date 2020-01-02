@@ -31,14 +31,14 @@ def test_databaseds_resource_definition_should_have_TANGO_HOST_set_to_its_own_ho
 
 
 @pytest.mark.chart_deploy()
-def test_tangodb_pod_should_have_mysql_server_running(tango_base_release):
+def test_tangodb_pod_should_have_mysql_server_running(tango_base_release, test_namespace):
         pod_name = "tangodb-{}-{}-0".format(tango_base_release.chart_name, tango_base_release.release_name)
-        host = _connect_to_pod(pod_name)
+        host = _connect_to_pod(pod_name, test_namespace)
         mysqld_proc = host.process.get(command="mysqld")
         assert mysqld_proc is not None
 
 
-def _connect_to_pod(pod_name, namespace="ci"):
+def _connect_to_pod(pod_name, namespace):
     host = testinfra.get_host("kubectl://{}?namespace={}".format(pod_name, namespace))
     return host
 

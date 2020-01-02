@@ -34,15 +34,6 @@ ingress:
   nginx: true
   hostname: integration.engageska-portugal.pt
 
-logstash:
-  enabled: false
-  image:
-    registry: docker.elastic.co
-    image: logstash/logstash
-    tag: 7.4.2
-    pullPolicy: IfNotPresent
-  nodePort: 30123
-
 tests:
   enabled: true
   image:

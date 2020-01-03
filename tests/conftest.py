@@ -66,9 +66,5 @@ def helm_adaptor(infratests_context):
 
 @pytest.fixture(scope="session")
 def k8s_api():
-    if os.getenv("CI"):  # assume gitlab-runner is in k8s cluster
-        k8s_config.load_incluster_config()
-    else:
-        k8s_config.load_kube_config()
-
+    k8s_config.load_kube_config()
     return k8s_client

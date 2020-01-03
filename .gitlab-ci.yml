@@ -41,6 +41,9 @@ helm-template-pytest:
   allow_failure: false
   script:
   - make template_pytests TEST_NAMESPACE=ci-$CI_JOB_ID
+  artifacts:
+    reports:
+      junit: junit-report.xml
 
 ct-test:
   stage: unit_test
@@ -66,6 +69,9 @@ chart-pytest:
     - make chart_pytests TEST_NAMESPACE=ci-$CI_JOB_ID
   environment:
     name: test
+  artifacts:
+    reports:
+      junit: junit-report.xml
 
 delete test environment:
   stage: clean

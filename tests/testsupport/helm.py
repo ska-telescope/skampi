@@ -43,11 +43,12 @@ class HelmTestAdaptor(object):
 
 
 class ChartDeployment(object):
-    def __init__(self, chart, helm_adaptor):
-        self.__helm_adaptor = helm_adaptor
+    def __init__(self, chart, helm_adaptor, k8s_api):
+        self._helm_adaptor = helm_adaptor
+        self._k8s_api = k8s_api
 
         try:
-            stdout = self.__helm_adaptor.install(chart)
+            stdout = self._helm_adaptor.install(chart) # actual deployment
 
             self.chart_name = chart
             self.release_name = self._parse_release_name_from(stdout)
@@ -56,7 +57,13 @@ class ChartDeployment(object):
 
     def delete(self):
         assert self.release_name is not None
-        self.__helm_adaptor.delete(self.release_name)
+        self._helm_adaptor.delete(self.release_name)
+
+    def get_pods(self):
+        api_instance = self._k8s_api.CoreV1Api()
+        pod_list = api_instance.list_namespaced_pod(self._helm_adaptor.namespace,
+                                                     label_selector="release={}".format(self.release_name))
+        return pod_list.items
 
     @staticmethod
     def _parse_release_name_from(stdout):

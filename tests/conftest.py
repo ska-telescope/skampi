@@ -1,7 +1,10 @@
+import os
 import subprocess
 from collections import namedtuple
 
 import pytest
+from kubernetes import client as k8s_client
+from kubernetes import config as k8s_config
 
 from tests.testsupport.helm import HelmTestAdaptor
 
@@ -59,3 +62,13 @@ def infratests_context(pytestconfig, test_namespace):
 @pytest.fixture(scope="session")
 def helm_adaptor(infratests_context):
     return infratests_context.helm_adaptor
+
+
+@pytest.fixture(scope="session")
+def k8s_api():
+    if os.getenv("CI"):  # assume gitlab-runner is in k8s cluster
+        k8s_config.load_incluster_config()
+    else:
+        k8s_config.load_kube_config()
+
+    return k8s_client

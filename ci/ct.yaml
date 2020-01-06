@@ -7,7 +7,7 @@ validate-maintainers: false
 validate-chart-schema: true
 validate-yaml: true
 check-version-increment: false
-process-all-charts: true
+process-all-charts: false
 charts: []
 chart-repos: []
 chart-dirs: 

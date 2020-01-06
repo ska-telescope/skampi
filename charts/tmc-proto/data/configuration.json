@@ -884,19 +884,6 @@
                 }
             }
         },
-        "SKALogger": {
-            "Ref": {
-                "SKALogger": {
-                    "ref/elt/logger": {
-                        "properties": {
-                            "SkaLevel": [
-                                "1"
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "alarmhandler-srv": {
             "01": {
                 "AlarmHandler": {

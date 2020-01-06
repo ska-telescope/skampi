@@ -4,3 +4,7 @@ description: A Helm chart for deploying the TMC prototype on Kubernetes
 name: tmc-proto
 version: 0.1.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+dependencies:
+  - name: tango-db
+    version: 0.1.0
+    repository: https://gitlab.com/ska-telescope/skampi/tree/master/charts/tango-base

@@ -102,11 +102,11 @@ deploy staging environment:
   tags:
   - docker-executor
   script:
-  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging
+  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=integration.engageska-portugal.pt HELM_RELEASE=staging
   - kubectl get all,pv,pvc,ingress -n staging
   environment:
     name: staging
-    url: http://kubernetes.engageska-portugal.pt/testdb
+    url: http://integration.engageska-portugal.pt/testdb
   only:
     refs:
       - staging
@@ -151,10 +151,10 @@ k8s_test staging environment:
   tags:
   - docker-executor
   script:
-  - make k8s_test KUBE_NAMESPACE=staging INGRESS_HOST=kubernetes.engageska-portugal.pt HELM_RELEASE=staging && [ -f "build/report.xml" ]
+  - make k8s_test KUBE_NAMESPACE=staging INGRESS_HOST=integration.engageska-portugal.pt HELM_RELEASE=staging && [ -f "build/report.xml" ]
   environment:
     name: staging
-    url: http://kubernetes.engageska-portugal.pt/testdb
+    url: http://integration.engageska-portugal.pt/testdb
   only:
     refs:
       - staging

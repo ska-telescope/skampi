@@ -3,7 +3,9 @@ import pytest
 import requests
 import json
 import pytest
+import logging
 
+from elasticsearch import Elasticsearch
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
@@ -54,4 +56,40 @@ def test_kibana_should_be_accessible_via_ingress(run_context):
     res = requests_retry_session().get(url)
 
     assert res.status_code == 200
+
+def test_tmc_proto_logs_into_elasticsearch(run_context):
+    # arrange/ test setup
+
+    NAMESPACE = run_context.KUBE_NAMESPACE
+    logging.info("Namespace:" + str(NAMESPACE))
+    RELEASE = run_context.HELM_RELEASE
+    logging.info("Namespace:" + str(RELEASE.upper()))
+
+    # connect to elastic and search for messages
+    elastic_host = os.environ.get('ELASTIC_LOGGING_{}_PORT_9200_TCP_ADDR'.format(RELEASE.upper()))
+    elastic_port = os.environ.get('ELASTIC_LOGGING_{}_SERVICE_PORT'.format(RELEASE.upper()))
+    es = Elasticsearch(["{}:{}".format(elastic_host, elastic_port)],
+                       use_ssl=False,
+                       verify_certs=False,
+                       ssl_show_warn=False)
+
+    logging.info("es :" + str(es))
+    search_tmc = {
+        "query": {
+            "match": {
+                "kubernetes.pod_name.keyword": {
+                    "query": "tmcprototype-tmc-proto-test"
+                }
+            }
+        }
+    }
+
+    result = es.search(
+        index='logstash*',
+        body=search_tmc
+    )
+    logging.info("Result :" + str(result['hits']['total']['value']))
+    no_of_hits = result['hits']['total']['value']
+    assert no_of_hits > 0
+
 

@@ -42,6 +42,9 @@ helm-template-pytest:
   script:
   - make template_pytests TEST_NAMESPACE=ci-$CI_JOB_ID
   artifacts:
+    name: template-pytest-reports
+    paths:
+    - junit-report.xml
     reports:
       junit: junit-report.xml
 
@@ -70,6 +73,9 @@ chart-pytest:
   environment:
     name: test
   artifacts:
+    name: chart-pytest-reports
+    paths:
+    - junit-report.xml
     reports:
       junit: junit-report.xml
 

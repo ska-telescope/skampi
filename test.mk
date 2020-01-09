@@ -1,6 +1,7 @@
 .PHONY: template_tests
 
-CHART_TESTING_TOOL = https://github.com/helm/chart-testing/releases/download/v2.4.0/chart-testing_2.4.0_linux_amd64.tar.gz
+TEST_NAMESPACE?=
+PYTEST_ARGS?=$(if $(CI),--test-namespace=$(TEST_NAMESPACE),--use-tiller-plugin)
 
 template_tests:
 	rc=0; \
@@ -9,3 +10,9 @@ template_tests:
 		|| rc=2 && continue; \
 	done; \
 	exit $$rc
+
+template_pytests:
+	pytest -m no_deploy $(PYTEST_ARGS)
+
+chart_pytests:
+	pytest -m chart_deploy $(PYTEST_ARGS)

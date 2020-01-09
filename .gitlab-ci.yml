@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:latest
+image: nexus.engageska-portugal.pt/ska-docker/deploy:0.1.5
 
 stages:
   - static_analysis
@@ -23,7 +23,6 @@ ct-lint:
   tags:
   - docker-executor
   allow_failure: true
-  before_script:
   script:
   - ct lint --config ci/ct.yaml --all
 
@@ -34,6 +33,20 @@ helm-template-tests:
   allow_failure: false
   script:
   - make template_tests
+
+helm-template-pytest:
+  stage: static_analysis
+  tags:
+  - docker-executor
+  allow_failure: false
+  script:
+  - make template_pytests TEST_NAMESPACE=ci-$CI_JOB_ID
+  artifacts:
+    name: template-pytest-reports
+    paths:
+    - junit-report.xml
+    reports:
+      junit: junit-report.xml
 
 ct-test:
   stage: unit_test
@@ -46,6 +59,25 @@ ct-test:
   - ct install --config ci/ct.yaml --release-label $CI_COMMIT_REF_SLUG --build-id $CI_JOB_ID
   environment:
     name: test
+
+chart-pytest:
+  stage: unit_test
+  tags:
+    - docker-executor
+  allow_failure: false
+  before_script:
+    - helm tiller start-ci
+    - $(helm tiller env)
+  script:
+    - make chart_pytests TEST_NAMESPACE=ci-$CI_JOB_ID
+  environment:
+    name: test
+  artifacts:
+    name: chart-pytest-reports
+    paths:
+    - junit-report.xml
+    reports:
+      junit: junit-report.xml
 
 delete test environment:
   stage: clean

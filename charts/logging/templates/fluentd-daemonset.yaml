@@ -51,8 +51,11 @@ spec:
         - name: mnt-data-logs
           mountPath: /mnt/data/docker/containers
           readOnly: true
-        - name: fluentd-config
+        - name: fluentd-config-namepace
           mountPath: /fluentd/etc/conf.d
+        - name: fluentd-config-fluent
+          mountPath: /fluentd/etc/fluent.conf
+          subPath: fluent.conf
 
 {{- if .Values.fluentd.livenessProbe.enabled }}
         livenessProbe:
@@ -96,8 +99,11 @@ spec:
       - name: journal
         hostPath:
           path: /var/log/journal
-      - name: fluentd-config
+      - name: fluentd-config-namepace
         configMap:
-          name: fluentd-configmap-{{ template "logging.name" . }}-{{ .Release.Name }}
+          name: fluentd-configmap-k8s-{{ template "logging.name" . }}-{{ .Release.Name }}
+      - name: fluentd-config-fluent
+        configMap:
+          name: fluentd-configmap-fluent-{{ template "logging.name" . }}-{{ .Release.Name }}
 
 {{ end }}

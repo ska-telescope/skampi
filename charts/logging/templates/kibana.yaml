@@ -41,4 +41,33 @@ spec:
             port: 5601
           initialDelaySeconds: 5
           timeoutSeconds: 10
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kibana-{{ .Release.Namespace }}-configurator
+  namespace: {{ .Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: kibana-configurator
+        image: alpine:latest
+        env:
+          - name: KIBANA_HOST
+            value: http://kibana-{{ template "logging.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}:5601
+        command: ["/bin/sh"]
+        args: ["-c", "apk add curl && curl -XPOST --retry-connrefused --connect-timeout 5 --retry 999  --retry-delay 1 \"${KIBANA_HOST}\"/kibana/api/saved_objects/index-pattern/ska_logs -H \"kbn-xsrf: true\" -H \"Content-Type: application/json\" -d @/tmp/kibana_conf.json "]
+        volumeMounts:
+          - name: kibana-config
+            mountPath: /tmp/
+            readOnly: true
+      volumes:
+        - name: kibana-config
+          configMap:
+            name: kibana-configmap-{{ template "logging.name" . }}-{{ .Release.Name }}
+      restartPolicy: "Never"
+
 {{ end }}

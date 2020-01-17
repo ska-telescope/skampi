@@ -1,4 +1,5 @@
 {{ if .Values.demo_mode.enabled }}
+
 apiVersion: v1
 kind: Pod
 metadata:
@@ -13,11 +14,5 @@ spec:
      - "-c"
      - |
         while true; do echo "1|$(date "+%Y-%m-%dT%T.%6NZ")|DEBUG||demo.stdout.logproducer|logproducer.py#1|tango-device:my/dev/name|A log line from stdout." | tee /dev/stderr; sleep 1; done
- - name: syslog-logproducer
-   image: centos:7
-   command:
-     - "bin/bash"
-     - "-c"
-     - |
-        while true; do logger -T -n {{ .Values.ingress.hostname }} -P 30123 "1|$(date "+%Y-%m-%dT%T.%6NZ")|DEBUG||demo.syslog.logproducer|test.py#1|tango-device:my/dev/name|A log line from rsyslog." | tee /dev/stderr; sleep 1; done
+
 {{ end }}

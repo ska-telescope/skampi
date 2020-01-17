@@ -72,4 +72,38 @@ spec:
   - port: 9200
     targetPort: 9200
 
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: elastic-{{ .Release.Namespace }}-configurator
+  namespace: {{ .Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: elastic-configurator
+        image: alpine:latest
+        env:
+          - name: ELASTIC_HOST
+            value: http://elastic-{{ template "logging.name" . }}-{{ .Release.Name }}:9200
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - >
+            apk add curl && 
+            curl -XPUT --retry-connrefused --connect-timeout 5 --retry 999  --retry-delay 1 "${ELASTIC_HOST}"/_ingest/pipeline/ska_log_parsing_pipeline -H "kbn-xsrf: true" -H "Content-Type: application/json" -d @/tmp/ska_log_parsing_pipeline.json && 
+            curl -XPUT --retry-connrefused --connect-timeout 5 --retry 999  --retry-delay 1 "${ELASTIC_HOST}"/_ilm/policy/ska_ilm_policy -H "kbn-xsrf: true" -H "Content-Type: application/json" -d @/tmp/ska_ilm_policy.json && 
+            curl -XPUT --retry-connrefused --connect-timeout 5 --retry 999  --retry-delay 1 "${ELASTIC_HOST}"/_template/ska_index_template -H "kbn-xsrf: true" -H "Content-Type: application/json" -d @/tmp/ska_index_template.json
+        volumeMounts:
+          - name: elastic-config
+            mountPath: /tmp/
+            readOnly: true
+      volumes:
+        - name: elastic-config
+          configMap:
+            name: elastic-config-map-{{ template "logging.name" . }}-{{ .Release.Name }}
+      restartPolicy: "Never"
+
 {{ end }}

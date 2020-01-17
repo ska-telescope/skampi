@@ -48,8 +48,14 @@ spec:
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
-        - name: fluentd-config
+        - name: mnt-data-logs
+          mountPath: /mnt/data/docker/containers
+          readOnly: true
+        - name: fluentd-config-namepace
           mountPath: /fluentd/etc/conf.d
+        - name: fluentd-config-fluent
+          mountPath: /fluentd/etc/fluent.conf
+          subPath: fluent.conf
 
 {{- if .Values.fluentd.livenessProbe.enabled }}
         livenessProbe:
@@ -80,6 +86,10 @@ spec:
 {{- end }}
       terminationGracePeriodSeconds: 30
       volumes:
+      # In some k8s deployments the log files end up in /mnt/data/docker/containers
+      - name: mnt-data-logs
+        hostPath:
+          path: /mnt/data/docker/containers
       - name: varlog
         hostPath:
           path: /var/log
@@ -89,8 +99,11 @@ spec:
       - name: journal
         hostPath:
           path: /var/log/journal
-      - name: fluentd-config
+      - name: fluentd-config-namepace
         configMap:
-          name: fluentd-configmap-{{ template "logging.name" . }}-{{ .Release.Name }}
+          name: fluentd-configmap-k8s-{{ template "logging.name" . }}-{{ .Release.Name }}
+      - name: fluentd-config-fluent
+        configMap:
+          name: fluentd-configmap-fluent-{{ template "logging.name" . }}-{{ .Release.Name }}
 
 {{ end }}

@@ -1,0 +1,70 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: acceptance-testing-service
+ namespace: {{ .Release.Namespace }}
+ labels: 
+  app: acceptance-tester
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+spec:
+ type: NodePort
+ ports:
+ - port: 2022
+   targetPort: 22
+   protocol: TCP
+ selector:
+    app: acceptance-tester
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+ name: acceptance-testing-pod
+ namespace: {{ .Release.Namespace }}
+ labels:
+   app: acceptance-tester
+   release: {{ .Release.Name }}
+   heritage: {{ .Release.Service }}
+spec:
+ volumes:
+  - name: environment
+    configMap:
+      name: environment-oet-oet-{{ .Release.Name }}
+  - name: testing-folder
+    persistentVolumeClaim:
+      claimName: {{ .Values.pvc }}
+ containers:
+ - name: sshcheck
+   image: {{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}
+   imagePullPolicy: Always
+   #command: ["/bin/sh"] {{if .Values.interactive }}
+  # args: ["-c", "{{.Values.interactive_entry}}"]  {{else}}
+   #args: ["-c", "{{.Values.job_entry}}"] {{end}}
+   ports:
+    - containerPort: 22
+   env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+   volumeMounts:
+      - name: environment
+        mountPath: /home/tango/.ssh
+        readOnly: true
+      - name: testing-folder
+        mountPath: /home/skampi
+ restartPolicy: Always
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pvc }}
+spec:
+  storageClassName: testing
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.storage }}
+

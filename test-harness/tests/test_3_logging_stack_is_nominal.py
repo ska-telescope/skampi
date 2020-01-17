@@ -4,6 +4,7 @@ import requests
 import json
 import pytest
 import logging
+import datetime
 
 from elasticsearch import Elasticsearch
 from requests.adapters import HTTPAdapter
@@ -29,27 +30,9 @@ def requests_retry_session(retries=3,
     return session
 
 
-@pytest.mark.skip("Unblock CI pipeline")
-def test_elasticsearch_is_receiving_requests_via_configured_ingress(run_context, k8s_api):
-    ingress = k8s_api.extensions_v1_beta1.read_namespaced_ingress(
-            "elastic-ing-logging-{}".format(run_context.HELM_RELEASE),
-            run_context.KUBE_NAMESPACE)
-
-    es_location = "{hostname}{prefix_path}".format(
-            hostname=ingress.spec.rules[0].host,
-            prefix_path=ingress.spec.rules[0].http.paths[0].path)
-    
-    es_health_url = "http://{}/_cluster/health".format(es_location)
-    
-    res = requests_retry_session().get(es_health_url)
-
-    assert res.status_code == 200
-    assert res.json()["status"] == "yellow" # TODO change to green once we have a quorum
-
-
-@pytest.mark.skip("Unblock pipeline for now.")
 def test_kibana_should_be_accessible_via_ingress(run_context):
-    HOSTNAME = "kibana-logging-{}".format(run_context.HELM_RELEASE)
+    HOSTNAME = "kibana-logging-{}-{}".format(run_context.KUBE_NAMESPACE,
+                                             run_context.HELM_RELEASE)
     BASE_PATH = "/kibana"
 
     url = "http://{}:5601{}/app/kibana".format(HOSTNAME, BASE_PATH)
@@ -57,13 +40,45 @@ def test_kibana_should_be_accessible_via_ingress(run_context):
 
     assert res.status_code == 200
 
-def test_tmc_proto_logs_into_elasticsearch(run_context):
-    # arrange/ test setup
 
+def test_log_parsing_into_elasticsearch(run_context):
+    """Test that the pipeline is added and parses as expected
+    """
+    ES_HOST = "elastic-logging-{}".format(run_context.HELM_RELEASE)
+    ES_PORT = "9200"
+
+    es_test_parse_url = "http://{}:{}/_ingest/pipeline/ska_log_parsing_pipeline/_simulate"
+    es_test_parse_url = es_test_parse_url.format(ES_HOST, ES_PORT)
+
+    log_string = ("1|2020-01-14T08:24:54.560513Z|DEBUG|thread_id_123|"
+                  "demo.stdout.logproducer|logproducer.py#1|tango-device:my/dev/name|"
+                  "A log line from stdout.")
+
+    res = requests.post(es_test_parse_url,
+                        json={"docs": [{"_source": {"log": log_string}}]})
+
+    assert res.status_code == 200
+    assert res.json()["docs"]
+    assert res.json()["docs"][0]['doc']
+    source = res.json()["docs"][0]['doc']['_source']
+    assert source['ska_line_loc'] == "logproducer.py#1"
+    assert source['ska_function'] == "demo.stdout.logproducer"
+    assert source['ska_version'] == "1"
+    assert source['ska_log_timestamp'] == "2020-01-14T08:24:54.560513Z"
+    assert source['ska_tags'] == "tango-device:my/dev/name"
+    assert source['ska_severity'] == "DEBUG"
+    assert source['ska_log_message'] == "A log line from stdout."
+    assert source['ska_thread_id'] == "thread_id_123"
+
+
+@pytest.mark.skip(reason="skipping until we can debug")
+def test_ska_logs_into_elasticsearch(run_context):
+    """Check that we can search on a SKA parsed field"""
     NAMESPACE = run_context.KUBE_NAMESPACE
     logging.info("Namespace:" + str(NAMESPACE))
     RELEASE = run_context.HELM_RELEASE
     logging.info("Namespace:" + str(RELEASE.upper()))
+    time_stamp = datetime.datetime.utcnow()
 
     # connect to elastic and search for messages
     elastic_host = os.environ.get('ELASTIC_LOGGING_{}_PORT_9200_TCP_ADDR'.format(RELEASE.upper()))
@@ -73,23 +88,34 @@ def test_tmc_proto_logs_into_elasticsearch(run_context):
                        verify_certs=False,
                        ssl_show_warn=False)
 
-    logging.info("es :" + str(es))
-    search_tmc = {
+    log_string = ("4|2020-01-14T08:24:54.560513Z|DEBUG|thread_id_123|"
+                  "demo.stdout.logproducer|logproducer.py#1|tango-device:my/dev/name|")
+    log_message = "A log line from stdout created at {}".format(time_stamp)
+
+    doc = {"log": log_string + log_message,
+           "kubernetes_namespace": run_context.KUBE_NAMESPACE,
+           "@timestamp": time_stamp.isoformat()}
+
+    indexes = es.indices.get("log*")
+    last_index = sorted(indexes,
+                        key=lambda i: indexes[i]['settings']['index']['creation_date'],
+                        reverse=True)[0]
+
+    es.index(index=last_index, body=doc)
+
+    search_ska_log_message = {
         "query": {
             "match": {
-                "kubernetes.pod_name.keyword": {
-                    "query": "tmcprototype-tmc-proto-test"
+                "ska_log_message": {
+                    "query": log_message,
+                    "operator": "and"
                 }
             }
         }
     }
 
     result = es.search(
-        index='logstash*',
-        body=search_tmc
+        index=last_index,
+        body=search_ska_log_message
     )
-    logging.info("Result :" + str(result['hits']['total']['value']))
-    no_of_hits = result['hits']['total']['value']
-    assert no_of_hits > 0
-
-
+    assert result['hits']['total']['value'] == 1

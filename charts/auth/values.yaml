@@ -1,0 +1,21 @@
+# Default values for auth.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+rbac:
+  enabled: true
+
+namespaces: 
+  - name: integration
+    users: ["matteo1981"]
+  - name: staging
+    users: ["matteo1981"]
+  - name: sarao
+    users: ["matteo1981"]
+  - name: ncra
+    users: ["matteo1981"]
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

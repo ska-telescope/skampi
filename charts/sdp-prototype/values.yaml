@@ -7,7 +7,7 @@ feature:
 # Helm deployment controller
 helm_deploy:
   image: nexus.engageska-portugal.pt/sdp-prototype/helm-deploy
-  version: 0.2.0
+  version: 0.3.0
   imagePullPolicy: IfNotPresent
   replicas: 1
   namespace: sdp
@@ -33,7 +33,7 @@ dsconfig:
 # Processing controller
 processing_controller:
   image: nexus.engageska-portugal.pt/sdp-prototype/processing-controller
-  version: 0.2.8
+  version: 0.3.0
   replicas: 1
   resources: {}
   imagePullPolicy: IfNotPresent
@@ -42,11 +42,11 @@ processing_controller:
 tangods:
   master:
     image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master
-    version: 0.2.6
+    version: 0.3.0
     imagePullPolicy: IfNotPresent
   subarray:
     image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray
-    version: 0.5.19
+    version: 0.6.0
     imagePullPolicy: IfNotPresent
 
 # Parameters for sub-chart

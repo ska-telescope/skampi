@@ -10,6 +10,9 @@ stages:
   - lifecycle
   - debug
 
+.pip_install_test_requirements: &pip_install_test_requirements |-
+  pip3 install -r test-requirements.txt
+
 helm-lint:
   stage: static_analysis
   tags:
@@ -40,11 +43,14 @@ helm-template-pytest:
   - docker-executor
   allow_failure: false
   script:
-  - make template_pytests TEST_NAMESPACE=ci-$CI_JOB_ID
+  - *pip_install_test_requirements
+  - pytest -m no_deploy --test-namespace=ci-$CI_JOB_ID
   artifacts:
+    when: always
     name: template-pytest-reports
     paths:
     - junit-report.xml
+    - pytest-logs.txt
     reports:
       junit: junit-report.xml
 
@@ -56,7 +62,9 @@ ct-test:
   script:
   - helm tiller start-ci
   - $(helm tiller env)
-  - ct install --config ci/ct.yaml --release-label $CI_COMMIT_REF_SLUG --build-id $CI_JOB_ID
+  - ct install --config ci/ct.yaml --release-label $CI_COMMIT_REF_SLUG --build-id $CI_JOB_ID --namespace ct-test-$CI_JOB_ID
+  after_script:
+    - kubectl delete namespace ct-test-$CI_JOB_ID || true
   environment:
     name: test
 
@@ -66,16 +74,41 @@ chart-pytest:
     - docker-executor
   allow_failure: false
   before_script:
-    - helm tiller start-ci
-    - $(helm tiller env)
+    - *pip_install_test_requirements
   script:
-    - make chart_pytests TEST_NAMESPACE=ci-$CI_JOB_ID
+    - pytest -m "chart_deploy and not quarantine" --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID || true
+  after_script:
+    - kubectl delete namespace ci-$CI_JOB_ID || true
   environment:
     name: test
   artifacts:
+    when: always
     name: chart-pytest-reports
     paths:
     - junit-report.xml
+    - pytest-logs.txt
+    reports:
+      junit: junit-report.xml
+
+chart-pytest-quarantine:
+  stage: unit_test
+  tags:
+    - docker-executor
+  allow_failure: true
+  before_script:
+    - *pip_install_test_requirements
+  script:
+    - pytest -m quarantine --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID
+  after_script:
+    - kubectl delete namespace ci-$CI_JOB_ID || true
+  environment:
+    name: test
+  artifacts:
+    when: always
+    name: chart-pytest-reports
+    paths:
+      - junit-report.xml
+      - pytest-logs.txt
     reports:
       junit: junit-report.xml
 

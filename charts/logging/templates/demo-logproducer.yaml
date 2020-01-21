@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
- name: demo-logproducer-{{ template "logging.fullname" . }}-{{ .Release.Name }}
+ name: demo-pod-logproducer-{{ template "logging.name" . }}-{{ .Release.Name }}
  namespace: {{ .Release.Namespace }}
 spec:
  containers:

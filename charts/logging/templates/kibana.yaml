@@ -4,7 +4,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}
+  name: kibana-deployment-{{ template "logging.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
@@ -46,14 +46,14 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: kibana-{{ .Release.Namespace }}-configurator
+  name: kibana-job-{{ template "logging.name" . }}-{{ .Release.Namespace }}-configurator
   namespace: {{ .Release.Namespace }}
 spec:
   ttlSecondsAfterFinished: 100
   template:
     spec:
       containers:
-      - name: kibana-configurator
+      - name: kibana-{{ template "logging.name" . }}-{{ .Release.Name }}-configurator
         image: alpine:latest
         env:
           - name: KIBANA_HOST

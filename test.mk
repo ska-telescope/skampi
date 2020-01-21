@@ -1,8 +1,5 @@
 .PHONY: template_tests
 
-TEST_NAMESPACE?=
-PYTEST_ARGS?=$(if $(CI),--test-namespace=$(TEST_NAMESPACE),--use-tiller-plugin)
-
 template_tests:
 	rc=0; \
 	for chrt in `ls charts/`; do \
@@ -11,8 +8,3 @@ template_tests:
 	done; \
 	exit $$rc
 
-template_pytests:
-	pytest -m no_deploy $(PYTEST_ARGS)
-
-chart_pytests:
-	pytest -m chart_deploy $(PYTEST_ARGS)

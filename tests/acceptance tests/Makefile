@@ -28,10 +28,12 @@ deploy_interactive: deploy_storage # deploy a testing container to work on inter
 	#wait for pod to be in running state
 	@$(wait_for_pod)
 	#get pod name
-	$(eval THE_POD := $(shell $(get_pod)))
-	echo $(THE_POD)
+	@$(eval THE_POD := $(shell $(get_pod)))
 	#execute additional dependencies on the pod
 	kubectl exec -it  -n integration $(THE_POD) -- bash  -c "apt-get update && apt-get install curl -y && apt-get install git -y"
+
+get_status:
+	kubectl get svc,pods,pv,pvc -l app=$(app) -n $(KUBE_NAMESPACE)
 
 deploy_test_job: deploy_storage # deploy a testing job TODO
 	@helm template test-pod/helm-chart/ -n test --namespace $(KUBE_NAMESPACE) -f test-pod/helm-chart/local_values.yaml --set interactive=false | kubectl apply -f -

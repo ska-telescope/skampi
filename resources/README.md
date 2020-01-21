@@ -20,7 +20,7 @@ More information on https://kubernetes.io/docs/tasks/access-application-cluster/
 It is also included an example of graphql query for the webjive application. The graphQl Engine is available in the following path of the integration web server: /gql/graphiql/
 
 Traefik
-=============
+=======
 ```
 # Install using tiller
 helm install stable/traefik --name traefik0 --namespace kube-system --set externalIP=xxx.xxx.xxx.xxx

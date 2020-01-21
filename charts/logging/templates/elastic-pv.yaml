@@ -12,7 +12,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   storageClassName: standard
-  persistentVolumeReclaimPolicy: Recycle
+  persistentVolumeReclaimPolicy: Delete
   capacity:
     storage: 10Gi
   accessModes:
@@ -33,6 +33,10 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  selector:
+    matchLabels:
+      app: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+      release: {{ .Release.Name }}
   storageClassName: standard
   accessModes:
     - ReadWriteOnce

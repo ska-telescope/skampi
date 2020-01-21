@@ -15,7 +15,7 @@ fluentd:
   enabled: true
   image:
     image: fluent/fluentd-kubernetes-daemonset
-    tag: v1-debian-elasticsearch
+    tag: v1.7-debian-elasticsearch7-2
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true

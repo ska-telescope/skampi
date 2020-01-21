@@ -40,11 +40,18 @@ spec:
           - name: FLUENT_ELASTICSEARCH_PASSWORD
             value: none
         volumeMounts:
+        - name: varlogpods
+          mountPath: /var/log/pods
+          readOnly: true
+        - name: varlogcontainers
+          mountPath: /var/log/containers
+          readOnly: true
+        - name: varlogdocker
+          mountPath: /var/log/docker
+          readOnly: true
         - name: journal
           mountPath: /var/log/journal
           readOnly: true
-        - name: varlog
-          mountPath: /var/log
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
@@ -86,13 +93,19 @@ spec:
 {{- end }}
       terminationGracePeriodSeconds: 30
       volumes:
+      - name: varlogpods
+        hostPath:
+          path: /var/log/pods
+      - name: varlogcontainers
+        hostPath:
+          path: /var/log/containers
+      - name: varlogdocker
+        hostPath:
+          path: /var/log/docker
       # In some k8s deployments the log files end up in /mnt/data/docker/containers
       - name: mnt-data-logs
         hostPath:
           path: /mnt/data/docker/containers
-      - name: varlog
-        hostPath:
-          path: /var/log
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers

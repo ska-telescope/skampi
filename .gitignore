@@ -9,3 +9,5 @@
 /build
 ansible-playbooks
 **/.idea
+/tests/acceptance_tests/__pycache__
+/tests/acceptance_tests/.pytest_cache

@@ -55,18 +55,4 @@ spec:
         mountPath: /home/skampi
  restartPolicy: Always
 
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.pvc }}
-  labels:
-    app: {{ .Values.app}}
-spec:
-  storageClassName: testing
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.storage }}
 

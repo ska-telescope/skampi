@@ -1,6 +1,8 @@
 pvc: 'skampi-git-repo-pvc'
 storage: "0.1G"
-interactive: true
-interactive_entry:  "service ssh start"
-job_entry: "make test"
+non_interactive: false
+job: "/dev/null"
+#job_entry: "cd /home/tango/skampi/tests/acceptance\ tests/ && make test"
+app: acceptance-tester
+source_code: "/home/tango/skampi"
 

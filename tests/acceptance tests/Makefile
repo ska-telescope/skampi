@@ -45,3 +45,14 @@ delete_interactive: # delete an interactive test container
 get_ssh_par: # get the ssh paramaters for getting into container
 	@kubectl get service -l app=acceptance-tester -n integration  -o jsonpath="{range .items[0]}{'Use this port to shh in: '}{.spec.ports[0].nodePort}{'\n'}{end}"
 
+cont_build: ## build the base dependencies needed for basic operations
+	pip3 install -r requirements
+
+cont_invoke:
+	sudo source /venv/bin/activate 
+	 
+cont_interactive:
+	/venv/bin/itango3 --profile=ska
+
+cont_test: ## run tests
+	py.test

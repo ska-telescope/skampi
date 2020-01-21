@@ -1,8 +1,0 @@
-pvc: 'skampi-git-repo-pvc'
-storage: "0.1G"
-non_interactive: false
-job: "/dev/null"
-#job_entry: "cd /home/tango/skampi/tests/acceptance\ tests/ && make test"
-app: acceptance-tester
-source_code: "/home/tango/skampi"
-

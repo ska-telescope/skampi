@@ -16,17 +16,19 @@ spec:
    protocol: TCP
  selector:
     app: {{ .Values.app}}
+    non_interactive: "{{ .Values.non_interactive}}"
 
 ---
 apiVersion: v1
 kind: Pod
-metadata:
- name: acceptance-testing-pod
+metadata: 
+ name: {{ .Values.pod_name}}
  namespace: {{ .Release.Namespace }}
  labels:
    app: {{ .Values.app}}
    release: {{ .Release.Name }}
    heritage: {{ .Release.Service }}
+   non_interactive: "{{ .Values.non_interactive}}"
 spec:
  volumes:
   - name: environment
@@ -38,10 +40,10 @@ spec:
  containers:
  - name: sshcheck
    image: {{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}
-   imagePullPolicy: Always
-   #command: ["/bin/sh"] {{if .Values.interactive }}
-  # args: ["-c", "{{.Values.interactive_entry}}"]  {{else}}
-   #args: ["-c", "{{.Values.job_entry}}"] {{end}}
+   imagePullPolicy: Always {{if .Values.non_interactive }}
+   command: ["/bin/sh"]
+   args: ["-c", "{{.Values.job}}"]  {{end}}
+   workingDir: {{ .Values.source_code}}
    ports:
     - containerPort: 22
    env:
@@ -52,7 +54,7 @@ spec:
         mountPath: /home/tango/.ssh
         readOnly: true
       - name: testing-folder
-        mountPath: /home/skampi
+        mountPath: {{ .Values.source_code }}
  restartPolicy: Always
 
 

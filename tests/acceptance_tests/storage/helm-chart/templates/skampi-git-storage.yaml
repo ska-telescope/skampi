@@ -20,6 +20,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.pvc }}
   namespace: {{ .Release.Namespace }}
+  labels:
+    type: repository
 spec:
   storageClassName: testing
   accessModes:

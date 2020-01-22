@@ -310,3 +310,27 @@ delete_gangway: ## delete install gangway authentication for gitlab
 			--set ingress.hosts="{gangway.$(INGRESS_HOST)}" \
 			| kubectl delete -n kube-system -f - && \
 			rm -rf $$TMP 
+
+smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).
+	@echo "Smoke test START"; \
+	n=10; \
+	while [ $$n -gt 0 ]; do \
+		waiting=`kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath='{.items[*].status.containerStatuses[*].state.waiting.reason}' | wc -w`; \
+		echo "Waiting containers=$$waiting"; \
+		if [ $$waiting -ne 0 ]; then \
+			echo "Waiting 30s for pods to become running...#$$n"; \
+			sleep 30s; \
+		fi; \
+		if [ $$waiting -eq 0 ]; then \
+			echo "Smoke test SUCCESS"; \
+			exit 0; \
+		fi; \
+		if [ $$n -eq 1 ]; then \
+			waiting=`kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath='{.items[*].status.containerStatuses[*].state.waiting.reason}' | wc -w`; \
+			echo "Smoke test FAILS"; \
+			echo "Found $$waiting waiting containers: "; \
+			kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath='{range .items[*].status.containerStatuses[?(.state.waiting)]}{.state.waiting.message}{"\n"}{end}'; \
+			exit 1; \
+		fi; \
+		n=`expr $$n - 1`; \
+	done

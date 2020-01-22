@@ -43,7 +43,7 @@ TEST_RUNNER = $(shell kubectl get pod -n $(KUBE_NAMESPACE) | grep test-runner | 
 # and then runs the requested make target in the container.
 # capture the output of the test in a build folder inside the container 
 # 
-TANGO_HOST = $(shell kubectl get pods | grep tangod | cut -d\  -f1)
+TANGO_HOST = $(shell kubectl get pods -n $(KUBE_NAMESPACE) | grep tangod | cut -d\  -f1)
 k8s_test = kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- rm -fr /app/test-harness && \
 		kubectl cp test-harness/ $(KUBE_NAMESPACE)/$(TEST_RUNNER):/app/test-harness && \
 		kubectl exec -i $(TEST_RUNNER) --namespace $(KUBE_NAMESPACE) -- \
@@ -177,6 +177,14 @@ delete: ## delete the helm chart release
 
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the helm chart
 	@for i in charts/*; do \
+	echo "*****************************  $$i ********************************"; \
+	if [ "$$i" = "charts/auth" ] ; then \
+		kubectl get clusterroles system:discovery > /dev/null 2>&1; \
+		retval=$$?; \
+		if [ $$retval -ne 0 ]; then \
+			continue; \
+		fi; \
+	fi; \
 	helm template $(helm_install_shim) $$i \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \

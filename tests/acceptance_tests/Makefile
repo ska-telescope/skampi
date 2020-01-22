@@ -65,6 +65,9 @@ get_logs:
 attach:
 	kubectl exec -it -n $(KUBE_NAMESPACE) $(pod_name_test_job) /bin/bash
 
+attach_interact:
+	kubectl attach -it -n $(KUBE_NAMESPACE) $(pod_name_interactive) 
+
 ############container makes######################################
 
 cont_build: cont_invoke ## build the base dependencies needed for basic operations
@@ -73,7 +76,7 @@ cont_build: cont_invoke ## build the base dependencies needed for basic operatio
 cont_invoke:
 	p=$$(pwd) ; \
 	cd / ; \
-	. venv/bin/activate ; \
+	. /venv/bin/activate ; \
 	cd $$p 
 
 cont_interactive:

@@ -15,9 +15,8 @@ from assertpy import assert_that
 
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy,DevState
-from helpers import wait_for
+from helpers import wait_for, obsState, resource, watch
 
-THE_SUBARRAY_NODE = 'ska_mid/tm_subarray_node/1'
 
 def pause():
     sleep(4)
@@ -28,28 +27,55 @@ def test_allocation():
     the_subarray = SubArray(1)
     the_resource_allocation = ResourceAllocation(dishes=[Dish(1), Dish(2)])
 
+    #"under the hood resources for observing the internal state"
+    tmc_subarray_node_01 = resource('ska_mid/tm_subarray_node/1')
+    csp_subarray_01 = resource('mid_csp/elt/subarray_01')
+    csp_master = resource('mid_csp/elt/master')
+    sdp_subarray_01 = resource('mid_sdp/elt/subarray_1')
+
+
+
     print("Starting up telescope ...")
     the_telescope.start_up()
 
 
     print("Releasing any previously allocated resources... ")
-    subarray_proxy = DeviceProxy(THE_SUBARRAY_NODE) 
-    if (subarray_proxy.read_attribute("State").value == DevState.ON) :
+    if (tmc_subarray_node_01.get("State") == 'ON') :
+        watch_State = watch(tmc_subarray_node_01).for_a_change_on("State")
         result = the_subarray.deallocate()
-        wait_result = wait_for(THE_SUBARRAY_NODE).to_be({"attr" : "State", "value" : DevState.OFF}) 
-        assert_that(wait_result).is_equal_to("OK")
+        State_val = watch_State.get_value_when_changed()
+        assert_that(State_val).is_equal_to("OFF")
 
     print("Allocating new resources... ")
+    #prepare
+    watch_State = watch(tmc_subarray_node_01).for_a_change_on("State")
+    watch_receptorIDList = watch(tmc_subarray_node_01).for_a_change_on("receptorIDList")
+
+    #execute
     result = the_subarray.allocate(the_resource_allocation)
-    assert_that(result).is_equal_to(the_resource_allocation)
-   
-    wait_result = wait_for('ska_mid/tm_subarray_node/1').to_be({"attr" : "State", "value" : DevState.ON}) 
-    assert_that(wait_result).is_equal_to("OK")
+
+    #gather info
+    State_val = watch_State.get_value_when_changed()
+    receptorIDList_val = watch_receptorIDList.get_value_when_changed(20)
 
     # Confirm that TM_subbarray node has cocrectly assigned resources
-    subarray_proxy = DeviceProxy('ska_mid/tm_subarray_node/1')   
-    receptor_list = subarray_proxy.receptorIDList
-    assert_that(receptor_list).is_equal_to((1, 2))
+    assert_that(result).is_equal_to(the_resource_allocation) 
+    assert_that(State_val).is_equal_to("ON")
+    assert_that(tmc_subarray_node_01.get('obsState')).is_equal_to('IDLE')
+    assert_that(receptorIDList_val).is_equal_to((1, 2))
+  
+    # the following changes must have occurred before the previous
+    #CSP subarray must be in state ON and in obsState IDLE
+    assert_that(csp_subarray_01.get('State')).is_equal_to('ON')
+    assert_that(csp_subarray_01.get('obsState')).is_equal_to('IDLE')
+    assert_that(csp_subarray_01.get('receptors')).is_equal_to((1,2))
+    assert_that(csp_master.get('receptorMembership')).is_equal_to((1,1,0,0))
+    assert_that(csp_master.get('availableReceptorIDs')).is_equal_to((3,4))
+    assert_that(csp_subarray_01.get('receptors')).is_equal_to((1,2))
+
+    #SDP subarray must be in state ON and in Obstate IDLE
+    assert_that(sdp_subarray_01.get('State')).is_equal_to('ON')
+    assert_that(sdp_subarray_01.get('obsState')).is_equal_to('IDLE')
 
     #need to check the state as well is in ObsState = IDLE and State = ON
     #TODO check the resource assignment of the CSP is correct (receptors and corresponding VCC state   - also check that it changed to correct state)
@@ -57,17 +83,26 @@ def test_allocation():
     #mid_csp/elt/subarray_01 check status and correct composition
     # check the resource assignment of the SDP is correct (no op - also check that the changed to correct state ObsState= IDLE and State = ON)
     # check that the dishes have responded
-    assert_that(receptor_list).is_equal_to((1, 2))
+    
 
     print("Now deallocating resources ... ")
-    the_subarray.deallocate()
-    pause() #rather poll for subarray_proxy.State changing ON OFFLINE (TMC team to confim)
+    #prepare
+    watch_State = watch(tmc_subarray_node_01).for_a_change_on("State")
+    watch_receptorIDList = watch(tmc_subarray_node_01).for_a_change_on("receptorIDList")
 
-    # Confirm result via direct inspection of TMC - expecting None 
-    receptor_list = subarray_proxy.receptorIDList
-    pause() # not needed
-    
-    assert_that(receptor_list).is_equal_to(None)
+    # execute
+    the_subarray.deallocate()
+
+    # gather info
+    State_val = watch_State.get_value_when_changed()
+    receptorIDList_val = watch_receptorIDList.get_value_when_changed()
+
+    # Confirm 
+
+    assert_that(State_val).is_equal_to("OFF")
+    assert_that(tmc_subarray_node_01.get('obsState')).is_equal_to('IDLE')
+    assert_that(receptorIDList_val).is_equal_to(None)
+
 
     print("Subarry has no allocated resources")
 

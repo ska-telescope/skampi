@@ -51,7 +51,32 @@ roleRef:
   kind: ClusterRole 
   name: system:persistent-volume-provisioner
   apiGroup: rbac.authorization.k8s.io
-  
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: our-cluster-role
+rules:
+- apiGroups: ["*"]
+  resources: ["clusterrole", "clusterrolebinding"]
+  verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .name }}-pv-provisioner-binding
+subjects:
+{{ range .users }}
+- kind: User
+  name: {{ . }} 
+  apiGroup: rbac.authorization.k8s.io
+{{ end }}
+roleRef:
+  kind: ClusterRole 
+  name: system:persistent-volume-provisioner
+  apiGroup: rbac.authorization.k8s.io
 
 {{ end }}
 {{ end }}

@@ -197,6 +197,14 @@ deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the he
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
 	@for i in charts/*; do \
+	echo "*****************************  $$i ********************************"; \
+	if [ "$$i" = "charts/auth" ] ; then \
+		kubectl get clusterroles system:discovery > /dev/null 2>&1; \
+		retval=$$?; \
+		if [ $$retval -ne 0 ]; then \
+			continue; \
+		fi; \
+	fi; \
 	helm template $(helm_install_shim) $$i \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \

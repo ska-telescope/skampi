@@ -4,6 +4,34 @@
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{ .name }}
+  name: {{ .name }}-others
+rules:
+- apiGroups: ["*"]
+  resources: ["etcdclusters"]
+  verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: {{ .name }}
+  name: {{ .name }}-others-binding
+subjects:
+{{ range .users }}
+- kind: User
+  name: {{ . }}
+  apiGroup: rbac.authorization.k8s.io
+{{ end }}
+roleRef:
+  kind: Role
+  name: {{ .name }}-others
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ .name }}-binding
@@ -38,44 +66,19 @@ roleRef:
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
-  name: {{ .name }}-pv-provisioner-binding
+  name: sdp-binding
+  namespace: sdp
 subjects:
 {{ range .users }}
 - kind: User
-  name: {{ . }} 
+  name: {{ . }}
   apiGroup: rbac.authorization.k8s.io
 {{ end }}
 roleRef:
   kind: ClusterRole 
-  name: system:persistent-volume-provisioner
-  apiGroup: rbac.authorization.k8s.io
-
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: our-cluster-role
-rules:
-- apiGroups: ["*"]
-  resources: ["clusterrole", "clusterrolebinding"]
-  verbs: ["*"]
-
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: {{ .name }}-pv-provisioner-binding
-subjects:
-{{ range .users }}
-- kind: User
-  name: {{ . }} 
-  apiGroup: rbac.authorization.k8s.io
-{{ end }}
-roleRef:
-  kind: ClusterRole 
-  name: system:persistent-volume-provisioner
+  name: admin
   apiGroup: rbac.authorization.k8s.io
 
 {{ end }}

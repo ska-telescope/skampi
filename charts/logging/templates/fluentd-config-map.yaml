@@ -98,3 +98,46 @@ data:
         retry_forever true
       </buffer>
     </match>
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-configmap-systemd-{{ template "logging.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  systemd.conf: |
+
+    <source>
+      @type systemd
+      @id in_systemd_kubelet
+      matches [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      <entry>
+        fields_strip_underscores true
+      </entry>
+      read_from_head false
+      tag kubelet
+    </source>
+
+    <source>
+      @type systemd
+      @id in_systemd_docker
+      matches [{ "_SYSTEMD_UNIT": "docker.service" }]
+      <entry>
+        fields_strip_underscores true
+      </entry>
+      read_from_head false
+      tag docker.systemd
+    </source>
+
+    <source>
+      @type systemd
+      @id in_systemd_bootkube
+      matches [{ "_SYSTEMD_UNIT": "bootkube.service" }]
+      <entry>
+        fields_strip_underscores true
+      </entry>
+      read_from_head false
+      tag bootkube
+    </source>
+

@@ -63,6 +63,9 @@ spec:
         - name: fluentd-config-fluent
           mountPath: /fluentd/etc/fluent.conf
           subPath: fluent.conf
+        - name: fluentd-config-systemd
+          mountPath: /fluentd/etc/systemd.conf
+          subPath: systemd.conf
 
 {{- if .Values.fluentd.livenessProbe.enabled }}
         livenessProbe:
@@ -118,5 +121,8 @@ spec:
       - name: fluentd-config-fluent
         configMap:
           name: fluentd-configmap-fluent-{{ template "logging.name" . }}-{{ .Release.Name }}
+      - name: fluentd-config-systemd
+        configMap:
+          name: fluentd-configmap-systemd-{{ template "logging.name" . }}-{{ .Release.Name }}
 
 {{ end }}

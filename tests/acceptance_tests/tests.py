@@ -14,7 +14,10 @@ from time import sleep
 from assertpy import assert_that
 
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
-from tango import DeviceProxy
+from tango import DeviceProxy,DevState
+from helpers import wait_for
+
+THE_SUBARRAY_NODE = 'ska_mid/tm_subarray_node/1'
 
 def pause():
     sleep(4)
@@ -28,22 +31,26 @@ def test_allocation():
     print("Starting up telescope ...")
     the_telescope.start_up()
 
-   #commented this out as it gives an error when it was already deallocated 
-   # print("Releasing any previously allocated resources... ")
-   # result = the_subarray.deallocate()
-   # pause()
+
+    print("Releasing any previously allocated resources... ")
+    subarray_proxy = DeviceProxy(THE_SUBARRAY_NODE) 
+    if (subarray_proxy.read_attribute("State").value == DevState.ON) :
+        result = the_subarray.deallocate()
+        wait_result = wait_for(THE_SUBARRAY_NODE).to_be({"attr" : "State", "value" : DevState.OFF}) 
+        assert_that(wait_result).is_equal_to("OK")
 
     print("Allocating new resources... ")
     result = the_subarray.allocate(the_resource_allocation)
-    pause() #rather poll for subarray_proxy.State changing OFF/OFLLINE to ON (TMC team to confirm whether this is really neccesary
-
     assert_that(result).is_equal_to(the_resource_allocation)
+   
+    wait_result = wait_for('ska_mid/tm_subarray_node/1').to_be({"attr" : "State", "value" : DevState.ON}) 
+    assert_that(wait_result).is_equal_to("OK")
 
-    # Confirm result via direct inspection of TMC
-    subarray_proxy = DeviceProxy('ska_mid/tm_subarray_node/1')
-    pause() # not neccesary
+    # Confirm that TM_subbarray node has cocrectly assigned resources
+    subarray_proxy = DeviceProxy('ska_mid/tm_subarray_node/1')   
     receptor_list = subarray_proxy.receptorIDList
-    pause() # not neccesary
+    assert_that(receptor_list).is_equal_to((1, 2))
+
     #need to check the state as well is in ObsState = IDLE and State = ON
     #TODO check the resource assignment of the CSP is correct (receptors and corresponding VCC state   - also check that it changed to correct state)
     #mid_csp/elt/master check the status of receptors and VCC reflect assignment

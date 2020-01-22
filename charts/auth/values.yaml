@@ -6,13 +6,7 @@ rbac:
 
 namespaces: 
   - name: integration
-    users: ["matteo1981"]
-  - name: staging
-    users: ["matteo1981"]
-  - name: sarao
-    users: ["matteo1981"]
-  - name: ncra
-    users: ["matteo1981"]
+    users: ["https://gitlab.com#3003086", "https://gitlab.com#2930369"]
 
 nodeSelector: {}
 

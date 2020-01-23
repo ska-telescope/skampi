@@ -54,8 +54,8 @@ Replace `31910` with the value you get. Then set up a remote ssh connection in v
 
 ```yaml
 Host engage-VM-acceptance-testing
-  HostName 192.168.93.28
-  Port 31910
+  HostName <your machine IP>
+  Port <your port nr>
   User tango
 ```
 

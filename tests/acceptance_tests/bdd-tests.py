@@ -91,7 +91,7 @@ def allocate_resources(gimme_a_subarray, resource_alloc_def):
     result = the_subarray.allocate(the_resource_allocation)
 
 @then("the subarray is correctly allocated")
-def check_resources_allocated():
+def check_resources_allocated(watch_tmc_subarray_state, watch_receptorIDList, resource_alloc_def, show_tmc_subarray_state, show_csp_subarray_state, show_csp_master_state, show_sdp_subarray_state):
     #gather info
     State_val = watch_State.get_value_when_changed()
     receptorIDList_val = watch_receptorIDList.get_value_when_changed(20)
@@ -122,8 +122,8 @@ def check_resources_allocated():
     # check the resource assignment of the SDP is correct (no op - also check that the changed to correct state ObsState= IDLE and State = ON)
     # check that the dishes have responded
     
-
-    print("Now deallocating resources ... ")
+#TODO do similar when, then, statements for deallocating resources
+    logging.info("Now deallocating resources ... ")
     #prepare
     watch_State = watch(tmc_subarray_node_01).for_a_change_on("State")
     watch_receptorIDList = watch(tmc_subarray_node_01).for_a_change_on("receptorIDList")
@@ -142,8 +142,8 @@ def check_resources_allocated():
     assert_that(receptorIDList_val).is_equal_to(None)
 
 
-    print("Subarry has no allocated resources")
+    logging.info("Subarry has no allocated resources")
 
     # put telescope to standby
     the_telescope.standby()
-    print("Script Complete: All resources dealoccated, Telescope is in standby")
+    logging.info("Script Complete: All resources dealoccated, Telescope is in standby")

@@ -2,7 +2,6 @@
 
 This section contains the testing scripts and configuration data for performing end to end tests on the MVP.
 
-`TODO:`**create a getting started section**  
 ## Concepts 
 
 The tests aims to replicate a user operating on the system to achieve a set of use requirements. To help with automation the interface is via a text based interactive OET console. Thus the entrypoint into the system is on the OET. Future tests should also explore the greater use of GUI's (e.g. webjive) as entry points.

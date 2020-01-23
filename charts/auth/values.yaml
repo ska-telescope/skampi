@@ -4,7 +4,7 @@
 rbac:
   enabled: true
 
-namespaces: 
+namespaces:
   - name: integration
     users: ["https://gitlab.com#3003086", "https://gitlab.com#2930369"]
 

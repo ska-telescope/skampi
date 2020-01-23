@@ -59,13 +59,13 @@ Host engage-VM-acceptance-testing
   User tango
 ```
 
-Upon entering the container execution enviornment you should install the python extension on your IDE. The shell will normally open in iTango that allows you to test commands on the OET. When exiting iTango (`exit()`), navigate to skampi to worok on your testing scripts `/home/tango/skampi/`. To run tests manualy you need to first invoke the correct interpreter:
+Upon entering the container execution enviornment, you should install the python extension on your IDE. The shell will normally open in iTango that allows you to test commands on the OET. When exiting iTango (`exit()`), navigate to skampi to work on your testing scripts `/home/tango/skampi/`. To run tests manualy you need to first invoke the correct interpreter:
 
 ```shell
 . /venv/bin/activate
 ```
 
-Thereafter the neccessarry dependencies will be loaded allowing you access to the correct oet.domain libraries.
+Thereafter, the neccessarry dependencies will be loaded allowing you access to the correct oet.domain libraries.
 Tests are initiated by:
 
 ```shell
@@ -82,7 +82,7 @@ The get your IDE to point to the same execution environment paste the following 
 To run a test autimatically the pod is configured slightly differently as a test job that gets invoked by the following command on your machine:
 
 ```shell
-deploy_test_job:
+make deploy_test_job:
 ```
 
 This command can then be used in a CI setup to run acceptance tests are part of a pipeline.

@@ -16,7 +16,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /data/archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}/
+    path: /data/archiverdb-{{ template "archiver.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
 
 ---
 

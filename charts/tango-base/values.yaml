@@ -60,8 +60,6 @@ jive:
 
 vscode:
   enabled: false
-  srcPath: /home/osboxes/workspace/ # code location
-  extPath: /home/osboxes/.vscode/ # extension localtion
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-vscode

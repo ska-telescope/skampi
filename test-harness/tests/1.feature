@@ -17,3 +17,11 @@ Feature:
 		When the configuration file is passed to webjive
 		
 		Then the telescope is configured
+
+    @AT1-444 @AT1-444
+    Scenario: startup
+		Given tango devices
+
+		When I invoke the StartUpTelescope command
+
+		Then Observation state of lower level devices should change

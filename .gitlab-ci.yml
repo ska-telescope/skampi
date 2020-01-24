@@ -273,17 +273,3 @@ xray_report:
   when: always
   only: [master]
   retry: 2
-
-integration_blue:
-  tags:
-  - docker-executor
-  script:
-  - make deploy_all KUBE_NAMESPACE=integrationblue INGRESS_HOST=kubernetes-v2.engageska-portugal.pt
-  - kubectl get all,pv,pvc,ingress -n integrationblue
-  - make k8s_test KUBE_NAMESPACE=integrationblue INGRESS_HOST=kubernetes-v2.engageska-portugal.pt
-  retry: 2
-  environment:
-    name: integration-blue
-  only:
-    refs:
-      - master

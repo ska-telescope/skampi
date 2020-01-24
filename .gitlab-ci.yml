@@ -76,7 +76,7 @@ chart-pytest:
   before_script:
     - *pip_install_test_requirements
   script:
-    - pytest -m "chart_deploy and not quarantine" --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID
+    - pytest -m "chart_deploy and not quarantine" --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID || [ "$?" == "5" ] && true
   after_script:
     - kubectl delete namespace ci-$CI_JOB_ID || true
   environment:

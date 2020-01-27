@@ -59,11 +59,11 @@ jive:
     pullPolicy: IfNotPresent
 
 vscode:
-  enabled: false
+  enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-vscode
-    tag: latest
+    tag: 0.1.2
     pullPolicy: IfNotPresent
 
 logviewer:

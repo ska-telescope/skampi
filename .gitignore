@@ -10,6 +10,6 @@
 /builds
 ansible-playbooks
 **/.idea
-/tests/acceptance_tests/__pycache__
-/tests/acceptance_tests/.pytest_cache
-/tests/acceptance_tests/.vscode
+/test-harness/acceptance_tests/__pycache__
+/test-harness/acceptance_tests/.pytest_cache
+/test-harness/acceptance_tests/.vscode

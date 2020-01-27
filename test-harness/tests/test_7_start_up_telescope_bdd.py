@@ -23,8 +23,9 @@ def config_location(run_context):
   cookies = {'webjive_jwt': webjive_jwt}
 
   url = 'http://webjive-webjive-{}:5004/db'.format(run_context.HELM_RELEASE)
-  with open('files/mutation.json', 'r') as file:
-    mutation = file.read().replace('\n', '')
+  # with open('test-harness/files/mutation.json', 'r') as file:
+  #   mutation = file.read().replace('\n', '')
+  mutation = '{"query":"mutation {\\n  executeCommand(device: \\"ska_mid/tm_central/central_node\\", command: \\"StartUpTelescope\\") {\\n    ok\\n    output\\n    message\\n  }\\n}\\n","variables":"null"}'
   jsonMutation = json.loads(mutation)
   r = requests.post(url=url, json=jsonMutation, cookies=cookies)
   return r

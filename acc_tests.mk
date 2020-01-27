@@ -31,14 +31,14 @@ acc_deploy_storage: # deploy a persistant volume that maps to the skampi reposit
 	@helm template $(storage_path)  -n test --namespace $(KUBE_NAMESPACE) --set path=$(SOURCE_PATH),enabled=true $(apply_template)
 
 acc_deploy_interactive: acc_deploy_storage # deploy a testing container to work on interactively
-	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml $(apply_template)
+	helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml $(apply_template)
 	#wait for pod to be in running state
 	@$(wait_for_pod)
 	#execute additional dependencies on the pod
 	kubectl exec -it  -n integration $(pod_name_interactive) -- bash  -c "apt-get update && apt-get install curl -y && apt-get install git -y"
 
 acc_delete_interactive: # delete an interactive test container
-	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml --set pod_name=$(pod_name_interactive),enabed=true  $(delete_template)
+	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml $(delete_template)
 
 
 acc_deploy_test_job: acc_deploy_storage # deploy a testing job 

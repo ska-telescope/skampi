@@ -2,26 +2,6 @@
 ---
 
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: vscode-{{ template "tango-base.name" . }}-authorized-keys-configuration-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
-data:
-  authorized_keys:
-{{ (tpl (.Files.Glob "data/authorized_keys").AsConfig . ) | indent 2 }}
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: vscode-{{ template "tango-base.name" . }}-settings-json-configuration-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
-data:
-  settings.json:
-{{ (tpl (.Files.Glob "data/settings.json").AsConfig . ) | indent 2 }}
----
-
-apiVersion: v1
 kind: Service
 metadata:
   name: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
@@ -34,9 +14,10 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - port: 2022
-    targetPort: 22
+  - name: vscodeport
+    port: 22
     protocol: TCP
+    nodePort: 32080
   selector:
     app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
 
@@ -66,25 +47,20 @@ spec:
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
-      volumes:
-      - name: authorized_keys
-        configMap:
-          name: "vscode-{{ template "tango-base.name" . }}-authorized-keys-configuration-{{ .Release.Name }}"
-      - name: settings_json
-        configMap:
-          name: "vscode-{{ template "tango-base.name" . }}-settings-json-configuration-{{ .Release.Name }}"
-      
       containers:
       - name: vscode
         image: "{{ .Values.vscode.image.registry }}/{{ .Values.vscode.image.image }}:{{ .Values.vscode.image.tag }}"
         imagePullPolicy: {{ .Values.vscode.image.pullPolicy }}
         ports:
-        - containerPort: 22
-        volumeMounts:
-        - name: authorized_keys 
-          mountPath: ~/.ssh
-        - name: authorized_keys 
-          mountPath: ~/.vscode
+        - name: vscodeport
+          containerPort: 22
+        env:
+        - name: KUBE_NAMESPACE
+          value: {{ .Release.Namespace }}
+        - name: HELM_RELEASE
+          value: {{ .Release.Name }}
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ .Release.Name }}:10000 
         resources:
 {{ toYaml .Values.vscode.resources | indent 10 }}
 {{- with .Values.nodeSelector }}

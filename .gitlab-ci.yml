@@ -10,6 +10,9 @@ stages:
   - lifecycle
   - debug
 
+before_script: 
+  - echo "192.168.93.47   kubernetes.engageska-portugal.pt" >> /etc/hosts
+
 .pip_install_test_requirements: &pip_install_test_requirements |-
   pip3 install -r test-requirements.txt
 

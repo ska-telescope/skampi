@@ -1,3 +1,4 @@
+if {{ .Values.enabled}}
 ---
 apiVersion: v1
 kind: Service
@@ -56,5 +57,6 @@ spec:
       - name: testing-folder
         mountPath: {{ .Values.source_code }}
  restartPolicy: Always
+ {{end}}
 
 

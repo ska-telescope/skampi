@@ -28,25 +28,25 @@ The git storage allows the skampi repository to be mounted as a volume onto the 
 In the git repository, cloned on your kubernetes enabled machine, navigate to the acceptance testing folder:
 
 ```bash
-cd tests/acceptance_tests/
+cd ~/skampi
 ```
 
 To deploy the acceptance tester in interactive mode run:
 
 ```bash
-make deploy_interactive
+make acc_deploy_interactive
 ```
 
 The system will install a storage pv and pvc (or update it) and instantiate an `acceptance-testing-pod` on the `integration` namespace using the exact same `oet-ssh` image currently configured. The `acceptance-testing-pod` will mount to the `skampi` repository at `/home/tango/skampi/`. You can get the status of the deployment running:
 
 ```bash
-make get_status
+make acc_get_status
 ```
 
 afterwards you can get the shh connection details by running:
 
 ```bash
-$ make get_ssh_par
+$ make acc_get_ssh_par
 $ Use this port to shh in: 31910
 ```
 

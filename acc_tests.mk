@@ -53,7 +53,7 @@ acc_deploy_test_job: acc_deploy_storage # deploy a testing job
 	#wait for pod to be in running state
 	@$(wait_for_pod)
 	#show logs for pod
-	@kubectl logs $(pod_name_test_job) --namespace $(KUBE_NAMESPACE) 
+	@kubectl attach $(pod_name_test_job) --namespace $(KUBE_NAMESPACE) 
 
 acc_delete_test_job:
 	@helm template $(test_pod_path)/ -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml --set pod_name=$(pod_name_test_job),enabled=true --set non_interactive=true $(delete_template)

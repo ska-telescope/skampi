@@ -16,6 +16,7 @@ USE_NGINX ?= false## Use NGINX as the Ingress Controller
 API_SERVER_IP ?= $(THIS_HOST)## Api server IP of k8s
 API_SERVER_PORT ?= 6443## Api server port of k8s
 EXTERNAL_IP ?= $(THIS_HOST)## For traefik installation
+CLUSTER_NAME ?= integration.cluster## For the gangway kubectl setup 
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -263,7 +264,7 @@ get_pods: ##lists the pods deploued for a particular namespace
 get_versions: ## lists the container images used for particular pods
 	kubectl get pods -l release=$(HELM_RELEASE) -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{range .spec.containers[*]}{.name}{'\t'}{.image}{'\n\n'}{end}{'\n'}{end}{'\n'}"
 
-traefik: ## install the helm chart for traefik (in the kube-system namespace)
+traefik: ## install the helm chart for traefik (in the kube-system namespace). Input parameter EXTERNAL_IP (i.e. private ip of the master node).
 	@TMP=`mktemp -d`; \
 	helm fetch stable/traefik --untar --untardir $$TMP && \
 	helm template $(helm_install_shim) $$TMP/traefik -n traefik0 --namespace kube-system \
@@ -275,35 +276,35 @@ delete_traefik: ## delete the helm chart for traefik
 	@TMP=`mktemp -d`; \
 	helm fetch stable/traefik --untar --untardir $$TMP && \
 	helm template $(helm_install_shim) $$TMP/traefik -n traefik0 --namespace kube-system \
-		--set externalIP="$(THIS_HOST)" \
+		--set externalIP="$(EXTERNAL_IP)" \
 		| kubectl delete -n kube-system -f - && \
 		rm -rf $$TMP
 
-gangway: ## install gangway authentication for gitlab (in the kube-system namespace)
+gangway: ## install gangway authentication for gitlab (in the kube-system namespace). Input parameters: INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
 	@TMP=`mktemp -d`; \
 	helm fetch stable/gangway --untar --untardir $$TMP && \
 	helm template $(helm_install_shim) $$TMP/gangway -n gangway0 --namespace kube-system \
 			--values resources/gangway.yaml \
 			--set gangway.redirectURL="http://gangway.$(INGRESS_HOST)/callback" \
-			--set gangway.clusterName="$(KUBE_NAMESPACE).$(HELM_RELEASE)" 	\
+			--set gangway.clusterName="$(CLUSTER_NAME)" 	\
 			--set gangway.apiServerURL="https://$(API_SERVER_IP):$(API_SERVER_PORT)" \
 			--set ingress.hosts="{gangway.$(INGRESS_HOST)}" \
 			| kubectl apply -n kube-system -f - && 	\
 			rm -rf $$TMP 
 
-delete_gangway: ## delete install gangway authentication for gitlab
+delete_gangway: ## delete install gangway authentication for gitlab. Input parameters: INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
 	@TMP=`mktemp -d`; \
 	helm fetch stable/gangway --untar --untardir $$TMP && \
 	helm template $(helm_install_shim) $$TMP/gangway -n gangway0 --namespace kube-system \
 			--values resources/gangway.yaml \
 			--set gangway.redirectURL="http://gangway.$(INGRESS_HOST)/callback" \
-			--set gangway.clusterName="$(KUBE_NAMESPACE).$(HELM_RELEASE)" 	\
+			--set gangway.clusterName="$(CLUSTER_NAME)" 	\
 			--set gangway.apiServerURL="https://$(API_SERVER_IP):$(API_SERVER_PORT)" \
 			--set ingress.hosts="{gangway.$(INGRESS_HOST)}" \
 			| kubectl delete -n kube-system -f - && \
 			rm -rf $$TMP 
 
-smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).
+smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s). Input parameter KUBE_NAMESPACE
 	@echo "Smoke test START"; \
 	n=10; \
 	while [ $$n -gt 0 ]; do \

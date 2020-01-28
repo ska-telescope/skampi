@@ -16,6 +16,9 @@ before_script:
 .pip_install_test_requirements: &pip_install_test_requirements |-
   pip3 install -r test-requirements.txt
 
+.add_kubernetes_hosts_entry: &add_kubernetes_hosts_entry |-
+  grep -qxF "192.168.93.47   kubernetes.engageska-portugal.pt" /etc/hosts || echo "192.168.93.47   kubernetes.engageska-portugal.pt" >> /etc/hosts
+
 helm-lint:
   stage: static_analysis
   tags:
@@ -78,6 +81,7 @@ chart-pytest:
   allow_failure: false
   before_script:
     - *pip_install_test_requirements
+    - *add_kubernetes_hosts_entry
   script:
     - pytest -m "chart_deploy and not quarantine" --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID || [ "$?" == "5" ] && true
   after_script:
@@ -100,6 +104,7 @@ chart-pytest-quarantine:
   allow_failure: true
   before_script:
     - *pip_install_test_requirements
+    - *add_kubernetes_hosts_entry
   script:
     - pytest -m quarantine --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID || true
   after_script:

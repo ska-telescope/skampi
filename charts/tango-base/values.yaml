@@ -60,6 +60,7 @@ jive:
 
 vscode:
   enabled: true
+  nodeport: 32080
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-vscode

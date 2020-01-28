@@ -183,6 +183,7 @@ k8s_test test environment:
   - docker-executor
   script:
   - make k8s_test KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt && [ -f "build/report.xml" ]
+  - make acc_deploy_test_job
   environment:
     name: test
     url: http://integration.engageska-portugal.pt/testdb
@@ -196,6 +197,7 @@ k8s_test test environment:
     reports:
       junit: build/report.xml
     when: always
+
 
 smoketest test environment:
   stage: test

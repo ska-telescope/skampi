@@ -1,4 +1,5 @@
 {{if .Values.enabled}}
+{{if .Values.non_interactive}} {{else}}
 ---
 apiVersion: v1
 kind: Service
@@ -18,6 +19,7 @@ spec:
  selector:
     app: {{ .Values.app}}
     non_interactive: "{{ .Values.non_interactive}}"
+{{end}}
 
 ---
 apiVersion: v1

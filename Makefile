@@ -65,6 +65,7 @@ k8s_test: ## test the application on K8s
 	  exit $$status
 
 
+
 vars: ## Display variables - pass in DISPLAY and XAUTHORITY
 	@echo "DISPLAY: $(DISPLAY)"
 	@echo "XAUTHORITY: $(XAUTHORITYx)"

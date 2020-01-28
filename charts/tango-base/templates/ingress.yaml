@@ -1,0 +1,45 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: rest-api-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: rest-{{ template "tango-base.name" . }}
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ template "tango-base.chart" . }}"
+  annotations:
+    {{- range $key, $value := .Values.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  rules:
+    - host: tango.rest.{{ .Values.ingress.hostname }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName:  tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+              servicePort: 80
+{{- if .Values.ingress.tls.enabled }}
+  tls:
+    - secretName: {{ tpl .Values.ingress.tls.secretname . }}
+      hosts:
+        - tango.rest.{{ tpl .Values.ingress.hostname . }}
+{{- end -}}
+
+{{- if .Values.ingress.tls.enabled }}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ tpl .Values.ingress.tls.secretname . }}
+  namespace: {{ .Release.Namespace }}
+type: kubernetes.io/tls
+data:
+{{ (tpl (.Files.Glob "secrets/tls.*").AsSecrets . ) | indent 2  }}
+
+{{- end -}}
+{{- end -}}

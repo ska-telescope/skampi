@@ -144,6 +144,15 @@ mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
 		 -subj "/CN=$${CN}/O=Minikube"; \
 	else \
 	echo "SSL cert already exits in charts/webjive/data ... skipping"; \
+	fi; \
+	if [ ! -f charts/tango-base/secrets/tls.key ]; then \
+	CN=`echo "tango.rest.$(INGRESS_HOST)" | tr -d '[:space:]'`; \
+	openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
+	   -keyout charts/tango-base/secrets/tls.key \
+		 -out charts/tango-base/secrets/tls.crt \
+		 -subj "/CN=$${CN}/O=Minikube"; \
+	else \
+	echo "SSL cert already exits in charts/tango-base/secrets ... skipping"; \
 	fi
 
 deploy: namespace namespace_sdp mkcerts  ## deploy the helm chart

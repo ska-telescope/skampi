@@ -1,0 +1,90 @@
+{{ if .Values.tangorest.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: tango-rest-{{ template "tango-base.name" . }}
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ template "tango-base.chart" . }}"
+spec:
+  type: NodePort
+  ports:
+  - name: rest
+    protocol: TCP
+    port: 80
+    targetPort: rest
+  selector:
+    app.kubernetes.io/name: tango-rest-{{ template "tango-base.name" . }}
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: tango-rest-{{ template "tango-base.name" . }}
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ template "tango-base.chart" . }}"
+spec:
+  replicas: {{ .Values.tangorest.replicas }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tango-rest-{{ template "tango-base.name" . }}
+        app.kubernetes.io/instance: "{{ .Release.Name }}"
+        app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+        helm.sh/chart: "{{ template "tango-base.chart" . }}"
+    spec:
+      {{- if .Values.pullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.pullSecrets }}
+        - name: {{ . }}
+      {{- end}}
+      {{- end }}
+      containers:
+      - name: tango-rest
+        image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
+        imagePullPolicy: {{ .Values.tangorest.image.pullPolicy }}
+        command:
+          - /bin/bash
+        args:
+          - "-c"
+          - >
+            /usr/local/bin/wait-for-it.sh
+            databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}:10000
+            --timeout=30
+            --strict
+            --
+            /usr/bin/supervisord --configuration /etc/supervisor/supervisord.conf
+        env:
+        - name: TANGO_HOST
+          value: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}:10000
+        - name: JAVA_OPTS
+          value: "-Xmx4G -Xshare:off -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5009"
+        ports:
+        - name: rest
+          containerPort: 8080
+          protocol: TCP
+      restartPolicy: Always
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{ end }}

@@ -33,9 +33,6 @@ def test_allocation():
     csp_master = resource('mid_csp/elt/master')
     sdp_subarray_01 = resource('mid_sdp/elt/subarray_1')
 
-
-
-
     print("Starting up telescope ...")
     the_telescope.start_up()
 
@@ -76,15 +73,7 @@ def test_allocation():
 
     #SDP subarray must be in state ON and in Obstate IDLE
     assert_that(sdp_subarray_01.get('State')).is_equal_to('ON')
-    assert_that(sdp_subarray_01.get('obsState')).is_equal_to('IDLE')
-
-    #need to check the state as well is in ObsState = IDLE and State = ON
-    #TODO check the resource assignment of the CSP is correct (receptors and corresponding VCC state   - also check that it changed to correct state)
-    #mid_csp/elt/master check the status of receptors and VCC reflect assignment
-    #mid_csp/elt/subarray_01 check status and correct composition
-    # check the resource assignment of the SDP is correct (no op - also check that the changed to correct state ObsState= IDLE and State = ON)
-    # check that the dishes have responded
-    
+    assert_that(sdp_subarray_01.get('obsState')).is_equal_to('IDLE') 
 
     print("Now deallocating resources ... ")
     #prepare

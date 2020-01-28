@@ -23,7 +23,7 @@ spec:
     app.kubernetes.io/instance: "{{ .Release.Name }}"
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
@@ -34,6 +34,9 @@ metadata:
     app.kubernetes.io/managed-by: "{{ .Release.Service }}"
     helm.sh/chart: "{{ template "tango-base.chart" . }}"
 spec:
+  selector:
+    matchLabels:
+      run: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   replicas: {{ .Values.tangorest.replicas }}
   template:
     metadata:
@@ -42,6 +45,7 @@ spec:
         app.kubernetes.io/instance: "{{ .Release.Name }}"
         app.kubernetes.io/managed-by: "{{ .Release.Service }}"
         helm.sh/chart: "{{ template "tango-base.chart" . }}"
+        run: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
     spec:
       {{- if .Values.pullSecrets }}
       imagePullSecrets:

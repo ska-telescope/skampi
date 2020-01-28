@@ -13,3 +13,4 @@ ansible-playbooks
 /test-harness/acceptance_tests/__pycache__
 /test-harness/acceptance_tests/.pytest_cache
 /test-harness/acceptance_tests/.vscode
+/tests/__pycache__/

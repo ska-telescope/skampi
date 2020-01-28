@@ -35,6 +35,7 @@ def test_allocation():
 
 
 
+
     print("Starting up telescope ...")
     the_telescope.start_up()
 

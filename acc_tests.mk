@@ -8,13 +8,14 @@ execution_path:= /home/
 time_out=10
 storage_path = charts/acceptance-testing/storage
 test_pod_path = charts/acceptance-testing/test-pod
-
+test_scripts_path = test-harness/acceptance_tests 
 SOURCE_PATH := $(shell pwd )
 THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
 
+
 #kubectl composites
 pod_ready := kubectl get pods -l app=$(app) -n $(KUBE_NAMESPACE) -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}'
-
+loc := pos $$(pwd) && cd $(test_scripts_path) && 
 
 #shell routines
 #wait for a time out period until pod is in ready state
@@ -70,28 +71,7 @@ acc_attach:
 acc_attach_interact:
 	kubectl attach -it -n $(KUBE_NAMESPACE) $(pod_name_interactive) 
 
-############container makes######################################
-
-acc_cont_build: cont_invoke ## build the base dependencies needed for basic operations
-	pip3 install -r requirements
-
-acc_cont_invoke:
-	p=$$(pwd) ; \
-	cd / ; \
-	. /venv/bin/activate ; \
-	cd $$p 
-
-acc_cont_interactive:
-	. /venv/bin/itango3 --profile=ska
-
-acc_cont_test: cont_build ## run tests
-	py.test
-
-acc_temp:
-	( p=$$(pwd) ; \
-	cd / ; \
-	. venv/bin/activate ; \
-	cd $$p )
+	
 
 
 

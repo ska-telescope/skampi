@@ -38,19 +38,29 @@ acc_deploy_interactive: acc_deploy_storage # deploy a testing container to work 
 	#execute additional dependencies on the pod
 	kubectl exec -it  -n integration $(pod_name_interactive) -- bash  -c "apt-get update && apt-get install curl -y && apt-get install git -y"
 
+acc_show_interactive:
+	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml
+
+acc_show_test_job:
+	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml  --set pod_name=$(pod_name_test_job),enabled=true,non_interactive=false
+	#--set non_interactive=true
 acc_delete_interactive: # delete an interactive test container
 	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml $(delete_template)
 
 
 acc_deploy_test_job: acc_deploy_storage # deploy a testing job 
-	@helm template test-pod/helm-chart/ -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml  --set pod_name=$(pod_name_test_job),enabled=true --set non_interactive=true $(apply_template)
+	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml  --set pod_name=$(pod_name_test_job),enabled=true,non_interactive=true  $(apply_template)
+	#wait for pod to be in running state
+	@$(wait_for_pod)
+	#show logs for pod
+	@kubectl logs $(pod_name_test_job) --namespace $(KUBE_NAMESPACE) 
 
 acc_delete_test_job:
-	@helm template test-pod/helm-chart/ -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml --set pod_name=$(pod_name_test_job),enabled=true --set non_interactive=true $(delete_template)
+	@helm template $(test_pod_path)/ -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml --set pod_name=$(pod_name_test_job),enabled=true --set non_interactive=true $(delete_template)
 
 
 acc_delete_storage: # delete a storage volume
-	@helm template storage/helm-chart/ -n test --namespace $(KUBE_NAMESPACE) --set path=$(SOURCE_PATH),enabled=true $(delete_template)	
+	@helm template $(storage_path)/ -n test --namespace $(KUBE_NAMESPACE) --set path=$(SOURCE_PATH),enabled=true $(delete_template)	
 
 acc_get_ssh_par: # get the ssh paramaters for getting into container
 	@kubectl get service -l app=acceptance-tester -n integration  -o jsonpath="{range .items[0]}{'Use this port to shh in: '}{.spec.ports[0].nodePort}{'\n'}{end}"

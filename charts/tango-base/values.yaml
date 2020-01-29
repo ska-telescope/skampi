@@ -58,6 +58,17 @@ jive:
     tag: latest
     pullPolicy: IfNotPresent
 
+vnc:
+  enabled: false
+  nodeport_vnc: 32081
+  nodeport_novnc: 32082
+  replicas: 1
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-vnc
+    tag: latest
+    pullPolicy: IfNotPresent
+
 vscode:
   enabled: true
   nodeport: 32080

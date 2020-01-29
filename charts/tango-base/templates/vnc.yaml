@@ -1,0 +1,85 @@
+{{ if .Values.vnc.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tango-base.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  ports:
+  - name: vncport
+    port: 5920
+    protocol: TCP
+    nodePort: {{ .Values.vnc.nodeport_vnc }}
+  - name: novncport
+    port: 6081
+    protocol: TCP
+    nodePort: {{ .Values.vnc.nodeport_novnc }}
+  selector:
+    app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tango-base.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  serviceName: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  replicas:  {{ .Values.vnc.replicas }}
+  template:
+    metadata:
+      labels:
+        app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+        chart: {{ template "tango-base.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      containers:
+      - name: vnc
+        image: "{{ .Values.vnc.image.registry }}/{{ .Values.vnc.image.image }}:{{ .Values.vnc.image.tag }}"
+        imagePullPolicy: {{ .Values.vnc.image.pullPolicy }}
+        ports:
+        - name: vncport
+          containerPort: 5920
+        - name: novncport
+          containerPort: 6081
+        env:
+        - name: KUBE_NAMESPACE
+          value: {{ .Release.Namespace }}
+        - name: HELM_RELEASE
+          value: {{ .Release.Name }}
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ .Release.Name }}:10000 
+        resources:
+{{ toYaml .Values.vnc.resources | indent 10 }}
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{ end }}

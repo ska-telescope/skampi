@@ -65,6 +65,8 @@ stages:
 lint_chart:
   stage: helm-package
   when: manual
+  tags:
+    - helm-repoman
   script:
     - pwd
 

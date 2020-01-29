@@ -8,14 +8,14 @@ import subprocess
 class HelmTestAdaptor(object):
     HELM_TEMPLATE_CMD = "helm template --namespace {} --name {} -x templates/{} charts/{}"
     HELM_DELETE_CMD = "helm delete {} --purge"
-    HELM_INSTALL_CMD = "helm install charts/{} --namespace {} --wait"
+    HELM_INSTALL_CMD = "helm install charts/{} --namespace {} --wait {}"
 
     def __init__(self, use_tiller_plugin, test_namespace):
         self.use_tiller_plugin = use_tiller_plugin
         self.namespace = test_namespace
 
-    def install(self, chart):
-        cmd = self._wrap_tiller(self.HELM_INSTALL_CMD.format(chart, self.namespace))
+    def install(self, chart, cmd_args=""):
+        cmd = self._wrap_tiller(self.HELM_INSTALL_CMD.format(chart, self.namespace, cmd_args))
         cmd = cmd.split()
         return self._run_subprocess(cmd)
 
@@ -47,12 +47,13 @@ class HelmTestAdaptor(object):
 
 
 class ChartDeployment(object):
-    def __init__(self, chart, helm_adaptor, k8s_api):
+    def __init__(self, chart, helm_adaptor, k8s_api, values={}):
         self._helm_adaptor = helm_adaptor
         self._k8s_api = k8s_api
 
         try:
-            stdout = self._helm_adaptor.install(chart)  # actual deployment
+            set_flag = ChartDeployment.create_set_cli_flag_from(values)
+            stdout = self._helm_adaptor.install(chart, set_flag)  # actual deployment
 
             self.chart_name = chart
             self.release_name = self._parse_release_name_from(stdout)
@@ -104,6 +105,12 @@ class ChartDeployment(object):
         api_instance = self._k8s_api.CoreV1Api()
         return [svc for svc in api_instance.list_namespaced_service(self._helm_adaptor.namespace).items if
                 svc.metadata.name.endswith(self.release_name)]
+
+    @staticmethod
+    def create_set_cli_flag_from(values):
+        chart_values = [f"{key}={value}" for key, value in values.items()]
+        set_flag = "--set={}".format(",".join(chart_values))
+        return set_flag
 
     @staticmethod
     def _parse_release_name_from(stdout):

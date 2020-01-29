@@ -7,7 +7,11 @@ from tests.testsupport.util import parse_yaml_str, wait_until
 
 @pytest.fixture(scope="module")
 def tango_base_release(helm_adaptor, k8s_api):
-    tango_base_release = ChartDeployment("tango-base", helm_adaptor, k8s_api)  # setup
+    chart_values = {
+        "vscode.enabled": "false"
+    }
+
+    tango_base_release = ChartDeployment("tango-base", helm_adaptor, k8s_api, chart_values)  # setup
     yield tango_base_release  # yield fixture
     tango_base_release.delete()  # teardown
 

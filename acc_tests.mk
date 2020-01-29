@@ -20,17 +20,11 @@ job_ready := kubectl get job $(test_job) -n $(KUBE_NAMESPACE) -o 'jsonpath={..st
 
 #shell routines
 #wait for a time out period until pod is in ready state
-wait_for_pod = count=0;  \
-		ready=$$($(pod_ready));  \
-		while [ $$count -lt $(time_out) -a $$ready != True ]; do \
-			sleep 1; \
-			echo $$count; \
-			count=`expr $$count + 1`; \
-			ready=$$($(pod_ready)) ;\
-		done;
+
+wait_for_interactive_pod = pod=$$$(pod_name_interactive) ; $(wait_for_pod)
 
 wait_for_job = pod=$$(kubectl get pods --selector=job-name=$(test_job) -n $(KUBE_NAMESPACE) --output=jsonpath='{.items[*].metadata.name}'); \
-	       kubectl wait --for=condition=Ready -n $(KUBE_NAMESPACE) pod/$$pod
+	       $(wait_for_pod)
 
 acc_deploy_storage: # deploy a persistant volume that maps to the skampi repository
 	@helm template $(storage_path)  -n test --namespace $(KUBE_NAMESPACE) --set path=$(SOURCE_PATH),enabled=true $(apply_template)
@@ -38,7 +32,7 @@ acc_deploy_storage: # deploy a persistant volume that maps to the skampi reposit
 acc_deploy_interactive: acc_deploy_storage # deploy a testing container to work on interactively
 	helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml $(apply_template)
 	#wait for pod to be in running state
-	@$(wait_for_pod)
+	@$(wait_for_interactive_pod)
 	#execute additional dependencies on the pod
 	kubectl exec -it  -n integration $(pod_name_interactive) -- bash  -c "apt-get update && apt-get install curl -y && apt-get install git -y"
 

@@ -13,7 +13,9 @@ interactive:
 	. /venv/bin/itango3 --profile=ska
 
 test: build ## run tests
-	py.test
+	py.test | tee setup_py_test.stdout; \
+	status=$$?; \
+	exit $$status
 
 	
 

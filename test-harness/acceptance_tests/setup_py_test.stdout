@@ -1,0 +1,145 @@
+============================= test session starts ==============================
+platform linux -- Python 3.7.3, pytest-5.1.2, py-1.8.0, pluggy-0.13.0
+rootdir: /home/tango/skampi/test-harness/acceptance_tests, inifile: pytest.ini
+plugins: metadata-1.8.0, json-report-1.1.0, pylint-0.14.1, cov-2.7.1
+collected 1 item
+
+tests.py F                                                               [100%]
+
+=================================== FAILURES ===================================
+_______________________________ test_allocation ________________________________
+
+    def test_allocation():
+    
+        #given is from 29  to 44
+    
+        the_telescope = SKAMid()
+        the_subarray = SubArray(1)
+        the_resource_allocation = ResourceAllocation(dishes=[Dish(1), Dish(2)])
+    
+    
+        #"under the hood resources for observing the internal state"
+        tmc_subarray_node_01 = resource('ska_mid/tm_subarray_node/1')
+        csp_subarray_01 = resource('mid_csp/elt/subarray_01')
+        csp_master = resource('mid_csp/elt/master')
+        sdp_subarray_01 = resource('mid_sdp/elt/subarray_1')
+    
+        print("Starting up telescope ...")
+        #these are our assumptions for the initial state:
+        #1. Telescope is in the "OFF" state (this means all sub arrays are in the DISABLED state)
+        #we assume this is the state that the system will be after deployment
+        the_telescope.start_up()
+    
+        #maybe get rid of this
+        #print("Releasing any previously allocated resources... ")
+       # if (tmc_subarray_node_01.get("State") == 'ON') :
+       #     watch_State = watch(tmc_subarray_node_01).for_a_change_on("State")
+        #    result = the_subarray.deallocate()
+         #   State_val = watch_State.get_value_when_changed()
+         #   assert_that(State_val).is_equal_to("OFF")
+    
+    
+        print("Allocating new resources... ")
+        #when I alocate dishes 1 - 2 : lines 56 to 67
+        #prepare
+        watch_State = watch(tmc_subarray_node_01).for_a_change_on("State")
+        watch_receptorIDList = watch(tmc_subarray_node_01).for_a_change_on("receptorIDList")
+    
+        #execute
+        result = the_subarray.allocate(the_resource_allocation)
+    
+        #gather info
+        State_val = watch_State.get_value_when_changed()
+        receptorIDList_val = watch_receptorIDList.get_value_when_changed(20)
+    
+        # then subarray cocrectly assigned resources
+        # Confirm that TM_subbarray node has cocrectly assigned resources
+>       assert_that(result).is_equal_to(the_resource_allocation)
+
+tests.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <assertpy.assertpy.AssertionBuilder object at 0x7f09f2650f98>
+other = <ResourceAllocation(dishes=[<Dish(1)>, <Dish(2)>])>, kwargs = {}
+
+    def is_equal_to(self, other, **kwargs):
+        """Asserts that val is equal to other.
+    
+        Checks actual is equal to expected using the ``==`` operator. When val is *dict-like*,
+        optionally ignore or include keys when checking equality.
+    
+        Args:
+            other: the expected value
+            **kwargs: see below
+    
+        Keyword Args:
+            ignore: the dict key (or list of keys) to ignore
+            include: the dict key (of list of keys) to include
+    
+        Examples:
+            Usage::
+    
+                assert_that(1 + 2).is_equal_to(3)
+                assert_that('foo').is_equal_to('foo')
+                assert_that(123).is_equal_to(123)
+                assert_that(123.4).is_equal_to(123.4)
+                assert_that(['a', 'b']).is_equal_to(['a', 'b'])
+                assert_that((1, 2, 3)).is_equal_to((1, 2, 3))
+                assert_that({'a': 1, 'b': 2}).is_equal_to({'a': 1, 'b': 2})
+                assert_that({'a', 'b'}).is_equal_to({'a', 'b'})
+    
+            When the val is *dict-like*, keys can optionally be *ignored* when checking equality::
+    
+                # ignore a single key
+                assert_that({'a': 1, 'b': 2}).is_equal_to({'a': 1}, ignore='b')
+    
+                # ignore multiple keys
+                assert_that({'a': 1, 'b': 2, 'c': 3}).is_equal_to({'a': 1}, ignore=['b', 'c'])
+    
+            When the val is *dict-like*, only certain keys can be *included* when checking equality::
+    
+                # include a single key
+                assert_that({'a': 1, 'b': 2}).is_equal_to({'a': 1}, include='a')
+    
+                # include multiple keys
+                assert_that({'a': 1, 'b': 2, 'c': 3}).is_equal_to({'a': 1, 'b': 2}, include=['a', 'b'])
+    
+            Failure produces a nice error message::
+    
+                assert_that(1).is_equal_to(2)  # fails
+                # Expected <1> to be equal to <2>, but was not.
+    
+        Returns:
+            AssertionBuilder: returns this instance to chain to the next assertion
+    
+        Raises:
+            AssertionError: if actual is **not** equal to expected
+    
+        Tip:
+            Using :meth:`is_equal_to` with a ``float`` val is just asking for trouble. Instead, you'll
+            always want to use *fuzzy* numeric assertions like :meth:`~assertpy.numeric.NumericMixin.is_close_to`
+            or :meth:`~assertpy.numeric.NumericMixin.is_between`.
+    
+        See Also:
+            :meth:`~assertpy.string.StringMixin.is_equal_to_ignoring_case` - for case-insensitive string equality
+        """
+        if self._check_dict_like(self.val, check_values=False, return_as_bool=True) and \
+                self._check_dict_like(other, check_values=False, return_as_bool=True):
+            if self._dict_not_equal(self.val, other, ignore=kwargs.get('ignore'), include=kwargs.get('include')):
+                self._dict_err(self.val, other, ignore=kwargs.get('ignore'), include=kwargs.get('include'))
+        else:
+            if self.val != other:
+>               self.error('Expected <%s> to be equal to <%s>, but was not.' % (self.val, other))
+E               AssertionError: Expected <<ResourceAllocation(dishes=[])>> to be equal to <<ResourceAllocation(dishes=[<Dish(1)>, <Dish(2)>])>>, but was not.
+
+/venv/lib/python3.7/site-packages/assertpy/base.py:121: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Starting up telescope ...
+Allocating new resources... 
+=============================== warnings summary ===============================
+/app/oet/domain.py:129
+  /app/oet/domain.py:129: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated, and in 3.8 it will stop working
+    class DishAllocation(collections.MutableSet):
+
+-- Docs: https://docs.pytest.org/en/latest/warnings.html
+======================== 1 failed, 1 warnings in 56.93s ========================

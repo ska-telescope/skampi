@@ -334,3 +334,6 @@ smoketest: ## check that the number of waiting containers is zero (10 attempts, 
 		fi; \
 		n=`expr $$n - 1`; \
 	done
+
+get_status:
+	kubectl get pod,svc,deployments,pv,pvc,ingress -n $(KUBE_NAMESPACE)

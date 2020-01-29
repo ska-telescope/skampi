@@ -1,0 +1,75 @@
+#
+# Note: Tests can be run locally with
+#   gitlab-runner exec <executor, eg. docker> <job name>
+#
+
+stages:
+  - helm-package
+#  - helm-publish
+
+## ============================================================================
+## Common settings for building docker images
+## ============================================================================
+
+#.push_docker:
+#  dependencies: []
+#  variables:
+#    DOCKER_REGISTRY_HOST: $DOCKER_REGISTRY_HOST
+#    DOCKER_REGISTRY_USER: $CI_PROJECT_NAME
+#    GIT_VERSION: ${CI_COMMIT_SHA:0:8}
+#  tags:
+#    - docker
+#    - engageska
+#  image: docker:stable
+#  services:
+#    - docker:dind
+#  before_script:
+#    - apk add make git
+#    - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
+#  script:
+#    - cd $BUILD_PATH
+#    - make DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST DOCKER_REGISTRY_USER=$CI_PROJECT_NAME pull_default
+#    - make DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST DOCKER_REGISTRY_USER=$CI_PROJECT_NAME push_version
+#  retry: 2
+
+
+# ============================================================================
+# Build documentation
+# ============================================================================
+#build_docs:
+#  stage: test
+#  image: nexus.engageska-portugal.pt/sdp-prototype/pytango_ska_dev:latest
+#  before_script:
+#    - pip install -r docs/requirements.txt
+#  script:
+#    - make -C docs html
+#  artifacts:
+#    paths: [docs/build/html/]
+#    expire_in: 1 day
+#
+#create_ci_metrics:
+#  stage: .post
+#  image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
+#  when: always
+#  tags: []
+#  script:
+#    # Gitlab CI badges creation: START
+#    - apt-get -y update
+#    - apt-get install -y curl --no-install-recommends
+#    - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh
+#    # Gitlab CI badges creation: END
+#  artifacts:
+#    paths:
+#      - ./build
+
+lint_chart:
+  stage: helm-package
+  when: manual
+  script:
+    - pwd
+
+#package_chart:
+#  stage: helm-package
+#  when: manual
+#  script:
+#    helm package

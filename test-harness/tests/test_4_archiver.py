@@ -9,7 +9,7 @@ import pytest
 def test_init():
   print("Init test archiver")
 
-@pytest.mark.quarantine(reason="quarantined until ncra team works on it")
+@pytest.skip.quarantine(reason="skipping until ncra team works on it")
 def test_archiver():
   evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
   config_manager_device_fqdn = "archiving/hdbpp/confmanager01"

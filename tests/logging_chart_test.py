@@ -133,7 +133,7 @@ def test_fluentd_ingests_logs_from_pod_stdout_into_elasticsearch(logging_chart_d
         result = _query_elasticsearch_for_log(expected_log)
         return result['hits']['total']['value'] != 0
 
-    wait_until(_wait_for_elastic_hits, retry_timeout=300)
+    wait_until(_wait_for_elastic_hits, retry_timeout=500)
 
 @pytest.mark.chart_deploy
 def test_elastic_config_applied(logging_chart_deployment, test_namespace):

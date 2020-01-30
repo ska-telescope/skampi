@@ -45,7 +45,8 @@ setup(
         'pycodestyle',
         'pytest-bdd',
         'elasticsearch',
-        'kubernetes'
+        'kubernetes',
+        'assertpy'
     ],
     extras_require={
         'dev':  ['prospector[with_pyroma]', 'yapf', 'isort']

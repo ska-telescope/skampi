@@ -18,13 +18,14 @@ pod_ready := kubectl get pods -l app=$(app) -n $(KUBE_NAMESPACE) -o 'jsonpath={.
 loc := pos $$(pwd) && cd $(test_scripts_path) && 
 job_ready := kubectl get job $(test_job) -n $(KUBE_NAMESPACE) -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}'
 
-#shell routines
-#wait for a time out period until pod is in ready state
+wait_for_pod := kubectl wait --for=condition=Ready -n $(KUBE_NAMESPACE) pod/$$pod
+wait_for_interactive_pod = pod=$(pod_name_interactive) ; $(wait_for_pod)
+wait_for_job = pod=$(test_job) ; $(wait_for_pod)
 
-wait_for_interactive_pod = pod=$$$(pod_name_interactive) ; $(wait_for_pod)
-
-wait_for_job = pod=$$(kubectl get pods --selector=job-name=$(test_job) -n $(KUBE_NAMESPACE) --output=jsonpath='{.items[*].metadata.name}'); \
-	       $(wait_for_pod)
+acc_test  = kubectl exec -i $(test_job) --namespace $(KUBE_NAMESPACE) -- rm -fr /app/acceptance_tests && \
+		kubectl cp test-harness/acceptance_tests/ $(KUBE_NAMESPACE)/$(test_job):/app/acceptance_tests && \
+		kubectl exec -i $(test_job) --namespace $(KUBE_NAMESPACE) -- \
+		/bin/bash -c "cd /app/acceptance_tests && make $1" 2>&1
 
 acc_deploy_storage: # deploy a persistant volume that maps to the skampi repository
 	@helm template $(storage_path)  -n test --namespace $(KUBE_NAMESPACE) --set path=$(SOURCE_PATH),enabled=true $(apply_template)
@@ -46,21 +47,23 @@ acc_delete_interactive: # delete an interactive test container
 	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml $(delete_template)
 
 
-acc_deploy_test_job: acc_deploy_storage # deploy a testing job 
-	#delete job if already exists
-	@-kubectl get job --namespace $(KUBE_NAMESPACE) $(test_job) 1> /dev/null && kubectl delete job --namespace $(KUBE_NAMESPACE) $(test_job)
+acc_deploy_test_job: # deploy a testing job 
 	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml  --set pod_name=$(test_job),enabled=true,non_interactive=true  $(apply_template)
 	#wait for pod to be in running state
 	$(wait_for_job)
 	#attach onto the job
-	@kubectl attach job $(test_job) --namespace $(KUBE_NAMESPACE) 
+	$(call acc_test,test); \
+	status=$$?; \
+	rm -fr build2; \
+	kubectl cp $(KUBE_NAMESPACE)/$(test_job):/app/test-harness/build/ build2/; \
+	exit $$status
 
 temp:
 	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml  --set pod_name=$(pod_name_test_job),enabled=true,non_interactive=true  $(apply_template)
 
 acc_delete_test_job:
 	@helm template $(test_pod_path)/ -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml --set pod_name=$(test_job),enabled=true --set non_interactive=true $(delete_template)
-	@helm template $(storage_path)/ -n test --namespace $(KUBE_NAMESPACE) --set path=$(SOURCE_PATH),enabled=true $(delete_template)	
+
 
 
 acc_delete_storage: # delete a storage volume

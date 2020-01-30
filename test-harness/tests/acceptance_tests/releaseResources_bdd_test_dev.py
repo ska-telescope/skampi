@@ -8,8 +8,6 @@ Acceptance tests for MVP.
 """
 import sys
 
-import bdd as bdd
-
 sys.path.append('/app')
 
 import pytest

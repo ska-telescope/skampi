@@ -15,3 +15,10 @@ ansible-playbooks
 /test-harness/acceptance_tests/.vscode
 /tests/__pycache__/
 *.py.swp
+/test-harness/.eggs
+/test-harness/skampi.egg-info/
+/test-harness/pytest-logs.txt
+/test-harness/setup_py_test.stdout
+/test-harness/report.xml
+/test-harness/.pytest_cache
+/test-harness/tests/__pycache__

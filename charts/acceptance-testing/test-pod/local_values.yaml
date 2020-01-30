@@ -6,4 +6,3 @@ app: acceptance-tester
 source_code: "/home/tango/skampi/"
 job: "cd test-harness/acceptance_tests/ && make test "
 enabled: false
-

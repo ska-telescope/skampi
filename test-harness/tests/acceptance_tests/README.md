@@ -10,9 +10,9 @@ To observe the system requires looking at the internal state of the system. This
 
 ## Architecture
 
-To ensure the test scripts are executing via the OET they have to be invoked on an exact replica of the OET execution environment. Thus an acceptance tester is deployed using the exact same container (and its configuration) used for the OET. In essence therefore, the acceptance tester become the OET.
+To ensure the test scripts are executing via the OET they have to be invoked on an exact replica of the OET execution environment. Thus the container (and therefore pod) used in performing the test must be loaded with the exact same image (or package) that will be used in deploying the MVP during production. For testing the MVP in the CI pipeline this is acheived by ensuring the test runner is loaded with the same container image as used for the oet. During development the user can make use of an interactive pod that gets deployed with a skampi repository as its volume using the same image as for the oet container.
 
-The deployment consists of two parts:
+Note that during interactive development the testing deployment consists of two parts:
 
 1. The git storage (Persistance Volume CLaim and Persistance Volume)
 2. The test pod (mounting on the storage)
@@ -23,9 +23,9 @@ The git storage allows the skampi repository to be mounted as a volume onto the 
 
 ### Using it interactively
 
-*this section assumes you are using a visul code IDE*
+*this section assumes you are using a visul code IDE *
  
-In the git repository, cloned on your kubernetes enabled machine, navigate to the acceptance testing folder:
+In the git repository, cloned on your kubernetes enabled machine, navigate to the root directory:
 
 ```bash
 cd ~/skampi
@@ -65,24 +65,30 @@ Upon entering the container execution enviornment, you should install the python
 . /venv/bin/activate
 ```
 
-Thereafter, the neccessarry dependencies will be loaded allowing you access to the correct oet.domain libraries.
+Thereafter, the neccessarry dependencies will be loaded allowing you access to the correct oet.domain libraries. During development you can navigate to the test-harness folder:
+
+```shell
+cd test-harness/
+```
+To install tests depencies on your development pod run
+
+```shell
+make install
+```
+
 Tests are initiated by:
 
 ```shell
-make cont_test
+py.test
 ```
 
-The get your IDE to point to the same execution environment paste the following code into the  `/.vscode/settings.json` file:
-
-```json
-"python.pythonPath": "/venv/bin/python3"
-```
 ### Running tests automatically
 
-To run a test autimatically the pod is configured slightly differently as a test job that gets invoked by the following command on your machine:
+To run a test autimatically the test runner pod is used as deployed by the ci pipeline. This forms part of the general testing that gets run during the testing stage and gets invoked by:
 
 ```shell
-make deploy_test_job:
+make K8s_test:
 ```
+Note that the testing configuration is set up so that it will ignore tests ending with "_dev". This eallows one to isolate tests that are committed to master but not yet released for testing the pipeline.
 
-This command can then be used in a CI setup to run acceptance tests are part of a pipeline.
+Before commiting your code to master make sure the the tests execute during the test pipeline by running above command.

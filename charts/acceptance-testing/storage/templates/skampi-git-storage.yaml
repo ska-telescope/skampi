@@ -7,11 +7,11 @@ metadata:
   labels:
     type: repository
 spec:
-  storageClassName: testing
+#  storageClassName: testing
   capacity:
     storage: {{ .Values.storage }}
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   hostPath:
     path: "{{ .Values.path }}"
 
@@ -24,7 +24,7 @@ metadata:
   labels:
     type: repository
 spec:
-  storageClassName: testing
+#  storageClassName: testing
   accessModes:
     - ReadWriteOnce
   resources:

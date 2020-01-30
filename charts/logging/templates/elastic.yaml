@@ -76,7 +76,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: elastic-{{ .Release.Namespace }}-configurator
+  name: elastic-configurator-{{ template "logging.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   ttlSecondsAfterFinished: 100

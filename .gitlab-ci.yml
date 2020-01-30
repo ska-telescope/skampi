@@ -18,6 +18,8 @@ before_script:
 
 .add_kubernetes_hosts_entry: &add_kubernetes_hosts_entry |-
   grep -qxF "192.168.93.47   kubernetes.engageska-portugal.pt" /etc/hosts || echo "192.168.93.47   kubernetes.engageska-portugal.pt" >> /etc/hosts
+  env
+  cat /etc/hosts
 
 helm-lint:
   stage: static_analysis

@@ -22,3 +22,5 @@ ansible-playbooks
 /test-harness/report.xml
 /test-harness/.pytest_cache
 /test-harness/tests/__pycache__
+/test-harness/build/
+test-harness/dist/

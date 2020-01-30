@@ -5,14 +5,6 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
-rsyslog:
-  enabled: true
-  image:
-    registry: registry.hub.docker.com/u/
-    image: jumanjiman/rsyslog
-    tag: latest
-    pullPolicy: IfNotPresent
-
 tmcprototype:
   enabled: true
   image:

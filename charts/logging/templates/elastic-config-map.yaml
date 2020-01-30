@@ -33,8 +33,8 @@ data:
             "min_age": "0ms",
             "actions": {
               "rollover": {
-                "max_size": "1gb",
-                "max_age": "1d"
+                "max_size": "{{ .Values.elastic.ilm.rollover.max_size }}",
+                "max_age": "{{ .Values.elastic.ilm.rollover.max_age }}"
               },
               "set_priority": {
                 "priority": 100
@@ -42,7 +42,7 @@ data:
             }
           },
           "delete": {
-            "min_age": "1d",
+            "min_age": "{{ .Values.elastic.ilm.delete.min_age }}",
             "actions": {
               "delete": {}
             }

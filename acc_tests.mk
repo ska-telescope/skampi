@@ -46,7 +46,7 @@ acc_show_test_job:
 
 acc_delete_interactive: acc_delete_interactive_pod acc_delete_storage
 	
-_
+
 acc_delete_interactive_pod: # delete an interactive test container
 	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml $(delete_template)
 

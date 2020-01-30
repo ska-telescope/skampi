@@ -21,7 +21,11 @@ from tango import DeviceProxy, DevState
 from helpers import wait_for, obsState, resource, watch
 
 
-@scenario("./path-to-feature-file", "Allocate Resources")
+@scenario("./resource_allocation.feature", "Allocate Resources")
+def test_allocate_resources():
+    """Allocate Resources."""
+    pass
+
 @given("The telescope is ready")
 def i_can_haz_telescope():
     the_telescope = SKAMid()

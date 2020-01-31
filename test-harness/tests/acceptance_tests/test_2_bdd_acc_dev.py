@@ -70,7 +70,7 @@ def show_sdp_subarray_state():
 
 
 @given("a means of observing the sdp master")
-def show_csp_master_state():
+def show_sdp_master_state():
     sdp_master = resource('mid_sdp/elt/master')
     return sdp_master
 

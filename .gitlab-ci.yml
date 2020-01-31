@@ -62,16 +62,18 @@ stages:
 #    paths:
 #      - ./build
 
-lint_chart:
-  stage: helm-package
-  when: always
-  tags:
-    - helm-repoman
-  script:
-    - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/test.sh | sh
 
 #package_chart:
 #  stage: helm-package
 #  when: manual
 #  script:
 #    helm package
+
+publish-chart:
+  stage: helm-package
+  when: always
+  tags:
+    - helm-repoman
+  script:
+    - helm init --client-only
+    - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/test.sh | sh

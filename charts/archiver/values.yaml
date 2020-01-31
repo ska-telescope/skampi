@@ -28,7 +28,7 @@ hdbppdb:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: mariadb_hdbpp
     tag: 0.1.0
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   db:
     rootpw: secret
     db: hdbpp
@@ -59,7 +59,7 @@ hdbppviewer:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: hdbpp_viewer
     tag: 0.1.0
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
 attrconfig:
   image:

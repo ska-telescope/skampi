@@ -79,4 +79,4 @@ publish-chart:
     - helm-repoman
   script:
     - helm init --client-only # Because otherwise Helm complains
-    - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/test.sh | sh
+    - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/helm-repo-update.sh | sh

@@ -11,7 +11,7 @@ else
 fi
 
 # Ad repo to local env
-helm repo add ska-integr8 $RAW_HOST/helm-chart
+helm repo add ska-integr8 $RAW_HOST/repository/helm-chart
 
 # Copy repo index to pwd
 wget $RAW_HOST/repository/helm-chart/index.yaml

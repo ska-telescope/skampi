@@ -17,3 +17,9 @@ Scenario: Deallocate Resources
 	Given I allocate resources to a subarray
 	When I deallocate the resources
 	Then subarrays should go into OFF state
+
+Scenaro: Allocate Resources
+	Given A running telescope for executing observations on a subarray
+	When I allocate two dishes to subarray 1
+        Then I have a subarray composed of two dishes
+	Then and the subarray is in a state ready for executing observations by means of scheduling blocks

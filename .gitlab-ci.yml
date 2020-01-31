@@ -64,11 +64,11 @@ stages:
 
 lint_chart:
   stage: helm-package
-  when: manual
+  when: always
   tags:
     - helm-repoman
   script:
-    - pwd
+    - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/test.sh | sh
 
 #package_chart:
 #  stage: helm-package

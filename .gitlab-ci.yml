@@ -73,7 +73,7 @@ publish-chart:
   stage: helm-publish
   when: always # options: manual / always. If you say manual, this job will run after you've clicked somewhere on Gitlab.
   only: # This is the name of the branch from where you will be able to update the repo with your chart(s)
-    - publish-chart
+    - helm-publish
   tags:   # Make sure to enable the helm-repoman Gitlab Runner to run this chart. On your project, go to
     - helm-repoman
   script:

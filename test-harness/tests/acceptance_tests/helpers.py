@@ -1,9 +1,9 @@
 
 from tango import DeviceProxy, DevState, CmdArgType, EventType
+from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from time import sleep
 
 obsState = {"IDLE" : 0}
-
 
 class resource:
 
@@ -36,14 +36,25 @@ class monitor:
     def _is_not_changed(self):
         return (self.previous_value == self.current_value)
 
-    def get_value_when_changed(self,timeout=10):
+    def _wait(self.timeout=10):
         timeout = timeout
         while ( self._is_not_changed()):
             timeout -=1
             if (timeout == 0) : return "timout"
             sleep(2)
             self._update()
+        return "changed"
+
+
+    def get_value_when_changed(self,timeout=10):
+        response = self._wait(timeout)
+        if (response = "timeout"):
+            return "timeout"
         return self.current_value
+    
+    def wait_until_value_changed(self,timeout=10):
+        self._wait(timemout)
+
 
 
 

@@ -21,7 +21,9 @@ from tango import DeviceProxy, DevState
 from helpers import wait_for, obsState, resource, watch
 
 
-@scenario("./path-to-feature-file", "Deallocate Resources")
+@scenario("./resource_management.feature", "Deallocate Resources")
+def test_deallocate_resources():
+    """Deallocate Resources."""
 
 @given("The telescope is ready")
 def i_can_haz_telescope():

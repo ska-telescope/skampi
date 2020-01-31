@@ -1,6 +1,7 @@
 KUBE_NAMESPACE = integration
 apply_template= | kubectl apply -f -
 delete_template= | kubectl delete -f -
+path_to_oet_values = charts/oet/values.yaml
 pod_name_interactive= acceptance-testing-pod
 test_job= acceptance-testing-job
 app= acceptance-tester
@@ -31,6 +32,8 @@ acc_deploy_storage: # deploy a persistant volume that maps to the skampi reposit
 	@helm template $(storage_path)  -n test --namespace $(KUBE_NAMESPACE) --set path=$(SOURCE_PATH),enabled=true $(apply_template)
 
 acc_deploy_interactive: acc_deploy_storage # deploy a testing container to work on interactively
+	#update values of the oet by copying it from charts/oet
+	rm $(test_pod_path)/values.yaml && cp $(path_to_oet_values) $(test_pod_path)/values.yaml
 	helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml $(apply_template)
 	#wait for pod to be in running state
 	@$(wait_for_interactive_pod)

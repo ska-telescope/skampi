@@ -1,5 +1,6 @@
 #!/bin/bash
 
+pwd
 # Change directory to charts/ folder if it exists
 
 if [[ -d "charts" ]]

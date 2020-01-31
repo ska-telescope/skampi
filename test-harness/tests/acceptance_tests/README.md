@@ -89,6 +89,6 @@ To run a test autimatically the test runner pod is used as deployed by the ci pi
 ```shell
 make K8s_test:
 ```
-Note that the testing configuration is set up so that it will ignore tests ending with "_dev". This eallows one to isolate tests that are committed to master but not yet released for testing the pipeline.
+Note that the testing configuration is set up so that it will ignore tests ending with "_dev". This allows one to isolate tests that are committed to master but not yet released for testing the pipeline.
 
 Before commiting your code to master make sure the the tests execute during the test pipeline by running above command.

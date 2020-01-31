@@ -21,7 +21,9 @@ from tango import DeviceProxy, DevState
 from helpers import wait_for, obsState, resource, watch
 
 
-@scenario("./path-to-feature-file", "Deallocate Resources")
+@scenario("./resource_management.feature", "Deallocate Resources")
+def test_deallocate_resources():
+    """Deallocate Resources."""
 
 @given("The telescope is ready")
 def i_can_haz_telescope():
@@ -68,7 +70,7 @@ def show_sdp_subarray_state():
 
 
 @given("a means of observing the sdp master")
-def show_csp_master_state():
+def show_sdp_master_state():
     sdp_master = resource('mid_sdp/elt/master')
     return sdp_master
 

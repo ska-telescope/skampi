@@ -4,8 +4,8 @@
 #
 
 stages:
-  - helm-package
-#  - helm-publish
+#  - helm-package
+  - helm-publish
 
 ## ============================================================================
 ## Common settings for building docker images
@@ -70,12 +70,13 @@ stages:
 #    helm package
 
 publish-chart:
-  stage: helm-package
-  when: always
-  only:
-    - ci.pipeline
-  tags:
+  stage: helm-publish
+  when: # options: manual / always. If you say manual, this job will run after you've clicked somewhere on Gitlab.
+    - always
+  only: # This is the name of the branch from where you will be able to update the repo with your chart(s)
+    - publish-chart
+  tags:   # Make sure to enable the helm-repoman Gitlab Runner to run this chart. On your project, go to
     - helm-repoman
   script:
-    - helm init --client-only
+    - helm init --client-only # Because otherwise Helm complains
     - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/test.sh | sh

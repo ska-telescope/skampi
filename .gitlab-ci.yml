@@ -72,6 +72,7 @@ stages:
 publish-chart:
   stage: helm-package
   when: always
+  only: ci.pipeline@gitlab-org/ska-telescope
   tags:
     - helm-repoman
   script:

@@ -77,5 +77,5 @@ publish-chart:
   tags:   # Make sure to enable the helm-repoman Gitlab Runner to run this chart. On your project, go to
     - helm-repoman
   script:
-    - helm init --client-only # Because otherwise Helm complains
+    # - helm init --client-only # Because otherwise Helm complains
     - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/helm-repo-update.sh | sh

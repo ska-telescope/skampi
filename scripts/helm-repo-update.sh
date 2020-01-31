@@ -2,6 +2,8 @@
 
 # Change directory to charts/ folder if it exists
 
+pwd
+
 if [[ -d "charts" ]]
 then
         cd charts

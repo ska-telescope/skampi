@@ -83,7 +83,8 @@ stages:
 package-chart:
   stage: .post
   when: manual # the script will require you to specify the name of the chart that you want to package - CHART_NAME
-  only: helm-publish # if you want to limit the running of this job only to a branch called `helm-publish`, this is how
+  only:
+    - helm-publish # if you want to limit the running of this job only to a branch called `helm-publish`, this is how
   tags:
     - helm-repoman # the name of the runner where this job will be executed. This runner has minikube installed, and will execute the job from the shell.
   script:
@@ -92,7 +93,8 @@ package-chart:
 publish-chart:
   stage: .post
   when: always
-  only: helm-publish
+  only:
+    - helm-publish
   tags:
     - helm-repoman
   script:

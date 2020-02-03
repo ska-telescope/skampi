@@ -88,7 +88,7 @@ chart-pytest:
   stage: unit_test
   tags:
     - docker-executor
-  allow_failure: false
+  allow_failure: true
   before_script:
     - *pip_install_test_requirements
     - *add_kubernetes_hosts_entry

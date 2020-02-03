@@ -63,12 +63,6 @@ stages:
 #      - ./build
 
 
-#package_chart:
-#  stage: helm-package
-#  when: manual
-#  script:
-#    helm package
-
 publish-chart:
   stage: helm-publish
   when: always # options: manual / always. If you say manual, this job will run after you've clicked somewhere on Gitlab.

@@ -64,7 +64,7 @@ stages:
 
 
 package-chart:
-  stage: .post
+  stage: helm-package
   when: manual # the script will require you to specify the name of the chart that you want to package - CHART_NAME
   only:
     - helm-publish # if you want to limit the running of this job only to a branch called `helm-publish`, this is how
@@ -77,7 +77,7 @@ package-chart:
     - helm package $CHART_NAME
 
 publish-chart:
-  stage: .post
+  stage: helm-publish
   when: always
   only:
     - helm-publish

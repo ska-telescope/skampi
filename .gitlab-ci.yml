@@ -16,9 +16,6 @@ stages:
   - post_test
   - debug
 
-before_script: 
-  - echo "192.168.93.47   kubernetes.engageska-portugal.pt" >> /etc/hosts
-
 .pip_install_test_requirements: &pip_install_test_requirements |-
   pip3 install -r test-requirements.txt
 
@@ -28,6 +25,9 @@ before_script:
   
   env
   cat /etc/hosts
+
+before_script: 
+  - *add_kubernetes_hosts_entry
 
 helm-lint:
   stage: static_analysis

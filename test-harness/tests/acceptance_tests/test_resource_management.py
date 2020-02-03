@@ -20,9 +20,8 @@ from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
 from helpers import wait_for, obsState, resource, watch
 
-@pytest.mark.xfail
-@scenario("./resource_management.feature", "Deallocate Resources")
-@pytest.mark.xfail
+#@pytest.mark.xfail
+@scenario("resource_management.feature", "Deallocate Resources")
 def test_deallocate_resources():
     """Deallocate Resources."""
 
@@ -149,9 +148,6 @@ def subarray_state_OFF(i_can_haz_telescope, gimme_a_subarray,show_tmc_subarray_s
     assert_that(show_tmc_subarray_state.get("obsState")).is_equal_to("IDLE")
     assert_that(show_csp_subarray_state.get("obsState")).is_equal_to("IDLE")
     assert_that(show_sdp_subarray_state.get("obsState")).is_equal_to("IDLE")
-
-    # assert_that(receptorIDList_val).is_equal_to(None)
-    logging.info("recepror id list value: " + receptorIDList_val)
     assert_that(receptorIDList_val == [])
 
     # Confirm

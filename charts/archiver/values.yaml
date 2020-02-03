@@ -54,7 +54,7 @@ confighdbpp:
     pullPolicy: IfNotPresent
 
 hdbppviewer:
-  enabled: true
+  enabled: false
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: hdbpp_viewer

@@ -4,6 +4,7 @@ Test archiver
 """
 from tango import DeviceProxy, DevFailed
 from time import sleep
+import pytest
 
 def test_init():
   print("Init test archiver")

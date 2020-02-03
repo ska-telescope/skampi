@@ -8,3 +8,12 @@ template_tests:
 	done; \
 	exit $$rc
 
+tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.readthedocs.io/en/latest/development/advanced/rest-api.html#tango-rest-api-implementations
+	@echo "---------------------------------------------------"
+	@echo "Test HTTP:"; echo ""
+	curl -u "tango-cs:tango" -XGET http://tango.rest.$(INGRESS_HOST)/tango/rest/rc4/hosts/databaseds-tango-base-$(HELM_RELEASE)/10000 | json_pp
+	# @echo "", echo ""
+	# @echo "---------------------------------------------------"
+	# @echo "Test HTTPS:"; echo ""
+	# curl -k -u "tango-cs:tango" -XGET https://tango.rest.$(INGRESS_HOST)/tango/rest/rc4/hosts/databaseds-tango-base-$(HELM_RELEASE)/10000 | json_pp
+	# @echo ""

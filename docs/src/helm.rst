@@ -32,5 +32,28 @@ All the charts are included in the folder "charts". Every chart has the followin
        tag: latest
        pullPolicy: Always
 
+
+Update chart settings.
+----------------------
+
+In some cases you may want to alter the settings applied in the chart.
+E.g To set the Elastic index lifetime management policy to keep logs for 2 days, update `values.yaml` to the following:
+
+.. code-block:: console
+
+   elastic:
+    enabled: true
+    image:
+     registry: docker.elastic.co
+     image: elasticsearch/elasticsearch
+     tag: 7.4.2
+     pullPolicy: IfNotPresent
+    ilm:
+     rollover:
+      max_size: "1gb"
+      max_age: "2d" # Update here
+      delete:
+      min_age: "1d"
+
 More information available `here <https://helm.sh/docs/>`_. 
 Helm Glossare here <https://helm.sh/docs/glossary/>`_. 

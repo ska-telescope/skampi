@@ -17,7 +17,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /data/mongodb-{{ template "webjive.name" . }}-{{ .Release.Name }}/
+    path: /data/mongodb-{{ template "webjive.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
 
 ---
 

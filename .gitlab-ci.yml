@@ -4,7 +4,6 @@ variables:
   DEPLOY_ENVIRONMENT: "test"
   CT_TEST_ENVIRONMENT: "ct-test"
   KUBE_NAMESPACE: "integration"
-  BRANCH_REF: "master"
   INGRESS_HOST: "integration.engageska-portugal.pt"
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
 
@@ -25,6 +24,8 @@ before_script:
 
 .add_kubernetes_hosts_entry: &add_kubernetes_hosts_entry |-
   grep -qxF "192.168.93.47   kubernetes.engageska-portugal.pt" /etc/hosts || echo "192.168.93.47   kubernetes.engageska-portugal.pt" >> /etc/hosts
+  grep -qxF "192.168.93.34   kubernetes-v2.engageska-portugal.pt" /etc/hosts || echo "192.168.93.34   kubernetes-v2.engageska-portugal.pt" >> /etc/hosts
+  
   env
   cat /etc/hosts
 
@@ -142,7 +143,7 @@ delete test environment:
     name: $DEPLOY_ENVIRONMENT
   only:
     refs:
-      - $BRANCH_REF
+      - master
     variables:
       - $DELETE == "true"
 
@@ -159,7 +160,7 @@ deploy test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - $BRANCH_REF
+      - master
 
 k8s_test test environment:
   stage: test
@@ -173,7 +174,7 @@ k8s_test test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - $BRANCH_REF
+      - master
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths: 
@@ -193,7 +194,7 @@ smoketest test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - $BRANCH_REF
+      - master
 
 .run-debug-cmd:
   stage: debug
@@ -236,5 +237,5 @@ xray_report:
          --data @build/cucumber.json
          https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
   when: always
-  only: [$BRANCH_REF]
+  only: [master]
   retry: 2

@@ -2,6 +2,7 @@
 from tango import DeviceProxy, DevState, CmdArgType, EventType
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from time import sleep
+from numpy import ndarray 
 
 obsState = {"IDLE" : 0}
 
@@ -20,6 +21,9 @@ class resource:
         if (tp == CmdArgType.DevState):
             return str(p.read_attribute(attr).value)
         else:
+            value = getattr(p,attr)
+            if isinstance(value,ndarray):
+                return tuple(value)
             return getattr(p,attr)
 
 class monitor:
@@ -34,7 +38,10 @@ class monitor:
         self.current_value = self.resource.get(self.attr)
 
     def _is_not_changed(self):
-        return (self.previous_value == self.current_value)
+        comparison = (self.previous_value == self.current_value)
+        if isinstance(comparison,ndarray):
+            return comparison.all()
+        else: return comparison
 
     def _wait(self,timeout=10):
         timeout = timeout

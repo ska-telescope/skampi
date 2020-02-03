@@ -1,59 +1,65 @@
-{{ if .Values.vscode.enabled }}
+{{ if .Values.vnc.enabled }}
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
     chart: {{ template "tango-base.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   ports:
-  - name: vscodeport
-    port: 22
+  - name: vncport
+    port: 5920
     protocol: TCP
-    nodePort: {{ .Values.vscode.nodeport }}
+    nodePort: {{ .Values.vnc.nodeport_vnc }}
+  - name: novncport
+    port: 6081
+    protocol: TCP
+    nodePort: {{ .Values.vnc.nodeport_novnc }}
   selector:
-    app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
 
 ---
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
     chart: {{ template "tango-base.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-  serviceName: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-  replicas:  {{ .Values.vscode.replicas }}
+      app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  serviceName: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  replicas:  {{ .Values.vnc.replicas }}
   template:
     metadata:
       labels:
-        app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+        app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
         chart: {{ template "tango-base.chart" . }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
       containers:
-      - name: vscode
-        image: "{{ .Values.vscode.image.registry }}/{{ .Values.vscode.image.image }}:{{ .Values.vscode.image.tag }}"
-        imagePullPolicy: {{ .Values.vscode.image.pullPolicy }}
+      - name: vnc
+        image: "{{ .Values.vnc.image.registry }}/{{ .Values.vnc.image.image }}:{{ .Values.vnc.image.tag }}"
+        imagePullPolicy: {{ .Values.vnc.image.pullPolicy }}
         ports:
-        - name: vscodeport
-          containerPort: 22
+        - name: vncport
+          containerPort: 5920
+        - name: novncport
+          containerPort: 6081
         env:
         - name: KUBE_NAMESPACE
           value: {{ .Release.Namespace }}
@@ -62,7 +68,7 @@ spec:
         - name: TANGO_HOST
           value: databaseds-tango-base-{{ .Release.Name }}:10000 
         resources:
-{{ toYaml .Values.vscode.resources | indent 10 }}
+{{ toYaml .Values.vnc.resources | indent 10 }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

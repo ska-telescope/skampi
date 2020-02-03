@@ -29,3 +29,4 @@ Scenario: Assign Resources
     Then I have a subarray composed of two dishes
 	
 	Then the subarray is in a state ready for executing observations by means of scheduling blocks
+

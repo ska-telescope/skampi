@@ -11,6 +11,7 @@ from pytest_bdd import scenario, given, when, then
 
 
 @scenario("./1.feature", "Test Tango setup")
+@pytest.mark.xfail
 def test_tango_setup():
     pass
 

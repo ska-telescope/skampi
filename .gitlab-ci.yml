@@ -10,8 +10,16 @@ stages:
   - lifecycle
   - debug
 
+before_script: 
+  - echo "192.168.93.47   kubernetes.engageska-portugal.pt" >> /etc/hosts
+
 .pip_install_test_requirements: &pip_install_test_requirements |-
   pip3 install -r test-requirements.txt
+
+.add_kubernetes_hosts_entry: &add_kubernetes_hosts_entry |-
+  grep -qxF "192.168.93.47   kubernetes.engageska-portugal.pt" /etc/hosts || echo "192.168.93.47   kubernetes.engageska-portugal.pt" >> /etc/hosts
+  env
+  cat /etc/hosts
 
 helm-lint:
   stage: static_analysis
@@ -75,8 +83,9 @@ chart-pytest:
   allow_failure: false
   before_script:
     - *pip_install_test_requirements
+    - *add_kubernetes_hosts_entry
   script:
-    - pytest -m "chart_deploy and not quarantine" --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID
+    - pytest -m "chart_deploy and not quarantine" --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID || [ "$?" == "5" ] && true
   after_script:
     - kubectl delete namespace ci-$CI_JOB_ID || true
   environment:
@@ -97,6 +106,7 @@ chart-pytest-quarantine:
   allow_failure: true
   before_script:
     - *pip_install_test_requirements
+    - *add_kubernetes_hosts_entry
   script:
     - pytest -m quarantine --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID || true
   after_script:
@@ -114,6 +124,7 @@ chart-pytest-quarantine:
 
 delete test environment:
   stage: clean
+  retry: 2
   tags:
   - docker-executor
   script:
@@ -150,7 +161,7 @@ deploy test environment:
   tags:
   - docker-executor
   script:
-  - if [ -n "$HELM_CHART" ]; then make delete KUBE_NAMESPACE=integration; fi;
+  #- if [ -n "$HELM_CHART" ]; then make delete KUBE_NAMESPACE=integration; fi;
   - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
   - kubectl get all,pv,pvc,ingress -n integration
   retry: 2
@@ -275,4 +286,3 @@ xray_report:
   when: always
   only: [master]
   retry: 2
-

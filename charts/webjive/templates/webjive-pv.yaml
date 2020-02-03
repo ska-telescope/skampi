@@ -16,7 +16,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /data/webjive-{{ template "webjive.name" . }}-{{ .Release.Name }}/
+    path: /data/webjive-{{ template "webjive.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
 
 ---
 

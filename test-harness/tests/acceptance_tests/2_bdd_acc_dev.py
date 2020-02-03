@@ -20,8 +20,9 @@ from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
 from helpers import wait_for, obsState, resource, watch
 
-
+@pytest.mark.xfail
 @scenario("./resource_management.feature", "Deallocate Resources")
+@pytest.mark.xfail
 def test_deallocate_resources():
     """Deallocate Resources."""
 

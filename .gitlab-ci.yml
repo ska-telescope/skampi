@@ -124,6 +124,7 @@ chart-pytest-quarantine:
 
 delete test environment:
   stage: clean
+  retry: 2
   tags:
   - docker-executor
   script:

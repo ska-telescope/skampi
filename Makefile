@@ -33,8 +33,6 @@ REMOTE_DEBUG ?= false
 # include makefile targets for testing
 -include test.mk
 
-# include makefile targets for deploying acceptance testing
--include acc_tests.mk
 
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test

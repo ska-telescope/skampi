@@ -7,7 +7,11 @@ from tests.testsupport.util import parse_yaml_str, wait_until
 
 @pytest.fixture(scope="module")
 def tango_base_release(helm_adaptor, k8s_api):
-    tango_base_release = ChartDeployment("tango-base", helm_adaptor, k8s_api)  # setup
+    chart_values = {
+        "vscode.enabled": "false"
+    }
+
+    tango_base_release = ChartDeployment("tango-base", helm_adaptor, k8s_api, chart_values)  # setup
     yield tango_base_release  # yield fixture
     tango_base_release.delete()  # teardown
 
@@ -28,6 +32,7 @@ def test_databaseds_resource_definition_should_have_TANGO_HOST_set_to_its_own_ho
     assert expected_env_var in env_vars
 
 
+@pytest.mark.quarantine
 @pytest.mark.chart_deploy
 def test_tangodb_pod_should_have_mysql_server_running(tango_base_release, test_namespace):
     pod_name = [pod.metadata.name for pod in tango_base_release.get_pods() if

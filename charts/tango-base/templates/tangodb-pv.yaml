@@ -12,12 +12,13 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   storageClassName: standard
+  persistentVolumeReclaimPolicy: Delete
   capacity:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /data/tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}/
+    path: /data/tangodb-{{ template "tango-base.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
 
 ---
 

@@ -15,7 +15,7 @@ spec:
   ports:
   - name: ds
     port: 10000
-  clusterIP: None
+  type: NodePort
   selector:
     app: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
 

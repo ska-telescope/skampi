@@ -1,0 +1,62 @@
+{
+  "scanID": 123,
+  "pointing": {
+    "target": {
+      "system": "ICRS",
+      "name": "Polaris",
+      "RA": "02:31:49.0946",
+      "dec": "+89:15:50.7923"
+    }
+  },
+  "dish": {
+    "receiverBand": "1"
+  },
+  "csp":{
+    "frequencyBand": "1",
+    "fsp": [
+      {
+        "fspID": 1,
+        "functionMode": "CORR",
+        "frequencySliceID": 1,
+        "integrationTime": 1400,
+        "corrBandwidth": 0,
+        "channelAveragingMap": [
+          [1,2], [745,0], [1489,0], [2233,0], [2977,0], [3721,0], [4465,0],
+          [5209,0], [5953,0], [6697,0], [7441,0], [8185,0], [8929,0], [9673,0],
+          [10417,0], [11161,0], [11905,0], [12649,0], [13393,0], [14137,0]
+        ]
+      }
+    ]
+  },
+  "sdp": {
+    "configure": [
+      {
+        "id": "realtime-20190627-0001",
+        "sbiId": "20190627-0001",
+        "workflow": {
+          "id": "vis_ingest",
+          "type": "realtime",
+          "version": "0.1.0"
+        },
+        "parameters": {
+          "numStations": 4,
+          "numChannels": 372,
+          "numPolarisations": 4,
+          "freqStartHz": 0.35e9,
+          "freqEndHz": 1.05e9,
+          "fields": {
+            "0": {
+            "system": "ICRS",
+             "name": "Polaris",
+             "ra": 0.662432049839445,
+             "dec": 1.5579526053855042
+             }
+          }
+        },
+        "scanParameters": {
+          "123": { "fieldId": 0, "intervalMs": 1400 }
+        }
+      }
+    ]
+  }
+}

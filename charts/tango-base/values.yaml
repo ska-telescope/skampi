@@ -59,10 +59,10 @@ jive:
     pullPolicy: IfNotPresent
 
 vnc:
-  enabled: false
+  enabled: true
   nodeport_vnc: 32081
   nodeport_novnc: 32082
-  replicas: 1
+  replicas: 3
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-vnc

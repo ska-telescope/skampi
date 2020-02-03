@@ -72,7 +72,6 @@ package-chart:
     - helm-repoman # the name of the runner where this job will be executed. This runner has minikube installed, and will execute the job from the shell.
   script:
     - cd charts
-    - pwd
     - echo $CHART_NAME
     - helm package $CHART_NAME
 

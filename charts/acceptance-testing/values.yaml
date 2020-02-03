@@ -1,0 +1,6 @@
+storage:
+    pvc: 'skampi-git-repo-pvc'
+    enabled: false
+test-pod:
+    pvc: 'skampi-git-repo-pvc'
+    enabled: false

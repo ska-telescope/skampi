@@ -94,7 +94,7 @@ acc_attach:
 	kubectl exec -it -n $(KUBE_NAMESPACE) $(pod_name_test_job) /bin/bash
 
 acc_attach_interact:
-	kubectl attach -it -n $(KUBE_NAMESPACE) $(pod_name_interactive) 
+	kubectl exec -it -n $(KUBE_NAMESPACE) $(pod_name_interactive)  /bin/bash
 
 	
 

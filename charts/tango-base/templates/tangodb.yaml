@@ -15,7 +15,7 @@ spec:
   ports:
   - name: mysql
     port: 3306
-  clusterIP: None
+  type: NodePort
   selector:
     app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
 

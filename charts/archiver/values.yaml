@@ -8,9 +8,9 @@ xauthority: "~/.Xauthority"
 archiver:
   enabled: true
   image:
-    registry: nexus.engageska-portugal.pt/tango-example
-    image: archiver
-    tag: latest
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-archiver
+    tag: 0.1.0
     pullPolicy: IfNotPresent
   db:
     rootpw: secret
@@ -25,10 +25,10 @@ archiver:
 hdbppdb:
   enabled: true
   image:
-    registry: nexus.engageska-portugal.pt/tango-example
+    registry: nexus.engageska-portugal.pt/ska-docker
     image: mariadb_hdbpp
-    tag: latest
-    pullPolicy: Always
+    tag: 0.1.0
+    pullPolicy: IfNotPresent
   db:
     rootpw: secret
     db: hdbpp
@@ -56,10 +56,10 @@ confighdbpp:
 hdbppviewer:
   enabled: false
   image:
-    registry: nexus.engageska-portugal.pt/tango-example
-    image: hdbpp-viewer
-    tag: latest
-    pullPolicy: Always
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: hdbpp_viewer
+    tag: 0.1.0
+    pullPolicy: IfNotPresent
 
 attrconfig:
   image:

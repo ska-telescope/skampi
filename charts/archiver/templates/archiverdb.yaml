@@ -15,7 +15,7 @@ spec:
   ports:
   - name: archiverdb-port
     port: 3306
-  clusterIP: None
+  type: NodePort
   selector:
     app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
 

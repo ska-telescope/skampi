@@ -27,3 +27,5 @@ ansible-playbooks
 /test-harness/build/
 /test-harness/dist/
 /test-harness/report.json
+*__pycache__
+*.swp

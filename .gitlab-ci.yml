@@ -73,8 +73,7 @@ package-chart:
   allow_failure: false
   script:
     - cd charts
-    - pwd
-    - echo $CHART_NAME
+    - if [ $CHART_NAME == 'all' ]; then for
     - helm package $CHART_NAME
     - mv *.tgz ~/packages
 
@@ -87,4 +86,4 @@ publish-chart:
     - helm-repoman
   script:
     - cd ~/packages
-    - for f in *.tgz; do curl -v -u $RAW_USER:$RAW_PASS --upload-file $f $RAW_HOST/repository/helm-chart/$f; done
+    - for f in *.tgz; do curl -v -u $RAW_USER:$RAW_PASS --upload-file $f $RAW_HOST/repository/helm-chart/$f; rm $f; done

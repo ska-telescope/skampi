@@ -76,6 +76,7 @@ package-chart:
     - pwd
     - echo $CHART_NAME
     - helm package $CHART_NAME
+    - mv *.tgz ~/packages
 
 publish-chart:
   stage: helm-publish
@@ -85,5 +86,5 @@ publish-chart:
   tags:
     - helm-repoman
   script:
-    - cd charts
+    - cd ~/packages
     - for f in *.tgz; do curl -v -u $RAW_USER:$RAW_PASS --upload-file $f $RAW_HOST/repository/helm-chart/$f; done

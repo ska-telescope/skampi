@@ -17,3 +17,14 @@ Feature:
 		When the configuration file is passed to webjive
 		
 		Then the telescope is configured
+
+
+	@AT1-444 @AT1-444
+    Scenario: Assign Resources
+		Given I have a OET commands
+
+		When start up the telescope, turning DISH master devices on
+
+		And I call assignResources
+
+		Then subarray states changes to ON

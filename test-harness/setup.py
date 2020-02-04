@@ -5,6 +5,9 @@ from setuptools import setup
 
 with open('README.md') as readme_file:
     readme = readme_file.read()
+#moved test_depndencies to a seperate file so that they can be loaded with pip install during development
+with open('test_requirements.txt') as f:
+    test_requirements = f.read().splitlines()
 
 setup(
     name='skampi',
@@ -38,15 +41,7 @@ setup(
         'sphinx',
         'recommonmark'
     ],
-    tests_require=[
-        'pytest',
-        'pytest-cov',
-        'pytest-json-report',
-        'pycodestyle',
-        'pytest-bdd',
-        'elasticsearch',
-        'kubernetes'
-    ],
+    tests_require=test_requirements,
     extras_require={
         'dev':  ['prospector[with_pyroma]', 'yapf', 'isort']
     }

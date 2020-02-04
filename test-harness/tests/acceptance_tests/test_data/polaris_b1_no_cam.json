@@ -1,0 +1,69 @@
+{
+  "scanID": 123,
+  "pointing": {
+    "target": {
+      "system": "ICRS",
+      "name": "Polaris",
+      "RA": "02:31:49.0946",
+      "dec": "+89:15:50.7923"
+    }
+  },
+  "dish": {
+    "receiverBand": "1"
+  },
+  "csp":{
+    "frequencyBand": "1",
+    "fsp": [
+      {
+        "fspID": 1,
+        "functionMode": "CORR",
+        "frequencySliceID": 1,
+        "integrationTime": 1400,
+        "corrBandwidth": 0
+      }
+    ]
+  },
+  "sdp": {
+    "configure": [
+      {
+        "sbiId": "SBI-20200101-0000",
+        "scanId": 12345,
+        "processingBlocks": [
+          {
+            "id": "PB-20200101-0000-visreceive",
+            "cspCbfOutlinkAddress": "mid_csp/elt/subarray01/cbfOutLink",
+            "workflow": {"type": "realtime", "id": "vis_receive", "version": "0.1.0"},
+            "parameters": {
+              "fields": [
+                {"id": "0", "system": "ICRS", "ra":  "", "dec": ""},
+                {"id": "1", "system": "ICRS", "ra":  "", "dec": ""}
+              ]
+            },
+            "scanParameters": {"fieldId": "0", "interval": 0.14}
+          },
+          {
+            "id": "PB-20200101-0000-testrealtime",
+            "workflow": {"type": "realtime", "id": "testrealtime", "version": "0.1.0"},
+            "parameters": {}
+          },
+          {
+            "id": "PB-20200101-0000-calibration",
+            "workflow": {"type": "batch", "id": "ical", "version": "0.1.0"},
+            "parameters": {},
+            "dependencies": [
+              {"pbId": "PB-20200101-0000-visreceive", "type": ["visibilities"]}
+            ]
+          },
+          {
+            "id": "PB-20200101-0000-imaging",
+            "workflow": {"type": "batch", "id": "dprepb", "version": "0.1.0"},
+            "parameters": {},
+            "dependencies": [
+              {"pbId": "PB-20200101-0000-calibration", "type": ["calibration", "skymodel"]}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

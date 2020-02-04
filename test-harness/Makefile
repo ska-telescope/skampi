@@ -21,3 +21,11 @@ test:
 		exit $$status
 
 .PHONY: all test
+
+install:
+	pip3 install -r test_requirements.txt
+
+pytest:
+	py.test
+
+

@@ -3,9 +3,9 @@ replicaCount: 1
 testrunner:
   enabled: true
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-itango
-    tag: latest
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: oet-ssh
+    tag:  0.2.9
     pullPolicy: IfNotPresent
 
 resources: {}

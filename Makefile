@@ -6,7 +6,7 @@ BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
 THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
-KUBE_NAMESPACE ?= default## Kubernetes Namespace to use
+KUBE_NAMESPACE ?= integration## Kubernetes Namespace to use
 KUBE_NAMESPACE_SDP ?= $(KUBE_NAMESPACE)-sdp ## Kubernetes Namespace to use for SDP dynamic deployments
 HELM_RELEASE ?= test## Helm release name
 HELM_CHART ?= tango-base## Helm Chart to install (see ./charts)
@@ -32,6 +32,7 @@ REMOTE_DEBUG ?= false
 
 # include makefile targets for testing
 -include test.mk
+
 
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
@@ -61,6 +62,7 @@ k8s_test: ## test the application on K8s
 	  rm -fr build; \
 	  kubectl cp $(KUBE_NAMESPACE)/$(TEST_RUNNER):/app/test-harness/build/ build/; \
 	  exit $$status
+
 
 
 vars: ## Display variables - pass in DISPLAY and XAUTHORITY
@@ -336,3 +338,6 @@ smoketest: ## check that the number of waiting containers is zero (10 attempts, 
 		fi; \
 		n=`expr $$n - 1`; \
 	done
+
+get_status:
+	kubectl get pod,svc,deployments,pv,pvc,ingress -n $(KUBE_NAMESPACE)

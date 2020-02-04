@@ -1,0 +1,8 @@
+pvc: 'skampi-git-repo-pvc'
+storage: "0.1G"
+pod_name: default-acceptance-tester-pod
+non_interactive: false
+app: acceptance-tester
+source_code: "/home/tango/skampi/"
+job: "cd test-harness/acceptance_tests/ && make test "
+enabled: false

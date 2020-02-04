@@ -1,0 +1,20 @@
+# Default values for oet.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+display: ":0"
+xauthority: "~/.Xauthority"
+
+oet:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: oet-ssh
+    tag: latest
+    pullPolicy: IfNotPresent
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

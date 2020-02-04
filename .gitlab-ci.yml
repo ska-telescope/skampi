@@ -70,7 +70,7 @@ helm-template-pytest:
     reports:
       junit: junit-report.xml
 
-ct-test:
+.ct-test:
   stage: unit_test
   tags:
   - docker-executor

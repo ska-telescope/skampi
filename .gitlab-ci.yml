@@ -76,7 +76,7 @@ package-chart:
     - pwd
     - echo $CHART_NAME
     - helm package $CHART_NAME
-    - mv *.tgz ~/packages
+    - sudo mv *.tgz ~/packages
 
 publish-chart:
   stage: helm-publish

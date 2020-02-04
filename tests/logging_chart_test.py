@@ -124,6 +124,7 @@ def elastic_svc_proxy(logging_chart_deployment, test_namespace):
 
 
 @pytest.mark.chart_deploy
+@pytest.mark.quarantine
 @pytest.mark.usefixtures("elastic_svc_proxy")
 def test_fluentd_ingests_logs_from_pod_stdout_into_elasticsearch(logging_chart_deployment, echoserver, test_namespace):
     expected_log = "simple were so well compounded"

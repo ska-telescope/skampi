@@ -37,6 +37,8 @@ class HelmTestAdaptor(object):
 
     @staticmethod
     def _run_subprocess(shell_cmd):
+        assert isinstance(shell_cmd, list)
+        shell_cmd.extend(['--tiller-connection-timeout', '5'])
         result = subprocess.run(shell_cmd, stdout=subprocess.PIPE, encoding="utf8", check=True)
         return result.stdout
 

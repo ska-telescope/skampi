@@ -25,4 +25,5 @@ ansible-playbooks
 /test-harness/tests/__pycache__
 /tests/testsupport/__pycache__
 /test-harness/build/
-test-harness/dist/
+/test-harness/dist/
+/test-harness/report.json

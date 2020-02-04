@@ -85,4 +85,5 @@ publish-chart:
   tags:
     - helm-repoman
   script:
+    - cd charts
     - for f in *.tgz; do curl -v -u $RAW_USER:$RAW_PASS --upload-file $f $RAW_HOST/repository/helm-chart/$f; done

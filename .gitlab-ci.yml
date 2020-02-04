@@ -42,6 +42,8 @@ ct-lint:
   tags:
   - docker-executor
   allow_failure: true
+  variables:
+    PYTHONIOENCODING: utf8
   script:
   - ct lint --config ci/ct.yaml --all
 

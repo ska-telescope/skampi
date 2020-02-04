@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:0.1.5
+image: nexus.engageska-portugal.pt/ska-docker/deploy:0.3.0
 
 variables:
   DEPLOY_ENVIRONMENT: "test"

@@ -1,3 +1,6 @@
+import sys
+
+sys.path.append('/app')
 
 from tango import DeviceProxy, DevState, CmdArgType, EventType
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
@@ -112,3 +115,18 @@ class state_checker:
 
 def wait_for(device,timeout=10):
     return state_checker(device,timeout)
+
+def take_subarray(id):
+    return pilot(id)
+
+class pilot():
+
+    def __init__(self,id):
+        self.SubArray = SubArray(id)
+    
+    def to_be_composed_out_of(self,dishes):
+        SKAMid().start_up()
+        return self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1,dishes+1)]))
+
+
+

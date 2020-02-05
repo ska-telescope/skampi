@@ -72,4 +72,4 @@ publish-chart:
   script:
     - cd charts
     - if [ $CHART_NAME == 'all' ]; then for d in */; do helm package "$d"; done; else helm package $CHART_NAME; fi
-    - for f in *.tgz; do curl -v -u $RAW_USER:$RAW_PASS --upload-file $f $RAW_HOST/repository/helm-chart/$f; rm $f; done
+    - for f in *.tgz; do curl -v -u $HELM_USER:$HELM_PASS --upload-file $f $HELM_HOST/repository/helm-chart/$f; rm $f; done

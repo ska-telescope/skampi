@@ -4,3 +4,6 @@ storage:
 test-pod:
     pvc: 'skampi-git-repo-pvc'
     enabled: false
+    oet:
+        image:
+          tag: 0.2.9

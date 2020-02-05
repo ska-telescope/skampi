@@ -73,8 +73,7 @@ package-chart:
   allow_failure: false
   script:
     - cd charts
-    - if [ $CHART_NAME == 'all' ]; then for
-    - helm package $CHART_NAME
+    - if [ $CHART_NAME == 'all' ]; for d in */; do helm package "$d"; else helm package $CHART_NAME; done;
     - mv *.tgz ~/packages
 
 publish-chart:

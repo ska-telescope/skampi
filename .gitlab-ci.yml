@@ -61,15 +61,15 @@ stages:
 #    paths:
 #      - ./build
 
+
 publish-chart:
   stage: helm-publish
-  when: manual # the script will require you to specify the name of the chart that you want to package - CHART_NAME
+  when: manual
   only:
-  - helm-publish
-    tags:
-  - helm-repoman
-    script:
-  - cd charts
-  - if [ $CHART_NAME == 'all' ]; then for d in */; do helm package "$d"; done; else helm package $CHART_NAME; fi
-  - for f in *.tgz; do curl -v -u $RAW_USER:$RAW_PASS --upload-file $f $RAW_HOST/repository/helm-chart/$f; rm $f; done
-
+    - helm-publish
+  tags:
+    - helm-repoman
+  script:
+    - cd charts
+    - if [ $CHART_NAME == 'all' ]; then for d in */; do helm package "$d"; done; else helm package $CHART_NAME; fi
+    - for f in *.tgz; do curl -v -u $RAW_USER:$RAW_PASS --upload-file $f $RAW_HOST/repository/helm-chart/$f; rm $f; done

@@ -60,6 +60,7 @@ jive:
 
 vnc:
   enabled: true
+  nodeport_enabled: false
   nodeport_vnc: 32081
   nodeport_novnc: 32082
   replicas: 3
@@ -71,6 +72,7 @@ vnc:
 
 vscode:
   enabled: true
+  nodeport_enabled: false
   nodeport: 32080
   replicas: 3
   image:

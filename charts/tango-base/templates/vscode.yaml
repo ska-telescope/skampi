@@ -17,7 +17,9 @@ spec:
   - name: vscodeport
     port: 22
     protocol: TCP
+{{ if .Values.vscode.nodeport_enabled }}
     nodePort: {{ .Values.vscode.nodeport }}
+{{end}}
   selector:
     app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
 

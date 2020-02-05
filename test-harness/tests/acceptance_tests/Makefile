@@ -10,7 +10,7 @@ time_out=10
 storage_path = ../../../charts/acceptance-testing/charts/storage
 test_pod_path = ../../../charts/acceptance-testing/charts/test-pod
 test_scripts_path = test-harness/acceptance_tests 
-SOURCE_PATH := $(shell pwd )
+SOURCE_PATH := $(shell cd ~/skampi && pwd )
 THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
 
 
@@ -33,8 +33,7 @@ acc_deploy_storage: # deploy a persistant volume that maps to the skampi reposit
 
 acc_deploy_interactive: acc_deploy_storage # deploy a testing container to work on interactively
 	#update values of the oet by copying it from charts/oet
-	rm $(test_pod_path)/values.yaml && cp $(path_to_oet_values) $(test_pod_path)/values.yaml
-	helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml $(apply_template)
+	helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true  $(apply_template)
 	#wait for pod to be in running state
 	@$(wait_for_interactive_pod)
 	#execute additional dependencies on the pod
@@ -51,7 +50,7 @@ acc_delete_interactive: acc_delete_interactive_pod acc_delete_storage
 	
 
 acc_delete_interactive_pod: # delete an interactive test container
-	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml $(delete_template)
+	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true $(delete_template)
 
 
 

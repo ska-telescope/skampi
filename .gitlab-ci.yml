@@ -4,7 +4,6 @@
 #
 
 stages:
-  - helm-package
   - helm-publish
 
 ## ============================================================================
@@ -62,27 +61,15 @@ stages:
 #    paths:
 #      - ./build
 
-
-package-chart:
-  stage: helm-package
-  when: manual # the script will require you to specify the name of the chart that you want to package - CHART_NAME
-  only:
-    - helm-publish # if you want to limit the running of this job only to a branch called `helm-publish`, this is how
-  tags:
-    - helm-repoman # the name of the runner where this job will be executed. This runner has minikube installed, and will execute the job from the shell.
-  allow_failure: false
-  script:
-    - cd charts
-    - if [ $CHART_NAME == 'all' ]; then for d in */; do helm package "$d"; done; else helm package $CHART_NAME; fi
-    - mv *.tgz ~/packages
-
 publish-chart:
   stage: helm-publish
-  when: always
+  when: manual # the script will require you to specify the name of the chart that you want to package - CHART_NAME
   only:
-    - helm-publish
-  tags:
-    - helm-repoman
-  script:
-    - cd ~/packages
-    - for f in *.tgz; do curl -v -u $RAW_USER:$RAW_PASS --upload-file $f $RAW_HOST/repository/helm-chart/$f; rm $f; done
+  - helm-publish
+    tags:
+  - helm-repoman
+    script:
+  - cd charts
+  - if [ $CHART_NAME == 'all' ]; then for d in */; do helm package "$d"; done; else helm package $CHART_NAME; fi
+  - for f in *.tgz; do curl -v -u $RAW_USER:$RAW_PASS --upload-file $f $RAW_HOST/repository/helm-chart/$f; rm $f; done
+

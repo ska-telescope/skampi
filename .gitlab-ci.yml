@@ -5,6 +5,7 @@
 
 stages:
   - helm-publish
+  - docs
 
 ## ============================================================================
 ## Common settings for building docker images
@@ -61,6 +62,16 @@ stages:
 #    paths:
 #      - ./build
 
+push-to-devdev:
+        when: always
+        stage: docs
+        only:
+        except:
+                - master
+        tags:
+                - helm-publish
+        script:
+                - echo $(git branch)
 
 publish-chart:
   stage: helm-publish

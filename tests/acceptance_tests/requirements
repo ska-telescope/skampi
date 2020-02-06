@@ -1,5 +1,0 @@
-tox
-coverage
-pytest
-pytest-cov
-assertpy

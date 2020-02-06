@@ -1,4 +1,11 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:0.1.5
+image: nexus.engageska-portugal.pt/ska-docker/deploy:0.3.0
+
+variables:
+  DEPLOY_ENVIRONMENT: "test"
+  CT_TEST_ENVIRONMENT: "ct-test"
+  KUBE_NAMESPACE: "integration"
+  INGRESS_HOST: "integration.engageska-portugal.pt"
+  DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
 
 stages:
   - static_analysis
@@ -7,11 +14,20 @@ stages:
   - deploy
   - test
   - post_test
-  - lifecycle
   - debug
 
 .pip_install_test_requirements: &pip_install_test_requirements |-
   pip3 install -r test-requirements.txt
+
+.add_kubernetes_hosts_entry: &add_kubernetes_hosts_entry |-
+  grep -qxF "192.168.93.47   kubernetes.engageska-portugal.pt" /etc/hosts || echo "192.168.93.47   kubernetes.engageska-portugal.pt" >> /etc/hosts
+  grep -qxF "192.168.93.34   kubernetes-v2.engageska-portugal.pt" /etc/hosts || echo "192.168.93.34   kubernetes-v2.engageska-portugal.pt" >> /etc/hosts
+  
+  env
+  cat /etc/hosts
+
+before_script: 
+  - *add_kubernetes_hosts_entry
 
 helm-lint:
   stage: static_analysis
@@ -26,6 +42,8 @@ ct-lint:
   tags:
   - docker-executor
   allow_failure: true
+  variables:
+    PYTHONIOENCODING: utf8
   script:
   - ct lint --config ci/ct.yaml --all
 
@@ -54,7 +72,7 @@ helm-template-pytest:
     reports:
       junit: junit-report.xml
 
-ct-test:
+.ct-test:
   stage: unit_test
   tags:
   - docker-executor
@@ -66,21 +84,22 @@ ct-test:
   after_script:
     - kubectl delete namespace ct-test-$CI_JOB_ID || true
   environment:
-    name: test
+    name: $CT_TEST_ENVIRONMENT
 
 chart-pytest:
   stage: unit_test
   tags:
     - docker-executor
-  allow_failure: false
+  allow_failure: true
   before_script:
     - *pip_install_test_requirements
+    - *add_kubernetes_hosts_entry
   script:
-    - pytest -m "chart_deploy and not quarantine" --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID
+    - pytest -m "chart_deploy and not quarantine" --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID || [ "$?" == "5" ] && true
   after_script:
     - kubectl delete namespace ci-$CI_JOB_ID || true
   environment:
-    name: test
+    name: $CT_TEST_ENVIRONMENT
   artifacts:
     when: always
     name: chart-pytest-reports
@@ -97,12 +116,13 @@ chart-pytest-quarantine:
   allow_failure: true
   before_script:
     - *pip_install_test_requirements
+    - *add_kubernetes_hosts_entry
   script:
     - pytest -m quarantine --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID || true
   after_script:
     - kubectl delete namespace ci-$CI_JOB_ID || true
   environment:
-    name: test
+    name: $CT_TEST_ENVIRONMENT
   artifacts:
     when: always
     name: chart-pytest-reports
@@ -114,34 +134,18 @@ chart-pytest-quarantine:
 
 delete test environment:
   stage: clean
-  tags:
-  - docker-executor
-  script:
-  - make delete_all KUBE_NAMESPACE=integration
-  - kubectl delete namespace integration
-  - kubectl delete namespace integration-sdp
-  environment:
-    name: test
-  only:
-    refs:
-      - master
-    variables:
-      - $DELETE == "true"
-
-delete staging environment:
-  stage: clean
   retry: 2
   tags:
   - docker-executor
   script:
-  - make delete_all KUBE_NAMESPACE=staging HELM_RELEASE=staging
-  - kubectl delete namespace staging
-  - kubectl delete namespace staging-sdp
+  - make delete_all KUBE_NAMESPACE=$KUBE_NAMESPACE
+  - kubectl delete namespace $KUBE_NAMESPACE
+  - kubectl delete namespace $KUBE_NAMESPACE-sdp
   environment:
-    name: staging
+    name: $DEPLOY_ENVIRONMENT
   only:
     refs:
-      - staging
+      - master
     variables:
       - $DELETE == "true"
 
@@ -150,31 +154,15 @@ deploy test environment:
   tags:
   - docker-executor
   script:
-  - if [ -n "$HELM_CHART" ]; then make delete KUBE_NAMESPACE=integration; fi;
-  - make deploy_all KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt
-  - kubectl get all,pv,pvc,ingress -n integration
+  - make deploy_all 
+  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   retry: 2
   environment:
-    name: test
-    url: http://integration.engageska-portugal.pt/testdb
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
   only:
     refs:
       - master
-
-deploy staging environment:
-  stage: deploy
-  retry: 2
-  tags:
-  - docker-executor
-  script:
-  - make deploy_all KUBE_NAMESPACE=staging INGRESS_HOST=integration.engageska-portugal.pt HELM_RELEASE=staging
-  - kubectl get all,pv,pvc,ingress -n staging
-  environment:
-    name: staging
-    url: http://integration.engageska-portugal.pt/testdb
-  only:
-    refs:
-      - staging
 
 k8s_test test environment:
   stage: test
@@ -182,10 +170,10 @@ k8s_test test environment:
   tags:
   - docker-executor
   script:
-  - make k8s_test KUBE_NAMESPACE=integration INGRESS_HOST=integration.engageska-portugal.pt && [ -f "build/report.xml" ]
+  - make k8s_test && [ -f "build/report.xml" ]
   environment:
-    name: test
-    url: http://integration.engageska-portugal.pt/testdb
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
   only:
     refs:
       - master
@@ -202,32 +190,13 @@ smoketest test environment:
   tags:
   - docker-executor
   script:
-  - ./scripts/smoketest.sh
+  - make smoketest
   environment:
-    name: test
-    url: http://integration.engageska-portugal.pt/testdb
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
   only:
     refs:
       - master
-
-k8s_test staging environment:
-  stage: test
-  retry: 2
-  tags:
-  - docker-executor
-  script:
-  - make k8s_test KUBE_NAMESPACE=staging INGRESS_HOST=integration.engageska-portugal.pt HELM_RELEASE=staging && [ -f "build/report.xml" ]
-  environment:
-    name: staging
-    url: http://integration.engageska-portugal.pt/testdb
-  only:
-    refs:
-      - staging
-  artifacts:
-    name: "report.json"
-    paths: ['build/report.json']
-    reports:
-      junit: build/report.xml
 
 .run-debug-cmd:
   stage: debug
@@ -242,8 +211,7 @@ k8s_test staging environment:
 
 print-debug-info:
   stage: debug
-  variables:
-    KUBE_NAMESPACE: integration
+  when: always
   tags:
   - docker-executor
   script:
@@ -251,12 +219,12 @@ print-debug-info:
   - kubectl describe ingresses --all-namespaces > .public/ingresses-all-namespaces.txt
   - kubectl describe -n kube-system pod $(kubectl get pod -n kube-system | grep traefik | cut -d\  -f1) > .public/describe-traefik.txt
   - kubectl logs --tail=100 -n kube-system  $(kubectl get pod -n kube-system | grep traefik | cut -d\  -f1) > .public/logs-traefik.txt
-  - make podlogs KUBE_NAMESPACE=$KUBE_NAMESPACE > .public/podlogs.txt
+  - make podlogs > .public/podlogs.txt
   - kubectl logs --tail=100 -n $KUBE_NAMESPACE $(kubectl get pod -n $KUBE_NAMESPACE | grep fluentd | head -n 1  | cut -d\  -f1) > .public/fluentd.txt
   - kubectl get all --all-namespaces > .public/get-all-namespaces.txt
   - mv .public public
   environment:
-    name: test
+    name: $DEPLOY_ENVIRONMENT
   artifacts:
     paths:
     - public
@@ -273,4 +241,3 @@ xray_report:
   when: always
   only: [master]
   retry: 2
-

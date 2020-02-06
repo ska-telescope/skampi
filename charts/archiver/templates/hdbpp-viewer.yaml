@@ -22,7 +22,7 @@ spec:
       - -c
       - "retry --max=20 -- tango_admin --ping-device archiving/hdbpp/eventsubscriber01 &&\
           retry --max=20 -- tango_admin --ping-device archiving/hdbpp/confmanager01 &&\
-          ./hdbpp_viewer/configure_hdbppViewer"
+          ./hdbpp_viewer/hdbpp_viewer_script"
 
     env:
     - name: XAUTHORITY

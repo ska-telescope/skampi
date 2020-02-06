@@ -58,13 +58,35 @@ jive:
     tag: latest
     pullPolicy: IfNotPresent
 
+vnc:
+  enabled: true
+  nodeport_enabled: false
+  nodeport_vnc: 32081
+  nodeport_novnc: 32082
+  replicas: 3
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-vnc
+    tag: latest
+    pullPolicy: IfNotPresent
+
 vscode:
-  enabled: false
-  srcPath: /home/osboxes/workspace/ # code location
-  extPath: /home/osboxes/.vscode/ # extension localtion
+  enabled: true
+  nodeport_enabled: false
+  nodeport: 32080
+  replicas: 3
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-vscode
+    tag: 0.1.2
+    pullPolicy: IfNotPresent
+
+tangorest:
+  enabled: true
+  replicas: 1
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-rest
     tag: latest
     pullPolicy: IfNotPresent
 
@@ -75,6 +97,23 @@ logviewer:
     image: tango-java
     tag: latest
     pullPolicy: IfNotPresent
+
+# Configure Ingress resource that allow you to access the Tango REST API
+ingress:
+  enabled: true
+  hostname: tango-base.minikube.local
+
+  # Ingress annotations
+  annotations:
+    kubernetes.io/ingress.class: traefik
+
+  # Ingress TLS configuration
+  #
+  tls:
+    enabled: false
+    secretname: "tls-secret-tango-base-{{ .Release.Name }}"
+    hostname: "{{ .Values.ingress.hostname }}"
+
 
 nodeSelector: {}
 

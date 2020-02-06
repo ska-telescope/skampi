@@ -1,24 +1,7 @@
 Available resources
 ===================
 
-In the repository there is a folder called "resources" which is a collection of resources used for testing and for configuration. 
-
-+-----------------------+-------------------------------------------------------+
-| File                  | Description                                           |
-+=======================+=======================================================+
-| configuration.yaml    | First version of the configuration script used by the |
-|                       | tmc-prototype to configure the database. It reads the |
-|                       | file devices.json and configure the database          |
-|                       | accordingly.                                          |
-+-----------------------+-------------------------------------------------------+
-| devices.json          | Used by the configuration.yaml script to configure    |
-|                       | the database.                                         |
-+-----------------------+-------------------------------------------------------+
-| graphql.query.test    | It contains a graphql query to test the related       |
-|                       | webjive service.                                      |
-+-----------------------+-------------------------------------------------------+
-| traefik-minikube.yaml | Definition of the traefik ingress controller          |
-+-----------------------+-------------------------------------------------------+
+The folder called "resources" is a collection of resources used for testing and for configuration. 
 
 Makefile targets
 ----------------
@@ -31,7 +14,11 @@ This project contains a Makefile which defines the following targets:
 +-----------------+---------------------------------------------------------------------+
 | k8s             | Which kubernetes are we connected to                                |
 +-----------------+---------------------------------------------------------------------+
+| k8s_test        | test the application on K8s                                         |
++-----------------+---------------------------------------------------------------------+
 | apply           | apply resource descriptor k8s.yml                                   |
++-----------------+---------------------------------------------------------------------+
+| get_versions    | lists the container images used for particular pods                 |
 +-----------------+---------------------------------------------------------------------+
 | logs            | POD logs for descriptor                                             |
 +-----------------+---------------------------------------------------------------------+
@@ -39,11 +26,27 @@ This project contains a Makefile which defines the following targets:
 +-----------------+---------------------------------------------------------------------+
 | namespace       | create the kubernetes namespace                                     |
 +-----------------+---------------------------------------------------------------------+
+| deploy_all      | deploy ALL of the helm chart                                        |
++-----------------+---------------------------------------------------------------------+
+| deploy_etcd     | deploy etcd-operator into namespace                                 |
++-----------------+---------------------------------------------------------------------+
 | deploy          | deploy the helm chart                                               |
 +-----------------+---------------------------------------------------------------------+
 | show            | show the helm chart                                                 |
 +-----------------+---------------------------------------------------------------------+
+| delete_all      | delete ALL of the helm chart release                                |
++-----------------+---------------------------------------------------------------------+
+| delete_etcd     | Remove etcd-operator from namespace                                 |
++-----------------+---------------------------------------------------------------------+
 | delete          | delete the helm chart release                                       |
++-----------------+---------------------------------------------------------------------+
+| traefik         | install the helm chart for traefik (in the kube-system namespace)   |
++-----------------+---------------------------------------------------------------------+
+| delete_traefik  | delete the helm chart for traefik                                   |
++-----------------+---------------------------------------------------------------------+
+| gangway         | install gangway authentication for gitlab (kube-system namespace)   |
++-----------------+---------------------------------------------------------------------+
+| delete_gangway  | delete gangway authentication for gitlab                            |
 +-----------------+---------------------------------------------------------------------+
 | poddescribe     | describe Pods executed from Helm chart                              |
 +-----------------+---------------------------------------------------------------------+
@@ -54,10 +57,11 @@ This project contains a Makefile which defines the following targets:
 | help            | Show the help summary                                               |
 +-----------------+---------------------------------------------------------------------+
 
+
 Ansible
 -------
 
-It is possible to setup a local integration environment using the ansible playbook available `here <https://github.com/ska-telescope/ansible-playbooks#integration-environment>`_.
+It is possible to setup a local SKAMPI environment using the ansible playbook available `here <https://github.com/ska-telescope/ansible-playbooks#skampi>`_.
 
 
 .. toctree::
@@ -65,3 +69,4 @@ It is possible to setup a local integration environment using the ansible playbo
    :caption: Readme File:
 
    resources-readme
+   resources-auth-readme

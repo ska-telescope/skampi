@@ -1,4 +1,0 @@
-pvc: 'skampi-git-repo-pvc'
-pv: 'skampi-git-repo-pv'
-storage: 0.1G
-path: "/home/ubuntu/skampi"

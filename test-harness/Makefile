@@ -5,7 +5,7 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
-TEST_ARTIFACTS = setup_py_test.stdout htmlcov coverage.xml report.xml report.json cucumber.json pytest-logs.txt
+TEST_ARTIFACTS = setup_py_test.stdout report.xml report.json cucumber.json pytest-logs.txt
 
 all: test
 
@@ -21,3 +21,11 @@ test:
 		exit $$status
 
 .PHONY: all test
+
+install:
+	pip3 install -r test_requirements.txt
+
+pytest:
+	py.test
+
+

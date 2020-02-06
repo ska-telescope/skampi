@@ -1,0 +1,61 @@
+{{if .Values.enabled}}
+{{if .Values.non_interactive}} {{else}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: acceptance-testing-service
+ namespace: {{ .Release.Namespace }}
+ labels: 
+  app: {{ .Values.app}}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+spec:
+ type: NodePort
+ ports:
+ - port: 2022
+   targetPort: 22
+   protocol: TCP
+ selector:
+    app: {{ .Values.app}}
+    non_interactive: "{{ .Values.non_interactive}}"
+{{end}}
+
+---
+apiVersion: v1
+kind: Pod
+metadata: 
+ name: {{ .Values.pod_name}}
+ namespace: {{ .Release.Namespace }}
+ labels:
+   app: {{ .Values.app}}
+   release: {{ .Release.Name }}
+   heritage: {{ .Release.Service }}
+   non_interactive: "{{ .Values.non_interactive}}"
+spec:
+ volumes:
+  - name: environment
+    configMap:
+      name: environment-oet-oet-{{ .Release.Name }}  {{if .Values.non_interactive}} {{else}}
+  - name: testing-folder
+    persistentVolumeClaim:
+      claimName: {{ .Values.pvc }}  {{end}}
+ containers:
+ - name: sshcheck
+   image: {{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}
+   imagePullPolicy: Always 
+   workingDir: {{ .Values.source_code}}
+   ports:
+    - containerPort: 22
+   env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+   volumeMounts:
+      - name: environment
+        mountPath: /home/tango/.ssh
+        readOnly: true {{if .Values.non_interactive}} {{else}}
+      - name: testing-folder 
+        mountPath: {{ .Values.source_code }} {{end}}
+ restartPolicy: Always
+ {{end}}
+

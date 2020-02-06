@@ -10,6 +10,12 @@ elastic:
     image: elasticsearch/elasticsearch
     tag: 7.4.2
     pullPolicy: IfNotPresent
+  ilm:
+    rollover:
+      max_size: "1gb"
+      max_age: "1d"
+    delete:
+      min_age: "1d"
 
 fluentd:
   enabled: true

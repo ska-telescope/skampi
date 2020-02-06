@@ -4,3 +4,4 @@ testinfra==3.3.0
 kubernetes==10.0.1
 elasticsearch==7.1.0
 requests==2.22.0
+pytest-bdd==3.0.1

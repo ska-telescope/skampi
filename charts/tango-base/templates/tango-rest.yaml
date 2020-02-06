@@ -16,7 +16,7 @@ spec:
   ports:
   - name: rest
     protocol: TCP
-    port: 80
+    port: 8080
     targetPort: rest
   selector:
     app.kubernetes.io/name: tango-rest-{{ template "tango-base.name" . }}

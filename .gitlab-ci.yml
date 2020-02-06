@@ -69,7 +69,7 @@ push-to-devdev:
         except:
                 - master
         tags:
-                - helm-publish
+                - helm-repoman
         script:
                 - echo $(git branch)
 

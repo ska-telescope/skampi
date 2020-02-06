@@ -37,7 +37,7 @@ acc_deploy_interactive: acc_deploy_storage # deploy a testing container to work 
 	#wait for pod to be in running state
 	@$(wait_for_interactive_pod)
 	#execute additional dependencies on the pod
-	kubectl exec -it  -n integration $(pod_name_interactive) -- bash  -c "DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install curl -y && apt-get install git --fix-missing -y"
+	kubectl exec -it  -n integration $(pod_name_interactive) -- bash  -c "DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install curl -y && apt-get install git --fix-missing -y && /venv/bin/pip3 install jupyter"
 
 acc_show_interactive:
 	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml

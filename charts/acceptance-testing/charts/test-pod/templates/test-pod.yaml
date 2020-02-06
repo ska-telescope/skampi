@@ -14,8 +14,12 @@ spec:
  type: NodePort
  ports:
  - port: 2022
+   name: "ssh" 
    targetPort: 22
    protocol: TCP
+ - port: 8888
+   name: "jupyter" 
+   targetPort: 8888 
  selector:
     app: {{ .Values.app}}
     non_interactive: "{{ .Values.non_interactive}}"

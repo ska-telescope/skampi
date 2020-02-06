@@ -9,7 +9,7 @@ Acceptance tests for MVP.
 import sys
 
 sys.path.append('/app')
-
+import time
 import pytest
 import logging
 from time import sleep
@@ -117,83 +117,34 @@ def deallocate_resources(gimme_a_subarray):
     # logging.info("deallocation result: ", result)
 
 
-@then("TMC subarray should go into OFF state")
-def subarray_state_OFF(i_can_haz_telescope, gimme_a_subarray,show_tmc_subarray_state):
+@then("subarray should go into OFF state")
+def subarray_state_OFF(i_can_haz_telescope, gimme_a_subarray, show_tmc_subarray_state,
+                       show_csp_subarray_state, show_sdp_subarray_state ):
     logging.info("Now deallocating resources ... ")
+    logging.info("TMC subarray state: " + show_tmc_subarray_state.get("State"))
+    time.sleep(5)
+    logging.info("CSP subarray state: " + show_csp_subarray_state.get("State"))
+    logging.info("SDP subarray state: " + show_sdp_subarray_state.get("State"))
 
-    # prepare
-    watch_State_csp = watch(show_tmc_subarray_state).for_a_change_on("State")
-    logging.info("CSP subarray state: " + show_tmc_subarray_state.get("State"))
-
-    # execute
-    # gimme_a_subarray.deallocate()
+    watch_receptorIDList = watch(show_tmc_subarray_state).for_a_change_on("receptorIDList")
 
     # gather info
-    # State_val_csp = watch_State_csp.get_value_when_changed()
+    receptorIDList_val = watch_receptorIDList.get_value_when_changed()
 
     # Confirm
     assert_that(show_tmc_subarray_state.get("State") == "OFF")
-    #assert_that(State_val_csp).is_equal_to("OFF")
+    assert_that(show_csp_subarray_state.get("State") == "OFF")
+    assert_that(show_sdp_subarray_state.get("State") == "OFF")
 
     assert_that(show_tmc_subarray_state.get("obsState")).is_equal_to("IDLE")
-
-    # Confirm
-    logging.info("CSP Subarry is now deallocated")
-
-    # put telescope to standby
-    i_can_haz_telescope.standby()
-
-
-@then("CSP subarray should go into OFF state")
-def subarray_state_OFF(i_can_haz_telescope, gimme_a_subarray,show_csp_subarray_state):
-    logging.info("Now deallocating resources ... ")
-
-    # prepare
-    watch_State_csp = watch(show_csp_subarray_state).for_a_change_on("State")
-    logging.info("CSP subarray state: " + show_csp_subarray_state.get("State"))
-
-    # execute
-    # gimme_a_subarray.deallocate()
-
-    # gather info
-    # State_val_csp = watch_State_csp.get_value_when_changed()
-
-    # Confirm
-    assert_that(show_csp_subarray_state.get("State") == "OFF")
-    #assert_that(State_val_csp).is_equal_to("OFF")
-
     assert_that(show_csp_subarray_state.get("obsState")).is_equal_to("IDLE")
-
-    # Confirm
-    logging.info("CSP Subarry is now deallocated")
-
-    # put telescope to standby
-    i_can_haz_telescope.standby()
-
-
-@then ("SDP subarray should go into OFF state")
-def subarray_state_OFF(i_can_haz_telescope, gimme_a_subarray,show_sdp_subarray_state):
-    logging.info("Now deallocating resources ... ")
-
-    # prepare
-    watch_State_sdp = watch(show_sdp_subarray_state).for_a_change_on("State")
-    logging.info("SDP subarray state: " + show_sdp_subarray_state.get("State"))
-
-    # execute
-    # gimme_a_subarray.deallocate()
-
-    # gather info
-    # State_val_csp = watch_State_csp.get_value_when_changed()
-
-    # Confirm
-    assert_that(show_sdp_subarray_state.get("State") == "OFF")
-    #assert_that(State_val_csp).is_equal_to("OFF")
-
     assert_that(show_sdp_subarray_state.get("obsState")).is_equal_to("IDLE")
+    assert_that(receptorIDList_val == [])
 
     # Confirm
-    logging.info("SDP Subarry is now deallocated")
+    logging.info("Subarry is now deallocated")
 
     # put telescope to standby
     i_can_haz_telescope.standby()
+
 

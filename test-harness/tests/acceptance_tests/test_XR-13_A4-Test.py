@@ -21,7 +21,7 @@ from tango import DeviceProxy, DevState
 from helpers import wait_for, obsState, resource, watch
 
 #@pytest.mark.xfail
-@scenario("resource_management.feature", "Deallocate Resources")
+@scenario("1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
 def test_deallocate_resources():
     """Deallocate Resources."""
 

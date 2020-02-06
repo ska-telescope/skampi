@@ -17,11 +17,15 @@ spec:
   - name: vncport
     port: 5920
     protocol: TCP
+{{ if .Values.vnc.nodeport_enabled }}
     nodePort: {{ .Values.vnc.nodeport_vnc }}
+{{end}}
   - name: novncport
     port: 6081
     protocol: TCP
+{{ if .Values.vnc.nodeport_enabled }}
     nodePort: {{ .Values.vnc.nodeport_novnc }}
+{{end}}
   selector:
     app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
 

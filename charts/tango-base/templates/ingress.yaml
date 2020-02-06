@@ -21,7 +21,7 @@ spec:
           - path: /
             backend:
               serviceName:  tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-              servicePort: 80
+              servicePort: 8080
 {{- if .Values.ingress.tls.enabled }}
   tls:
     - secretName: {{ tpl .Values.ingress.tls.secretname . }}

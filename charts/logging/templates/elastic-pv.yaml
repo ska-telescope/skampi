@@ -1,4 +1,7 @@
 {{ if .Values.elastic.enabled }}
+
+{{ if .Values.elastic.use_pv }}
+
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -43,4 +46,7 @@ spec:
   resources:
     requests:
       storage: 10Gi
-{{ end }}
+
+{{ end }} # use_pv
+
+{{ end }} # enabled

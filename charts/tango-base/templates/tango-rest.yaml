@@ -7,20 +7,17 @@ metadata:
   name: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app.kubernetes.io/name: tango-rest-{{ template "tango-base.name" . }}
-    app.kubernetes.io/instance: "{{ .Release.Name }}"
-    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
-    helm.sh/chart: "{{ template "tango-base.chart" . }}"
+    app: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    chart: {{ template "tango-base.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   ports:
   - name: rest
-    protocol: TCP
-    port: 80
-    targetPort: rest
+    port: 8080
   selector:
-    app.kubernetes.io/name: tango-rest-{{ template "tango-base.name" . }}
-    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
 
 ---
 apiVersion: apps/v1
@@ -37,9 +34,6 @@ spec:
   selector:
     matchLabels:
       app: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-      chart: {{ template "tango-base.chart" . }}
-      release: {{ .Release.Name }}
-      heritage: {{ .Release.Service }}
   replicas: {{ .Values.tangorest.replicas }}
   template:
     metadata:

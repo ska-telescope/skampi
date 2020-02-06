@@ -14,6 +14,8 @@ spec:
       labels:
         component: elasticsearch
     spec:
+
+      {{ if .Values.elastic.use_pv }}
       initContainers:
       - name: setdatadirpermissions
         image: "{{ .Values.elastic.image.registry }}/{{ .Values.elastic.image.image }}:{{ .Values.elastic.image.tag }}"
@@ -25,6 +27,7 @@ spec:
         volumeMounts:
         - name: elastic-data
           mountPath: /usr/share/elasticsearch/data
+      {{ end }}
 
       containers:
       - name: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
@@ -41,19 +44,26 @@ spec:
         - containerPort: 9200
           name: http
           protocol: TCP
+
+        {{ if .Values.elastic.use_pv }}
         volumeMounts:
         - name: elastic-data
           mountPath: /usr/share/elasticsearch/data
+        {{ end }}
+
         readinessProbe:
           httpGet:
             path: /_cluster/health
             port: 9200
           initialDelaySeconds: 15
           periodSeconds: 5
+
+      {{ if .Values.elastic.use_pv }}
       volumes:
       - name: elastic-data
         persistentVolumeClaim:
           claimName: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
+      {{ end }}
 
 ---
 

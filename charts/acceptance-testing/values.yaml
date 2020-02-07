@@ -6,4 +6,4 @@ test-pod:
     enabled: false
     oet:
         image:
-          tag: 0.2.9
+            tag: 0.2.9

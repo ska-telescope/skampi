@@ -2,7 +2,7 @@ image: nexus.engageska-portugal.pt/ska-docker/deploy:0.3.0
 
 variables:
   DEPLOY_ENVIRONMENT: "test"
-  CT_TEST_ENVIRONMENT: "ct-test"
+  CT_TEST_ENVIRONMENT: "test"
   KUBE_NAMESPACE: "integration"
   INGRESS_HOST: "integration.engageska-portugal.pt"
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"

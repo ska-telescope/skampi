@@ -24,7 +24,7 @@ from helpers import wait_for, obsState, resource, watch
 def result():
     return {}
 
-@scenario("1_XR-13.feature", "A1 Test, Sub-array resource allocation")
+@scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
 def test_allocate_resources():
     """Assign Resources."""
 

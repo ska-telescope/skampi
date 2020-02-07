@@ -6,6 +6,9 @@ variables:
   KUBE_NAMESPACE: "integration"
   INGRESS_HOST: "integration.engageska-portugal.pt"
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
+  HELM_TILLER_SILENT: "true"
+  HELM_TILLER_LOGS: "true"
+  HELM_TILLER_LOGS_DIR: tiller.log
 
 stages:
   - static_analysis
@@ -88,6 +91,10 @@ helm-template-pytest:
   - ct install --config ci/ct.yaml --release-label $CI_COMMIT_REF_SLUG --build-id $CI_JOB_ID --namespace ct-test-$CI_JOB_ID
   after_script:
     - kubectl delete namespace ct-test-$CI_JOB_ID || true
+  artifacts:
+    when: always
+    paths:
+    - tiller.log
   environment:
     name: $CT_TEST_ENVIRONMENT
 
@@ -111,6 +118,7 @@ chart-pytest:
     paths:
     - junit-report.xml
     - pytest-logs.txt
+    - tiller.log
     reports:
       junit: junit-report.xml
 
@@ -159,7 +167,7 @@ deploy test environment:
   tags:
   - docker-executor
   script:
-  - make helm HELM_CMD=version
+  - helm tiller run -- helm version 
   - make deploy_all 
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   retry: 2

@@ -145,6 +145,7 @@ delete test environment:
   - make delete_all KUBE_NAMESPACE=$KUBE_NAMESPACE
   - kubectl delete namespace $KUBE_NAMESPACE
   - kubectl delete namespace $KUBE_NAMESPACE-sdp
+  - helm tiller run -- helm ls | grep -E '(FAILED|DELETED)' | awk '{print $1}' | xargs -I'%N' helm tiller run -- helm delete --purge \%N
   environment:
     name: $DEPLOY_ENVIRONMENT
   only:

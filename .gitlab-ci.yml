@@ -159,7 +159,7 @@ deploy test environment:
   tags:
   - docker-executor
   script:
-  - helm version 2> /dev/null
+  - helm version
   - make deploy_all 
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   retry: 2

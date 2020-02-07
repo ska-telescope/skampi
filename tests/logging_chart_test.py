@@ -78,7 +78,11 @@ class TestLoggingChartTemplates:
 @pytest.fixture(scope="module")
 def logging_chart_deployment(helm_adaptor, k8s_api):
     logging.info("+++ Deploying logging chart.")
-    chart_deployment = ChartDeployment('logging', helm_adaptor, k8s_api)
+    chart_values = {
+        "elastic.use_pv": "false"
+    }
+
+    chart_deployment = ChartDeployment('logging', helm_adaptor, k8s_api, values=chart_values)
     yield chart_deployment
     logging.info("+++ Deleting logging chart release.")
     chart_deployment.delete()

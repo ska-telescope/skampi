@@ -8,7 +8,12 @@ from tests.testsupport.util import parse_yaml_str, wait_until
 @pytest.fixture(scope="module")
 def tango_base_release(helm_adaptor, k8s_api):
     chart_values = {
-        "vscode.enabled": "false"
+        "vscode.enabled": "false",
+        "vnc.enabled": "false",
+        "vscode.enabled": "false",
+        "ingress.enabled": "false",
+        "tangotest.enabled": "false",
+        "tangodb.use_pv": "false"
     }
 
     tango_base_release = ChartDeployment("tango-base", helm_adaptor, k8s_api, chart_values)  # setup

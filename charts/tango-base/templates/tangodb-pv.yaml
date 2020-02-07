@@ -1,4 +1,6 @@
 {{ if .Values.tangodb.enabled }}
+
+{{ if .Values.tangodb.use_pv }}
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -39,5 +41,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
+{{ end }}
 
 {{ end }}

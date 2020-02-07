@@ -7,6 +7,7 @@ xauthority: "~/.Xauthority"
 
 tangodb:
   enabled: true
+  use_pv: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-db

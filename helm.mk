@@ -4,7 +4,8 @@
 
 # stuff for backwards compatibility with helm v2
 HELM_TILLER_PLUGIN := https://github.com/rimusz/helm-tiller
-helm_is_v2 = $(strip $(shell helm version 2> /dev/null | grep SemVer:\"v2\.))
+#helm_is_v2 = $(strip $(shell helm version 2> /dev/null | grep SemVer:\"v2\.))
+helm_is_v2 = true
 helm_install_shim = $(if $(helm_is_v2),--name $(HELM_RELEASE) --tiller-namespace $(KUBE_NAMESPACE),$(HELM_RELEASE))
 
 # helm command to install a chart

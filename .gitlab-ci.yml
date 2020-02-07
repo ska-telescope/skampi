@@ -81,7 +81,7 @@ helm-template-pytest:
       junit: junit-report.xml
 
 .ct-test:
-  stage: unit_test
+  stage: test
   tags:
   - docker-executor
   allow_failure: true
@@ -99,7 +99,7 @@ helm-template-pytest:
     name: $CT_TEST_ENVIRONMENT
 
 chart-pytest:
-  stage: unit_test
+  stage: test
   tags:
     - docker-executor
   allow_failure: true
@@ -123,7 +123,7 @@ chart-pytest:
       junit: junit-report.xml
 
 chart-pytest-quarantine:
-  stage: unit_test
+  stage: test
   tags:
     - docker-executor
   allow_failure: true

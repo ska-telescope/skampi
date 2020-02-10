@@ -42,3 +42,8 @@ The X Window System can also be installed into the container itself using a virt
 service/vnc-tango-base-test                NodePort    10.102.239.60    <none>        5920:30040/TCP,6081:31955/TCP       10h
 ```
 
+Please request the password to the system team. 
+Once inside the container, it is possible to open jive with a new terminal window as shown in the figure below. 
+
+.. image:: _static/img/novnc.png 
+    :alt: No VNC in the pipeline cluster

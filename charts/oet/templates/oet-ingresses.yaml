@@ -1,0 +1,25 @@
+{{ if .Values.oet.enabled }}
+
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: jupyter-main-ing-{{ template "oet.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+      kubernetes.io/ingress.class: traefik
+spec:
+  tls:
+    - hosts:
+      - {{ tpl .Values.ingress.hostname . }}
+      secretName: tls-secret-{{ template "oet.name" . }}-{{ .Release.Name }}
+  rules:
+    - host: {{ tpl .Values.ingress.hostname . }}
+      http:
+        paths:
+       - path: /oet/jupyter
+          backend:
+           serviceName: jupyter-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           servicePort: 80
+

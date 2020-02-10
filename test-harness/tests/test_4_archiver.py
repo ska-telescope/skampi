@@ -3,6 +3,7 @@
 Test archiver
 """
 from tango import DevFailed, DeviceProxy
+from time import sleep
 import pytest
 import logging
 

@@ -11,6 +11,7 @@ This project defines the integration between various component repository on Kub
    templates
    environments
    testing
+   gui
    resources
 
 

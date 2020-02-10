@@ -1,0 +1,124 @@
+{{ if .Values.ssh.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ssh-{{ template "oet.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: ssh-{{ template "oet.name" . }}-{{ .Release.Name }}
+    chart: {{ template "oet.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 22
+      nodePort: {{ .Values.ssh.nodePort }}
+  selector:
+    app: ssh-{{ template "oet.name" . }}-{{ .Release.Name }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ssh-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  environment: |
+    TANGO_HOST=databaseds-tango-base-{{ .Release.Name }}:10000
+  profile: |
+    export PATH=/venv/bin:${PATH}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ssh-{{ template "oet.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: ssh-{{ template "oet.name" . }}-{{ .Release.Name }}
+    chart: {{ template "oet.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: ssh-{{ template "oet.name" . }}-{{ .Release.Name }}
+  serviceName: ssh-{{ template "oet.name" . }}-{{ .Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ssh-{{ template "oet.name" . }}-{{ .Release.Name }}
+        chart: {{ template "oet.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      restartPolicy: Always
+      initContainers:
+      - name: check-databaseds-ready
+        image: "{{ .Values.ssh.image.registry }}/{{ .Values.ssh.image.image }}:{{ .Values.ssh.image.tag }}"
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-{{ .Release.Name }}:10000
+          - --timeout=30
+          - --strict
+          - --
+          - echo databaseds ready
+      containers:
+      - name: oet-ssh
+        image: "{{ .Values.ssh.image.registry }}/{{ .Values.ssh.image.image }}:{{ .Values.ssh.image.tag }}"
+        imagePullPolicy: {{ .Values.ssh.imagePullPolicy }}
+        ports:
+          - name: oet-ssh
+            containerPort: 22
+        env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-{{ .Release.Name }}:10000
+        volumeMounts:
+          - name: ssh-configmap-volume
+            mountPath: /home/tango/.profile
+            subPath: .profile
+          - name: ssh-configmap-volume
+            mountPath: /etc/environment
+            subPath: environment
+        readinessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: {{ .Values.ssh.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.ssh.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.ssh.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.ssh.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.ssh.readinessProbe.failureThreshold }}
+        livenessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: {{ .Values.ssh.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.ssh.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.ssh.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.ssh.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.ssh.livenessProbe.failureThreshold }}
+      volumes:
+        - name: ssh-configmap-volume
+          configMap:
+            name: ssh-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
+            items:
+            - key: environment
+              path: environment
+            - key: profile
+              path: .profile
+      resources:
+  {{ toYaml .Values.ssh.resources | indent 10 }}
+  {{- with .Values.nodeSelector }}
+nodeSelector:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{- with .Values.affinity }}
+affinity:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{- with .Values.tolerations }}
+tolerations:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{ end }}

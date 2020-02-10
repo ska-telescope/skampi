@@ -1,0 +1,140 @@
+{{ if .Values.jupyter.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+    chart: {{ template "oet.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8888
+      nodePort: {{ .Values.jupyter.nodePort }}
+  selector:
+    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+---
+{{if .Values.jupyter.storage.enabled}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jupyter-storage-pv
+  namespace: {{ .Release.Namespace }}
+  labels:
+    type: jupyter_storage
+    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+spec:
+  storageClassName: jupyter
+  capacity:
+    storage: {{ .Values.jupyter.storage.capacity }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "{{ .Values.jupyter.storage.hostPath }}"
+  
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jupyter-storage-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    type: jupyter_storage
+    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+spec:
+  storageClassName: jupyter
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.jupyter.storage.capacity }}
+{{end}}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+    chart: {{ template "oet.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+  serviceName: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+        chart: {{ template "oet.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: jupyter-storage-pvc
+      initContainers:
+      - name: check-databaseds-ready
+        image: "{{ .Values.jupyter.image.registry }}/{{ .Values.jupyter.image.image }}:{{ .Values.jupyter.image.tag }}"
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-{{ .Release.Name }}:10000
+          - --timeout=30
+          - --strict
+          - --
+          - echo databaseds ready
+      containers:
+      - name: oet-jupyter
+        image: "{{ .Values.jupyter.image.registry }}/{{ .Values.jupyter.image.image }}:{{ .Values.jupyter.image.tag }}"
+        imagePullPolicy: {{ .Values.jupyter.imagePullPolicy }}
+        ports:
+          - name: oet-jupyter
+            containerPort: 8888
+        env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-{{ .Release.Name }}:10000
+        volumeMounts:
+          - name: storage
+            mountPath: /app/jupyter_storage
+        readinessProbe:
+          tcpSocket:
+            port: 8888
+          initialDelaySeconds: {{ .Values.jupyter.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.jupyter.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.jupyter.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.jupyter.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.jupyter.readinessProbe.failureThreshold }}
+        livenessProbe:
+          tcpSocket:
+            port: 8888
+          initialDelaySeconds: {{ .Values.jupyter.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.jupyter.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.jupyter.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.jupyter.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.jupyter.livenessProbe.failureThreshold }}
+      restartPolicy: Always
+      resources:
+  {{ toYaml .Values.rest.resources | indent 10 }}
+  {{- with .Values.nodeSelector }}
+nodeSelector:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{- with .Values.affinity }}
+affinity:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{- with .Values.tolerations }}
+tolerations:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{ end }}

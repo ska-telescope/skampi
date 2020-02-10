@@ -2,16 +2,100 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-display: ":0"
-xauthority: "~/.Xauthority"
-
-oet:
+ssh:
   enabled: true
+  nodePort:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet-ssh
-    tag: 0.2.9
+    tag: 0.3.0
     pullPolicy: IfNotPresent
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+itango:
+  enabled: false
+  nodePort:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: oet-ssh
+    tag: 0.3.0
+    pullPolicy: IfNotPresent
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+rest:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: oet
+    tag: 0.3.0
+    pullPolicy: IfNotPresent
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+jupyter:
+  enabled: true
+  nodePort:
+  storage:
+    enabled: true
+    hostPath: /home/ubuntu/skampi/build/jupyter/
+    capacity: 0.1G
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: oet-jupyter
+    tag: 0.3.0
+    pullPolicy: IfNotPresent
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
 
 nodeSelector: {}
 

@@ -3,6 +3,8 @@
 Test archiver
 """
 from tango import DevFailed, DeviceProxy
+import pytest
+import logging
 
 def test_init():
   print("Init test archiver")
@@ -36,15 +38,23 @@ def test_archiver():
           flag=0
           break
   except DevFailed as df:
-    str_df = str(df)
-    print("Exception: ", str_df)
+    logging.info("Managed exception: " + str(df))
 
-  # Check status of Attribute Archiving in Configuration Manager
-  result_config_manager = conf_manager_proxy.command_inout("AttributeStatus", attribute)
-  # Check status of Attribute Archiving in Event Subscriber
-  result_evt_subscriber = evt_subscriber_device_proxy.command_inout("AttributeStatus", attribute)
-  assert "Archiving          : Started" in result_config_manager
-  assert "Archiving          : Started" in result_evt_subscriber
+  max_retries = 10
+  sleep_time = 1
+  for x in range(0, max_retries):
+    try:
+      # Check status of Attribute Archiving in Configuration Manager
+      result_config_manager = conf_manager_proxy.command_inout("AttributeStatus", attribute)
+      # Check status of Attribute Archiving in Event Subscriber
+      result_evt_subscriber = evt_subscriber_device_proxy.command_inout("AttributeStatus", attribute)
+      assert "Archiving          : Started" in result_config_manager
+      assert "Archiving          : Started" in result_evt_subscriber
+    except DevFailed as df:
+      if(x == (max_retries -1)):
+        raise df
+      logging.info("Attribute not ready. Sleeping for " + str(sleep_time) + "ss")
+      sleep(sleep_time)
 
   try:
     # Remove Attribute for archiving
@@ -57,5 +67,4 @@ def test_archiver():
           flag=0
           break
   except DevFailed as df:
-    str_df = str(df)
-    print("Exception: ", str_df)
+    logging.info("Managed exception: " + str(df))

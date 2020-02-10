@@ -1,6 +1,4 @@
-{{ if .Values.oet.enabled }}
-
-
+{{ if .Values.jupyter.enabled }}
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -10,19 +8,19 @@ metadata:
   annotations:
       kubernetes.io/ingress.class: traefik
 spec:
+{{ if .Values.ingress.tls.enabled }}
   tls:
     - hosts:
-      - {{ tpl .Values.ingress.hostname . }}
-      secretName: tls-secret-{{ template "oet.name" . }}-{{ .Release.Name }}
+      - {{ template .Values.ingress.hostname . }}
+      secretName: {{ tpl .Values.ingress.tls.secretname . }}
+{{ end }}
   rules:
-    - host: {{ tpl .Values.ingress.hostname . }}
+    - host: {{ template .Values.ingress.hostname . }}
       http:
         paths:
-       - path: /oet/jupyter
+        - path: /oet/jupyter
           backend:
-           serviceName: jupyter-{{ template "webjive.name" . }}-{{ .Release.Name }}
+           serviceName: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
            servicePort: 80
-
-{{ end }}
 
 {{ end }}

@@ -1,0 +1,123 @@
+{{ if .Values.itango.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+    chart: {{ template "oet.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 22
+      nodePort: {{ .Values.itango.nodePort }}
+  selector:
+    app: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: itango-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  environment: |
+    TANGO_HOST=databaseds-tango-base-{{ .Release.Name }}:10000
+    PATH=/venv/bin:$PATH
+  profile: |
+    cd /app
+    /venv/bin/itango3 --profile=ska
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+    chart: {{ template "oet.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+  serviceName: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+        chart: {{ template "oet.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      restartPolicy: Always
+      initContainers:
+      - name: check-databaseds-ready
+        image: "{{ .Values.rest.image.registry }}/{{ .Values.rest.image.image }}:{{ .Values.rest.image.tag }}"
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-{{ .Release.Name }}:10000
+          - --timeout=30
+          - --strict
+          - --
+          - echo databaseds ready
+      containers:
+      - name: oet-itango
+        image: "{{ .Values.itango.image.registry }}/{{ .Values.itango.image.image }}:{{ .Values.itango.image.tag }}"
+        imagePullPolicy: {{ .Values.itango.imagePullPolicy }}
+        ports:
+          - name: oet-itango
+            containerPort: 22
+        volumeMounts:
+          - name: itango-configmap-volume
+            mountPath: /home/tango/.profile
+            subPath: .profile
+          - name: itango-configmap-volume
+            mountPath: /etc/environment
+            subPath: environment
+        readinessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: {{ .Values.rest.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.rest.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.rest.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.rest.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.rest.readinessProbe.failureThreshold }}
+        livenessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: {{ .Values.rest.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.rest.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.rest.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.rest.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.rest.livenessProbe.failureThreshold }}
+      volumes:
+        - name: itango-configmap-volume
+          configMap:
+            name: itango-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
+            items:
+            - key: profile
+              path: .profile
+            - key: environment
+              path: environment
+      resources:
+  {{ toYaml .Values.rest.resources | indent 10 }}
+  {{- with .Values.nodeSelector }}
+nodeSelector:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{- with .Values.affinity }}
+affinity:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{- with .Values.tolerations }}
+tolerations:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{ end }}

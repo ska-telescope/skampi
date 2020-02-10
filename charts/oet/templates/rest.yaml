@@ -1,0 +1,137 @@
+{{ if .Values.rest.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+    chart: {{ template "oet.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - name: oet-rest
+    port: 5000
+  clusterIP: None
+  selector:
+    app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oet-scripts-{{ template "oet.name" .}}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+binaryData:
+  hello_world.py: |-
+{{ .Files.Get "data/hello_world.py" | b64enc | indent 4 }}
+  allocate.py: |-
+{{ .Files.Get "data/allocate.py" | b64enc | indent 4 }}
+  deallocate.py: |-
+{{ .Files.Get "data/deallocate.py" | b64enc | indent 4 }}
+  startup.py: |-
+{{ .Files.Get "data/startup.py" | b64enc | indent 4 }}
+  standby.py: |-
+{{ .Files.Get "data/standby.py" | b64enc | indent 4 }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+    chart: {{ template "oet.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+  serviceName: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+        chart: {{ template "oet.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      initContainers:
+      - name: check-databaseds-ready
+        image: "{{ .Values.rest.image.registry }}/{{ .Values.rest.image.image }}:{{ .Values.rest.image.tag }}"
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-{{ .Release.Name }}:10000
+          - --timeout=30
+          - --strict
+          - --
+          - echo databaseds ready
+      containers:
+      - name: oet-rest
+        image: "{{ .Values.rest.image.registry }}/{{ .Values.rest.image.image }}:{{ .Values.rest.image.tag }}"
+        imagePullPolicy: {{ .Values.rest.image.pullPolicy }}
+        command:
+          - flask
+          - run
+          - -h
+          - 0.0.0.0
+        env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-{{ .Release.Name }}:10000
+          - name: FLASK_APP
+            value: /app/oet/procedure/application/restserver:create_app
+        ports:
+          - name: oet-rest
+            containerPort: 5000
+        volumeMounts:
+          - name: oet-scripts-volume
+            mountPath: /scripts
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: {{ .Values.rest.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.rest.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.rest.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.rest.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.rest.readinessProbe.failureThreshold }}
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: {{ .Values.rest.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.rest.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.rest.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.rest.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.rest.livenessProbe.failureThreshold }}
+      volumes:
+        - name: oet-scripts-volume
+          configMap:
+            name: oet-scripts-{{ template "oet.name" .}}-{{ .Release.Name }}
+            items:
+              - key: hello_world.py
+                path: hello_world.py
+              - key: allocate.py
+                path: allocate.py
+              - key: deallocate.py
+                path: deallocate.py
+              - key: startup.py
+                path: startup.py
+              - key: standby.py
+                path: standby.py
+      resources:
+  {{ toYaml .Values.rest.resources | indent 10 }}
+  {{- with .Values.nodeSelector }}
+nodeSelector:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{- with .Values.affinity }}
+affinity:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{- with .Values.tolerations }}
+tolerations:
+  {{ toYaml . | indent 8 }}
+  {{- end }}
+  {{ end }}

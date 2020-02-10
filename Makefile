@@ -315,7 +315,10 @@ delete_gangway: ## delete install gangway authentication for gitlab. Input param
 			| kubectl delete -n kube-system -f - && \
 			rm -rf $$TMP 
 
-smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s). Input parameter KUBE_NAMESPACE
+set_context:
+	kubectl config set-context $$(kubectl config current-context) --namespace $${NAMESPACE:-$(KUBE_NAMESPACE)}
+
+smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).
 	@echo "Smoke test START"; \
 	n=10; \
 	while [ $$n -gt 0 ]; do \

@@ -23,3 +23,6 @@ spec:
            serviceName: jupyter-{{ template "webjive.name" . }}-{{ .Release.Name }}
            servicePort: 80
 
+{{ end }}
+
+{{ end }}

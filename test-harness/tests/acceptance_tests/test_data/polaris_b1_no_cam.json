@@ -1,5 +1,5 @@
 {
-  "scanID": 123,
+  "scanID": 1234,
   "pointing": {
     "target": {
       "system": "ICRS",
@@ -26,44 +26,33 @@
   "sdp": {
     "configure": [
       {
-        "sbiId": "SBI-20200101-0000",
-        "scanId": 12345,
-        "processingBlocks": [
-          {
-            "id": "PB-20200101-0000-visreceive",
-            "cspCbfOutlinkAddress": "mid_csp/elt/subarray01/cbfOutLink",
-            "workflow": {"type": "realtime", "id": "vis_receive", "version": "0.1.0"},
-            "parameters": {
-              "fields": [
-                {"id": "0", "system": "ICRS", "ra":  "", "dec": ""},
-                {"id": "1", "system": "ICRS", "ra":  "", "dec": ""}
-              ]
-            },
-            "scanParameters": {"fieldId": "0", "interval": 0.14}
-          },
-          {
-            "id": "PB-20200101-0000-testrealtime",
-            "workflow": {"type": "realtime", "id": "testrealtime", "version": "0.1.0"},
-            "parameters": {}
-          },
-          {
-            "id": "PB-20200101-0000-calibration",
-            "workflow": {"type": "batch", "id": "ical", "version": "0.1.0"},
-            "parameters": {},
-            "dependencies": [
-              {"pbId": "PB-20200101-0000-visreceive", "type": ["visibilities"]}
-            ]
-          },
-          {
-            "id": "PB-20200101-0000-imaging",
-            "workflow": {"type": "batch", "id": "dprepb", "version": "0.1.0"},
-            "parameters": {},
-            "dependencies": [
-              {"pbId": "PB-20200101-0000-calibration", "type": ["calibration", "skymodel"]}
-            ]
+        "id": "realtime-20190627-0001",
+        "sbiId": "20190627-0001",
+        "workflow": {
+          "id": "vis_receive",
+          "type": "realtime",
+          "version": "0.1.0"
+        },
+        "parameters": {
+          "numStations": 4,
+          "numChannels": 372,
+          "numPolarisations": 4,
+          "freqStartHz": 0.35e9,
+          "freqEndHz": 1.05e9,
+          "fields": {
+            "0": {
+            "system": "ICRS",
+             "name": "Polaris",
+             "ra": 0.662432049839445,
+             "dec": 1.5579526053855042
+             }
           }
-        ]
+        },
+        "scanParameters": {
+          "1234": { "fieldId": 0, "intervalMs": 1400 }
+        }
       }
     ]
   }
 }
+

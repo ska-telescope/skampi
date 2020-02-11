@@ -37,3 +37,5 @@ pytest-logs.txt
 report.xml
 report.json
 test-harness/cucumber.json
+charts/tango-base/secrets/tls.key
+charts/tango-base/secrets/tls.crt

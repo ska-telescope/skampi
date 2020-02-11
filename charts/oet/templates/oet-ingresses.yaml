@@ -21,6 +21,6 @@ spec:
         - path: /oet/jupyter
           backend:
            serviceName: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
-           servicePort: 80
+           servicePort: 8888
 
 {{ end }}

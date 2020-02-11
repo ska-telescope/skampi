@@ -112,6 +112,7 @@ ingress:
     enabled: true
     secretname: "tls-secret-{{ template \"oet.name\" . }}-{{ .Release.Name }}"
     hostname: "{{ .Values.ingress.hostname }}"
+
 nodeSelector: {}
 
 affinity: {}

@@ -344,3 +344,16 @@ smoketest: ## check that the number of waiting containers is zero (10 attempts, 
 
 get_status:
 	kubectl get pod,svc,deployments,pv,pvc,ingress -n $(KUBE_NAMESPACE)
+
+redeploy:
+	make delete delete_all && make deploy_all && make wait
+	
+wait:
+	pods=$$( kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{' '}{end}" ) && \
+	for pod in $$pods ;  do \
+		phase=$$(kubectl get pod -n $(KUBE_NAMESPACE) $$pod -o=jsonpath='{.status.phase}'); \
+		if [ "$$phase" = "Succeeded" ]; then \
+			echo $$pod $$phase; else \
+			kubectl wait --for=condition=Ready -n $(KUBE_NAMESPACE) pod/$$pod; \
+		fi; \
+	done

@@ -26,6 +26,13 @@ fluentd:
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
+  logging_rate_throttle:
+    enabled: true
+    # group_reset_rate_s must be <= group_bucket_limit
+    # group_reset_rate_s must be <= group_bucket_limit / group_bucket_period_s
+    group_bucket_period_s: 60
+    group_bucket_limit: 1000
+    group_reset_rate_s: 10
 
 kibana:
   enabled: true

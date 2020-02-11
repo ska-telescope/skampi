@@ -1,25 +1,112 @@
 import logging
-import subprocess
 import json
-from datetime import datetime
 from time import sleep
 
 import pytest
-from elasticsearch import Elasticsearch
 
 from tests.testsupport.extras import EchoServer
 from tests.testsupport.helm import HelmChart, ChartDeployment
-from tests.testsupport.util import check_connection, wait_until, parse_yaml_str
+from tests.testsupport.util import wait_until, parse_yaml_str
 
 
 @pytest.fixture(scope="class")
 def logging_chart(request, helm_adaptor):
+    throttle_settings = {
+        'fluentd.logging_rate_throttle.enabled': 'false',
+        'fluentd.logging_rate_throttle.group_bucket_period_s': '1',
+        'fluentd.logging_rate_throttle.group_bucket_limit': '20',
+        'fluentd.logging_rate_throttle.group_reset_rate_s': '5'
+    }
     request.cls.chart = HelmChart('logging', helm_adaptor)
+
+
+@pytest.fixture(scope="class")
+def throttled_logging_chart(request, helm_adaptor):
+    throttle_settings = {
+        'fluentd.logging_rate_throttle.enabled': 'true',
+        'fluentd.logging_rate_throttle.group_bucket_period_s': '1',
+        'fluentd.logging_rate_throttle.group_bucket_limit': '20',
+        'fluentd.logging_rate_throttle.group_reset_rate_s': '5'
+    }
+    request.cls.chart = HelmChart('logging', helm_adaptor,
+                                  set_flag_values=throttle_settings)
+
+
+@pytest.fixture(scope="class")
+def logging_chart_deployment(helm_adaptor, k8s_api):
+    logging.info("+++ Deploying logging chart.")
+    throttle_settings = {'fluentd.logging_rate_throttle.enabled': 'false'}
+    chart_deployment = ChartDeployment('logging', helm_adaptor, k8s_api,
+                                       set_flag_values=throttle_settings)
+    yield chart_deployment
+    logging.info("+++ Deleting logging chart release.")
+    chart_deployment.delete()
+
+
+@pytest.fixture(scope="function")
+def echoserver(test_namespace):
+    logging.info("+++ Deploying echoserver pod.")
+    echoserver = EchoServer(test_namespace)
+    yield echoserver
+    logging.info("+++ Deleting echoserver pod.")
+    echoserver.delete()
+
+
+@pytest.fixture(scope="class")
+def logging_chart_throttled_deployment(helm_adaptor, k8s_api):
+    logging.info("+++ Deploying throttled logging chart.")
+
+    throttle_settings = {
+        'fluentd.logging_rate_throttle.enabled': 'true',
+        'fluentd.logging_rate_throttle.group_bucket_period_s': '1',
+        'fluentd.logging_rate_throttle.group_bucket_limit': '20',
+        'fluentd.logging_rate_throttle.group_reset_rate_s': '5'
+    }
+
+    chart_deployment = ChartDeployment('logging', helm_adaptor, k8s_api,
+                                       set_flag_values=throttle_settings)
+    yield chart_deployment
+    logging.info("+++ Deleting throttled logging chart release.")
+    chart_deployment.delete()
+
+
+class SearchElasticMixin:
+
+    def query_elasticsearch_for_log(self, chart_deployment, log_msg):
+        """Execute a elastic search query"""
+
+        elastic_pod_name = chart_deployment.search_pod_name('elastic-logging')[0]
+
+        query_body = {
+            "query": {
+                "query_string": {
+                    "query": log_msg,
+                    "fields": ["log", "MESSAGE"]
+                }
+            }
+        }
+
+        command_str = ("curl -s -X GET http://0.0.0.0:9200/logstash-*/_search "
+                       "-H 'Content-Type: application/json' "
+                       "-H 'Accept: application/json' "
+                       "-d '{}' ").format(json.dumps(query_body))
+
+        resp = chart_deployment.pod_exec_bash(elastic_pod_name, command_str)
+        logging.info("Elastic search, pod_name: %s, command: %s, response: %s",
+                     elastic_pod_name, command_str, resp)
+        return json.loads(resp)
 
 
 @pytest.mark.no_deploy
 @pytest.mark.usefixtures("logging_chart")
 class TestLoggingChartTemplates:
+
+    def test_throttling_is_disabled(self):
+        resources = parse_yaml_str(self.chart.templates['fluentd-config-map.yaml'])
+
+        assert 'group_bucket_period_s 1' not in resources[0]['data']['ska.conf']
+        assert 'group_bucket_limit 20' not in resources[0]['data']['ska.conf']
+        assert 'group_reset_rate_s 5' not in resources[0]['data']['ska.conf']
 
     def test_elastic_service_is_exposed_on_port_9200_for_all_k8s_nodes(self):
         elastic_svc = parse_yaml_str(self.chart.templates['elastic.yaml'])[1]
@@ -75,140 +162,117 @@ class TestLoggingChartTemplates:
         assert ska_ilm_policy_phases['delete']['min_age'] == '1d'
 
 
-@pytest.fixture(scope="module")
-def logging_chart_deployment(helm_adaptor, k8s_api):
-    logging.info("+++ Deploying logging chart.")
-    chart_values = {
-        "elastic.use_pv": "false"
-    }
+@pytest.mark.no_deploy
+@pytest.mark.usefixtures("throttled_logging_chart")
+class TestLoggingChartThrottledTemplates:
+    def test_throttle_settings_applied(self):
+        resources = parse_yaml_str(self.chart.templates['fluentd-config-map.yaml'])
 
-    chart_deployment = ChartDeployment('logging', helm_adaptor, k8s_api, values=chart_values)
-    yield chart_deployment
-    logging.info("+++ Deleting logging chart release.")
-    chart_deployment.delete()
-
-
-@pytest.fixture(scope="module")
-def echoserver(test_namespace):
-    logging.info("+++ Deploying echoserver pod.")
-    echoserver = EchoServer(test_namespace)
-    yield echoserver
-    logging.info("+++ Deleting echoserver pod.")
-    echoserver.delete()
-
-
-@pytest.fixture(scope="module")
-def elastic_svc_proxy(logging_chart_deployment, test_namespace):
-    elastic_svc_name = _get_elastic_svc_name(logging_chart_deployment)
-    proxy_proc = subprocess.Popen(
-        "kubectl port-forward -n {} svc/{} 9200:9200".format(test_namespace, elastic_svc_name).split())
-
-    def elastic_proxy_is_ready():
-        return check_connection('127.0.0.1', 9200)
-
-    wait_until(elastic_proxy_is_ready)
-    yield
-    proxy_proc.kill()
+        assert 'group_bucket_period_s 1' in resources[0]['data']['ska.conf']
+        assert 'group_bucket_limit 20' in resources[0]['data']['ska.conf']
+        assert 'group_reset_rate_s 5' in resources[0]['data']['ska.conf']
 
 
 @pytest.mark.chart_deploy
-@pytest.mark.quarantine
-@pytest.mark.usefixtures("elastic_svc_proxy")
-def test_fluentd_ingests_logs_from_pod_stdout_into_elasticsearch(logging_chart_deployment, echoserver, test_namespace):
-    expected_log = "simple were so well compounded"
-    echoserver.print_to_stdout(expected_log)
+@pytest.mark.usefixtures("logging_chart_deployment")
+class TestLoggingDeployment(SearchElasticMixin):
 
-    def _wait_for_elastic_hits():
-        result = _query_elasticsearch_for_log(expected_log)
-        return result['hits']['total']['value'] != 0
+    @pytest.mark.usefixtures("echoserver")
+    def test_fluentd_ingests_logs_from_pod_stdout_into_elasticsearch(self,
+                                                                     logging_chart_deployment,
+                                                                     echoserver,
+                                                                     test_namespace):
+        expected_log = "simple were so well compounded"
+        echoserver.print_to_stdout(expected_log)
 
-    wait_until(_wait_for_elastic_hits, retry_timeout=500)
+        def _wait_for_elastic_hits():
+            result = self.query_elasticsearch_for_log(logging_chart_deployment, expected_log)
+            return result['hits']['total']['value'] != 0
+
+        wait_until(_wait_for_elastic_hits, retry_timeout=500)
+
+    def test_elastic_config_applied(self, logging_chart_deployment, test_namespace):
+        """ Test that the elastic config has been applied"""
+
+        elastic_pod_name = logging_chart_deployment.search_pod_name('elastic-logging')[0]
+
+        # ilm
+        command_str = 'curl -s  -X GET http://0.0.0.0:9200/_ilm/policy/ska_ilm_policy'
+        resp = logging_chart_deployment.pod_exec_bash(elastic_pod_name, command_str)
+        resp = resp.replace("'", '"')
+        logging.info(resp)
+        resp_json = json.loads(resp)
+        assert 'ska_ilm_policy' in resp_json
+
+        # pipeline parse
+        log_string = ("1|2020-01-14T08:24:54.560513Z|DEBUG|thread_id_123|"
+                      "demo.stdout.logproducer|logproducer.py#1|tango-device:my/dev/name|"
+                      "A log line from stdout.")
+        doc = {"docs": [{"_source": {"log": log_string}}]}
+        command_str = ("curl -s  -X POST http://0.0.0.0:9200/"
+                       "_ingest/pipeline/ska_log_parsing_pipeline/_simulate "
+                       "-H 'Content-Type: application/json' "
+                       "-d '{}' ").format(json.dumps(doc))
+        resp = logging_chart_deployment.pod_exec_bash(elastic_pod_name, command_str)
+        resp = resp.replace("'", '"')
+        logging.info(resp)
+        res_json = json.loads(resp)
+        source = res_json["docs"][0]['doc']['_source']
+        assert source['ska_line_loc'] == "logproducer.py#1"
+        assert source['ska_function'] == "demo.stdout.logproducer"
+        assert source['ska_version'] == "1"
+        assert source['ska_log_timestamp'] == "2020-01-14T08:24:54.560513Z"
+        assert source['ska_tags'] == "tango-device:my/dev/name"
+        assert source['ska_severity'] == "DEBUG"
+        assert source['ska_log_message'] == "A log line from stdout."
+        assert source['ska_thread_id'] == "thread_id_123"
+
+    def test_kibana_is_up_with_correct_base_path(self, logging_chart_deployment):
+        """Check that Kibana is up and base path is as expected"""
+        kibana_pod_name = logging_chart_deployment.search_pod_name('kibana-deployment')[0]
+        BASE_PATH = "/kibana"
+        command_str = ('curl -s  -X GET '
+                       'http://0.0.0.0:5601{}/api/spaces/space').format(BASE_PATH)
+
+        resp = logging_chart_deployment.pod_exec_bash(kibana_pod_name, command_str)
+        resp = resp.replace("'", '"')
+        resp = resp.replace("True", "true")
+        logging.info(resp)
+        assert len(json.loads(resp)) > 0
+
 
 @pytest.mark.chart_deploy
-def test_elastic_config_applied(logging_chart_deployment, test_namespace):
-    """ Test that the elastic config has been applied"""
+@pytest.mark.usefixtures("logging_chart_throttled_deployment")
+class TestThrottlingLoggingDeployment(SearchElasticMixin):
 
-    elastic_pod_name = logging_chart_deployment.search_pod_name('elastic-logging')[0]
-
-    # ilm
-    command_str = 'curl -s  -X GET http://0.0.0.0:9200/_ilm/policy/ska_ilm_policy'
-    resp = logging_chart_deployment.pod_exec_bash(elastic_pod_name, command_str)
-    resp = resp.replace("'", '"')
-    logging.info(resp)
-    resp_json = json.loads(resp)
-    assert 'ska_ilm_policy' in resp_json
-
-    # pipeline parse
-    log_string = ("1|2020-01-14T08:24:54.560513Z|DEBUG|thread_id_123|"
-                  "demo.stdout.logproducer|logproducer.py#1|tango-device:my/dev/name|"
-                  "A log line from stdout.")
-    doc = {"docs": [{"_source": {"log": log_string}}]}
-    command_str = ("curl -s  -X POST http://0.0.0.0:9200/"
-                   "_ingest/pipeline/ska_log_parsing_pipeline/_simulate "
-                   "-H 'Content-Type: application/json' "
-                   "-d '{}' ").format(json.dumps(doc))
-    resp = logging_chart_deployment.pod_exec_bash(elastic_pod_name, command_str)
-    resp = resp.replace("'", '"')
-    logging.info(resp)
-    res_json = json.loads(resp)
-    source = res_json["docs"][0]['doc']['_source']
-    assert source['ska_line_loc'] == "logproducer.py#1"
-    assert source['ska_function'] == "demo.stdout.logproducer"
-    assert source['ska_version'] == "1"
-    assert source['ska_log_timestamp'] == "2020-01-14T08:24:54.560513Z"
-    assert source['ska_tags'] == "tango-device:my/dev/name"
-    assert source['ska_severity'] == "DEBUG"
-    assert source['ska_log_message'] == "A log line from stdout."
-    assert source['ska_thread_id'] == "thread_id_123"
-
-
-@pytest.mark.chart_deploy
-def test_kibana_is_up_with_correct_base_path(logging_chart_deployment):
-    """Check that Kibana is up and base path is as expected"""
-    kibana_pod_name = logging_chart_deployment.search_pod_name('kibana-deployment')[0]
-    BASE_PATH = "/kibana"
-    command_str = ('curl -s  -X GET '
-                   'http://0.0.0.0:5601{}/api/spaces/space').format(BASE_PATH)
-
-    resp = logging_chart_deployment.pod_exec_bash(kibana_pod_name, command_str)
-    resp = resp.replace("'", '"')
-    resp = resp.replace("True", "true")
-    logging.info(resp)
-    assert len(json.loads(resp)) > 0
-
-
-def _get_elastic_svc_name(logging_chart_deployment):
-    elastic_svc_name = [svc.metadata.name for svc in logging_chart_deployment.get_services() if
-                        svc.metadata.name.startswith('elastic-')].pop()
-    return elastic_svc_name
-
-
-def _wait_until_fluentd_ingests_echoserver_logs(fluentd_daemonset_name, start_timestamp, namespace):
-    def fluentd_ingests_echoserver_logs():
-        seconds_since_start = (datetime.now() - start_timestamp).total_seconds()
-        cmd = "kubectl logs {} -n {} --all-containers --since={}s | grep -q echoserver".format(fluentd_daemonset_name,
-                                                                                               namespace,
-                                                                                               int(seconds_since_start))
-        return subprocess.run(cmd, shell=True).returncode == 0
-
-    wait_until(fluentd_ingests_echoserver_logs, retry_timeout=120)
-    sleep(5)
-
-
-def _query_elasticsearch_for_log(log_msg):
-    es = Elasticsearch(['127.0.0.1:9200'], use_ssl=False, verify_certs=False, ssl_show_warn=False)
-    query_body = {
-        "query": {
-            "multi_match": {
-                "query": log_msg,
-                "fields": ["log", "MESSAGE"]
+    def test_log_throttling_happens(self, logging_chart_throttled_deployment,
+                                    test_namespace):
+        """Check that logs are throttled per container"""
+        pod_manifest = {
+            'apiVersion': 'v1',
+            'kind': 'Pod',
+            'metadata': {
+                'name': 'flood-logs',
+                'namespace': test_namespace
+            },
+            'spec': {
+                'containers': [{
+                    'image': 'alpine:latest',
+                    'name': 'flood-logs',
+                    "args": [
+                        "/bin/sh",
+                        "-c",
+                        "while true; do echo \"Flood the logs\" | tee /dev/stderr; sleep 0.25; done"
+                    ]
+                }],
+                'restartPolicy': 'Never'
             }
         }
-    }
-    result = es.search(
-        index="logstash-*",
-        body=query_body
-    )
+        logging_chart_throttled_deployment.launch_pod_manifest(pod_manifest)
 
-    logging.debug(result)
-    return result
+        def _wait_for_elastic_hits():
+            result = self.query_elasticsearch_for_log(logging_chart_throttled_deployment,
+                                                      '(rate exceeded group_key) AND (period_s=1 limit=20 rate_limit_s=20 reset_rate_s=5)')
+            return result['hits']['total']['value'] != 0
+
+        wait_until(_wait_for_elastic_hits, retry_timeout=500)

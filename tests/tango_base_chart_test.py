@@ -16,7 +16,8 @@ def tango_base_release(helm_adaptor, k8s_api):
         "tangodb.use_pv": "false"
     }
 
-    tango_base_release = ChartDeployment("tango-base", helm_adaptor, k8s_api, chart_values)  # setup
+    tango_base_release = ChartDeployment("tango-base", helm_adaptor, k8s_api,
+                                          set_flag_values=chart_values)  # setup
     yield tango_base_release  # yield fixture
     tango_base_release.delete()  # teardown
 

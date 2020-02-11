@@ -98,7 +98,7 @@ helm-template-pytest:
   environment:
     name: $CT_TEST_ENVIRONMENT
 
-chart-pytest:
+.chart-pytest:
   stage: test
   tags:
     - docker-executor
@@ -122,7 +122,7 @@ chart-pytest:
     reports:
       junit: junit-report.xml
 
-chart-pytest-quarantine:
+.chart-pytest-quarantine:
   stage: test
   tags:
     - docker-executor

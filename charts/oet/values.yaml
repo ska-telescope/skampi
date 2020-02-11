@@ -97,7 +97,7 @@ jupyter:
     successThreshold: 1
     failureThreshold: 3
 
-# Configure Ingress 
+# Configure Ingress
 ingress:
   enabled: true
   nginx: false
@@ -110,7 +110,7 @@ ingress:
   #
   tls:
     enabled: true
-    secretname: "tls-secret-{{ template \"oet.name\" . }}-{{ .Release.Name }}"
+    secretname: 'tls-secret-{{ template "oet.name" . }}-{{ .Release.Name }}'
     hostname: "{{ .Values.ingress.hostname }}"
 
 nodeSelector: {}

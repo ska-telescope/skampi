@@ -15,10 +15,10 @@ spec:
 #       secretName: {{ tpl .Values.ingress.tls.secretname . }}
 # {{ end }}
   rules:
-    - host: {{ tpl .Values.ingress.hostname . }}
+    - host: jupyter.{{ tpl .Values.ingress.hostname . }}
       http:
         paths:
-        - path: /oet/jupyter
+        - path: /
           backend:
            serviceName: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
            servicePort: 8888

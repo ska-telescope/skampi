@@ -35,6 +35,16 @@ data:
       </regexp>
     </filter>
 
+    {{ if .Values.fluentd.logging_rate_throttle.enabled }}
+    <filter docker.systemd>
+      @type throttle
+      group_key kubernetes.container_name
+      group_bucket_period_s {{ .Values.fluentd.logging_rate_throttle.group_bucket_period_s }}
+      group_bucket_limit {{ .Values.fluentd.logging_rate_throttle.group_bucket_limit }}
+      group_reset_rate_s {{ .Values.fluentd.logging_rate_throttle.group_reset_rate_s }}
+    </filter>
+    {{ end }}
+
 
     # syslog
     <filter kubernetes.**>
@@ -53,6 +63,16 @@ data:
       </regexp>
     </filter>
 
+    {{ if .Values.fluentd.logging_rate_throttle.enabled }}
+    <filter kubernetes.**>
+      @type throttle
+      group_key kubernetes.container_name
+      group_bucket_period_s {{ .Values.fluentd.logging_rate_throttle.group_bucket_period_s }}
+      group_bucket_limit {{ .Values.fluentd.logging_rate_throttle.group_bucket_limit }}
+      group_reset_rate_s {{ .Values.fluentd.logging_rate_throttle.group_reset_rate_s }}
+    </filter>
+    {{ end }}
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -66,7 +86,7 @@ data:
     @include "#{ENV['FLUENTD_PROMETHEUS_CONF'] || 'prometheus'}.conf"
     @include kubernetes.conf
     @include conf.d/*.conf
-    
+
     <match **>
       @type elasticsearch
       @id out_es

@@ -28,6 +28,12 @@ spec:
       containers:
       - name: fluentd
         image: "{{ .Values.fluentd.image.image }}:{{ .Values.fluentd.image.tag }}"
+
+        {{ if .Values.fluentd.logging_rate_throttle.enabled }}
+        command: ["/bin/bash"]
+        args: ["-c", "fluent-gem install fluent-plugin-throttle ; tini -- /fluentd/entrypoint.sh"]
+        {{ end }}
+
         env:
           - name:  FLUENT_ELASTICSEARCH_HOST
             value: "elastic-{{ template "logging.name" . }}-{{ .Release.Name }}"

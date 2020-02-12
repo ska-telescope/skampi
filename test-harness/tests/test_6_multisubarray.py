@@ -4,7 +4,7 @@ import json
 def test_init():
   print("Init test multisubarray")
 
-def test_startup(create_centralnode_proxy):
+def test_startup(create_centralnode_proxy, create_subarray1_proxy):
     create_centralnode_proxy.StartUpTelescope()
     sleep(3)
     result = create_subarray1_proxy.state()
@@ -52,7 +52,7 @@ def test_releaseresources_sub3(create_centralnode_proxy, create_subarray3_proxy)
     result = create_subarray3_proxy.receptorIDList
     assert result == None
 
-def test_standby(create_centralnode_proxy):
+def test_standby(create_centralnode_proxy, create_subarray1_proxy):
     create_centralnode_proxy.StandByTelescope()
     sleep(3)
     result = create_subarray1_proxy.state()

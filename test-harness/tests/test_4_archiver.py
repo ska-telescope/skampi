@@ -2,7 +2,7 @@
 """
 Test archiver
 """
-from tango import DevFailed, DeviceProxy
+from tango import DevFailed, DeviceProxy, GreenMode
 from time import sleep
 import pytest
 import logging
@@ -15,6 +15,10 @@ def test_archiver():
   config_manager_device_fqdn = "archiving/hdbpp/confmanager01"
   conf_manager_proxy = DeviceProxy(config_manager_device_fqdn)
   evt_subscriber_device_proxy = DeviceProxy(evt_subscriber_device_fqdn)
+
+  conf_manager_proxy.set_timeout_millis(5000)
+  evt_subscriber_device_proxy.set_timeout_millis(5000)
+
   attribute = "mid_d0001/elt/master/windspeed"
   # SetAttributeName
   conf_manager_proxy.write_attribute("SetAttributeName", attribute)
@@ -31,13 +35,13 @@ def test_archiver():
   try:
     # Add Attribute for archiving
     conf_manager_proxy.command_inout("AttributeAdd")
-    flag=1
-    while flag:
-      attribute_list = evt_subscriber_device_proxy.read_attribute("AttributeList").value
-      for attribute_req in attribute_list:
-        if attribute in attribute_req:
-          flag=0
-          break
+    # flag=1
+    # while flag:
+    #   attribute_list = evt_subscriber_device_proxy.read_attribute("AttributeList").value
+    #   for attribute_req in attribute_list:
+    #     if attribute in attribute_req:
+    #       flag=0
+    #       break
   except DevFailed as df:
     logging.info("Managed exception: " + str(df))
 
@@ -60,12 +64,12 @@ def test_archiver():
   try:
     # Remove Attribute for archiving
     conf_manager_proxy.command_inout("AttributeRemove", attribute)
-    flag=1
-    while flag:
-      attribute_list = evt_subscriber_device_proxy.read_attribute("AttributeList").value
-      for attribute_req in attribute_list:
-        if attribute not in attribute_req:
-          flag=0
-          break
+    # flag=1
+    # while flag:
+    #   attribute_list = evt_subscriber_device_proxy.read_attribute("AttributeList").value
+    #   for attribute_req in attribute_list:
+    #     if attribute not in attribute_req:
+    #       flag=0
+    #       break
   except DevFailed as df:
     logging.info("Managed exception: " + str(df))

@@ -68,7 +68,7 @@ spec:
       containers:
       - name: oet-ssh
         image: "{{ .Values.ssh.image.registry }}/{{ .Values.ssh.image.image }}:{{ .Values.ssh.image.tag }}"
-        imagePullPolicy: {{ .Values.ssh.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.ssh.image.pullPolicy }}
         ports:
           - name: oet-ssh
             containerPort: 22

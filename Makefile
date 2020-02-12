@@ -17,6 +17,7 @@ API_SERVER_IP ?= $(THIS_HOST)## Api server IP of k8s
 API_SERVER_PORT ?= 6443## Api server port of k8s
 EXTERNAL_IP ?= $(THIS_HOST)## For traefik installation
 CLUSTER_NAME ?= integration.cluster## For the gangway kubectl setup 
+CHART_SET ?= #for additional flags you want to set when deploying (default empty)
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -165,6 +166,7 @@ deploy: namespace namespace_sdp mkcerts  ## deploy the helm chart
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+				 $(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl apply -f -
 
 show: mkcerts  ## show the helm chart
@@ -185,6 +187,7 @@ delete: ## delete the helm chart release
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+				 $(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl delete -f -
 
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the helm chart

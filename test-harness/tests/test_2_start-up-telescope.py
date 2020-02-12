@@ -12,7 +12,6 @@ import pytest
 def test_init():    
   print("Init start-up-telescope")
 
-@pytest.mark.skip(reason="no way of currently testing this")
 def test_start_up_telescope(run_context):
   jsonLogin={"username":"user1","password":"abc123"}
   url = 'http://webjive-webjive-{}:8080/login'.format(run_context.HELM_RELEASE)

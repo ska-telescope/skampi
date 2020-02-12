@@ -29,3 +29,13 @@ ansible-playbooks
 /test-harness/report.json
 *__pycache__
 *.swp
+*.ipynb
+.pytest_cache/*
+cucumber.json
+junit-report.xml
+pytest-logs.txt
+report.xml
+report.json
+test-harness/cucumber.json
+charts/tango-base/secrets/tls.key
+charts/tango-base/secrets/tls.crt

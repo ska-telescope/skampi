@@ -125,8 +125,9 @@ class pilot():
         self.SubArray = SubArray(id)
     
     def to_be_composed_out_of(self,dishes):
-        SKAMid().start_up()
         return self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1,dishes+1)]))
 
+def restart_subarray(id):
+    pass
 
 

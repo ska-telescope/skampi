@@ -1,5 +1,6 @@
 from time import sleep
 import json
+from tango import DevState
 
 def test_init():
   print("Init test multisubarray")

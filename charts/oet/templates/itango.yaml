@@ -70,7 +70,7 @@ spec:
       containers:
       - name: oet-itango
         image: "{{ .Values.itango.image.registry }}/{{ .Values.itango.image.image }}:{{ .Values.itango.image.tag }}"
-        imagePullPolicy: {{ .Values.itango.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.itango.image.pullPolicy }}
         ports:
           - name: oet-itango
             containerPort: 22

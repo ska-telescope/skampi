@@ -96,7 +96,7 @@ spec:
       containers:
       - name: oet-jupyter
         image: "{{ .Values.jupyter.image.registry }}/{{ .Values.jupyter.image.image }}:{{ .Values.jupyter.image.tag }}"
-        imagePullPolicy: {{ .Values.jupyter.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.jupyter.image.pullPolicy }}
         ports:
           - name: oet-jupyter
             containerPort: 8888

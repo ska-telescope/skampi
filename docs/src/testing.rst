@@ -7,6 +7,104 @@ scripts, components to support its test and deployment.
 This page outlines the various categories of testing and approaches one can employ to test various aspects of SKA MPI prototype that can
 be implemented in this repository.
 
+Minikube Testing Environment - EngageSKA Openstack
+--------------------------------------------------
+
+Minikube is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster 
+inside a Virtual Machine (VM) inside an instance in Openstack.
+
+Create a Virtual Machine
+^^^^^^^^^^^^^^^^^^^^^^
+
+The first step is to create a Virtual Machine in EngageSKA Openstack: 
+https://developerskatelescopeorg.readthedocs.io/en/latest/services/ait_performance_env.html. 
+The recommended specifications are:
+
+- Volume Size: 100 GB
+- Image: Ubuntu 18.04
+- Flavor: m2.small
+
+Create and test the environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Once this VM is up and running, we need to run the ansile-playbooks for creating a development environment and the SHAMPI environment:
+
+1. Install Ansible: https://developer.skatelescope.org/projects/ansible-playbooks/en/latest/README.html#ansibleplaybook
+2. Install the integration environment: https://developer.skatelescope.org/projects/ansible-playbooks/en/latest/README.html#skampi
+
+Finally, we are going to test this installation with one project example. Just run these instructions to verify your installation.
+
+.. code-block:: bash
+
+    # Create Environment
+    git clone https://gitlab.com/ska-telescope/ansible-playbooks.git
+    cd ansible-playbooks
+    ansible-playbook -i hosts deploy_tangoenv.yml
+    ansible-playbook -i hosts deploy_skampi.yml
+    sudo reboot
+    # Run Project
+    git clone https://gitlab.com/ska-telescope/skampi.git
+    cd skampi/
+    make deploy_all KUBE_NAMESPACE=integration
+
+Kubernets Testing Environment
+-----------------------------
+
+
+Visual Studio Code Remote Access
+--------------------------------
+
+Visual Studio Code Remote Development allows you to use a container, remote machine, or the Windows Subsystem for Linux (WSL) as a 
+full-featured development environment.
+
+No source code needs to be on your local machine. Each extension in the Remote Development extension pack can run commands 
+and other extensions directly inside a container, in WSL, or on a remote machine so that everything feels like it does when you run locally.
+
+.. image:: _static/img/architecture.png 
+    :alt: SKAMPI Gitlab CI pipeline
+
+Install Extension
+^^^^^^^^^^^^^^^^^
+Before everything, we need to install the Remote Development extension from vscode.
+
+
+.. image:: _static/img/vscode-installExtension.png
+    :alt: SKAMPI Gitlab CI pipeline
+
+
+Connect to Openstack Virtual Machine - Option 1
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+With the previous VM successfully up and running, 
+we can successfully use *vscode* to create a vscode server inside the VM so we can connect to it.
+
+First, we have to make sure that the local ssh configurations are correct on the ``home/$USERNAME/.ssh/`` directory. 
+The private key associated with this VM needs to have the filename ``id_rsa`` and 
+the ``config`` file with the VM specifications.
+
+.. code-block:: bash
+
+    Host $VM_NAME
+        HostName $floating_IP
+        User ubuntu
+
+After this, just launch the remote extension (bottom left icon or use the shortcut "ctrl+shift+P") 
+and select ``Remote-SSH: Connect to Host...`` and select the ``$VM_NAME`` connection you previously created.
+
+Connect to Kubernets - Option 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Connection establish
+^^^^^^^^^^^^^^^^^^^^
+
+Finally, the vscode will install everything on its own, and establish the SSH connection.
+
+.. image:: _static/img/vscode-connection.png
+    :alt: SKAMPI Gitlab CI pipeline
+
+
+In this new instance of vscode, you can create/edit files and directories, install extensions and have direct access to the VM terminal.
+
 Testing Infrastructure as Code
 ------------------------------
 There is a substantial amount of infrastructure and its constituent parts (e.g. Kubernetes resources and their

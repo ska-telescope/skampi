@@ -1,6 +1,6 @@
 apiVersion: v1
 appVersion: "1.0"
-description: A Helm chart for deploying the CSP prototype on Kubernetes
-name: csp-proto
-version: 0.3.0
+description: A Helm chart for deploying the CSP_Mid.LMC CBF prototype on Kubernetes
+name: mid-cbf-mcs
+version: 0.1.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png

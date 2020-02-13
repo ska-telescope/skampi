@@ -13,11 +13,11 @@ rsyslog:
     tag: latest
     pullPolicy: IfNotPresent
 
-csplmc:
+midcbfmcs:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: csplmc
+    image: mid-cbf-mcs
     tag: 0.2.1
     pullPolicy: IfNotPresent
 

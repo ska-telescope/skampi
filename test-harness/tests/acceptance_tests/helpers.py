@@ -6,8 +6,16 @@ from tango import DeviceProxy, DevState, CmdArgType, EventType
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from time import sleep
 from numpy import ndarray 
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 obsState = {"IDLE" : 0}
+
+
+def map_dish_nr_to_device_name(dish_nr):
+    digits = str(10000+dish_nr)[1::]
+    return "mid_d"+digits+"/elt/master"
 
 class resource:
 
@@ -35,6 +43,7 @@ class monitor:
         self.previous_value = previous_value
         self.resource = resource
         self.attr = attr
+        self.device_name = resource.device_name
         self.current_value = self.resource.get(self.attr)
 
     def _update(self):
@@ -46,12 +55,12 @@ class monitor:
             return comparison.all()
         else: return comparison
 
-    def _wait(self,timeout=10):
+    def _wait(self,timeout=20):
         timeout = timeout
         while ( self._is_not_changed()):
             timeout -=1
             if (timeout == 0) : return "timeout"
-            sleep(2)
+            sleep(0.5)
             self._update()
         return "changed"
 
@@ -80,7 +89,7 @@ class subscriber:
 
 def watch(resource):
     return subscriber(resource)
-
+#this function may become depracated
 class state_checker:
 
     def __init__(self,device,timeout=10,debug=False):
@@ -125,9 +134,62 @@ class pilot():
         self.SubArray = SubArray(id)
     
     def to_be_composed_out_of(self,dishes):
-        return self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1,dishes+1)]))
+        dish_devices = [map_dish_nr_to_device_name(x) for x in range(1,dishes+1)]
+        the_waiter = waiter()
+        the_waiter.set_wait_for_assign_resources(dish_devices)
+
+        result = self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1,dishes+1)]))
+
+        the_waiter.wait()
+        LOGGER.info(the_waiter.logs)
+        return result
+
+
 
 def restart_subarray(id):
     pass
 
+class waiter():
 
+    def __init__(self):
+        self.waits = []
+        self.logs =""
+    
+    def set_wait_for_assign_resources(self,receptors):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
+        for receptor in receptors:
+            self.waits.append(watch(resource(receptor)).for_a_change_on("State"))
+
+    def set_wait_for_tearing_down_subarray(self,receptors):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
+        receptors = resource('ska_mid/tm_subarray_node/1').get("receptorIDList")
+        for receptor in receptors:
+            self.waits.append(watch(resource(receptor)).for_a_change_on("State"))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
+
+    def set_wait_for_going_to_standby(self):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
+
+    def set_wait_for_starting_up(self):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
+
+    def wait(self,timeout = 20):
+        while self.waits:
+            wait =self.waits.pop()
+            result = wait.wait_until_value_changed(timeout)
+            if result == "timeout":
+                self.logs += wait.device_name + " timed out whilst waiting for" +wait.attr + " to change from " + wait.previous_value + " in " + timeout +" seconds ;"
+            else:
+                self.logs += wait.device_name + " changed " +str(wait.attr) + " from " + str(wait.previous_value) + " to " + str(wait.current_value) + " ;"
+
+    

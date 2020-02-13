@@ -21,20 +21,12 @@ stages:
 .pip_install_test_requirements: &pip_install_test_requirements |-
   pip3 install -r test-requirements.txt
 
-.add_kubernetes_hosts_entry: &add_kubernetes_hosts_entry |-
-  grep -qxF "192.168.93.47   kubernetes.engageska-portugal.pt" /etc/hosts || echo "192.168.93.47   kubernetes.engageska-portugal.pt" >> /etc/hosts
-  grep -qxF "192.168.93.34   kubernetes-v2.engageska-portugal.pt" /etc/hosts || echo "192.168.93.34   kubernetes-v2.engageska-portugal.pt" >> /etc/hosts
-  
-  env
-  cat /etc/hosts
-
 .teardown_k8s_test_resources: &teardown_k8s_test_resources |-
   kubectl delete all --all --namespace=ci-$CI_JOB_ID --force --grace-period=0 || true
   kubectl delete namespace ci-$CI_JOB_ID || true
   helm tiller run -- helm ls | grep -E '(FAILED|DELETED)' | awk '{print $1}' | xargs -I'%N' helm tiller run -- helm delete --purge \%N
 
 before_script: 
-  - *add_kubernetes_hosts_entry
   - export HELM_TILLER_LOGS_DIR=$PWD/tiller.log
 
 helm-lint:
@@ -105,7 +97,6 @@ helm-template-pytest:
   allow_failure: true
   before_script:
     - *pip_install_test_requirements
-    - *add_kubernetes_hosts_entry
   script:
     - pytest -m "chart_deploy and not quarantine" --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID || [ "$?" == "5" ] && true
   after_script:
@@ -129,7 +120,6 @@ helm-template-pytest:
   allow_failure: true
   before_script:
     - *pip_install_test_requirements
-    - *add_kubernetes_hosts_entry
   script:
     - pytest -m quarantine --use-tiller-plugin --test-namespace=ci-$CI_JOB_ID || true
   after_script:

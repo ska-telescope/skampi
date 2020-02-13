@@ -8,7 +8,6 @@ variables:
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
-  BRANCH_TO_DEPLOY: "master"
 
 stages:
   - static_analysis
@@ -160,7 +159,7 @@ delete test environment:
     name: $DEPLOY_ENVIRONMENT
   only:
     refs:
-      - $BRANCH_TO_DEPLOY
+      - master
     variables:
       - $DELETE == "true"
 
@@ -177,7 +176,7 @@ deploy test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - $BRANCH_TO_DEPLOY
+      - master
 
 k8s_test test environment:
   stage: test
@@ -191,7 +190,7 @@ k8s_test test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - $BRANCH_TO_DEPLOY
+      - master
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths: 
@@ -211,7 +210,7 @@ smoketest test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - $BRANCH_TO_DEPLOY
+      - master
 
 .run-debug-cmd:
   stage: debug
@@ -254,5 +253,5 @@ xray_report:
          --data @build/cucumber.json
          https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
   when: always
-  only: [$BRANCH_TO_DEPLOY]
+  only: [master]
   retry: 2

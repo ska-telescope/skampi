@@ -23,9 +23,6 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   volumes:
-    - name: logs
-      persistentVolumeClaim:
-        claimName: rsyslog-{{ template "csp-proto.name" . }}-{{ .Release.Name }}
     - name: configuration
       configMap:
         name: "csp-proto-configuration-json-{{ template "csp-proto.name" . }}-{{ .Release.Name }}"
@@ -53,15 +50,11 @@ spec:
   - name: cspmaster
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
+      - "retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
             /venv/bin/python /app/csplmc/CspMaster/CspMaster/CspMaster.py csp"
     env:
     - name: TANGO_HOST
@@ -70,15 +63,11 @@ spec:
   - name: cspsubarray01
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_01 &&\
             /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub1"
     env:
@@ -88,15 +77,11 @@ spec:
   - name: cspsubarray02
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_02 &&\
             /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub2"
     env:
@@ -106,15 +91,11 @@ spec:
   - name: cspsubarray03
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_03 &&\
             /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub3"
     env:

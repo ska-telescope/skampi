@@ -113,12 +113,15 @@ lint:  ## lint the HELM_CHART of the helm chart
 	cd charts/$(HELM_CHART); pwd; helm lint;
 
 .PHONY: deploy_etcd delete_etcd
-deploy_etcd: ## deploy etcd-operator into namespace
+deploy_etcd: namespace ## deploy etcd-operator into namespace
 	@if ! kubectl get pod -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.labels.app}' \
 		| grep -q etcd-operator; then \
 		TMP=`mktemp -d`; \
 		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
-		helm template $(helm_install_shim) $$TMP/etcd-operator -n etc-operator --namespace $(KUBE_NAMESPACE) \
+		helm template $(helm_install_shim) $$TMP/etcd-operator \
+			-n etc-operator --namespace $(KUBE_NAMESPACE) \
+			--set deployments.backupOperator=false \
+			--set deployments.restoreOperator=false \
 		| kubectl apply -n $(KUBE_NAMESPACE) -f -; \
 		n=5; \
     	while ! kubectl api-resources --api-group=etcd.database.coreos.com \

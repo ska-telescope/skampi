@@ -360,3 +360,11 @@ wait:
 			kubectl wait --for=condition=Ready -n $(KUBE_NAMESPACE) pod/$$pod; \
 		fi; \
 	done
+
+#this is so that you can load dashboards previously saved, TODO: make the name of the pod variable
+dump_dashboards:
+	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongodump --archive > webjive-dash.dump
+	
+load_dashboards:
+	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongorestore --archive < webjive-dash.dump 
+	

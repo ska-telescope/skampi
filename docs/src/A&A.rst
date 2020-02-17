@@ -70,9 +70,11 @@ Each role is related to the users with a resource called RoleBinding. The file `
 ABAC
 ----
 
-[ABAC](https://kubernetes.io/docs/reference/access-authn-authz/abac/) allows authorization according to a set of policies which combine attributes together. The authorization policy is specified into a file with format one JSON object per line. Each line is a policy object containing which specify versioning information and specification, for example:
+`ABAC <https://kubernetes.io/docs/reference/access-authn-authz/abac/>`_ allows authorization according to a set of policies which combine attributes together. The authorization policy is specified into a file with format one JSON object per line. Each line is a policy object containing which specify versioning information and specification, for example:
 
-`{"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user": "matteo", "namespace": "integration", "resource": "", "apiGroup": ""}} `
+.. code-block:: JSON
+
+    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user": "matteo", "namespace": "integration", "resource": "", "apiGroup": ""}}
 
 KUBECONFIG
 ==========

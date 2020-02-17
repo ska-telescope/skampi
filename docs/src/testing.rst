@@ -47,9 +47,41 @@ Finally, we are going to test this installation with one project example. Just r
     cd skampi/
     make deploy_all KUBE_NAMESPACE=integration
 
-Kubernets Testing Environment
------------------------------
+Kubernets Testing Environments
+------------------------------
+At the moment 3 k8s multi-node clusters are available for testing purpose: 
 
++--------------------------+-----------------------------------------------------------------------------------------------------------+
+| Cluster name             | Information                                                                                               |
++==========================+===========================================================================================================+
+| *engageska-k8s-master*   | - 1 master, 4 worker nodes                                                                                |
+|                          | - working in the skampi pipeline                                                                          |
+|                          | - A&A not available                                                                                       |
++--------------------------+-----------------------------------------------------------------------------------------------------------+
+| *engageska-k8s-v2*       | - 1 master, 2 worker nodes                                                                                |
+|                          | - working in the skampi pipeline                                                                          |
+|                          | - A&A available. To work with it the file /etc/hosts has to be modified with the following lines:         |
+|                          |      192.168.93.34	gangway.kubernetes-v2.engageska-portugal.pt                                            |
++--------------------------+-----------------------------------------------------------------------------------------------------------+
+| *kubernetes-cipro*       | - 1 master, 2 worker nodes                                                                                |
+|                          | - not working in the skampi pipeline                                                                      |
+|                          | - A&A available. To work with it the file /etc/hosts has to be modified with the following lines:         |
+|                          |      192.168.93.46	gangway.kubernetes-cipro.engageska-portugal.pt                                         |
++--------------------------+-----------------------------------------------------------------------------------------------------------+
+
+Kubectl setup
+^^^^^^^^^^^^^
+
+If a cluster has the A&A module enabled it is possible to generate the instructions to let the local kubectl work with it. In order To do that, once modified the file /etc/hosts as explained above, open the [gangway](https://github.com/heptiolabs/gangway) url for `engageska-k8s-v2 <http://gangway.kubernetes-v2.engageska-portugal.pt>`_ or `kubernetes-cipro <http://gangway.kubernetes-cipro.engageska-portugal.pt >`_.
+The *Sign In* button will redirect to gitlab.com for authentication. Once authenticated it will appear the set of commands to setup the local kubectl as shown below. 
+
+.. image:: _static/img/signin.png
+    :alt: Gangway Sign In
+
+.. image:: _static/img/kubectl.png
+    :alt: Kubectl setup
+
+The following namespaces are available for use: "integration", "sdp", "csp", "button", "ncra", "karoo". For creating new namespaces or for any authorization request, contact the system team.
 
 Visual Studio Code Remote Access
 --------------------------------

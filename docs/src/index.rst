@@ -12,7 +12,7 @@ This project defines the integration between various component repository on Kub
    environments
    testing
    gui
-   A&A
+   AnA
    resources
 
 

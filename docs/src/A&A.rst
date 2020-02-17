@@ -74,7 +74,13 @@ ABAC
 
 .. code-block:: JSON
 
-    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user": "matteo", "namespace": "integration", "resource": "", "apiGroup": ""}}
+    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", 
+      "kind": "Policy", 
+      "spec": {
+        "user": "matteo", 
+        "namespace": "integration", 
+        "resource": "", 
+        "apiGroup": ""}}
 
 KUBECONFIG
 ==========

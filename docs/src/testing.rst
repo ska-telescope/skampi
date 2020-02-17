@@ -61,18 +61,18 @@ At the moment 3 k8s multi-node clusters are available for testing purpose:
 | *engageska-k8s-v2*       | - 1 master, 2 worker nodes                                                                                |
 |                          | - working in the skampi pipeline                                                                          |
 |                          | - A&A available. To work with it the file /etc/hosts has to be modified with the following lines:         |
-|                          | ```                                                                                                       |
+|                          | .. code-block:: bash                                                                                      |
+|                          |                                                                                                           |
 |                          |      192.168.93.46	gangway.kubernetes-v2.engageska-portugal.pt                                            |
 |                          |                                                                                                           |
-|                          | ```                                                                                                       |
 +--------------------------+-----------------------------------------------------------------------------------------------------------+
 | *kubernetes-cipro*       | - 1 master, 2 worker nodes                                                                                |
 |                          | - not working in the skampi pipeline                                                                      |
 |                          | - A&A available. To work with it the file /etc/hosts has to be modified with the following lines:         |
-|                          | ```                                                                                                       |
+|                          | .. code-block:: bash                                                                                      |
+|                          |                                                                                                           |
 |                          |      192.168.93.46	gangway.kubernetes-cipro.engageska-portugal.pt                                         |
 |                          |                                                                                                           |
-|                          | ```                                                                                                       |
 +--------------------------+-----------------------------------------------------------------------------------------------------------+
 
 Kubectl setup

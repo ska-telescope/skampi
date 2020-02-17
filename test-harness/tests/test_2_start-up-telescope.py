@@ -7,6 +7,7 @@ import requests
 import json
 import sys
 from time import sleep
+import pytest
 
 def test_init():    
   print("Init start-up-telescope")

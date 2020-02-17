@@ -20,25 +20,27 @@ To enable authentication with `OpenID Connect Tokens <https://kubernetes.io/docs
 
 .. code-block:: bash
 
+    export CLIENT_ID=f84585f68a80c8d6292ec13bb691a19889d80635ffae4e821285c9d3c1980343
     sudo -E minikube start --vm-driver=none \
         --extra-config=kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf \
         --extra-config=apiserver.authorization-mode=RBAC \
         --extra-config=apiserver.oidc-issuer-url=https://gitlab.com \
         --extra-config=apiserver.oidc-username-claim=sub  \
-        --extra-config=apiserver.oidc-client-id=417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f
+        --extra-config=apiserver.oidc-client-id=$CLIENT_ID
 
-The parameter `oidc-client-id` must correspond to the `application id <https://gitlab.com/profile/applications>`_ created in gitlab.
+The parameter ``apiserver.oidc-client-id`` must correspond to the `application id <https://gitlab.com/profile/applications>`_ created in gitlab.
 
 Once the minikube is started, to configure the kubectl tool, it is possible to use `gangway <https://github.com/heptiolabs/gangway>`_. To install it:
 
 .. code-block:: bash
 
-    make gangway KUBE_NAMESPACE=integration \
-        API_SERVER_PORT=6443 \
-        API_SERVER_IP=xxx.xxx.xxx.xxx \
-        CLIENT_ID=from_gitlab_applicationid \
-        CLIENT_SECRET=from_gitlab_applicationsecret \
-        INGRESS_HOST=integration.engageska-portugal.pt
+    export from_gitlab_applicationid=f84585f68a80c8d6292ec13bb691a19889d80635ffae4e821285c9d3c1980343
+    export from_gitlab_applicationsecret=432899cbbb1f0d4dcbef60d38013e5cbfc5b0c6e60d3356207e811508a6ddebc
+    make gangway CLIENT_ID=$from_gitlab_applicationid \
+        CLIENT_SECRET=$from_gitlab_applicationsecret \
+        INGRESS_HOST=integration.engageska-portugal.pt \
+        API_SERVER_PORT=8443 \
+        API_SERVER_IP=xxx.xxx.xxx.xxx 
 
 The result will be a new ingress at the link `gangway.integration.engageska-portugal.pt`. Remember to modify the file `/etc/hosts` adding the following lines:
 

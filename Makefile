@@ -17,8 +17,12 @@ API_SERVER_IP ?= $(THIS_HOST)## Api server IP of k8s
 API_SERVER_PORT ?= 6443## Api server port of k8s
 EXTERNAL_IP ?= $(THIS_HOST)## For traefik installation
 CLUSTER_NAME ?= integration.cluster## For the gangway kubectl setup 
+<<<<<<< HEAD
 CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f## For the gangway kubectl setup, taken from Gitlab
 CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f## For the gangway kubectl setup, taken from Gitlab
+=======
+CHART_SET ?= #for additional flags you want to set when deploying (default empty)
+>>>>>>> master
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -167,6 +171,7 @@ deploy: namespace namespace_sdp mkcerts  ## deploy the helm chart
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+				 $(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl apply -f -
 
 show: mkcerts  ## show the helm chart
@@ -187,6 +192,7 @@ delete: ## delete the helm chart release
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+				 $(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl delete -f -
 
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the helm chart
@@ -350,3 +356,24 @@ smoketest: ## check that the number of waiting containers is zero (10 attempts, 
 
 get_status:
 	kubectl get pod,svc,deployments,pv,pvc,ingress -n $(KUBE_NAMESPACE)
+
+redeploy:
+	make delete delete_all && make deploy_all && make wait
+	
+wait:
+	pods=$$( kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{' '}{end}" ) && \
+	for pod in $$pods ;  do \
+		phase=$$(kubectl get pod -n $(KUBE_NAMESPACE) $$pod -o=jsonpath='{.status.phase}'); \
+		if [ "$$phase" = "Succeeded" ]; then \
+			echo $$pod $$phase; else \
+			kubectl wait --for=condition=Ready -n $(KUBE_NAMESPACE) pod/$$pod; \
+		fi; \
+	done
+
+#this is so that you can load dashboards previously saved, TODO: make the name of the pod variable
+dump_dashboards:
+	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongodump --archive > webjive-dash.dump
+	
+load_dashboards:
+	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongorestore --archive < webjive-dash.dump 
+	

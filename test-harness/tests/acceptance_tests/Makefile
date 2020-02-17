@@ -37,7 +37,11 @@ acc_deploy_interactive: acc_deploy_storage # deploy a testing container to work 
 	#wait for pod to be in running state
 	@$(wait_for_interactive_pod)
 	#execute additional dependencies on the pod
-	kubectl exec -it  -n integration $(pod_name_interactive) -- bash  -c "DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install curl -y && apt-get install git --fix-missing -y && /venv/bin/pip3 install jupyter"
+	kubectl exec -it  --namespace $(KUBE_NAMESPACE) $(pod_name_interactive) -- bash  -c "DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install curl -y && apt-get install git --fix-missing -y && /venv/bin/pip3 install jupyter"
+
+acc_start_jupyter:acc_deploy_interactive
+	kubectl exec --namespace $(KUBE_NAMESPACE) $(pod_name_interactive) -- bash -c "/venv/bin/jupyter notebook --ip=0.0.0.0 --port=8888 --NotebookApp.allow_password_change=False --allow-root"
+
 
 acc_show_interactive:
 	@helm template $(test_pod_path) -n test --namespace $(KUBE_NAMESPACE) --set pod_name=$(pod_name_interactive),enabled=true -f $(test_pod_path)/local_values.yaml
@@ -69,7 +73,9 @@ acc_deploy_test_job: # deploy a testing job
 acc_delete_test_job:
 	@helm template $(test_pod_path)/ -n test --namespace $(KUBE_NAMESPACE) -f $(test_pod_path)/local_values.yaml --set pod_name=$(test_job),enabled=true --set non_interactive=true $(delete_template)
 
-
+acc_redeploy_interactive:
+	make acc_delete_interactive
+	make acc_start_jupyter
 
 acc_delete_storage: # delete a storage volume
 	@helm template $(storage_path)/ -n test --namespace $(KUBE_NAMESPACE) --set path=$(SOURCE_PATH),enabled=true $(delete_template)	

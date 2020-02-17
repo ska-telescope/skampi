@@ -18,10 +18,11 @@ from pytest_bdd import scenario, given, when, then
 
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
-from helpers import wait_for, obsState, resource, watch
+from test_support.helpers import wait_for, obsState, resource, watch
 
 #@pytest.mark.xfail
 @scenario("1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
+@pytest.mark.skip(reason="WIP untill after refactoring")
 def test_deallocate_resources():
     """Deallocate Resources."""
 

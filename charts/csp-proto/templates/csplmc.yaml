@@ -7,25 +7,22 @@ metadata:
   name: "csp-proto-configuration-json-{{ template "csp-proto.name" . }}-{{ .Release.Name }}"
   namespace: {{ .Release.Namespace }}
 data: 
-  configuration.json: 
-{{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
+  cspconfig.json: 
+{{ (tpl (.Files.Glob "data/cspconfig.json").AsConfig . ) | indent 2  }}
 
 ---
 apiVersion: v1
 kind: Pod
 metadata:
-  name: csplmc-{{ template "csp-proto.name" . }}-{{ .Release.Name }}
+  name: midcsplmc-{{ template "csp-proto.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: csplmc-{{ template "csp-proto.name" . }}-{{ .Release.Name }}
+    app: midcsplmc-{{ template "csp-proto.name" . }}-{{ .Release.Name }}
     chart: {{ template "csp-proto.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   volumes:
-    - name: logs
-      persistentVolumeClaim:
-        claimName: rsyslog-{{ template "csp-proto.name" . }}-{{ .Release.Name }}
     - name: configuration
       configMap:
         name: "csp-proto-configuration-json-{{ template "csp-proto.name" . }}-{{ .Release.Name }}"
@@ -40,7 +37,7 @@ spec:
       - --timeout=30
       - --strict
       - --
-      - json2tango -w -a -u data/configuration.json
+      - json2tango -w -a -u data/cspconfig.json
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -53,15 +50,11 @@ spec:
   - name: cspmaster
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
+      - "retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
             /venv/bin/python /app/csplmc/CspMaster/CspMaster/CspMaster.py csp"
     env:
     - name: TANGO_HOST
@@ -70,15 +63,11 @@ spec:
   - name: cspsubarray01
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_01 &&\
             /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub1"
     env:
@@ -88,15 +77,11 @@ spec:
   - name: cspsubarray02
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_02 &&\
             /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub2"
     env:
@@ -106,240 +91,16 @@ spec:
   - name: cspsubarray03
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
     command:
       - sh
     args:
       - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_03 &&\
             /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub3"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: cbfmaster
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/01 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/02 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/03 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/04 &&\
-            /venv/bin/python /app/tangods/CbfMaster/CbfMaster/CbfMaster.py master"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: cbfsubarray01
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
-            /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-01"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: cbfsubarray02
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
-            /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-02"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: cbfsubarray03
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
-            /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-03"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: vcc001
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            /venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-001"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: vcc002
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            /venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-002"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: vcc003
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            /venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-003"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: vcc004
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            /venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-004"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: fsp01
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-01"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: fsp02
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-02"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: fsp03
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-03"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
-  - name: fsp04
-    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
-    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
-    volumeMounts:
-    - name: logs
-      mountPath: /logs
-    command:
-      - sh
-    args:
-      - -c
-      - "sudo ln -sf /logs/log /dev/log && \
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-04"
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
-
 
 {{- with .Values.csplmc.env }}
 {{ toYaml . | indent 4 }}

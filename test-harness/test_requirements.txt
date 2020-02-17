@@ -7,3 +7,4 @@ elasticsearch
 kubernetes
 assertpy
 mock
+importlib

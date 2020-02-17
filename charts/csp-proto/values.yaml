@@ -5,27 +5,11 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
-rsyslog:
-  enabled: true
-  image:
-    registry: registry.hub.docker.com/u/
-    image: jumanjiman/rsyslog
-    tag: latest
-    pullPolicy: IfNotPresent
-
 csplmc:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: csplmc
-    tag: 0.2.1
-    pullPolicy: IfNotPresent
-
-midcbfmcs:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: mid-cbf-mcs
     tag: 0.2.1
     pullPolicy: IfNotPresent
 

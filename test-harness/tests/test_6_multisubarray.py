@@ -1,9 +1,15 @@
 from time import sleep
 import json
+from tango import DevState
 
 def test_init():
   print("Init test multisubarray")
 
+def test_startup(create_centralnode_proxy, create_subarray1_proxy):
+    create_centralnode_proxy.StartUpTelescope()
+    sleep(3)
+    result = create_subarray1_proxy.state()
+    assert result == DevState.OFF
 
 def test_assignresources_sub1(create_centralnode_proxy, create_subarray1_proxy):
     test_input = '{"subarrayID":1,"dish":{"receptorIDList":["0001"]}}'
@@ -46,3 +52,9 @@ def test_releaseresources_sub3(create_centralnode_proxy, create_subarray3_proxy)
     sleep(3)
     result = create_subarray3_proxy.receptorIDList
     assert result == None
+
+def test_standby(create_centralnode_proxy, create_subarray1_proxy):
+    create_centralnode_proxy.StandByTelescope()
+    sleep(3)
+    result = create_subarray1_proxy.state()
+    assert result == DevState.DISABLE

@@ -5,47 +5,48 @@ In this section there are some instruction on how it is possible to setup the A&
 Static File Authentication
 --------------------------
 
-To enable authentication with [static file](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#static-password-file) in a minikube environment, start it with the following command:
+To enable authentication with `static file <https://kubernetes.io/docs/reference/access-authn-authz/authentication/#static-password-file>`_ in a minikube environment, start it with the following command (consult the `kubernetes documentation <https://kubernetes.io/docs/reference/access-authn-authz/authentication/#static-password-file>`_ for the formatting of `users.csv`):
 
-```
-sudo -E minikube start --vm-driver=none --extra-config=kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf --extra-config=apiserver.basic-auth-file=/var/lib/minikube/certs/users.csv
-```
+.. code-block:: bash
+
+    sudo -E minikube start --vm-driver=none \
+        --extra-config=kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf \
+        --extra-config=apiserver.basic-auth-file=/var/lib/minikube/certs/users.csv
 
 OpenID Connect Tokens Authentication
 ------------------------------------
 
-To enable authentication with [OpenID Connect Tokens](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) in a minikube environment, for instance with Gitlab, start it with the following command:
+To enable authentication with `OpenID Connect Tokens <https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens)>`_ in a minikube environment, for instance with Gitlab, start it with the following command:
 
-```
-sudo -E minikube start --vm-driver=none 
-    --extra-config=kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf 
-    --extra-config=apiserver.authorization-mode=RBAC 
-    --extra-config=apiserver.oidc-issuer-url=https://gitlab.com 
-    --extra-config=apiserver.oidc-username-claim=sub 
-    --extra-config=apiserver.oidc-client-id=417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f
+.. code-block:: bash
 
-```
+    sudo -E minikube start --vm-driver=none \
+        --extra-config=kubelet.resolv-conf=/var/run/systemd/resolve/resolv.conf \
+        --extra-config=apiserver.authorization-mode=RBAC \
+        --extra-config=apiserver.oidc-issuer-url=https://gitlab.com \
+        --extra-config=apiserver.oidc-username-claim=sub  \
+        --extra-config=apiserver.oidc-client-id=417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f
 
-The parameter `oidc-client-id` must correspond to the [application id](https://gitlab.com/profile/applications) created in gitlab.
+The parameter `oidc-client-id` must correspond to the `application id <https://gitlab.com/profile/applications>`_ created in gitlab.
 
-Once the minikube is started, to configure the kubectl tool, it is possible to use [gangway](https://github.com/heptiolabs/gangway). To install it:
+Once the minikube is started, to configure the kubectl tool, it is possible to use `gangway <https://github.com/heptiolabs/gangway>`_. To install it:
 
-```
-make gangway KUBE_NAMESPACE=integration 
-    API_SERVER_PORT=6443 
-    API_SERVER_IP=xxx.xxx.xxx.xxx
-    CLIENT_ID=from_gitlab_applicationid
-    CLIENT_SECRET=from_gitlab_applicationsecret
-    INGRESS_HOST=integration.engageska-portugal.pt
+.. code-block:: bash
 
-```
+    make gangway KUBE_NAMESPACE=integration \
+        API_SERVER_PORT=6443 \
+        API_SERVER_IP=xxx.xxx.xxx.xxx \
+        CLIENT_ID=from_gitlab_applicationid \
+        CLIENT_SECRET=from_gitlab_applicationsecret \
+        INGRESS_HOST=integration.engageska-portugal.pt
+
 The result will be a new ingress at the link `gangway.integration.engageska-portugal.pt`. Remember to modify the file `/etc/hosts` adding the following lines:
 
-```
-xxx.xxx.xxx.xxx 	integration.engageska-portugal.pt
-xxx.xxx.xxx.xxx     gangway.integration.engageska-portugal.pt
+.. code-block:: bash
 
-```
+    xxx.xxx.xxx.xxx 	integration.engageska-portugal.pt
+    xxx.xxx.xxx.xxx     gangway.integration.engageska-portugal.pt
+
 
 *The clusters available in skampi are enabled with the OpenID Connect Tokens Authentication.*
 
@@ -57,7 +58,7 @@ There are two possibilities for authorization in k8s: the first one is called RB
 RBAC
 ----
 
-[RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) allows authorization based on the roles of individual users within an enterprise. A role contains a set of rules which define
+`RBAC <https://kubernetes.io/docs/reference/access-authn-authz/rbac/>`_ allows authorization based on the roles of individual users within an enterprise. A role contains a set of rules which define
 * an API group (all the k8s api is divided into a set of groups),
 * a set of resources like pod, deployment and so on,
 * a set of verbs like get, list and so on 
@@ -77,4 +78,4 @@ KUBECONFIG
 ==========
 
 The command `kubectl config view` shows the current configuration of the running minikube instance. In order to reproduce the PoC of this folder it is necessary to modify it adding the context for the user to access the local cluster (the file `kubeconfig` shows how it has been modified). 
-More information can be found [here](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/)
+More information can be found `here <https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/>`_

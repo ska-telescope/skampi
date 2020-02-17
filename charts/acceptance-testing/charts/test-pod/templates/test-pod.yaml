@@ -46,7 +46,7 @@ spec:
       claimName: {{ .Values.pvc }}  {{end}}
  containers:
  - name: sshcheck
-   image: {{ .Values.oet.image.registry }}/{{ .Values.oet.image.image }}:{{ .Values.oet.image.tag }}
+   image: {{ .Values.oet.image.registry }}/{{ .Values.oet.image.name }}:{{ .Values.oet.image.tag }}
    imagePullPolicy: Always 
    workingDir: {{ .Values.source_code}}
    ports:

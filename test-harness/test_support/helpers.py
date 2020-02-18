@@ -134,9 +134,8 @@ class pilot():
         self.SubArray = SubArray(id)
     
     def to_be_composed_out_of(self,dishes):
-        dish_devices = [map_dish_nr_to_device_name(x) for x in range(1,dishes+1)]
         the_waiter = waiter()
-        the_waiter.set_wait_for_assign_resources(dish_devices)
+        the_waiter.set_wait_for_assign_resources()
 
         result = self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1,dishes+1)]))
 
@@ -155,17 +154,12 @@ class waiter():
         self.waits = []
         self.logs =""
     
-    def set_wait_for_assign_resources(self,receptors):
+    def set_wait_for_assign_resources(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
-        for receptor in receptors:
-            self.waits.append(watch(resource(receptor)).for_a_change_on("State"))
 
-    def set_wait_for_tearing_down_subarray(self,receptors):
+    def set_wait_for_tearing_down_subarray(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
-        receptors = resource('ska_mid/tm_subarray_node/1').get("receptorIDList")
-        for receptor in receptors:
-            self.waits.append(watch(resource(receptor)).for_a_change_on("State"))
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))

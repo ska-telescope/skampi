@@ -42,8 +42,7 @@ def set_to_running():
 @when("I allocate 4 dishes to subarray 1")
 def allocate_four_dishes(result):
     the_waiter = waiter()
-    dish_devices = [map_dish_nr_to_device_name(x) for x in range(1,4+1)]
-    the_waiter.set_wait_for_assign_resources(dish_devices)
+    the_waiter.set_wait_for_assign_resources()
 
     result['response'] = SubArray(1).allocate(ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)]))
 
@@ -84,8 +83,7 @@ def teardown_function(function):
     """
     if (resource('ska_mid/tm_subarray_node/1').get("State") == "ON"):
         the_waiter = waiter()
-        dish_devices = [map_dish_nr_to_device_name(x) for x in range(1,4+1)]
-        the_waiter.set_wait_for_tearing_down_subarray(dish_devices)
+        the_waiter.set_wait_for_tearing_down_subarray()
         SubArray(1).deallocate()
         the_waiter.wait()
         LOGGER.info(the_waiter.logs)

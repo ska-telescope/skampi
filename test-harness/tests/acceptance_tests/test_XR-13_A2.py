@@ -89,16 +89,15 @@ def teardown_function(function):
     call.
     """
     the_waiter = waiter()
-    dish_devices = [map_dish_nr_to_device_name(x) for x in range(1,4+1)]
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
-        the_waiter.set_wait_for_tearing_down_subarray(dish_devices)
+        the_waiter.set_wait_for_tearing_down_subarray()
         LOGGER.info("tearing down composed subarray (IDLE)")
         SubArray(1).deallocate()
         the_waiter.wait()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
         LOGGER.info("tearing down configured subarray (READY)")
         SubArray(1).end_sb()
-        the_waiter.set_wait_for_tearing_down_subarray(dish_devices)
+        the_waiter.set_wait_for_tearing_down_subarray()
         SubArray(1).deallocate()
         the_waiter.wait()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):

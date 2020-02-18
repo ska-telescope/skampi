@@ -1,22 +1,21 @@
-import pytest
 import sys
 sys.path.append('/app')
 
-import mock
 import importlib
+import mock
 import tango
-from test_support.helpers import *
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from assertpy import assert_that
+from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+from test_support.helpers import *
 
-class TestResource(object):
+class TestResource():
     def test_init(self):
         """
         Test the __init__ method.
         """
-        name = 'name'
-        r = resource(name)
-        assert r.device_name == name
+        device_name = 'name'
+        item_under_test = resource(device_name)
+        assert item_under_test.device_name == device_name
 
     @mock.patch('tango.DeviceProxy')
     def test_get_attr_enum(self, mock_proxy):
@@ -27,19 +26,19 @@ class TestResource(object):
         """
         importlib.reload(sys.modules[resource.__module__])
         # Create AttributeInfoEx object for enum attribute
-        aixe = tango.AttributeInfoEx()
-        aixe.data_type = tango._tango.CmdArgType.DevEnum
-        aixe.name = 'enumAttribute'
+        attr_info_ex = tango.AttributeInfoEx()
+        attr_info_ex.data_type = tango._tango.CmdArgType.DevEnum
+        attr_info_ex.name = 'enumAttribute'
         # Set for mock attribute and return values of methods
         attribute_list = 'buildState,versionId,enumAttribute'
         mock_proxy.return_value.get_attribute_list.return_value = attribute_list
-        mock_proxy.return_value._get_attribute_config.return_value = aixe
-        mock_proxy.return_value.enumAttribute = aixe
+        mock_proxy.return_value._get_attribute_config.return_value = attr_info_ex
+        mock_proxy.return_value.enumAttribute = attr_info_ex
         # Create instance of resource to test
         device_name = 'device'
-        r = resource(device_name)
+        item_under_test = resource(device_name)
 
-        assert r.get('enumAttribute') == aixe.name
+        assert item_under_test.get('enumAttribute') == attr_info_ex.name
 
     @mock.patch('tango.DeviceProxy')
     def test_get_attr_not_found(self, mock_proxy):
@@ -54,9 +53,9 @@ class TestResource(object):
         mock_proxy.return_value.get_attribute_list.return_value = attribute_list
         # Create instance of resource to test
         device_name = 'device'
-        r = resource(device_name)
+        item_under_test = resource(device_name)
 
-        assert r.get('nonexistent attribute') == 'attribute not found'
+        assert item_under_test.get('nonexistent attribute') == 'attribute not found'
 
     def mock_start_up():
         pass

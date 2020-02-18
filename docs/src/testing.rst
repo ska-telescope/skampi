@@ -11,41 +11,95 @@ Minikube Testing Environment - EngageSKA Openstack
 --------------------------------------------------
 
 Minikube is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster 
-inside a Virtual Machine (VM) inside an instance in Openstack.
+inside a Virtual Machine (VM) in Openstack.
 
 Create a Virtual Machine
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first step is to create a Virtual Machine in EngageSKA Openstack: 
 https://developerskatelescopeorg.readthedocs.io/en/latest/services/ait_performance_env.html. 
 The recommended specifications are:
 
 - Volume Size: 100 GB
-- Image: Ubuntu 18.04
+- Image: Ubuntu 18.04 LTS Jan/2020
 - Flavor: m2.small
+
+Don't forget to associate your public key or generate a new key pair in the ``Key Pair`` section.
+
+Next, go to the ``Instances`` section and create a new floating IP (dropdown on the right).  
+
+
+Create SSH connection
+^^^^^^^^^^^^^^^^^^^^^^
+
+On your local machine, go to ``~/.ssh/`` directory
+and create two new files: ``config`` and ``id_rsa``.
+Inside the ``id_rsa`` file, you need to paste the private key you previously generated. For the
+``config`` file copy and paste these properties:
+
+.. code-block:: bash
+
+    Host connection-name         # connection-name -> name of your connection, give any name you want
+        HostName IP              # IP -> VM's floating IP 
+        User ubuntu
+
+Finally, with the command ``ssh connection-name`` starts the ssh connection.
 
 Create and test the environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once this VM is up and running, we need to run the ansile-playbooks for creating a development environment and the SHAMPI environment:
-
-1. Install Ansible: https://developer.skatelescope.org/projects/ansible-playbooks/en/latest/README.html#ansibleplaybook
-2. Install the integration environment: https://developer.skatelescope.org/projects/ansible-playbooks/en/latest/README.html#skampi
-
-Finally, we are going to test this installation with one project example. Just run these instructions to verify your installation.
+Install ansible inside the VM and run the ansible-playbooks for creating 
+a development environment and the SHAMPI environment:
 
 .. code-block:: bash
 
+    # Install Ansible
+    sudo apt-add-repository --yes --update ppa:ansible/ansible && sudo apt-get install ansible
     # Create Environment
     git clone https://gitlab.com/ska-telescope/ansible-playbooks.git
     cd ansible-playbooks
     ansible-playbook -i hosts deploy_tangoenv.yml
     ansible-playbook -i hosts deploy_skampi.yml
-    sudo reboot
-    # Run Project
+
+Verify if everything is running using ``kubectl get services -n integration``:
+
+.. code-block:: bash
+
+    NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                             AGE
+    archiverdb-archiver-test           NodePort    10.96.233.41     <none>        3306:31305/TCP                      5m27s
+    databaseds-tango-base-test         NodePort    10.105.145.228   <none>        10000:30897/TCP                     5m24s
+    elastic-logging-test               NodePort    10.103.79.41     <none>        9200:31976/TCP                      5m26s
+    etcd-restore-operator              ClusterIP   10.100.7.96      <none>        19999/TCP                           5m28s
+    jupyter-oet-test                   NodePort    10.105.61.127    <none>        8888:32025/TCP                      5m26s
+    kibana-logging-integration-test    ClusterIP   10.102.79.54     <none>        5601/TCP                            5m26s
+    mongodb-webjive-test               ClusterIP   None             <none>        27017/TCP                           5m23s
+    rest-oet-test                      ClusterIP   None             <none>        5000/TCP                            5m25s
+    ssh-oet-test                       NodePort    10.97.46.250     <none>        22:30520/TCP                        5m25s
+    tango-rest-tango-base-test         NodePort    10.99.6.220      <none>        8080:32490/TCP                      5m24s
+    tangodb-tango-base-test            NodePort    10.103.4.193     <none>        3306:31154/TCP                      5m24s
+    test-sdp-prototype-etcd            ClusterIP   None             <none>        2379/TCP,2380/TCP                   3m18s
+    test-sdp-prototype-etcd-client     ClusterIP   10.107.155.120   <none>        2379/TCP                            3m18s
+    test-sdp-prototype-etcd-nodeport   NodePort    10.107.127.158   <none>        2379:30456/TCP                      5m25s
+    vnc-tango-base-test                NodePort    10.108.131.141   <none>        5920:30658/TCP,6081:30662/TCP       5m24s
+    vscode-tango-base-test             NodePort    10.107.133.184   <none>        22:31214/TCP                        5m24s
+    webjive-webjive-test               ClusterIP   10.111.102.81    <none>        80/TCP,5004/TCP,3012/TCP,8080/TCP   5m23s
+
+The next step is to reboot the system with ``sudo reboot`` and then ssh again into the VM.
+
+Finally, download the SKAMPI repository and run the test in minikube:
+
+.. code-block:: bash
+
+    #Remove the existing skampi directory
+    sudo rm -rd skampi/
+    # Download and run test
     git clone https://gitlab.com/ska-telescope/skampi.git
+    cd ansible-playbooks
+    ansible-playbook deploy_minikube.yml 
+    cd .. 
     cd skampi/
     make deploy_all KUBE_NAMESPACE=integration
+
 
 Kubernets Testing Environments
 ------------------------------
@@ -110,38 +164,39 @@ Before everything, we need to install the Remote Development extension from vsco
     :alt: SKAMPI Gitlab CI pipeline
 
 
-Connect to Openstack Virtual Machine - Option 1
+Connect to Openstack VM - Option 1
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Create a new ssh connection on your local machine: `Create SSH connection`_.
 
-With the previous VM successfully up and running, 
-we can successfully use *vscode* to create a vscode server inside the VM so we can connect to it.
-
-First, we have to make sure that the local ssh configurations are correct on the ``home/$USERNAME/.ssh/`` directory. 
-The private key associated with this VM needs to have the filename ``id_rsa`` and 
-the ``config`` file with the VM specifications.
-
-.. code-block:: bash
-
-    Host $VM_NAME
-        HostName $floating_IP
-        User ubuntu
-
-After this, just launch the remote extension (bottom left icon or use the shortcut "ctrl+shift+P") 
-and select ``Remote-SSH: Connect to Host...`` and select the ``$VM_NAME`` connection you previously created.
+After this, launch the remote extension inside vscode (bottom left icon or use the shortcut ``ctrl+shift+P``) 
+and select ``Remote-SSH: Connect to Host...`` and select the ``connection-name`` you previously created.
 
 Connect to Kubernets - Option 2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Connection establish
-^^^^^^^^^^^^^^^^^^^^
+Run ``kubectl get services -n integration`` to know on which port the vscode server service is:
 
-Finally, the vscode will install everything on its own, and establish the SSH connection.
+.. code-block:: bash
 
-.. image:: _static/img/vscode-connection.png
-    :alt: SKAMPI Gitlab CI pipeline
+    kubectl get services -n integration
+    NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                             AGE
+    ...
+    vscode-tango-base-test             NodePort    10.107.133.184   <none>        22:*PORT*/TCP                        5m24s
+    ...
+
+Create a new ssh connection on your local machine: `Create SSH connection`_.
+But with this configuration parameters:
+
+.. code-block:: bash
+
+    Host connection-name          # connection_name -> name of your connection, give any name you want
+        HostName IP               # IP -> VM's floating IP 
+        Port port                 # port-> vscode server port
+        User tango
 
 
-In this new instance of vscode, you can create/edit files and directories, install extensions and have direct access to the VM terminal.
+After this, launch the remote extension inside vscode (bottom left icon or use the shortcut ``ctrl+shift+P``) 
+and select ``Remote-SSH: Connect to Host...`` and select the ``connection-name`` you previously created.
 
 Testing Infrastructure as Code
 ------------------------------

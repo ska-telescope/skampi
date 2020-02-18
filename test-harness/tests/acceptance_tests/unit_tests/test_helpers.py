@@ -3,6 +3,7 @@ sys.path.append('/app')
 
 import importlib
 import mock
+from mock import Mock
 import tango
 from test_support.helpers import resource, take_subarray, waiter, subscriber, watch
 from assertpy import assert_that
@@ -80,3 +81,15 @@ def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     #assert_that(subscriber_mock.call_count).is_equal_to(5+4)
     #assert_that(watch_mock.call_count).is_equal_to(5+4)
     the_waiter.wait()
+
+def test_wait_for_change():
+    resource_mock = Mock(spec=resource)
+    resource_mock.device_name = "test_device"
+    resource_mock.get.return_value = "value_then"
+    watch = monitor(resource_mock,"value_then","attr")
+    result = watch.wait_until_value_changed(10)
+    assert_that(result).is_equal_to("timeout")
+    resource_mock.get.return_value = "value_now"
+    result = watch.wait_until_value_changed(10)
+    assert_that(result).is_equal_to(9)
+

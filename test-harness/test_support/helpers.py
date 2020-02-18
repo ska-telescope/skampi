@@ -19,6 +19,8 @@ def map_dish_nr_to_device_name(dish_nr):
 
 class resource:
 
+    device_name = None
+
     def __init__(self,device_name):
         self.device_name = device_name
     
@@ -37,7 +39,13 @@ class resource:
                 return tuple(value)
             return getattr(p,attr)
 
-class monitor:
+class monitor(object):
+
+    previous_value = None
+    resource = None
+    attr = None
+    device_name = None
+    current_value = None
 
     def __init__(self,resource,previous_value,attr):
         self.previous_value = previous_value
@@ -55,24 +63,24 @@ class monitor:
             return comparison.all()
         else: return comparison
 
-    def _wait(self,timeout=20):
+    def _wait(self,timeout=50):
         timeout = timeout
         while ( self._is_not_changed()):
             timeout -=1
             if (timeout == 0) : return "timeout"
-            sleep(0.5)
+            sleep(0.1)
             self._update()
-        return "changed"
+        return timeout
 
 
-    def get_value_when_changed(self,timeout=10):
+    def get_value_when_changed(self,timeout=50):
         response = self._wait(timeout)
         if (response == "timeout"):
             return "timeout"
         return self.current_value
     
-    def wait_until_value_changed(self,timeout=10):
-        self._wait(timeout)
+    def wait_until_value_changed(self,timeout=50):
+        return self._wait(timeout)
 
 
 
@@ -169,21 +177,22 @@ class waiter():
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
+        #at the moment sdb does not go to standby
+        #self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 
     def set_wait_for_starting_up(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
+        #self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 
-    def wait(self,timeout = 20):
+    def wait(self,timeout = 50):
         while self.waits:
             wait =self.waits.pop()
             result = wait.wait_until_value_changed(timeout)
             if result == "timeout":
-                self.logs += wait.device_name + " timed out whilst waiting for" +wait.attr + " to change from " + wait.previous_value + " in " + timeout +" seconds ;"
+                self.logs += wait.device_name + " timed out whilst waiting for " +wait.attr + " to change from " + wait.previous_value + " in " + str(timeout*0.1) +" seconds ;"
             else:
-                self.logs += wait.device_name + " changed " +str(wait.attr) + " from " + str(wait.previous_value) + " to " + str(wait.current_value) + " ;"
+                self.logs += wait.device_name + " changed " +str(wait.attr) + " from " + str(wait.previous_value) + " to " + str(wait.current_value) + " after " + str(timeout - result) +" tries ;"
 
     

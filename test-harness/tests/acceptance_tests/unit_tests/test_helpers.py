@@ -3,9 +3,10 @@ import sys
 sys.path.append('/app')
 
 import mock
+from mock import call
 import importlib
 import tango
-from test_support.helpers import *
+from test_support.helpers import resource, take_subarray, waiter, subscriber, watch
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from assertpy import assert_that
 
@@ -36,8 +37,6 @@ class TestResource(object):
         r = resource(device_name)
         assert r.get('nonexistent attribute') == 'attribute not found'
 
-    def mock_start_up():
-        pass
 
 @mock.patch('test_support.helpers.SubArray.allocate')
 @mock.patch('test_support.helpers.waiter')
@@ -49,3 +48,14 @@ def test_pilot_compose_subarray(waiter_mock,subarray_mock_allocate):
     waiter_mock_instance.set_wait_for_assign_resources.assert_called_once()
     waiter_mock_instance.wait.assert_called_once()
     subarray_mock_allocate.assert_called_once_with(allocation)
+
+@mock.patch('test_support.helpers.watch')
+@mock.patch('test_support.helpers.resource')
+@mock.patch('test_support.helpers.subscriber')
+def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
+    the_waiter = waiter()
+    the_waiter.set_wait_for_tearing_down_subarray()
+    assert_that(resource_mock.call_count).is_equal_to(5)
+    #assert_that(subscriber_mock.call_count).is_equal_to(5+4)
+    #assert_that(watch_mock.call_count).is_equal_to(5+4)
+    the_waiter.wait()

@@ -17,6 +17,8 @@ API_SERVER_IP ?= $(THIS_HOST)## Api server IP of k8s
 API_SERVER_PORT ?= 6443## Api server port of k8s
 EXTERNAL_IP ?= $(THIS_HOST)## For traefik installation
 CLUSTER_NAME ?= integration.cluster## For the gangway kubectl setup 
+CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f## For the gangway kubectl setup, taken from Gitlab
+CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f## For the gangway kubectl setup, taken from Gitlab
 CHART_SET ?= #for additional flags you want to set when deploying (default empty)
 
 # activate remote debugger for VSCode (ptvsd)
@@ -294,25 +296,29 @@ delete_traefik: ## delete the helm chart for traefik
 		| kubectl delete -n kube-system -f - && \
 		rm -rf $$TMP
 
-gangway: ## install gangway authentication for gitlab (in the kube-system namespace). Input parameters: INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
+gangway: ## install gangway authentication for gitlab (in the kube-system namespace). Input parameters: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
 	@TMP=`mktemp -d`; \
 	helm fetch stable/gangway --untar --untardir $$TMP && \
 	helm template $(helm_install_shim) $$TMP/gangway -n gangway0 --namespace kube-system \
 			--values resources/gangway.yaml \
 			--set gangway.redirectURL="http://gangway.$(INGRESS_HOST)/callback" \
 			--set gangway.clusterName="$(CLUSTER_NAME)" 	\
+			--set gangway.clientID="$(CLIENT_ID)" 	\
+			--set gangway.clientSecret="$(CLIENT_SECRET)" 	\
 			--set gangway.apiServerURL="https://$(API_SERVER_IP):$(API_SERVER_PORT)" \
 			--set ingress.hosts="{gangway.$(INGRESS_HOST)}" \
 			| kubectl apply -n kube-system -f - && 	\
 			rm -rf $$TMP 
 
-delete_gangway: ## delete install gangway authentication for gitlab. Input parameters: INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
+delete_gangway: ## delete install gangway authentication for gitlab. Input parameters: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
 	@TMP=`mktemp -d`; \
 	helm fetch stable/gangway --untar --untardir $$TMP && \
 	helm template $(helm_install_shim) $$TMP/gangway -n gangway0 --namespace kube-system \
 			--values resources/gangway.yaml \
 			--set gangway.redirectURL="http://gangway.$(INGRESS_HOST)/callback" \
 			--set gangway.clusterName="$(CLUSTER_NAME)" 	\
+			--set gangway.clientID="$(CLIENT_ID)" 	\
+			--set gangway.clientSecret="$(CLIENT_SECRET)" 	\
 			--set gangway.apiServerURL="https://$(API_SERVER_IP):$(API_SERVER_PORT)" \
 			--set ingress.hosts="{gangway.$(INGRESS_HOST)}" \
 			| kubectl delete -n kube-system -f - && \

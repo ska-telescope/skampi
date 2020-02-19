@@ -69,4 +69,3 @@ It is possible to setup a local SKAMPI environment using the ansible playbook av
    :caption: Readme File:
 
    resources-readme
-   resources-auth-readme

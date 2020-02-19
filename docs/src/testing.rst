@@ -174,7 +174,7 @@ and select ``Remote-SSH: Connect to Host...`` and select the ``connection-name``
 Connect to Kubernets - Option 2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Run ``kubectl get services -n integration`` to know on which port the vscode server service is:
+The tango-base chart available in the skampi repository defines an ssh service which can be used within the vscode extension. The service is deployed in the same IP as the host machine and the port can be discovered with the command ``kubectl get services -n integration`` which will give you the following output:
 
 .. code-block:: bash
 
@@ -197,6 +197,7 @@ But with this configuration parameters:
 
 After this, launch the remote extension inside vscode (bottom left icon or use the shortcut ``ctrl+shift+P``) 
 and select ``Remote-SSH: Connect to Host...`` and select the ``connection-name`` you previously created.
+Please request the password to the system team. 
 
 Testing Infrastructure as Code
 ------------------------------

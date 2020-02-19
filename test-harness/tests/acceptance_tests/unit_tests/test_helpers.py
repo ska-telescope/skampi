@@ -39,10 +39,10 @@ class TestResource():
         Enum attribute name is returned.
         DeviceProxy used by resource is mocked.
         """
-        #importlib.reload(sys.modules[resource.__module__])
         # Create AttributeInfoEx object for enum attribute
-        attr_info_ex = self.get_attribute_info_ex(
-            'enumAttribute', tango._tango.CmdArgType.DevEnum)
+        attr_info_ex = tango.AttributeInfoEx()
+        attr_info_ex.data_type = tango._tango.CmdArgType.DevEnum
+        attr_info_ex.name = 'enumAttribute'
         # Set for mock attribute and return values of methods
         attribute_list = 'buildState,versionId,enumAttribute'
         mock_proxy.return_value.get_attribute_list.return_value = attribute_list

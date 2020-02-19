@@ -349,7 +349,10 @@ get_status:
 	kubectl get pod,svc,deployments,pv,pvc,ingress -n $(KUBE_NAMESPACE)
 
 redeploy:
-	make delete delete_all && make deploy_all && make wait
+	make delete_all -n $(KUBE_NAMESPACE)  && make deploy_all && watch kubectl get pods -n $(KUBE_NAMESPACE)
+
+make clean:
+	kubectl delete all --all -n $(KUBE_NAMESPACE)
 	
 wait:
 	pods=$$( kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{' '}{end}" ) && \

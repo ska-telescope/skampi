@@ -109,10 +109,9 @@ class state_checker:
         timeout = self.timeout
         result = "notOK"
         while (timeout != 0):
-            timeout -= 1
             if (self.debug): print(timeout)
             premise_correct = False
-            result=""
+            result=str(timeout)
             for premise in premises:
                 required_attr = premise["value"]
                 attr_name = premise["attr"]
@@ -123,14 +122,14 @@ class state_checker:
                      premise_correct = False
                      result += str(attr_name)+" not eq "+str(required_attr)
             if (premise_correct):
-                timeout = 0
-                result = "OK"
+                return timeout
                 #TODO throw timout exception
             else :
-                sleep(1)
-        return result
+                sleep(0.1)
+                timeout -= 1
+        return "timed out"
 
-def wait_for(device,timeout=10):
+def wait_for(device,timeout=50):
     return state_checker(device,timeout)
 
 def take_subarray(id):
@@ -165,6 +164,9 @@ class waiter():
     def set_wait_for_assign_resources(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
+        #self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
 
     def set_wait_for_tearing_down_subarray(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
@@ -185,13 +187,17 @@ class waiter():
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
         #self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
+        
+    def set_wait_for_ending_SB(self):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState"))
 
     def wait(self,timeout = 50):
+        self.logs = ""
         while self.waits:
             wait =self.waits.pop()
             result = wait.wait_until_value_changed(timeout)
             if result == "timeout":
-                self.logs += wait.device_name + " timed out whilst waiting for " +wait.attr + " to change from " + wait.previous_value + " in " + str(timeout*0.1) +" seconds ;"
+                self.logs += wait.device_name + " timed out whilst waiting for " +wait.attr + " to change from " + wait.previous_value + " in 5 seconds;"
             else:
                 self.logs += wait.device_name + " changed " +str(wait.attr) + " from " + str(wait.previous_value) + " to " + str(wait.current_value) + " after " + str(timeout - result) +" tries ;"
 

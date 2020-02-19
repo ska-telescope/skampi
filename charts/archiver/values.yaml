@@ -5,29 +5,15 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
-archiver:
+pv:
   enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-archiver
-    tag: 0.1.0
-    pullPolicy: IfNotPresent
-  db:
-    rootpw: secret
-    db: hdbpp
-    user: tango
-    passowrd: tango
-  resources:
-    requests:
-      cpu: 200m     # 200m = 0.2 CPU
-      memory: 256Mi # 256Mi = 0.25 GB mem
 
 hdbppdb:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: mariadb_hdbpp
-    tag: 0.1.0
+    tag: 0.1.1
     pullPolicy: IfNotPresent
   db:
     rootpw: secret
@@ -39,17 +25,22 @@ hdbppdb:
       cpu: 200m     # 200m = 0.2 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
 
+archiver:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-archiver
+    tag: 0.2.0
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 200m     # 200m = 0.2 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
+
 dsconfig:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-dsconfig
-    tag: latest
-    pullPolicy: IfNotPresent
-
-confighdbpp:
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-db
     tag: latest
     pullPolicy: IfNotPresent
 
@@ -64,7 +55,7 @@ hdbppviewer:
 attrconfig:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: ska-python-buildenv
+    image: tango-itango
     tag: 0.1.0
     pullPolicy: IfNotPresent
 

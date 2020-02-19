@@ -19,14 +19,14 @@ class TestResource():
         item_under_test = resource(device_name)
         assert item_under_test.device_name == device_name
 
-    @mock.patch('tango.DeviceProxy')
+    @mock.patch('test_support.helpers.DeviceProxy')
     def test_get_attr_enum(self, mock_proxy):
         """
         Test the get method.
         Enum attribute name is returned.
         DeviceProxy used by resource is mocked.
         """
-        importlib.reload(sys.modules[resource.__module__])
+        #importlib.reload(sys.modules[resource.__module__])
         # Create AttributeInfoEx object for enum attribute
         attr_info_ex = tango.AttributeInfoEx()
         attr_info_ex.data_type = tango._tango.CmdArgType.DevEnum
@@ -42,14 +42,14 @@ class TestResource():
 
         assert item_under_test.get('enumAttribute') == attr_info_ex.name
 
-    @mock.patch('tango.DeviceProxy')
+    @mock.patch('test_support.helpers.DeviceProxy')
     def test_get_attr_not_found(self, mock_proxy):
         """
         Test the get method.
         Attribute name is not in the attribute list.
         DeviceProxy used by resource is mocked.
         """
-        importlib.reload(sys.modules[resource.__module__])
+        #importlib.reload(sys.modules[resource.__module__])
         # Set for mock return value of method
         attribute_list = 'buildState,versionId,enumAttribute'
         mock_proxy.return_value.get_attribute_list.return_value = attribute_list
@@ -93,3 +93,11 @@ def test_wait_for_change():
     result = watch.wait_until_value_changed(10)
     assert_that(result).is_equal_to(9)
 
+def test_state_changer():
+    resource_mock = Mock(spec=resource)
+    resource_mock.device_name = "test_device" 
+    resource_mock.get.return_value = "value_then"
+    result = wait_for(resource_mock,10).to_be({"attr":"mock_attr","value":"value_then"})
+    assert_that(result).is_equal_to(10)
+    result = wait_for(resource_mock,1).to_be({"attr":"mock_attr","value":"value_now"})
+    assert_that(result).is_equal_to("timed out")

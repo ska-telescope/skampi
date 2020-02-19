@@ -7,6 +7,193 @@ scripts, components to support its test and deployment.
 This page outlines the various categories of testing and approaches one can employ to test various aspects of SKA MPI prototype that can
 be implemented in this repository.
 
+Minikube Testing Environment - EngageSKA Openstack
+--------------------------------------------------
+
+Minikube is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster 
+inside a Virtual Machine (VM) in Openstack.
+
+Create a Virtual Machine
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The first step is to create a Virtual Machine in EngageSKA Openstack: 
+https://developerskatelescopeorg.readthedocs.io/en/latest/services/ait_performance_env.html. 
+The recommended specifications are:
+
+- Volume Size: 100 GB
+- Image: Ubuntu 18.04 LTS Jan/2020
+- Flavor: m2.small
+
+Don't forget to associate your public key or generate a new key pair in the ``Key Pair`` section.
+
+Next, go to the ``Instances`` section and create a new floating IP (dropdown on the right).  
+
+Create and test the environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Install ansible inside the VM and run the ansible-playbooks for creating 
+a development environment and the SHAMPI environment:
+
+.. code-block:: bash
+
+    # Install Ansible
+    sudo apt-add-repository --yes --update ppa:ansible/ansible && sudo apt-get install ansible
+    # Create Environment
+    git clone https://gitlab.com/ska-telescope/ansible-playbooks.git
+    cd ansible-playbooks
+    ansible-playbook -i hosts deploy_tangoenv.yml
+    ansible-playbook -i hosts deploy_skampi.yml
+
+Verify if everything is running using ``kubectl get services -n integration``:
+
+.. code-block:: bash
+
+    NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                             AGE
+    archiverdb-archiver-test           NodePort    10.96.233.41     <none>        3306:31305/TCP                      5m27s
+    databaseds-tango-base-test         NodePort    10.105.145.228   <none>        10000:30897/TCP                     5m24s
+    elastic-logging-test               NodePort    10.103.79.41     <none>        9200:31976/TCP                      5m26s
+    etcd-restore-operator              ClusterIP   10.100.7.96      <none>        19999/TCP                           5m28s
+    jupyter-oet-test                   NodePort    10.105.61.127    <none>        8888:32025/TCP                      5m26s
+    kibana-logging-integration-test    ClusterIP   10.102.79.54     <none>        5601/TCP                            5m26s
+    mongodb-webjive-test               ClusterIP   None             <none>        27017/TCP                           5m23s
+    rest-oet-test                      ClusterIP   None             <none>        5000/TCP                            5m25s
+    ssh-oet-test                       NodePort    10.97.46.250     <none>        22:30520/TCP                        5m25s
+    tango-rest-tango-base-test         NodePort    10.99.6.220      <none>        8080:32490/TCP                      5m24s
+    tangodb-tango-base-test            NodePort    10.103.4.193     <none>        3306:31154/TCP                      5m24s
+    test-sdp-prototype-etcd            ClusterIP   None             <none>        2379/TCP,2380/TCP                   3m18s
+    test-sdp-prototype-etcd-client     ClusterIP   10.107.155.120   <none>        2379/TCP                            3m18s
+    test-sdp-prototype-etcd-nodeport   NodePort    10.107.127.158   <none>        2379:30456/TCP                      5m25s
+    vnc-tango-base-test                NodePort    10.108.131.141   <none>        5920:30658/TCP,6081:30662/TCP       5m24s
+    vscode-tango-base-test             NodePort    10.107.133.184   <none>        22:31214/TCP                        5m24s
+    webjive-webjive-test               ClusterIP   10.111.102.81    <none>        80/TCP,5004/TCP,3012/TCP,8080/TCP   5m23s
+
+The next step is to reboot the system with ``sudo reboot`` and then ssh again into the VM.
+
+Finally, download the SKAMPI repository and run the test in minikube:
+
+.. code-block:: bash
+
+    #Remove the existing skampi directory
+    sudo rm -rd skampi/
+    # Download and run test
+    git clone https://gitlab.com/ska-telescope/skampi.git
+    cd ansible-playbooks
+    ansible-playbook deploy_minikube.yml 
+    cd .. 
+    cd skampi/
+    make deploy_all KUBE_NAMESPACE=integration
+
+
+Kubernets Testing Environments
+------------------------------
+At the moment 3 k8s multi-node clusters are available for testing purpose: 
+
++--------------------------+-----------------------------------------------------------------------------------------------------------+
+| Cluster name             | Information                                                                                               |
++==========================+===========================================================================================================+
+| *engageska-k8s-master*   | - 1 master, 4 worker nodes                                                                                |
+|                          | - working in the skampi pipeline                                                                          |
+|                          | - A&A not available                                                                                       |
++--------------------------+-----------------------------------------------------------------------------------------------------------+
+| *engageska-k8s-v2*       | - 1 master, 2 worker nodes                                                                                |
+|                          | - working in the skampi pipeline                                                                          |
+|                          | - A&A available. To work with it the file /etc/hosts has to be modified with the following lines:         |
+|                          | .. code-block:: bash                                                                                      |
+|                          |                                                                                                           |
+|                          |      192.168.93.46	gangway.kubernetes-v2.engageska-portugal.pt                                            |
+|                          |                                                                                                           |
++--------------------------+-----------------------------------------------------------------------------------------------------------+
+| *kubernetes-cipro*       | - 1 master, 2 worker nodes                                                                                |
+|                          | - not working in the skampi pipeline                                                                      |
+|                          | - A&A available. To work with it the file /etc/hosts has to be modified with the following lines:         |
+|                          | .. code-block:: bash                                                                                      |
+|                          |                                                                                                           |
+|                          |      192.168.93.46	gangway.kubernetes-cipro.engageska-portugal.pt                                         |
+|                          |                                                                                                           |
++--------------------------+-----------------------------------------------------------------------------------------------------------+
+
+Kubectl setup
+^^^^^^^^^^^^^
+
+If a cluster has the A&A module enabled it is possible to generate the instructions to let the local kubectl work with it. In order To do that, once modified the file /etc/hosts as explained above, open the [gangway](https://github.com/heptiolabs/gangway) url for `engageska-k8s-v2 <http://gangway.kubernetes-v2.engageska-portugal.pt>`_ or `kubernetes-cipro <http://gangway.kubernetes-cipro.engageska-portugal.pt >`_.
+The *Sign In* button will redirect to gitlab.com for authentication. Once authenticated it will appear the set of commands to setup the local kubectl as shown below. 
+
+.. image:: _static/img/signin.png
+    :alt: Gangway Sign In
+
+.. image:: _static/img/kubectl.png
+    :alt: Kubectl setup
+
+The following namespaces are available for use: "integration", "sdp", "csp", "button", "ncra", "karoo". For creating new namespaces or for any authorization request, contact the system team.
+
+Visual Studio Code Remote Access
+--------------------------------
+
+Visual Studio Code Remote Development allows you to use a container, remote machine, or the Windows Subsystem for Linux (WSL) as a 
+full-featured development environment.
+
+No source code needs to be on your local machine. Each extension in the Remote Development extension pack can run commands 
+and other extensions directly inside a container, in WSL, or on a remote machine so that everything feels like it does when you run locally.
+
+.. image:: _static/img/architecture.png 
+    :alt: SKAMPI Gitlab CI pipeline
+
+Install Extension
+^^^^^^^^^^^^^^^^^
+Before everything, we need to install the Remote Development extension from vscode.
+
+
+.. image:: _static/img/vscode-installExtension.png
+    :alt: SKAMPI Gitlab CI pipeline
+
+Create SSH connection
+^^^^^^^^^^^^^^^^^^^^^^
+
+On vscode, open the ``Remote-SSH: Open Configuration File...``, copy and paste these properties:
+
+.. code-block:: bash
+
+    Host connection-name         # connection-name -> name of your connection, give any name you want
+        HostName IP              # IP -> VM's floating IP 
+        User ubuntu
+
+Finally, with the command ``ssh connection-name`` starts the ssh connection.
+
+Connect to Openstack VM - Option 1
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+After you created a new ssh connection on your local machine: `Create SSH connection`_.
+
+After this, launch the remote extension inside vscode (bottom left icon or use the shortcut ``ctrl+shift+P``) 
+and select ``Remote-SSH: Connect to Host...`` and select the ``connection-name`` you previously created.
+
+Connect to Kubernets - Option 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The tango-base chart available in the skampi repository defines an ssh service which can be used within the vscode extension. The service is deployed in the same IP as the host machine and the port can be discovered with the command ``kubectl get services -n integration`` which will give you the following output:
+
+.. code-block:: bash
+
+    kubectl get services -n integration
+    NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                             AGE
+    ...
+    vscode-tango-base-test             NodePort    10.107.133.184   <none>        22:*PORT*/TCP                        5m24s
+    ...
+
+Create new ssh connection on your local machine: `Create SSH connection`_.
+But with this configuration parameters:
+
+.. code-block:: bash
+
+    Host connection-name          # connection_name -> name of your connection, give any name you want
+        HostName IP               # IP -> VM's floating IP 
+        Port port                 # port-> vscode server port
+        User tango
+
+
+After this, launch the remote extension inside vscode (bottom left icon or use the shortcut ``ctrl+shift+P``) 
+and select ``Remote-SSH: Connect to Host...`` and select the ``connection-name`` you previously created.
+Please request the password to the system team. 
+
 Testing Infrastructure as Code
 ------------------------------
 There is a substantial amount of infrastructure and its constituent parts (e.g. Kubernetes resources and their

@@ -28,23 +28,6 @@ Don't forget to associate your public key or generate a new key pair in the ``Ke
 
 Next, go to the ``Instances`` section and create a new floating IP (dropdown on the right).  
 
-
-Create SSH connection
-^^^^^^^^^^^^^^^^^^^^^^
-
-On your local machine, go to ``~/.ssh/`` directory
-and create two new files: ``config`` and ``id_rsa``.
-Inside the ``id_rsa`` file, you need to paste the private key you previously generated. For the
-``config`` file copy and paste these properties:
-
-.. code-block:: bash
-
-    Host connection-name         # connection-name -> name of your connection, give any name you want
-        HostName IP              # IP -> VM's floating IP 
-        User ubuntu
-
-Finally, with the command ``ssh connection-name`` starts the ssh connection.
-
 Create and test the environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -163,10 +146,22 @@ Before everything, we need to install the Remote Development extension from vsco
 .. image:: _static/img/vscode-installExtension.png
     :alt: SKAMPI Gitlab CI pipeline
 
+Create SSH connection
+^^^^^^^^^^^^^^^^^^^^^^
+
+On vscode, open the ``Remote-SSH: Open Configuration File...``, copy and paste these properties:
+
+.. code-block:: bash
+
+    Host connection-name         # connection-name -> name of your connection, give any name you want
+        HostName IP              # IP -> VM's floating IP 
+        User ubuntu
+
+Finally, with the command ``ssh connection-name`` starts the ssh connection.
 
 Connect to Openstack VM - Option 1
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Create a new ssh connection on your local machine: `Create SSH connection`_.
+After you created a new ssh connection on your local machine: `Create SSH connection`_.
 
 After this, launch the remote extension inside vscode (bottom left icon or use the shortcut ``ctrl+shift+P``) 
 and select ``Remote-SSH: Connect to Host...`` and select the ``connection-name`` you previously created.
@@ -184,7 +179,7 @@ The tango-base chart available in the skampi repository defines an ssh service w
     vscode-tango-base-test             NodePort    10.107.133.184   <none>        22:*PORT*/TCP                        5m24s
     ...
 
-Create a new ssh connection on your local machine: `Create SSH connection`_.
+Create new ssh connection on your local machine: `Create SSH connection`_.
 But with this configuration parameters:
 
 .. code-block:: bash

@@ -1,3 +1,6 @@
+"""
+Tests for helpers.py
+"""
 import sys
 sys.path.append('/app')
 
@@ -5,8 +8,8 @@ import importlib
 import mock
 from mock import Mock
 import tango
-from test_support.helpers import resource, take_subarray, waiter, subscriber, watch
 from assertpy import assert_that
+from test_support.helpers import resource, take_subarray, waiter, subscriber, watch
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from test_support.helpers import *
 
@@ -20,6 +23,16 @@ class TestResource():
         assert item_under_test.device_name == device_name
 
     @mock.patch('test_support.helpers.DeviceProxy')
+    def get_attribute_info_ex(self, name, data_type):
+        """
+        Return AttributeInfoEx object.
+        """
+        attr_info_ex = tango.AttributeInfoEx()
+        attr_info_ex.data_type = data_type
+        attr_info_ex.name = name
+        return attr_info_ex
+
+    @mock.patch('test_support.helpers.DeviceProxy')
     def test_get_attr_enum(self, mock_proxy):
         """
         Test the get method.
@@ -28,9 +41,8 @@ class TestResource():
         """
         #importlib.reload(sys.modules[resource.__module__])
         # Create AttributeInfoEx object for enum attribute
-        attr_info_ex = tango.AttributeInfoEx()
-        attr_info_ex.data_type = tango._tango.CmdArgType.DevEnum
-        attr_info_ex.name = 'enumAttribute'
+        attr_info_ex = self.get_attribute_info_ex(
+            'enumAttribute', tango._tango.CmdArgType.DevEnum)
         # Set for mock attribute and return values of methods
         attribute_list = 'buildState,versionId,enumAttribute'
         mock_proxy.return_value.get_attribute_list.return_value = attribute_list
@@ -39,7 +51,6 @@ class TestResource():
         # Create instance of resource to test
         device_name = 'device'
         item_under_test = resource(device_name)
-
         assert item_under_test.get('enumAttribute') == attr_info_ex.name
 
     @mock.patch('test_support.helpers.DeviceProxy')
@@ -56,16 +67,17 @@ class TestResource():
         # Create instance of resource to test
         device_name = 'device'
         item_under_test = resource(device_name)
-
         assert item_under_test.get('nonexistent attribute') == 'attribute not found'
-
 
 @mock.patch('test_support.helpers.SubArray.allocate')
 @mock.patch('test_support.helpers.waiter')
-def test_pilot_compose_subarray(waiter_mock,subarray_mock_allocate):
-    allocation = ResourceAllocation(dishes= [Dish(1), Dish(2), Dish(3), Dish(4)])
+def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
+    allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
     take_subarray(1).to_be_composed_out_of(4)
-    dish_devices = ['mid_d0001/elt/master','mid_d0002/elt/master','mid_d0003/elt/master','mid_d0004/elt/master']
+    dish_devices = [
+        'mid_d0001/elt/master', 'mid_d0002/elt/master',
+        'mid_d0003/elt/master', 'mid_d0004/elt/master',
+        ]
     waiter_mock_instance = waiter_mock.return_value
     waiter_mock_instance.set_wait_for_assign_resources.assert_called_once()
     waiter_mock_instance.wait.assert_called_once()
@@ -86,7 +98,7 @@ def test_wait_for_change():
     resource_mock = Mock(spec=resource)
     resource_mock.device_name = "test_device"
     resource_mock.get.return_value = "value_then"
-    watch = monitor(resource_mock,"value_then","attr")
+    watch = monitor(resource_mock, "value_then", "attr")
     result = watch.wait_until_value_changed(10)
     assert_that(result).is_equal_to("timeout")
     resource_mock.get.return_value = "value_now"

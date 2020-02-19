@@ -51,6 +51,7 @@ def start_up():
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up() 
     the_waiter.wait()
+    LOGGER.info(the_waiter.logs)
 
 
 
@@ -94,18 +95,24 @@ def teardown_function(function):
         LOGGER.info("tearing down composed subarray (IDLE)")
         SubArray(1).deallocate()
         the_waiter.wait()
+        LOGGER.info(the_waiter.logs)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
         LOGGER.info("tearing down configured subarray (READY)")
+        the_waiter.set_wait_for_ending_SB()
         SubArray(1).end_sb()
+        the_waiter.wait()
+        LOGGER.info(the_waiter.logs)
         the_waiter.set_wait_for_tearing_down_subarray()
         SubArray(1).deallocate()
         the_waiter.wait()
+        LOGGER.info(the_waiter.logs)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         LOGGER.info("tearing down configuring subarray")
         restart_subarray(1)
     the_waiter.set_wait_for_going_to_standby()
     SKAMid().standby()
     the_waiter.wait()
+    LOGGER.info(the_waiter.logs)
 
         
     

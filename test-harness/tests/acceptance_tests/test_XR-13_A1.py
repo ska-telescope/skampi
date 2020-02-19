@@ -38,6 +38,7 @@ def set_to_running():
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
     the_waiter.wait()
+    LOGGER.info(the_waiter.logs)
 
 @when("I allocate 4 dishes to subarray 1")
 def allocate_four_dishes(result):
@@ -49,6 +50,10 @@ def allocate_four_dishes(result):
     #wait for certain values to be changed (refer to helpers for what is currently defined as neccesarry to wait)
     the_waiter.wait()
     LOGGER.info(the_waiter.logs)
+    result = wait_for(resource('mid_csp/elt/master'),20).to_be({"attr":"receptorMembership","value":(1, 1, 1, 1)})
+    if (result == "timed out"):
+        LOGGER.info("timed out after 2 seconds waiting for mid_csp/elt/master receptorMembership to change to (1,1,1,1)")
+    
 
     return result
 
@@ -87,10 +92,10 @@ def teardown_function(function):
         SubArray(1).deallocate()
         the_waiter.wait()
         LOGGER.info(the_waiter.logs)
-
-    the_waiter = waiter()
-    the_waiter.set_wait_for_going_to_standby()
-    SKAMid().standby()
-    the_waiter.wait()
-    LOGGER.info(the_waiter.logs)
+    if (resource('ska_mid/tm_subarray_node/1').get("State") == "OFF"):
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_to_standby()
+        SKAMid().standby()
+        the_waiter.wait()
+        LOGGER.info(the_waiter.logs)
     

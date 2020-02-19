@@ -101,6 +101,16 @@ acc_attach:
 acc_attach_interact:
 	kubectl exec -it -n $(KUBE_NAMESPACE) $(pod_name_interactive)  /bin/bash
 
+acc_clean:
+	rm -R __pycache__ ;\
+	cd .. &&\
+	rm -R .pytest_cache ;\
+	cd tests/ && \
+	rm -R __pycache_ ;\
+	cd acceptance_tests/ &&\
+	rm -R __pycache__ ; \
+	cd ../../test_support/
+
 	
 
 

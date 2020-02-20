@@ -71,7 +71,7 @@ def config():
     signal.signal(signal.SIGALRM, handlde_timeout)
     signal.alarm(timeout)#wait for 30 seconds and timeout if still stick
     try:
-        SubArray(1).configure_from_file(file)
+        SubArray(1).configure_from_file(file,False)#false means the file is not interpreted this ensures multiple runs
     except:
         LOGGER.info("configure from file timed out after %s",timeout)
 

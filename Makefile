@@ -349,7 +349,7 @@ get_status:
 	kubectl get pod,svc,deployments,pv,pvc,ingress -n $(KUBE_NAMESPACE)
 
 redeploy:
-	make delete_all -n $(KUBE_NAMESPACE)  && make deploy_all && watch kubectl get pods -n $(KUBE_NAMESPACE)
+	make delete_all && make deploy_all && watch kubectl get pods -n $(KUBE_NAMESPACE)
 
 make clean:
 	kubectl delete all --all -n $(KUBE_NAMESPACE)
@@ -371,3 +371,5 @@ dump_dashboards:
 load_dashboards:
 	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongorestore --archive < webjive-dash.dump 
 	
+get_jupyter_port:
+	@kubectl get service -l app=jupyter-oet-test -n $(KUBE_NAMESPACE)  -o jsonpath="{range .items[0]}{'Use this url:http://$(THIS_HOST):'}{.spec.ports[0].nodePort}{'\n'}{end}"

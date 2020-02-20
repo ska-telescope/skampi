@@ -197,7 +197,7 @@ class waiter():
             wait =self.waits.pop()
             result = wait.wait_until_value_changed(timeout)
             if result == "timeout":
-                self.logs += wait.device_name + " timed out whilst waiting for " +wait.attr + " to change from " + wait.previous_value + " in 5 seconds;"
+                self.logs += wait.device_name + " timed out whilst waiting for " +wait.attr + " to change from " + str(wait.previous_value) + " in 5 seconds;"
             else:
                 self.logs += wait.device_name + " changed " +str(wait.attr) + " from " + str(wait.previous_value) + " to " + str(wait.current_value) + " after " + str(timeout - result) +" tries ;"
 

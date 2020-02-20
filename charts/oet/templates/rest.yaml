@@ -34,6 +34,8 @@ binaryData:
 {{ .Files.Get "data/startup.py" | b64enc | indent 4 }}
   standby.py: |-
 {{ .Files.Get "data/standby.py" | b64enc | indent 4 }}
+  observe.py: |-
+{{ .Files.Get "data/observe.py" | b64enc | indent 4 }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -120,6 +122,8 @@ spec:
                 path: startup.py
               - key: standby.py
                 path: standby.py
+              - key: observe.py
+                path: observe.py
       resources:
   {{ toYaml .Values.rest.resources | indent 10 }}
   {{- with .Values.nodeSelector }}

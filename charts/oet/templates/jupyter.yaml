@@ -106,16 +106,21 @@ spec:
         - name: storage
           persistentVolumeClaim:
             claimName: jupyter-storage-pvc
+        - name: config
+          configMap:
+            name: config
+        - name: workdir
+          emptyDir: {}
       initContainers:
       - name: check-databaseds-ready
+        volumeMounts: 
+        - name: workdir
+          mountPath: /temp
+        - name: config
+          mountPath: /config
         image: "{{ .Values.jupyter.image.registry }}/{{ .Values.jupyter.image.image }}:{{ .Values.jupyter.image.tag }}"
-        command:
-          - /usr/local/bin/wait-for-it.sh
-          - databaseds-tango-base-{{ .Release.Name }}:10000
-          - --timeout=30
-          - --strict
-          - --
-          - echo databaseds ready
+        command: ["/bin/sh","-c"]
+        args: ["/usr/local/bin/wait-for-it.sh databaseds-tango-base-{{ .Release.Name }}:10000 --timeout=30 --strict -- echo databaseds ready && cp /config/* /temp/"]
       containers:
       - name: oet-jupyter
         image: "{{ .Values.jupyter.image.registry }}/{{ .Values.jupyter.image.image }}:{{ .Values.jupyter.image.tag }}"
@@ -129,6 +134,8 @@ spec:
         volumeMounts:
           - name: storage
             mountPath: /app/jupyter_storage
+          - name: workdir
+            mountPath: /home/tango/.jupyter
         readinessProbe:
           tcpSocket:
             port: 8888

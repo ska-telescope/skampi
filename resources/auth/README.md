@@ -31,10 +31,11 @@ The parameter `oidc-client-id` must correspond to the [application id](https://g
 Once the minikube is started, to configure the kubectl tool, it is possible to use [gangway](https://github.com/heptiolabs/gangway). To install it, it is possible to use the Makefile of the skampi repository:
 
 ```
-make gangway KUBE_NAMESPACE=integration 
-    API_SERVER_PORT=6443 
-    API_SERVER_IP=xxx.xxx.xxx.xxx
-    INGRESS_HOST=integration.engageska-portugal.pt
+make gangway CLIENT_ID=$from_gitlab_applicationid \
+    CLIENT_SECRET=$from_gitlab_applicationsecret \
+    INGRESS_HOST=integration.engageska-portugal.pt \
+    API_SERVER_PORT=8443 \
+    API_SERVER_IP=xxx.xxx.xxx.xxx 
 
 ```
 The result will be a new ingress at the link `gangway.integration.engageska-portugal.pt`. Remember to modify the file `/etc/hosts` adding the following lines:

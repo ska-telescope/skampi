@@ -36,7 +36,6 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "{{ .Values.jupyter.storage.hostPath }}"
-  
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -54,6 +53,18 @@ spec:
     requests:
       storage: {{ .Values.jupyter.storage.capacity }}
 {{end}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jupyter-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  environment: |
+    TANGO_HOST=databaseds-tango-base-{{ .Release.Name }}:10000
+  venv.sh: |
+    export PATH="/venv/bin:${PATH}"
+    export OET_REST_URI=http://rest-{{ template "oet.name" . }}-{{ .Release.Name }}:5000/api/v1.0/procedures
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -80,6 +91,14 @@ spec:
         heritage: {{ .Release.Service }}
     spec:
       volumes:
+        - name: jupyter-configmap-volume
+          configMap:
+            name: jupyter-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
+            items:
+            - key: environment
+              path: environment
+            - key: venv.sh
+              path: venv.sh
         - name: storage
           persistentVolumeClaim:
             claimName: jupyter-storage-pvc
@@ -103,9 +122,17 @@ spec:
         env:
           - name: TANGO_HOST
             value: databaseds-tango-base-{{ .Release.Name }}:10000
+          - name: SHELL
+            value: /bin/bash
         volumeMounts:
           - name: storage
             mountPath: /app/jupyter_storage
+          - name: jupyter-configmap-volume
+            mountPath: /etc/environment
+            subPath: environment
+          - name: jupyter-configmap-volume
+            mountPath: /etc/profile.d/venv.sh
+            subPath: venv.sh
         readinessProbe:
           tcpSocket:
             port: 8888

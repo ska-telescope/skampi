@@ -48,7 +48,7 @@ spec:
       containers:
       - name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
         image: "{{ .Values.hdbppdb.image.registry }}/{{ .Values.hdbppdb.image.image }}:{{ .Values.hdbppdb.image.tag }}"
-        imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.hdbppdb.image.pullPolicy }}
         env:
           - name: MYSQL_ROOT_PASSWORD
             value: "{{ .Values.hdbppdb.db.rootpw }}"
@@ -65,15 +65,19 @@ spec:
         ports:
         - name: archiverdb-port
           containerPort: 3306
+{{ if .Values.pv.enabled }}
         volumeMounts:
-        - name: data
-          mountPath: /var/lib/mysql
+         - name: data
+           mountPath: /var/lib/mysql
+{{end}}
         resources:
 {{ toYaml .Values.archiver.resources | indent 10 }}
       volumes:
+{{ if .Values.pv.enabled }}
       - name: data
         persistentVolumeClaim:
           claimName: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+{{end}}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

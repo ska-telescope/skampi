@@ -60,10 +60,17 @@ spec:
     image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
     imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
     command:
-      - sh
-    args:
-      - -c
-      - "./usr/local/bin/hdbppcm-srv 01"
+      - /usr/local/bin/wait-for-it.sh
+      - databaseds-tango-base-{{ .Release.Name }}:10000
+      - --timeout=30
+      - --strict
+      - --
+      - /usr/local/bin/wait-for-it.sh
+      - archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}:3306
+      - --timeout=30
+      - --strict
+      - --
+      - ./usr/local/bin/hdbppcm-srv 01
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -74,19 +81,23 @@ spec:
     image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
     imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
     command:
-      - sh
-    args:
-      - -c
-      - "./usr/local/bin/hdbppes-srv 01"
+      - /usr/local/bin/wait-for-it.sh
+      - databaseds-tango-base-{{ .Release.Name }}:10000
+      - --timeout=30
+      - --strict
+      - --
+      - /usr/local/bin/wait-for-it.sh
+      - archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}:3306
+      - --timeout=30
+      - --strict
+      - --
+      - ./usr/local/bin/hdbppes-srv 01
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
     - name: HdbManager
       value: "archiving/hdbpp/confmanager01"
 
-{{- with .Values.archiver.env }}
-{{ toYaml . | indent 4 }}
-{{- end }}
   restartPolicy: Always
 {{- with .Values.nodeSelector }}
   nodeSelector:

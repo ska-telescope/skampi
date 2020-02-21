@@ -22,11 +22,13 @@ def cm_configure_attributes():
             if attr_list is not None:
                 for already_archived in attr_list:
                     if attribute.lower() in str(already_archived).lower():
+                        print("Attribute " + attribute + " already configured.")
                         is_already_archived = True
                         already_configured_count += 1
                         break
 
             if not is_already_archived:
+                print("Attribute " + attribute + " not configured. Configuring it now. ")
                 max_retries = 10
                 sleep_time = 30
                 for x in range(0, max_retries):

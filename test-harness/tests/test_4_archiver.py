@@ -23,10 +23,11 @@ def test_archiver():
 
   is_already_archived = False
   attr_list = evt_subscriber_device_proxy.read_attribute("AttributeList").value
-  for already_archived in attr_list:
-    if attribute in str(already_archived).lower():
-      is_already_archived = True
-      break
+  if attr_list is not None:
+    for already_archived in attr_list:
+      if attribute in str(already_archived).lower():
+        is_already_archived = True
+        break
 
   if not is_already_archived:
     # wait for the attribute to be up and running for configuring it. 

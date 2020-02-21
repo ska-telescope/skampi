@@ -19,11 +19,12 @@ def cm_configure_attributes():
 
             is_already_archived = False
             attr_list = evt_subscriber_proxy.read_attribute("AttributeList").value
-            for already_archived in attr_list:
-                if attribute.lower() in str(already_archived).lower():
-                    is_already_archived = True
-                    already_configured_count += 1
-                    break
+            if attr_list is not None:
+                for already_archived in attr_list:
+                    if attribute.lower() in str(already_archived).lower():
+                        is_already_archived = True
+                        already_configured_count += 1
+                        break
 
             if not is_already_archived:
                 max_retries = 10

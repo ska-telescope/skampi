@@ -9,7 +9,7 @@ ssh:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet-ssh
     tag: 0.3.0
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -32,7 +32,7 @@ itango:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet-ssh
     tag: 0.3.0
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -54,7 +54,7 @@ rest:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet
     tag: 0.3.0
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -81,7 +81,7 @@ jupyter:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet-jupyter
     tag: 0.3.0
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0

@@ -84,19 +84,19 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 22
-          initialDelaySeconds: {{ .Values.rest.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.rest.readinessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.rest.readinessProbe.timeoutSeconds }}
-          successThreshold: {{ .Values.rest.readinessProbe.successThreshold }}
-          failureThreshold: {{ .Values.rest.readinessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.itango.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.itango.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.itango.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.itango.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.itango.readinessProbe.failureThreshold }}
         livenessProbe:
           tcpSocket:
             port: 22
-          initialDelaySeconds: {{ .Values.rest.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.rest.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.rest.livenessProbe.timeoutSeconds }}
-          successThreshold: {{ .Values.rest.livenessProbe.successThreshold }}
-          failureThreshold: {{ .Values.rest.livenessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.itango.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.itango.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.itango.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.itango.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.itango.livenessProbe.failureThreshold }}
       volumes:
         - name: itango-configmap-volume
           configMap:
@@ -107,7 +107,7 @@ spec:
             - key: environment
               path: environment
       resources:
-  {{ toYaml .Values.rest.resources | indent 10 }}
+  {{ toYaml .Values.itango.resources | indent 10 }}
   {{- with .Values.nodeSelector }}
 nodeSelector:
   {{ toYaml . | indent 8 }}

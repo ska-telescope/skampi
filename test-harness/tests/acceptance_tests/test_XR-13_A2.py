@@ -24,13 +24,12 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
-def update_file(file):
-    import json
-    import random
-    from datetime import date 
+import json
+
+def set_workflow_id(file, workflow_id):
     with open(file,'r') as f: 
         data = json.load(f)
-    data['sdp']['configure'][0]['id'] = "realtime-"+date.today().strftime("%Y%m%d")+"-"+str(random.choice(range(1, 10000))) 
+    data['sdp']['configure'][0]['workflow']['id'] = 'vis_receive'
     with open(file,'w') as f:
         json.dump(data, f)
 
@@ -66,12 +65,12 @@ def config():
     timeout = 60
     #update the ID of the config data so that there is no duplicate configs send during tests
     file = 'tests/acceptance_tests/test_data/polaris_b1_no_cam.json'
-    update_file(file)
+    set_workflow_id(file, 'vis_receive')
     #set a timout mechanism in case a component gets stuck in executing
     signal.signal(signal.SIGALRM, handlde_timeout)
     signal.alarm(timeout)#wait for 30 seconds and timeout if still stick
     try:
-        SubArray(1).configure_from_file(file,False)#false means the file is not interpreted this ensures multiple runs
+        SubArray(1).configure_from_file(file)
     except:
         LOGGER.info("configure from file timed out after %s",timeout)
 

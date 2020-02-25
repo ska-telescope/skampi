@@ -124,6 +124,8 @@ spec:
             value: databaseds-tango-base-{{ .Release.Name }}:10000
           - name: SHELL
             value: /bin/bash
+          - name: OET_REST_URI
+            value: http://rest-{{ template "oet.name" . }}-{{ .Release.Name }}:5000/api/v1.0/procedures
         volumeMounts:
           - name: storage
             mountPath: /app/jupyter_storage

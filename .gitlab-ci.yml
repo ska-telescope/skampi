@@ -90,7 +90,7 @@ helm-template-pytest:
   environment:
     name: $CT_TEST_ENVIRONMENT
 
-.chart-pytest:
+chart-pytest:
   stage: test
   tags:
     - docker-executor

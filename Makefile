@@ -139,7 +139,10 @@ delete_etcd: ## Remove etcd-operator from namespace
 		| grep -q etcd-operator; then \
 		TMP=`mktemp -d`; \
 		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
-		helm template $(helm_install_shim) $$TMP/etcd-operator -n etc-operator \
+		helm template $(helm_install_shim) $$TMP/etcd-operator \
+			-n etc-operator --namespace $(KUBE_NAMESPACE) \
+			--set deployments.backupOperator=false \
+			--set deployments.restoreOperator=false \
 		| kubectl delete -n $(KUBE_NAMESPACE) -f -; \
 	fi
 

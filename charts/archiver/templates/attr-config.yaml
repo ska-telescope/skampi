@@ -28,19 +28,32 @@ spec:
     - name: configureattrconfig
       configMap:
         name: "attrconfig-configuration-{{ template "archiver.name" . }}-{{ .Release.Name }}"
-  containers:
-  - name: attrconfig
-    image: "{{ .Values.attrconfig.image.registry }}/{{ .Values.attrconfig.image.image }}:{{ .Values.attrconfig.image.tag }}"
-    imagePullPolicy: {{ .Values.attrconfig.image.pullPolicy }}
-
+  initContainers:
+  - name: wait-for-devices
+    image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
+    imagePullPolicy: {{ .Values.dsconfig.image.pullPolicy }}
     command:
       - sh
     args:
       - -c
-      - "retry --max=20 -- tango_admin --ping-device archiving/hdbpp/eventsubscriber01 &&\
-      retry --max=20 -- tango_admin --ping-device archiving/hdbpp/confmanager01 &&\
-      /venv/bin/python data/configure_hdbpp.py --cm=archiving/hdbpp/confmanager01 \
-      --es=archiving/hdbpp/eventsubscriber01 --attrfile=data/attribute_fqdn.txt"
+      - "retry --max=20 -- tango_admin --ping-device archiving/hdbpp/eventsubscriber01 && \
+         retry --max=20 -- tango_admin --ping-device archiving/hdbpp/confmanager01"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  containers:
+  - name: attrconfig
+    image: "{{ .Values.attrconfig.image.registry }}/{{ .Values.attrconfig.image.image }}:{{ .Values.attrconfig.image.tag }}"
+    imagePullPolicy: {{ .Values.attrconfig.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python data/configure_hdbpp.py \ 
+          --cm=archiving/hdbpp/confmanager01 \
+          --es=archiving/hdbpp/eventsubscriber01 \
+          --attrfile=data/attribute_fqdn.txt"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -52,7 +65,7 @@ spec:
 {{- with .Values.archiver.env }}
 {{ toYaml . | indent 4 }}
 {{- end }}
-  restartPolicy: OnFailure
+  restartPolicy: Never
 {{- with .Values.nodeSelector }}
   nodeSelector:
 {{ toYaml . | indent 4 }}

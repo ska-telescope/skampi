@@ -22,7 +22,7 @@ stages:
   pip3 install -r test-requirements.txt
 
 .teardown_k8s_test_resources: &teardown_k8s_test_resources |-
-  kubectl delete all --all --namespace=ci-$CI_JOB_ID --force --grace-period=0 || true
+  kubectl delete all --all --namespace=ci-$CI_JOB_ID || true
   kubectl delete namespace ci-$CI_JOB_ID || true
   helm tiller run -- helm ls | grep -E '(FAILED|DELETED)' | awk '{print $1}' | xargs -I'%N' helm tiller run -- helm delete --purge \%N
 

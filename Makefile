@@ -81,7 +81,7 @@ k8s: ## Which kubernetes are we connected to
 	@kubectl version
 	@echo ""
 	@echo "Helm version:"
-	@helm version --client
+	@$(helm_tiller_prefix) helm version
 
 logs: ## POD logs for descriptor
 	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l group=example -o=name`; \

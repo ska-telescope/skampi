@@ -10,7 +10,6 @@ import logging
 def test_init():
   print("Init test archiver")
 
-@pytest.mark.skip(reason="confmanager always too busy. not clear why but this tests goes in timeout very often.")
 def test_archiver():
   evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
   config_manager_device_fqdn = "archiving/hdbpp/confmanager01"

@@ -52,7 +52,7 @@ def test_archiver():
     conf_manager_proxy.AttributeAdd()
     
   evt_subscriber_device_proxy.Start()
-
+  sleep(3) # the polling
   result_config_manager = conf_manager_proxy.AttributeStatus(attribute)
   result_evt_subscriber = evt_subscriber_device_proxy.AttributeStatus(attribute)
   

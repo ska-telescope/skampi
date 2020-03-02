@@ -33,6 +33,9 @@ REMOTE_DEBUG ?= false
 # include makefile targets that wrap helm
 -include helm.mk
 
+# install stable chart repo this step si
+helm_add_stable_repo := helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+
 # include makefile targets for testing
 -include test.mk
 
@@ -119,6 +122,7 @@ deploy_etcd: namespace ## deploy etcd-operator into namespace
 	@if ! kubectl get pod -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.labels.app}' \
 		| grep -q etcd-operator; then \
 		TMP=`mktemp -d`; \
+		$(helm_add_stable_repo) && \
 		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
 		helm template $(helm_install_shim) $$TMP/etcd-operator \
 			-n etc-operator --namespace $(KUBE_NAMESPACE) \
@@ -138,6 +142,7 @@ delete_etcd: ## Remove etcd-operator from namespace
         		-o jsonpath='{.items[*].metadata.labels.app}' \
 		| grep -q etcd-operator; then \
 		TMP=`mktemp -d`; \
+		$(helm_add_stable_repo) && \
 		helm fetch stable/etcd-operator --untar --untardir $$TMP && \
 		helm template $(helm_install_shim) $$TMP/etcd-operator \
 			-n etc-operator --namespace $(KUBE_NAMESPACE) \
@@ -288,6 +293,7 @@ get_versions: ## lists the container images used for particular pods
 
 traefik: ## install the helm chart for traefik (in the kube-system namespace). Input parameter EXTERNAL_IP (i.e. private ip of the master node).
 	@TMP=`mktemp -d`; \
+	$(helm_add_stable_repo) && \
 	helm fetch stable/traefik --untar --untardir $$TMP && \
 	helm template $(helm_install_shim) $$TMP/traefik -n traefik0 --namespace kube-system \
 		--set externalIP="$(EXTERNAL_IP)" \
@@ -296,6 +302,7 @@ traefik: ## install the helm chart for traefik (in the kube-system namespace). I
 
 delete_traefik: ## delete the helm chart for traefik 
 	@TMP=`mktemp -d`; \
+	$(helm_add_stable_repo) && \
 	helm fetch stable/traefik --untar --untardir $$TMP && \
 	helm template $(helm_install_shim) $$TMP/traefik -n traefik0 --namespace kube-system \
 		--set externalIP="$(EXTERNAL_IP)" \
@@ -304,6 +311,7 @@ delete_traefik: ## delete the helm chart for traefik
 
 gangway: ## install gangway authentication for gitlab (in the kube-system namespace). Input parameters: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
 	@TMP=`mktemp -d`; \
+	$(helm_add_stable_repo) && \
 	helm fetch stable/gangway --untar --untardir $$TMP && \
 	helm template $(helm_install_shim) $$TMP/gangway -n gangway0 --namespace kube-system \
 			--values resources/gangway.yaml \
@@ -318,6 +326,7 @@ gangway: ## install gangway authentication for gitlab (in the kube-system namesp
 
 delete_gangway: ## delete install gangway authentication for gitlab. Input parameters: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
 	@TMP=`mktemp -d`; \
+	$(helm_add_stable_repo) && \
 	helm fetch stable/gangway --untar --untardir $$TMP && \
 	helm template $(helm_install_shim) $$TMP/gangway -n gangway0 --namespace kube-system \
 			--values resources/gangway.yaml \

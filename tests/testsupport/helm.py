@@ -11,18 +11,15 @@ from tests.testsupport.util import wait_until
 
 
 class HelmTestAdaptor(object):
-    HELM_TEMPLATE_CMD = "helm template {} --namespace {} --name {} -x templates/{} charts/{}"
-    HELM_DELETE_CMD = "helm delete {} --purge"
-    HELM_INSTALL_CMD = "helm install charts/{} --namespace {} --wait {}"
+    HELM_DELETE_CMD = "helm delete {}"
 
     def __init__(self, use_tiller_plugin, test_namespace):
         self.use_tiller_plugin = use_tiller_plugin
         self.namespace = test_namespace
 
-    def install(self, chart, cmd_args=""):
-        cmd = self._wrap_tiller(self.HELM_INSTALL_CMD.format(chart, self.namespace, cmd_args))
-        cmd = cmd.split()
-        return self._run_subprocess(cmd)
+    def install(self, chart_name, cmd_args="", release_name=None):
+        cmd = f"helm install charts/{chart_name} --generate-name --namespace={self.namespace} --wait {cmd_args}"
+        return self._run_subprocess(cmd.split())
 
     def delete(self, helm_release):
         cmd = self._wrap_tiller(self.HELM_DELETE_CMD.format(helm_release))
@@ -32,8 +29,9 @@ class HelmTestAdaptor(object):
         set_flag = ''
         if set_flag_values:
             set_flag = self.create_set_cli_flag_from(set_flag_values)
-        cmd = self.HELM_TEMPLATE_CMD.format(set_flag, self.namespace, release_name,
-                                            template, chart_name)
+        
+        cmd = f"helm template {release_name} charts/{chart_name} -s templates/{template} --namespace={self.namespace} {set_flag}"
+
         return self._run_subprocess(cmd.split())
 
     def _wrap_tiller(self, helm_cmd):
@@ -46,7 +44,6 @@ class HelmTestAdaptor(object):
     @staticmethod
     def _run_subprocess(shell_cmd):
         assert isinstance(shell_cmd, list)
-        shell_cmd.extend(['--tiller-connection-timeout', '5'])
         try:
             result = subprocess.run(shell_cmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, encoding="utf8", check=True)

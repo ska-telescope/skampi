@@ -1,7 +1,7 @@
 replicaCount: 1
 
 testrunner:
-  enabled: true
+  enabled: false
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet-ssh

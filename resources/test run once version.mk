@@ -1,4 +1,3 @@
-.PHONY: template_tests
 
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test

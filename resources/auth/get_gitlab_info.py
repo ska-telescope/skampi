@@ -41,3 +41,28 @@ print ("***********************")
 print(output_members)
 print ("***********************")
 
+page=1
+json_proj = get_json("https://gitlab.com/api/v4/groups/3180705/projects?per_page=100&page=" + str(page))
+output_proj = []
+count = len(json_proj)
+count_branches = 0
+
+while len(json_proj) > 0:
+    for proj in json_proj:
+        try:
+            json_branches = get_json("https://gitlab.com/api/v4/projects/" + str(proj["id"])+ "/repository/branches?per_page=100&page=1")
+            count_branches = count_branches + len(json_branches)
+            print("Project " + str(proj["description"]) + " has " + str(len(json_branches)) + " branches.")
+            output_proj.append(str(proj["name"]) + "\t" + str(len(json_branches)))
+        except:
+            pass
+
+    page=page + 1
+    json_proj = get_json("https://gitlab.com/api/v4/groups/3180705/projects?per_page=100&page=" + str(page))
+    count = count + len(json_proj)
+
+print ("Total Projects= "+ str(count))
+print ("Total Branches= "+ str(count_branches))
+print ("***********************")
+print(output_proj)
+print ("***********************")

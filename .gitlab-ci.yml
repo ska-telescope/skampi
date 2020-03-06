@@ -231,6 +231,19 @@ print-debug-info:
     paths:
     - public
 
+reset-archiver:
+  stage: debug
+  tags:
+  - docker-executor
+  script:
+  - kubectl delete pod -n $KUBE_NAMESPACE $(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' -n $KUBE_NAMESPACE  | grep archiver) 
+  - make deploy HELM_CHART=archiver
+  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  when: manual
+  only:
+    refs:
+      - master
+
 xray_report:
   stage: post_test
   tags:

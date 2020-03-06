@@ -239,6 +239,9 @@ reset-archiver:
   - kubectl delete pod -n $KUBE_NAMESPACE $(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' -n $KUBE_NAMESPACE  | grep archiver) 
   - make deploy HELM_CHART=archiver
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
   when: manual
   only:
     refs:

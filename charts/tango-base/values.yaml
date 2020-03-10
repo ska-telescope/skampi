@@ -11,7 +11,7 @@ tangodb:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-db
-    tag: 10.4.10
+    tag: latest
     pullPolicy: IfNotPresent
   db:
     rootpw: secret
@@ -27,8 +27,8 @@ databaseds:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-databaseds
-    tag: 5.12
+    image: tango-cpp
+    tag: latest
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -40,23 +40,23 @@ itango:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-itango
-    tag: 9.3.1
+    tag: latest
     pullPolicy: IfNotPresent
 
 tangotest:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-test
-    tag: 2.1
+    image: tango-java
+    tag: latest
     pullPolicy: IfNotPresent
 
 jive:
   enabled: false
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-jive
-    tag: 7.22
+    image: tango-java
+    tag: latest
     pullPolicy: IfNotPresent
 
 vnc:
@@ -68,18 +68,18 @@ vnc:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-vnc
-    tag: 0.1.0
+    tag: latest
     pullPolicy: IfNotPresent
 
 vscode:
   enabled: true
   nodeport_enabled: false
   nodeport: 32080
-  replicas: 1
+  replicas: 3
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-vscode
-    tag: 0.2.0
+    tag: 0.1.2
     pullPolicy: IfNotPresent
 
 tangorest:
@@ -88,7 +88,7 @@ tangorest:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-rest
-    tag: 1.14
+    tag: latest
     pullPolicy: IfNotPresent
 
 logviewer:
@@ -96,7 +96,7 @@ logviewer:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-java
-    tag: 9.3.3
+    tag: latest
     pullPolicy: IfNotPresent
 
 # Configure Ingress resource that allow you to access the Tango REST API

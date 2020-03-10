@@ -232,7 +232,7 @@ print-debug-info:
     - public
 
 reset-archiver:
-  stage: debug
+  stage: deploy
   tags:
   - docker-executor
   script:

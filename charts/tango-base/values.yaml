@@ -72,14 +72,14 @@ vnc:
     pullPolicy: IfNotPresent
 
 vscode:
-  enabled: true
+  enabled: false
   nodeport_enabled: false
   nodeport: 32080
   replicas: 1
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-vscode
-    tag: 0.1.2
+    tag: latest
     pullPolicy: IfNotPresent
 
 tangorest:

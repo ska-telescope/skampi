@@ -106,7 +106,7 @@ deploy_etcd: namespace ## deploy etcd-operator into namespace
 	fi
 
 delete_etcd: ## Remove etcd-operator from namespace
-	@if kubectl get pod -n $(KUBE_NAMESPACE) \
+	-@if kubectl get pod -n $(KUBE_NAMESPACE) \
         		-o jsonpath='{.items[*].metadata.labels.app}' \
 		| grep -q etcd-operator; then \
 		TMP=`mktemp -d`; \

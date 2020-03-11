@@ -13,7 +13,7 @@ hdbppdb:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: mariadb_hdbpp
-    tag: 0.1.1
+    tag: 1.1.0
     pullPolicy: IfNotPresent
   db:
     rootpw: secret
@@ -30,7 +30,7 @@ archiver:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-archiver
-    tag: 0.2.0
+    tag: 1.0.0
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -49,14 +49,14 @@ hdbppviewer:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: hdbpp_viewer
-    tag: 0.1.0
+    tag: 1.10
     pullPolicy: IfNotPresent
 
 attrconfig:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-itango
-    tag: 0.1.0
+    tag: 9.3.1
     pullPolicy: IfNotPresent
 
 nodeSelector: {}

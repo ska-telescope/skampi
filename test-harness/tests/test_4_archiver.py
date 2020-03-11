@@ -9,14 +9,18 @@ import logging
 
 def test_init():
   print("Init test archiver")
+  evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
+  evt_subscriber_device_proxy = DeviceProxy(evt_subscriber_device_fqdn)
+  evt_subscriber_device_proxy.Start()
+  sleep(3) # the polling
 
-def test_archiver():
+def test_configure_attribute():
   evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
   config_manager_device_fqdn = "archiving/hdbpp/confmanager01"
   conf_manager_proxy = DeviceProxy(config_manager_device_fqdn)
   evt_subscriber_device_proxy = DeviceProxy(evt_subscriber_device_fqdn)
 
-  # conf_manager_proxy.set_timeout_millis(5000)
+  conf_manager_proxy.set_timeout_millis(5000)
   # evt_subscriber_device_proxy.set_timeout_millis(5000)
 
   attribute = "sys/tg_test/1/double_scalar"
@@ -25,18 +29,22 @@ def test_archiver():
   attr_list = evt_subscriber_device_proxy.read_attribute("AttributeList").value
   if attr_list is not None:
     for already_archived in attr_list:
+      #logging.info("Comparing: " + str(attribute) + " and " + str(already_archived).lower())
       if attribute in str(already_archived).lower():
         is_already_archived = True
+        #logging.info("is_already_archived: True")
         break
 
   if not is_already_archived:
     # wait for the attribute to be up and running for configuring it. 
+    #logging.info("Adding attribute not archived....")
     max_retries = 10
     sleep_time = 30
     for x in range(0, max_retries):
         try:
           att = AttributeProxy(attribute)
           att.read()
+          #logging.info("Attribute online value=" + str(att.read()))
           break
         except DevFailed as df:
           if(x == (max_retries -1)):
@@ -60,3 +68,13 @@ def test_archiver():
   assert "Archiving          : Started" in result_evt_subscriber
 
   conf_manager_proxy.AttributeRemove(attribute)
+
+def test_archiving_started():
+  evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
+  evt_subscriber_device_proxy = DeviceProxy(evt_subscriber_device_fqdn)
+
+  attribute = "mid_d0001/elt/master/WindSpeed"
+  
+  result_evt_subscriber = evt_subscriber_device_proxy.AttributeStatus(attribute)
+  
+  assert "Archiving          : Started" in result_evt_subscriber

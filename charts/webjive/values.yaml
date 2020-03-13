@@ -49,9 +49,9 @@ dashboards:
 
 tangogql:
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive-develop_tangogql
-    tag: 0.0.2
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: web-maxiv-tangogql
+    tag: latest
     pullPolicy: Always
 
 # Configure Ingress resource that allow you to access the Tango REST API

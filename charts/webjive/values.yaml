@@ -16,8 +16,8 @@ itango:
 webjive:
   enabled: true
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive-develop_webjive
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: webjive
     tag: latest
     pullPolicy: Always
 

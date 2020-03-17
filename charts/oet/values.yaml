@@ -7,7 +7,7 @@ ssh:
   nodePort:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
-    image: oet-ssh
+    image: observation-execution-tool-ssh
     tag: 0.3.0
     pullPolicy: Always
   livenessProbe:
@@ -30,7 +30,7 @@ itango:
   nodePort:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
-    image: oet-ssh
+    image: observation-execution-tool-ssh
     tag: 0.3.0
     pullPolicy: Always
   livenessProbe:
@@ -52,7 +52,7 @@ rest:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
-    image: oet
+    image: observation-execution-tool
     tag: 0.3.0
     pullPolicy: Always
   livenessProbe:
@@ -79,7 +79,7 @@ jupyter:
     capacity: 0.1G
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
-    image: oet-jupyter
+    image: observation-execution-tool-jupyter
     tag: 0.3.0
     pullPolicy: Always
   livenessProbe:

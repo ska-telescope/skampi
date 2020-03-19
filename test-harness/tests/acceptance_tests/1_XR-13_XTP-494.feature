@@ -36,10 +36,10 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 	
 	@XTP-436 @XTP-494
 	Scenario: A4-Test, Sub-array deallocation of resources
-	    Given A running telescope with four dishes are allocated to subarray 1
+	    Given A running telescope with '4' dishes are allocated to 'subarray 1'
 	    When I deallocate the resources
-	    Then Subarrays should go into OFF state
-	    And ReceptorList for subarray should be empty
+	    Then 'subarray 1' should go into OFF state
+	    And ReceptorList for 'subarray 1' should be empty
 
 
 	

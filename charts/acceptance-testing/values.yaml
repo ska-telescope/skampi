@@ -7,3 +7,4 @@ test-pod:
     oet:
         image:
             tag: 0.3.0
+            name: 'oet-ssh'

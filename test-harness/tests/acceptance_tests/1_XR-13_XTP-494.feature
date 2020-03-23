@@ -14,17 +14,17 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 	#  
 	# 
 
-	
+
 	@XTP-417 @XTP-494
 	Scenario: A1-Test, Sub-array resource allocation
 		Given A running telescope for executing observations on a subarray
 		When I allocate 4 dishes to subarray 1
 		Then I have a subarray composed of 4 dishes
 		And the subarray is in the condition that allows scan configurations to take place
-		
-			
+
 
 	
+
 	@XTP-427 @XTP-494
 	Scenario: A2-Test, Sub-array transitions from IDLE to READY state
 		Given I am accessing the console interface for the OET
@@ -52,7 +52,7 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 		And I allocate resources to a subarray
 		When I deallocate the resources
 		Then subarray should go into OFF state
-			
+					
 
 	
 	@XTP-428 @XTP-494

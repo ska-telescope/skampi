@@ -18,30 +18,42 @@ from pytest_bdd import scenario, given, when, then
 
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
-from helpers import wait_for, obsState, resource, watch
+from test_support.helpers import wait_for, obsState, resource, watch, waiter, map_dish_nr_to_device_name
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 @pytest.fixture
 def result():
     return {}
 
 @scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
+@pytest.mark.skip(reason="WIP untill after refactoring")
 def test_allocate_resources():
     """Assign Resources."""
 
 @given("A running telescope for executing observations on a subarray")
 def set_to_running():
+    the_waiter = waiter()
+    the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
+    the_waiter.wait()
+    LOGGER.info(the_waiter.logs)
 
 @when("I allocate 4 dishes to subarray 1")
-def allocate_two_dishes(result):
-    watch_State = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State")
-    watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
+def allocate_four_dishes(result):
+    the_waiter = waiter()
+    the_waiter.set_wait_for_assign_resources()
 
     result['response'] = SubArray(1).allocate(ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)]))
 
-    #wait for certain values to be changed - this is a bit of a fudge as idealy we should only watch for state
-    #watch_State.wait_until_value_changed()
-    watch_receptorIDList.wait_until_value_changed()
+    #wait for certain values to be changed (refer to helpers for what is currently defined as neccesarry to wait)
+    the_waiter.wait()
+    LOGGER.info(the_waiter.logs)
+    result = wait_for(resource('mid_csp/elt/master'),20).to_be({"attr":"receptorMembership","value":(1, 1, 1, 1)})
+    if (result == "timed out"):
+        LOGGER.info("timed out after 2 seconds waiting for mid_csp/elt/master receptorMembership to change to (1,1,1,1)")
+    
 
     return result
 
@@ -75,5 +87,15 @@ def teardown_function(function):
     call.
     """
     if (resource('ska_mid/tm_subarray_node/1').get("State") == "ON"):
+        the_waiter = waiter()
+        the_waiter.set_wait_for_tearing_down_subarray()
         SubArray(1).deallocate()
-    SKAMid().standby()
+        the_waiter.wait()
+        LOGGER.info(the_waiter.logs)
+    if (resource('ska_mid/tm_subarray_node/1').get("State") == "OFF"):
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_to_standby()
+        SKAMid().standby()
+        the_waiter.wait()
+        LOGGER.info(the_waiter.logs)
+    

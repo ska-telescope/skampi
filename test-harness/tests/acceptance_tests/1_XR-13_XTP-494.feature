@@ -1,4 +1,4 @@
-@XR-13
+@VTS-221
 Feature: Execute a basic observation for the MVP PI5 subarray
 	#Demonstrate the sub-array ([Fig 1|https://confluence.skatelescope.org/display/SE/Understanding+Sub+array+state]) according to the following state machine ([Fig 3|https://confluence.skatelescope.org/display/SE/Understanding+Sub+array+state]) for a imaging scan.  
 	#  
@@ -36,11 +36,10 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 	
 	@XTP-436 @XTP-494
 	Scenario: A4-Test, Sub-array deallocation of resources
-	    Given A running telescope with '4' dishes are allocated to 'subarray 1'
-	    When I deallocate the resources
-	    Then 'subarray 1' should go into OFF state
-	    And ReceptorList for 'subarray 1' should be empty
-
+		Given A running telescope with "4" dishes are allocated to "subarray 1"
+		When I deallocate the resources
+		Then "subarray 1" should go into OFF state
+		And ReceptorList for "subarray 1" should be empty	
 
 	
 	@XTP-428 @XTP-494

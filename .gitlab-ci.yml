@@ -8,6 +8,7 @@ variables:
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
+  VALUES: "pipeline.yaml"
 
 stages:
   - static_analysis
@@ -28,7 +29,6 @@ stages:
 
 before_script: 
   - export HELM_TILLER_LOGS_DIR=$PWD/tiller.log
-  - echo "" > values.yaml
 
 helm-lint:
   stage: static_analysis

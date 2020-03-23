@@ -20,6 +20,7 @@ CLUSTER_NAME ?= integration.cluster## For the gangway kubectl setup
 CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f## For the gangway kubectl setup, taken from Gitlab
 CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f## For the gangway kubectl setup, taken from Gitlab
 CHART_SET ?= #for additional flags you want to set when deploying (default empty)
+VALUES ?= values.yaml
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -149,7 +150,7 @@ deploy: namespace namespace_sdp mkcerts  ## deploy the helm chart
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 				 $(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-				 --values values.yaml | kubectl apply -f -
+				 --values $(VALUES) | kubectl apply -f -
 
 show: mkcerts  ## show the helm chart
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
@@ -160,7 +161,7 @@ show: mkcerts  ## show the helm chart
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-				 --values values.yaml
+				 --values $(VALUES)
 
 delete: ## delete the helm chart release
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
@@ -172,7 +173,7 @@ delete: ## delete the helm chart release
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 				 $(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-				 --values values.yaml | kubectl delete -f -
+				 --values $(VALUES) | kubectl delete -f -
 
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the helm chart
 	@for i in charts/*; do \
@@ -188,7 +189,7 @@ deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the he
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-				 --values values.yaml | kubectl apply -f - ; \
+				 --values $(VALUES) | kubectl apply -f - ; \
 	done
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
@@ -205,7 +206,7 @@ delete_all: delete_etcd ## delete ALL of the helm chart release
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)"  \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-				 --values values.yaml | kubectl delete -f - ; \
+				 --values $(VALUES) | kubectl delete -f - ; \
 	done
 
 poddescribe: ## describe Pods executed from Helm chart

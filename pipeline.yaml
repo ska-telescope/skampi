@@ -1,0 +1,12 @@
+elastic:
+  enabled: true
+fluentd:
+  enabled: true
+kibana:
+  enabled: true
+tests:
+  enabled: true
+hdbppdb:
+  enabled: true
+archiver:
+  enabled: true

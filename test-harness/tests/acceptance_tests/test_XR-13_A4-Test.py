@@ -29,7 +29,7 @@ def test_deallocate_resources():
     """Deallocate Resources."""
     pass
 
-@given(" A running telescope with '4' dishes are allocated to 'subarray 1'")
+@given('A running telescope with "4" dishes are allocated to "subarray 1"')
 def set_to_running(result):
     SKAMid().start_up()
     #watch_State = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State")
@@ -45,7 +45,7 @@ def deallocate_resources(result):
     logging.info("ReleaseResources command is involked on subarray ")
 
 
-@then("'subarray 1' should go into OFF state")
+@then('"subarray 1" should go into OFF state')
 def subarray_state_OFF():
     logging.info("Now deallocating resources ... ")
     logging.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
@@ -57,7 +57,7 @@ def subarray_state_OFF():
     logging.info("Subarray is now deallocated")
 
 
-@then("ReceptorList for 'subarray 1' should be empty")
+@then('ReceptorList for "subarray 1" should be empty')
 def receptorID_list_empty():
     watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
     # gather info

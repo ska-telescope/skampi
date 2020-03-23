@@ -9,7 +9,7 @@ ssh:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet-ssh
     tag: 0.3.0
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -32,7 +32,7 @@ itango:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet-ssh
     tag: 0.3.0
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -54,7 +54,7 @@ rest:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet
     tag: 0.3.0
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -75,13 +75,13 @@ jupyter:
   nodePort:
   storage:
     enabled: true
-    hostPath: /home/ubuntu/skampi/build/jupyter/
+    hostPath: /home/ubuntu/skampi-hostpath/build/jupyter/
     capacity: 0.1G
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: oet-jupyter
     tag: 0.3.0
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -96,6 +96,22 @@ jupyter:
     timeoutSeconds: 1
     successThreshold: 1
     failureThreshold: 3
+
+# Configure Ingress
+ingress:
+  enabled: true
+  nginx: false
+  hostname: integration.engageska-portugal.pt
+
+  # Ingress annotations
+  annotations: {}
+
+  # Ingress TLS configuration
+  #
+  tls:
+    enabled: true
+    secretname: 'tls-secret-{{ template "oet.name" . }}-{{ .Release.Name }}'
+    hostname: "{{ .Values.ingress.hostname }}"
 
 nodeSelector: {}
 

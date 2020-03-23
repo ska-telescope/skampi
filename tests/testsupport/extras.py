@@ -38,9 +38,9 @@ class EchoServer(object):
         self._proxy_proc.kill()
         for resource in self.definition:
             subprocess.run(
-                "kubectl delete {} {} -n {} --force --grace-period=0".format(resource['kind'],
-                                                                             resource['metadata']['name'],
-                                                                             self.namespace).split(), check=True)
+                "kubectl delete {} {} -n {}".format(resource['kind'],
+                                                    resource['metadata']['name'],
+                                                    self.namespace).split(), check=True)
 
     def is_running(self):
         cmd = "kubectl describe pod echoserver -n {} | grep -q 'Status:.*Running'".format(

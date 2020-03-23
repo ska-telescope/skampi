@@ -10,5 +10,8 @@
 "mid_d0003/elt/master/desiredPointing",
 "mid_d0004/elt/master/WindSpeed",
 "mid_d0004/elt/master/achievedPointing",
-"mid_d0004/elt/master/desiredPointing"
+"mid_d0004/elt/master/desiredPointing",
+"sys/tg_test/1/ulong_scalar",
+"sys/tg_test/1/long64_scalar",
+"sys/tg_test/1/long_scalar"
 ]

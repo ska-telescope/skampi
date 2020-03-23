@@ -68,7 +68,7 @@ def _are_deployment_tests_included(pytestconfig):
 
 def _create_test_namespace_if_needed(test_namespace):
     get_ns_cmd = "kubectl get namespaces {}".format(test_namespace)
-    get_ns_result = subprocess.run(get_ns_cmd.split(), stdout=subprocess.PIPE, shell=True)
+    get_ns_result = subprocess.run(get_ns_cmd, stdout=subprocess.PIPE, shell=True)
     if (get_ns_result.returncode != 0):
         create_ns_cmd = "kubectl create namespace {}".format(test_namespace)
         subprocess.run(create_ns_cmd.split(), stdout=subprocess.PIPE, encoding="utf8",

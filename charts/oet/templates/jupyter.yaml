@@ -1,5 +1,41 @@
 {{ if .Values.jupyter.enabled }}
 ---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: jupyter-main-ing-{{ template "oet.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+      kubernetes.io/ingress.class: traefik
+spec:
+# {{ if .Values.ingress.tls.enabled }}
+#   tls:
+#     - hosts:
+#       - {{ tpl .Values.ingress.hostname . }}
+#       secretName: {{ tpl .Values.ingress.tls.secretname . }}
+# {{ end }}
+  rules:
+    - host: jupyter-{{ tpl .Values.ingress.hostname . }}
+      http:
+        paths:
+        - path: /
+          backend:
+           serviceName: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+           servicePort: 8888
+---
+apiVersion: v1
+data:
+  jupyter_notebook_config.json: |-
+    {
+        "NotebookApp": {
+          "password": "sha1:a83c43c88b88:980ac02521dcf9f62f610e26b051f157c05a36fe"
+        }
+      }
+kind: ConfigMap
+metadata:
+  name: jupyter-configmap
+  namespace: integration
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -102,16 +138,21 @@ spec:
         - name: storage
           persistentVolumeClaim:
             claimName: jupyter-storage-pvc
+        - name: config
+          configMap:
+            name: jupyter-configmap
+        - name: workdir
+          emptyDir: {}
       initContainers:
       - name: check-databaseds-ready
+        volumeMounts: 
+        - name: workdir
+          mountPath: /temp
+        - name: config
+          mountPath: /config
         image: "{{ .Values.jupyter.image.registry }}/{{ .Values.jupyter.image.image }}:{{ .Values.jupyter.image.tag }}"
-        command:
-          - /usr/local/bin/wait-for-it.sh
-          - databaseds-tango-base-{{ .Release.Name }}:10000
-          - --timeout=30
-          - --strict
-          - --
-          - echo databaseds ready
+        command: ["/bin/sh","-c"]
+        args: ["/usr/local/bin/wait-for-it.sh databaseds-tango-base-{{ .Release.Name }}:10000 --timeout=30 --strict -- echo databaseds ready && cp /config/* /temp/"]
       containers:
       - name: oet-jupyter
         image: "{{ .Values.jupyter.image.registry }}/{{ .Values.jupyter.image.image }}:{{ .Values.jupyter.image.tag }}"
@@ -124,9 +165,13 @@ spec:
             value: databaseds-tango-base-{{ .Release.Name }}:10000
           - name: SHELL
             value: /bin/bash
+          - name: OET_REST_URI
+            value: http://rest-{{ template "oet.name" . }}-{{ .Release.Name }}:5000/api/v1.0/procedures
         volumeMounts:
           - name: storage
             mountPath: /app/jupyter_storage
+          - name: workdir
+            mountPath: /home/tango/.jupyter
           - name: jupyter-configmap-volume
             mountPath: /etc/environment
             subPath: environment

@@ -7,8 +7,8 @@ test_job= acceptance-testing-job
 app= acceptance-tester
 execution_path:= /home/
 time_out=10
-storage_path = ../../../charts/acceptance-testing/charts/storage
-test_pod_path = ../../../charts/acceptance-testing/charts/test-pod
+storage_path = ../../charts/acceptance-testing/charts/storage
+test_pod_path = ../../charts/acceptance-testing/charts/test-pod
 test_scripts_path = test-harness/acceptance_tests 
 SOURCE_PATH := $(shell cd ~/skampi && pwd )
 THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
@@ -38,6 +38,8 @@ acc_deploy_interactive: acc_deploy_storage # deploy a testing container to work 
 	@$(wait_for_interactive_pod)
 	#execute additional dependencies on the pod
 	kubectl exec -it  --namespace $(KUBE_NAMESPACE) $(pod_name_interactive) -- bash  -c "DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install curl -y && apt-get install git --fix-missing -y && /venv/bin/pip3 install jupyter"
+
+
 
 acc_start_jupyter:acc_deploy_interactive
 	kubectl exec --namespace $(KUBE_NAMESPACE) $(pod_name_interactive) -- bash -c "/venv/bin/jupyter notebook --ip=0.0.0.0 --port=8888 --NotebookApp.allow_password_change=False --allow-root"
@@ -98,6 +100,16 @@ acc_attach:
 
 acc_attach_interact:
 	kubectl exec -it -n $(KUBE_NAMESPACE) $(pod_name_interactive)  /bin/bash
+
+acc_clean:
+	rm -R __pycache__ ;\
+	cd .. &&\
+	rm -R .pytest_cache ;\
+	cd tests/ && \
+	rm -R __pycache_ ;\
+	cd acceptance_tests/ &&\
+	rm -R __pycache__ ; \
+	cd ../../test_support/
 
 	
 

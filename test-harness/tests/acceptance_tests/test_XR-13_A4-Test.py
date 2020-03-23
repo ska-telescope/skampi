@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-test_calc
+test_XR-13_A4-Test
 ----------------------------------
-Acceptance tests for MVP.
+Acceptance test to deallocate the resources from subarray for MVP.
 """
 import sys
 
@@ -15,16 +15,17 @@ import logging
 from time import sleep
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
-from helpers import wait_for, obsState, resource, watch
+from test_support.helpers import wait_for, obsState, resource, watch
 
+<<<<<<< test-harness/tests/acceptance_tests/test_XR-13_A4-Test.py
 @pytest.fixture
 def result():
     return {}
-
+    
 @scenario("1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
+
 def test_deallocate_resources():
     """Deallocate Resources."""
     pass

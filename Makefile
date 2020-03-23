@@ -148,7 +148,8 @@ deploy: namespace namespace_sdp mkcerts  ## deploy the helm chart
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 				 $(CHART_SET) \
-				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl apply -f -
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --values values.yaml | kubectl apply -f -
 
 show: mkcerts  ## show the helm chart
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
@@ -158,7 +159,8 @@ show: mkcerts  ## show the helm chart
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
-				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP)
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --values values.yaml
 
 delete: ## delete the helm chart release
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
@@ -169,7 +171,8 @@ delete: ## delete the helm chart release
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 				 $(CHART_SET) \
-				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl delete -f -
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --values values.yaml | kubectl delete -f -
 
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the helm chart
 	@for i in charts/*; do \
@@ -184,7 +187,8 @@ deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the he
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
-				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl apply -f - ; \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --values values.yaml | kubectl apply -f - ; \
 	done
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
@@ -200,7 +204,8 @@ delete_all: delete_etcd ## delete ALL of the helm chart release
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)"  \
-				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) | kubectl delete -f - ; \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --values values.yaml | kubectl delete -f - ; \
 	done
 
 poddescribe: ## describe Pods executed from Helm chart

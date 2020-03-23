@@ -19,7 +19,7 @@ from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
 from test_support.helpers import wait_for, obsState, resource, watch
 
-<<<<<<< test-harness/tests/acceptance_tests/test_XR-13_A4-Test.py
+
 @pytest.fixture
 def result():
     return {}

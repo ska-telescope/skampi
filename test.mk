@@ -3,7 +3,7 @@
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
-IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-telescope/observation-execution-tool-ssh:0.3.0
+IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-telescope/oet-ssh:0.3.0
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-only-once-$(KUBE_NAMESPACE)-$(HELM_RELEASE)
 #

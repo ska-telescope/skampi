@@ -1,0 +1,52 @@
+{{ if .Values.skuid.enabled }}
+
+{{ if .Values.ingress.enabled }}
+
+{{ if .Values.ingress.nginx }}
+# nginx
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: skuid-ing-{{ template "skuid.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: skuid-{{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: {{ tpl .Values.ingress.hostname . }}
+    http:
+      paths:
+      - path: {{ .Values.skuid.basePath }}
+        backend:
+          serviceName: skuid-{{ template "skuid.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}
+          servicePort: 9870
+
+{{ else }}
+# traefik
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: skuid-ing-{{ template "skuid.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: skuid-{{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: {{ tpl .Values.ingress.hostname . }}
+      http:
+        paths:
+        - path: {{ .Values.skuid.basePath }}
+          backend:
+            serviceName: skuid-{{ template "skuid.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}
+            servicePort: 9870
+{{ end }}
+
+{{ end }}
+
+{{ end }}

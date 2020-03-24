@@ -1,0 +1,69 @@
+{{ if .Values.skuid.enabled }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skuid-deployment-{{ template "skuid.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      run: skuid-{{ .Release.Namespace }}
+  template:
+    metadata:
+      labels:
+        run: skuid-{{ .Release.Namespace }}
+    spec:
+      containers:
+      - name: skuid-{{ template "skuid.name" . }}-{{ .Release.Name }}
+        {{ if .Values.skuid.use_pv }}
+        env:
+        - name: CURSOR_FILE_PATH
+          value: "/data/cursor_file"
+        - name: SCAN_ID_CURSOR_FILE_PATH
+          value: "/data/scan_id_cursor_file"
+        - name: SKUID_GENERATOR_ID
+          value: "T0001"
+        {{ end }}
+        image: "{{ .Values.skuid.image.registry }}/{{ .Values.skuid.image.image }}:{{ .Values.skuid.image.tag }}"
+        imagePullPolicy: {{ .Values.skuid.image.pullPolicy }}
+        ports:
+        - name: skuid-http
+          containerPort: 9870
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            port: 9870
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
+        {{ if .Values.skuid.use_pv }}
+        volumeMounts:
+        - name: skuid-data
+          mountPath: /data/
+        {{ end }}
+
+      {{ if .Values.skuid.use_pv }}
+      volumes:
+      - name: skuid-data
+        persistentVolumeClaim:
+          claimName: skuid-pvc-{{ template "skuid.name" . }}-{{ .Release.Name }}
+      {{ end }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: skuid-{{ template "skuid.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    service: skuid-{{ .Release.Namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    run: skuid-{{ .Release.Namespace }}
+  ports:
+  - port: {{ .Values.skuid.service_port }}
+    targetPort: 9870
+
+{{ end }}

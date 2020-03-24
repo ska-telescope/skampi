@@ -1,0 +1,52 @@
+{{ if .Values.skuid.enabled }}
+
+{{ if .Values.skuid.use_pv }}
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: skuid-pv-{{ template "skuid.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: skuid-{{ template "skuid.name" . }}-{{ .Release.Name }}
+    chart: {{ template "skuid.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: Recycle
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /data/skuid-{{ template "skuid.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: skuid-pvc-{{ template "skuid.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: skuid-{{ template "skuid.name" . }}-{{ .Release.Name }}
+    chart: {{ template "skuid.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: skuid-{{ template "skuid.name" . }}-{{ .Release.Name }}
+      release: {{ .Release.Name }}
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+
+{{ end }} # use_pv
+
+{{ end }} # enabled

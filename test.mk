@@ -125,5 +125,3 @@ delete_testing_pod:
 
 location:= $(shell pwd)
 
-temp:
-	@echo $(testing-config)

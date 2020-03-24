@@ -92,3 +92,38 @@ tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.
 	# @echo "Test HTTPS:"; echo ""
 	# curl -k -u "tango-cs:tango" -XGET https://tango.rest.$(INGRESS_HOST)/tango/rest/rc4/hosts/databaseds-tango-base-$(HELM_RELEASE)/10000 | json_pp
 	# @echo ""
+
+##the following section is for developers requiring the testing pod to be instantiated with a volume mappig to skampi
+location:= $(shell pwd)
+#the port mapping to host
+hostPort ?= 2020
+testing-config := '{ "apiVersion": "v1","spec":{\
+					"containers":[{\
+						"image":"$(IMAGE_TO_TEST) ",\
+						"name":"testing-container",\
+						"volumeMounts":[{\
+							"mountPath":"/home/tango/skampi/",\
+							"name":"testing-volume"}],\
+						"ports":[{\
+							"containerPort":22,\
+							"hostPort":$(hostPort)}]}],\
+					"volumes":[{\
+						"name":"testing-volume",\
+						"hostPath":{\
+							"path":"$(location)",\
+							"type":"Directory"}}]}}'
+
+deploy_testing_pod:
+	kubectl run testing-pod \
+	--image=$(IMAGE_TO_TEST) \
+	--namespace $(KUBE_NAMESPACE)
+	--generator=run-pod/v1 \
+	--overrides=$(testing-config)
+	
+delete_testing_pod:
+	kubectl delete pod testing-pod
+
+location:= $(shell pwd)
+
+temp:
+	@echo $(testing-config)

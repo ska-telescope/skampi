@@ -39,7 +39,7 @@ def handlde_timeout():
     raise Exception("operation timeout")
 
 #@pytest.mark.xfail
-@scenario("1_XR-13_XTP-494.feature", "A2-Test, Execution of Configure command on subarray")
+@scenario("1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 @pytest.mark.skip(reason="WIP untill after refactoring")
 def test_configure_subarray():
     """Configure Subarray."""
@@ -54,13 +54,13 @@ def start_up():
 
 
 
-@given('subarray "1" is in IDLE state')
+@given("sub-array is in IDLE state")
 def assign():
     take_subarray(1).to_be_composed_out_of(4)
 
 
 
-@when('I call the configure command on subarray "1"')
+@when("I call the configure scan execution instruction")
 def config():
     timeout = 80
     #update the ID of the config data so that there is no duplicate configs send during tests
@@ -75,7 +75,7 @@ def config():
         LOGGER.info("configure from file timed out after %s",timeout)
 
 
-@then('subarray "1" is in READY state providing further Scan command on subarray "1"')
+@then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():
     #check that the TMC report subarray as being in the ON state and obsState = IDLE
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')

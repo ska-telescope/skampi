@@ -99,7 +99,7 @@ location:= $(shell pwd)
 hostPort ?= 2020
 testing-config := '{ "apiVersion": "v1","spec":{\
 					"containers":[{\
-						"image":"$(IMAGE_TO_TEST) ",\
+						"image":"$(IMAGE_TO_TEST)",\
 						"name":"testing-container",\
 						"volumeMounts":[{\
 							"mountPath":"/home/tango/skampi/",\
@@ -116,7 +116,8 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 deploy_testing_pod:
 	kubectl run testing-pod \
 	--image=$(IMAGE_TO_TEST) \
-	--namespace $(KUBE_NAMESPACE)
+	--namespace $(KUBE_NAMESPACE) \
+	--wait \
 	--generator=run-pod/v1 \
 	--overrides=$(testing-config)
 	

@@ -110,6 +110,7 @@ def teardown_function(function):
         restart_subarray(1)
     the_waiter.set_wait_for_going_to_standby()
     SKAMid().standby()
+    LOGGER.info("TELESCOPE is in Standby mode")
     the_waiter.wait()
     LOGGER.info(the_waiter.logs)
 

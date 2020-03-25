@@ -27,7 +27,7 @@ dsconfig:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-dsconfig
-    tag: latest
+    tag: 1.2.5.1
     pullPolicy: IfNotPresent
 
 # Processing controller

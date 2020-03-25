@@ -12,6 +12,6 @@ skuid:
   service_port: 9870
 
 ingress:
-  enabled: true
+  enabled: false
   nginx: false # Default to traefik
   hostname: integration.engageska-portugal.pt

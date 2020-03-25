@@ -9,7 +9,10 @@ from tests.testsupport.util import parse_yaml_str
 
 @pytest.fixture(scope="class")
 def skuid_chart(request, helm_adaptor):
-    request.cls.chart = HelmChart("skuid", helm_adaptor, set_flag_values={})
+    chart_values = {
+        'ingress.enabled': 'true'
+    }
+    request.cls.chart = HelmChart("skuid", helm_adaptor, set_flag_values=chart_values)
 
 
 @pytest.fixture(scope="class")

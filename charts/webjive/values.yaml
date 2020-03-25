@@ -18,14 +18,14 @@ webjive:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: webjive
-    tag: 1.0.0
+    tag: 1.0.0-develop-1
     pullPolicy: Always
 
 authserver:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: webjive-auth
-    tag: 1.0.0
+    tag: 1.0.0-develop-1
     pullPolicy: Always
 
 redis:
@@ -44,14 +44,14 @@ dashboards:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: dashboard-repo
-    tag: 1.0.0-develop-cdd6462f1db73e27ded41e51ce3c1f8b169139dd
+    tag: 1.0.0-develop-2
     pullPolicy: Always
 
 tangogql:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: web-maxiv-tangogql
-    tag: 1.0.0
+    tag: 1.0.0-develop-1
     pullPolicy: Always
 
 # Configure Ingress resource that allow you to access the Tango REST API

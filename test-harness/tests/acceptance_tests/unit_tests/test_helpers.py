@@ -99,17 +99,17 @@ def test_wait_for_change():
     resource_mock.device_name = "test_device"
     resource_mock.get.return_value = "value_then"
     watch = monitor(resource_mock, "value_then", "attr")
-    result = watch.wait_until_value_changed(10)
+    result = watch.wait_until_value_changed(80)
     assert_that(result).is_equal_to("timeout")
     resource_mock.get.return_value = "value_now"
-    result = watch.wait_until_value_changed(10)
-    assert_that(result).is_equal_to(9)
+    result = watch.wait_until_value_changed(80)
+    assert_that(result).is_equal_to(79)
 
 def test_state_changer():
     resource_mock = Mock(spec=resource)
     resource_mock.device_name = "test_device" 
     resource_mock.get.return_value = "value_then"
-    result = wait_for(resource_mock,10).to_be({"attr":"mock_attr","value":"value_then"})
-    assert_that(result).is_equal_to(10)
+    result = wait_for(resource_mock,80).to_be({"attr":"mock_attr","value":"value_then"})
+    assert_that(result).is_equal_to(80)
     result = wait_for(resource_mock,1).to_be({"attr":"mock_attr","value":"value_now"})
     assert_that(result).is_equal_to("timed out")

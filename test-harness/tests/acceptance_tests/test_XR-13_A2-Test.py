@@ -58,13 +58,12 @@ def start_up():
 
 @given("sub-array is in IDLE state")
 def assign():
-    take_subarray(1).to_be_composed_out_of(2)
+    take_subarray(1).to_be_composed_out_of(4)
     # watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
     # result['response'] = SubArray(1).allocate(ResourceAllocation(dishes=[Dish(1), Dish(2)]))
     # logging.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
     # watch_receptorIDList.wait_until_value_changed()
     # return result
-
 
 
 @when("I call the configure scan execution instruction")
@@ -78,6 +77,7 @@ def config():
     signal.alarm(timeout)#wait for 30 seconds and timeout if still stick
     try:
         SubArray(1).configure_from_file(file)
+        print("HI")
     except:
         LOGGER.info("configure from file timed out after %s",timeout)
 
@@ -100,12 +100,14 @@ def teardown_function(function):
     """
     the_waiter = waiter()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+        print("inside IDLE")
         the_waiter.set_wait_for_tearing_down_subarray()
         LOGGER.info("tearing down composed subarray (IDLE)")
         SubArray(1).deallocate()
         the_waiter.wait()
         LOGGER.info(the_waiter.logs)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
+        print("inside READY")
         LOGGER.info("tearing down configured subarray (READY)")
         the_waiter.set_wait_for_ending_SB()
         SubArray(1).end_sb()
@@ -116,6 +118,7 @@ def teardown_function(function):
         the_waiter.wait()
         LOGGER.info(the_waiter.logs)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+        print("inside CONFIGURING")
         LOGGER.info("tearing down configuring subarray")
         restart_subarray(1)
     the_waiter.set_wait_for_going_to_standby()
@@ -124,6 +127,3 @@ def teardown_function(function):
     the_waiter.wait()
     LOGGER.info(the_waiter.logs)
 
-
-        
-    

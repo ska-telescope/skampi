@@ -122,7 +122,7 @@ deploy_testing_pod:
 	--overrides=$(testing-config)
 	
 delete_testing_pod:
-	kubectl delete pod testing-pod
+	kubectl delete pod testing-pod --namespace $(KUBE_NAMESPACE)
 
 location:= $(shell pwd)
 

@@ -7,6 +7,8 @@ test_calc
 Acceptance tests for MVP.
 """
 import sys
+from datetime import date
+from random import random
 
 sys.path.append('/app')
 import time
@@ -26,10 +28,10 @@ LOGGER = logging.getLogger(__name__)
 
 import json
 
-def set_workflow_id(file, workflow_id):
+def update_file(file):
     with open(file,'r') as f: 
         data = json.load(f)
-    data['sdp']['configure'][0]['workflow']['id'] = 'vis_receive'
+    data['sdp']['configure'][0]['id'] = "realtime-"+date.today().strftime("%Y%m%d")+"-"+str(random.choice(range(1, 10000)))
     with open(file,'w') as f:
         json.dump(data, f)
 
@@ -56,16 +58,16 @@ def start_up():
 
 @given("sub-array is in IDLE state")
 def assign():
-    take_subarray(1).to_be_composed_out_of(4)
+    take_subarray(1).to_be_composed_out_of(2)
 
 
 
 @when("I call the configure scan execution instruction")
 def config():
-    timeout = 80
+    timeout = 120
     #update the ID of the config data so that there is no duplicate configs send during tests
     file = 'tests/acceptance_tests/test_data/polaris_b1_no_cam.json'
-    set_workflow_id(file, 'vis_receive')
+    update_file(file)
     #set a timout mechanism in case a component gets stuck in executing
     signal.signal(signal.SIGALRM, handlde_timeout)
     signal.alarm(timeout)#wait for 30 seconds and timeout if still stick
@@ -79,10 +81,13 @@ def config():
 def check_state():
     #check that the TMC report subarray as being in the ON state and obsState = IDLE
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
+    logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
     #check that the CSP report subarray as being in the ON state and obsState = IDLE
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
+    logging.info("CSPsubarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
     #check that the SDP report subarray as being in the ON state and obsState = IDLE
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
+    logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function

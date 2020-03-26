@@ -70,7 +70,7 @@ class TestSkuidChart:
         containers_spec = squid_deployment["spec"]["template"]["spec"]["containers"][0]
         assert (
             containers_spec["image"]
-            == "nexus.engageska-portugal.pt/ska-telescope/skuid:0.0.1"
+            == "nexus.engageska-portugal.pt/ska-telescope/skuid:1.0.0"
         )
         assert containers_spec["ports"][0]["name"] == "skuid-http"
         assert containers_spec["ports"][0]["containerPort"] == 9870

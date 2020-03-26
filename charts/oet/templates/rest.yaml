@@ -75,11 +75,8 @@ spec:
       - name: oet-rest
         image: "{{ .Values.rest.image.registry }}/{{ .Values.rest.image.image }}:{{ .Values.rest.image.tag }}"
         imagePullPolicy: {{ .Values.rest.image.pullPolicy }}
-        command:
-          - flask
-          - run
-          - -h
-          - 0.0.0.0
+        command: ["/bin/sh"]
+        args: ["-c", "/$HOME/.local/bin/flask run -h 0.0.0.0"]
         env:
           - name: TANGO_HOST
             value: databaseds-tango-base-{{ .Release.Name }}:10000

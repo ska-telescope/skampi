@@ -114,7 +114,7 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 							"type":"Directory"}}]}}'
 
 deploy_testing_pod:
-	kubectl run testing-pod \
+	@kubectl run testing-pod \
 	--image=$(IMAGE_TO_TEST) \
 	--namespace $(KUBE_NAMESPACE) \
 	--wait \
@@ -122,7 +122,7 @@ deploy_testing_pod:
 	--overrides=$(testing-config)
 	
 delete_testing_pod:
-	kubectl delete pod testing-pod --namespace $(KUBE_NAMESPACE)
+	@kubectl delete pod testing-pod --namespace $(KUBE_NAMESPACE)
 
 location:= $(shell pwd)
 

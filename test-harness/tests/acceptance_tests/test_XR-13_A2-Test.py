@@ -8,7 +8,7 @@ Acceptance tests for MVP.
 """
 import sys
 from datetime import date
-from random import random
+from random import *
 
 sys.path.append('/app')
 import time

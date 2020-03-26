@@ -6,7 +6,7 @@ skuid:
   image:
     image: ska-telescope/skuid
     registry: nexus.engageska-portugal.pt
-    tag: 0.0.1
+    tag: 1.0.0
     pullPolicy: Always # During dev
     basePath: /skuid
   service_port: 9870

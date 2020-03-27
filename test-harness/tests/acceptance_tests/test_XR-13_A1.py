@@ -8,8 +8,6 @@ Acceptance tests for MVP.
 """
 import sys
 
-sys.path.append('/app')
-
 import pytest
 import logging
 from time import sleep

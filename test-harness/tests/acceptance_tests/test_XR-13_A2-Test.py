@@ -7,21 +7,20 @@ test_calc
 Acceptance tests for MVP.
 """
 import sys
-from datetime import date
-from random import *
 
 sys.path.append('/app')
-import time
 import signal
 import pytest
-import logging
-from time import sleep
+import random
+from datetime import date
+#from random import random, choice
+from random import choice
+#from scipy import *
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
-from tango import DeviceProxy, DevState
-from test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, map_dish_nr_to_device_name
+from oet.domain import SKAMid, SubArray
+from test_support.helpers import obsState, resource, take_subarray, restart_subarray, waiter
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -31,9 +30,31 @@ import json
 def update_file(file):
     with open(file,'r') as f: 
         data = json.load(f)
-    data['sdp']['configure'][0]['id'] = "realtime-"+date.today().strftime("%Y%m%d")+"-"+str(random.choice(range(1, 10000)))
+    random_no = random.randint(100,999)
+    print("random_no")
+    data['scanID'] = random_no
+    data['sdp']['configure'][0]['id'] = "realtime-"+date.today().strftime("%Y%m%d")+"-"+str(choice(range(1, 1000)))
+
+    fieldid = 1
+    intervalms = 1400
+
+    scan_details = {}
+    scan_details["fieldId"] = fieldid
+    scan_details["intervalMs"] = intervalms
+
+    scanparams = {}
+    scanParameters = {}
+    
+    scanParameters[random_no] = scan_details
+    scanparams = scanParameters
+
+    data['sdp']['configure'][0]['scanParameters'] = scanParameters
+
+    # data['sdp']['configure'][0]['scanParameters'][str(random_no)]['fieldId'] = 0
+    # data['sdp']['configure'][0]['scanParameters'][str(random_no)]['intervalMS'] = 1400
     with open(file,'w') as f:
         json.dump(data, f)
+    print("Updated f is", f)
 
    
 def handlde_timeout():

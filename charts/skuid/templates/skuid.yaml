@@ -46,7 +46,7 @@ spec:
       volumes:
       - name: skuid-data
         persistentVolumeClaim:
-          claimName: skuid-pvc-{{ template "skuid.name" . }}-{{ .Release.Name }}
+          claimName: skuid-pvc-{{ .Release.Namespace }}-{{ .Release.Name }}
       {{ end }}
 
 ---

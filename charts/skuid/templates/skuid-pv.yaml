@@ -6,10 +6,10 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: skuid-pv-{{ template "skuid.name" . }}-{{ .Release.Name }}
+  name: skuid-pv-{{ .Release.Namespace }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: skuid-{{ template "skuid.name" . }}-{{ .Release.Name }}
+    app: skuid-{{ .Release.Namespace }}-{{ .Release.Name }}
     chart: {{ template "skuid.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -28,7 +28,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: skuid-pvc-{{ template "skuid.name" . }}-{{ .Release.Name }}
+  name: skuid-pvc-{{ .Release.Namespace }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
     app: skuid-{{ template "skuid.name" . }}-{{ .Release.Name }}
@@ -38,8 +38,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: skuid-{{ template "skuid.name" . }}-{{ .Release.Name }}
-      release: {{ .Release.Name }}
+      app: skuid-{{ .Release.Namespace }}-{{ .Release.Name }}
   storageClassName: standard
   accessModes:
     - ReadWriteMany

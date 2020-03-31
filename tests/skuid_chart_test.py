@@ -132,8 +132,7 @@ class TestSkuidDeployment:
             "skuid",
             "skuid/ska_id/test",
             "skuid/ska_scan_id",
-            "skuid/entity_types/get",
-            "skuid/entity_types/add/new",
+            "skuid/entity_types/get"
         ]:
             resp = skuid_chart_deployment.pod_exec_bash(
                 skuid_pod_name, command_str + path

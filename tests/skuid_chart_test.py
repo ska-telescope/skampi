@@ -117,12 +117,6 @@ class TestSkuidDeployment:
         resp_json = json.loads(resp_json)
         assert len(resp_json) > 5
 
-        command_str = "curl -s  -X POST http://0.0.0.0:9870/skuid/entity_types/add/new"
-        resp = skuid_chart_deployment.pod_exec_bash(skuid_pod_name, command_str)
-        resp_json = json.loads(resp)
-        resp_json = json.loads(resp_json)
-        assert "new" in resp_json
-
     def test_skuid_response_time(self, skuid_chart_deployment):
         """Ensure the response times are less than 1/20 of a second.
         NOTE: These timings do not take k8s networking overhead into account

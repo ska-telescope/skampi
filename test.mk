@@ -3,7 +3,7 @@
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
-IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-telescope/oet-ssh:0.3.0
+IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:latest
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-only-once-$(KUBE_NAMESPACE)-$(HELM_RELEASE)
 #
@@ -104,6 +104,13 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 						"volumeMounts":[{\
 							"mountPath":"/home/tango/skampi/",\
 							"name":"testing-volume"}],\
+						"env":[{\
+          			 		"name": "TANGO_HOST",\
+            				"value": "databaseds-tango-base-$(HELM_RELEASE):10000"},{\
+							"name": "KUBE_NAMESPACE",\
+          					"value": "$(KUBE_NAMESPACE)"},{\
+        					"name": "HELM_RELEASE",\
+          					"value": "$(HELM_RELEASE)"}],\
 						"ports":[{\
 							"containerPort":22,\
 							"hostPort":$(hostPort)}]}],\
@@ -114,7 +121,7 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 							"type":"Directory"}}]}}'
 
 deploy_testing_pod:
-	kubectl run testing-pod \
+	@kubectl run testing-pod \
 	--image=$(IMAGE_TO_TEST) \
 	--namespace $(KUBE_NAMESPACE) \
 	--wait \
@@ -122,7 +129,10 @@ deploy_testing_pod:
 	--overrides=$(testing-config)
 	
 delete_testing_pod:
-	kubectl delete pod testing-pod
+	@kubectl delete pod testing-pod --namespace $(KUBE_NAMESPACE)
+
+attach_testing_pod:
+	@kubectl exec -it testing-pod /bin/bash
 
 location:= $(shell pwd)
 

@@ -1,0 +1,17 @@
+# Default values for skuid.
+
+skuid:
+  enabled: true
+  use_pv: true
+  image:
+    image: ska-telescope/skuid
+    registry: nexus.engageska-portugal.pt
+    tag: 0.0.1
+    pullPolicy: Always # During dev
+    basePath: /skuid
+  service_port: 9870
+
+ingress:
+  enabled: false
+  nginx: false # Default to traefik
+  hostname: integration.engageska-portugal.pt

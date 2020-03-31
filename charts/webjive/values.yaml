@@ -16,16 +16,16 @@ itango:
 webjive:
   enabled: true
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive-develop_webjive
-    tag: latest
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: webjive
+    tag: 1.0.0-develop-1
     pullPolicy: Always
 
 authserver:
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive-develop_auth
-    tag: latest
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: webjive-auth
+    tag: 1.0.0-develop-1
     pullPolicy: Always
 
 redis:
@@ -42,16 +42,16 @@ mongodb:
 
 dashboards:
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive-develop_dashboards
-    tag: latest
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: dashboard-repo
+    tag: 1.0.0-develop-2
     pullPolicy: Always
 
 tangogql:
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: webjive-develop_tangogql
-    tag: 0.0.2
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: web-maxiv-tangogql
+    tag: 1.0.0-develop-1
     pullPolicy: Always
 
 # Configure Ingress resource that allow you to access the Tango REST API

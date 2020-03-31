@@ -1,0 +1,13 @@
+name: skuid
+version: 0.0.1
+apiVersion: v1
+appVersion: "0.1"
+description: Service that returns unique IDs for use by SKA
+keywords:
+- SKA
+- UID
+- skuid
+home: https://gitlab.com/ska-telescope/skuid/
+icon: http://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+sources:
+- https://gitlab.com/ska-telescope/skuid/

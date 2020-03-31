@@ -27,7 +27,7 @@ dsconfig:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-dsconfig
-    tag: latest
+    tag: 1.2.5.1
     pullPolicy: IfNotPresent
 
 # Processing controller
@@ -45,7 +45,7 @@ processing_controller:
 tangods:
   master:
     image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master
-    version: 0.3.0
+    version: 0.3.1
     imagePullPolicy: IfNotPresent
   subarray:
     image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray

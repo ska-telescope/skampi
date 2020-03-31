@@ -18,7 +18,8 @@ class HelmTestAdaptor(object):
         self.namespace = test_namespace
 
     def install(self, chart_name, cmd_args="", release_name=None):
-        cmd = f"helm install charts/{chart_name} --generate-name --namespace={self.namespace} --wait {cmd_args}"
+        # cmd = f"helm install charts/{chart_name} --generate-name --namespace={self.namespace} --wait {cmd_args}"
+        cmd = f"helm install charts/{chart_name} --namespace={self.namespace} --wait {cmd_args}"
         return self._run_subprocess(cmd.split())
 
     def delete(self, helm_release):
@@ -29,8 +30,9 @@ class HelmTestAdaptor(object):
         set_flag = ''
         if set_flag_values:
             set_flag = self.create_set_cli_flag_from(set_flag_values)
-        
-        cmd = f"helm template {release_name} charts/{chart_name} -s templates/{template} --namespace={self.namespace} {set_flag}"
+
+        #cmd = f"helm template {release_name} charts/{chart_name} -s templates/{template} --namespace={self.namespace} {set_flag}"
+        cmd = f"helm template charts/{chart_name} -x templates/{template} --namespace={self.namespace} {set_flag}"
 
         return self._run_subprocess(cmd.split())
 
@@ -90,6 +92,7 @@ class ChartDeployment(object):
 
     def delete(self):
         assert self.release_name is not None
+        assert self.release_name is not ""
         api_instance = self._k8s_api.CoreV1Api()
         p_volumes = self._get_persistent_volume_names(api_instance)
         logging.info("Persistent Volumes to delete: %s", p_volumes)

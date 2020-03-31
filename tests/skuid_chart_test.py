@@ -47,9 +47,9 @@ class TestSkuidChart:
         )[0]
         assert skuid_pv["spec"]["persistentVolumeReclaimPolicy"] == "Recycle"
         assert skuid_pv["spec"]["capacity"]["storage"] == "100Mi"
-        assert skuid_pv["spec"]["accessModes"] == ["ReadWriteMany"]
+        assert skuid_pv["spec"]["accessModes"] == ["ReadWriteOnce"]
 
-        assert skuid_pvc["spec"]["accessModes"] == ["ReadWriteMany"]
+        assert skuid_pvc["spec"]["accessModes"] == ["ReadWriteOnce"]
         assert skuid_pvc["spec"]["resources"]["requests"]["storage"] == "100Mi"
 
         squid_chart = parse_yaml_str(self.chart.templates["skuid.yaml"])

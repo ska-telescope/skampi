@@ -19,7 +19,7 @@ spec:
   capacity:
     storage: 100Mi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   hostPath:
     path: /data/skuid-{{ template "skuid.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
 
@@ -41,7 +41,7 @@ spec:
       app: skuid-{{ .Release.Namespace }}-{{ .Release.Name }}
   storageClassName: standard
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 100Mi

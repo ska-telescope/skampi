@@ -86,6 +86,12 @@ def start_up():
 @given("sub-array is in IDLE state")
 def assign():
     take_subarray(1).to_be_composed_out_of(4)
+    assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
+    assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
+    assert_that(resource('mid_sdp/elt/subarray_1').get("obsState")).is_equal_to("IDLE")
+    #watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
+    assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
+
     # watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
     # result['response'] = SubArray(1).allocate(ResourceAllocation(dishes=[Dish(1), Dish(2)]))
     # logging.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
@@ -98,14 +104,14 @@ def config():
     timeout = 60
     # update the ID of the config data so that there is no duplicate configs send during tests
     file = 'tests/acceptance_tests/test_data/polaris_b1_no_cam.json'
-    update_file(file)
+    # update_file(file)
     # set a timout mechanism in case a component gets stuck in executing
     # signal.signal(signal.SIGALRM, handlde_timeout)
     # signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
     try:
+        logging.info("Configuring the subarray")
+        logging.info("Config JSON: ", + file)
         SubArray(1).configure_from_file(file)
-        print("file is",file)
-        print("HI")
     except:
         LOGGER.info("configure from file timed out after %s", timeout)
 

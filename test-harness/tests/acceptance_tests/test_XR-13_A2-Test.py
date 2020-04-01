@@ -89,9 +89,12 @@ def assign():
     assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
     assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
     assert_that(resource('mid_sdp/elt/subarray_1').get("obsState")).is_equal_to("IDLE")
-    #watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
 
+    watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
+    assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
+    receptorIDList_val = watch_receptorIDList.get_value_when_changed()
+    assert_that(receptorIDList_val == [(1,2,3,4)])
+    
     # watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
     # result['response'] = SubArray(1).allocate(ResourceAllocation(dishes=[Dish(1), Dish(2)]))
     # logging.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))

@@ -8,7 +8,7 @@ ssh:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh
-    tag: 0.4.0
+    tag: 0.4.1
     pullPolicy: Always
   livenessProbe:
     enabled: true
@@ -31,7 +31,7 @@ itango:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh
-    tag: 0.4.0
+    tag: 0.4.1
     pullPolicy: Always
   livenessProbe:
     enabled: true
@@ -53,7 +53,7 @@ rest:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool
-    tag: 0.4.0
+    tag: 0.4.1
     pullPolicy: Always
   livenessProbe:
     enabled: true

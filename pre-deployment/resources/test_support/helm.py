@@ -7,7 +7,7 @@ import logging
 import time
 
 
-from tests.testsupport.util import wait_until
+from resources.test_support.util import wait_until
 
 
 class HelmTestAdaptor(object):
@@ -18,7 +18,7 @@ class HelmTestAdaptor(object):
         self.namespace = test_namespace
 
     def install(self, chart_name, cmd_args="", release_name=None):
-        cmd = f"helm install charts/{chart_name} --generate-name --namespace={self.namespace} --wait {cmd_args}"
+        cmd = f"helm install ../charts/{chart_name} --generate-name --namespace={self.namespace} --wait {cmd_args}"
         return self._run_subprocess(cmd.split())
 
     def delete(self, helm_release):
@@ -30,7 +30,7 @@ class HelmTestAdaptor(object):
         if set_flag_values:
             set_flag = self.create_set_cli_flag_from(set_flag_values)
         
-        cmd = f"helm template {release_name} charts/{chart_name} -s templates/{template} --namespace={self.namespace} {set_flag}"
+        cmd = f"helm template {release_name} ../charts/{chart_name} -s templates/{template} --namespace={self.namespace} {set_flag}"
 
         return self._run_subprocess(cmd.split())
 
@@ -258,7 +258,7 @@ class HelmChart(object):
 
     def __init__(self, name, helm_adaptor, set_flag_values={}):
         self.name = name
-        self.templates_dir = "charts/{}/templates".format(self.name)
+        self.templates_dir = "../charts/{}/templates".format(self.name)
         self._helm_adaptor = helm_adaptor
         self._release_name_stub = self.generate_release_name()
         self._rendered_templates = None

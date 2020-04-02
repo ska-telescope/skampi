@@ -17,14 +17,14 @@ from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
-from test_support.helpers import wait_for, obsState, resource, watch
+from resources.test_support.helpers import wait_for, obsState, resource, watch
 
 
 @pytest.fixture
 def result():
     return {}
     
-@scenario("1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
+@scenario("../../../features/1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
 
 def test_deallocate_resources():
     """Deallocate Resources."""

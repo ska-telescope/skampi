@@ -2,11 +2,11 @@ import subprocess
 
 import requests
 
-from tests.testsupport.util import check_connection, wait_until, parse_yaml_str
+from resources.test_support.util import check_connection, wait_until, parse_yaml_str
 
 
 class EchoServer(object):
-    DEFINITION_FILE = 'tests/testsupport/extras/echoserver.yaml'
+    DEFINITION_FILE = 'resources/test_support/extras/echoserver.yaml'
     LISTEN_PORT = 9001
 
     def __init__(self, namespace, local_port=LISTEN_PORT):

@@ -16,7 +16,7 @@ from pytest_bdd import scenario, given, when, then
 
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
-from test_support.helpers import wait_for, obsState, resource, watch, waiter, map_dish_nr_to_device_name
+from resources.test_support.helpers import wait_for, obsState, resource, watch, waiter, map_dish_nr_to_device_name
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ LOGGER = logging.getLogger(__name__)
 def result():
     return {}
 
-@scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
+@scenario("../../../features/1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
 @pytest.mark.skip(reason="WIP untill after refactoring")
 def test_allocate_resources():
     """Assign Resources."""

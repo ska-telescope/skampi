@@ -1,1 +1,0 @@
-{"query":"mutation {\n  executeCommand(device: \"ska_mid/tm_central/central_node\", command: \"StartUpTelescope\") {\n    ok\n    output\n    message\n  }\n}\n","variables":"null"}

@@ -8,7 +8,6 @@ Acceptance test to deallocate the resources from subarray for MVP.
 """
 import sys
 
-sys.path.append('/app')
 import time
 import pytest
 import logging

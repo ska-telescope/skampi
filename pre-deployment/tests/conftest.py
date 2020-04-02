@@ -6,7 +6,7 @@ import pytest
 from kubernetes import client as k8s_client
 from kubernetes import config as k8s_config
 
-from tests.testsupport.helm import HelmTestAdaptor
+from resources.test_support.helm import HelmTestAdaptor
 
 DEFAULT_USE_TILLER_FLAG = False
 DEFAULT_TEST_NAMESPACE = "ci"

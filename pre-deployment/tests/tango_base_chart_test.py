@@ -1,8 +1,8 @@
 import pytest
 import testinfra
 
-from tests.testsupport.helm import ChartDeployment
-from tests.testsupport.util import parse_yaml_str, wait_until
+from resources.test_support.helm import ChartDeployment
+from resources.test_support.util import parse_yaml_str, wait_until
 
 
 @pytest.fixture(scope="module")

@@ -79,4 +79,4 @@ def check_attribute(device_proxy, attribute_name, attr_value):
 def check_command(device_proxy, call_command, result):
   assert str(call_command) == result
 
-scenarios('features')
+scenarios('../../features/1.basic.feature')

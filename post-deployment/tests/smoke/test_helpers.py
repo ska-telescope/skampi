@@ -9,9 +9,9 @@ import mock
 from mock import Mock
 import tango
 from assertpy import assert_that
-from test_support.helpers import resource, take_subarray, waiter, subscriber, watch
+from resources.test_support.helpers import resource, take_subarray, waiter, subscriber, watch
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
-from test_support.helpers import *
+from resources.test_support.helpers import *
 
 class TestResource():
     def test_init(self):
@@ -22,7 +22,7 @@ class TestResource():
         item_under_test = resource(device_name)
         assert item_under_test.device_name == device_name
 
-    @mock.patch('test_support.helpers.DeviceProxy')
+    @mock.patch('resources.test_support.helpers.DeviceProxy')
     def get_attribute_info_ex(self, name, data_type):
         """
         Return AttributeInfoEx object.
@@ -32,7 +32,7 @@ class TestResource():
         attr_info_ex.name = name
         return attr_info_ex
 
-    @mock.patch('test_support.helpers.DeviceProxy')
+    @mock.patch('resources.test_support.helpers.DeviceProxy')
     def test_get_attr_enum(self, mock_proxy):
         """
         Test the get method.
@@ -53,7 +53,7 @@ class TestResource():
         item_under_test = resource(device_name)
         assert item_under_test.get('enumAttribute') == attr_info_ex.name
 
-    @mock.patch('test_support.helpers.DeviceProxy')
+    @mock.patch('resources.test_support.helpers.DeviceProxy')
     def test_get_attr_not_found(self, mock_proxy):
         """
         Test the get method.
@@ -69,8 +69,8 @@ class TestResource():
         item_under_test = resource(device_name)
         assert item_under_test.get('nonexistent attribute') == 'attribute not found'
 
-@mock.patch('test_support.helpers.SubArray.allocate')
-@mock.patch('test_support.helpers.waiter')
+@mock.patch('resources.test_support.helpers.SubArray.allocate')
+@mock.patch('resources.test_support.helpers.waiter')
 def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
     allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
     take_subarray(1).to_be_composed_out_of(4)
@@ -83,9 +83,9 @@ def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
     waiter_mock_instance.wait.assert_called_once()
     subarray_mock_allocate.assert_called_once_with(allocation)
 
-@mock.patch('test_support.helpers.watch')
-@mock.patch('test_support.helpers.resource')
-@mock.patch('test_support.helpers.subscriber')
+@mock.patch('resources.test_support.helpers.watch')
+@mock.patch('resources.test_support.helpers.resource')
+@mock.patch('resources.test_support.helpers.subscriber')
 def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     the_waiter = waiter()
     the_waiter.set_wait_for_tearing_down_subarray()

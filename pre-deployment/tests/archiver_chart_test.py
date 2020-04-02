@@ -1,6 +1,6 @@
 import pytest
 
-from tests.testsupport.util import parse_yaml_str
+from resources.test_support.util import parse_yaml_str
 
 
 @pytest.mark.no_deploy

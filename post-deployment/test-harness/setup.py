@@ -5,7 +5,7 @@ from setuptools import setup
 
 with open('README.md') as readme_file:
     readme = readme_file.read()
-#moved test_depndencies to a seperate file so that they can be loaded with pip install during development
+
 setup(
     name='skampi',
     version='0.0.0',

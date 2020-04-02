@@ -18,12 +18,13 @@ TANGO_HOST = databaseds-tango-base-$(HELM_RELEASE):10000
 # capture the output of the test in a tar file
 # stream the tar file base64 encoded to the Pod logs
 # 
-k8s_test = tar -c test-harness/ | \
+k8s_test = tar -c post-deployment/ | \
 		kubectl run $(TEST_RUNNER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
 		--image=$(IMAGE_TO_TEST) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
+		mv test-harness/* . && \
 		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) $1 && \
 		tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
@@ -39,7 +40,7 @@ k8s_test = tar -c test-harness/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-k8s_test: smoketest ## test the application on K8s
+k8s_test: smoketest## test the application on K8s
 	$(call k8s_test,test); \
 	  status=$$?; \
 	  rm -fr build; \
@@ -132,7 +133,7 @@ delete_testing_pod:
 	@kubectl delete pod testing-pod --namespace $(KUBE_NAMESPACE)
 
 attach_testing_pod:
-	@kubectl exec -it testing-pod /bin/bash
+	@kubectl exec -it testing-pod --namespace $(KUBE_NAMESPACE) /bin/bash
 
 location:= $(shell pwd)
 

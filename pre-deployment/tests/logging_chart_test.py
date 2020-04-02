@@ -4,9 +4,9 @@ from time import sleep
 
 import pytest
 
-from tests.testsupport.extras import EchoServer
-from tests.testsupport.helm import HelmChart, ChartDeployment
-from tests.testsupport.util import wait_until, parse_yaml_str
+from resources.test_support.extras import EchoServer
+from resources.test_support.helm import HelmChart, ChartDeployment
+from resources.test_support.util import wait_until, parse_yaml_str
 
 
 @pytest.fixture(scope="class")

@@ -63,7 +63,7 @@ class monitor(object):
             return comparison.all()
         else: return comparison
 
-    def _wait(self,timeout=50):
+    def _wait(self,timeout=80):
         timeout = timeout
         while ( self._is_not_changed()):
             timeout -=1
@@ -100,7 +100,7 @@ def watch(resource):
 #this function may become depracated
 class state_checker:
 
-    def __init__(self,device,timeout=10,debug=False):
+    def __init__(self,device,timeout=80,debug=False):
         self.device = device
         self.timeout =timeout
         self.debug = debug
@@ -129,7 +129,7 @@ class state_checker:
                 timeout -= 1
         return "timed out"
 
-def wait_for(device,timeout=50):
+def wait_for(device,timeout=80):
     return state_checker(device,timeout)
 
 def take_subarray(id):
@@ -191,7 +191,7 @@ class waiter():
     def set_wait_for_ending_SB(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState"))
 
-    def wait(self,timeout = 50):
+    def wait(self,timeout = 80):
         self.logs = ""
         while self.waits:
             wait =self.waits.pop()

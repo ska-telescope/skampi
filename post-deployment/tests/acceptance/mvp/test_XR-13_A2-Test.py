@@ -103,7 +103,7 @@ def assign():
 def config():
     timeout = 60
     # update the ID of the config data so that there is no duplicate configs send during tests
-    file = '../../../resources/test_data/polaris_b1_no_cam.json'
+    file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)
     # set a timout mechanism in case a component gets stuck in executing
     # signal.signal(signal.SIGALRM, handlde_timeout)

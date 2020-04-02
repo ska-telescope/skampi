@@ -21,7 +21,7 @@ from datetime import date
 from random import choice
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-
+import oet
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
 from test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
@@ -107,14 +107,16 @@ def config():
     timeout = 60
     # update the ID of the config data so that there is no duplicate configs send during tests
     file = 'tests/acceptance_tests/test_data/polaris_b1_no_cam.json'
-    # update_file(file)
+    update_file(file)
     # set a timout mechanism in case a component gets stuck in executing
     # signal.signal(signal.SIGALRM, handlde_timeout)
     # signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
     try:
         logging.info("Configuring the subarray")
-        logging.info("Config JSON: ", + file)
-        SubArray(1).configure_from_file(file)
+        #oet.command.SCAN_ID_GENERATOR.next()
+        SubArray(1).configure_from_file(file, with_processing = False)
+        logging.info("Json is", +str(file))
+        #oet.command.SCAN_ID_GENERATOR.next()
     except:
         LOGGER.info("configure from file timed out after %s", timeout)
 

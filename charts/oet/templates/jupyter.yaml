@@ -137,7 +137,7 @@ spec:
               path: venv.sh
         - name: storage
           persistentVolumeClaim:
-            claimName: jupyter-storage-pvc
+            claimName: jupyter-storage-pvc-{{ .Release.Namespace }}
         - name: config
           configMap:
             name: jupyter-configmap

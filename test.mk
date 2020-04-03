@@ -103,7 +103,7 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 						"image":"$(IMAGE_TO_TEST)",\
 						"name":"testing-container",\
 						"volumeMounts":[{\
-							"mountPath":"/home/tango/skampi/",\
+							"mountPath":"/app/skampi/",\
 							"name":"testing-volume"}],\
 						"env":[{\
           			 		"name": "TANGO_HOST",\

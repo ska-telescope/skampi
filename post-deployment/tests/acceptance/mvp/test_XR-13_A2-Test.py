@@ -9,7 +9,6 @@ Acceptance tests for MVP.
 import sys
 
 
-sys.path.append('/app')
 import time
 import signal
 
@@ -24,7 +23,7 @@ from pytest_bdd import scenario, given, when, then
 import oet
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
-from test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
+from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
     map_dish_nr_to_device_name
 import logging
 
@@ -66,9 +65,7 @@ def handlde_timeout():
     raise Exception("operation timeout")
 
 
-# @pytest.mark.xfail
-@scenario("1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
-@pytest.mark.skip(reason="WIP untill after refactoring")
+@scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 def test_configure_subarray():
     """Configure Subarray."""
 
@@ -106,7 +103,7 @@ def assign():
 def config():
     timeout = 60
     # update the ID of the config data so that there is no duplicate configs send during tests
-    file = 'tests/acceptance_tests/test_data/polaris_b1_no_cam.json'
+    file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)
     # set a timout mechanism in case a component gets stuck in executing
     # signal.signal(signal.SIGALRM, handlde_timeout)

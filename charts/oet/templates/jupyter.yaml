@@ -34,7 +34,7 @@ data:
 kind: ConfigMap
 metadata:
   name: jupyter-configmap
-  namespace: integration
+  namespace: {{ .Release.Namespace }}
 ---
 apiVersion: v1
 kind: Service

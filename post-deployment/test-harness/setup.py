@@ -3,14 +3,14 @@
 
 from setuptools import setup
 
-with open('README.md') as readme_file:
-    readme = readme_file.read()
+#with open('README.md') as readme_file:
+#    readme = readme_file.read()
 
 setup(
     name='skampi',
     version='0.0.0',
     description="",
-    long_description=readme + '\n\n',
+    long_description='TODO\n\n',
     author="Matteo Di Carlo System Team",
     author_email='matteo.dicarlo@inaf.it',
     url='https://github.com/ska-telescope/tango-example',

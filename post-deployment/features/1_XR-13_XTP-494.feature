@@ -46,7 +46,4 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 		Given I am accessing the console interface for the OET
 		And Sub-array is in READY state
 		When I call the execution of the scan instruction
-		And duration of scan is TBD seconds
-		Then Sub-array is in SCANNING state 
-		And basic imaging outcome is delivered
-		And observation ends after TBD seconds
+		Then Sub-array is in SCANNING state

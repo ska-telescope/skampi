@@ -1,11 +1,7 @@
+import logging
 from time import sleep
-import json
 from tango import DevState
-
-
-def test_init():
-    print("Init test multisubarray")
-
+from resources.test_support.helpers import resource, watch
 
 def test_check_subarray_state_change_sequence(create_centralnode_proxy, create_subarray1_proxy,
                                               create_cspsubarray1_proxy, create_sdpsubarray1_proxy):
@@ -15,12 +11,27 @@ def test_check_subarray_state_change_sequence(create_centralnode_proxy, create_s
     create_centralnode_proxy.AssignResources(assign_res_test_input)
     sleep(3)
     release_res_test_input = '{"subarrayID":1,"releaseALL":true,"receptorIDList":[]}'
-    json.loads(create_centralnode_proxy.ReleaseResources(release_res_test_input))
+    create_centralnode_proxy.ReleaseResources(release_res_test_input)
+    # When ReleaseResources command is invoked, subarraynode should change its state to "OFF"
+    # *after* cspsubarray and sdpsubarray change their state to "OFF"
+    logging.info("cspsubarray1 state: " + resource('mid_csp/elt/subarray_01').get("State"))
+    logging.info("sdpsubarray1 state: " + resource('mid_sdp/elt/subarray_1').get("State"))
+    logging.info("subarray1 state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
+
     assert ((create_cspsubarray1_proxy.state() == DevState.OFF or
              create_sdpsubarray1_proxy.state() == DevState.OFF) and
             create_subarray1_proxy.state() == DevState.ON)
-    sleep(1)
-    assert ((create_cspsubarray1_proxy.state() == DevState.OFF or
-             create_sdpsubarray1_proxy.state() == DevState.OFF) and
-            create_subarray1_proxy.state() == DevState.OFF)
+
+    watch_cspsubarray1_state = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State")
+    cspsubarray1_state = watch_cspsubarray1_state.get_value_when_changed()
+
+    logging.info("cspsubarray1 state: " + resource('mid_csp/elt/subarray_01').get("State"))
+    logging.info("sdpsubarray1 state: " + resource('mid_sdp/elt/subarray_1').get("State"))
+    logging.info("subarray1 state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
+
+    if cspsubarray1_state == "OFF":
+        assert ((create_cspsubarray1_proxy.state() == DevState.OFF or
+                 create_sdpsubarray1_proxy.state() == DevState.OFF) and
+                create_subarray1_proxy.state() == DevState.OFF)
+
     create_centralnode_proxy.StandByTelescope()

@@ -67,7 +67,7 @@ spec:
       - -c
       - "retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
          retry --max=5 -- tango_admin --ping-device mid_csp/capability_monitor/search_beams &&\
-            /venv/bin/python /app/csp_lmc_mid/MidCspMaster master"
+            /venv/bin/python /app/csp_lmc_mid/MidCspMaster.py master"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000

@@ -57,6 +57,8 @@ setup(
         'dev':  ['prospector[with_pyroma]', 'yapf', 'isort']
     },
     dependency_links=[
-        "https://nexus.engageska-portugal.pt/repository/pypi/packages/cdm-shared-library/"
+        "https://nexus.engageska-portugal.pt/repository/pypi/simple/cdm-shared-library/",
+        "https://nexus.engageska-portugal.pt/repository/pypi/simple/observation-execution-tool/"
+
     ]
 )

@@ -58,7 +58,6 @@ spec:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
 
-  containers:
   - name: midcspmaster
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}

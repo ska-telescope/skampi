@@ -237,7 +237,7 @@
                             }, 
                             "vlbiBeamAddresses": {
                                 "__root_att": [
-                                    "mid_csp/capability_monitor/vlbi_beams/CapabilityAddresses"
+                                    "mid_csp/capability_monitor/vlbi_beams/capabilityAddresses"
                                 ]
                             }, 
                             "vlbiBeamMembership": {
@@ -258,7 +258,7 @@
                             ], 
                             "CspSubarrays": [
                                 "mid_csp/elt/subarray_01", 
-                                "mid_csp/elt/subarray_02"
+                                "mid_csp/elt/subarray_02",
                                 "mid_csp/elt/subarray_03"
                             ], 
                             "MaxCapabilities": [
@@ -335,7 +335,7 @@
                                 "standbycmdfailure", 
                                 "2000", 
                                 "cspcbfstate", 
-                                "3000"
+                                "1000"
                             ]
                         }
                     }
@@ -478,9 +478,6 @@
                             ], 
                             "subID": [
                                 "1"
-                            ],
-                            "SubID": [
-                                "2"
                             ]
                         }
                     }
@@ -687,7 +684,7 @@
 		}
             },
             "subarray3": {
-                "MidCspSubarrayBase": 
+                "MidCspSubarrayBase": {
                     "mid_csp/elt/subarray_03": {
                         "attribute_properties": {
 			    "adminMode": {

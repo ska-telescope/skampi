@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: skuid-config-{{ template "skuid.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    run: skuid-{{ .Release.Namespace }}
+data:
+  SKUID_GENERATOR_ID: {{ .Values.skuid.config.generator_id }}
+  SKUID_CURSOR: {{ .Values.skuid.config.data_dir }}/skuid_cursor.dat
+  SKUID_SCANID_CURSOR: {{ .Values.skuid.config.data_dir }}/scan_id_cursor.dat
+  SKUID_TYPES_FILE: {{ .Values.skuid.config.config_dir }}/entity_types.json
+{{ if .Values.skuid.config.entity_types.override }}
+  entity_types.json: |-
+    {{ toJson .Values.skuid.config.entity_types.valid_types }}
+{{ end }}

@@ -3,14 +3,14 @@
 
 from setuptools import setup
 
-with open('README.md') as readme_file:
-    readme = readme_file.read()
+#with open('README.md') as readme_file:
+#    readme = readme_file.read()
 
 setup(
     name='skampi',
     version='0.0.0',
     description="",
-    long_description=readme + '\n\n',
+    long_description='TODO\n\n',
     author="Matteo Di Carlo System Team",
     author_email='matteo.dicarlo@inaf.it',
     url='https://github.com/ska-telescope/tango-example',
@@ -57,6 +57,8 @@ setup(
         'dev':  ['prospector[with_pyroma]', 'yapf', 'isort']
     },
     dependency_links=[
-        "https://nexus.engageska-portugal.pt/repository/pypi/packages/cdm-shared-library/"
+        "https://nexus.engageska-portugal.pt/repository/pypi/simple/cdm-shared-library/",
+        "https://nexus.engageska-portugal.pt/repository/pypi/simple/observation-execution-tool/"
+
     ]
 )

@@ -123,7 +123,6 @@ def scan():
     signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
     try:
         SubArray(1).scan(20.0)
-        LOGGER.info("Json string", +str(file))
     except:
         LOGGER.info("Scan from file timed out after %s", timeout)
 
@@ -131,24 +130,38 @@ def scan():
 @then("Sub-array is in SCANNING state")
 def check_sub_state():
     # check that the TMC report subarray as being in the ON state and obsState = SCANNING
-    watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+    #watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
-    logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
+    #logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
+    # check that the CSP report subarray as being in the ON state and obsState = SCANNING
+    #watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
+    #logging.info("subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
+    # check that the SDP report subarray as being in the ON state and obsState = SCANNING
+    #watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
+    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
+    #logging.info("subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+    
+@then("After SCANNING Sub-array is moved to READY state")
+def check_ready_state():
+    # check that the TMC report subarray as being in the ON state and obsState = SCANNING
+    watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
+    logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
     # check that the CSP report subarray as being in the ON state and obsState = SCANNING
     watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
-    logging.info("subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
+    logging.info("CSP-subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
     # check that the SDP report subarray as being in the ON state and obsState = SCANNING
     watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
-    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
-    logging.info("subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
+    logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
 
 def teardown_function(function):
      """ teardown any state that was previously setup with a setup_function
      call.
      """
      the_waiter = waiter()
-     #the_waiter.set_wait_for_tearing_down_subarray()
      if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
          LOGGER.info("tearing down configured subarray (READY)")
          the_waiter.set_wait_for_ending_SB()

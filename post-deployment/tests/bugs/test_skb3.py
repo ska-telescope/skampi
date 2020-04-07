@@ -1,6 +1,5 @@
 import logging
 from tango import DevState
-from time import sleep
 from resources.test_support.helpers import resource, watch
 import pytest
 
@@ -46,7 +45,5 @@ def test_check_subarray_state_change_sequence(create_centralnode_proxy, create_s
                         create_subarray1_proxy.state() == DevState.OFF)
 
     create_centralnode_proxy.StandByTelescope()
-    sleep(3)
-    # watch_subarray1_state = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State")
-    # while subarray1_state is not "DISABLE":
-    #     subarray1_state = watch_subarray1_state.get_value_when_changed()
+    watch_subarray1_state = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State")
+    watch_subarray1_state.wait_until_value_changed()

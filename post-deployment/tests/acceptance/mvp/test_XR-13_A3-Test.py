@@ -131,39 +131,43 @@ def scan():
 @then("Sub-array is in SCANNING state")
 def check_sub_state():
     # check that the TMC report subarray as being in the ON state and obsState = SCANNING
+    watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
+    logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
     # check that the CSP report subarray as being in the ON state and obsState = SCANNING
+    watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
+    logging.info("subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
     # check that the SDP report subarray as being in the ON state and obsState = SCANNING
+    watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
+    logging.info("subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
 
 def teardown_function(function):
      """ teardown any state that was previously setup with a setup_function
      call.
      """
      the_waiter = waiter()
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
-         print("inside SCANNING")
-         LOGGER.info("tearing down configuring subarray")
-         restart_subarray(1)
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-         print("inside CONFIGURING")
-         LOGGER.info("tearing down configuring subarray")
-         restart_subarray(1)
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
-         the_waiter.set_wait_for_tearing_down_subarray()
-         LOGGER.info("tearing down composed subarray (IDLE)")
-         SubArray(1).deallocate()
-         the_waiter.wait()
-         LOGGER.info(the_waiter.logs)
+     #the_waiter.set_wait_for_tearing_down_subarray()
      if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
-         print("inside READY")
          LOGGER.info("tearing down configured subarray (READY)")
          the_waiter.set_wait_for_ending_SB()
          SubArray(1).end_sb()
          the_waiter.wait()
          LOGGER.info(the_waiter.logs)
          the_waiter.set_wait_for_tearing_down_subarray()
+         SubArray(1).deallocate()
+         the_waiter.wait()
+         LOGGER.info(the_waiter.logs)
+     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
+         LOGGER.info("tearing down scanning subarray")
+         restart_subarray(1)
+     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+         LOGGER.info("tearing down configuring subarray")
+         restart_subarray(1)
+     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+         the_waiter.set_wait_for_tearing_down_subarray()
+         LOGGER.info("tearing down composed subarray (IDLE)")
          SubArray(1).deallocate()
          the_waiter.wait()
          LOGGER.info(the_waiter.logs)

@@ -47,6 +47,7 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 		And Sub-array is in READY state
 		When I call the execution of the scan instruction
 		And duration of scan is TBD seconds
-		Then Sub-array is in SCANNING state 
+		Then Sub-array is in SCANNING state
+		And After SCANNING Sub-array is moved to READY state
 		And basic imaging outcome is delivered
 		And observation ends after TBD seconds

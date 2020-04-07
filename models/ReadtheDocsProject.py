@@ -120,24 +120,14 @@ def make_subprojects(parent="developerskatelescopeorg", project_slugs=['my-mac']
         print(readthedocs.make_subproject(parent, slug, slug).status_code)
 
 
-def create_readthedocs_project(params):
-    if 'programming_language' not in params:
-        prog_lang = "py"
-    else:
-        prog_lang = params['programming_language']
-    if 'language' not in params:
-        lang = "en"
-    else:
-        lang = params['language']
+def create_readthedocs_project(name_with_namespace, repository, prog_lang, lang, test_sub):
 
-    if 'test' in params:
-        test_sub = True
-    else:
-        test_sub = False
+    readthedocs_project = ReadthedocsProject(
+        name=name_with_namespace,
+        repo_url=repository,
+        language=lang, programming_language=prog_lang
+    ).create_project(test_sub)
 
-    readthedocs_project = ReadthedocsProject(name=params['name_with_namespace'],
-                                             repo_url=params['repository'],
-                                             language=lang, programming_language=prog_lang).create_project(test_sub)
     return readthedocs_project
 
 if __name__ == '__main__':

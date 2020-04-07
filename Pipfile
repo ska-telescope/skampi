@@ -42,6 +42,7 @@ pygithub = "*"
 conf = "*"
 flask-pymongo = "*"
 pymongo = "*"
+fire = "*"
 
 [requires]
 python_version = "3.6"

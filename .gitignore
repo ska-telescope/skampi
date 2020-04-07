@@ -11,3 +11,4 @@ docstatus/repos
 .python-version
 build
 .pytest_cache
+Pipfile.lock

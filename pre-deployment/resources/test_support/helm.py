@@ -1,13 +1,13 @@
 import glob
+import logging
 import os
 import random
 import string
 import subprocess
-import logging
-import time
 
+import objectpath
 
-from resources.test_support.util import wait_until
+from resources.test_support.util import wait_until, parse_yaml_str
 
 
 class HelmTestAdaptor(object):
@@ -48,9 +48,9 @@ class HelmTestAdaptor(object):
             result = subprocess.run(shell_cmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, encoding="utf8", check=True)
         except subprocess.CalledProcessError as e:
-            logging.error("Command ran: %s", " ".join(e.cmd))
-            logging.error("Result stdout: %s", e.stdout)
-            logging.error("Result stderr: %s", e.stderr)
+            logging.error("!!! Ran: %s", " ".join(e.cmd))
+            logging.error("!!! Got stdout: %s", e.stdout)
+            logging.error("!!! Got stderr: %s", e.stderr)
             raise
         return result.stdout
 
@@ -80,10 +80,10 @@ class ChartDeployment(object):
             self.chart_name = chart
             self.release_name = self._parse_release_name_from(stdout)
         except subprocess.CalledProcessError as e:
-            logging.error("CalledProcessError cmd: %s", e.cmd)
-            logging.error("CalledProcessError output: %s", e.output)
-            logging.error("CalledProcessError stderr: %s", e.stderr)
-            logging.error("CalledProcessError stdout: %s", e.stdout)
+            logging.error("!!! Ran: %s", " ".join(e.cmd))
+            logging.error("!!! Got output: %s", e.output)
+            logging.error("!!! Got stdout: %s", e.stdout)
+            logging.error("!!! Got stderr: %s", e.stderr)
             raise
         except Exception as e:
             raise RuntimeError('!!! Failed to deploy helm chart.', e)
@@ -92,10 +92,10 @@ class ChartDeployment(object):
         assert self.release_name is not None
         api_instance = self._k8s_api.CoreV1Api()
         p_volumes = self._get_persistent_volume_names(api_instance)
-        logging.info("Persistent Volumes to delete: %s", p_volumes)
+        logging.info("+++ Persistent Volumes to delete: %s", p_volumes)
 
         for pod_name in self.additional_pods:
-            logging.info("Deleting additional pod: %s", pod_name)
+            logging.info("+++ Deleting additional pod: %s", pod_name)
             api_instance.delete_namespaced_pod(pod_name, self._helm_adaptor.namespace)
 
         self._helm_adaptor.delete(self.release_name)
@@ -104,7 +104,7 @@ class ChartDeployment(object):
             # Make double sure we only delete PVs in our release
             if self.release_name in pv:
                 api_instance.delete_persistent_volume(pv)
-                logging.info("Deleted PV: %s", pv)
+                logging.info("+++ Deleted PV: %s", pv)
 
     def pod_exec_bash(self, pod_name, command_str):
         """Execute a command on the pod commandline using bash
@@ -124,7 +124,7 @@ class ChartDeployment(object):
         """
         cmd = ['kubectl', 'exec', '-n', self._helm_adaptor.namespace, pod_name,
                '--', '/bin/bash', '-c', command_str]
-        logging.info(cmd)
+        logging.info('+++ Executing: %s', ' '.join(cmd))
         res = self._helm_adaptor._run_subprocess(cmd)
         return res
 
@@ -197,7 +197,7 @@ class ChartDeployment(object):
         assert manifest['metadata']['name'], "The manifest should have a pod name"
         pod_name = manifest['metadata']['name']
 
-        logging.info("Launching pod: %s", pod_name)
+        logging.info("+++ Launching pod: %s", pod_name)
 
         resp = api_instance.create_namespaced_pod(body=manifest,
                                                   namespace=self._helm_adaptor.namespace)
@@ -209,7 +209,7 @@ class ChartDeployment(object):
 
         wait_until(_wait_for_pod_launch, retry_timeout=500)
 
-        logging.info("Launced pod: %s", pod_name)
+        logging.info("+++ Launced pod: %s", pod_name)
         self.additional_pods.append(pod_name)
         return pod_name
 
@@ -255,28 +255,55 @@ class ChartDeployment(object):
 
 
 class HelmChart(object):
+    """ An object to represent the Helm chart under test."""
 
-    def __init__(self, name, helm_adaptor, set_flag_values={}):
+    class RenderedTemplate:
+        """ A part of the Helm chart after templating via `helm template`."""
+        def __init__(self, templated_string):
+            self._rendered_template = templated_string
+
+        def __str__(self):
+            return self._rendered_template
+
+        def as_collection(self):
+            return parse_yaml_str(self._rendered_template)
+
+        def as_objectpath(self):
+            """ An queryable data structure. See https://objectpath.org/ """
+            return objectpath.Tree(self.as_collection())
+
+
+    def __init__(self, name, helm_adaptor, render_templates=True, initial_chart_values={}):
         self.name = name
         self.templates_dir = "../charts/{}/templates".format(self.name)
         self._helm_adaptor = helm_adaptor
         self._release_name_stub = self.generate_release_name()
-        self._rendered_templates = None
-        self.set_flag_values = set_flag_values
+        self.chart_values = initial_chart_values
+        self._rendered_templates = (
+            self._render_all(self.templates_dir, self._release_name_stub, self.chart_values)
+            if render_templates
+            else None)
+
+    def _render_all(self, templates_dir, release_name, chart_values):
+        chart_templates = [os.path.basename(fpath) for fpath in (glob.glob("{}/*.yaml".format(templates_dir)))]
+        return {template: self.render_template(template, release_name, chart_values)
+                                    for template in
+                                    chart_templates}
 
     @property
     def templates(self):
         if self._rendered_templates is not None:
             return self._rendered_templates
 
-        chart_templates = [os.path.basename(fpath) for fpath in (glob.glob("{}/*.yaml".format(self.templates_dir)))]
-        self._rendered_templates = {template: self._helm_adaptor.template(self.name, self._release_name_stub, template, set_flag_values=self.set_flag_values)
-                                    for template in
-                                    chart_templates}
+        self._rendered_templates = self._render_all(self.templates_dir, self._release_name_stub, self.chart_values)
         return self._rendered_templates
 
-    def render_template(self, template_file, release_name):
-        return self._helm_adaptor.template(self.name, release_name, os.path.join(self.templates_dir, template_file))
+    def render_template(self, template_file, release_name=None, chart_values={}):
+        release_name = self._release_name_stub if release_name is None else release_name
+        templated_string = self._helm_adaptor.template(self.name, release_name,
+                template_file, chart_values)
+        return self.RenderedTemplate(templated_string)
+
 
     @staticmethod
     def generate_release_name():

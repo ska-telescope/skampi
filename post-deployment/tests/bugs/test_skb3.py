@@ -46,4 +46,4 @@ def test_check_subarray_state_change_sequence(create_centralnode_proxy, create_s
                         create_subarray1_proxy.state() == DevState.OFF)
 
     create_centralnode_proxy.StandByTelescope()
-    sleep(3)
+    sleep(5)

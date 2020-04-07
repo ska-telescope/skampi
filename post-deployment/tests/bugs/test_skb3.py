@@ -2,6 +2,7 @@ import logging
 from tango import DevState
 from resources.test_support.helpers import resource, watch
 import pytest
+from time import sleep
 
 
 @pytest.mark.xfail(reason="subarray node is not in sync with cspsuarray state.")
@@ -45,5 +46,4 @@ def test_check_subarray_state_change_sequence(create_centralnode_proxy, create_s
                         create_subarray1_proxy.state() == DevState.OFF)
 
     create_centralnode_proxy.StandByTelescope()
-    watch_subarray1_state = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State")
-    watch_subarray1_state.wait_until_value_changed()
+    sleep(3)

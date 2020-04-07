@@ -25,7 +25,4 @@ def create_repo(project_name,maintainer_ids, template= None):
 
 
 if __name__ == "__main__":
-    fire.Fire({
-        'skagitlab': SKAGitLab,
-        'readthedocs': ReadtheDocs
-    })
+    fire.Fire()

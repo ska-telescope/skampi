@@ -6,10 +6,23 @@ skuid:
   image:
     image: ska-telescope/skuid
     registry: nexus.engageska-portugal.pt
-    tag: 0.0.1
+    tag: 1.1.0
     pullPolicy: Always # During dev
     basePath: /skuid
   service_port: 9870
+  config:
+    generator_id: T0001
+    data_dir: /data
+    config_dir: /etc/skuid
+    entity_types:
+      override: true # overrides types via configmap
+      valid_types:
+        sbd: SchedulingBlockDefinition
+        sbi: SchedulingBlockInstance
+        dp: DataProduct
+        opj: ObservingProject
+        opp: ObservingProposal
+        pb: ProcessingBlock
 
 ingress:
   enabled: false

@@ -96,6 +96,7 @@ tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.
 
 ##the following section is for developers requiring the testing pod to be instantiated with a volume mappig to skampi
 location:= $(shell pwd)
+PYTHONPATH=/app/skampi/:/app/skampi/post-deployment/
 #the port mapping to host
 hostPort ?= 2020
 testing-config := '{ "apiVersion": "v1","spec":{\
@@ -111,7 +112,9 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 							"name": "KUBE_NAMESPACE",\
           					"value": "$(KUBE_NAMESPACE)"},{\
         					"name": "HELM_RELEASE",\
-          					"value": "$(HELM_RELEASE)"}],\
+          					"value": "$(HELM_RELEASE)"},{\
+							"name": "PYTHONPATH",\
+							"value": "$(PYTHONPATH)"}],\
 						"ports":[{\
 							"containerPort":22,\
 							"hostPort":$(hostPort)}]}],\

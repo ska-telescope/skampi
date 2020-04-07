@@ -82,6 +82,8 @@ spec:
             value: databaseds-tango-base-{{ .Release.Name }}:10000
           - name: FLASK_APP
             value: /app/oet/procedure/application/restserver:create_app
+          - name: SKUID_URL
+            value: "skuid-skuid-{{ .Release.Namespace }}-{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:9870"
         ports:
           - name: oet-rest
             containerPort: 5000

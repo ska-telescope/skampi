@@ -58,7 +58,8 @@ setup(
     },
     dependency_links=[
         "https://nexus.engageska-portugal.pt/repository/pypi/simple/cdm-shared-library/",
-        "https://nexus.engageska-portugal.pt/repository/pypi/simple/observation-execution-tool/"
+        "https://nexus.engageska-portugal.pt/repository/pypi/simple/observation-execution-tool/",
+        "https://nexus.engageska-portugal.pt/repository/pypi/simple/skuid/"
 
     ]
 )

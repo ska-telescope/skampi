@@ -1,12 +1,11 @@
-import logging
 import json
-from time import sleep
+import logging
 
 import pytest
 
 from resources.test_support.extras import EchoServer
 from resources.test_support.helm import HelmChart, ChartDeployment
-from resources.test_support.util import wait_until, parse_yaml_str
+from resources.test_support.util import wait_until
 
 
 @pytest.fixture(scope="class")
@@ -14,7 +13,7 @@ def logging_chart(request, helm_adaptor):
     chart_values = {
         'demo_mode.enabled': 'true'
     }
-    request.cls.chart = HelmChart('logging', helm_adaptor, set_flag_values=chart_values)
+    request.cls.chart = HelmChart('logging', helm_adaptor, initial_chart_values=chart_values)
 
 
 @pytest.fixture(scope="class")
@@ -27,7 +26,7 @@ def throttled_logging_chart(request, helm_adaptor):
     }
     throttle_settings['demo_mode.enabled'] = 'true'
     request.cls.chart = HelmChart('logging', helm_adaptor,
-                                  set_flag_values=throttle_settings)
+                                  initial_chart_values=throttle_settings)
 
 
 @pytest.fixture(scope="class")
@@ -100,7 +99,7 @@ class SearchElasticMixin:
 class TestLoggingChartTemplates:
 
     def test_throttling_is_disabled(self):
-        resources = parse_yaml_str(self.chart.templates['fluentd-config-map.yaml'])
+        resources = self.chart.templates['fluentd-config-map.yaml'].as_collection()
         ska_conf = list(filter(lambda x: 'ska.conf'in x['data'], resources))[0]
 
         assert 'group_bucket_period_s 1' not in ska_conf['data']['ska.conf']
@@ -108,7 +107,7 @@ class TestLoggingChartTemplates:
         assert 'group_reset_rate_s 5' not in ska_conf['data']['ska.conf']
 
     def test_elastic_service_is_exposed_on_port_9200_for_all_k8s_nodes(self):
-        elastic_resources = parse_yaml_str(self.chart.templates['elastic.yaml'])
+        elastic_resources = self.chart.templates['elastic.yaml'].as_collection()
         elastic_svc = list(filter(lambda x: x['kind'] == 'Service', elastic_resources))[0]
 
         expected_portmapping = {
@@ -120,12 +119,12 @@ class TestLoggingChartTemplates:
         assert expected_portmapping in elastic_svc['spec']['ports']
 
     def test_fluentd_is_authorised_to_read_pods_and_namespaces_cluster_wide(self):
-        resources = parse_yaml_str(self.chart.templates['fluentd-rbac.yaml'])
+        resources = self.chart.templates['fluentd-rbac.yaml'].as_collection()
         serviceaccount = list(filter(lambda x: x['kind'] == 'ServiceAccount', resources))[0]
         clusterrole = list(filter(lambda x: x['kind'] == 'ClusterRole', resources))[0]
         clusterrolebinding = list(filter(lambda x: x['kind'] == 'ClusterRoleBinding', resources))[0]
 
-        daemonset = parse_yaml_str(self.chart.templates['fluentd-daemonset.yaml']).pop()
+        daemonset = self.chart.templates['fluentd-daemonset.yaml'].as_collection().pop()
         serviceaccount_name = serviceaccount['metadata']['name']
 
         expected_auth_rule = {
@@ -139,11 +138,11 @@ class TestLoggingChartTemplates:
         assert daemonset['spec']['template']['spec']['serviceAccountName'] == serviceaccount_name
 
     def test_fluentd_is_configured_to_integrate_with_elastic_via_incluster_hostname(self):
-        resources = parse_yaml_str(self.chart.templates['elastic.yaml'])
+        resources = self.chart.templates['elastic.yaml'].as_collection()
         elastic_deployment = list(filter(lambda x: x['kind'] == 'Deployment', resources))[0]
         elastic_svc = list(filter(lambda x: x['kind'] == 'Service', resources))[0]
 
-        fluentd_daemonset = parse_yaml_str(self.chart.templates['fluentd-daemonset.yaml']).pop()
+        fluentd_daemonset = self.chart.templates['fluentd-daemonset.yaml'].as_collection().pop()
 
         expected_env_vars = [
             {"FLUENT_ELASTICSEARCH_HOST": elastic_deployment['metadata']['name']},
@@ -159,7 +158,7 @@ class TestLoggingChartTemplates:
     def test_elastic_ilm_chart_yaml(self):
         """Check that the values.yaml is applied as expected"""
         template = self.chart.templates['elastic-config-map.yaml']
-        elastic_cm = parse_yaml_str(template)[0]
+        elastic_cm = template.as_collection()[0]
         assert 'ska_ilm_policy.json' in elastic_cm['data']
         ska_ilm_policy = json.loads(elastic_cm['data']['ska_ilm_policy.json'])
         ska_ilm_policy_phases = ska_ilm_policy['policy']['phases']
@@ -172,7 +171,7 @@ class TestLoggingChartTemplates:
 @pytest.mark.usefixtures("throttled_logging_chart")
 class TestLoggingChartThrottledTemplates:
     def test_throttle_settings_applied(self):
-        resources = parse_yaml_str(self.chart.templates['fluentd-config-map.yaml'])
+        resources = self.chart.templates['fluentd-config-map.yaml'].as_collection()
         ska_conf = list(filter(lambda x: 'ska.conf'in x['data'], resources))[0]
 
         assert 'group_bucket_period_s 1' in ska_conf['data']['ska.conf']
@@ -182,6 +181,7 @@ class TestLoggingChartThrottledTemplates:
 
 @pytest.mark.chart_deploy
 @pytest.mark.usefixtures("logging_chart_deployment")
+@pytest.mark.quarantine
 class TestLoggingDeployment(SearchElasticMixin):
 
     @pytest.mark.usefixtures("echoserver")

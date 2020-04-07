@@ -125,10 +125,13 @@ def scan():
 @then("Sub-array is in SCANNING state")
 def check_sub_state():
     # check that the TMC report subarray as being in the ON state and obsState = SCANNING
+    watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
     # check that the CSP report subarray as being in the ON state and obsState = SCANNING
+    watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
     # check that the SDP report subarray as being in the ON state and obsState = SCANNING
+    watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
 
 

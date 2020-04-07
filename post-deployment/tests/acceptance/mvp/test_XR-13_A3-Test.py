@@ -77,13 +77,13 @@ def start_up():
     LOGGER.info(the_waiter.logs)
 
 def assign():
-    take_subarray(1).to_be_composed_out_of(4)
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
-    assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
-    assert_that(resource('mid_sdp/elt/subarray_1').get("obsState")).is_equal_to("IDLE")
+    take_subarray(2).to_be_composed_out_of(4)
+    assert_that(resource('ska_mid/tm_subarray_node/2').get("obsState")).is_equal_to("IDLE")
+    assert_that(resource('mid_csp/elt/subarray_02').get("obsState")).is_equal_to("IDLE")
+    assert_that(resource('mid_sdp/elt/subarray_2').get("obsState")).is_equal_to("IDLE")
 
-    watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
+    watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/2')).for_a_change_on("receptorIDList")
+    assert_that(resource('ska_mid/tm_subarray_node/2').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
     receptorIDList_val = watch_receptorIDList.get_value_when_changed()
     assert_that(receptorIDList_val == [(1,2,3,4)])
 
@@ -95,43 +95,43 @@ def config():
     file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)
     # set a timout mechanism in case a component gets stuck in executing
-    #signal.signal(signal.SIGALRM, handlde_timeout)
-    #signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
+    signal.signal(signal.SIGALRM, handlde_timeout)
+    signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
     try:
-        SubArray(1).configure_from_file(file, False)
+        SubArray(2).configure_from_file(file, False)
     except:
         LOGGER.info("configure from file timed out after %s", timeout)
 def check_state():
     #watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
      # check that the TMC report subarray as being in the ON state and obsState = READY
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
-    logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
+    assert_that(resource('ska_mid/tm_subarray_node/2').get('obsState')).is_equal_to('READY')
+    logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/2').get("obsState"))
     # check that the CSP report subarray as being in the ON state and obsState = READY
     #watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
-    logging.info("CSPsubarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
+    assert_that(resource('mid_csp/elt/subarray_02').get('obsState')).is_equal_to('READY')
+    logging.info("CSPsubarray obsState: " + resource('mid_csp/elt/subarray_02').get("obsState"))
     # check that the SDP report subarray as being in the ON state and obsState = READY
     #watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
-    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
-    logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+    assert_that(resource('mid_sdp/elt/subarray_2').get('obsState')).is_equal_to('READY')
+    logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_2').get("obsState"))
 
 
 @when("I call the execution of the scan instruction")
 def scan():
-    SubArray(1).scan(20.0)
+    SubArray(2).scan(20.0)
 
 
 @then("Sub-array is in SCANNING state")
 def check_sub_state():
     # check that the TMC report subarray as being in the ON state and obsState = IDLE
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
-    logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
+    assert_that(resource('ska_mid/tm_subarray_node/2').get('obsState')).is_equal_to('SCANNING')
+    logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/2').get("obsState"))
     # check that the CSP report subarray as being in the ON state and obsState = IDLE
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
-    logging.info("CSPsubarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
+    assert_that(resource('mid_csp/elt/subarray_02').get('obsState')).is_equal_to('SCANNING')
+    logging.info("CSPsubarray obsState: " + resource('mid_csp/elt/subarray_02').get("obsState"))
     # check that the SDP report subarray as being in the ON state and obsState = IDLE
-    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
-    logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+    assert_that(resource('mid_sdp/elt/subarray_2').get('obsState')).is_equal_to('SCANNING')
+    logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_2').get("obsState"))
 
 
 def teardown_function(function):
@@ -139,31 +139,31 @@ def teardown_function(function):
      call.
      """
      the_waiter = waiter()
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+     if (resource('ska_mid/tm_subarray_node/2').get('obsState') == "IDLE"):
          the_waiter.set_wait_for_tearing_down_subarray()
          LOGGER.info("tearing down composed subarray (IDLE)")
-         SubArray(1).deallocate()
+         SubArray(2).deallocate()
          the_waiter.wait()
          LOGGER.info(the_waiter.logs)
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
+     if (resource('ska_mid/tm_subarray_node/2').get('obsState') == "READY"):
          print("inside READY")
          LOGGER.info("tearing down configured subarray (READY)")
          the_waiter.set_wait_for_ending_SB()
-         SubArray(1).end_sb()
+         SubArray(2).end_sb()
          the_waiter.wait()
          LOGGER.info(the_waiter.logs)
          the_waiter.set_wait_for_tearing_down_subarray()
-         SubArray(1).deallocate()
+         SubArray(2).deallocate()
          the_waiter.wait()
          LOGGER.info(the_waiter.logs)
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+     if (resource('ska_mid/tm_subarray_node/2').get('obsState') == "CONFIGURING"):
          print("inside CONFIGURING")
          LOGGER.info("tearing down configuring subarray")
-         restart_subarray(1)
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
+         restart_subarray(2)
+     if (resource('ska_mid/tm_subarray_node/2').get('obsState') == "SCANNING"):
          print("inside SCANNING")
          LOGGER.info("tearing down configuring subarray")
-         restart_subarray(1)
+         restart_subarray(2)
      the_waiter.set_wait_for_going_to_standby()
      SKAMid().standby()
      LOGGER.info("standby command is executed on telescope")

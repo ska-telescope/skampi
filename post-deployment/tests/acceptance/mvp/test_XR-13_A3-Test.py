@@ -74,8 +74,8 @@ def start_up():
 
     take_subarray(1).to_be_composed_out_of(4)
     assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
-    assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
-    assert_that(resource('mid_sdp/elt/subarray_1').get("obsState")).is_equal_to("IDLE")
+    # assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
+    # assert_that(resource('mid_sdp/elt/subarray_1').get("obsState")).is_equal_to("IDLE")
     watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
     assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
     receptorIDList_val = watch_receptorIDList.get_value_when_changed()
@@ -125,30 +125,30 @@ def scan():
 @then("Sub-array is in SCANNING state")
 def check_sub_state():
     # check that the TMC report subarray as being in the ON state and obsState = SCANNING
-    #watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING)
+    watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
     #logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
     # check that the CSP report subarray as being in the ON state and obsState = SCANNING
-    #watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
+    watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
     #logging.info("subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState")
     # check that the SDP report subarray as being in the ON state and obsState = SCANNING
-    #watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
+    watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
     #logging.info("subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
     
 @then("After SCANNING Sub-array is moved to READY state")
 def check_ready_state():
     # check that the TMC report subarray as being in the ON state and obsState = SCANNING
-    watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+    #watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
     # check that the CSP report subarray as being in the ON state and obsState = SCANNING
-    watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
+    #watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
     logging.info("CSP-subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
     # check that the SDP report subarray as being in the ON state and obsState = SCANNING
-    watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
+    #watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
     logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
 

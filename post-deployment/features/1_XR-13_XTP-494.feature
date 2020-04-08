@@ -40,6 +40,8 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 		When I deallocate the resources
 		Then "subarray 1" should go into OFF state
 		And ReceptorList for "subarray 1" should be empty
+
+
 	
 	@XTP-428 @XTP-494
 	Scenario: A3-Test, Sub-array performs an observational imaging scan

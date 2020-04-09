@@ -1,5 +1,0 @@
-pvc: 'skampi-git-repo-pvc'
-pv: 'skampi-git-repo-pv'
-storage: 0.1G
-path: "/home/user/bdd_storage"
-enabled: false

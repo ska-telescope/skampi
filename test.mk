@@ -3,7 +3,7 @@
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
-IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.2
+IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.1
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-only-once-$(KUBE_NAMESPACE)-$(HELM_RELEASE)
 #

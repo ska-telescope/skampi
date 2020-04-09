@@ -69,6 +69,8 @@
                             "polled_attr": [
                                 "adminmode",
                                 "1000",
+                                "state",
+                                "1000",
                                 "healthstate",
                                 "1000",
                                 "obsmode",
@@ -127,6 +129,8 @@
                             "polled_attr": [
                                 "adminmode",
                                 "1000",
+                                "state",
+                                "1000",
                                 "healthstate",
                                 "1000",
                                 "obsmode",
@@ -184,6 +188,8 @@
                             ],
                             "polled_attr": [
                                 "adminmode",
+                                "1000",
+                                "state",
                                 "1000",
                                 "healthstate",
                                 "1000",

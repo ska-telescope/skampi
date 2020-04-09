@@ -21,8 +21,6 @@ stages:
 
 .pip_install_test_requirements: &pip_install_test_requirements |-
   cd pre-deployment
-  mv test-harness/* .
-  ls -la
   pip3 install -r test-requirements.txt
 
 .teardown_k8s_test_resources: &teardown_k8s_test_resources |-

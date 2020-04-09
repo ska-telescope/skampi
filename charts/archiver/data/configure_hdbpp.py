@@ -80,8 +80,26 @@ for opt, arg in opts:
 conf_manager_proxy = DeviceProxy(conf_manager_device_fqdn)
 evt_subscriber_proxy = DeviceProxy(evt_subscriber_device_fqdn)
 
-configure_success_count, configure_fail_count, already_configured_count, total_attrib_count = cm_configure_attributes()
-print("Configured successfully: ", configure_success_count, "Failed: ", configure_fail_count, "Already configured: ", already_configured_count, "Total attributes: ", total_attrib_count)
+sleep_time = 20
+max_retries = 10
+for x in range(0, max_retries):
+    try:
+        configure_success_count, configure_fail_count, already_configured_count, total_attrib_count = cm_configure_attributes()
+        print("Configured successfully: ", configure_success_count, "Failed: ", configure_fail_count, "Already configured: ", already_configured_count, "Total attributes: ", total_attrib_count)
+        break
+    except:
+        print("configure_attribute exception: " + str(sys.exc_info()))
+        if(x == (max_retries - 1)):
+            raise df
+
+    try:
+        deviceAdm = DeviceProxy("dserver/hdbppcm-srv/01")
+        deviceAdm.RestartServer()
+    except:
+        print("reset_conf_manager exception: " + str(sys.exc_info()[0]))
+
+    sleep(sleep_time)
+
 
 if configure_fail_count > 0:
     exit(-1)

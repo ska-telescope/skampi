@@ -9,53 +9,38 @@ from time import sleep
 def test_check_subarray_state_change_sequence(create_centralnode_proxy, create_subarray1_proxy,
                                               create_cspsubarray1_proxy, create_sdpsubarray1_proxy):
     create_centralnode_proxy.StartUpTelescope()
+    sleep(3)
 
-    watch_subarray1_state = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State")
-    subarray1_state = watch_subarray1_state.get_value_when_changed()
+    assign_res_test_input = '{"subarrayID":1,"dish":{"receptorIDList":["0001","0002"]}}'
+    create_centralnode_proxy.AssignResources(assign_res_test_input)
 
-    if subarray1_state == "OFF":
-        assign_res_test_input = '{"subarrayID":1,"dish":{"receptorIDList":["0001","0002"]}}'
-        create_centralnode_proxy.AssignResources(assign_res_test_input)
+    sleep(3)
 
-        watch_subarray1_state = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State")
-        subarray1_state = watch_subarray1_state.get_value_when_changed()
+    # When ReleaseResources command is invoked, subarraynode should change its state to "OFF"
+    # *after* cspsubarray and sdpsubarray change their state to "OFF"
+    release_res_test_input = '{"subarrayID":1,"releaseALL":true,"receptorIDList":[]}'
+    create_centralnode_proxy.ReleaseResources(release_res_test_input)
+    logging.info("cspsubarray1 state: " + resource('mid_csp/elt/subarray_01').get("State"))
+    logging.info("sdpsubarray1 state: " + resource('mid_sdp/elt/subarray_1').get("State"))
+    logging.info("subarray1 state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
 
-        if subarray1_state == "ON":
-            release_res_test_input = '{"subarrayID":1,"releaseALL":true,"receptorIDList":[]}'
-            create_centralnode_proxy.ReleaseResources(release_res_test_input)
-            # When ReleaseResources command is invoked, subarraynode should change its state to "OFF"
-            # *after* cspsubarray and sdpsubarray change their state to "OFF"
-            logging.info("cspsubarray1 state: " + resource('mid_csp/elt/subarray_01').get("State"))
-            logging.info("sdpsubarray1 state: " + resource('mid_sdp/elt/subarray_1').get("State"))
-            logging.info("subarray1 state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
+    assert ((create_cspsubarray1_proxy.state() == DevState.OFF or
+             create_sdpsubarray1_proxy.state() == DevState.OFF) and
+            create_subarray1_proxy.state() == DevState.ON)
 
-            print("SubarrayState before assert 1: ", subarray1_state)
-            logging.info("subarray1 state before assert 1: " + resource('ska_mid/tm_subarray_node/1').get("State"))
+    sleep(3)
+    logging.info("cspsubarray1 state: " + resource('mid_csp/elt/subarray_01').get("State"))
+    logging.info("sdpsubarray1 state: " + resource('mid_sdp/elt/subarray_1').get("State"))
+    logging.info("subarray1 state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
 
-            assert ((create_cspsubarray1_proxy.state() == DevState.OFF or
-                     create_sdpsubarray1_proxy.state() == DevState.OFF) and
-                    create_subarray1_proxy.state() == DevState.ON)
+    assert ((create_cspsubarray1_proxy.state() == DevState.OFF or
+             create_sdpsubarray1_proxy.state() == DevState.OFF) and
+            create_subarray1_proxy.state() == DevState.OFF)
 
-            print("SubarrayState after assert 1: ", subarray1_state)
-            logging.info("subarray1 after assert 1: " + resource('ska_mid/tm_subarray_node/1').get("State"))
 
-            watch_cspsubarray1_state = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State")
-            cspsubarray1_state = watch_cspsubarray1_state.get_value_when_changed()
-
-            logging.info("cspsubarray1 state: " + resource('mid_csp/elt/subarray_01').get("State"))
-            logging.info("sdpsubarray1 state: " + resource('mid_sdp/elt/subarray_1').get("State"))
-            logging.info("subarray1 state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
-
-            if cspsubarray1_state == "OFF":
-                assert ((create_cspsubarray1_proxy.state() == DevState.OFF or
-                         create_sdpsubarray1_proxy.state() == DevState.OFF) and
-                        create_subarray1_proxy.state() == DevState.OFF)
-
-    watch_subarray1_state = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State")
+def test_standby(create_centralnode_proxy, create_subarray1_proxy):
+    sleep(2)
     create_centralnode_proxy.StandByTelescope()
-    while subarray1_state != "DISABLE":
-        subarray1_state = watch_subarray1_state.get_value_when_changed()
-
-    print("SubarrayState at the end: ", subarray1_state)
-    logging.info("subarray1 state at end: " + resource('ska_mid/tm_subarray_node/1').get("State"))
-
+    sleep(3)
+    result = create_subarray1_proxy.state()
+    assert result == DevState.DISABLE

@@ -234,24 +234,6 @@ print-debug-info:
     paths:
     - public
 
-reset-archiver-and-test:
-  stage: test
-  retry: 2
-  tags:
-  - docker-executor
-  script:
-  - kubectl delete pod -n $KUBE_NAMESPACE $(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' -n $KUBE_NAMESPACE  | grep archiver) 
-  - make deploy HELM_CHART=archiver
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make k8s_test && [ -f "build/report.xml" ]
-  environment:
-    name: $DEPLOY_ENVIRONMENT
-    url: $DEPLOY_URL
-  when: manual
-  only:
-    refs:
-      - master
-
 xray_report:
   stage: post_test
   tags:

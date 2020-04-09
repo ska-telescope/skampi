@@ -5,7 +5,7 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
-TEST_ARTIFACTS = pytest.stdout report.xml report.json cucumber.json pytest-logs.txt
+TEST_ARTIFACTS = report.xml report.json cucumber.json pytest-logs.txt
 
 all: test
 
@@ -14,10 +14,10 @@ all: test
 # copy TEST_ARTIFACTS into build directory
 # exit with same exit code as test run
 test:install
-	@mkdir -p build
+	@mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \
-	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest | tee pytest.stdout; \
-		status=$$?; \
+	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest | tee pytest.stdout && \
+		status=$$? && \
 		$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
 		exit $$status
 

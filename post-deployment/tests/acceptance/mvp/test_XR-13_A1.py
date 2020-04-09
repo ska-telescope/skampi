@@ -62,7 +62,7 @@ def check_subarray_composition(result):
     #check that this is reflected correctly on TMC side
     assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
     #check that this is reflected correctly on CSP side
-    assert_that(resource('mid_csp/elt/subarray_01').get('receptors')).is_equal_to((1, 2, 3, 4))
+    assert_that(resource('mid_csp/elt/subarray_01').get('assignedReceptors')).is_equal_to((1, 2, 3, 4))
     assert_that(resource('mid_csp/elt/master').get('receptorMembership')).is_equal_to((1, 1, 1, 1))
     #TODO need to find a better way of testing sets with sets
     #assert_that(set(resource('mid_csp/elt/master').get('availableReceptorIDs'))).is_subset_of(set((4,3)))

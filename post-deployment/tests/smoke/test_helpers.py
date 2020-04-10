@@ -12,8 +12,10 @@ from assertpy import assert_that
 from resources.test_support.helpers import resource, take_subarray, waiter, subscriber, watch
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from resources.test_support.helpers import *
+import pytest
 
 class TestResource():
+    @pytest.mark.fast
     def test_init(self):
         """
         Test the __init__ method.
@@ -23,6 +25,7 @@ class TestResource():
         assert item_under_test.device_name == device_name
 
     @mock.patch('resources.test_support.helpers.DeviceProxy')
+    @pytest.mark.fast
     def get_attribute_info_ex(self, name, data_type):
         """
         Return AttributeInfoEx object.
@@ -33,6 +36,7 @@ class TestResource():
         return attr_info_ex
 
     @mock.patch('resources.test_support.helpers.DeviceProxy')
+    @pytest.mark.fast
     def test_get_attr_enum(self, mock_proxy):
         """
         Test the get method.
@@ -54,6 +58,7 @@ class TestResource():
         assert item_under_test.get('enumAttribute') == attr_info_ex.name
 
     @mock.patch('resources.test_support.helpers.DeviceProxy')
+    @pytest.mark.fast
     def test_get_attr_not_found(self, mock_proxy):
         """
         Test the get method.
@@ -71,6 +76,7 @@ class TestResource():
 
 @mock.patch('resources.test_support.helpers.SubArray.allocate')
 @mock.patch('resources.test_support.helpers.waiter')
+@pytest.mark.fast
 def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
     allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
     take_subarray(1).to_be_composed_out_of(4)
@@ -86,6 +92,7 @@ def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
 @mock.patch('resources.test_support.helpers.watch')
 @mock.patch('resources.test_support.helpers.resource')
 @mock.patch('resources.test_support.helpers.subscriber')
+@pytest.mark.fast
 def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     the_waiter = waiter()
     the_waiter.set_wait_for_tearing_down_subarray()
@@ -94,6 +101,7 @@ def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     #assert_that(watch_mock.call_count).is_equal_to(5+4)
     the_waiter.wait()
 
+@pytest.mark.fast
 def test_wait_for_change():
     resource_mock = Mock(spec=resource)
     resource_mock.device_name = "test_device"
@@ -105,6 +113,7 @@ def test_wait_for_change():
     result = watch.wait_until_value_changed(10)
     assert_that(result).is_equal_to(9)
 
+@pytest.mark.fast
 def test_state_changer():
     resource_mock = Mock(spec=resource)
     resource_mock.device_name = "test_device" 

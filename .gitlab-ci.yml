@@ -3,12 +3,13 @@ image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
 variables:
   DEPLOY_ENVIRONMENT: "test"
   CT_TEST_ENVIRONMENT: "ct-test"
-  KUBE_NAMESPACE: "integration"
-  INGRESS_HOST: "integration.engageska-portugal.pt"
-  DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
+  KUBE_NAMESPACE: "ncra"
+  INGRESS_HOST: "ncra.engageska-portugal.pt"
+  DEPLOY_URL: "http://ncra.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
   VALUES: "pipeline.yaml"
+  HELM_RELEASE: "ncra"
 
 stages:
   - static_analysis
@@ -21,8 +22,7 @@ stages:
 
 .pip_install_test_requirements: &pip_install_test_requirements |-
   cd pre-deployment
-  mv test-harness/* .
-  ls -la
+  mv test-harness/* . 
   pip3 install -r test-requirements.txt
 
 .teardown_k8s_test_resources: &teardown_k8s_test_resources |-
@@ -151,7 +151,7 @@ delete test environment:
     name: $DEPLOY_ENVIRONMENT
   only:
     refs:
-      - master
+      - update_images_tmc_csp
     variables:
       - $DELETE == "true"
 
@@ -168,7 +168,7 @@ deploy test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - master
+      - update_images_tmc_csp
 
 k8s_test test environment:
   stage: test
@@ -182,7 +182,7 @@ k8s_test test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - master
+      - update_images_tmc_csp
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths: 
@@ -202,7 +202,7 @@ smoketest test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - master
+      - update_images_tmc_csp
 
 .run-debug-cmd:
   stage: debug
@@ -235,24 +235,6 @@ print-debug-info:
   artifacts:
     paths:
     - public
-
-reset-archiver-and-test:
-  stage: test
-  retry: 2
-  tags:
-  - docker-executor
-  script:
-  - kubectl delete pod -n $KUBE_NAMESPACE $(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' -n $KUBE_NAMESPACE  | grep archiver) 
-  - make deploy HELM_CHART=archiver
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make k8s_test && [ -f "build/report.xml" ]
-  environment:
-    name: $DEPLOY_ENVIRONMENT
-    url: $DEPLOY_URL
-  when: manual
-  only:
-    refs:
-      - master
 
 xray_report:
   stage: post_test

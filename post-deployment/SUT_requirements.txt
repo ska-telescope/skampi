@@ -1,0 +1,3 @@
+cdm-shared-library
+observation-execution-tool==0.4.3
+--extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple

@@ -73,6 +73,7 @@ def test_configure_subarray():
 @given("I am accessing the console interface for the OET")
 def start_up():
     the_waiter = waiter()
+    the_waiter.wait(timeout=100)
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
     the_waiter.wait()
@@ -82,6 +83,8 @@ def start_up():
 
 @given("sub-array is in IDLE state")
 def assign():
+    the_waiter = waiter()
+    the_waiter.wait(timeout=100)
     take_subarray(1).to_be_composed_out_of(4)
     assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
     assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
@@ -91,17 +94,13 @@ def assign():
     assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
     receptorIDList_val = watch_receptorIDList.get_value_when_changed()
     assert_that(receptorIDList_val == [(1,2,3,4)])
-    
-    # watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
-    # result['response'] = SubArray(1).allocate(ResourceAllocation(dishes=[Dish(1), Dish(2)]))
-    # logging.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
-    # watch_receptorIDList.wait_until_value_changed()
-    # return result
-
 
 @when("I call the configure scan execution instruction")
 def config():
-    timeout = 60
+    # timeout = 60
+    the_waiter = waiter()
+    the_waiter.wait(timeout=100)
+
     # update the ID of the config data so that there is no duplicate configs send during tests
     file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)
@@ -115,8 +114,8 @@ def config():
         logging.info("Json is" + str(file))
         #oet.command.SCAN_ID_GENERATOR.next()
     except Exception as ex_obj:
-        print("Exception ---------:", ex_obj)
-        LOGGER.info("configure from file timed out after %s", timeout)
+        LOGGER.info("Exception is:", ex_obj)
+        # LOGGER.info("configure from file timed out after %s", timeout)
 
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")

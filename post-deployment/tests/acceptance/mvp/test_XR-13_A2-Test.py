@@ -112,9 +112,10 @@ def config():
         logging.info("Configuring the subarray")
         #oet.command.SCAN_ID_GENERATOR.next()
         SubArray(1).configure_from_file(file, with_processing = False)
-        logging.info("Json is", +str(file))
+        logging.info("Json is" + str(file))
         #oet.command.SCAN_ID_GENERATOR.next()
-    except:
+    except Exception as ex_obj:
+        print("Exception ---------:", ex_obj)
         LOGGER.info("configure from file timed out after %s", timeout)
 
 

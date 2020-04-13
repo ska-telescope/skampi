@@ -31,7 +31,7 @@ def run_context():
 
     return RunContext(*values)
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="class")
 def create_centralnode_proxy():
     centralnode_proxy = DeviceProxy("ska_mid/tm_central/central_node")
     return centralnode_proxy

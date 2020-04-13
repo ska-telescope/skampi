@@ -15,6 +15,7 @@ def test_init():
   evt_subscriber_device_proxy.Start()
   sleep(3) # the polling
 
+
 def configure_attribute(attribute):
   conf_manager_proxy = DeviceProxy("archiving/hdbpp/confmanager01")
   

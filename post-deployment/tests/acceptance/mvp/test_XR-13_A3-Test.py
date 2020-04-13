@@ -67,6 +67,7 @@ def test_subarray_scan():
 @given("I am accessing the console interface for the OET")
 def start_up():
     the_waiter = waiter()
+    the_waiter.wait(timeout=100)
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
     the_waiter.wait()
@@ -74,8 +75,9 @@ def start_up():
 
     take_subarray(1).to_be_composed_out_of(4)
     assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
-    # assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
-    # assert_that(resource('mid_sdp/elt/subarray_1').get("obsState")).is_equal_to("IDLE")
+    assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
+    assert_that(resource('mid_sdp/elt/subarray_1').get("obsState")).is_equal_to("IDLE")
+
     watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
     assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
     receptorIDList_val = watch_receptorIDList.get_value_when_changed()
@@ -83,60 +85,61 @@ def start_up():
 
 @given("Sub-array is in READY state")
 def config():
-    timeout = 60
+    #timeout = 60
+    the_waiter = waiter()
+    the_waiter.wait(timeout=100)
     # update the ID of the config data so that there is no duplicate configs send during tests
     file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)
     # set a timout mechanism in case a component gets stuck in executing
-    signal.signal(signal.SIGALRM, handlde_timeout)
-    signal.alarm(timeout)  # wait for seconds and timeout if still stick
+    #signal.signal(signal.SIGALRM, handlde_timeout)
+    #signal.alarm(timeout)  # wait for seconds and timeout if still stick
     try:
-        SubArray(1).configure_from_file(file, False)
-    except:
-        LOGGER.info("configure from file timed out after %s", timeout)
+        logging.info("Configuring the subarray")
+        # oet.command.SCAN_ID_GENERATOR.next()
+        SubArray(1).configure_from_file(file, with_processing=False)
+        logging.info("Json is" + str(file))
+    except Exception as ex_obj:
+        LOGGER.info("Exception is:", ex_obj)
+        #LOGGER.info("configure from file timed out after %s", timeout)
 
 def check_state():
-    watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
-     # check that the TMC report subarray as being in the ON state and obsState = READY
+    # check that the TMC report subarray as being in the ON state and obsState = IDLE
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    # check that the CSP report subarray as being in the ON state and obsState = READY
-    watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
+    # check that the CSP report subarray as being in the ON state and obsState = IDLE
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
     logging.info("CSPsubarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
-    # check that the SDP report subarray as being in the ON state and obsState = READY
-    watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
+    # check that the SDP report subarray as being in the ON state and obsState = IDLE
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
     logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
 
-
 @when("I call the execution of the scan instruction")
 def scan():
-    timeout = 20
+    #timeout = 20
+    the_waiter = waiter()
+    the_waiter.wait(timeout=100)
     # set a timout mechanism in case a component gets stuck in executing
-    signal.signal(signal.SIGALRM, handlde_timeout)
-    signal.alarm(timeout)  # wait for seconds and timeout if still stick
+    #signal.signal(signal.SIGALRM, handlde_timeout)
+    #signal.alarm(timeout)  # wait for seconds and timeout if still stick
     try:
-        SubArray(1).scan(20.0)
-    except:
-        LOGGER.info("Scan from file timed out after %s", timeout)
-
+        SubArray(1).scan(10.0)
+        the_waiter.wait(timeout=50)
+    except Exception as ex_obj:
+        LOGGER.info("Exception is:", ex_obj)
 
 @then("Sub-array is in SCANNING state")
 def check_sub_state():
     # check that the TMC report subarray as being in the ON state and obsState = SCANNING
-    watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
     #logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
     # check that the CSP report subarray as being in the ON state and obsState = SCANNING
-    watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
     #logging.info("subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState")
     # check that the SDP report subarray as being in the ON state and obsState = SCANNING
-    watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
     #logging.info("subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
-    
+
 @then("After SCANNING Sub-array is moved to READY state")
 def check_ready_state():
     # check that the TMC report subarray as being in the ON state and obsState = SCANNING

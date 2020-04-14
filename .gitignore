@@ -39,3 +39,9 @@ report.json
 test-harness/cucumber.json
 charts/tango-base/secrets/tls.key
 charts/tango-base/secrets/tls.crt
+post-deployment/skampi.egg-info/
+post-deployment/dist/
+post-deployment/resources/test_data/polaris_b1_no_cam.json
+post-deployment/build
+post-deployment/.pytest_cache
+post-deployment/resources/test_data/polaris_b1_no_cam.json

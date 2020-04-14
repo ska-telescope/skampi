@@ -34,7 +34,7 @@ data:
 kind: ConfigMap
 metadata:
   name: jupyter-configmap
-  namespace: integration
+  namespace: {{ .Release.Namespace }}
 ---
 apiVersion: v1
 kind: Service
@@ -59,7 +59,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: jupyter-storage-pv
+  name: jupyter-storage-pv-{{ .Release.Namespace }}
   namespace: {{ .Release.Namespace }}
   labels:
     type: jupyter_storage
@@ -71,12 +71,12 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "{{ .Values.jupyter.storage.hostPath }}"
+    path: /data/jupyter-{{ .Release.Namespace }}-{{ .Release.Name }}/
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: jupyter-storage-pvc
+  name: jupyter-storage-pvc-{{ .Release.Namespace }}
   namespace: {{ .Release.Namespace }}
   labels:
     type: jupyter_storage
@@ -137,7 +137,7 @@ spec:
               path: venv.sh
         - name: storage
           persistentVolumeClaim:
-            claimName: jupyter-storage-pvc
+            claimName: jupyter-storage-pvc-{{ .Release.Namespace }}
         - name: config
           configMap:
             name: jupyter-configmap

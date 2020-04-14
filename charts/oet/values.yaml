@@ -8,8 +8,8 @@ ssh:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh
-    tag: 0.4.0
-    pullPolicy: Always
+    tag: 0.4.4
+    pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -31,8 +31,8 @@ itango:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh
-    tag: 0.4.0
-    pullPolicy: Always
+    tag: 0.4.4
+    pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -53,8 +53,8 @@ rest:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool
-    tag: 0.4.0
-    pullPolicy: Always
+    tag: 0.4.4
+    pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -80,8 +80,8 @@ jupyter:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-jupyter
-    tag: 0.3.0
-    pullPolicy: Always
+    tag: 0.4.4
+    pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
     initialDelaySeconds: 0

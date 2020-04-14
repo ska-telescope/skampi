@@ -3,22 +3,23 @@
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
-IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:latest
+IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.2
 # Test runner - run to completion job in K8s
-TEST_RUNNER = test-makefile-runner-only-once-$(KUBE_NAMESPACE)-$(HELM_RELEASE)
+TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(HELM_RELEASE)
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
 # capture the output of the test in a build folder inside the container 
 # 
 TANGO_HOST = databaseds-tango-base-$(HELM_RELEASE):10000
+MARK ?= fast
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
 # capture the output of the test in a tar file
 # stream the tar file base64 encoded to the Pod logs
 # 
-k8s_test = tar -c test-harness/ | \
+k8s_test = tar -c post-deployment/ | \
 		kubectl run $(TEST_RUNNER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
@@ -39,7 +40,7 @@ k8s_test = tar -c test-harness/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-k8s_test: smoketest ## test the application on K8s
+k8s_test: smoketest## test the application on K8s
 	$(call k8s_test,test); \
 	  status=$$?; \
 	  rm -fr build; \
@@ -95,6 +96,7 @@ tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.
 
 ##the following section is for developers requiring the testing pod to be instantiated with a volume mappig to skampi
 location:= $(shell pwd)
+PYTHONPATH=/app/skampi/:/app/skampi/post-deployment/
 #the port mapping to host
 hostPort ?= 2020
 testing-config := '{ "apiVersion": "v1","spec":{\
@@ -102,7 +104,7 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 						"image":"$(IMAGE_TO_TEST)",\
 						"name":"testing-container",\
 						"volumeMounts":[{\
-							"mountPath":"/home/tango/skampi/",\
+							"mountPath":"/app/skampi/",\
 							"name":"testing-volume"}],\
 						"env":[{\
           			 		"name": "TANGO_HOST",\
@@ -110,7 +112,9 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 							"name": "KUBE_NAMESPACE",\
           					"value": "$(KUBE_NAMESPACE)"},{\
         					"name": "HELM_RELEASE",\
-          					"value": "$(HELM_RELEASE)"}],\
+          					"value": "$(HELM_RELEASE)"},{\
+							"name": "PYTHONPATH",\
+							"value": "$(PYTHONPATH)"}],\
 						"ports":[{\
 							"containerPort":22,\
 							"hostPort":$(hostPort)}]}],\
@@ -132,7 +136,7 @@ delete_testing_pod:
 	@kubectl delete pod testing-pod --namespace $(KUBE_NAMESPACE)
 
 attach_testing_pod:
-	@kubectl exec -it testing-pod /bin/bash
+	@kubectl exec -it testing-pod --namespace $(KUBE_NAMESPACE) /bin/bash
 
 location:= $(shell pwd)
 

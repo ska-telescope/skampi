@@ -76,6 +76,14 @@ spec:
       value: databaseds-tango-base-{{ .Release.Name }}:10000
     - name: HdbManager
       value: "archiving/hdbpp/confmanager01"
+    livenessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      exec:
+        command:
+        - sh
+        - -c
+        - "tango_admin --ping-device 'archiving/hdbpp/confmanager01'"
 
   - name: hdbpp-es
     image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"

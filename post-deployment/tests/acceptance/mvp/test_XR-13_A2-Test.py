@@ -11,7 +11,6 @@ import sys
 
 import time
 import signal
-
 import pytest
 import logging
 from time import sleep
@@ -66,7 +65,7 @@ def handlde_timeout():
 
 
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
-@pytest.mark.skip(reason="no way of currently testing this")
+#@pytest.mark.skip(reason="no way of currently testing this")
 def test_configure_subarray():
     """Configure Subarray."""
 

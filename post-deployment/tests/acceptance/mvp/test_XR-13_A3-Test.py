@@ -6,13 +6,7 @@ test_calc
 ----------------------------------
 Acceptance tests for MVP.
 """
-import sys
-import time
-import signal
 
-import pytest
-import logging
-from time import sleep
 import random
 from datetime import date
 from random import choice
@@ -29,6 +23,9 @@ LOGGER = logging.getLogger(__name__)
 
 import json
 
+#variable for scan duration
+duration = 0.0
+
 def update_file(file):
     with open(file, 'r') as f:
         data = json.load(f)
@@ -42,23 +39,13 @@ def update_file(file):
     scan_details = {}
     scan_details["fieldId"] = fieldid
     scan_details["intervalMs"] = intervalms
-
-    scanparams = {}
     scanParameters = {}
-
     scanParameters[random_no] = scan_details
-    scanparams = scanParameters
 
     data['sdp']['configure'][0]['scanParameters'] = scanParameters
 
     with open(file, 'w') as f:
         json.dump(data, f)
-
-
-def handlde_timeout():
-    print("operation timeout")
-    raise Exception("operation timeout")
-
 
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational imaging scan")
 def test_subarray_scan():
@@ -85,100 +72,67 @@ def start_up():
 
 @given("Sub-array is in READY state")
 def config():
-    #timeout = 60
     the_waiter = waiter()
     the_waiter.wait(timeout=100)
-    # update the ID of the config data so that there is no duplicate configs send during tests
     file = 'resources/test_data/polaris_b1_no_cam.json'
+    # update the ID of the config data so that there is no duplicate configs send during tests
     update_file(file)
-    # set a timout mechanism in case a component gets stuck in executing
-    #signal.signal(signal.SIGALRM, handlde_timeout)
-    #signal.alarm(timeout)  # wait for seconds and timeout if still stick
     try:
         logging.info("Configuring the subarray")
-        # oet.command.SCAN_ID_GENERATOR.next()
         SubArray(1).configure_from_file(file, with_processing=False)
         logging.info("Json is" + str(file))
     except Exception as ex_obj:
         LOGGER.info("Exception is:", ex_obj)
-        #LOGGER.info("configure from file timed out after %s", timeout)
 
 def check_state():
-    # check that the TMC report subarray as being in the ON state and obsState = IDLE
+    # check that the TMC report subarray as being in the ON state and obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    # check that the CSP report subarray as being in the ON state and obsState = IDLE
+    # check that the CSP report subarray as being in the ON state and obsState = READY
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
     logging.info("CSPsubarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
-    # check that the SDP report subarray as being in the ON state and obsState = IDLE
+    # check that the SDP report subarray as being in the ON state and obsState = READY
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
     logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
 
+@given("Duration of scan is TBD seconds")
+def scan_duration():
+    global duration
+    duration = 10.0
+
 @when("I call the execution of the scan instruction")
 def scan():
-    #timeout = 20
     the_waiter = waiter()
     the_waiter.wait(timeout=100)
-    # set a timout mechanism in case a component gets stuck in executing
-    #signal.signal(signal.SIGALRM, handlde_timeout)
-    #signal.alarm(timeout)  # wait for seconds and timeout if still stick
+    global duration #variable for scan duration
     try:
-        SubArray(1).scan(10.0)
-        the_waiter.wait(timeout=50)
+        SubArray(1).scan(duration)
     except Exception as ex_obj:
         LOGGER.info("Exception is:", ex_obj)
 
-@then("Sub-array is in SCANNING state")
-def check_sub_state():
-    # check that the TMC report subarray as being in the ON state and obsState = SCANNING
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
-    #logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    # check that the CSP report subarray as being in the ON state and obsState = SCANNING
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
-    #logging.info("subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState")
-    # check that the SDP report subarray as being in the ON state and obsState = SCANNING
-    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
-    #logging.info("subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
-
 @then("After SCANNING Sub-array is moved to READY state")
 def check_ready_state():
-    # check that the TMC report subarray as being in the ON state and obsState = SCANNING
-    #watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+    # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    # check that the CSP report subarray as being in the ON state and obsState = SCANNING
-    #watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
+    # check that the CSP report subarray as being in the obsState = READY
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
     logging.info("CSP-subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
-    # check that the SDP report subarray as being in the ON state and obsState = SCANNING
-    #watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
+    # check that the SDP report subarray as being in the obsState = READY
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
     logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
 
-def teardown_function(function):
-     """ teardown any state that was previously setup with a setup_function
-     call.
-     """
+
+@then("observation ends after TBD seconds")
+def teardown_function():
      the_waiter = waiter()
      if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
-         LOGGER.info("tearing down configured subarray (READY)")
+         LOGGER.info("tearing down Configured and  Scan subarray (READY)")
          the_waiter.set_wait_for_ending_SB()
          SubArray(1).end_sb()
          the_waiter.wait()
          LOGGER.info(the_waiter.logs)
          the_waiter.set_wait_for_tearing_down_subarray()
-         SubArray(1).deallocate()
-         the_waiter.wait()
-         LOGGER.info(the_waiter.logs)
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
-         LOGGER.info("tearing down scanning subarray")
-         restart_subarray(1)
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-         LOGGER.info("tearing down configuring subarray")
-         restart_subarray(1)
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
-         the_waiter.set_wait_for_tearing_down_subarray()
-         LOGGER.info("tearing down composed subarray (IDLE)")
          SubArray(1).deallocate()
          the_waiter.wait()
          LOGGER.info(the_waiter.logs)

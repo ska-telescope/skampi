@@ -4,6 +4,7 @@ URL="https://confluence.skatelescope.org/rest/api/content/"
 page_name="Latest+Version+-+PI6"
 humane_page_name="Latest Version - PI6"
 Space="SWSI"
+KUBE_NAMESPACE=integration
 
 HELM_RELEASE=test
 KUBE_NAMESPACE=integration
@@ -15,7 +16,7 @@ path="$path{range .spec.containers[*]}"
 path="$path{'<tr><td></td><td>'}{.name}{'</td><td>'}{.image}{'</td></tr>'}"
 path="$path{end}"
 path="$path{end}{'</tbody></table></p>'}"
-content=$(kubectl get pods -l release=$HELM_RELEASE -n $KUBE_NAMESPACE -o jsonpath="$path")
+content=$(kubectl get pods -n $KUBE_NAMESPACE -o jsonpath="$path")
 
 
 ##get the page id

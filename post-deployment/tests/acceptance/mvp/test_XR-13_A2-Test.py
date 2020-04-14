@@ -48,7 +48,7 @@ def test_configure_subarray():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
-    # the_waiter = waiter()
+    the_waiter = waiter()
     # the_waiter.wait(timeout=100)
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()

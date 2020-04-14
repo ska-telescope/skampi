@@ -8,6 +8,9 @@ Acceptance tests for MVP.
 """
 
 import random
+from concurrent import futures
+from time import sleep
+import threading
 from datetime import date
 from random import choice
 from assertpy import assert_that
@@ -46,6 +49,21 @@ def update_file(file):
 
     with open(file, 'w') as f:
         json.dump(data, f)
+
+# def thread_scan():
+#     global duration
+#     duration = 10.0
+#     try:
+#         while (duration) = (duration-1):
+#             TMC_subarray_obstate = resource('ska_mid/tm_subarray_node/1').get("obsState")
+#             SDP_subarray_obstate = resource('mid_sdp/elt/subarray_1').get("obsState")
+#             CSP_subarray_obstate = resource('mid_csp/elt/subarray_01').get("obsState")
+#     except Exception as exc:
+#         LOGGER.info("Exception in thread " +str(exc))
+
+def send_scan(duration):
+    SubArray(1).scan(duration)
+
 
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational imaging scan")
 def test_subarray_scan():
@@ -95,23 +113,35 @@ def check_state():
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
     logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
 
-@given("Duration of scan is TBD seconds")
+
+@given("duration of scan is 10 seconds")
 def scan_duration():
     global duration
     duration = 10.0
 
-@when("I call the execution of the scan instruction")
-def scan():
-    the_waiter = waiter()
-    the_waiter.wait(timeout=100)
-    global duration #variable for scan duration
-    try:
-        SubArray(1).scan(duration)
-    except Exception as ex_obj:
-        LOGGER.info("Exception is:", ex_obj)
 
-@then("After SCANNING Sub-array is moved to READY state")
+@when("I call the execution of the scan instruction")
+def invoke_scan_command():
+    executor = futures.ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(send_scan, 10.0)
+
+
+@then("Sub-array changes to a SCANNING state")
 def check_ready_state():
+    # check that the TMC report subarray as being in the obsState = READY
+    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
+    logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
+    # check that the CSP report subarray as being in the obsState = READY
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
+    logging.info("CSP-subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
+    # check that the SDP report subarray as being in the obsState = READY
+    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
+    logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+
+
+@then("observation ends after 10 seconds as indicated by returning to READY state")
+def check_running_state():
+    sleep(10)
     # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
@@ -122,22 +152,36 @@ def check_ready_state():
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
     logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
 
+def teardown_function(function):
+    """ teardown any state that was previously setup with a setup_function
+    call.
+    """
+    the_waiter = waiter()
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+        print("inside IDLE")
+        the_waiter.set_wait_for_tearing_down_subarray()
+        LOGGER.info("tearing down composed subarray (IDLE)")
+        SubArray(1).deallocate()
+        the_waiter.wait()
+        LOGGER.info(the_waiter.logs)
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
+        print("inside READY")
+        LOGGER.info("tearing down configured subarray (READY)")
+        the_waiter.set_wait_for_ending_SB()
+        SubArray(1).end_sb()
+        the_waiter.wait()
+        LOGGER.info(the_waiter.logs)
+        the_waiter.set_wait_for_tearing_down_subarray()
+        SubArray(1).deallocate()
+        the_waiter.wait()
+        LOGGER.info(the_waiter.logs)
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+        print("inside CONFIGURING")
+        LOGGER.info("tearing down configuring subarray")
+        restart_subarray(1)
+    the_waiter.set_wait_for_going_to_standby()
+    SKAMid().standby()
+    LOGGER.info("standby command is executed on telescope")
+    the_waiter.wait()
+    LOGGER.info(the_waiter.logs)
 
-@then("observation ends after TBD seconds")
-def teardown_function():
-     the_waiter = waiter()
-     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
-         LOGGER.info("tearing down Configured and  Scan subarray (READY)")
-         the_waiter.set_wait_for_ending_SB()
-         SubArray(1).end_sb()
-         the_waiter.wait()
-         LOGGER.info(the_waiter.logs)
-         the_waiter.set_wait_for_tearing_down_subarray()
-         SubArray(1).deallocate()
-         the_waiter.wait()
-         LOGGER.info(the_waiter.logs)
-     the_waiter.set_wait_for_going_to_standby()
-     SKAMid().standby()
-     LOGGER.info("standby command is executed on telescope")
-     the_waiter.wait()
-     LOGGER.info(the_waiter.logs)

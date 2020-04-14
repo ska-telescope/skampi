@@ -5,7 +5,7 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
-TEST_ARTIFACTS = setup_py_test.stdout report.xml report.json cucumber.json pytest-logs.txt
+TEST_ARTIFACTS = report.xml report.json cucumber.json pytest-logs.txt
 
 all: test
 
@@ -13,10 +13,11 @@ all: test
 # execute the python tests
 # copy TEST_ARTIFACTS into build directory
 # exit with same exit code as test run
-test:
-	@mkdir -p build
-	python setup.py test | tee setup_py_test.stdout; \
-		status=$$?; \
+test:install
+	@mkdir -p build && \
+	find . -name "*.pyc" -type f -delete && \
+	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest | tee pytest.stdout && \
+		status=$$? && \
 		$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
 		exit $$status
 
@@ -25,7 +26,6 @@ test:
 install:
 	pip3 install -r test_requirements.txt
 
-pytest:
-	py.test
+
 
 

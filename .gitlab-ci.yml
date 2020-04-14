@@ -3,12 +3,13 @@ image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
 variables:
   DEPLOY_ENVIRONMENT: "test"
   CT_TEST_ENVIRONMENT: "ct-test"
-  KUBE_NAMESPACE: "integration"
-  INGRESS_HOST: "integration.engageska-portugal.pt"
-  DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
+  KUBE_NAMESPACE: "ncra"
+  INGRESS_HOST: "ncra.engageska-portugal.pt"
+  DEPLOY_URL: "http://ncra.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
   VALUES: "pipeline.yaml"
+  HELM_RELEASE: "ncra"
 
 stages:
   - static_analysis
@@ -21,6 +22,7 @@ stages:
 
 .pip_install_test_requirements: &pip_install_test_requirements |-
   cd pre-deployment
+  mv test-harness/* .
   pip3 install -r test-requirements.txt
 
 .teardown_k8s_test_resources: &teardown_k8s_test_resources |-
@@ -28,7 +30,7 @@ stages:
   kubectl delete namespace ci-$CI_JOB_ID || true
   helm ls | grep -E '(FAILED|DELETED)' | awk '{print $1}' | xargs -I'%N' helm delete --purge \%N
 
-before_script: 
+before_script:
   - export HELM_TILLER_LOGS_DIR=$PWD/tiller.log
 
 helm-lint:
@@ -149,7 +151,7 @@ delete test environment:
     name: $DEPLOY_ENVIRONMENT
   only:
     refs:
-      - master
+      - update_images_tmc_csp
     variables:
       - $DELETE == "true"
 
@@ -158,7 +160,7 @@ deploy test environment:
   tags:
   - docker-executor
   script:
-  - make deploy_all 
+  - make deploy_all
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   retry: 2
   environment:
@@ -166,7 +168,7 @@ deploy test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - master
+      - update_images_tmc_csp
 
 k8s_test test environment:
   stage: test
@@ -180,10 +182,10 @@ k8s_test test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - master
+      - update_images_tmc_csp
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths: 
+    paths:
       - "build/"
     reports:
       junit: build/report.xml
@@ -200,7 +202,7 @@ smoketest test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - master
+      - update_images_tmc_csp
 
 .run-debug-cmd:
   stage: debug
@@ -246,4 +248,3 @@ xray_report:
   when: always
   only: [master]
   retry: 2
-

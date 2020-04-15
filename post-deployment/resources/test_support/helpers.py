@@ -206,4 +206,3 @@ class waiter():
                 self.logs += wait.device_name + " changed " + str(wait.attr) + " from " + str(
                     wait.previous_value) + " to " + str(wait.current_value) + " after " + str(
                     timeout - result) + " tries ;"
-

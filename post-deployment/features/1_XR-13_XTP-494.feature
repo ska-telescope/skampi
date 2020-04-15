@@ -44,7 +44,8 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 
 
 	@XTP-428 @XTP-494
-	Given I am accessing the console interface for the OET
+	Scenario: A3-Test, Sub-array performs an observational imaging scan
+	    Given I am accessing the console interface for the OET
 		And Sub-array is in READY state
 		And duration of scan is 10 seconds
 		When I call the execution of the scan instruction

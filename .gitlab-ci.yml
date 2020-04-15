@@ -28,7 +28,7 @@ stages:
   kubectl delete namespace ci-$CI_JOB_ID || true
   helm ls | grep -E '(FAILED|DELETED)' | awk '{print $1}' | xargs -I'%N' helm delete --purge \%N
 
-before_script: 
+before_script:
   - export HELM_TILLER_LOGS_DIR=$PWD/tiller.log
 
 helm-lint:
@@ -158,7 +158,7 @@ deploy test environment:
   tags:
   - docker-executor
   script:
-  - make deploy_all 
+  - make deploy_all
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   retry: 2
   environment:
@@ -183,7 +183,7 @@ k8s_test test environment:
       - master
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths: 
+    paths:
       - "build/"
     reports:
       junit: build/report.xml

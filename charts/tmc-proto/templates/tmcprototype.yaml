@@ -54,7 +54,7 @@ spec:
       - sh
     args:
       - -c
-      - " /venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 01"
+      - "/venv/bin/DishMasterDS 01"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -66,7 +66,7 @@ spec:
       - sh
     args:
       - -c
-      - "/venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 02"
+      - "/venv/bin/DishMasterDS 02"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -78,7 +78,7 @@ spec:
       - sh
     args:
       - -c
-      - "/venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 03"
+      - "/venv/bin/DishMasterDS 03"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -90,7 +90,7 @@ spec:
       - sh
     args:
       - -c
-      - "/venv/bin/python /app/tmcprototype/DishMaster/DishMaster/DishMaster.py 04"
+      - "/venv/bin/DishMasterDS 04"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -104,7 +104,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_d0001/elt/master &&\
-             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 01"
+             /venv/bin/DishLeafNodeDS 01"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -118,7 +118,7 @@ spec:
     args:
       - -c
       - " retry --max=10 -- tango_admin --ping-device mid_d0002/elt/master &&\
-             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 02"
+             /venv/bin/DishLeafNodeDS 02"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -132,7 +132,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_d0003/elt/master &&\
-             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 03"
+             /venv/bin/DishLeafNodeDS 03"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -145,7 +145,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_d0004/elt/master &&\
-             /venv/bin/python /app/tmcprototype/DishLeafNode/DishLeafNode/DishLeafNode.py 04"
+             /venv/bin/DishLeafNodeDS 04"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -159,7 +159,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_01 &&\
-             /venv/bin/python /app/tmcprototype/CspSubarrayLeafNode/CspSubarrayLeafNode/CspSubarrayLeafNode.py 01"
+             /venv/bin/CspSubarrayLeafNodeDS 01"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -173,7 +173,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_02 &&\
-             /venv/bin/python /app/tmcprototype/CspSubarrayLeafNode/CspSubarrayLeafNode/CspSubarrayLeafNode.py 02"
+             /venv/bin/CspSubarrayLeafNodeDS 02"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -187,7 +187,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_03 &&\
-             /venv/bin/python /app/tmcprototype/CspSubarrayLeafNode/CspSubarrayLeafNode/CspSubarrayLeafNode.py 03"
+             /venv/bin/CspSubarrayLeafNodeDS 03"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -201,7 +201,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
-             /venv/bin/python /app/tmcprototype/CspMasterLeafNode/CspMasterLeafNode/CspMasterLeafNode.py 01"
+             /venv/bin/CspMasterLeafNodeDS 01"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -215,7 +215,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_1 &&\
-             /venv/bin/python /app/tmcprototype/SdpSubarrayLeafNode/SdpSubarrayLeafNode/SdpSubarrayLeafNode.py 01"
+             /venv/bin/SdpSubarrayLeafNodeDS 01"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -229,7 +229,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_2 &&\
-             /venv/bin/python /app/tmcprototype/SdpSubarrayLeafNode/SdpSubarrayLeafNode/SdpSubarrayLeafNode.py 02"
+             /venv/bin/SdpSubarrayLeafNodeDS 02"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -243,7 +243,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_3 &&\
-             /venv/bin/python /app/tmcprototype/SdpSubarrayLeafNode/SdpSubarrayLeafNode/SdpSubarrayLeafNode.py 03"
+             /venv/bin/SdpSubarrayLeafNodeDS 03"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -257,7 +257,7 @@ spec:
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/master &&\
-             /venv/bin/python /app/tmcprototype/SdpMasterLeafNode/SdpMasterLeafNode/SdpMasterLeafNode.py 01 01"
+             /venv/bin/SdpMasterLeafNodeDS 01"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -276,7 +276,7 @@ spec:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_subarray01 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray01 &&\
-             /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py sa1"
+             /venv/bin/SubarrayNodeDS sa1"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -295,7 +295,7 @@ spec:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_subarray02 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray02 &&\
-             /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py sa2"
+             /venv/bin/SubarrayNodeDS sa2"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -314,7 +314,7 @@ spec:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_subarray03 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray03 &&\
-             /venv/bin/python /app/tmcprototype/SubarrayNode/SubarrayNode/SubarrayNode.py sa3"
+             /venv/bin/SubarrayNodeDS sa3"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -332,7 +332,7 @@ spec:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/1 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/2 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/3 &&\
-             /venv/bin/python /app/tmcprototype/CentralNode/CentralNode/CentralNode.py 01"
+             /venv/bin/CentralNodeDS 01"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000

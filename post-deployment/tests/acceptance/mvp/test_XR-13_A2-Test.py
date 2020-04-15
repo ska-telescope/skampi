@@ -51,6 +51,10 @@ def update_file(file):
     with open(file, 'w') as f:
         json.dump(data, f)
 
+def handlde_timeout():
+    print("operation timeout")
+    raise Exception("operation timeout")
+
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 
 def test_configure_subarray():
@@ -59,7 +63,6 @@ def test_configure_subarray():
 @given("I am accessing the console interface for the OET")
 def start_up():
     the_waiter = waiter()
-    the_waiter.wait(timeout=100)
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
     the_waiter.wait()
@@ -81,17 +84,19 @@ def assign():
 
 @when("I call the configure scan execution instruction")
 def config():
-    the_waiter = waiter()
-    the_waiter.wait(timeout=100)
+    timeout = 60
     # update the ID of the config data so that there is no duplicate configs send during tests
     file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)
+    # set a timout mechanism in case a component gets stuck in executing
+    signal.signal(signal.SIGALRM, handlde_timeout)
+    signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
     try:
         logging.info("Configuring the subarray")
         SubArray(1).configure_from_file(file, with_processing = False)
         logging.info("Json is" + str(file))
-    except Exception as ex_obj:
-        LOGGER.info("Exception is:", ex_obj)
+    except:
+        LOGGER.info("configure from file timed out after %s",timeout)
 
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")

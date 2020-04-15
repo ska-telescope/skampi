@@ -49,7 +49,6 @@ def test_configure_subarray():
 @given("I am accessing the console interface for the OET")
 def start_up():
     the_waiter = waiter()
-    # the_waiter.wait(timeout=100)
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
     the_waiter.wait()
@@ -57,8 +56,6 @@ def start_up():
 
 @given("sub-array is in IDLE state")
 def assign():
-    # the_waiter = waiter()
-    # the_waiter.wait(timeout=100)
     take_subarray(1).to_be_composed_out_of(4)
     assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
     assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
@@ -71,9 +68,6 @@ def assign():
 
 @when("I call the configure scan execution instruction")
 def config():
-    # the_waiter = waiter()
-    # the_waiter.wait(timeout=100)
-
     # update the ID of the config data so that there is no duplicate configs send during tests
     file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)

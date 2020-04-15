@@ -16,6 +16,7 @@ from random import choice
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 import oet
+import pytest
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
@@ -60,6 +61,11 @@ def update_file(file):
 #             CSP_subarray_obstate = resource('mid_csp/elt/subarray_01').get("obsState")
 #     except Exception as exc:
 #         LOGGER.info("Exception in thread " +str(exc))
+
+
+@pytest.fixture
+def fixture():
+    return {}
 
 def send_scan(duration):
     SubArray(1).scan(duration)
@@ -115,19 +121,24 @@ def check_state():
 
 
 @given("duration of scan is 10 seconds")
-def scan_duration():
-    global duration
-    duration = 10.0
+def scan_duration(fixture):
+    fixture['duration'] = 10.0
+    return fixture
+    
 
 
 @when("I call the execution of the scan instruction")
-def invoke_scan_command():
+def invoke_scan_command(fixture):
     executor = futures.ThreadPoolExecutor(max_workers=1)
-    future = executor.submit(send_scan, 10.0)
+    fixture['watch_subarray_state'] = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+    future = executor.submit(send_scan, fixture['duration'])
+    fixture['future'] = future
+    return fixture
 
 
 @then("Sub-array changes to a SCANNING state")
-def check_ready_state():
+def check_ready_state(fixture):
+    fixture['watch_subarray_state'].wait_until_value_changed()
     # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
     logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
@@ -137,11 +148,12 @@ def check_ready_state():
     # check that the SDP report subarray as being in the obsState = READY
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
     logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+    return fixture
 
 
 @then("observation ends after 10 seconds as indicated by returning to READY state")
-def check_running_state():
-    sleep(10)
+def check_running_state(fixture):
+    fixture['future'].result(timeout=10)
     # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))

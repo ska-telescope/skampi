@@ -138,5 +138,23 @@ delete_testing_pod:
 attach_testing_pod:
 	@kubectl exec -it testing-pod --namespace $(KUBE_NAMESPACE) /bin/bash
 
+oet_podname = $(shell kubectl get pods -l app=rest-oet-$(HELM_RELEASE) -o=jsonpath='{..metadata.name}')
+sut_cdm_ver= $(shell kubectl exec -it $(oet_podname) pip list | grep "cdm-shared-library" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
+sut_cdm_cur_ver=$(shell grep "cdm-shared-library" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
+sut_oet_ver = $(shell kubectl exec -it $(oet_podname) pip list | grep "observation-execution-tool" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
+sut_oet_cur_ver=$(shell grep "observation-execution-tool" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
+
+check_oet_packages:
+	@echo "MVP is based on cdm-shared-library=$(sut_cdm_ver)"
+	@echo "Test are based on cdm-shared-library=$(sut_cdm_cur_ver)"
+	@if [ $(sut_cdm_ver) != $(sut_cdm_cur_ver) ] ; then \
+	echo "Warning: cdm-shared-library package for MVP is not the same as used for testing!"; \
+	fi
+	@echo "MVP is based on observation-execution-tool=$(sut_oet_ver)"
+	@echo "Test are based on observation-execution-tool=$(sut_oet_cur_ver)"
+	@if [ $(sut_oet_ver) != $(sut_oet_cur_ver) ] ; then \
+	echo "Warning: observation-execution-tool package for MVP is not the same as used for testing!"; \
+	fi
+
 location:= $(shell pwd)
 

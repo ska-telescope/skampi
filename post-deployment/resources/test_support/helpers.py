@@ -1,12 +1,14 @@
 import sys
 
-sys.path.append('/app')
-
 from tango import DeviceProxy, DevState, CmdArgType, EventType
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from time import sleep
 from numpy import ndarray
 import logging
+import json 
+from datetime import date
+import random
+from random import choice
 
 LOGGER = logging.getLogger(__name__)
 
@@ -207,3 +209,32 @@ class waiter():
                     wait.previous_value) + " to " + str(wait.current_value) + " after " + str(
                     timeout - result) + " tries ;"
 
+def update_file(file):
+    import os 
+    LOGGER.info("current dir:" + os.path.dirname(os.path.realpath(__file__)))
+    LOGGER.info("current working dir:" + os.getcwd())
+    try:
+        os.chdir('post-deployment')
+    except: # ignores if this is an error (assumes then that we are already on that directory)
+        pass
+    LOGGER.info("current working dir:" + os.getcwd())
+    with open(file, 'r') as f:
+        data = json.load(f)
+    random_no = random.randint(100, 999)
+    data['scanID'] = random_no
+    data['sdp']['configure'][0]['id'] = "realtime-" + date.today().strftime("%Y%m%d") + "-" + str(choice
+                                                                                                  (range(1, 10000)))
+    fieldid = 1
+    intervalms = 1400
+
+    scan_details = {}
+    scan_details["fieldId"] = fieldid
+    scan_details["intervalMs"] = intervalms
+    scanParameters = {}
+    scanParameters[random_no] = scan_details
+
+    data['sdp']['configure'][0]['scanParameters'] = scanParameters
+
+    with open(file, 'w') as f:
+        json.dump(data, f)
+    

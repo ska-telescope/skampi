@@ -24,7 +24,7 @@ import oet
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
-    map_dish_nr_to_device_name
+    map_dish_nr_to_device_name, update_file
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ LOGGER = logging.getLogger(__name__)
 import json
 
 
-def update_file(file):
+'''def update_file(file):
     with open(file, 'r') as f:
         data = json.load(f)
     random_no = random.randint(100, 999)
@@ -57,7 +57,7 @@ def update_file(file):
     print("data is", data)
 
     with open(file, 'w') as f:
-        json.dump(data, f)
+        json.dump(data, f)'''
 
 
 def handlde_timeout():

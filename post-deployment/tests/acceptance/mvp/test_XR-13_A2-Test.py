@@ -6,16 +6,8 @@ test_calc
 ----------------------------------
 Acceptance tests for MVP.
 """
-
-import sys
-
-
-import time
-import signal
-import pytest
-import logging
-from time import sleep
 import random
+import signal
 from datetime import date
 from random import choice
 from assertpy import assert_that
@@ -55,8 +47,8 @@ def handlde_timeout():
     print("operation timeout")
     raise Exception("operation timeout")
 
-@scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 
+@scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 def test_configure_subarray():
     """Configure Subarray."""
 
@@ -70,8 +62,6 @@ def start_up():
 
 @given("sub-array is in IDLE state")
 def assign():
-    the_waiter = waiter()
-    the_waiter.wait(timeout=100)
     take_subarray(1).to_be_composed_out_of(4)
     assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
     assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
@@ -88,16 +78,14 @@ def config():
     # update the ID of the config data so that there is no duplicate configs send during tests
     file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)
-    # set a timout mechanism in case a component gets stuck in executing
     signal.signal(signal.SIGALRM, handlde_timeout)
     signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
     try:
         logging.info("Configuring the subarray")
         SubArray(1).configure_from_file(file, with_processing = False)
         logging.info("Json is" + str(file))
-    except:
-        LOGGER.info("configure from file timed out after %s",timeout)
-
+    except Exception as ex_obj:
+        LOGGER.info("Exception is:", ex_obj)
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():

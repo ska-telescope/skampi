@@ -8,6 +8,7 @@ Acceptance tests for MVP.
 """
 
 import random
+import signal
 from concurrent import futures
 from time import sleep
 import threading
@@ -50,6 +51,11 @@ def update_file(file):
         json.dump(data, f)
 
 
+def handlde_timeout():
+    print("operation timeout")
+    raise Exception("operation timeout")
+
+
 @pytest.fixture
 def fixture():
     return {}
@@ -65,7 +71,6 @@ def test_subarray_scan():
 @given("I am accessing the console interface for the OET")
 def start_up():
     the_waiter = waiter()
-    the_waiter.wait(timeout=100)
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
     the_waiter.wait()
@@ -83,17 +88,17 @@ def start_up():
 
 @given("Sub-array is in READY state")
 def config():
-    the_waiter = waiter()
-    the_waiter.wait(timeout=100)
+    timeout = 80
     file = 'resources/test_data/polaris_b1_no_cam.json'
     # update the ID of the config data so that there is no duplicate configs send during tests
     update_file(file)
+    signal.signal(signal.SIGALRM, handlde_timeout)
+    signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
     try:
         logging.info("Configuring the subarray")
         SubArray(1).configure_from_file(file, with_processing=False)
-        logging.info("Json is" + str(file))
     except Exception as ex_obj:
-        LOGGER.info("Exception is:", ex_obj)
+        LOGGER.info("Exception in configure command:", ex_obj)
 
 def check_state():
     # check that the TMC report subarray as being in the ON state and obsState = READY
@@ -171,6 +176,9 @@ def teardown_function(function):
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         print("inside CONFIGURING")
         LOGGER.info("tearing down configuring subarray")
+        restart_subarray(1)
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
+        LOGGER.info("tearing down scanning subarray")
         restart_subarray(1)
     the_waiter.set_wait_for_going_to_standby()
     SKAMid().standby()

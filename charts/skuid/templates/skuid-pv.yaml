@@ -1,7 +1,7 @@
 {{ if .Values.skuid.enabled }}
 
 {{ if .Values.skuid.use_pv }}
-
+{{ if .Values.minikube }}
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -22,7 +22,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /data/skuid-{{ template "skuid.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
-
+{{ end }}
 ---
 
 apiVersion: v1
@@ -39,9 +39,15 @@ spec:
   selector:
     matchLabels:
       app: skuid-{{ .Release.Namespace }}-{{ .Release.Name }}
+{{ if .Values.minikube }}
   storageClassName: standard
   accessModes:
     - ReadWriteOnce
+{{ else }}
+  storageClassName: nfss1
+  accessModes:
+    - ReadWriteMany
+{{ end }}
   resources:
     requests:
       storage: 100Mi

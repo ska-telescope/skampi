@@ -10,3 +10,5 @@ hdbppdb:
   enabled: true
 archiver:
   enabled: true
+
+minikube: false

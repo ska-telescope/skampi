@@ -3,6 +3,7 @@ import sys
 from tango import DeviceProxy, DevState, CmdArgType, EventType
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from time import sleep
+import signal
 from numpy import ndarray
 import logging
 import json 
@@ -18,7 +19,10 @@ obsState = {"IDLE": 0}
 def map_dish_nr_to_device_name(dish_nr):
     digits = str(10000 + dish_nr)[1::]
     return "mid_d" + digits + "/elt/master"
-
+    
+def handlde_timeout():
+    print("operation timeout")
+    raise Exception("operation timeout")
 
 class resource:
     device_name = None
@@ -153,7 +157,19 @@ class pilot():
 
         the_waiter.wait()
         LOGGER.info(the_waiter.logs)
-        return result
+        return self
+
+    def and_configure_scan_by_file(self,file='resources/test_data/polaris_b1_no_cam.json'):
+        timeout = 80
+        # update the ID of the config data so that there is no duplicate configs send during tests
+        update_file(file)
+        signal.signal(signal.SIGALRM, handlde_timeout)
+        signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
+        try:
+            logging.info("Configuring the subarray")
+            SubArray(1).configure_from_file(file, with_processing=False)
+        except Exception as ex_obj:
+            LOGGER.info("Exception in configure command:", ex_obj)
 
 
 def restart_subarray(id):

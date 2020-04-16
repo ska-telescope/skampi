@@ -51,10 +51,6 @@ def update_file(file):
         json.dump(data, f)
 
 
-def handlde_timeout():
-    print("operation timeout")
-    raise Exception("operation timeout")
-
 
 @pytest.fixture
 def fixture():
@@ -76,40 +72,19 @@ def start_up():
     the_waiter.wait()
     LOGGER.info(the_waiter.logs)
 
-    take_subarray(1).to_be_composed_out_of(4)
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
+    
+''' assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
     assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
     assert_that(resource('mid_sdp/elt/subarray_1').get("obsState")).is_equal_to("IDLE")
 
     watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
     assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
     receptorIDList_val = watch_receptorIDList.get_value_when_changed()
-    assert_that(receptorIDList_val == [(1,2,3,4)])
+    assert_that(receptorIDList_val == [(1,2,3,4)])'''
 
 @given("Sub-array is in READY state")
-def config():
-    timeout = 80
-    file = 'resources/test_data/polaris_b1_no_cam.json'
-    # update the ID of the config data so that there is no duplicate configs send during tests
-    update_file(file)
-    signal.signal(signal.SIGALRM, handlde_timeout)
-    signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
-    try:
-        logging.info("Configuring the subarray")
-        SubArray(1).configure_from_file(file, with_processing=False)
-    except Exception as ex_obj:
-        LOGGER.info("Exception in configure command:", ex_obj)
-
-def check_state():
-    # check that the TMC report subarray as being in the ON state and obsState = READY
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
-    logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    # check that the CSP report subarray as being in the ON state and obsState = READY
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
-    logging.info("CSPsubarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
-    # check that the SDP report subarray as being in the ON state and obsState = READY
-    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
-    logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+def set_to_ready():
+    take_subarray(1).to_be_composed_out_of(4).and_configure_scan_by_file()
 
 @given("duration of scan is 10 seconds")
 def scan_duration(fixture):

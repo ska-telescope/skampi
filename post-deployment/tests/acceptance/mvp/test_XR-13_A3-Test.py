@@ -131,14 +131,12 @@ def teardown_function(function):
     """
     the_waiter = waiter()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
-        print("inside IDLE")
         the_waiter.set_wait_for_tearing_down_subarray()
         LOGGER.info("tearing down composed subarray (IDLE)")
         SubArray(1).deallocate()
         the_waiter.wait()
         LOGGER.info(the_waiter.logs)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
-        print("inside READY")
         LOGGER.info("tearing down configured subarray (READY)")
         the_waiter.set_wait_for_ending_SB()
         SubArray(1).end_sb()
@@ -149,7 +147,6 @@ def teardown_function(function):
         the_waiter.wait()
         LOGGER.info(the_waiter.logs)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        print("inside CONFIGURING")
         LOGGER.info("tearing down configuring subarray")
         restart_subarray(1)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):

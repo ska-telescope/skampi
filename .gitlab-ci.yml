@@ -178,9 +178,9 @@ k8s_test test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
-  only:
-    refs:
-      - master
+#  only:
+#    refs:
+#      - master
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

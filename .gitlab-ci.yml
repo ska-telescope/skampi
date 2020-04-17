@@ -3,12 +3,13 @@ image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
 variables:
   DEPLOY_ENVIRONMENT: "test"
   CT_TEST_ENVIRONMENT: "ct-test"
-  KUBE_NAMESPACE: "integration"
-  INGRESS_HOST: "integration.engageska-portugal.pt"
-  DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
+  KUBE_NAMESPACE: "ncra"
+  INGRESS_HOST: "ncra.engageska-portugal.pt"
+  DEPLOY_URL: "http://ncra.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
   VALUES: "pipeline.yaml"
+  HELM_RELEASE: "ncra"
 
 stages:
   - static_analysis
@@ -149,7 +150,7 @@ delete test environment:
     name: $DEPLOY_ENVIRONMENT
   only:
     refs:
-      - master
+      - bdd_scan_testcase
     variables:
       - $DELETE == "true"
 
@@ -166,7 +167,7 @@ deploy test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - master
+      - bdd_scan_testcase
 
 k8s_test test environment:
   stage: test
@@ -178,9 +179,9 @@ k8s_test test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
-#  only:
-#    refs:
-#      - master
+  only:
+    refs:
+      - bdd_scan_testcase
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -198,9 +199,9 @@ smoketest test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
-#  only:
-#    refs:
-#      - master
+  only:
+    refs:
+      - bdd_scan_testcase
 
 .run-debug-cmd:
   stage: debug

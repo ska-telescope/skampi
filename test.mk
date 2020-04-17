@@ -3,7 +3,7 @@
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
-IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.2
+IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.4
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(HELM_RELEASE)
 #
@@ -96,7 +96,8 @@ tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.
 
 ##the following section is for developers requiring the testing pod to be instantiated with a volume mappig to skampi
 location:= $(shell pwd)
-PYTHONPATH=/app/skampi/:/app/skampi/post-deployment/
+PYTHONPATH=/home/tango/skampi/:/home/tango/skampi/post-deployment/:
+testing-pod?=testing-pod
 #the port mapping to host
 hostPort ?= 2020
 testing-config := '{ "apiVersion": "v1","spec":{\
@@ -104,7 +105,7 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 						"image":"$(IMAGE_TO_TEST)",\
 						"name":"testing-container",\
 						"volumeMounts":[{\
-							"mountPath":"/app/skampi/",\
+							"mountPath":"/home/tango/skampi/",\
 							"name":"testing-volume"}],\
 						"env":[{\
           			 		"name": "TANGO_HOST",\
@@ -125,7 +126,7 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 							"type":"Directory"}}]}}'
 
 deploy_testing_pod:
-	@kubectl run testing-pod \
+	@kubectl run $(testing-pod) \
 	--image=$(IMAGE_TO_TEST) \
 	--namespace $(KUBE_NAMESPACE) \
 	--wait \
@@ -133,10 +134,36 @@ deploy_testing_pod:
 	--overrides=$(testing-config)
 	
 delete_testing_pod:
-	@kubectl delete pod testing-pod --namespace $(KUBE_NAMESPACE)
+	@kubectl delete pod $(testing-pod) --namespace $(KUBE_NAMESPACE)
 
 attach_testing_pod:
-	@kubectl exec -it testing-pod --namespace $(KUBE_NAMESPACE) /bin/bash
+	@kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) /bin/bash
+
+oet_podname = $(shell kubectl get pods -l app=rest-oet-$(HELM_RELEASE) -o=jsonpath='{..metadata.name}')
+sut_cdm_ver= $(shell kubectl exec -it $(oet_podname) pip list | grep "cdm-shared-library" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
+sut_cdm_cur_ver=$(shell grep "cdm-shared-library" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
+sut_oet_ver = $(shell kubectl exec -it $(oet_podname) pip list | grep "observation-execution-tool" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
+sut_oet_cur_ver=$(shell grep "observation-execution-tool" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
+
+check_oet_packages:
+	@echo "MVP is based on cdm-shared-library=$(sut_cdm_ver)"
+	@echo "Test are based on cdm-shared-library=$(sut_cdm_cur_ver)"
+	@if [ $(sut_cdm_ver) != $(sut_cdm_cur_ver) ] ; then \
+	echo "Warning: cdm-shared-library package for MVP is not the same as used for testing!"; \
+	fi
+	@echo "MVP is based on observation-execution-tool=$(sut_oet_ver)"
+	@echo "Test are based on observation-execution-tool=$(sut_oet_cur_ver)"
+	@if [ $(sut_oet_ver) != $(sut_oet_cur_ver) ] ; then \
+	echo "Warning: observation-execution-tool package for MVP is not the same as used for testing!"; \
+	fi
+
+clean_skampi:
+	 git ls-files . --ignored --exclude-standard --others --directory | xargs rm -R -f
+
+test_as_ssh_client:
+	kubectl exec -it $(testing-pod) -- bash -c "ssh-keygen -t rsa -f /home/tango/.ssh/id_rsa -q -P ''" && \
+	kubectl exec -it $(testing-pod) -- bash -c "cat /home/tango/.ssh/id_rsa.pub" >>~/.ssh/authorized_keys
+
 
 location:= $(shell pwd)
 

@@ -1,4 +1,5 @@
 # Default values for skuid.
+minikube: true
 
 skuid:
   enabled: true

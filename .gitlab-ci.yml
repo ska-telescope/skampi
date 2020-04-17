@@ -198,9 +198,9 @@ smoketest test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
-  only:
-    refs:
-      - master
+#  only:
+#    refs:
+#      - master
 
 .run-debug-cmd:
   stage: debug

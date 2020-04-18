@@ -1,6 +1,7 @@
 # Default values for oet.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+minikube: true
 
 ssh:
   enabled: true
@@ -8,7 +9,7 @@ ssh:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh
-    tag: 0.4.3
+    tag: 0.4.4
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
@@ -31,7 +32,7 @@ itango:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh
-    tag: 0.4.3
+    tag: 0.4.4
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
@@ -53,7 +54,7 @@ rest:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool
-    tag: 0.4.3
+    tag: 0.4.4
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
@@ -80,7 +81,7 @@ jupyter:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-jupyter
-    tag: 0.4.3
+    tag: 0.4.4
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true

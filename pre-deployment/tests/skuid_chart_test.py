@@ -79,16 +79,18 @@ class TestSkuidChart:
         )
 
         pv_chart = self.chart.templates["skuid-pv.yaml"].as_collection()
-        skuid_pv = list(filter(lambda x: x["kind"] == "PersistentVolume", pv_chart))[0]
         skuid_pvc = list(
             filter(lambda x: x["kind"] == "PersistentVolumeClaim", pv_chart)
         )[0]
-        assert skuid_pv["spec"]["persistentVolumeReclaimPolicy"] == "Recycle"
-        assert skuid_pv["spec"]["capacity"]["storage"] == "100Mi"
-        assert skuid_pv["spec"]["accessModes"] == ["ReadWriteOnce"]
+        if (skuid_pvc["spec"]["storageClassName"] == "standard"):
+            skuid_pv = list(filter(lambda x: x["kind"] == "PersistentVolume", pv_chart))[0]
+            
+            assert skuid_pv["spec"]["persistentVolumeReclaimPolicy"] == "Recycle"
+            assert skuid_pv["spec"]["capacity"]["storage"] == "100Mi"
+            assert skuid_pv["spec"]["accessModes"] == ["ReadWriteOnce"]
 
-        assert skuid_pvc["spec"]["accessModes"] == ["ReadWriteOnce"]
-        assert skuid_pvc["spec"]["resources"]["requests"]["storage"] == "100Mi"
+            assert skuid_pvc["spec"]["accessModes"] == ["ReadWriteOnce"]
+            assert skuid_pvc["spec"]["resources"]["requests"]["storage"] == "100Mi"
 
         squid_chart = self.chart.templates["skuid.yaml"].as_collection()
         squid_deployment = list(

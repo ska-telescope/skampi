@@ -102,3 +102,4 @@ def test_archiving_started():
   result_evt_subscriber = evt_subscriber_device_proxy.AttributeStatus(attribute)
   
   assert "Archiving          : Started" in result_evt_subscriber
+

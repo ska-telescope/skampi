@@ -142,6 +142,7 @@ deploy_testing_pod:
 	kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-key=/home/tango/.minikube/client.key && \
 	kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-certificate=/home/tango/.minikube/client.crt && \
 	kubectl config --kubeconfig=/home/tango/.kube/config set-cluster minikube --certificate-authority=/home/tango/.minikube/ca.crt"
+	@kubectl exec -it $(testing-pod) -- bash -c "echo 'source <(kubectl completion bash)' >>/home/tango/.bashrc"
 
 	
 delete_testing_pod:

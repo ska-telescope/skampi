@@ -342,3 +342,5 @@ load_dashboards:
 get_jupyter_port:
 	@kubectl get service -l app=jupyter-oet-test -n $(KUBE_NAMESPACE)  -o jsonpath="{range .items[0]}{'Use this url:http://$(THIS_HOST):'}{.spec.ports[0].nodePort}{'\n'}{end}"
 
+test_ssl:
+	curl --insecure -v https://$(THIS_HOST) -H 'Host: $(INGRESS_HOST) '2>&1 | awk 'BEGIN { cert=0 } /^\* SSL connection/ { cert=1 } /^\*/ { if (cert) print }'

@@ -25,7 +25,7 @@ def test_init():
 @pytest.mark.tracer
 def test_tracer():
     tracer = tracer_helper()
-    tracer.enable_logging("sys/tg_test/1", 5)
+    tracer.enable_logging("sys/tg_test/1", LogLevel.LOG_DEBUG)
     tracer.wait_until_message_received("DataGenerator::generating data", 10)
-    assert len(tracer.get_messages()) > 10
+    assert len(tracer.get_messages()) > 0
     tracer.disable_logging("sys/tg_test/1")

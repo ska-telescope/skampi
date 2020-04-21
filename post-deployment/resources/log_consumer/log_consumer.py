@@ -29,7 +29,7 @@ class log_consumer(Device):
         result = ""
         for str0 in input:
             result = result + str0 + "\t"
-        self.attr_message = result + "\n"
+        self.attr_message = result
         #print(self.attr_message)
         self.push_change_event("message", self.attr_message, time.time(), AttrQuality.ATTR_VALID)
 

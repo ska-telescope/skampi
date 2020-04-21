@@ -9,6 +9,7 @@ variables:
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
   VALUES: "pipeline.yaml"
+  MARK: "all"
 
 stages:
   - static_analysis

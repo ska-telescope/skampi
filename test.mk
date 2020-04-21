@@ -141,8 +141,13 @@ deploy_testing_pod:
 	@kubectl exec -it $(testing-pod) -- bash -c " \
 	kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-key=/home/tango/.minikube/client.key && \
 	kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-certificate=/home/tango/.minikube/client.crt && \
-	kubectl config --kubeconfig=/home/tango/.kube/config set-cluster minikube --certificate-authority=/home/tango/.minikube/ca.crt"
-	@kubectl exec -it $(testing-pod) -- bash -c "echo 'source <(kubectl completion bash)' >>/home/tango/.bashrc"
+	kubectl config --kubeconfig=/home/tango/.kube/config set-cluster minikube --certificate-authority=/home/tango/.minikube/ca.crt && \
+	echo 'source <(kubectl completion bash)' >>/home/tango/.bashrc && \
+	echo 'export HELM_RELEASE=$(HELM_RELEASE)' >> /home/tango/.bashrc && \
+	echo 'export KUBE_NAMESPACE=$(KUBE_NAMESPACE)' >> /home/tango/.bashrc && \
+	echo 'export VALUES=pipeline.yaml' >> /home/tango/.bashrc && \
+	echo 'export TANGO_HOST=databaseds-tango-base-test:10000' >> /home/tango/.bashrc
+
 
 	
 delete_testing_pod:
@@ -177,7 +182,7 @@ ssh_config = "Host kube-host\n\tHostName $(THIS_HOST) \n \tUser ubuntu"
 test_as_ssh_client:
 	@kubectl exec -it $(testing-pod) -- bash -c "mkdir /home/tango/.ssh/ && ssh-keygen -t rsa -f /home/tango/.ssh/id_rsa -q -P ''"
 	@kubectl exec -it $(testing-pod) -- bash -c "cat /home/tango/.ssh/id_rsa.pub" >>~/.ssh/authorized_keys
-	@kubectl exec -it $(testing-pod) -- bash -c "chown tango:tango -R /hoe/tango/.ssh/"
+	@kubectl exec -it $(testing-pod) -- bash -c "chown tango:tango -R /home/tango/.ssh/"
 	@echo $(ssh_config) >temp
 	@kubectl cp temp $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.ssh/config
 	@rm temp

@@ -188,7 +188,11 @@ test_as_ssh_client:
 	@kubectl cp temp $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.ssh/config
 	@rm temp
 
-
+GIT_EMAIL=user.email.com
+GIT_USER="user name"
+config_git:
+	@kubectl exec -it $(testing-pod) -- bash -c "git config --global user.name '$(GIT_EMAIL)'"
+	@kubectl exec -it $(testing-pod) -- bash -c "git git config --global user.email $(GIT_USER)"
 
 
 location:= $(shell pwd)

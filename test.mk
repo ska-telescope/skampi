@@ -96,6 +96,8 @@ tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.
 
 ##the following section is for developers requiring the testing pod to be instantiated with a volume mappig to skampi
 location:= $(shell pwd)
+kube_path ?= $(shell echo ~/.kube)
+k8_path ?= $(shell echo ~/.minikube)
 PYTHONPATH=/home/tango/skampi/:/home/tango/skampi/post-deployment/:
 testing-pod?=testing-pod
 #the port mapping to host
@@ -137,15 +139,16 @@ deploy_testing_pod:
 	@kubectl cp $(kube_path) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.kube/ 
 	@kubectl cp $(k8_path) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.minikube/
 	@kubectl exec -it $(testing-pod) -- bash -c " \
-	kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-key=/home/tango/.minikube/client.key && \
-	kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-certificate=/home/tango/.minikube/client.crt && \
-	kubectl config --kubeconfig=/home/tango/.kube/config set-cluster minikube --certificate-authority=/home/tango/.minikube/ca.crt && \
-	echo 'source <(kubectl completion bash)' >>/home/tango/.bashrc && \
-	echo 'export HELM_RELEASE=$(HELM_RELEASE)' >> /home/tango/.bashrc && \
-	echo 'export KUBE_NAMESPACE=$(KUBE_NAMESPACE)' >> /home/tango/.bashrc && \
-	echo 'export VALUES=pipeline.yaml' >> /home/tango/.bashrc && \
-	echo 'export TANGO_HOST=databaseds-tango-base-test:10000' >> /home/tango/.bashrc && \
-	
+		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-key=/home/tango/.minikube/client.key && \
+		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-certificate=/home/tango/.minikube/client.crt && \
+		kubectl config --kubeconfig=/home/tango/.kube/config set-cluster minikube --certificate-authority=/home/tango/.minikube/ca.crt && \
+		echo 'source <(kubectl completion bash)' >>/home/tango/.bashrc && \
+		echo 'export HELM_RELEASE=$(HELM_RELEASE)' >> /home/tango/.bashrc && \
+		echo 'export KUBE_NAMESPACE=$(KUBE_NAMESPACE)' >> /home/tango/.bashrc && \
+		echo 'export VALUES=pipeline.yaml' >> /home/tango/.bashrc && \
+		echo 'export TANGO_HOST=databaseds-tango-base-test:10000' >> /home/tango/.bashrc "
+	@kubectl exec -it $(testing-pod) -- bash -c " tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \
+	 	python3 /home/tango/skampi/post-deployment/resources/log_consumer/log_consumer.py log &"
 
 
 
@@ -184,6 +187,8 @@ test_as_ssh_client:
 	@echo $(ssh_config) >temp
 	@kubectl cp temp $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.ssh/config
 	@rm temp
+
+
 
 
 location:= $(shell pwd)

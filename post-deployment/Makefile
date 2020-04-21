@@ -17,7 +17,7 @@ test:install
 	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && python3 resources/log_consumer/log_consumer.py log &
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \
-	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest -m tracer --disable-pytest-warnings | tee pytest.stdout && \
+	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest --disable-pytest-warnings | tee pytest.stdout && \
 		status=$$? && \
 		$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
 		exit $$status

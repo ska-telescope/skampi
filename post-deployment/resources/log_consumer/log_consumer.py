@@ -1,12 +1,11 @@
 
 import time
-
 import numpy
 from tango import AttrQuality, AttrWriteType, DispLevel, DevState, DebugIt  # GreenMode
 from tango.server import Device, attribute, command, device_property
 
 
-class LogConsumer(Device):
+class log_consumer(Device):
 
     message = attribute(
         dtype='str',
@@ -35,4 +34,4 @@ class LogConsumer(Device):
         self.push_change_event("message", self.attr_message, time.time(), AttrQuality.ATTR_VALID)
 
 if __name__ == "__main__":
-    LogConsumer.run_server()
+    log_consumer.run_server()

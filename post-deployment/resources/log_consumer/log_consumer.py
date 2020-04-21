@@ -8,8 +8,7 @@ from tango.server import Device, attribute, command, device_property
 class log_consumer(Device):
 
     message = attribute(
-        dtype='str',
-        period=100
+        dtype='str'
     )
 
     def __init__(self, device_class, device_name):

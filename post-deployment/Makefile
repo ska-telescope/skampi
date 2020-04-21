@@ -5,7 +5,7 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
-TEST_ARTIFACTS = pytest.stdout report.xml report.json cucumber.json pytest-logs.txt
+TEST_ARTIFACTS = report.xml report.json cucumber.json pytest-logs.txt
 
 all: test
 
@@ -18,13 +18,16 @@ test: install
 	(python3 resources/log_consumer/log_consumer.py log &); \
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \
-	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest --disable-pytest-warnings | tee pytest.stdout && \
-	status=$$? && \
-	tango_admin --delete-server log_consumer/log && \
+	if [ "$(MARK)" == "all" ]; then \
+		PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest --disable-pytest-warnings | tee pytest.stdout && status=$$?; \
+	else \
+		PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest -m $(MARK) --disable-pytest-warnings | tee pytest.stdout && status=$$?; \
+	fi; \
+	(tango_admin --delete-server log_consumer/log &) && \
 	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
 	exit $$status
 
+.PHONY: all test install
+
 install:
 	pip3 install -r test_requirements.txt
-
-.PHONY: all test install

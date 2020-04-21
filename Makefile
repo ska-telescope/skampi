@@ -344,3 +344,7 @@ get_jupyter_port:
 
 test_ssl:
 	curl -v https://$(THIS_HOST) -H 'Host: $(INGRESS_HOST) '2>&1 | awk 'BEGIN { cert=0 } /^\* SSL connection/ { cert=1 } /^\*/ { if (cert) print }'
+
+clear_certificates:
+	rm charts/webjive/data/tls.*
+	rm charts/tango-base/secrets/tls.*

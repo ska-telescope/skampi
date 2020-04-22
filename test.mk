@@ -29,7 +29,7 @@ k8s_test = tar -c post-deployment/ | \
 		tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
 		cat /tmp/build.tgz | base64 && \
-		echo '~~~~BOUNDARY~~~~'" \
+		echo '~~~~BOUNDARY~~~~'">/dev/null \
 		2>&1
 
 # run the test function

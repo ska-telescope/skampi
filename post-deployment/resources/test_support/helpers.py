@@ -10,6 +10,8 @@ import json
 from datetime import date
 import random
 from random import choice
+from resources.log_consumer.tracer_helper import TraceHelper
+from tango import Database, DeviceProxy, DeviceData, EventType, LogLevel, DevVarStringArray,EventData, DeviceAttribute
 
 LOGGER = logging.getLogger(__name__)
 
@@ -253,4 +255,61 @@ def update_file(file):
 
     with open(file, 'w') as f:
         json.dump(data, f)
+
+class device_logging():
+    
+    def __init__(self):
+        self.tracer=TraceHelper()
+        self.traces=[]
+        self.log_level=LogLevel.LOG_DEBUG
+    
+    def set_logging_level(self,level):
+        mapping = {'DEBUG' : LogLevel.LOG_DEBUG,
+                   'INFO' : LogLevel.LOG_INFO,
+                   'WARNING': LogLevel.LOG_WARN,
+                   'OFF': LogLevel.LOG_OFF,
+                   'FATAL':LogLevel.LOG_FATAL}
+        self.log_level=mapping[level]
+    
+    def update_traces(self,traces):
+        if type(traces) == list:
+            self.traces.extend(traces)
+        if type(traces) == str:
+            self.traces.append(traces)
+    def start_tracing(self):
+        for trace in self.traces:
+            logging.debug('setting traces for %s',trace)
+            self.tracer.enable_logging(trace, self.log_level)
+
+    def stop_tracing(self):
+        for trace in self.traces:
+            logging.debug('stopping traces for %s',trace)
+            self.tracer.disable_logging(trace)
+    
+    def get_logging(self,wait=False):
+        if wait:
+            self.tracer.wait_until_message_received("DataGenerator::generating data", 10)
+        return self.tracer.get_messages()
+
+    def print_event_data(self,e):
+        message =" reception date: {} message: '{}' device: {} error:{}".\
+            format(\
+                e.reception_date,\
+                e.attr_value.value,\
+                e.device,\
+                e.err\
+            )
+        return message
+
+    def get_printable_messages(self,wait=False):
+        if wait:
+            self.tracer.wait_until_message_received("DataGenerator::generating data", 10)
+        messages = self.tracer.get_messages()
+        msg_counter = 0
+        printout = ''
+        for message in messages:
+            msg_counter +=1
+            printout += str(msg_counter) + self.print_event_data(message) + "\n"
+        return printout
+
     

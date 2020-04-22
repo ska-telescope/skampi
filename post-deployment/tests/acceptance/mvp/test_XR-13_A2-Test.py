@@ -14,34 +14,12 @@ from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
-    map_dish_nr_to_device_name, update_file
+    map_dish_nr_to_device_name, update_file, device_logging
 import logging
 
 LOGGER = logging.getLogger(__name__)
 
 import json
-
-
-'''def update_file(file):
-    with open(file, 'r') as f:
-        data = json.load(f)
-    random_no = random.randint(100, 999)
-    data['scanID'] = random_no
-    data['sdp']['configure'][0]['id'] = "realtime-" + date.today().strftime("%Y%m%d") + "-" + str(choice(range(1, 10000)))
-
-    fieldid = 1
-    intervalms = 1400
-
-    scan_details = {}
-    scan_details["fieldId"] = fieldid
-    scan_details["intervalMs"] = intervalms
-    scanParameters = {}
-    scanParameters[random_no] = scan_details
-
-    data['sdp']['configure'][0]['scanParameters'] = scanParameters
-
-    with open(file, 'w') as f:
-        json.dump(data, f)'''
 
 def handlde_timeout():
     print("operation timeout")
@@ -80,12 +58,19 @@ def config():
     update_file(file)
     signal.signal(signal.SIGALRM, handlde_timeout)
     signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
+    #set up logging of components
+    d = device_logging()
+    d.update_traces(['ska_mid/tm_subarray_node/1','mid_csp/elt/subarray_01','mid_sdp/elt/subarray_1'])
+    d.start_tracing()
     try:
         logging.info("Configuring the subarray")
         SubArray(1).configure_from_file(file, with_processing = False)
         logging.info("Json is" + str(file))
     except Exception as ex_obj:
         LOGGER.info("Exception is:", ex_obj)
+
+
+    LOGGER.info(d.get_printable_messages())
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():

@@ -31,3 +31,11 @@ test: install
 
 install:
 	pip3 install -r test_requirements.txt
+
+start_log_consumer:
+	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01
+	(python3 resources/log_consumer/log_consumer.py log &)
+
+remove_log_consumer:
+	kill $$(ps aux | grep -v grep | grep 'python3 resources/log_consumer/log_consumer.py' | awk '{print $$2}')
+	tango_admin --delete-server LogConsumer/log

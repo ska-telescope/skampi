@@ -28,6 +28,10 @@ def test_tracer():
     try:
         tracer.enable_logging("sys/tg_test/1", LogLevel.LOG_DEBUG)
         tracer.wait_until_message_received("DataGenerator::generating data", 20)
-        assert len(tracer.get_messages()) > 0
+        n_msg = len(tracer.get_messages())
+        assert n_msg > 0
     finally:
         tracer.disable_logging("sys/tg_test/1")
+    
+    sleep(1)
+    assert n_msg == len(tracer.get_messages())

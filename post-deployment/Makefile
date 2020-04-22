@@ -5,7 +5,7 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
-TEST_ARTIFACTS = report.xml report.json cucumber.json pytest-logs.txt
+TEST_ARTIFACTS = pytest.stdout report.xml report.json cucumber.json pytest-logs.txt
 
 all: test
 

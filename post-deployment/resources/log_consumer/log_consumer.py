@@ -5,11 +5,7 @@ from tango import AttrQuality, AttrWriteType, DispLevel, DevState, DebugIt  # Gr
 from tango.server import Device, attribute, command, device_property
 
 
-class log_consumer(Device):
-
-    message = attribute(
-        dtype='str'
-    )
+class LogConsumer(Device):
 
     def __init__(self, device_class, device_name):
         super().__init__(device_class, device_name)
@@ -20,17 +16,15 @@ class log_consumer(Device):
         """Initialise device"""
         Device.init_device(self)
 
-    def read_message(self):
+    @attribute(dtype='str')
+    def message(self):
         return self.attr_message
 
     @command(dtype_in=[str])
     def Log(self, input):
-        result = ""
-        for str0 in input:
-            result = result + str0 + "\t"
+        result = "\t".join(input) 
         self.attr_message = result
-        #print(self.attr_message)
         self.push_change_event("message", self.attr_message, time.time(), AttrQuality.ATTR_VALID)
 
 if __name__ == "__main__":
-    log_consumer.run_server()
+    LogConsumer.run_server()

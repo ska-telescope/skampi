@@ -14,7 +14,7 @@ all: test
 # copy TEST_ARTIFACTS into build directory
 # exit with same exit code as test run
 test: install
-	tango_admin --add-server log_consumer/log log_consumer log_consumer/log/log01 && \
+	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \
 	(python3 resources/log_consumer/log_consumer.py log &); \
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \

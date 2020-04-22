@@ -5,7 +5,7 @@ import pytest
 import logging
 from tango import Database, DeviceProxy, DeviceData, EventType, LogLevel, DevVarStringArray
 from time import sleep
-from resources.log_consumer.tracer_helper import tracer_helper
+from resources.log_consumer.tracer_helper import TraceHelper
 
 @pytest.mark.fast
 def test_init():    
@@ -16,7 +16,7 @@ def test_init():
           logging.info("Connecting to the databaseds")
           db = Database()
           break
-      except:
+      except Exception:
           logging.info("Could not connect to the databaseds. Retry after " + str(timeSleep) + " seconds.")
           sleep(timeSleep)
   logging.info("Connected to the databaseds")
@@ -24,8 +24,8 @@ def test_init():
 @pytest.mark.fast
 @pytest.mark.tracer
 def test_tracer():
-    tracer = tracer_helper()
+    tracer = TraceHelper()
     tracer.enable_logging("sys/tg_test/1", LogLevel.LOG_DEBUG)
-    tracer.wait_until_message_received("DataGenerator::generating data", 10)
+    tracer.wait_until_message_received("DataGenerator::generating data", 20)
     assert len(tracer.get_messages()) > 0
     tracer.disable_logging("sys/tg_test/1")

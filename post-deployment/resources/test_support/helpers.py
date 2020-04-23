@@ -260,6 +260,7 @@ class DeviceLogging():
     
     def __init__(self):
         self.tracer=TraceHelper()
+        self.tracer.reset_messages()
         self.traces=[]
         self.log_level=LogLevel.LOG_DEBUG
     

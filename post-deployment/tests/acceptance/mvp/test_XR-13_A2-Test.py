@@ -68,9 +68,8 @@ def config():
         logging.info("Json is" + str(file))
     except Exception as ex_obj:
         LOGGER.info("Exception is:", ex_obj)
-
-
-    LOGGER.info(d.get_printable_messages())
+    
+    LOGGER.info("The following messages was logged from devices: "+ d.get_printable_messages())
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():

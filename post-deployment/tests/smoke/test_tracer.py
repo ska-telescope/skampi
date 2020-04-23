@@ -41,28 +41,32 @@ def test_tracer():
     assert n_msg == len(tracer.get_messages())
 
 @pytest.mark.xfail
-@pytest.mark.fast
+@pytest.mark.slow
 @pytest.mark.tracer
 def test_tracer_update():
+    logging.info("instantiating TracerHelper")
     tracer = TraceHelper()
     try:
         logging.info("enable logging on sys/tg_test/1")
         tracer.enable_logging("sys/tg_test/1", LogLevel.LOG_DEBUG)
-        tracer.wait_until_message_received("DataGenerator::generating data", 20)
-        old_messages = tracer.get_messages()
-        n_msg = len(old_messages)
-        assert n_msg > 0
+        sleep(3)
     finally:
         tracer.disable_logging("sys/tg_test/1")
         logging.info("disabled logging on sys/tg_test/1")
+    old_messages = tracer.get_messages()
+    logging.info("instantiating a new TracerHelper object")
     new_tracer = TraceHelper()
     logging.info("enable logging on ska_mid/tm_central/central_node")
     new_tracer.enable_logging("ska_mid/tm_central/central_node", LogLevel.LOG_DEBUG)
-    sleep(1)
-    new_messages = tracer.get_messages()
+    sleep(3)
+    new_messages = new_tracer.get_messages()
     try:
+        logging.info("new messages")
         for new_message in new_messages:
+            logging.info("date: %s message: %s",new_message.reception_date,new_message.attr_value.value)
+            logging.info("old messages")
             for old_message in old_messages:
+                logging.info("date: %s message: %s",old_message.reception_date,old_message.attr_value.value)
                 assert_that(new_message).is_not_equal_to(old_message)
     finally:
         tracer.disable_logging("ska_mid/tm_central/central_node")

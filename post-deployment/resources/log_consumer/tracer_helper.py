@@ -6,6 +6,13 @@ from tango import Database, DeviceProxy, DeviceData, EventType, LogLevel, DevVar
 import time
 
 class TraceHelper:
+    __instance = None
+
+    def __new__(cls):
+        if TraceHelper.__instance is None:
+            TraceHelper.__instance = object.__new__(cls)
+        return TraceHelper.__instance
+
     def __init__(self):
         self.messages = []
         self.wait_for_msg = ""

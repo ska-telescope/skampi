@@ -10,6 +10,7 @@ class TraceHelper:
         self.messages = []
         self.wait_for_msg = ""
         self.last_msg = ""
+        self.found = False
         self.lock = threading.Lock()
         self.log_consumer_name = "LogConsumer/log/log01"
         self.logger_dev = DeviceProxy(self.log_consumer_name)

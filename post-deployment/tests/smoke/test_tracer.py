@@ -49,15 +49,14 @@ def test_tracer_update():
         logging.info("enable logging on sys/tg_test/1")
         tracer.enable_logging("sys/tg_test/1", LogLevel.LOG_DEBUG)
         tracer.wait_until_message_received("DataGenerator::generating data", 20)
-        old_messages = tracer.get_messages()
-        n_msg = len(old_messages)
-        assert n_msg > 0
     finally:
         tracer.disable_logging("sys/tg_test/1")
         logging.info("disabled logging on sys/tg_test/1")
-    new_tracer = TraceHelper()
+    
+    old_messages = tracer.get_messages()
+    tracer.reset_messages()
     logging.info("enable logging on ska_mid/tm_central/central_node")
-    new_tracer.enable_logging("ska_mid/tm_central/central_node", LogLevel.LOG_DEBUG)
+    tracer.enable_logging("ska_mid/tm_central/central_node", LogLevel.LOG_DEBUG)
     sleep(1)
     new_messages = tracer.get_messages()
     try:

@@ -38,7 +38,9 @@ class TraceHelper:
             logging.info(str(args.attr_value.value))
 
     def get_messages(self):
-        return self.messages
+        """"Return a copy of the current messages."""
+        with self.lock:
+            return list(self.messages)
 
     def wait_until_message_received(self, msg, timeout):
         startTime = time.time()

@@ -27,8 +27,8 @@ class TraceHelper:
         dev.set_logging_level(0)
 
     def handle_event(self, args):
-        if (args.attr_value.err):
-            logging.info(str(args))
+        if (args.err):
+            logging.error(str(args))
             return
 
         with self.lock:

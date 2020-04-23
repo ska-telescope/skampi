@@ -1,11 +1,11 @@
-from resources.test_support.helpers import device_logging
+from resources.test_support.helpers import DeviceLogging
 import logging
 import json
 from time import sleep
 
 
 def test_device_logging():
-    d = device_logging()
+    d = DeviceLogging()
     d.update_traces(['sys/tg_test/1'])
     #logging.debug("the device target = {}",str(d.tracer.dev))
     logging.info('starting traces for sys/tg_test/1')

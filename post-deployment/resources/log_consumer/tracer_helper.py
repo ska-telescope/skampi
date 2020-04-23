@@ -38,6 +38,10 @@ class TraceHelper:
                 self.found = True
             logging.info(str(args.attr_value.value))
 
+    def reset_messages(self):
+        with self.lock:
+            self.messages = []
+
     def get_messages(self):
         """"Return a copy of the current messages."""
         with self.lock:

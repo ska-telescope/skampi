@@ -48,14 +48,15 @@ def test_tracer_update():
     try:
         logging.info("enable logging on sys/tg_test/1")
         tracer.enable_logging("sys/tg_test/1", LogLevel.LOG_DEBUG)
-        sleep(3)
+        tracer.wait_until_message_received("DataGenerator::generating data", 20)
     finally:
         tracer.disable_logging("sys/tg_test/1")
         logging.info("disabled logging on sys/tg_test/1")
     old_messages = tracer.get_messages()
-    logging.info("re enabling logging on sys/tg_test/1")
-    tracer.enable_logging("sys/tg_test/1", LogLevel.LOG_DEBUG)
-    sleep(3)
+    tracer.reset_messages()
+    logging.info("enable logging on ska_mid/tm_central/central_node")
+    tracer.enable_logging("ska_mid/tm_central/central_node", LogLevel.LOG_DEBUG)
+    sleep(1)
     new_messages = tracer.get_messages()
     try:
         logging.info("new messages")
@@ -66,7 +67,7 @@ def test_tracer_update():
                 logging.info("date: %s message: %s",old_message.reception_date,old_message.attr_value.value)
                 assert_that(new_message).is_not_equal_to(old_message)
     finally:
-        tracer.disable_logging("sys/tg_test/1")
-        logging.info("disabled logging on sys/tg_test/1")        
+        tracer.disable_logging("ska_mid/tm_central/central_node")
+        logging.info("disabled logging on ska_mid/tm_central/central_node")        
     
         

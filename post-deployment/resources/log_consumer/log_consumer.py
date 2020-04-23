@@ -23,8 +23,9 @@ class LogConsumer(Device):
     @command(dtype_in=[str])
     def Log(self, input):
         result = "\t".join(input) 
-        self.attr_message = result
-        self.push_change_event("message", self.attr_message, time.time(), AttrQuality.ATTR_VALID)
+        if(self.attr_message != result):
+            self.attr_message = result
+            self.push_change_event("message", self.attr_message, time.time(), AttrQuality.ATTR_VALID)
 
 if __name__ == "__main__":
     LogConsumer.run_server()

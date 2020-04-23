@@ -256,7 +256,7 @@ def update_file(file):
     with open(file, 'w') as f:
         json.dump(data, f)
 
-class device_logging():
+class DeviceLogging():
     
     def __init__(self):
         self.tracer=TraceHelper()

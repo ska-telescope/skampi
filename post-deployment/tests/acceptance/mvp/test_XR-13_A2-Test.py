@@ -14,7 +14,7 @@ from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
-    map_dish_nr_to_device_name, update_file, device_logging
+    map_dish_nr_to_device_name, update_file, DeviceLogging
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -59,7 +59,7 @@ def config():
     signal.signal(signal.SIGALRM, handlde_timeout)
     signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
     #set up logging of components
-    d = device_logging()
+    d = DeviceLogging()
     d.update_traces(['ska_mid/tm_subarray_node/1','mid_csp/elt/subarray_01','mid_sdp/elt/subarray_1'])
     d.start_tracing()
     try:

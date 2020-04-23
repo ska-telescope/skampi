@@ -10,6 +10,7 @@ class TraceHelper:
         self.messages = []
         self.wait_for_msg = ""
         self.last_msg = ""
+        self.found = False
         self.lock = threading.Lock()
         self.log_consumer_name = "LogConsumer/log/log01"
         self.logger_dev = DeviceProxy(self.log_consumer_name)
@@ -26,6 +27,10 @@ class TraceHelper:
         dev.set_logging_level(0)
 
     def handle_event(self, args):
+        if (args.attr_value.err):
+            logging.info(str(args))
+            return
+
         with self.lock:
             self.messages.append(args)
             self.last_msg = args.attr_value.value
@@ -34,7 +39,9 @@ class TraceHelper:
             logging.info(str(args.attr_value.value))
 
     def get_messages(self):
-        return self.messages
+        """"Return a copy of the current messages."""
+        with self.lock:
+            return list(self.messages)
 
     def wait_until_message_received(self, msg, timeout):
         startTime = time.time()

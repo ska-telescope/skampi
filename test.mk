@@ -29,7 +29,7 @@ k8s_test = tar -c post-deployment/ | \
 		tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
 		cat /tmp/build.tgz | base64 && \
-		echo '~~~~BOUNDARY~~~~'">/dev/null \
+		echo '~~~~BOUNDARY~~~~'" \
 		2>&1
 
 # run the test function
@@ -42,14 +42,13 @@ k8s_test = tar -c post-deployment/ | \
 # exit the saved status
 k8s_test: smoketest## test the application on K8s
 	$(call k8s_test,test); \
-	  status=$$?; \
-	  rm -fr build; \
-	  kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | perl -ne 'BEGIN {$$on=1;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;'; \
+		status=$$?; \
+		rm -fr build; \
 		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
 		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
 		base64 -d | tar -xzf -; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
-	  exit $$status
+		exit $$status
 
 
 smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).

@@ -26,6 +26,10 @@ class TraceHelper:
         dev.set_logging_level(0)
 
     def handle_event(self, args):
+        if (args.attr_value.err):
+            logging.info(str(args))
+            return
+
         with self.lock:
             self.messages.append(args)
             self.last_msg = args.attr_value.value

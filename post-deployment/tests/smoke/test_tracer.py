@@ -33,5 +33,6 @@ def test_tracer():
     finally:
         tracer.disable_logging("sys/tg_test/1")
     
+    # test that we didn't get any additional messages after disabling the logging
     sleep(1)
     assert n_msg == len(tracer.get_messages())

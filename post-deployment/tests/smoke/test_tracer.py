@@ -53,7 +53,7 @@ def test_tracer_update():
         tracer.disable_logging("sys/tg_test/1")
         logging.info("disabled logging on sys/tg_test/1")
     old_messages = tracer.get_messages()
-    tracer.reset_messages()
+    tracer = TraceHelper()
     logging.info("enable logging on ska_mid/tm_central/central_node")
     tracer.enable_logging("ska_mid/tm_central/central_node", LogLevel.LOG_DEBUG)
     sleep(1)

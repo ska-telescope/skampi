@@ -287,9 +287,10 @@ class DeviceLogging():
             self.tracer.disable_logging(trace)
     
     def get_logging(self,wait=False):
-        if wait:
-            self.tracer.wait_until_message_received("DataGenerator::generating data", 10)
         return self.tracer.get_messages()
+
+    def wait_until_message_received(self,message, timeout):
+        self.tracer.wait_until_message_received(message, timeout)
 
     def print_event_data(self,e):
         message =" reception date: {} message: '{}' device: {} error:{}".\
@@ -301,9 +302,7 @@ class DeviceLogging():
             )
         return message
 
-    def get_printable_messages(self,wait=False):
-        if wait:
-            self.tracer.wait_until_message_received("DataGenerator::generating data", 10)
+    def get_printable_messages(self):
         messages = self.tracer.get_messages()
         msg_counter = 0
         printout = ''

@@ -14,14 +14,15 @@ class TraceHelper:
         return TraceHelper.__instance
 
     def __init__(self):
-        self.messages = []
-        self.wait_for_msg = ""
-        self.last_msg = ""
-        self.found = False
-        self.lock = threading.Lock()
-        self.log_consumer_name = "LogConsumer/log/log01"
-        self.logger_dev = DeviceProxy(self.log_consumer_name)
-        self.logger_dev.subscribe_event("message", EventType.CHANGE_EVENT, self.handle_event, stateless=True)
+        if(not hasattr(TraceHelper.__instance, "lock")):
+            TraceHelper.__instance.messages = []
+            TraceHelper.__instance.wait_for_msg = ""
+            TraceHelper.__instance.last_msg = ""
+            TraceHelper.__instance.found = False
+            TraceHelper.__instance.lock = threading.Lock()
+            TraceHelper.__instance.log_consumer_name = "LogConsumer/log/log01"
+            TraceHelper.__instance.logger_dev = DeviceProxy(TraceHelper.__instance.log_consumer_name)
+            TraceHelper.__instance.logger_dev.subscribe_event("message", EventType.CHANGE_EVENT, TraceHelper.__instance.handle_event, stateless=True)
 
     def enable_logging(self, devName, logLevel):
         dev = DeviceProxy(devName)
@@ -61,8 +62,9 @@ class TraceHelper:
             self.wait_for_msg = msg
         
         while True:
-            if self.found:
-                return True
+            with self.lock: 
+                if self.found:
+                    return True
             if(time.time() - startTime > timeout):
                 raise Exception("Timeout occurred")
             time.sleep(0.1)

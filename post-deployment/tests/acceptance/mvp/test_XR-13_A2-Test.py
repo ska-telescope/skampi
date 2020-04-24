@@ -67,9 +67,10 @@ def config():
         SubArray(1).configure_from_file(file, with_processing = False)
         logging.info("Json is" + str(file))
     except Exception as ex_obj:
-        LOGGER.info("Exception is:", ex_obj)
+        LOGGER.info("Exception is: %s", ex_obj)
     
     LOGGER.info("The following messages was logged from devices: "+ d.get_printable_messages())
+    d.stop_tracing()
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():

@@ -65,7 +65,7 @@ spec:
 {{- with .Values.archiver.env }}
 {{ toYaml . | indent 4 }}
 {{- end }}
-  restartPolicy: Never
+  restartPolicy: OnFailure
 {{- with .Values.nodeSelector }}
   nodeSelector:
 {{ toYaml . | indent 4 }}

@@ -1,9 +1,10 @@
 from resources.test_support.helpers import DeviceLogging
 import logging
 import json
+import pytest
 from time import sleep
 
-
+@pytest.mark.tracer
 def test_device_logging():
     d = DeviceLogging()
     d.update_traces(['sys/tg_test/1'])

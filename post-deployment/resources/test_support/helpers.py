@@ -171,7 +171,7 @@ class pilot():
             logging.info("Configuring the subarray")
             SubArray(1).configure_from_file(file, with_processing=False)
         except Exception as ex_obj:
-            LOGGER.info("Exception in configure command:", ex_obj)
+            LOGGER.info("Exception in configure command: %s", ex_obj)
 
 
 def restart_subarray(id):
@@ -293,7 +293,7 @@ class DeviceLogging():
     def wait_until_message_received(self,message, timeout):
         self.tracer.wait_until_message_received(message, timeout)
 
-    def print_event_data(self,e):
+    def format_event_data(self,e):
         message =" reception date: {} message: '{}' device: {} error:{}".\
             format(\
                 e.reception_date,\
@@ -309,7 +309,7 @@ class DeviceLogging():
         printout = ''
         for message in messages:
             msg_counter +=1
-            printout += str(msg_counter) + self.print_event_data(message) + "\n"
+            printout += str(msg_counter) + self.format_event_data(message) + "\n"
         return printout
 
     

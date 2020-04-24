@@ -7,16 +7,18 @@ import pytest
 import socket
 import os
 
-os.environ["USE_LOCAL_HOST_IP_FOR_SSL_TEST"] = "True"
 
-
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_check_connection():
-    if os.environ["USE_LOCAL_HOST_IP_FOR_SSL_TEST"] == "True":
+    a = os.environ['USE_LOCAL_HOST_IP_FOR_SSL_TEST']
+    print("a: ", a)
+    if a == 'TRUE':
         host_name = socket.gethostname()
         host_ip = socket.gethostbyname(host_name)    # IP of this host
+        print("Host IP (if part): ", host_ip)
     else:
         host_ip="192.168.93.47"
+        print("Host IP (else part)= ", host_ip)
 
     ingress_host="integration.engageska-portugal.pt"   # Ingress HTTP hostname
 

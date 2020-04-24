@@ -12,6 +12,7 @@ TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(HELM_RELEASE
 # capture the output of the test in a build folder inside the container 
 # 
 TANGO_HOST = databaseds-tango-base-$(HELM_RELEASE):10000
+USE_LOCAL_HOST_IP_FOR_SSL_TEST = "TRUE"
 MARK ?= fast
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
@@ -25,7 +26,8 @@ k8s_test = tar -c post-deployment/ | \
 		--image-pull-policy=IfNotPresent \
 		--image=$(IMAGE_TO_TEST) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
-		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) $1 && \
+		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) \
+		USE_LOCAL_HOST_IP_FOR_SSL_TEST=$(USE_LOCAL_HOST_IP_FOR_SSL_TEST) $1 && \
 		tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
 		cat /tmp/build.tgz | base64 && \

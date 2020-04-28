@@ -256,10 +256,11 @@ def update_file(file):
     with open(file, 'w') as f:
         json.dump(data, f)
 
-class DeviceLogging():
-    
+class DeviceLoggingImplWithTraceHelper():
+
     def __init__(self):
         self.tracer=TraceHelper()
+       # self.tracer.disable_logging()
         self.tracer.reset_messages()
         self.traces=[]
         self.log_level=LogLevel.LOG_DEBUG
@@ -277,6 +278,7 @@ class DeviceLogging():
             self.traces.extend(traces)
         if type(traces) == str:
             self.traces.append(traces)
+
     def start_tracing(self):
         for trace in self.traces:
             logging.debug('setting traces for %s',trace)
@@ -287,20 +289,25 @@ class DeviceLogging():
             logging.debug('stopping traces for %s',trace)
             self.tracer.disable_logging(trace)
     
-    def get_logging(self,wait=False):
+    def get_logging(self):
         return self.tracer.get_messages()
 
     def wait_until_message_received(self,message, timeout):
         self.tracer.wait_until_message_received(message, timeout)
 
-    def format_event_data(self,e):
-        message =" reception date: {} message: '{}' device: {} error:{}".\
-            format(\
-                e.reception_date,\
-                e.attr_value.value,\
-                e.device,\
-                e.err\
-            )
+    def _format_event_data(self,e,format='string'):
+        if format=='string':
+            message =" reception date: {} message: '{}' error:{}".\
+                format(
+                    e.reception_date,
+                    e.attr_value.value,
+                    e.err
+                )
+        elif format=='dict':
+            message = {
+                'reception date':e.reception_date,
+                'message':e.attr_value.value,
+                'error': e.err}
         return message
 
     def get_printable_messages(self):
@@ -309,7 +316,54 @@ class DeviceLogging():
         printout = ''
         for message in messages:
             msg_counter +=1
-            printout += str(msg_counter) + self.format_event_data(message) + "\n"
+            printout += str(msg_counter) + self._format_event_data(message) + "\n"
         return printout
+
+    def get_messages_as_list_dict(self):
+        messages = self.tracer.get_messages()
+        return [self._format_event_data(message,format="dict") for message in messages]
+
+#abstraction of Device logging implemenetation is set by implementation object and mappoing is defined in shim dictionary
+class DeviceLogging():
+    
+    def __init__(self,implementation='TraceHelper'):
+        if (implementation=='TraceHelper'):
+            self.implementation = DeviceLoggingImplWithTraceHelper()
+            self._shim = {"set_logging_level":self.implementation.set_logging_level,
+                          "update_traces": self.implementation.update_traces, 
+                          "stop_tracing": self.implementation.stop_tracing, 
+                          "get_logging": self.implementation.get_logging, 
+                          "start_tracing": self.implementation.start_tracing, 
+                          "wait_until_message_received": self.implementation.wait_until_message_received, 
+                          "get_printable_messages": self.implementation.get_printable_messages, 
+                          "get_messages_as_list_dict": self.implementation.get_messages_as_list_dict
+             }
+        else:
+            raise Exception('unknown implentation of Device logging {}'.format(implementation))
+
+    def set_logging_level(self,level):
+        self._shim['set_logging_level'](level)
+    
+    def update_traces(self,traces):
+        self._shim['update_traces'](traces)
+
+    def start_tracing(self):
+        self._shim['start_tracing']()
+
+    def stop_tracing(self):
+        self._shim['stop_tracing']()
+    
+    def get_logging(self):
+        return self._shim['get_logging']()
+
+    def wait_until_message_received(self,message, timeout):
+        self._shim['wait_until_message_received'](message, timeout)
+
+    def get_printable_messages(self):
+        return self._shim['get_printable_messages']()
+
+    def get_messages_as_list_dict(self):
+        return self._shim['get_messages_as_list_dict']()
+
 
     

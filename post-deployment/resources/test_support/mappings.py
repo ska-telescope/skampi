@@ -96,4 +96,5 @@ device_to_container = {"mid_csp_cbf/fsp_corr/01" : "fsp01",
 "mid_d0003/elt/master" : "dishmaster2",
 "mid_d0001/elt/master" : "dishmaster3",
 "mid_d0004/elt/master" : "dishmaster4",
-"sdp-processing-controller" : "sdp-prototype"}
+"sdp-processing-controller" : "sdp-prototype",
+"helm-deploy" : "helm-deploy"}

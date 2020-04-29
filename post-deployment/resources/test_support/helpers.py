@@ -344,6 +344,17 @@ class DeviceLogging():
                           "get_printable_messages": self.implementation.get_printable_messages, 
                           "get_messages_as_list_dict": self.implementation.get_messages_as_list_dict
              }
+        if (implementation=='DeviceLoggingImplWithDBDirect'):
+            self.implementation = DeviceLoggingImplWithDBDirect()
+            self._shim = {"set_logging_level":self.implementation.set_logging_level,
+                          "update_traces": self.implementation.update_devices_to_be_logged, 
+                          "stop_tracing": self.implementation.stop_tracing, 
+                          "get_logging": self.implementation.get_logging, 
+                          "start_tracing": self.implementation.start_tracing, 
+                          "wait_until_message_received": self.implementation.wait_until_message_received, 
+                          "get_printable_messages": self.implementation.get_printable_messages, 
+                          "get_messages_as_list_dict": self.implementation.get_messages_as_list_dict
+             }
         else:
             raise Exception('unknown implentation of Device logging {}'.format(implementation))
 
@@ -404,6 +415,18 @@ class DeviceLoggingImplWithDBDirect():
         self.start_time = time()
         self.running = True
 
+    def set_logging_level(self,level):
+        #TODO implement filtering based on log level
+        self.logging =level
+
+    def get_logging(self):
+        #TODO implement filtering based on log level
+        return self.logging
+
+    def wait_until_message_received(self,message,timeout):
+        #returns immediately as this behaviour cant be done by this object
+        return
+
     def _update_containers_to_devices(self,device,container):
 
         if device in self.containers_to_devices.keys():
@@ -459,3 +482,23 @@ class DeviceLoggingImplWithDBDirect():
         if self.running:
             self.stop_tracing()
         return self.dict_results
+
+    def _format_log_data(self,log):
+        log =" reception date: {} message: '{}' pod: {} container: {} device/comp: {}".\
+                format(
+                    log['ska_log_timestamp'],
+                    log['ska_log_message'],
+                    log['pod'],
+                    log['container'],
+                    log['device']
+                )
+
+    def get_printable_messages(self):
+        logs = self.dict_results
+        log_counter = 0
+        printout = ''
+        for log in logs:
+            log_counter +=1
+            printout += str(log_counter) + self._format_log_data(log) + "\n"
+        return printout
+    

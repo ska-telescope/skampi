@@ -489,14 +489,14 @@ class DeviceLoggingImplWithDBDirect():
         return self.dict_results
 
     def _format_log_data(self,log):
-        log =" reception date: {} message: '{}' pod: {} container: {} device/comp: ".\
+        log =" reception date: {} device/comp: {} message: '{}' container: {} ".\
                 format(
                     log['ska_log_timestamp'],
+                    log['device'],
                     log['ska_log_message'],
-                    log['pod'],
-                    log['container'],
-                  #  log['device']
+                    log['container']   
                 )
+        return log
 
     def get_printable_messages(self):
         logs = self.get_messages_as_list_dict()

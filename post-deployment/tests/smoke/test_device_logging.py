@@ -83,7 +83,7 @@ def test_log_elastic_time_window():
         break
     assert_that(current_minute - lowest_minute).is_less_than_or_equal_to(960/60)
 
-def test_log_by_time_window_query():
+'''def test_log_by_time_window_query():
 
     d = DeviceLogging('DeviceLoggingImplWithDBDirect')
     d.update_traces(['ska_mid/tm_subarray_node/1','mid_csp/elt/subarray_01','mid_sdp/elt/subarray_1'])
@@ -92,14 +92,14 @@ def test_log_by_time_window_query():
     for item in res:
         logging.info("cont: {}".format(item['container']))
 
-'''def test_elastic():
+def test_elastic():
     es = get_log_stash_db()
     index = "logstash-{}".format(date.today().strftime("%Y.%m.%d"))
     greater_than_query = 'now-{:d}s/s'.format(60*100)
     container_name = 'sdp-subarray-1'
     search = Search(using=es,index=index)\
         .filter("range",ska_log_timestamp={'gte': greater_than_query})\
-        .query(Q("match",kubernetes__container_name=container_name))\
+        .query(Q("match_prhase",kubernetes__container_name=container_name))\
         .sort("ska_log_message")\
         .source(includes=['ska_log_message','ska_log_timestamp','kubernetes.container_name','kubernetes.pod_name'])
     for hit in search.scan():

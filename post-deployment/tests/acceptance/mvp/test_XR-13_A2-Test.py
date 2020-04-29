@@ -21,7 +21,7 @@ LOGGER = logging.getLogger(__name__)
 
 import json
 
-def handlde_timeout():
+def handlde_timeout(arg1,agr2):
     print("operation timeout")
     raise Exception("operation timeout")
 
@@ -59,7 +59,7 @@ def config():
     signal.signal(signal.SIGALRM, handlde_timeout)
     signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
     #set up logging of components
-    d = DeviceLogging()
+    d = DeviceLogging('DeviceLoggingImplWithDBDirect')
     d.update_traces(['ska_mid/tm_subarray_node/1','mid_csp/elt/subarray_01','mid_sdp/elt/subarray_1'])
     d.start_tracing()
     try:
@@ -68,7 +68,10 @@ def config():
         logging.info("Json is" + str(file))
     except Exception as ex_obj:
         LOGGER.info("Exception is: %s", ex_obj)
-    
+        d.stop_tracing()
+        LOGGER.info("The following messages was logged from devices: "+ d.get_printable_messages())
+        raise
+    d.stop_tracing()
     LOGGER.info("The following messages was logged from devices: "+ d.get_printable_messages())
     d.stop_tracing()
 

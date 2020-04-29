@@ -69,7 +69,7 @@ def config():
     except Exception as ex_obj:
         LOGGER.info("Exception is: %s", ex_obj)
         d.stop_tracing()
-        LOGGER.info("The following messages was logged from devices: "+ d.get_printable_messages())
+        LOGGER.info("The following messages was logged from devices: \n"+ d.get_printable_messages())
         raise
     d.stop_tracing()
     LOGGER.info("The following messages was logged from devices: "+ d.get_printable_messages())

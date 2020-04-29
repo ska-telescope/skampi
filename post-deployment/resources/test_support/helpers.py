@@ -452,20 +452,24 @@ class DeviceLoggingImplWithDBDirect():
             .sort("ska_log_message")\
             .source(includes=['ska_log_message','ska_log_timestamp','kubernetes.container_name','kubernetes.pod_name'])
         ##may be replaced by a to_dict command
-        self.dict_results = [
-            {
-                "ska_log_message" : hit.ska_log_message,
-                "ska_log_timestamp" : hit.ska_log_timestamp,
-                "container" : hit.kubernetes.container_name,
-                "pod" : hit.kubernetes.pod_name,
-                "device" : self.containers_to_devices[hit.kubernetes.container_name]
-            }
-            for hit in search.scan()
-        ]
+        self.dict_results = []
+        for hit in search.scan():
+            ## following code is temp to remove spurios hits on container names using match instead of terms search
+            ## TODO fix by using appropriate elastic query
+            container = hit.kubernetes.container_name
+            if container in self.containers_to_devices.keys():
+                self.dict_results.append({
+                    "ska_log_message" : hit.ska_log_message,
+                    "ska_log_timestamp" : hit.ska_log_timestamp,
+                    "container" : container,
+                    "pod" : hit.kubernetes.pod_name,
+                    "device" : self.containers_to_devices[hit.kubernetes.container_name]
+            })
 
     def stop_tracing(self):
 
         elapsed_time = ceil(time() - self.start_time)
+        self.running = False
         self._search_filtered_by_timewindow(elapsed_time)
 
 
@@ -481,20 +485,21 @@ class DeviceLoggingImplWithDBDirect():
 
         if self.running:
             self.stop_tracing()
+        
         return self.dict_results
 
     def _format_log_data(self,log):
-        log =" reception date: {} message: '{}' pod: {} container: {} device/comp: {}".\
+        log =" reception date: {} message: '{}' pod: {} container: {} device/comp: ".\
                 format(
                     log['ska_log_timestamp'],
                     log['ska_log_message'],
                     log['pod'],
                     log['container'],
-                    log['device']
+                  #  log['device']
                 )
 
     def get_printable_messages(self):
-        logs = self.dict_results
+        logs = self.get_messages_as_list_dict()
         log_counter = 0
         printout = ''
         for log in logs:

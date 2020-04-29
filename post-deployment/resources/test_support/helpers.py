@@ -9,9 +9,15 @@ import logging
 import json 
 from datetime import date
 import random
+import os
 from random import choice
 from resources.log_consumer.tracer_helper import TraceHelper
 from tango import Database, DeviceProxy, DeviceData, EventType, LogLevel, DevVarStringArray,EventData, DeviceAttribute
+from elasticsearch_dsl import Search,Q
+from datetime import date
+from time import time
+from resources.test_support.mappings import device_to_container
+from math  import ceil
 
 LOGGER = logging.getLogger(__name__)
 
@@ -366,4 +372,90 @@ class DeviceLogging():
         return self._shim['get_messages_as_list_dict']()
 
 
+def get_log_stash_db(port=9200,elastic_name='elastic-logging'):
+    from elasticsearch import Elasticsearch
     
+    HELM_RELEASE = os.environ.get('HELM_RELEASE')
+    elastic_host = '{}-{}'.format(elastic_name,HELM_RELEASE)
+    elastic_port = port
+    host_details = {
+        'host': elastic_host, 
+        'port': elastic_port
+    }  
+    return Elasticsearch([host_details]) 
+
+class DeviceLoggingImplWithDBDirect():
+        
+    def __init__(self,es=None):
+ 
+        if es == None:
+            es = get_log_stash_db()
+        self.es=es
+        #assumes the search is always only on todays logs
+        index = "logstash-{}".format(date.today().strftime("%Y.%m.%d"))
+        self.search = Search(using=es,index=index)
+        self.containers_to_devices ={}
+        self.Qs = None
+        self.start_time=None
+        self.running = False
+    
+    def start_tracing(self):   
+
+        self.start_time = time()
+        self.running = True
+
+    def _update_containers_to_devices(self,device,container):
+
+        if device in self.containers_to_devices.keys():
+            self.containers_to_devices[container] += "/{}".format(device)
+        else:
+            self.containers_to_devices[container] = device
+
+    def _update_Q(self,device):
+
+        container = device_to_container[device]
+        self._update_containers_to_devices(device,container)
+        if self.Qs == None:
+            self.Qs = Q("match",kubernetes__container_name=container)
+        else:
+            self.Qs = self.Qs|Q("match",kubernetes__container_name=container)
+    
+    def _search_filtered_by_timewindow(self,timewindow):
+
+        greater_than_query = 'now-{:d}s/s'.format(timewindow)
+        search = self.search\
+            .filter("range",ska_log_timestamp={'gte': greater_than_query})\
+            .query(self.Qs)\
+            .sort("ska_log_message")\
+            .source(includes=['ska_log_message','ska_log_timestamp','kubernetes.container_name','kubernetes.pod_name'])
+        ##may be replaced by a to_dict command
+        self.dict_results = [
+            {
+                "ska_log_message" : hit.ska_log_message,
+                "ska_log_timestamp" : hit.ska_log_timestamp,
+                "container" : hit.kubernetes.container_name,
+                "pod" : hit.kubernetes.pod_name,
+                "device" : self.containers_to_devices[hit.kubernetes.container_name]
+            }
+            for hit in search.scan()
+        ]
+
+    def stop_tracing(self):
+
+        elapsed_time = ceil(time() - self.start_time)
+        self._search_filtered_by_timewindow(elapsed_time)
+
+
+    def update_devices_to_be_logged(self,devices):
+
+        if type(devices) == list:
+            for device in devices:
+                self._update_Q(device)
+        if type(devices) == str:
+            self._update_Q(devices)
+
+    def get_messages_as_list_dict(self):
+
+        if self.running:
+            self.stop_tracing()
+        return self.dict_results

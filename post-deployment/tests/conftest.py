@@ -61,6 +61,11 @@ def create_sdpsubarray1_proxy():
     sdpsubarray1_proxy = DeviceProxy("mid_sdp/elt/subarray_1")
     return sdpsubarray1_proxy
 
+@pytest.fixture(scope="class")
+def create_dish_master_proxy():
+    dish_master_proxy = DeviceProxy("mid_d0001/elt/master")
+    return dish_master_proxy
+
 """
 Client that provides access to the Kubernetes API from the namespace the test 
 runner pod is running in. 

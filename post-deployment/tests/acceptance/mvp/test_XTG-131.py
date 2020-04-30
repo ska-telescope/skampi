@@ -18,14 +18,17 @@ from resources.test_support.helpers import wait_for, obsState, resource, watch, 
 
 LOGGER = logging.getLogger(__name__)
 
+@pytest.mark.fast
 @scenario("../../../features/XTG-131.feature", "Dish to full power standby mode")
 def test_dish_full_power_mode():
     """Set Dish to full power standby mode"""
 
 @given("Dish Master reports STANDBY_LP Dish mode")
-def pre_condition():
-    logging.info("Dish 0001 dishMode: " + resource('mid_d0001/elt/master').get("dishMode"))
-    assert_that(resource('mid_d0001/elt/master').get('dishmode')).is_equal_to(3)
+def pre_condition(create_dish_master_proxy):
+    logging.info("Dish 0001 dishMode: " + str(create_dish_master_proxy.dishMode))
+    create_dish_master_proxy.SetStandbyLPMode()
+    logging.info("Dish 0001 dishMode: " + str(create_dish_master_proxy.dishMode))
+    assert_that(create_dish_master_proxy.dishMode).is_equal_to(3)
 
 @when("I command Dish Master to STANDBY_FP Dish mode")
 def set_dish_standby_fp():

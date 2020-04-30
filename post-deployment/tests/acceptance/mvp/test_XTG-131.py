@@ -9,12 +9,9 @@ Acceptance tests for MVP.
 
 import logging
 import pytest
-from time import sleep
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
-from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
-    map_dish_nr_to_device_name, update_file, DeviceLogging
+from resources.test_support.helpers import resource, watch, waiter
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,26 +20,27 @@ LOGGER = logging.getLogger(__name__)
 def test_dish_full_power_mode():
     """Set Dish to full power standby mode"""
 
-@given("Dish Master reports STANDBY_LP Dish mode")
-def pre_condition(create_dish_master_proxy):
-    logging.info("Dish 0001 dishMode: " + str(create_dish_master_proxy.dishMode))
-    create_dish_master_proxy.SetStandbyLPMode()
-    logging.info("Dish 0001 dishMode: " + str(create_dish_master_proxy.dishMode))
-    assert_that(create_dish_master_proxy.dishMode).is_equal_to(3)
+@given("Dish Master reports OPERATING Dish mode")
+def pre_condition():
+    logging.info('Dish 0001 dishMode: ' + resource('mid_d0001/elt/master').get('dishMode'))
+    assert_that(resource('mid_d0001/elt/master').get('dishMode')).is_equal_to('OPERATE')
 
 @when("I command Dish Master to STANDBY_FP Dish mode")
-def set_dish_standby_fp():
-    # TODO: set dish to standby FP mode
-    pass
+def set_dish_standby_fp(create_dish_master_proxy):
+    create_dish_master_proxy.SetStandbyFPMode()
+    # Using waiter object to wait for the mode change to happen
+    the_waiter = waiter()
+    the_waiter.waits.append(watch(resource('mid_d0001/elt/master')).for_a_change_on('dishMode'))
+    the_waiter.wait()
+    logging.info('Dish 0001 dishMode: ' + resource('mid_d0001/elt/master').get('dishMode'))
 
 @then("Dish Master reports STANDBY_FP Dish mode")
 def check_dish_standby_fp():
-    # TODO: test that dish is in standby FP mode
-    logging.info("Dish 0001 dishMode: " + resource('mid_d0001/elt/master').get("dishMode"))
-    assert_that(resource('mid_d0001/elt/master').get('dishmode')).is_equal_to(3)
+    logging.info('Dish 0001 dishMode: ' + resource('mid_d0001/elt/master').get('dishMode'))
+    assert_that(resource('mid_d0001/elt/master').get('dishMode')).is_equal_to('STANDBY-FP')
 
-def teardown_function(function):
-    """ teardown any state that was previously setup with a setup_function call.
-    """
-    pass
+@then("Dish Master (device) is in STANDBY state")
+def check_master_device_state():
+    logging.info('Dish 0001 state: ' + resource('mid_d0001/elt/master').get('State'))
+    assert_that(resource('mid_d0001/elt/master').get('State')).is_equal_to('STANDBY')
 

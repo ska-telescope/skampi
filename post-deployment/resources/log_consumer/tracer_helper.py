@@ -31,6 +31,7 @@ class TraceHelper:
         try:
             if(hasattr(dev, "loggingTargets")):
                 logging.info("adding syslog::"+socket.gethostname())
+                logging.info(str(dev.loggingTargets))
                 dev.loggingTargets = ["syslog::" + socket.gethostname()]
             #dev.add_logging_target("syslog::" + socket.gethostname())
         except Exception as ex_obj:
@@ -43,7 +44,7 @@ class TraceHelper:
         dev.remove_logging_target("device::" + self.log_consumer_name)
         try:
             if(hasattr(dev, "loggingTargets")):
-                dev.loggingTargets = []
+                dev.loggingTargets = ["console::cout"]
         except Exception as ex_obj:
             logging.error("Exception in configure command:" + str(ex_obj))
         

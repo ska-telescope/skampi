@@ -2,8 +2,9 @@ import sys
 import pytest
 import logging
 import threading
-from tango import Database, DeviceProxy, DeviceData, EventType, LogLevel, DevVarStringArray
 import time
+import socket
+from tango import Database, DeviceProxy, DeviceData, EventType, LogLevel, DevVarStringArray
 
 class TraceHelper:
     __instance = None
@@ -27,11 +28,25 @@ class TraceHelper:
     def enable_logging(self, devName, logLevel):
         dev = DeviceProxy(devName)
         dev.add_logging_target("device::" + self.log_consumer_name)
+        try:
+            if(hasattr(dev, "loggingTargets")):
+                logging.info("adding syslog::"+socket.gethostname())
+                dev.loggingTargets = ["syslog::" + socket.gethostname()]
+            #dev.add_logging_target("syslog::" + socket.gethostname())
+        except Exception as ex_obj:
+            logging.error("Exception in configure command:" + str(ex_obj))
+
         dev.set_logging_level(int(logLevel))
 
     def disable_logging(self, devName):
         dev = DeviceProxy(devName)
         dev.remove_logging_target("device::" + self.log_consumer_name)
+        try:
+            if(hasattr(dev, "loggingTargets")):
+                dev.loggingTargets = []
+        except Exception as ex_obj:
+            logging.error("Exception in configure command:" + str(ex_obj))
+        
         dev.set_logging_level(0)
 
     def handle_event(self, args):

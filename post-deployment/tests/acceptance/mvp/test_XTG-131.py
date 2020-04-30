@@ -24,48 +24,22 @@ def test_dish_full_power_mode():
 
 @given("Dish Master reports STANDBY_LP Dish mode")
 def pre_condition():
-    the_waiter = waiter()
-    the_waiter.set_wait_for_starting_up()
-    SKAMid().start_up()
-    the_waiter.wait()
-    LOGGER.info(the_waiter.logs)
+    logging.info("Dish 0001 dishMode: " + resource('mid_d0001/elt/master').get("dishMode"))
+    assert_that(resource('mid_d0001/elt/master').get('dishmode')).is_equal_to(3)
 
 @when("I command Dish Master to STANDBY_FP Dish mode")
 def set_dish_standby_fp():
-    assert_that(resource('mid_d0001/elt/master').get('dishmode')).is_equal_to('3')
+    # TODO: set dish to standby FP mode
+    pass
 
 @then("Dish Master reports STANDBY_FP Dish mode")
 def check_dish_standby_fp():
-    assert_that(resource('mid_d0001/elt/master').get('dishmode')).is_equal_to('3')
-    logging.info("Dish 0001 dishmode: " + resource('mid_d0001/elt/master').get("dishmode"))
+    # TODO: test that dish is in standby FP mode
+    logging.info("Dish 0001 dishMode: " + resource('mid_d0001/elt/master').get("dishMode"))
+    assert_that(resource('mid_d0001/elt/master').get('dishmode')).is_equal_to(3)
 
 def teardown_function(function):
-    """ teardown any state that was previously setup with a setup_function
-    call.
+    """ teardown any state that was previously setup with a setup_function call.
     """
-    the_waiter = waiter()
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
-        the_waiter.set_wait_for_tearing_down_subarray()
-        LOGGER.info("tearing down composed subarray (IDLE)")
-        SubArray(1).deallocate()
-        the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
-        LOGGER.info("tearing down configured subarray (READY)")
-        the_waiter.set_wait_for_ending_SB()
-        SubArray(1).end_sb()
-        the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
-        the_waiter.set_wait_for_tearing_down_subarray()
-        SubArray(1).deallocate()
-        the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        LOGGER.info("tearing down configuring subarray")
-        restart_subarray(1)
-    the_waiter.set_wait_for_going_to_standby()
-    SKAMid().standby()
-    LOGGER.info("standby command is executed on telescope")
-    the_waiter.wait()
-    LOGGER.info(the_waiter.logs)
+    pass
 

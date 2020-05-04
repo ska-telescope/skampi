@@ -1,14 +1,22 @@
-
 SKA SDP prototype deployed!
+{{- if .Values.console.enabled }}
 
-To connect to the configuration database:
+You can connect to the configuration database by running a shell in the
+console pod. To start a bash shell, use:
 
-   $ export SDP_CONFIG_PORT=`kubectl get service {{ include "sdp-prototype.fullname" . }}-etcd-nodeport -o jsonpath="{..nodePort}"`
-   $ pip install -U ska-sdp-config
-   $ sdpcfg ls /pb/
+    $ kubectl exec -it deploy/{{ include "sdp-prototype.fullname" . }}-console bash
 
-Note that unless Kubernetes is installed locally (e.g. using Docker),
-you will also need to set SDP_CONFIG_HOST. For instance for Minikube:
+and from there you can use the sdpcfg command, e.g.:
 
-   $ export SDP_CONFIG_HOST=`minikube ip`
+    # sdpcfg ls -R /
 
+Alternatively to start an iPython shell, use:
+
+    $ kubectl exec -it deploy/{{ include "sdp-prototype.fullname" . }}-console ipython
+
+and from there you can use the ska_sdp_config package, e.g.:
+
+    import ska_sdp_config
+    config = ska_sdp_config.Config()
+
+{{- end }}

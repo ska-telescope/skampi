@@ -8,7 +8,7 @@ Acceptance tests for MVP.
 """
 import random
 import signal
-from datetime import date
+from datetime import date,datetime
 from random import choice
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
@@ -24,6 +24,14 @@ import json
 def handlde_timeout(arg1,agr2):
     print("operation timeout")
     raise Exception("operation timeout")
+
+def print_logs_to_file(d,status='ok'):
+    if status=='ok':
+        filename = 'test_AX-13_A2_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
+    elif status=='error':
+        filename = 'error_test_AX-13_A2_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
+    LOGGER.info("Printing log files to build/{}".format(filename))
+    d.implementation.print_log_to_file(filename,style='csv')
 
 
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
@@ -57,23 +65,26 @@ def config():
     file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)
     signal.signal(signal.SIGALRM, handlde_timeout)
-    signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
+    signal.alarm(timeout)  # wait for 20 seconds and timeout if still stick
     #set up logging of components
     d = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    d.update_traces(['ska_mid/tm_subarray_node/1','mid_csp/elt/subarray_01','mid_sdp/elt/subarray_1'])
+    d.update_traces(['ska_mid/tm_subarray_node/1',
+                    'mid_csp/elt/subarray_01',
+                    'mid_csp_cbf/sub_elt/subarray_01',
+                    'mid_sdp/elt/subarray_1'])
     d.start_tracing()
     try:
         logging.info("Configuring the subarray")
         SubArray(1).configure_from_file(file, with_processing = False)
         logging.info("Json is" + str(file))
-    except Exception as ex_obj:
-        LOGGER.info("Exception is: %s", ex_obj)
+    except:
+        LOGGER.info("Command timed out after {} seconds".format(timeout))
         d.stop_tracing()
-        LOGGER.info("The following messages was logged from devices: \n"+ d.get_printable_messages())
+        print_logs_to_file(d,status='error')
+        LOGGER.info("The following messages was logged from devices:\n{}".format(d.get_printable_messages()))
         raise
     d.stop_tracing()
-    LOGGER.info("The following messages was logged from devices: "+ d.get_printable_messages())
-    d.stop_tracing()
+    print_logs_to_file(d,status='ok')
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():

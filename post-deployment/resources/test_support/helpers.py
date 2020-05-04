@@ -507,20 +507,23 @@ class DeviceLoggingImplWithDBDirect():
         return printout
     
     def print_log_to_file(self,filename,style='dict'):
+        data = self.get_messages_as_list_dict()
         if not os.path.exists('build'):
             os.mkdir('build')
-        if style=='dict':
-            with open('build/{}'.format(filename), 'w') as file:
-                data = self.get_messages_as_list_dict()
-                if data != None:
-                    file.write(json.dumps(data)) # use `json.loads` to do the reverse
-        elif style=='csv':
-            data = self.get_messages_as_list_dict()
-            if data != None:
+        if data != []:
+            if style=='dict':
+                with open('build/{}'.format(filename), 'w') as file:
+                    file.write(json.dumps(data)) 
+            elif style=='csv':
                 csv_columns = data[0].keys()
                 with open('build/{}'.format(filename), 'w') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
                     writer.writeheader()
                     for row in data:
                         writer.writerow(row)
+        else:
+            data = 'no data logged'
+            with open('build/{}'.format(filename), 'w') as file:
+                file.write(json.dumps(data)) 
+                
 

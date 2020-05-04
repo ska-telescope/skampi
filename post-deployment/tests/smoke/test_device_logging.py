@@ -10,6 +10,7 @@ from datetime import date
 import mock
 import os
 import csv
+from mock import MagicMock
 
 ###to be  moved
 from elasticsearch_dsl import Search,Q
@@ -111,22 +112,47 @@ def print_to_file_fixture():
     if os.path.isfile('build/{}'.format(filename_json)):
             os.remove('build/{}'.format(filename_json))
 
+@pytest.fixture()
+def device_logging_fixture():
+    fixture = {}
+    filename_csv = 'temp.csv'
+    filename_json = 'temp.json'
+    fixture['filename_csv'] = filename_csv
+    fixture['filename_json'] = filename_json
+    dict_results = []
+    for n in range(10):
+        dict_results.append({
+            "ska_log_message" : "ska_log_message{}".format(n),
+            "ska_log_timestamp" : "ska_log_timestamp{}".format(n),
+            "container" : "ska_log_timestamp{}".format(n),
+            "pod" : "pod{}".format(n) ,
+            "device" : "device{}".format(n)
+        })
+    get_messages_as_list_dict_mock1 = MagicMock('resources.test_support.helpers.DeviceLoggingImplWithDBDirect.get_messages_as_list_dict')
+    get_messages_as_list_dict_mock2 = MagicMock('resources.test_support.helpers.DeviceLoggingImplWithDBDirect.get_messages_as_list_dict')
+    get_messages_as_list_dict_mock1.return_value = dict_results
+    get_messages_as_list_dict_mock2.return_value = []
+    d1 = DeviceLogging('DeviceLoggingImplWithDBDirect')
+    d2 = DeviceLogging('DeviceLoggingImplWithDBDirect')
+    d1.implementation.get_messages_as_list_dict = get_messages_as_list_dict_mock1
+    d2.implementation.get_messages_as_list_dict = get_messages_as_list_dict_mock2
+    fixture['mocked_device_logging_with_dummy_data'] = d1
+    fixture['mocked_device_logging_with_empty_data'] = d2
+    fixture['dummy_data'] = dict_results
+    yield fixture
+    ##tear down
+    if os.path.isfile('build/{}'.format(filename_csv)):
+        os.remove('build/{}'.format(filename_csv))
+    if os.path.isfile('build/{}'.format(filename_json)):
+        os.remove('build/{}'.format(filename_json))
 
 
-@mock.patch('resources.test_support.helpers.DeviceLoggingImplWithDBDirect.get_messages_as_list_dict')
-def test_print_to_file(get_messages_as_list_dict_mock,print_to_file_fixture):
+def test_print_to_csv_file(device_logging_fixture):
     #given
-    get_messages_as_list_dict_mock.return_value = print_to_file_fixture['mock_results']
-    d = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    filename = print_to_file_fixture['filename_json']
+    d = device_logging_fixture['mocked_device_logging_with_dummy_data']
+    filename = device_logging_fixture['filename_csv']
+    dummy_data = device_logging_fixture['dummy_data']
     #when
-    d.implementation.print_log_to_file(filename)
-    #then
-    with open('build/{}'.format(filename), 'r') as file:
-        results = json.loads(file.read())
-    assert_that(results).is_equal_to(print_to_file_fixture['mock_results'])
-    #and when
-    filename = print_to_file_fixture['filename_csv']
     d.implementation.print_log_to_file(filename,style='csv')
     #then
     with open('build/{}'.format(filename), 'r') as csvfile:
@@ -134,10 +160,41 @@ def test_print_to_file(get_messages_as_list_dict_mock,print_to_file_fixture):
         results = []
         for row in reader:
             results.append(row)
-    assert_that(results).is_equal_to(print_to_file_fixture['mock_results'])
+    assert_that(results).is_equal_to(dummy_data)
 
+def test_print_to_json_file(device_logging_fixture):
+    #given
+    d = device_logging_fixture['mocked_device_logging_with_dummy_data']
+    filename = device_logging_fixture['filename_json']
+    dummy_data = device_logging_fixture['dummy_data']
+    #when
+    d.implementation.print_log_to_file(filename,style='dict')
+    #then
+    with open('build/{}'.format(filename), 'r') as file:
+        results = json.loads(file.read())
+    assert_that(results).is_equal_to(dummy_data)
 
+def test_print_json_empty_file(device_logging_fixture):
+    #given
+    d = device_logging_fixture['mocked_device_logging_with_empty_data']
+    filename = device_logging_fixture['filename_json']
+    #when
+    d.implementation.print_log_to_file(filename,style='dict')
+    #then
+    with open('build/{}'.format(filename), 'r') as file:
+        results = json.loads(file.read())
+    assert_that(results).is_equal_to("no data logged")
 
+def test_print_csv_empty_file(device_logging_fixture):
+    #given
+    d = device_logging_fixture['mocked_device_logging_with_empty_data']
+    filename = device_logging_fixture['filename_csv']
+    #when
+    d.implementation.print_log_to_file(filename,style='csv')
+    #then
+    with open('build/{}'.format(filename), 'r') as file:
+        results = json.loads(file.read())
+    assert_that(results).is_equal_to("no data logged")
 
 
 '''def test_log_by_time_window_query():

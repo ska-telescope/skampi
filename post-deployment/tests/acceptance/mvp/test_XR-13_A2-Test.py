@@ -44,11 +44,13 @@ def start_up():
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
     the_waiter.wait()
-    LOGGER.info(the_waiter.logs)
+    LOGGER.info("Telescope Started up")
+    LOGGER.debug("the_waiter.logs")
 
 @given("sub-array is in IDLE state")
 def assign():
     take_subarray(1).to_be_composed_out_of(4)
+    LOGGER.info("Subarray 1 is ready and composed out of 4 dishes")
 
 @when("I call the configure scan execution instruction")
 def config():
@@ -59,6 +61,7 @@ def config():
     signal.signal(signal.SIGALRM, handlde_timeout)
     signal.alarm(timeout)  # wait for 20 seconds and timeout if still stick
     #set up logging of components
+    LOGGER.info("Starting Configuration Test")
     d = DeviceLogging('DeviceLoggingImplWithDBDirect')
     d.update_traces(['ska_mid/tm_subarray_node/1',
                     'mid_csp/elt/subarray_01',
@@ -66,29 +69,29 @@ def config():
                     'mid_sdp/elt/subarray_1'])
     d.start_tracing()
     try:
-        logging.info("Configuring the subarray")
         SubArray(1).configure_from_file(file, with_processing = False)
-        logging.info("Json is" + str(file))
     except:
-        LOGGER.info("Command timed out after {} seconds".format(timeout))
+        LOGGER.info("Configure Command timed out after {} seconds".format(timeout))
+        LOGGER.info("Gathering logs")
         d.stop_tracing()
         print_logs_to_file(d,status='error')
         LOGGER.info("The following messages was logged from devices:\n{}".format(d.get_printable_messages()))
         raise
+    LOGGER.info("Configure executed successfully")
+    LOGGER.info("Gathering logs")
     d.stop_tracing()
     print_logs_to_file(d,status='ok')
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():
+    LOGGER.info("Checking the results")
     # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
-    logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
     # check that the CSP report subarray as being in the obsState = READY
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
-    logging.info("CSPsubarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
     # check that the SDP report subarray as being in the obsState = READY
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
-    logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+    LOGGER.info("Results OK")
 
 
 def teardown_function(function):
@@ -97,27 +100,31 @@ def teardown_function(function):
     """
     the_waiter = waiter()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+        #this means there must have been an error
         the_waiter.set_wait_for_tearing_down_subarray()
         LOGGER.info("tearing down composed subarray (IDLE)")
         SubArray(1).deallocate()
         the_waiter.wait()
         LOGGER.info(the_waiter.logs)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
+        #this means test must have passed
         LOGGER.info("tearing down configured subarray (READY)")
         the_waiter.set_wait_for_ending_SB()
         SubArray(1).end_sb()
         the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
+        LOGGER.debug(the_waiter.logs)
         the_waiter.set_wait_for_tearing_down_subarray()
         SubArray(1).deallocate()
         the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
+        LOGGER.debug(the_waiter.logs)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        LOGGER.info("tearing down configuring subarray")
+        LOGGER.warn("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
+        #raise exception since we are unable to continue with tear down
+        raise Exception("Unable to tear down test setup")
+    LOGGER.info("Putting Telescope in standby")
     the_waiter.set_wait_for_going_to_standby()
     SKAMid().standby()
-    LOGGER.info("standby command is executed on telescope")
     the_waiter.wait()
-    LOGGER.info(the_waiter.logs)
+    LOGGER.debug(the_waiter.logs)
 

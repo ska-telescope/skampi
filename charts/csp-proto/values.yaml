@@ -10,7 +10,7 @@ csplmc:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: csplmc
-    tag: 0.2.1
+    tag: 0.5.7-4028dc62
     pullPolicy: IfNotPresent
 
 dsconfig:

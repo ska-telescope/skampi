@@ -1,5 +1,5 @@
 Feature: TMC integration with Dish Software
-	
+
 	@XTG-131
 	Scenario: Dish from STANDBY-LP to STANDBY-FP
         Given Dish Master reports STANDBY-LP Dish mode

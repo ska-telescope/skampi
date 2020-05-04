@@ -6,61 +6,22 @@ test_calc
 ----------------------------------
 Acceptance tests for MVP.
 """
-import sys
-
-
-import time
-import signal
-
-import pytest
-import logging
-from time import sleep
 import random
+import signal
 from datetime import date
 from random import choice
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-import oet
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
-from tango import DeviceProxy, DevState
 from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
-    map_dish_nr_to_device_name
+    map_dish_nr_to_device_name, update_file, DeviceLogging
 import logging
 
 LOGGER = logging.getLogger(__name__)
 
 import json
 
-
-def update_file(file):
-    with open(file, 'r') as f:
-        data = json.load(f)
-    random_no = random.randint(100, 999)
-    print("random_no",random_no)
-    data['scanID'] = random_no
-    data['sdp']['configure'][0]['id'] = "realtime-" + date.today().strftime("%Y%m%d") + "-" + str(choice(range(1, 10000)))
-
-    fieldid = 1
-    intervalms = 1400
-
-    scan_details = {}
-    scan_details["fieldId"] = fieldid
-    scan_details["intervalMs"] = intervalms
-
-    scanparams = {}
-    scanParameters = {}
-
-    scanParameters[random_no] = scan_details
-    scanparams = scanParameters
-
-    data['sdp']['configure'][0]['scanParameters'] = scanParameters
-    print("data is", data)
-
-    with open(file, 'w') as f:
-        json.dump(data, f)
-
-
-def handlde_timeout():
+def handlde_timeout(arg1,agr2):
     print("operation timeout")
     raise Exception("operation timeout")
 
@@ -69,7 +30,6 @@ def handlde_timeout():
 def test_configure_subarray():
     """Configure Subarray."""
 
-
 @given("I am accessing the console interface for the OET")
 def start_up():
     the_waiter = waiter()
@@ -77,8 +37,6 @@ def start_up():
     SKAMid().start_up()
     the_waiter.wait()
     LOGGER.info(the_waiter.logs)
-    # SKAMid().start_up()
-
 
 @given("sub-array is in IDLE state")
 def assign():
@@ -91,13 +49,6 @@ def assign():
     assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
     receptorIDList_val = watch_receptorIDList.get_value_when_changed()
     assert_that(receptorIDList_val == [(1,2,3,4)])
-    
-    # watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
-    # result['response'] = SubArray(1).allocate(ResourceAllocation(dishes=[Dish(1), Dish(2)]))
-    # logging.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
-    # watch_receptorIDList.wait_until_value_changed()
-    # return result
-
 
 @when("I call the configure scan execution instruction")
 def config():
@@ -105,28 +56,34 @@ def config():
     # update the ID of the config data so that there is no duplicate configs send during tests
     file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)
-    # set a timout mechanism in case a component gets stuck in executing
-    # signal.signal(signal.SIGALRM, handlde_timeout)
-    # signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
+    signal.signal(signal.SIGALRM, handlde_timeout)
+    signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
+    #set up logging of components
+    d = DeviceLogging('DeviceLoggingImplWithDBDirect')
+    d.update_traces(['ska_mid/tm_subarray_node/1','mid_csp/elt/subarray_01','mid_sdp/elt/subarray_1'])
+    d.start_tracing()
     try:
         logging.info("Configuring the subarray")
-        #oet.command.SCAN_ID_GENERATOR.next()
         SubArray(1).configure_from_file(file, with_processing = False)
-        logging.info("Json is", +str(file))
-        #oet.command.SCAN_ID_GENERATOR.next()
-    except:
-        LOGGER.info("configure from file timed out after %s", timeout)
-
+        logging.info("Json is" + str(file))
+    except Exception as ex_obj:
+        LOGGER.info("Exception is: %s", ex_obj)
+        d.stop_tracing()
+        LOGGER.info("The following messages was logged from devices: \n"+ d.get_printable_messages())
+        raise
+    d.stop_tracing()
+    LOGGER.info("The following messages was logged from devices: "+ d.get_printable_messages())
+    d.stop_tracing()
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():
-    # check that the TMC report subarray as being in the ON state and obsState = IDLE
+    # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     logging.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    # check that the CSP report subarray as being in the ON state and obsState = IDLE
+    # check that the CSP report subarray as being in the obsState = READY
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
     logging.info("CSPsubarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
-    # check that the SDP report subarray as being in the ON state and obsState = IDLE
+    # check that the SDP report subarray as being in the obsState = READY
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
     logging.info("SDPsubarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
 
@@ -137,14 +94,12 @@ def teardown_function(function):
     """
     the_waiter = waiter()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
-        print("inside IDLE")
         the_waiter.set_wait_for_tearing_down_subarray()
         LOGGER.info("tearing down composed subarray (IDLE)")
         SubArray(1).deallocate()
         the_waiter.wait()
         LOGGER.info(the_waiter.logs)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
-        print("inside READY")
         LOGGER.info("tearing down configured subarray (READY)")
         the_waiter.set_wait_for_ending_SB()
         SubArray(1).end_sb()
@@ -155,7 +110,6 @@ def teardown_function(function):
         the_waiter.wait()
         LOGGER.info(the_waiter.logs)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        print("inside CONFIGURING")
         LOGGER.info("tearing down configuring subarray")
         restart_subarray(1)
     the_waiter.set_wait_for_going_to_standby()

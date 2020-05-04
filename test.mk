@@ -3,15 +3,16 @@
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
-IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:latest
+IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.4
 # Test runner - run to completion job in K8s
-TEST_RUNNER = test-makefile-runner-only-once-$(KUBE_NAMESPACE)-$(HELM_RELEASE)
+TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(HELM_RELEASE)
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
 # capture the output of the test in a build folder inside the container 
 # 
 TANGO_HOST = databaseds-tango-base-$(HELM_RELEASE):10000
+MARK ?= fast
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
@@ -24,8 +25,7 @@ k8s_test = tar -c post-deployment/ | \
 		--image-pull-policy=IfNotPresent \
 		--image=$(IMAGE_TO_TEST) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
-		mv test-harness/* . && \
-		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) $1 && \
+		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK) $1 && \
 		tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
 		cat /tmp/build.tgz | base64 && \
@@ -42,14 +42,13 @@ k8s_test = tar -c post-deployment/ | \
 # exit the saved status
 k8s_test: smoketest## test the application on K8s
 	$(call k8s_test,test); \
-	  status=$$?; \
-	  rm -fr build; \
-	  kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | perl -ne 'BEGIN {$$on=1;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;'; \
+		status=$$?; \
+		rm -fr build; \
 		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
 		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
 		base64 -d | tar -xzf -; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
-	  exit $$status
+		exit $$status
 
 
 smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).
@@ -94,49 +93,23 @@ tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.
 	# curl -k -u "tango-cs:tango" -XGET https://tango.rest.$(INGRESS_HOST)/tango/rest/rc4/hosts/databaseds-tango-base-$(HELM_RELEASE)/10000 | json_pp
 	# @echo ""
 
+oet_podname = $(shell kubectl get pods -l app=rest-oet-$(HELM_RELEASE) -o=jsonpath='{..metadata.name}')
+sut_cdm_ver= $(shell kubectl exec -it $(oet_podname) pip list | grep "cdm-shared-library" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
+sut_cdm_cur_ver=$(shell grep "cdm-shared-library" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
+sut_oet_ver = $(shell kubectl exec -it $(oet_podname) pip list | grep "observation-execution-tool" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
+sut_oet_cur_ver=$(shell grep "observation-execution-tool" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
+
+check_oet_packages:
+	@echo "MVP is based on cdm-shared-library=$(sut_cdm_ver)"
+	@echo "Test are based on cdm-shared-library=$(sut_cdm_cur_ver)"
+	@if [ $(sut_cdm_ver) != $(sut_cdm_cur_ver) ] ; then \
+	echo "Warning: cdm-shared-library package for MVP is not the same as used for testing!"; \
+	fi
+	@echo "MVP is based on observation-execution-tool=$(sut_oet_ver)"
+	@echo "Test are based on observation-execution-tool=$(sut_oet_cur_ver)"
+	@if [ $(sut_oet_ver) != $(sut_oet_cur_ver) ] ; then \
+	echo "Warning: observation-execution-tool package for MVP is not the same as used for testing!"; \
+	fi
+
 ##the following section is for developers requiring the testing pod to be instantiated with a volume mappig to skampi
-location:= $(shell pwd)
-PYTHONPATH=/app/skampi/:/app/skampi/post-deployment/
-#the port mapping to host
-hostPort ?= 2020
-testing-config := '{ "apiVersion": "v1","spec":{\
-					"containers":[{\
-						"image":"$(IMAGE_TO_TEST)",\
-						"name":"testing-container",\
-						"volumeMounts":[{\
-							"mountPath":"/app/skampi/",\
-							"name":"testing-volume"}],\
-						"env":[{\
-          			 		"name": "TANGO_HOST",\
-            				"value": "databaseds-tango-base-$(HELM_RELEASE):10000"},{\
-							"name": "KUBE_NAMESPACE",\
-          					"value": "$(KUBE_NAMESPACE)"},{\
-        					"name": "HELM_RELEASE",\
-          					"value": "$(HELM_RELEASE)"},{\
-							"name": "PYTHONPATH",\
-							"value": "$(PYTHONPATH)"}],\
-						"ports":[{\
-							"containerPort":22,\
-							"hostPort":$(hostPort)}]}],\
-					"volumes":[{\
-						"name":"testing-volume",\
-						"hostPath":{\
-							"path":"$(location)",\
-							"type":"Directory"}}]}}'
-
-deploy_testing_pod:
-	@kubectl run testing-pod \
-	--image=$(IMAGE_TO_TEST) \
-	--namespace $(KUBE_NAMESPACE) \
-	--wait \
-	--generator=run-pod/v1 \
-	--overrides=$(testing-config)
-	
-delete_testing_pod:
-	@kubectl delete pod testing-pod --namespace $(KUBE_NAMESPACE)
-
-attach_testing_pod:
-	@kubectl exec -it testing-pod --namespace $(KUBE_NAMESPACE) /bin/bash
-
-location:= $(shell pwd)
-
+-include dev-testing.mk

@@ -1,4 +1,5 @@
 {{ if .Values.webjive.enabled }}
+{{ if .Values.minikube }}
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -19,7 +20,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /data/mongodb-{{ template "webjive.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
-
+{{ end }}
 ---
 
 apiVersion: v1
@@ -33,9 +34,15 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+{{ if .Values.minikube }}
   storageClassName: standard
   accessModes:
     - ReadWriteOnce
+{{ else }}
+  storageClassName: nfss1
+  accessModes:
+    - ReadWriteMany
+{{ end }}
   resources:
     requests:
       storage: 10Gi

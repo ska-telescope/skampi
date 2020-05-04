@@ -1,7 +1,7 @@
 {{ if .Values.elastic.enabled }}
 
 {{ if .Values.elastic.use_pv }}
-
+{{ if .Values.minikube }}
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -22,7 +22,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /data/elastic-{{ template "logging.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
-
+{{ end }}
 ---
 
 apiVersion: v1
@@ -36,16 +36,18 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  selector:
-    matchLabels:
-      app: elastic-{{ template "logging.name" . }}-{{ .Release.Name }}
-      release: {{ .Release.Name }}
-  storageClassName: standard
-  accessModes:
-    - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
+{{ if .Values.minikube }}
+  storageClassName: standard
+  accessModes:
+  - ReadWriteOnce
+{{ else }}
+  storageClassName: nfss1
+  accessModes:
+  - ReadWriteMany
+{{ end }}
 
 {{ end }} # use_pv
 

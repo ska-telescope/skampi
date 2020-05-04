@@ -7,6 +7,9 @@ from time import sleep
 import re
 import datetime 
 from datetime import date
+import mock
+import os
+import csv
 
 ###to be  moved
 from elasticsearch_dsl import Search,Q
@@ -82,6 +85,60 @@ def test_log_elastic_time_window():
         current_minute = datetime.datetime.now().minute 
         break
     assert_that(current_minute - lowest_minute).is_less_than_or_equal_to(960/60)
+
+
+
+@pytest.fixture()
+def print_to_file_fixture():
+    fixture = {}
+    dict_results = []
+    for n in range(10):
+        dict_results.append({
+            "ska_log_message" : "ska_log_message{}".format(n),
+            "ska_log_timestamp" : "ska_log_timestamp{}".format(n),
+            "container" : "ska_log_timestamp{}".format(n),
+            "pod" : "pod{}".format(n) ,
+            "device" : "device{}".format(n)
+        })
+    fixture['mock_results'] = dict_results
+    filename_csv = 'temp.csv'
+    filename_json = 'temp.json'
+    fixture['filename_csv'] = filename_csv
+    fixture['filename_json'] = filename_json
+    yield fixture
+    if os.path.isfile('build/{}'.format(filename_csv)):
+            os.remove('build/{}'.format(filename_csv))
+    if os.path.isfile('build/{}'.format(filename_json)):
+            os.remove('build/{}'.format(filename_json))
+
+
+
+@mock.patch('resources.test_support.helpers.DeviceLoggingImplWithDBDirect.get_messages_as_list_dict')
+def test_print_to_file(get_messages_as_list_dict_mock,print_to_file_fixture):
+    #given
+    get_messages_as_list_dict_mock.return_value = print_to_file_fixture['mock_results']
+    d = DeviceLogging('DeviceLoggingImplWithDBDirect')
+    filename = print_to_file_fixture['filename_json']
+    #when
+    d.implementation.print_log_to_file(filename)
+    #then
+    with open('build/{}'.format(filename), 'r') as file:
+        results = json.loads(file.read())
+    assert_that(results).is_equal_to(print_to_file_fixture['mock_results'])
+    #and when
+    filename = print_to_file_fixture['filename_csv']
+    d.implementation.print_log_to_file(filename,style='csv')
+    #then
+    with open('build/{}'.format(filename), 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        results = []
+        for row in reader:
+            results.append(row)
+    assert_that(results).is_equal_to(print_to_file_fixture['mock_results'])
+
+
+
+
 
 '''def test_log_by_time_window_query():
 

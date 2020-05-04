@@ -18,6 +18,9 @@ from datetime import date
 from time import time
 from resources.test_support.mappings import device_to_container
 from math  import ceil
+from elasticsearch import Elasticsearch
+import json
+import csv
 
 LOGGER = logging.getLogger(__name__)
 
@@ -384,7 +387,6 @@ class DeviceLogging():
 
 
 def get_log_stash_db(port=9200,elastic_name='elastic-logging'):
-    from elasticsearch import Elasticsearch
     
     HELM_RELEASE = os.environ.get('HELM_RELEASE')
     elastic_host = '{}-{}'.format(elastic_name,HELM_RELEASE)
@@ -507,3 +509,21 @@ class DeviceLoggingImplWithDBDirect():
             printout += str(log_counter) + self._format_log_data(log) + "\n"
         return printout
     
+    def print_log_to_file(self,filename,style='dict'):
+        if not os.path.exists('build'):
+            os.mkdir('build')
+        if style=='dict':
+            with open('build/{}'.format(filename), 'w') as file:
+                data = self.get_messages_as_list_dict()
+                if data != None:
+                    file.write(json.dumps(data)) # use `json.loads` to do the reverse
+        elif style=='csv':
+            data = self.get_messages_as_list_dict()
+            if data != None:
+                csv_columns = data[0].keys()
+                with open('build/{}'.format(filename), 'w') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+                    writer.writeheader()
+                    for row in data:
+                        writer.writerow(row)
+

@@ -238,13 +238,10 @@ class waiter():
 
 def update_file(file):
     import os 
-    LOGGER.info("current dir:" + os.path.dirname(os.path.realpath(__file__)))
-    LOGGER.info("current working dir:" + os.getcwd())
     try:
         os.chdir('post-deployment')
     except: # ignores if this is an error (assumes then that we are already on that directory)
         pass
-    LOGGER.info("current working dir:" + os.getcwd())
     with open(file, 'r') as f:
         data = json.load(f)
     random_no = random.randint(100, 999)

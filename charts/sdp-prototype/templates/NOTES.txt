@@ -12,9 +12,3 @@ you will also need to set SDP_CONFIG_HOST. For instance for Minikube:
 
    $ export SDP_CONFIG_HOST=`minikube ip`
 
-{{- if index .Values "tango-base" "itango" "enabled" }}
-
-To connect to the Tango interface via iTango, use:
-
-    $ kubectl exec -it itango-tango-base-{{ .Release.Name }} /venv/bin/itango3
-{{- end }}

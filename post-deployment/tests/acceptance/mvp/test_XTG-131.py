@@ -20,7 +20,7 @@ LOGGER = logging.getLogger(__name__)
 def test_dish_full_power_mode():
     """Set Dish to full power standby mode"""
 
-@given("Dish Master reports OPERATING Dish mode")
+@given("Dish Master reports OPERATE Dish mode")
 def pre_condition():
     logging.info('Dish 0001 dishMode: ' + resource('mid_d0001/elt/master').get('dishMode'))
     assert_that(resource('mid_d0001/elt/master').get('dishMode')).is_equal_to('OPERATE')

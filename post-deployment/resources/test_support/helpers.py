@@ -159,15 +159,18 @@ class pilot():
 
     def __init__(self, id):
         self.SubArray = SubArray(id)
+        self.logs = ""
 
     def to_be_composed_out_of(self, dishes):
         the_waiter = waiter()
         the_waiter.set_wait_for_assign_resources()
 
-        result = self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)]))
+        self.result = self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)]))
 
         the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
+        LOGGER.debug(the_waiter.logs)
+        self.logs = the_waiter.logs
+        assert(not the_waiter.timed_out)
         return self
 
     def and_configure_scan_by_file(self,file='resources/test_data/polaris_b1_no_cam.json'):
@@ -192,6 +195,7 @@ class waiter():
     def __init__(self):
         self.waits = []
         self.logs = ""
+        self.timed_out = False
 
     def set_wait_for_assign_resources(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
@@ -229,6 +233,7 @@ class waiter():
             wait = self.waits.pop()
             result = wait.wait_until_value_changed(timeout)
             if result == "timeout":
+                self.timed_out = True
                 self.logs += wait.device_name + " timed out whilst waiting for " + wait.attr + " to change from " + str(
                     wait.previous_value) + " in " + str(timeout) + " seconds;"
             else:

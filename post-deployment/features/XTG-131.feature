@@ -44,7 +44,7 @@ Scenario: mid_dsh_0005/elt/master from OPERATE to STANDBY-FP
 	And mid_dsh_0005/elt/master is in STANDBY state
 
 Scenario: mid_dsh_0005/elt/master from STANDBY-FP to STANDBY-LP
-        Given mid_dsh_0005/elt/master reports STANDBY-FP Dish mode
+    Given mid_dsh_0005/elt/master reports STANDBY-FP Dish mode
 	When I command mid_dsh_0005/elt/master to STANDBY-LP Dish mode
 	Then mid_dsh_0005/elt/master reports STANDBY-LP Dish mode
 	And mid_dsh_0005/elt/master is in STANDBY state

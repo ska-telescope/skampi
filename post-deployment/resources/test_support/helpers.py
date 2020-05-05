@@ -64,10 +64,11 @@ class monitor(object):
     device_name = None
     current_value = None
 
-    def __init__(self, resource, previous_value, attr):
+    def __init__(self, resource, previous_value, attr,future_value=None):
         self.previous_value = previous_value
         self.resource = resource
         self.attr = attr
+        self.future_value = future_value
         self.device_name = resource.device_name
         self.current_value = self.resource.get(self.attr)
 
@@ -77,6 +78,13 @@ class monitor(object):
     def _is_not_changed(self):
         comparison = (self.previous_value == self.current_value)
         if isinstance(comparison, ndarray):
+            return comparison.all()
+        else:
+            return comparison
+
+    def _compare(self,desired):
+        comparison = (self.current_value == desired)
+        if isinstance(comparison,ndarray):
             return comparison.all()
         else:
             return comparison
@@ -98,6 +106,16 @@ class monitor(object):
 
     def wait_until_value_changed(self, timeout=50):
         return self._wait(timeout)
+    
+    def wait_until_value_changed_to(self,value,timeout=50):
+        timeout = timeout
+        self._update()
+        while self._compare(value):
+            timeout -= 1
+            if (timeout == 0): return "timeout"
+            sleep(0.1)
+            self._update()
+        return timeout
 
 
 class subscriber:
@@ -109,7 +127,7 @@ class subscriber:
         value_now = self.resource.get(attr)
         return monitor(self.resource, value_now, attr)
 
-
+ 
 def watch(resource):
     return subscriber(resource)
 

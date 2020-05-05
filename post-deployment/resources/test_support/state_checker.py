@@ -3,18 +3,22 @@ from datetime import date,datetime
 from time import time, sleep
 import threading
 import logging
+import os
+import json
+import csv
 
 
 
 class StateChecker():
 
-    def __init__(self,resources,state_name='obsState',max_nr_of_records=None):
+    def __init__(self,resources,state_name='obsState',max_nr_of_records=None,specific_states={}):
         self.resources = resources
         self.th_records = []
         self.state_name = state_name
         self.th_running = False
         self.lock = threading.Lock()
         self.max_nr_of_records = max_nr_of_records
+        self.specific_states = specific_states
         
 
     def _get_running(self):
@@ -46,14 +50,17 @@ class StateChecker():
 
     def run(self,threaded=True,resolution=0.1):
         self._set_running()
-        max_nr_of_records = self.max_nr_of_records
+        #create copys to keep attributes immutable 
+        resources = self.resources.copy()
+        specific_states = self.specific_states.copy()
         if not threaded:
-            #need to have a deafult value for max nr of records other will run always
-            if max_nr_of_records == None:
+            #need to have a deafult value for max nr of records otherwise will run always
+            max_nr_of_records = self.max_nr_of_records
+            if self.max_nr_of_records == None:
                 max_nr_of_records = 100
-            self._loop(self.resources,self.state_name,resolution,max_nr_of_records)
+            self._loop(resources,self.state_name,resolution,max_nr_of_records,specific_states)
         else:
-            self.thread = threading.Thread(target=self._loop, args=(self.resources,self.state_name,resolution,max_nr_of_records))
+            self.thread = threading.Thread(target=self._loop, args=(resources,self.state_name,resolution,self.max_nr_of_records,specific_states))
             self.thread.start()
     
     def stop(self):
@@ -75,8 +82,34 @@ class StateChecker():
         else:
             return True
 
+    def print_records_to_file(self,filename,style='dict',filtered=False):
+        data = self.get_records(filtered)
+        if not os.path.exists('build'):
+            os.mkdir('build')
+        if data != []:
+            if style=='dict':
+                with open('build/{}'.format(filename), 'w') as file:
+                    file.write(json.dumps(data)) 
+            elif style=='csv':
+                csv_columns = data[0].keys()
+                with open('build/{}'.format(filename), 'w') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+                    writer.writeheader()
+                    for row in data:
+                        writer.writerow(row)
+        else:
+            data = 'no data logged'
+            with open('build/{}'.format(filename), 'w') as file:
+                file.write(json.dumps(data)) 
 
-    def _loop(self,resources,state_name,resolution,max_nr_of_records):
+    def _get_specific_state(self,specific_states,resource_name,state_name):
+        if resource_name in specific_states.keys():
+            return specific_states[resource_name]
+        else:
+            return state_name
+
+
+    def _loop(self,resources,state_name,resolution,max_nr_of_records,specific_states):
         n = 0
         list = []
         while self._get_running():
@@ -86,7 +119,11 @@ class StateChecker():
             record['seq'] = n
             record['time_window'] = datetime.now().strftime('%H:%M:%S.%f')[:-3] 
             for resource_name in resources:
-                record['{} state'.format(resource_name)] = resource(resource_name).get(state_name)
+                if specific_states == {}:
+                    specific_state_name = state_name
+                else:
+                    specific_state_name = self._get_specific_state(specific_states,resource_name,state_name)
+                record['{} state'.format(resource_name)] = resource(resource_name).get(specific_state_name)
                 record['{} delta'.format(resource_name)] = '{:f}'.format(time() - start_time)
             if self._is_unique(list,record):
                 record['unique'] = True

@@ -7,6 +7,8 @@ from assertpy import assert_that
 import re
 from time import sleep,time
 from datetime import datetime
+import csv
+import os
 
 def mock_get_unique(par):
     sleep(0.005)
@@ -62,6 +64,7 @@ def validate_results(res):
     end_time_window =  datetime.strptime(res[9]['time_window'],'%H:%M:%S.%f')
     assert_that((end_time_window-start_time_window).seconds).is_close_to(1,1)
 
+
 @mock.patch('resources.test_support.state_checker.resource')
 def test_non_threaded_loop(resource_mock):
     #given
@@ -78,7 +81,27 @@ def test_non_threaded_loop(resource_mock):
     validate_results(res)
     filtered_result = s.get_records(filtered=True)
     assert_that(filtered_result).is_length(10)
-    
+
+@mock.patch('resources.test_support.state_checker.resource')    
+def test_specific_states(resource_mock):
+    #given
+    resource_mock.return_value.get = mock_get_duplicate
+    s = StateChecker([
+        'dummy resource-1',
+        'dummy resource-2',
+        'dummy resource-3'],
+        max_nr_of_records=10,specific_states={
+         'dummy resource-2' : 'specificState 2',
+         'dummy resource-3' : 'specificState 3'     
+        })
+    #when
+    s.run(threaded=False,resolution=0.1)
+    records = s.get_records()
+    assert_that([record['dummy resource-2 state'] for record in records])\
+        .is_equal_to(['specificState 2' for record in records])
+    assert_that([record['dummy resource-3 state'] for record in records])\
+        .is_equal_to(['specificState 3' for record in records])
+
 def test_threaded_loop():
     #give
     s = StateChecker([
@@ -142,3 +165,28 @@ def test_time_window(resource_mock):
     #then
     records = s.get_records()
     assert_that(get_time_seperation(records)).is_less_than(5)
+
+@mock.patch('resources.test_support.state_checker.resource')
+def test_write_to_file(resource_mock):
+    #given
+    resource_mock.return_value.get = mock_get_unique
+    s = StateChecker([
+        'dummy resource-1',
+        'dummy resource-2',
+        'dummy resource-3'],
+        max_nr_of_records=10)
+    s.run(threaded=False,resolution=0.1)
+    filename = 'test.csv'
+    records = s.get_records()
+    #when
+    s.print_records_to_file(filename,style='csv')
+    #then
+    with open('build/{}'.format(filename), 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        results = []
+        for row in reader:
+            results.append(row)
+    #assert_that(results).is_equal_to(records)
+    if os.path.isfile('build/{}'.format(filename)):
+        os.remove('build/{}'.format(filename))
+  

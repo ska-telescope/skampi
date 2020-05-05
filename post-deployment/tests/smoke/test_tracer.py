@@ -3,6 +3,8 @@
 import sys
 import pytest
 import logging
+import socket
+import logging.handlers
 from tango import Database, DeviceProxy, DeviceData, EventType, LogLevel, DevVarStringArray
 from time import sleep
 from resources.log_consumer.tracer_helper import TraceHelper
@@ -22,8 +24,6 @@ def test_init():
           sleep(timeSleep)
   logging.info("Connected to the databaseds")
 
-
-
 @pytest.mark.fast
 @pytest.mark.tracer
 def test_tracer():
@@ -39,6 +39,47 @@ def test_tracer():
     # test that we didn't get any additional messages after disabling the logging
     sleep(1)
     assert n_msg == len(tracer.get_messages())
+
+@pytest.mark.fast
+@pytest.mark.xfail
+@pytest.mark.tracer_fail
+def test_tracer_all_devices():
+  tracer = TraceHelper()
+  db = Database()
+  count = 0
+  server_list = db.get_server_list()
+  i = 0
+  while i < len(server_list):
+    class_list = db.get_device_class_list(server_list[i])
+    j = 0
+    while j < len(class_list):
+      try:
+        if not "dserver" in class_list[j] and not "tg_test" in class_list[j] and not "log01" in class_list[j]:
+          #logging.info("Connecting to '" + class_list[j] + "'...\r\n")
+          dev = DeviceProxy(class_list[j])
+          tracer.enable_logging(class_list[j], LogLevel.LOG_DEBUG)
+      except Exception as e: 
+        pass
+      j += 2
+    i += 1
+  
+  n_msg = len(tracer.get_messages())
+  assert n_msg > 1
+
+  i = 0
+  while i < len(server_list):
+    class_list = db.get_device_class_list(server_list[i])
+    j = 0
+    while j < len(class_list):
+      try:
+        if not "dserver" in class_list[j] and not "tg_test" in class_list[j] and not "log01" in class_list[j]:
+          #logging.info("Connecting to '" + class_list[j] + "'...\r\n")
+          dev = DeviceProxy(class_list[j])
+          tracer.disable_logging(class_list[j])
+      except Exception as e: 
+        pass
+      j += 2
+    i += 1
 
 @pytest.mark.slow
 @pytest.mark.tracer
@@ -70,5 +111,16 @@ def test_tracer_update():
     finally:
         tracer.disable_logging("ska_mid/tm_central/central_node")
         logging.info("disabled logging on ska_mid/tm_central/central_node")        
-    
-        
+
+@pytest.mark.fast
+@pytest.mark.tracer
+def test_simple_syslog():
+  logger = logging.getLogger('my simple test')
+  logger.setLevel(logging.DEBUG)
+  handler = logging.handlers.SysLogHandler(address=(socket.gethostbyname(socket.gethostname()),514))
+  logger.addHandler(handler)
+  logger.debug('This is a debug message')
+  logger.info('This is an info message')
+  logger.warning('This is a warning message')
+  logger.error('This is an error message')
+  logger.critical('This is a critical message')

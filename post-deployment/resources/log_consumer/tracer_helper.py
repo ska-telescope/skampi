@@ -27,17 +27,17 @@ class TraceHelper:
 
     def enable_logging(self, devName, logLevel):
         dev = DeviceProxy(devName)
-        dev.add_logging_target("device::" + self.log_consumer_name)
         try:
             if(hasattr(dev, "loggingTargets")):
-                logging.info("adding syslog::"+socket.gethostname())
-                logging.info(str(dev.loggingTargets))
-                dev.loggingTargets = ["syslog::" + socket.gethostname()]
-            #dev.add_logging_target("syslog::" + socket.gethostname())
-        except Exception as ex_obj:
-            logging.error("Exception in configure command:" + str(ex_obj))
+                dev.loggingTargets = ["syslog::'" + socket.gethostbyname(socket.gethostname())+"',514"]
+            else:
+                dev.add_logging_target("device::" + self.log_consumer_name)
 
-        dev.set_logging_level(int(logLevel))
+            dev.set_logging_level(int(logLevel))
+        except Exception as ex_obj:
+            pass
+            #logging.error("Exception in configure command:" + str(ex_obj))
+
 
     def disable_logging(self, devName):
         dev = DeviceProxy(devName)

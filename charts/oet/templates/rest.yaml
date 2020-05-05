@@ -28,6 +28,8 @@ binaryData:
 {{ .Files.Get "data/hello_world.py" | b64enc | indent 4 }}
   allocate.py: |-
 {{ .Files.Get "data/allocate.py" | b64enc | indent 4 }}
+  allocate_from_file.py: |-
+{{ .Files.Get "data/allocate_from_file.py" | b64enc | indent 4 }}
   deallocate.py: |-
 {{ .Files.Get "data/deallocate.py" | b64enc | indent 4 }}
   startup.py: |-
@@ -36,6 +38,10 @@ binaryData:
 {{ .Files.Get "data/standby.py" | b64enc | indent 4 }}
   observe.py: |-
 {{ .Files.Get "data/observe.py" | b64enc | indent 4 }}
+  example_allocate.json: |-
+{{ .Files.Get "data/example_allocate.json" | b64enc | indent 4 }}
+  example_configure.json: |-
+{{ .Files.Get "data/example_configure.json" | b64enc | indent 4 }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -115,6 +121,8 @@ spec:
                 path: hello_world.py
               - key: allocate.py
                 path: allocate.py
+              - key: allocate_from_file.py
+                path: allocate_from_file.py
               - key: deallocate.py
                 path: deallocate.py
               - key: startup.py
@@ -123,6 +131,10 @@ spec:
                 path: standby.py
               - key: observe.py
                 path: observe.py
+              - key: example_allocate.json
+                path: example_allocate.json
+              - key: example_configure.json
+                path: example_configure.json
       resources:
   {{ toYaml .Values.rest.resources | indent 10 }}
   {{- with .Values.nodeSelector }}

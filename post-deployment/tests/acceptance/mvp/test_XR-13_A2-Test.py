@@ -14,7 +14,11 @@ from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
-    map_dish_nr_to_device_name, update_file, DeviceLogging
+    map_dish_nr_to_device_name, update_file, DeviceLogging, watch
+from resources.test_support.state_checker import StateChecker
+import pytest
+from  time  import sleep
+
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -25,13 +29,16 @@ def handlde_timeout(arg1,agr2):
     print("operation timeout")
     raise Exception("operation timeout")
 
-def print_logs_to_file(d,status='ok'):
+def print_logs_to_file(s,d,status='ok'):
     if status=='ok':
-        filename = 'test_AX-13_A2_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
+        filename_d = 'logs_test_AX-13_A2_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
+        filename_s = 'states_test_AX-13_A2_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
     elif status=='error':
-        filename = 'error_test_AX-13_A2_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-    LOGGER.info("Printing log files to build/{}".format(filename))
-    d.implementation.print_log_to_file(filename,style='csv')
+        filename_d = 'error_logs_test_AX-13_A2_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
+        filename_s = 'error_states_test_AX-13_A2_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
+    LOGGER.info("Printing log files to build/{} and build/{}".format(filename_d,filename_s))
+    d.implementation.print_log_to_file(filename_d,style='csv')
+    s.print_records_to_file(filename_s,style='csv',filtered=False)
 
 
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
@@ -55,32 +62,55 @@ def assign():
 @when("I call the configure scan execution instruction")
 def config():
     timeout = 60
+    devices_to_log = [
+        'ska_mid/tm_subarray_node/1',
+        'mid_csp/elt/subarray_01',
+        'mid_csp_cbf/sub_elt/subarray_01',
+        'mid_sdp/elt/subarray_1',
+        'mid_d0001/elt/master',
+        'mid_d0002/elt/master',
+        'mid_d0003/elt/master',
+        'mid_d0004/elt/master']
+    non_default_states_to_check = {
+        'mid_d0001/elt/master' : 'pointingState',
+        'mid_d0002/elt/master' : 'pointingState',
+        'mid_d0003/elt/master' : 'pointingState',
+        'mid_d0004/elt/master' : 'pointingState'}
     # update the ID of the config data so that there is no duplicate configs send during tests
     file = 'resources/test_data/polaris_b1_no_cam.json'
     update_file(file)
     signal.signal(signal.SIGALRM, handlde_timeout)
     signal.alarm(timeout)  # wait for 20 seconds and timeout if still stick
     #set up logging of components
+    s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
+    s.run(threaded=True,resolution=0.1)
     LOGGER.info("Starting Configuration Test")
     d = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    d.update_traces(['ska_mid/tm_subarray_node/1',
-                    'mid_csp/elt/subarray_01',
-                    'mid_csp_cbf/sub_elt/subarray_01',
-                    'mid_sdp/elt/subarray_1'])
+    d.update_traces(devices_to_log)
     d.start_tracing()
+    #setup a watch for subarray node to change obstate as transaction should only  be complete once it has changed
+    w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
     try:
         SubArray(1).configure_from_file(file, with_processing = False)
     except:
         LOGGER.info("Configure Command timed out after {} seconds".format(timeout))
         LOGGER.info("Gathering logs")
+        # sleep for 0.2 seconds to gather any pending events
+        sleep(0.2)
         d.stop_tracing()
-        print_logs_to_file(d,status='error')
+        s.stop()
+        print_logs_to_file(s,d,status='error')
         LOGGER.info("The following messages was logged from devices:\n{}".format(d.get_printable_messages()))
-        raise
+        #LOGGER.info("The following states was captured:\n{}".format(s.get_records()))
+        pytest.fail("timed out during confguration")
+    #ensure state is on Ready before proceeding
+    w.wait_until_value_changed_to('READY',timeout=20)
     LOGGER.info("Configure executed successfully")
     LOGGER.info("Gathering logs")
+    s.stop()
     d.stop_tracing()
-    print_logs_to_file(d,status='ok')
+    print_logs_to_file(s,d,status='ok')
+    
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():

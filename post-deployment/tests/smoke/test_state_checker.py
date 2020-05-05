@@ -1,4 +1,5 @@
-from resources.test_support.state_checker import StateChecker, return_resource
+from resources.test_support.state_checker import StateChecker
+from resources.test_support.helpers import resource
 import pytest
 import mock
 import logging
@@ -11,19 +12,8 @@ def mock_get(par):
     sleep(0.005)
     return "dummy state for {}".format(par)
 
-@mock.patch('resources.test_support.state_checker.resource')
-def test_non_threaded_loop(resource_mock):
-    #given
-    resource_mock.return_value.get = mock_get
-    s = StateChecker([
-        'dummy resource-1',
-        'dummy resource-2',
-        'dummy resource-3'],
-        max_nr_of_records=10)
-    #when
-    s.run(threaded=False,resolution=0.1)
-    #then
-    res = s.get_records()
+def validate_results(res):
+
     assert_that(res).is_length(10)
     keys = list(res[0].keys())
     assert_that(keys).is_equal_to([
@@ -45,7 +35,6 @@ def test_non_threaded_loop(resource_mock):
         is_equal_to(
         [ True for n in range(10) ]
     )
-    logging.info(res[0][keys[2]])
     for n in range(2,6,2):
         assert_that(
             [   re.match('dummy state for ObsState',record[keys[n]]) != None for record in res]).\
@@ -62,5 +51,32 @@ def test_non_threaded_loop(resource_mock):
     end_time_window =  datetime.strptime(res[9]['time_window'],'%H:%M:%S')
     assert_that(end_time_window.second-start_time_window.second).is_equal_to(1)
 
+
+@mock.patch('resources.test_support.state_checker.resource')
+def test_non_threaded_loop(resource_mock):
+    #given
+    resource_mock.return_value.get = mock_get
+    s = StateChecker([
+        'dummy resource-1',
+        'dummy resource-2',
+        'dummy resource-3'],
+        max_nr_of_records=10)
+    #when
+    s.run(threaded=False,resolution=0.1)
+    #then
+    res = s.get_records()
+    validate_results(res)
     
+def test_threaded_loop():
+    #give
+    s = StateChecker([
+        'ska_mid/tm_subarray_node/1'],
+        max_nr_of_records=20)
+    #when
+    s.run(threaded=True,resolution=0.1)
+    sleep(1)
+    s.stop()
+    #then
+    res = s.get_records()
+    assert_that(res).is_not_empty()
     

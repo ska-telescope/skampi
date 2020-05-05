@@ -30,15 +30,23 @@ def _change_dish_mode(dev_proxy, cmd, device_name):
     watch_dish_mode = watch(resource(device_name)).for_a_change_on('dishMode')
     watch_dish_mode.wait_until_value_changed()
 
+def pre_condition(dev_proxy, device_name, expected):
+    """verify the device dish mode before executing mode transition requests"""
+    try:
+        assert_that(resource(device_name).get('dishMode')).is_equal_to(expected)
+    except AssertionError:
+        # standbyfp mode is used as initial condition since it can be reached from other dish modes
+        _change_dish_mode(dev_proxy, 'SetStandbyFPMode', device_name)
+        _change_dish_mode(dev_proxy, mode_cmd_map[expected], device_name)
+    else:
+        logging.info(device_name + ' initial dishMode: ' + resource(device_name).get('dishMode'))
+        assert_that(resource(device_name).get('dishMode')).is_equal_to(expected)
+
 # define steps for scenario
 @given(parsers.parse("{device_name} reports {expected} Dish mode"))
 def device_proxy(device_name, expected):
     dev_proxy = DeviceProxy(device_name)
-    # standbyfp mode is used as initial condition since it can be reached from other dish modes
-    _change_dish_mode(dev_proxy, 'SetStandbyFPMode', device_name)
-    _change_dish_mode(dev_proxy, mode_cmd_map[expected], device_name)
-    logging.info(device_name + ' initial dishMode: ' + resource(device_name).get('dishMode'))
-    assert_that(resource(device_name).get('dishMode')).is_equal_to(expected)
+    pre_condition(dev_proxy, device_name, expected)
     return dev_proxy
 
 @when(parsers.parse("I command {device_name} to {requested} Dish mode"))

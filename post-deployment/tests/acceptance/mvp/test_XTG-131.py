@@ -79,22 +79,22 @@ def test_mid_d0001_from_standbyfp_to_standbylp():
     pass
 
 # mid_d0005/elt/master
-@pytest.mark.xfailed
+@pytest.mark.xfail
 @scenario("mid_d0005/elt/master from STANDBY-LP to STANDBY-FP")
 def test_mid_d0005_from_standbylp_to_standbyfp_mode():
     pass
 
-@pytest.mark.xfailed
+@pytest.mark.xfail
 @scenario("mid_d0005/elt/master from STANDBY-FP to OPERATE")
 def test_mid_d0005_from_standbyfp_to_operate_mode():
     pass
 
-@pytest.mark.xfailed
+@pytest.mark.xfail
 @scenario("mid_d0005/elt/master from OPERATE to STANDBY-FP")
 def test_mid_d0005_from_operate_to_standbyfp():
     pass
 
-@pytest.mark.xfailed
+@pytest.mark.xfail
 @scenario("mid_d0005/elt/master from STANDBY-FP to STANDBY-LP")
 def test_mid_d0005_from_standbyfp_to_standbylp():
     pass

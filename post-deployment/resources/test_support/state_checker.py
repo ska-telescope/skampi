@@ -84,7 +84,7 @@ class StateChecker():
             record = {}
             start_time = time()
             record['seq'] = n
-            record['time_window'] = datetime.now().strftime('%H:%M:%S')
+            record['time_window'] = datetime.now().strftime('%H:%M:%S.%f')[:-3] 
             for resource_name in resources:
                 record['{} state'.format(resource_name)] = resource(resource_name).get(state_name)
                 record['{} delta'.format(resource_name)] = '{:f}'.format(time() - start_time)
@@ -98,6 +98,7 @@ class StateChecker():
                     logging.debug('nr of records ({}) is above max {}, stopping'.format(n,max_nr_of_records))
                     self._clear_running()
                     break
-            sleep(resolution)  
+            time_left_to_sleep = abs(resolution - (time() - start_time))
+            sleep(time_left_to_sleep)  
         self._update_records(list)
 

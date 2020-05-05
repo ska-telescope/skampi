@@ -37,7 +37,7 @@ def validate_results(res):
         [ n+1 for n in range(10)]
     )
     assert_that(
-        [ re.match('\d\d:\d\d:\d\d',record[keys[1]]) != None for record in res]).\
+        [ re.match('\d\d:\d\d:\d\d.\d\d\d',record[keys[1]]) != None for record in res]).\
         is_equal_to(
         [ True for n in range(10) ]
     )
@@ -58,8 +58,8 @@ def validate_results(res):
         .is_equal_to(
         [ True for n in range(10)]
     )
-    start_time_window = datetime.strptime(res[0]['time_window'],'%H:%M:%S')
-    end_time_window =  datetime.strptime(res[9]['time_window'],'%H:%M:%S')
+    start_time_window = datetime.strptime(res[0]['time_window'],'%H:%M:%S.%f')
+    end_time_window =  datetime.strptime(res[9]['time_window'],'%H:%M:%S.%f')
     assert_that((end_time_window-start_time_window).seconds).is_close_to(1,1)
 
 @mock.patch('resources.test_support.state_checker.resource')
@@ -82,15 +82,20 @@ def test_non_threaded_loop(resource_mock):
 def test_threaded_loop():
     #give
     s = StateChecker([
-        'ska_mid/tm_subarray_node/1'],
+        'ska_mid/tm_subarray_node/1',
+        'mid_csp/elt/subarray_01',
+        'mid_sdp/elt/subarray_1'],
         max_nr_of_records=20)
     #when
     s.run(threaded=True,resolution=0.1)
     sleep(1)
     s.stop()
     #then
-    res = s.get_records()
-    assert_that(res).is_not_empty()
+    records = s.get_records()
+    assert_that(records).is_not_empty()
+    time_seperation = get_time_seperation(records)
+    logging.info(time_seperation)
+    assert_that(time_seperation).is_less_than(5)
     
 @mock.patch('resources.test_support.state_checker.resource')
 def test_annotate_uniqueness(resource_mock):
@@ -113,6 +118,15 @@ def test_annotate_uniqueness(resource_mock):
     filtered_result = s.get_records(filtered=True)
     assert_that(filtered_result).is_length(1)
 
+def get_time_seperation(records,resolution=100):
+    error_count = 0
+    for i,record in enumerate(records):
+        if i > 0:
+            curr_time_window = datetime.strptime(record['time_window'],'%H:%M:%S.%f')
+            prev_time_window =  datetime.strptime(records[i-1]['time_window'],'%H:%M:%S.%f')
+            error = (curr_time_window-prev_time_window).microseconds/1000 - resolution
+            error_count = error_count + error
+    return error_count/(len(records))
 
 @mock.patch('resources.test_support.state_checker.resource')
 def test_time_window(resource_mock):
@@ -127,5 +141,4 @@ def test_time_window(resource_mock):
     s.run(threaded=False,resolution=0.1)
     #then
     records = s.get_records()
-    for record in records:
-        logging.info(record['time_window'])
+    assert_that(get_time_seperation(records)).is_less_than(5)

@@ -35,6 +35,14 @@ def handlde_timeout():
     print("operation timeout")
     raise Exception("operation timeout")
 
+class ResourceGroup():
+
+    def __init__(self,resource_names):
+        self.resources = resource_names
+
+    def get(self,attr):
+        return [resource(resource_name).get(attr) for resource_name in self.resources]
+
 class resource:
     device_name = None
 
@@ -202,6 +210,9 @@ class pilot():
             SubArray(1).configure_from_file(file, with_processing=False)
         except Exception as ex_obj:
             LOGGER.info("Exception in configure command: %s", ex_obj)
+
+    def and_end_sb_when_ready(self):
+        self.SubArray.end_sb()
 
 
 def restart_subarray(id):

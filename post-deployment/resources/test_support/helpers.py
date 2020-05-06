@@ -21,6 +21,7 @@ from math  import ceil
 from elasticsearch import Elasticsearch
 import json
 import csv
+import pytest
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class ResourceGroup():
         self.resources = resource_names
 
     def get(self,attr):
-        return [resource(resource_name).get(attr) for resource_name in self.resources]
+        return [{resource_name : resource(resource_name).get(attr)} for resource_name in self.resources]
 
 class resource:
     device_name = None
@@ -97,12 +98,12 @@ class monitor(object):
         else:
             return comparison
 
-    def _wait(self, timeout=80):
+    def _wait(self, timeout=80,resolution=0.1):
         timeout = timeout
         while (self._is_not_changed()):
             timeout -= 1
             if (timeout == 0): return "timeout"
-            sleep(0.1)
+            sleep(resolution)
             self._update()
         return timeout
 
@@ -112,16 +113,16 @@ class monitor(object):
             return "timeout"
         return self.current_value
 
-    def wait_until_value_changed(self, timeout=50):
+    def wait_until_value_changed(self, timeout=50,resolution=0.1):
         return self._wait(timeout)
     
-    def wait_until_value_changed_to(self,value,timeout=50):
+    def wait_until_value_changed_to(self,value,timeout=50,resolution=0.1):
         timeout = timeout
         self._update()
         while self._compare(value):
             timeout -= 1
             if (timeout == 0): return "timeout"
-            sleep(0.1)
+            sleep(resolution)
             self._update()
         return timeout
 
@@ -194,9 +195,9 @@ class pilot():
         self.result = self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)]))
 
         the_waiter.wait()
-        LOGGER.debug(the_waiter.logs)
         self.logs = the_waiter.logs
-        assert(not the_waiter.timed_out)
+        if the_waiter.timed_out:
+            pytest.fail("timed out whilst composing subarray:\n {}".format(the_waiter.logs))
         return self
 
     def and_configure_scan_by_file(self,file='resources/test_data/polaris_b1_no_cam.json'):
@@ -211,8 +212,25 @@ class pilot():
         except Exception as ex_obj:
             LOGGER.info("Exception in configure command: %s", ex_obj)
 
+    def and_release_all_resources(self):
+        the_waiter = waiter()
+        the_waiter.set_wait_for_tearing_down_subarray()
+        SubArray(1).deallocate()
+        the_waiter.wait()
+        if the_waiter.timed_out:
+            pytest.fail("timed out whilst releasing resources on subarray:\n {}".format(the_waiter.logs))
+        self.logs = the_waiter.logs
+        return self
+
     def and_end_sb_when_ready(self):
-        self.SubArray.end_sb()
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_to_standby()
+        SKAMid().standby()
+        the_waiter.wait()
+        if the_waiter.timed_out:
+            pytest.fail("timed out taking the subarray to IDLE:\n {}".format(the_waiter.logs))
+        self.logs = the_waiter.logs
+        return self
 
 
 def restart_subarray(id):
@@ -256,19 +274,19 @@ class waiter():
     def set_wait_for_ending_SB(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState"))
 
-    def wait(self, timeout=80):
+    def wait(self, timeout=80,resolution=0.1):
         self.logs = ""
         while self.waits:
             wait = self.waits.pop()
-            result = wait.wait_until_value_changed(timeout)
+            result = wait.wait_until_value_changed(timeout=timeout,resolution=resolution)
             if result == "timeout":
                 self.timed_out = True
                 self.logs += wait.device_name + " timed out whilst waiting for " + wait.attr + " to change from " + str(
-                    wait.previous_value) + " in " + str(timeout) + " seconds;"
+                    wait.previous_value) + " in " + str(timeout*resolution) + " seconds;"
             else:
                 self.logs += wait.device_name + " changed " + str(wait.attr) + " from " + str(
-                    wait.previous_value) + " to " + str(wait.current_value) + " after " + str(
-                    timeout - result) + " tries ;"
+                    wait.previous_value) + " to " + str(wait.current_value) + " after " + str((
+                    timeout - result)*resolution) + " seconds ;"
 
 def update_file(file):
     import os 
@@ -560,4 +578,24 @@ class DeviceLoggingImplWithDBDirect():
             with open('build/{}'.format(filename), 'w') as file:
                 file.write(json.dumps(data)) 
                 
+def set_telescope_to_standby():
+    the_waiter = waiter()
+    the_waiter.set_wait_for_going_to_standby()
+    SKAMid().standby()
+    the_waiter.wait()
+    if the_waiter.timed_out:
+        pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
+def set_telescope_to_running():
+    the_waiter = waiter()
+    the_waiter.set_wait_for_starting_up()
+    SKAMid().start_up()
+    the_waiter.wait()
+    if the_waiter.timed_out:
+        pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
+
+def telescope_is_in_standby():
+    return  [resource('ska_mid/tm_subarray_node/1').get("State"),
+            resource('mid_csp/elt/subarray_01').get("State"),
+            resource('mid_csp_cbf/sub_elt/subarray_01').get("State")] == \
+            ['DISABLE' for n in range(3)]

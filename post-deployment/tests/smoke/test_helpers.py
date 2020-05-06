@@ -79,12 +79,14 @@ class TestResource():
 @pytest.mark.fast
 def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
     allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
+    waiter_mock_instance = waiter_mock.return_value
+    waiter_mock_instance.timed_out = False
     take_subarray(1).to_be_composed_out_of(4)
     dish_devices = [
         'mid_d0001/elt/master', 'mid_d0002/elt/master',
         'mid_d0003/elt/master', 'mid_d0004/elt/master',
         ]
-    waiter_mock_instance = waiter_mock.return_value
+
     waiter_mock_instance.set_wait_for_assign_resources.assert_called_once()
     waiter_mock_instance.wait.assert_called_once()
     subarray_mock_allocate.assert_called_once_with(allocation)

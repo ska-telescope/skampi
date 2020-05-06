@@ -384,8 +384,8 @@ class DeviceLoggingImplWithTraceHelper():
 #abstraction of Device logging implemenetation is set by implementation object and mappoing is defined in shim dictionary
 class DeviceLogging():
     
-    def __init__(self,implementation='TraceHelper'):
-        if (implementation=='TraceHelper'):
+    def __init__(self,implementation='TracerHelper'):
+        if (implementation=='TracerHelper'):
             self.implementation = DeviceLoggingImplWithTraceHelper()
             self._shim = {"set_logging_level":self.implementation.set_logging_level,
                           "update_traces": self.implementation.update_traces, 
@@ -396,7 +396,7 @@ class DeviceLogging():
                           "get_printable_messages": self.implementation.get_printable_messages, 
                           "get_messages_as_list_dict": self.implementation.get_messages_as_list_dict
              }
-        if (implementation=='DeviceLoggingImplWithDBDirect'):
+        elif (implementation=='DeviceLoggingImplWithDBDirect'):
             self.implementation = DeviceLoggingImplWithDBDirect()
             self._shim = {"set_logging_level":self.implementation.set_logging_level,
                           "update_traces": self.implementation.update_devices_to_be_logged, 

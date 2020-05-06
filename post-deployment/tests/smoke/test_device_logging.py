@@ -25,7 +25,7 @@ def test_device_logging():
     d.wait_until_message_received("DataGenerator::generating data", 20)
     dict_messages_before = d.get_messages_as_list_dict()
     d.stop_tracing()
-    d = DeviceLogging("TraceHelper")
+    d = DeviceLogging("TracerHelper")
     d.update_traces(['sys/tg_test/1'])
     logging.debug('starting traces again for for sys/tg_test/1')
     d.start_tracing()
@@ -50,7 +50,6 @@ def test_logging_on_test_device_as_string():
 def test_throw_error_():
     with pytest.raises(Exception):
         DeviceLogging("wrong implementation")
-    DeviceLogging("TraceHelper")
 
 def test_log_single_device_from_elastic():
 

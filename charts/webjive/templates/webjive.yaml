@@ -76,6 +76,10 @@ spec:
       - name: webjive
         image: "{{ .Values.webjive.image.registry }}/{{ .Values.webjive.image.image }}:{{ .Values.webjive.image.tag }}"
         imagePullPolicy: {{ .Values.webjive.image.pullPolicy }}
+        command:
+          - /bin/sh
+          - -c
+          - "sed -i '/^http /a \\ \\ \\ \\ map_hash_bucket_size 64;' /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
         ports:
         - name: webjive-http
           containerPort: 80

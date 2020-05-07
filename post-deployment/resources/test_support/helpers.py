@@ -209,8 +209,8 @@ class pilot():
         try:
             logging.info("Configuring the subarray")
             SubArray(1).configure_from_file(file, with_processing=False)
-        except Exception as ex_obj:
-            LOGGER.info("Exception in configure command: %s", ex_obj)
+        except:
+            pytest.fail("timed out whilst configuring subarray: unable to continue with tests")
 
     def and_release_all_resources(self):
         the_waiter = waiter()

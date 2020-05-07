@@ -12,3 +12,6 @@ archiver:
   enabled: false
 
 minikube: true
+
+pv:
+  storageClassName: nfss1

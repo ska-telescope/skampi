@@ -32,9 +32,8 @@ def _change_dish_mode(dev_proxy, cmd, device_name):
 
 def pre_condition(dev_proxy, device_name, expected):
     """verify the device dish mode before executing mode transition requests"""
-    try:
-        assert_that(resource(device_name).get('dishMode')).is_equal_to(expected)
-    except AssertionError:
+    actual = resource(device_name).get('dishMode')
+    if actual != expected:
         # standbyfp mode is used as initial condition since it can be reached from other dish modes
         _change_dish_mode(dev_proxy, 'SetStandbyFPMode', device_name)
         _change_dish_mode(dev_proxy, mode_cmd_map[expected], device_name)
@@ -65,22 +64,22 @@ def check_master_device_state(device_name, desired):
 
 
 # mid_d0001/elt/master
-@pytest.mark.xfail
+@pytest.mark.fast
 @scenario("mid_d0001/elt/master from STANDBY-LP to STANDBY-FP")
 def test_mid_d0001_from_standbylp_to_standbyfp_mode():
     pass
 
-@pytest.mark.xfail
+@pytest.mark.fast
 @scenario("mid_d0001/elt/master from STANDBY-FP to OPERATE")
 def test_mid_d0001_from_standbyfp_to_operate_mode():
     pass
 
-@pytest.mark.xfail
+@pytest.mark.fast
 @scenario("mid_d0001/elt/master from OPERATE to STANDBY-FP")
 def test_mid_d0001_from_operate_to_standbyfp():
     pass
 
-@pytest.mark.xfail
+@pytest.mark.fast
 @scenario("mid_d0001/elt/master from STANDBY-FP to STANDBY-LP")
 def test_mid_d0001_from_standbyfp_to_standbylp():
     pass

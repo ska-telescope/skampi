@@ -148,6 +148,11 @@ delete test environment:
   - kubectl delete namespace $KUBE_NAMESPACE-sdp
   environment:
     name: $DEPLOY_ENVIRONMENT
+  only:
+    refs:
+      - master
+    variables:
+      - $DELETE == "true"
 
 deploy test environment:
   stage: deploy
@@ -160,6 +165,9 @@ deploy test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
+  only:
+    refs:
+      - master
 
 k8s_test test environment:
   stage: test
@@ -171,6 +179,9 @@ k8s_test test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
+  only:
+    refs:
+      - master
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -188,6 +199,9 @@ smoketest test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
+  only:
+    refs:
+      - master
 
 .run-debug-cmd:
   stage: debug

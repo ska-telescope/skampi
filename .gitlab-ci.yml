@@ -148,9 +148,6 @@ delete test environment:
   - kubectl delete namespace $KUBE_NAMESPACE-sdp
   environment:
     name: $DEPLOY_ENVIRONMENT
-  only:
-    variables:
-      - $DELETE == "true"
 
 deploy test environment:
   stage: deploy

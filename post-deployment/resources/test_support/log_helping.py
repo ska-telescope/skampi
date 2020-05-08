@@ -3,7 +3,9 @@ from elasticsearch import Elasticsearch
 import logging
 import os
 from elasticsearch_dsl import Search,Q
-from datetime import date
+from elasticsearch_dsl.query import Range,Terms,Term
+from datetime import date,datetime
+
 from time import time,sleep
 from math  import ceil
 import json 
@@ -150,7 +152,7 @@ def get_log_stash_db(port=9200,elastic_name='elastic-logging'):
     return Elasticsearch([host_details]) 
 
 class DeviceLoggingImplWithDBDirect():
-        
+
     def __init__(self,es=None):
  
         if es == None:
@@ -163,10 +165,11 @@ class DeviceLoggingImplWithDBDirect():
         self.Qs = None
         self.start_time=None
         self.running = False
+        self.source_includes = ['ska_log_message','ska_log_timestamp','kubernetes.container_name','kubernetes.pod_name']
     
     def start_tracing(self):   
 
-        self.start_time = time()
+        self.start_time = datetime.now()
         self.running = True
 
     def set_logging_level(self,level):
@@ -183,28 +186,30 @@ class DeviceLoggingImplWithDBDirect():
 
     def _update_containers_to_devices(self,device,container):
 
-        if device in self.containers_to_devices.keys():
+        if container in self.containers_to_devices.keys():
             self.containers_to_devices[container] += "/{}".format(device)
         else:
             self.containers_to_devices[container] = device
 
-    def _update_Q(self,device):
-
+    def _update(self,device):
         container = device_to_container[device]
         self._update_containers_to_devices(device,container)
-        if self.Qs == None:
-            self.Qs = Q("match",kubernetes__container_name=container)
-        else:
-            self.Qs = self.Qs|Q("match",kubernetes__container_name=container)
     
-    def _search_filtered_by_timewindow(self,timewindow):
+    def _qeury_by_time_window(self):
+        return Range(ska_log_timestamp={'gte':self.start_time})
 
-        greater_than_query = 'now-{:d}s/s'.format(timewindow)
+    def _qeury_by_containers(self):
+        containers = list(self.containers_to_devices.keys())
+        if len(containers) == 1:
+            return Term(kubernetes__container_name__keyword = containers[0])
+        return Terms(kubernetes__container_name__keyword = containers)
+
+    def _run_query(self):
         search = self.search\
-            .filter("range",ska_log_timestamp={'gte': greater_than_query})\
-            .query(self.Qs)\
+            .query(self._qeury_by_time_window())\
+            .query(self._qeury_by_containers())\
             .sort("ska_log_message")\
-            .source(includes=['ska_log_message','ska_log_timestamp','kubernetes.container_name','kubernetes.pod_name'])
+            .source(includes=self.source_includes)
         ##may be replaced by a to_dict command
         self.dict_results = []
         for hit in search.scan():
@@ -222,18 +227,17 @@ class DeviceLoggingImplWithDBDirect():
 
     def stop_tracing(self):
 
-        elapsed_time = ceil(time() - self.start_time)
         self.running = False
-        self._search_filtered_by_timewindow(elapsed_time)
+        self._run_query()
 
 
     def update_devices_to_be_logged(self,devices):
 
         if type(devices) == list:
             for device in devices:
-                self._update_Q(device)
+                self._update(device)  
         if type(devices) == str:
-            self._update_Q(devices)
+            self._update(devices)
 
     def get_messages_as_list_dict(self):
 

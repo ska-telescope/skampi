@@ -5,8 +5,7 @@ import pytest
 from assertpy import assert_that
 from time import sleep
 import re
-import datetime 
-from datetime import date
+from datetime import datetime,date,timedelta
 import mock
 import os
 import csv
@@ -77,12 +76,13 @@ def test_log_elastic_time_window():
 
     d = DeviceLoggingImplWithDBDirect()
     d.update_devices_to_be_logged("sdp-processing-controller")
-    d._search_filtered_by_timewindow(960)                                                                           
+    d.start_time = datetime.now() - timedelta(seconds=960)
+    d._run_query()                                                                          
     res = d.get_messages_as_list_dict()
     for item in res:
         timestamp = item['ska_log_timestamp']
         lowest_minute = int(re.findall(r'(?<=^.{16}:)(\d{2})',timestamp)[0])
-        current_minute = datetime.datetime.now().minute 
+        current_minute = datetime.now().minute 
         break
     assert_that(current_minute - lowest_minute).is_less_than_or_equal_to(960/60)
 

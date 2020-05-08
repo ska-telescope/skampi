@@ -12,18 +12,22 @@ from datetime import date,datetime
 from random import choice
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
-from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
-    map_dish_nr_to_device_name, update_file, DeviceLogging, watch
-from resources.test_support.state_checker import StateChecker
-import pytest
 from  time  import sleep
-
 import logging
+import json
+#local dependencies
+from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
+    map_dish_nr_to_device_name, update_file, watch
+from resources.test_support.log_helping import DeviceLogging
+from resources.test_support.state_checking import StateChecker
+import pytest
+#SUT dependencies
+from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+
 
 LOGGER = logging.getLogger(__name__)
 
-import json
+
 
 def handlde_timeout(arg1,agr2):
     print("operation timeout")

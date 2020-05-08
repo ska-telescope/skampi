@@ -1,5 +1,3 @@
-from resources.test_support.state_checker import StateChecker
-from resources.test_support.helpers import resource
 import pytest
 import mock
 import logging
@@ -9,6 +7,10 @@ from time import sleep,time
 from datetime import datetime
 import csv
 import os
+#local dependencies
+from resources.test_support.helpers import resource
+#SUT
+from resources.test_support.state_checking import StateChecker
 
 def mock_get_unique(par):
     sleep(0.005)
@@ -39,19 +41,19 @@ def validate_results(res):
         [ n+1 for n in range(10)]
     )
     assert_that(
-        [ re.match('\d\d:\d\d:\d\d.\d\d\d',record[keys[1]]) != None for record in res]).\
+        [ re.match(r'\d\d:\d\d:\d\d.\d\d\d',record[keys[1]]) != None for record in res]).\
         is_equal_to(
         [ True for n in range(10) ]
     )
     for n in range(2,6,2):
         assert_that(
-            [   re.match('.+obsState',record[keys[n]]) != None for record in res]).\
+            [   re.match(r'.+obsState',record[keys[n]]) != None for record in res]).\
             is_equal_to(
             [ True for n in range(10) ]
         )
     for n in range(3,7,2):
         assert_that(
-            [   re.match('\d+\.\d{6}',record[keys[n]]) != None for record in res]).\
+            [   re.match(r'\d+\.\d{6}',record[keys[n]]) != None for record in res]).\
             is_equal_to(
             [ True for n in range(10) ]
         )
@@ -65,7 +67,7 @@ def validate_results(res):
     assert_that((end_time_window-start_time_window).seconds).is_close_to(1,1)
 
 
-@mock.patch('resources.test_support.state_checker.resource')
+@mock.patch('resources.test_support.state_checking.resource')
 def test_non_threaded_loop(resource_mock):
     #given
     resource_mock.return_value.get = mock_get_unique
@@ -82,7 +84,7 @@ def test_non_threaded_loop(resource_mock):
     filtered_result = s.get_records(filtered=True)
     assert_that(filtered_result).is_length(10)
 
-@mock.patch('resources.test_support.state_checker.resource')    
+@mock.patch('resources.test_support.state_checking.resource')    
 def test_specific_states(resource_mock):
     #given
     resource_mock.return_value.get = mock_get_duplicate
@@ -120,7 +122,7 @@ def test_threaded_loop():
     logging.info(time_seperation)
     assert_that(time_seperation).is_less_than(5)
     
-@mock.patch('resources.test_support.state_checker.resource')
+@mock.patch('resources.test_support.state_checking.resource')
 def test_annotate_uniqueness(resource_mock):
     #given
     resource_mock.return_value.get = mock_get_duplicate
@@ -151,7 +153,7 @@ def get_time_seperation(records,resolution=100):
             error_count = error_count + error
     return error_count/(len(records))
 
-@mock.patch('resources.test_support.state_checker.resource')
+@mock.patch('resources.test_support.state_checking.resource')
 def test_time_window(resource_mock):
     #given
     resource_mock.return_value.get = mock_get_unique
@@ -166,7 +168,7 @@ def test_time_window(resource_mock):
     records = s.get_records()
     assert_that(get_time_seperation(records)).is_less_than(5)
 
-@mock.patch('resources.test_support.state_checker.resource')
+@mock.patch('resources.test_support.state_checking.resource')
 def test_write_to_file(resource_mock):
     #given
     resource_mock.return_value.get = mock_get_unique
@@ -177,8 +179,7 @@ def test_write_to_file(resource_mock):
         max_nr_of_records=10)
     s.run(threaded=False,resolution=0.1)
     filename = 'test.csv'
-    records = s.get_records()
-    #when
+     #when
     s.print_records_to_file(filename,style='csv')
     #then
     with open('build/{}'.format(filename), 'r') as csvfile:

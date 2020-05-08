@@ -9,9 +9,12 @@ import mock
 from mock import Mock
 import tango
 from assertpy import assert_that
-from resources.test_support.helpers import resource, take_subarray, waiter, subscriber, watch
+#SUT
+from resources.test_support.helpers import resource, take_subarray, waiter, subscriber, watch,monitor,wait_for
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
-from resources.test_support.helpers import *
+#SUT framework (not part of test)
+from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+
 import pytest
 
 class TestResource():
@@ -28,7 +31,7 @@ class TestResource():
     @pytest.mark.fast
     def get_attribute_info_ex(self, name, data_type):
         """
-        Return AttributeInfoEx object.
+        Return Atfrom resources.log_consumer.tracer_helper import TraceHelpertributeInfoEx object.
         """
         attr_info_ex = tango.AttributeInfoEx()
         attr_info_ex.data_type = data_type
@@ -82,11 +85,6 @@ def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
     waiter_mock_instance = waiter_mock.return_value
     waiter_mock_instance.timed_out = False
     take_subarray(1).to_be_composed_out_of(4)
-    dish_devices = [
-        'mid_d0001/elt/master', 'mid_d0002/elt/master',
-        'mid_d0003/elt/master', 'mid_d0004/elt/master',
-        ]
-
     waiter_mock_instance.set_wait_for_assign_resources.assert_called_once()
     waiter_mock_instance.wait.assert_called_once()
     subarray_mock_allocate.assert_called_once_with(allocation)

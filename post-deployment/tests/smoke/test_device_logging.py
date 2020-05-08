@@ -1,4 +1,4 @@
-from resources.test_support.helpers import DeviceLogging,DeviceLoggingImplWithDBDirect, get_log_stash_db
+from resources.test_support.log_helping import DeviceLogging,DeviceLoggingImplWithDBDirect, get_log_stash_db
 import logging
 import json
 import pytest

@@ -25,7 +25,7 @@ fluentd:
     tag: v1.7-debian-elasticsearch7-2
     pullPolicy: IfNotPresent
   remote: true
-  elastic_host: 192.168.93.94 #default
+  elastic_host: 192.168.93.94  # default
   livenessProbe:
     enabled: true
   logging_rate_throttle:

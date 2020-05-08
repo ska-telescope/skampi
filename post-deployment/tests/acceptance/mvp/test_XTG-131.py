@@ -37,7 +37,7 @@ def pre_condition(dev_proxy, device_name, expected):
         # standbyfp mode is used as initial condition since it can be reached from other dish modes
         _change_dish_mode(dev_proxy, 'SetStandbyFPMode', device_name)
         _change_dish_mode(dev_proxy, mode_cmd_map[expected], device_name)
-        assert_that(resource(device_name).get('dishMode')).is_equal_to(expected)
+    assert_that(resource(device_name).get('dishMode')).is_equal_to(expected)
     logging.info(device_name + ' initial dishMode: ' + resource(device_name).get('dishMode'))
 
 # define steps for scenario
@@ -54,13 +54,13 @@ def set_dish_mode(device_name, requested, device_proxy):
 
 @then(parsers.parse("{device_name} reports {desired} Dish mode"))
 def check_dish_mode(device_name, desired):
-    logging.info(device_name + ' desired dishMode: ' + resource(device_name).get('dishMode'))
     assert_that(resource(device_name).get('dishMode')).is_equal_to(desired)
+    logging.info(device_name + ' desired dishMode: ' + resource(device_name).get('dishMode'))
 
 @then(parsers.parse("{device_name} is in {desired} state"))
 def check_master_device_state(device_name, desired):
-    logging.info(device_name + ' desired state: ' + resource(device_name).get('State'))
     assert_that(resource(device_name).get('State')).is_equal_to(desired)
+    logging.info(device_name + ' desired state: ' + resource(device_name).get('State'))
 
 
 # mid_d0001/elt/master

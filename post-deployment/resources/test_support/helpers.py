@@ -21,6 +21,13 @@ LOGGER = logging.getLogger(__name__)
 
 obsState = {"IDLE": 0}
 
+####typical device sets
+subarray_devices = [
+        'ska_mid/tm_subarray_node/1',
+        'mid_csp/elt/subarray_01',
+        'mid_csp_cbf/sub_elt/subarray_01',
+        'mid_sdp/elt/subarray_1']
+
 
 def map_dish_nr_to_device_name(dish_nr):
     digits = str(10000 + dish_nr)[1::]
@@ -184,6 +191,12 @@ class waiter():
         self.logs = ""
         self.timed_out = False
 
+    def set_wait_for_ending_SB(self):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState"))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState"))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState"))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState"))
+
     def set_wait_for_assign_resources(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
@@ -210,9 +223,6 @@ class waiter():
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
-
-    def set_wait_for_ending_SB(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState"))
 
     def wait(self, timeout=30,resolution=0.1):
         self.logs = ""
@@ -249,16 +259,16 @@ class pilot():
         return self
 
     def and_configure_scan_by_file(self,file='resources/test_data/polaris_b1_no_cam.json'):
-        timeout = 80
+        timeout = 30
         # update the ID of the config data so that there is no duplicate configs send during tests
         update_file(file)
         signal.signal(signal.SIGALRM, handlde_timeout)
         signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
         try:
-            logging.info("Configuring the subarray")
             SubArray(1).configure_from_file(file, with_processing=False)
         except:
             pytest.fail("timed out whilst configuring subarray: unable to continue with tests")
+        return self
 
     def and_release_all_resources(self):
         the_waiter = waiter()
@@ -272,8 +282,8 @@ class pilot():
 
     def and_end_sb_when_ready(self):
         the_waiter = waiter()
-        the_waiter.set_wait_for_going_to_standby()
-        SKAMid().standby()
+        the_waiter.set_wait_for_ending_SB()
+        SubArray(1).end_sb()
         the_waiter.wait()
         if the_waiter.timed_out:
             pytest.fail("timed out taking the subarray to IDLE:\n {}".format(the_waiter.logs))
@@ -292,13 +302,14 @@ def set_telescope_to_standby():
     if the_waiter.timed_out:
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
-def set_telescope_to_running():
+def set_telescope_to_running(disable_waiting = False):
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
-    the_waiter.wait()
-    if the_waiter.timed_out:
-        pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
+    if not disable_waiting:
+        the_waiter.wait()
+        if the_waiter.timed_out:
+            pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 
 def telescope_is_in_standby():
     return  [resource('ska_mid/tm_subarray_node/1').get("State"),

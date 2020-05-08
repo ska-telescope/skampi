@@ -18,7 +18,6 @@ def f_results_per_time_window(time):
     return Range(ska_log_timestamp={'gte': greater_than_query})
 
 
-
 def get_log_stash_db(port=9200,elastic_name='elastic-logging'):
     HELM_RELEASE = os.environ.get('HELM_RELEASE')
     elastic_host = '{}-{}'.format(elastic_name,HELM_RELEASE)
@@ -121,13 +120,13 @@ def search_logs_from_devices_by_timewindow(start_time,end_time,devices = subarra
     if search_for == None:
         result = s.query(q_get_by_timewindow(start_time,end_time)).\
             query(q_get_devices(devices)).\
-            sort('ska_log_timestamp').\
+            sort('-ska_log_timestamp').\
             source(source_list)
     else:    
         result = s.query(q_get_by_timewindow(start_time,end_time)).\
             query(q_get_devices(devices)).\
             query(q_search_in_log_message(search_for)).\
-            sort('ska_log_timestamp').\
+            sort('-ska_log_timestamp').\
             source(source_list)
     return ResultPrinter(result)
 
@@ -146,20 +145,29 @@ class ResultPrinter():
     def get_top_level_keys(self):
         return self.result.execute()[0].to_dict().keys()
 
-    def print_to_console(self,mapping_keys=mapping_keys1,seperator='\t'):
+    def print_to_console(self,mapping_keys=mapping_keys1,seperator='\t',scan='short'):
         sep = seperator
         res = self.result
         if res.count() > 0:
             if mapping_keys == 'all':
                 mapping_keys = self.get_top_level_keys()
-            header = reduce(lambda x,y:x+sep+y,mapping_keys)
+            header = reduce(lambda x,y:x+'\t\t\t'+y,mapping_keys)
             print(header)
-            data = reduce(lambda x,y:x+'\n'+y,
+            if scan=='short':
+                hits = res.execute()
+                data = reduce(lambda x,y:x+'\n'+y,
+                    [
+                        reduce(lambda x,y: x+sep+y,[row[key] for key in row.to_dict().keys() if key in mapping_keys])
+                        for row in hits
+                    ]
+                )
+            else:
+                data = reduce(lambda x,y:x+'\n'+y,
                     [
                         reduce(lambda x,y: x+sep+y,[row[key] for key in row.to_dict().keys() if key in mapping_keys])
                         for row in res.scan()
                     ]
-            )
+                )
             print(data)
         else:
             print('search returned no results')

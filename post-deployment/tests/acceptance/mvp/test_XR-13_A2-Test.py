@@ -17,17 +17,16 @@ import logging
 import json
 #local dependencies
 from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
-    map_dish_nr_to_device_name, update_file, watch
+    map_dish_nr_to_device_name, update_file, watch,telescope_is_in_standby,set_telescope_to_running,set_telescope_to_standby
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.state_checking import StateChecker
+from resources.test_support.persistance_helping import update_file
 import pytest
 #SUT dependencies
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 
 
 LOGGER = logging.getLogger(__name__)
-
-
 
 def handlde_timeout(arg1,agr2):
     print("operation timeout")
@@ -51,12 +50,12 @@ def test_configure_subarray():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
-    the_waiter = waiter()
-    the_waiter.set_wait_for_starting_up()
-    SKAMid().start_up()
-    the_waiter.wait()
-    LOGGER.info("Telescope Started up")
-    LOGGER.debug("the_waiter.logs")
+    LOGGER.info("Given I am accessing the console interface for the OETy")
+    assert(telescope_is_in_standby())
+    LOGGER.info("Starting up telescope")
+    set_telescope_to_running()
+
+
 
 @given("sub-array is in IDLE state")
 def assign():
@@ -135,30 +134,18 @@ def teardown_function(function):
     the_waiter = waiter()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
         #this means there must have been an error
-        the_waiter.set_wait_for_tearing_down_subarray()
-        LOGGER.info("tearing down composed subarray (IDLE)")
-        SubArray(1).deallocate()
-        the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
+        if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+            LOGGER.info("tearing down composed subarray (IDLE)")
+            take_subarray(1).and_release_all_resources()  
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
         #this means test must have passed
         LOGGER.info("tearing down configured subarray (READY)")
-        the_waiter.set_wait_for_ending_SB()
-        SubArray(1).end_sb()
-        the_waiter.wait()
-        LOGGER.debug(the_waiter.logs)
-        the_waiter.set_wait_for_tearing_down_subarray()
-        SubArray(1).deallocate()
-        the_waiter.wait()
-        LOGGER.debug(the_waiter.logs)
+        take_subarray(1).and_end_sb_when_ready().and_release_all_resources() 
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         LOGGER.warn("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
-    LOGGER.info("Putting Telescope in standby")
-    the_waiter.set_wait_for_going_to_standby()
-    SKAMid().standby()
-    the_waiter.wait()
-    LOGGER.debug(the_waiter.logs)
+    LOGGER.info("Put Telescope back to standby")
+    set_telescope_to_standby()
 

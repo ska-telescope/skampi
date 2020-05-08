@@ -32,7 +32,7 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 							"type":"Directory"}}]}}'
 
 GIT_EMAIL?=user.email.com
-GIT_USER?="user name"
+GIT_USER?=\"user name\"
 
 deploy_testing_pod:
 	@kubectl run $(testing-pod) \

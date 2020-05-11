@@ -25,7 +25,7 @@ fluentd:
     tag: v1.7-debian-elasticsearch7-2
     pullPolicy: IfNotPresent
   livenessProbe:
-    enabled: true
+    enabled: false
   logging_rate_throttle:
     enabled: true
     # group_reset_rate_s must be <= group_bucket_limit

@@ -21,7 +21,7 @@ import pytest
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
-    map_dish_nr_to_device_name
+    map_dish_nr_to_device_name,set_telescope_to_running,telescope_is_in_standby,set_telescope_to_standby
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -59,28 +59,17 @@ def fixture():
 def send_scan(duration):
     SubArray(1).scan(duration)
 
-
+@pytest.mark.xfail
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational imaging scan")
 def test_subarray_scan():
     """Imaging Scan Operation."""
 
 @given("I am accessing the console interface for the OET")
 def start_up():
-    the_waiter = waiter()
-    the_waiter.set_wait_for_starting_up()
-    SKAMid().start_up()
-    the_waiter.wait()
-    LOGGER.info(the_waiter.logs)
-
-    
-''' assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
-    assert_that(resource('mid_csp/elt/subarray_01').get("obsState")).is_equal_to("IDLE")
-    assert_that(resource('mid_sdp/elt/subarray_1').get("obsState")).is_equal_to("IDLE")
-
-    watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
-    receptorIDList_val = watch_receptorIDList.get_value_when_changed()
-    assert_that(receptorIDList_val == [(1,2,3,4)])'''
+    LOGGER.info("Given I am accessing the console interface for the OETy")
+    assert(telescope_is_in_standby())
+    LOGGER.info("Starting up telescope")
+    set_telescope_to_running()
 
 @given("Sub-array is in READY state")
 def set_to_ready():
@@ -129,32 +118,23 @@ def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-    the_waiter = waiter()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
-        the_waiter.set_wait_for_tearing_down_subarray()
-        LOGGER.info("tearing down composed subarray (IDLE)")
-        SubArray(1).deallocate()
-        the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
+        if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+            LOGGER.info("tearing down composed subarray (IDLE)")
+            take_subarray(1).and_release_all_resources()  
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
         LOGGER.info("tearing down configured subarray (READY)")
-        the_waiter.set_wait_for_ending_SB()
-        SubArray(1).end_sb()
-        the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
-        the_waiter.set_wait_for_tearing_down_subarray()
-        SubArray(1).deallocate()
-        the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
+        take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        LOGGER.info("tearing down configuring subarray")
+        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
+        #raise exception since we are unable to continue with tear down
+        raise Exception("Unable to tear down test setup")
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
-        LOGGER.info("tearing down scanning subarray")
+        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
-    the_waiter.set_wait_for_going_to_standby()
-    SKAMid().standby()
-    LOGGER.info("standby command is executed on telescope")
-    the_waiter.wait()
-    LOGGER.info(the_waiter.logs)
+        #raise exception since we are unable to continue with tear down
+        raise Exception("Unable to tear down test setup")
+    LOGGER.info("Put Telescope back to standby")
+    set_telescope_to_standby()
 

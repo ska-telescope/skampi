@@ -166,8 +166,8 @@ deploy test environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
   only:
-    refs:
-      - master
+    - master
+    - merge_requests
 
 k8s_test test environment:
   stage: test
@@ -180,8 +180,8 @@ k8s_test test environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
   only:
-    refs:
-      - master
+    - master
+    - merge_requests
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -200,8 +200,8 @@ smoketest test environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
   only:
-    refs:
-      - master
+    - master
+    - merge_requests
 
 .run-debug-cmd:
   stage: debug

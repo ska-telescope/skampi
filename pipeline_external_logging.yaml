@@ -1,0 +1,14 @@
+elastic:
+  enabled: false
+fluentd:
+  enabled: false
+kibana:
+  enabled: false
+tests:
+  enabled: true
+hdbppdb:
+  enabled: true
+archiver:
+  enabled: true
+
+minikube: false

@@ -9,6 +9,7 @@ variables:
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
   VALUES: "pipeline.yaml"
+  MARK: "all"
 
 stages:
   - static_analysis
@@ -21,8 +22,6 @@ stages:
 
 .pip_install_test_requirements: &pip_install_test_requirements |-
   cd pre-deployment
-  mv test-harness/* .
-  ls -la
   pip3 install -r test-requirements.txt
 
 .teardown_k8s_test_resources: &teardown_k8s_test_resources |-
@@ -30,7 +29,7 @@ stages:
   kubectl delete namespace ci-$CI_JOB_ID || true
   helm ls | grep -E '(FAILED|DELETED)' | awk '{print $1}' | xargs -I'%N' helm delete --purge \%N
 
-before_script: 
+before_script:
   - export HELM_TILLER_LOGS_DIR=$PWD/tiller.log
 
 helm-lint:
@@ -160,7 +159,7 @@ deploy test environment:
   tags:
   - docker-executor
   script:
-  - make deploy_all 
+  - make deploy_all
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   retry: 2
   environment:
@@ -185,7 +184,7 @@ k8s_test test environment:
       - master
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths: 
+    paths:
       - "build/"
     reports:
       junit: build/report.xml
@@ -235,24 +234,6 @@ print-debug-info:
   artifacts:
     paths:
     - public
-
-reset-archiver-and-test:
-  stage: test
-  retry: 2
-  tags:
-  - docker-executor
-  script:
-  - kubectl delete pod -n $KUBE_NAMESPACE $(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' -n $KUBE_NAMESPACE  | grep archiver) 
-  - make deploy HELM_CHART=archiver
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make k8s_test && [ -f "build/report.xml" ]
-  environment:
-    name: $DEPLOY_ENVIRONMENT
-    url: $DEPLOY_URL
-  when: manual
-  only:
-    refs:
-      - master
 
 xray_report:
   stage: post_test

@@ -5,7 +5,9 @@ the same host as the tests by using a DeviceTestContext.
 """
 from tango import Database, DeviceProxy
 from time import sleep
+import pytest
 
+@pytest.mark.fast
 def test_init():    
   print("Init test devices")
   timeSleep = 30
@@ -19,6 +21,7 @@ def test_init():
           sleep(timeSleep)
   print("Connected to the databaseds")
 
+@pytest.mark.fast
 def test_devices():
   db = Database()
   count = 0

@@ -1,6 +1,7 @@
 {{ if .Values.tangodb.enabled }}
 
 {{ if .Values.tangodb.use_pv }}
+{{ if .Values.minikube }}
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -21,7 +22,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /data/tangodb-{{ template "tango-base.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
-
+{{ end }}
 ---
 
 apiVersion: v1
@@ -35,9 +36,15 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+{{ if .Values.minikube }}
   storageClassName: standard
   accessModes:
     - ReadWriteOnce
+{{ else }}
+  storageClassName: nfss1
+  accessModes:
+    - ReadWriteMany
+{{ end }}
   resources:
     requests:
       storage: 1Gi

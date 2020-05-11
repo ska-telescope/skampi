@@ -1,7 +1,7 @@
 import pytest
 from elasticsearch import Elasticsearch
 
-
+@pytest.mark.logging
 def test_logging_namespace(run_context):
     """Test that we only get logs from our namespace"""
 

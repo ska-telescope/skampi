@@ -1,7 +1,7 @@
 # Default values for logging.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
+minikube: true
 
 elastic:
   enabled: true
@@ -27,7 +27,7 @@ fluentd:
   remote: true
   elastic_host: 192.168.93.94  # default
   livenessProbe:
-    enabled: true
+    enabled: false
   logging_rate_throttle:
     enabled: true
     # group_reset_rate_s must be <= group_bucket_limit

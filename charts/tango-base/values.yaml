@@ -4,6 +4,7 @@
 
 display: ":0"
 xauthority: "~/.Xauthority"
+minikube: true
 
 tangodb:
   enabled: true

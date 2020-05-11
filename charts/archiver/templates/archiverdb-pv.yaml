@@ -1,5 +1,6 @@
 {{ if .Values.pv.enabled }}
 
+{{ if .Values.minikube }}
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -21,8 +22,8 @@ spec:
   hostPath:
     path: /data/archiverdb-{{ template "archiver.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
 
+{{ end }}
 ---
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -34,11 +35,18 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+{{ if .Values.minikube }}
   storageClassName: standard
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
+{{ else }}
+  storageClassName: nfss1
+  accessModes:
+  - ReadWriteMany
+{{ end }}
   resources:
     requests:
       storage: 1Gi
+
 
 {{ end }}

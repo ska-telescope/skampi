@@ -45,9 +45,20 @@ spec:
       - name: configuration
         mountPath: data
         readOnly: true
-
   containers:
-  - name: cspmaster
+  - name: midcapabilitymonitor
+    image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
+    imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/csp_lmc_mid/MidCspCapabilityMonitor.py monitor"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: midcspmaster
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
     command:
@@ -55,12 +66,13 @@ spec:
     args:
       - -c
       - "retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
-            /venv/bin/python /app/csplmc/CspMaster/CspMaster/CspMaster.py csp"
+         retry --max=5 -- tango_admin --ping-device mid_csp/capability_monitor/search_beams &&\
+            /venv/bin/python /app/csp_lmc_mid/MidCspMaster.py master"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
 
-  - name: cspsubarray01
+  - name: midcspsubarray01
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
     command:
@@ -69,12 +81,12 @@ spec:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_01 &&\
-            /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub1"
+            /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray1"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
 
-  - name: cspsubarray02
+  - name: midcspsubarray02
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
     command:
@@ -83,12 +95,12 @@ spec:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_02 &&\
-            /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub2"
+            /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray2"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
 
-  - name: cspsubarray03
+  - name: midcspsubarray03
     image: "{{ .Values.csplmc.image.registry }}/{{ .Values.csplmc.image.image }}:{{ .Values.csplmc.image.tag }}"
     imagePullPolicy: {{ .Values.csplmc.image.pullPolicy }}
     command:
@@ -97,7 +109,7 @@ spec:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_03 &&\
-            /venv/bin/python /app/csplmc/CspSubarray/CspSubarray/CspSubarray.py sub3"
+            /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray3"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000

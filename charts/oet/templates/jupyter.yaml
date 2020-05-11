@@ -56,6 +56,7 @@ spec:
     app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
 ---
 {{if .Values.jupyter.storage.enabled}}
+{{ if .Values.minikube }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -72,6 +73,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /data/jupyter-{{ .Release.Namespace }}-{{ .Release.Name }}/
+{{ end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -82,9 +84,15 @@ metadata:
     type: jupyter_storage
     app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
 spec:
+{{ if .Values.minikube }}
   storageClassName: jupyter
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
+{{ else }}
+  storageClassName: nfss1
+  accessModes:
+  - ReadWriteMany
+{{ end }}
   resources:
     requests:
       storage: {{ .Values.jupyter.storage.capacity }}

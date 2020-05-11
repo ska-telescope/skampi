@@ -31,7 +31,7 @@ def run_context():
 
     return RunContext(*values)
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="class")
 def create_centralnode_proxy():
     centralnode_proxy = DeviceProxy("ska_mid/tm_central/central_node")
     return centralnode_proxy
@@ -50,6 +50,16 @@ def create_subarray2_proxy():
 def create_subarray3_proxy():
     subarray3_proxy = DeviceProxy("ska_mid/tm_subarray_node/3")
     return subarray3_proxy
+
+@pytest.fixture(scope="class")
+def create_cspsubarray1_proxy():
+    cspsubarray1_proxy = DeviceProxy("mid_csp/elt/subarray_01")
+    return cspsubarray1_proxy
+
+@pytest.fixture(scope="class")
+def create_sdpsubarray1_proxy():
+    sdpsubarray1_proxy = DeviceProxy("mid_sdp/elt/subarray_1")
+    return sdpsubarray1_proxy
 
 """
 Client that provides access to the Kubernetes API from the namespace the test 

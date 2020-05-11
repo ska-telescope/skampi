@@ -334,8 +334,7 @@ Requirements:
 
 - A Kubernetes cluster (minikube).
 - **kubectl** authorized to create namespaces and deploy resources to the cluster.
-- **helm v2.16.1** 
-- `helm-tiller plugin <https://github.com/rimusz/helm-tiller>`_ (optional).
+- **helm v3.0.2** 
 - **Python 3.7+**
 
 1. Install Python dependencies: ``pip install -r test-requirements.txt``
@@ -343,9 +342,6 @@ Requirements:
 3. Execute only the ``chart_deploy`` tests: ``pytest -m "chart_deploy and not quarantine"``
 4. Execute the quarantined tests: ``pytest -m quarantine``
 
-You should use the ``--use-tiller-plugin`` flag if you're using the **helm-tiller** plugin instead of an in-cluster
-tiller. See following `article <https://rimusz.net/tillerless-helm>`_ for details. This is recommended until we
-completely migrate to Helm 3 and remove Helm 2 in our codebase.
 
 PyCharm integration
 """""""""""""""""""

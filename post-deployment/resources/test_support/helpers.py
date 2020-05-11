@@ -33,14 +33,14 @@ def map_dish_nr_to_device_name(dish_nr):
     digits = str(10000 + dish_nr)[1::]
     return "mid_d" + digits + "/elt/master"
     
-def handlde_timeout():
+def handlde_timeout(par1,par2):
     print("operation timeout")
     raise Exception("operation timeout")
 
 #####MVP asbtraction (tango,kubernetes ect as stateless resources)
 class ResourceGroup():
 
-    def __init__(self,resource_names):
+    def __init__(self,resource_names=subarray_devices):
         self.resources = resource_names
 
     def get(self,attr):
@@ -268,6 +268,8 @@ class pilot():
             SubArray(1).configure_from_file(file, with_processing=False)
         except:
             pytest.fail("timed out whilst configuring subarray: unable to continue with tests")
+        finally:
+            signal.alarm(0)
         return self
 
     def and_release_all_resources(self):
@@ -318,7 +320,30 @@ def telescope_is_in_standby():
             ['DISABLE' for n in range(3)]
 
 
-
-
+def run_a_config_test():
+    assert(telescope_is_in_standby)
+    set_telescope_to_running()
+    try:
+        take_subarray(1).to_be_composed_out_of(4).and_configure_scan_by_file()
+    except:
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+            #this means there must have been an error
+            if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+                print("tearing down composed subarray (IDLE)")
+                take_subarray(1).and_release_all_resources() 
+            set_telescope_to_standby()
+            raise Exception("faiure in configuring subarry not configured, resources are released and put in standby")
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+            print("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
+            restart_subarray(1)
+            #raise exception since we are unable to continue with tear down
+            raise Exception("failure in configuring subarry, unable to reset the system")
+    take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+    set_telescope_to_standby()  
+        
+def run_a_config_test_series(size):
+    for i in range(size):
+        print('test run{}'.format(i))
+        run_a_config_test()
 
 

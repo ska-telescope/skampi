@@ -43,7 +43,7 @@ def print_logs_to_file(s,d,status='ok'):
     d.implementation.print_log_to_file(filename_d,style='csv')
     s.print_records_to_file(filename_s,style='csv',filtered=False)
 
-
+@pytest.mark.xfail
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 def test_configure_subarray():
     """Configure Subarray."""
@@ -106,6 +106,8 @@ def config():
         LOGGER.info("The following messages was logged from devices:\n{}".format(d.get_printable_messages()))
         #LOGGER.info("The following states was captured:\n{}".format(s.get_records()))
         pytest.fail("timed out during confguration")
+    finally:
+        signal.alarm(0)
     #ensure state is on Ready before proceeding
     w.wait_until_value_changed_to('READY',timeout=20)
     LOGGER.info("Configure executed successfully")
@@ -131,7 +133,6 @@ def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-    the_waiter = waiter()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
         #this means there must have been an error
         if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):

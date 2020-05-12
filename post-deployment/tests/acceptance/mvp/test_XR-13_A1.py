@@ -6,7 +6,7 @@ test_calc
 ----------------------------------
 Acceptance tests for MVP.
 """
-import sys
+import sys, os
 import pytest
 import logging
 from time import sleep
@@ -15,6 +15,7 @@ from pytest_bdd import scenario, given, when, then
 from datetime import date,datetime
 #SUT
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+import oet.observingtasks as observingtasks
 #SUT infrastructure
 from tango import DeviceProxy, DevState
 ## local imports
@@ -82,7 +83,14 @@ def allocate_four_dishes(result):
     d.update_traces(devices_to_log)
     d.start_tracing()
     ##system under test is being excuted
-    result['response'] = SubArray(1).allocate(ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)]))
+    
+    cwd, _ = os.path.split(__file__)
+    cdm_file_path = os.path.join(cwd, 'example_allocate.json')
+
+    subarray = SubArray(1)
+    result['response'] = subarray.allocate_from_file(cdm_file_path)
+ 
+
     ####################################
     #wait for certain values to be changed (wait_for_assign_resources)
     the_waiter.wait()

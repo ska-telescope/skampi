@@ -213,18 +213,26 @@ ordered_charts:
 
 pre_deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## pre-deployment
 
-DEPLOYMENT_ORDER ?= tango-base sdp-prototype cbf-proto csp-proto tmc-proto oet webjive archiver 
-deploy_all: pre_deploy_all all_charts
-
+DEPLOYMENT_ORDER ?= tango-base sdp-prototype cbf-proto csp-proto tmc-proto 
 deploy_subset: pre_deploy_all ordered_charts ## Deploy only the charts listed in $DEPLOYMENT_ORDER
 
-delete_all: delete_etcd ## delete ALL of the helm chart releases
+deploy_all: deploy_subset all_charts ## Deploy ordered subset followed by all the remaining charts
+
+delete_all: delete_etcd ## delete ALL of the helm chart release
 	@for i in charts/*; do \
 	echo "*****************************  $$i ********************************"; \
-		if [ "$$i" = "charts/auth" ] ; then \
-			continue; \
-		fi; \
-		make delete; \
+	if [ "$$i" = "charts/auth" ] ; then \
+		continue; \
+	fi; \
+	helm template $(helm_install_shim) $$i \
+				 --namespace $(KUBE_NAMESPACE) \
+	             --set display="$(DISPLAY)" \
+	             --set xauthority="$(XAUTHORITYx)" \
+				 --set ingress.hostname=$(INGRESS_HOST) \
+				 --set ingress.nginx=$(USE_NGINX) \
+	             --set tangoexample.debug="$(REMOTE_DEBUG)"  \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --values $(VALUES) | kubectl delete -f - ; \
 	done
 
 poddescribe: ## describe Pods executed from Helm chart

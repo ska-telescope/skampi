@@ -22,18 +22,22 @@ def test_multi_scan():
     the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
     config = load_config_from_file(configure1_file)
     SubarrayNode.Configure(config)
-    the_watch.wait_until_value_changed_to('READY')
-
+    #200 = 200*0.1 = 20 seconds timeout
+    the_watch.wait_until_value_changed_to('READY',timeout=200)
+ 
     SubarrayNode.Scan('{"id":1}')
-    the_watch.wait_until_value_changed_to('READY')
+    #200 = 200*0.1 = 20 seconds timeout assuming scan takes 10 seconds
+    the_watch.wait_until_value_changed_to('READY',timeout=200)
     
  
     config = load_config_from_file(configure2_file)
     SubarrayNode.Configure(config)
-    the_watch.wait_until_value_changed_to('READY')
+    #200 = 200*0.1 = 20 seconds timeout
+    the_watch.wait_until_value_changed_to('READY',timeout=200)
 
     SubarrayNode.Scan('{"id":1}')
-    the_watch.wait_until_value_changed_to('READY')
+    #200 = 200*0.1 = 20 seconds timeout assuming scan takes 10 seconds
+    the_watch.wait_until_value_changed_to('READY',timeout=200)
 
     the_waiter.clear_watches()
     the_waiter.set_wait_for_ending_SB()

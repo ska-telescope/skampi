@@ -20,7 +20,7 @@ def test_multi_scan():
     LOGGER.info('assigning two dishes to subarray 1')
     assign_resources_file = 'resources/test_data/TMC_integration/assign_resources.json'
     config = load_config_from_file(assign_resources_file)
-    SubarrayNode.AssignResources(config)
+    CentralNode.AssignResources(config)
     the_waiter.wait()
 
     #and for which the subarray is configured to perform a scan as per 'TMC_integration/configure1.json'

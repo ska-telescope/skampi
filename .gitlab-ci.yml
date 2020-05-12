@@ -142,10 +142,7 @@ delete test environment:
   tags:
   - docker-executor
   script:
-  - make delete_all || true
-  - kubectl delete all --all -n $KUBE_NAMESPACE
-  - kubectl delete namespace $KUBE_NAMESPACE
-  - kubectl delete namespace $KUBE_NAMESPACE-sdp
+  - kubectl -n $KUBE_NAMESPACE delete svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
   environment:
     name: $DEPLOY_ENVIRONMENT
   only:

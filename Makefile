@@ -208,12 +208,12 @@ ordered_charts:
 					$(CHART_SET) \
 					--set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 					--values $(VALUES) | kubectl apply -f - ; \
-		make smoketest SLEEPTIME=10s; \
+		make smoketest SLEEPTIME=3s; \
 	done
 
 pre_deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## pre-deployment
 
-DEPLOYMENT_ORDER ?= tango-base sdp-prototype cbf-proto csp-proto tmc-proto 
+DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
 deploy_subset: pre_deploy_all ordered_charts ## Deploy only the charts listed in $DEPLOYMENT_ORDER
 
 deploy_all: deploy_subset all_charts ## Deploy ordered subset followed by all the remaining charts

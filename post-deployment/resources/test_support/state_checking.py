@@ -46,6 +46,8 @@ class StateChecker():
                 return [record for record in self.th_records if record['unique']]
             else:
                 return self.th_records
+        else:
+            raise Exception("Not allowed to get records wilst running")
         
 
     def run(self,threaded=True,resolution=0.1):

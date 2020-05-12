@@ -1,7 +1,7 @@
 {{ if .Values.kibana.enabled }}
 
-
 {{ if .Values.ingress.nginx }}
+---
 # nginx
 
 apiVersion: extensions/v1beta1
@@ -24,6 +24,7 @@ spec:
           servicePort: 5601
 
 {{ else }}
+---
 # traefik
 
 apiVersion: extensions/v1beta1

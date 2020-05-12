@@ -221,7 +221,7 @@ print-debug-info:
   - docker-executor
   script:
   - mkdir .public
-	- kubectl config view --raw --flatten
+  - kubectl config view --raw --flatten
   - kubectl describe ingresses --all-namespaces > .public/ingresses-all-namespaces.txt
   - kubectl describe -n kube-system pod $(kubectl get pod -n kube-system | grep traefik | cut -d\  -f1) > .public/describe-traefik.txt
   - kubectl logs --tail=100 -n kube-system  $(kubectl get pod -n kube-system | grep traefik | cut -d\  -f1) > .public/logs-traefik.txt

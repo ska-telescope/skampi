@@ -41,3 +41,7 @@ def print_dict_to_csv_file(filename,data):
         writer.writeheader()
         for row in data:
             writer.writerow(row)
+
+def load_config_from_file(filename):
+    with open(filename, 'r') as file:
+        return file.read()

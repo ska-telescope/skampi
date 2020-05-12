@@ -144,7 +144,7 @@ class monitor(object):
         while not self._compare(value):
             count_down -= 1
             if (count_down == 0):
-                raise Exception('timed out waiting for {}.{} to change from {} to {} in {:d}s'.format(
+                raise Exception('timed out waiting for {}.{} to change from {} to {} in {:f}s'.format(
                     self.resource.device_name,
                     self.attr,
                     self.current_value,
@@ -262,19 +262,19 @@ class waiter():
                 result = wait.wait_until_value_changed(timeout=timeout,resolution=resolution)
             except:
                 self.timed_out = True
-                self.error_logs += "{} timed out whilst waiting for {} to change from {} in {}s\n".format(
+                self.error_logs += "{} timed out whilst waiting for {} to change from {} in {:f}s\n".format(
                     wait.device_name,
                     wait.attr,
                     wait.previous_value,
                     timeout*resolution
                 )
             else:
-                self.logs += "{} changed {} from {} to {} after {:d}s \n".format(
+                self.logs += "{} changed {} from {} to {} after {:f}s \n".format(
                     wait.device_name,
                     wait.attr,
                     wait.previous_value,
                     wait.current_value,
-                    timeout - result)*resolution
+                    timeout - result*resolution)
         if self.timed_out:
             raise Exception("timed out, the following timeouts occured:\n{}However the following expected changes was successfull:\n{}".format(
                 self.error_logs,

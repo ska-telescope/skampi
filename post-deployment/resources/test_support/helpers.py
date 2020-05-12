@@ -66,6 +66,21 @@ class resource:
             if isinstance(value, ndarray):
                 return tuple(value)
             return getattr(p, attr)
+    
+    def assert_attribute(self,attr):
+        return ObjectComparison("{}.{}".format(self.device_name,attr),self.get(attr))
+
+class ObjectComparison():
+    def __init__(self,object,value):
+        self.value = value
+        self.object = object
+
+    def equals(self,value):
+        try:
+            assert self.value == value
+        except:
+            raise Exception("{} is asserted to be {} but was instead {}".format(self.object,value,self.value))
+
 
 ####time keepers based on above resources
 class monitor(object):
@@ -101,10 +116,15 @@ class monitor(object):
             return comparison
 
     def _wait(self, timeout=80,resolution=0.1):
-        timeout = timeout
+        count_down = timeout
         while (self._is_not_changed()):
-            timeout -= 1
-            if (timeout == 0): return "timeout"
+            count_down -= 1
+            if (count_down == 0):
+                raise Exception('timed out waiting for {}.{} to change from {} in {:d}s'.format(
+                    self.resource.device_name,
+                    self.attr,
+                    self.current_value,
+                    timeout*resolution))
             sleep(resolution)
             self._update()
         return timeout
@@ -119,14 +139,20 @@ class monitor(object):
         return self._wait(timeout)
     
     def wait_until_value_changed_to(self,value,timeout=50,resolution=0.1):
-        timeout = timeout
+        count_down = timeout
         self._update()
         while not self._compare(value):
-            timeout -= 1
-            if (timeout == 0): return "timeout"
+            count_down -= 1
+            if (count_down == 0):
+                raise Exception('timed out waiting for {}.{} to change from {} to {} in {:d}s'.format(
+                    self.resource.device_name,
+                    self.attr,
+                    self.current_value,
+                    value,
+                    timeout*resolution))
             sleep(resolution)
             self._update()
-        return timeout
+        return count_down
 
 
 class subscriber:
@@ -189,6 +215,7 @@ class waiter():
     def __init__(self):
         self.waits = []
         self.logs = ""
+        self.error_logs = ""
         self.timed_out = False
 
     def clear_watches(self):
@@ -231,15 +258,28 @@ class waiter():
         self.logs = ""
         while self.waits:
             wait = self.waits.pop()
-            result = wait.wait_until_value_changed(timeout=timeout,resolution=resolution)
-            if result == "timeout":
+            try:
+                result = wait.wait_until_value_changed(timeout=timeout,resolution=resolution)
+            except:
                 self.timed_out = True
-                self.logs += wait.device_name + " timed out whilst waiting for " + wait.attr + " to change from " + str(
-                    wait.previous_value) + " in " + str(timeout*resolution) + " seconds;"
+                self.error_logs += "{} timed out whilst waiting for {} to change from {} in {}s\n".format(
+                    wait.device_name,
+                    wait.attr,
+                    wait.previous_value,
+                    timeout*resolution
+                )
             else:
-                self.logs += wait.device_name + " changed " + str(wait.attr) + " from " + str(
-                    wait.previous_value) + " to " + str(wait.current_value) + " after " + str((
-                    timeout - result)*resolution) + " seconds ;"
+                self.logs += "{} changed {} from {} to {} after {:d}s \n".format(
+                    wait.device_name,
+                    wait.attr,
+                    wait.previous_value,
+                    wait.current_value,
+                    timeout - result)*resolution
+        if self.timed_out:
+            raise Exception("timed out, the following timeouts occured:\n{}However the following expected changes was successfull:\n{}".format(
+                self.error_logs,
+                self.logs
+        ))
 
 #####schedulers and controllers aimed at putting the system in specified state
 

@@ -11,11 +11,14 @@ def test_multi_scan():
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')  
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')  
     # given a started up telescope
+    the_waiter = waiter()
+    the_waiter.set_wait_for_starting_up()
     LOGGER.info('stating up telescope')
     CentralNode.StartUpTelescope()
+    the_waiter.wait()
 
     # and a subarray composed of two resources confired as perTMC_integration/assign_resources.json
-    the_waiter = waiter()
+    the_waiter.clear_watches()
     the_waiter.set_wait_for_assign_resources()
     LOGGER.info('assigning two dishes to subarray 1')
     assign_resources_file = 'resources/test_data/TMC_integration/assign_resources.json'

@@ -13,7 +13,7 @@ def test_multi_scan():
     # given a started up telescope
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
-    LOGGER.info('stating up telescope')
+    LOGGER.info('starting up telescope')
     CentralNode.StartUpTelescope()
     the_waiter.wait()
 
@@ -35,7 +35,7 @@ def test_multi_scan():
     the_watch.wait_until_value_changed_to('READY')
     
     #and for which the subarray has successfully completed a scan durating 10 seconds based on previos configuration
-    LOGGER.info('Staring a scan of 10 seconds')
+    LOGGER.info('Starting a scan of 10 seconds')
     SubarrayNode.Scan('{"id":1}')
     the_watch.wait_until_value_changed_to('READY')
     LOGGER.info('Scan complete')

@@ -3,7 +3,7 @@ Triaging and managing Skampi (SKB) bugs
 
 This document defines a process for Triaging and managing Skampi (SKB) bugs so that any SKA team member knows how to handle the funnel of incoming bugs, the allocation, distribution and management of them.
 
-The standard process for changing a software includes the following phases: 
+The standard process for changing software includes the following phases:
 
 * Problem/modification identification, classification, and prioritization
 * Analysis
@@ -13,7 +13,7 @@ The standard process for changing a software includes the following phases:
 * Acceptance testing
 * Delivery
 
-The above process is not different for triaging and managing a bug in skampi. In the present document we will focus on how to identify a information as problem/bug and how to assign it to the right team(s).
+The above process is no different for triaging and managing a bug in skampi. In the present document we will focus on how to identify a problem or bug from incoming information and event notifications and how to assign it to the right team(s).
 
 Problem identification
 ----------------------
@@ -23,9 +23,9 @@ The problem identification phase starts when there is an indication of a failure
 * `ci-alerts-mvp <https://skasoftware.slack.com/archives/CPWKQBZV2>`_
 * `prometheus-alerts <https://skasoftware.slack.com/archives/C0110QW8YMQ>`_
 
-Everyone can join the channels to get those kind of information. 
+Any project member can join these channels to gain visibility of this information.
 
-If the information comes from the `ci-alerts-mvp <https://skasoftware.slack.com/archives/CPWKQBZV2>`_ then the primary source of information if the gitlab pipeline logs available `here <https://gitlab.com/ska-telescope/skampi/pipelines>`_. 
+If the information comes from the `ci-alerts-mvp <https://skasoftware.slack.com/archives/CPWKQBZV2>`_ then the primary source of detailed information for analysis are the gitlab pipeline logs available `here <https://gitlab.com/ska-telescope/skampi/pipelines>`_.
 
 Other source of information are:
 
@@ -40,11 +40,12 @@ Other source of information are:
 
 Allocating ownership to teams
 -----------------------------
-The following are general rules for allocating ownership to teams: 
+The following are general rules for allocating ownership to teams:
 
-* For every test case failing, the creator(s) of it must be involved in order to assign the bug to a specific team. 
-* System team should be always involved in the problem identification in order to understand whether the problem is infrastructual (related to a k8s cluster or any layer below it - docker, VM, virtualization and so on).
-* For prometheus alerts, the system team must provide the analisys of the problem and in case assign it to the right team(s).
+* The primary responsibility for a failed pipeline is the owner of the first commit to the branch since the last successful run of the pipeline.  It is therfore the responsibility of the committer to follow up on the pipeline status after each git push.
+* For every test case failing, the creator(s) of the test must be involved in order to assign the bug to the appropriate team.
+* The System Team should be always involved in the problem identification in order to understand whether the problem is infrastructure related (related to a k8s cluster or any layer below it - docker, VM, virtualization etc).
+* For prometheus alerts, the system team must provide the analysis of the alert details in order to understand the cause, and give input into assigning it to the right team(s).
 
 
 

@@ -35,9 +35,9 @@ c.InteractiveShellApp.exec_lines = ['%autoreload 2',
                                     'import resources.test_support.helpers as hel',
                                     'import resources.test_support.log_helping as log',
                                     'from oet import domain',
-                                    'import resources.test_support.log_helping as log',
-                                    'import resources.test_support.state_checking as stat'
-                                    ]
+                                    'import resources.test_support.persistance_helping as per',
+                                    'import resources.test_support.state_checking as stat',
+                                    'from tango import DeviceProxy']
 
 ## A list of dotted module names of IPython extensions to load.
 c.InteractiveShellApp.extensions = ['autoreload']

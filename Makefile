@@ -16,11 +16,11 @@ USE_NGINX ?= false## Use NGINX as the Ingress Controller
 API_SERVER_IP ?= $(THIS_HOST)## Api server IP of k8s
 API_SERVER_PORT ?= 6443## Api server port of k8s
 EXTERNAL_IP ?= $(THIS_HOST)## For traefik installation
-CLUSTER_NAME ?= integration.cluster## For the gangway kubectl setup 
+CLUSTER_NAME ?= integration.cluster## For the gangway kubectl setup
 CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f## For the gangway kubectl setup, taken from Gitlab
 CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f## For the gangway kubectl setup, taken from Gitlab
 CHART_SET ?= #for additional flags you want to set when deploying (default empty)
-VALUES ?= values.yaml# root level values files. This will override the chart values files. 
+VALUES ?= values.yaml# root level values files. This will override the chart values files.
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -140,7 +140,11 @@ mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
 	echo "SSL cert already exits in charts/tango-base/secrets ... skipping"; \
 	fi
 
-deploy: namespace namespace_sdp mkcerts  ## deploy the helm chart
+kubeconfig: ## show the current KUBECONFIG
+	@echo "Show KUBECONFIG:"
+	kubectl config view --raw --flatten
+
+deploy: kubeconfig namespace namespace_sdp mkcerts  ## deploy the helm chart
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
@@ -272,9 +276,9 @@ traefik: ## install the helm chart for traefik (in the kube-system namespace). I
 	helm template $(helm_install_shim) $$TMP/traefik -n traefik0 --namespace kube-system \
 		--set externalIP="$(EXTERNAL_IP)" \
 		| kubectl apply -n kube-system -f - && \
-		rm -rf $$TMP 
+		rm -rf $$TMP
 
-delete_traefik: ## delete the helm chart for traefik 
+delete_traefik: ## delete the helm chart for traefik
 	@TMP=`mktemp -d`; \
 	$(helm_add_stable_repo) && \
 	helm fetch stable/traefik --untar --untardir $$TMP && \
@@ -296,7 +300,7 @@ gangway: ## install gangway authentication for gitlab (in the kube-system namesp
 			--set gangway.apiServerURL="https://$(API_SERVER_IP):$(API_SERVER_PORT)" \
 			--set ingress.hosts="{gangway.$(INGRESS_HOST)}" \
 			| kubectl apply -n kube-system -f - && 	\
-			rm -rf $$TMP 
+			rm -rf $$TMP
 
 delete_gangway: ## delete install gangway authentication for gitlab. Input parameters: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
 	@TMP=`mktemp -d`; \
@@ -311,7 +315,7 @@ delete_gangway: ## delete install gangway authentication for gitlab. Input param
 			--set gangway.apiServerURL="https://$(API_SERVER_IP):$(API_SERVER_PORT)" \
 			--set ingress.hosts="{gangway.$(INGRESS_HOST)}" \
 			| kubectl delete -n kube-system -f - && \
-			rm -rf $$TMP 
+			rm -rf $$TMP
 
 set_context:
 	kubectl config set-context $$(kubectl config current-context) --namespace $${NAMESPACE:-$(KUBE_NAMESPACE)}
@@ -321,7 +325,7 @@ get_status:
 
 redeploy:
 	make delete delete_all && make deploy HELM_CHART=tango-base && make deploy_all && watch kubectl get pods
-	
+
 wait:
 	pods=$$( kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{' '}{end}" ) && \
 	for pod in $$pods ;  do \
@@ -335,10 +339,10 @@ wait:
 #this is so that you can load dashboards previously saved, TODO: make the name of the pod variable
 dump_dashboards:
 	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongodump --archive > webjive-dash.dump
-	
+
 load_dashboards:
-	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongorestore --archive < webjive-dash.dump 
-	
+	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongorestore --archive < webjive-dash.dump
+
 get_jupyter_port:
 	@kubectl get service -l app=jupyter-oet-test -n $(KUBE_NAMESPACE)  -o jsonpath="{range .items[0]}{'Use this url:http://$(THIS_HOST):'}{.spec.ports[0].nodePort}{'\n'}{end}"
 

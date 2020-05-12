@@ -121,7 +121,7 @@ class monitor(object):
     def wait_until_value_changed_to(self,value,timeout=50,resolution=0.1):
         timeout = timeout
         self._update()
-        while self._compare(value):
+        while not self._compare(value):
             timeout -= 1
             if (timeout == 0): return "timeout"
             sleep(resolution)
@@ -190,6 +190,9 @@ class waiter():
         self.waits = []
         self.logs = ""
         self.timed_out = False
+
+    def clear_watches(self):
+        self.waits = []
 
     def set_wait_for_ending_SB(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState"))

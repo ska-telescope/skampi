@@ -47,7 +47,8 @@ def test_multi_scan():
     # and run a new scan bsed on that configruation
     LOGGER.info('Staring new scan of 10 seconds based on  new config (testing part)')
     SubarrayNode.Scan('{"id":1}')
-    the_watch.wait_until_value_changed_to('READY')
+    #200 = 200*0.1 = 20 seconds timeout assuming scan takes 10 seconds
+    the_watch.wait_until_value_changed_to('READY',timeout=200)
 
     #the scanning should complete without any exceptions
     #TODO possible add some other asserts in here

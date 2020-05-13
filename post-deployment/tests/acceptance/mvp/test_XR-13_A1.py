@@ -89,7 +89,7 @@ def allocate_four_dishes(result):
 
     subarray = SubArray(1)
     four_dish_allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
-    subarray.allocate_from_file(cdm_file_path, four_dish_allocation)
+    result['response'] = subarray.allocate_from_file(cdm_file_path, four_dish_allocation)
 
     ####################################
     #wait for certain values to be changed (wait_for_assign_resources)

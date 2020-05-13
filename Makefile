@@ -213,10 +213,8 @@ ordered_charts:
 		make smoketest SLEEPTIME=3s; \
 	done
 
-pre_deploy_all: namespace namespace_sdp mkcerts deploy_etcd
-
 DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
-deploy_subset: pre_deploy_all ordered_charts ## Deploy subset of charts. @param: same as for deploy_all.
+deploy_subset: namespace namespace_sdp mkcerts deploy_etcd ordered_charts ## Deploy subset of charts. @param: same as for deploy_all.
 
 deploy_all: deploy_subset all_charts ## Deploy all charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
 

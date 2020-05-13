@@ -87,7 +87,7 @@ lint:  ## lint the HELM_CHART of the helm chart
 	cd charts/$(HELM_CHART); pwd; helm lint;
 
 .PHONY: deploy_etcd delete_etcd
-deploy_etcd: namespace ## deploy etcd-operator into namespace
+deploy_etcd: namespace ## Deploy etcd-operator into namespace
 	@if ! kubectl get pod -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.labels.app}' \
 		| grep -q etcd-operator; then \
 		TMP=`mktemp -d`; \
@@ -140,7 +140,7 @@ mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
 	echo "SSL cert already exits in charts/tango-base/secrets ... skipping"; \
 	fi
 
-deploy: namespace namespace_sdp mkcerts  ## deploy the helm chart
+deploy: namespace namespace_sdp mkcerts  ## Deploy one helm chart. @param: same as deploy_all, plus HELM_CHART
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
@@ -152,7 +152,7 @@ deploy: namespace namespace_sdp mkcerts  ## deploy the helm chart
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES) | kubectl apply -f -
 
-show: mkcerts  ## show the helm chart
+show: mkcerts  ## Show the helm chart @param: same as deploy_all, plus HELM_CHART
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
@@ -160,10 +160,11 @@ show: mkcerts  ## show the helm chart
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+				 $(CHART_SET)
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES)
 
-delete: ## delete the helm chart release
+delete: ## delete the helm chart release. @param: same as deploy_all, plus HELM_CHART
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
@@ -175,7 +176,7 @@ delete: ## delete the helm chart release
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES) | kubectl delete -f -
 
-all_charts:
+all_charts: 
 	@for i in charts/*; do \
 	echo "*****************************  $$i ********************************"; \
 	if [ "$$i" = "charts/auth" ] ; then \
@@ -188,11 +189,12 @@ all_charts:
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+					$(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES) | kubectl apply -f - ; \
 	done
 
-ordered_charts: 
+ordered_charts:
 	@echo "*******************************************************************"; \
 	echo "DEPLOYING $(DEPLOYMENT_ORDER)"; \
 	echo "*******************************************************************"; \
@@ -211,12 +213,12 @@ ordered_charts:
 		make smoketest SLEEPTIME=3s; \
 	done
 
-pre_deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## pre-deployment
+pre_deploy_all: namespace namespace_sdp mkcerts deploy_etcd
 
 DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
-deploy_subset: pre_deploy_all ordered_charts ## Deploy only the charts listed in $DEPLOYMENT_ORDER
+deploy_subset: pre_deploy_all ordered_charts ## Deploy subset of charts. @param: same as for deploy_all.
 
-deploy_all: deploy_subset all_charts ## Deploy ordered subset followed by all the remaining charts
+deploy_all: deploy_subset all_charts ## Deploy all charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
 	@for i in charts/*; do \
@@ -285,13 +287,13 @@ help:  ## show this help.
 	@echo ""; echo "make vars (+defaults):"
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-get_pods: ##lists the pods deploued for a particular namespace
+get_pods: ##lists the pods deploued for a particular namespace. @param: KUBE_NAMESPACE
 	kubectl get pods -n $(KUBE_NAMESPACE)
 
 get_versions: ## lists the container images used for particular pods
 	kubectl get pods -l release=$(HELM_RELEASE) -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{range .spec.containers[*]}{.name}{'\t'}{.image}{'\n\n'}{end}{'\n'}{end}{'\n'}"
 
-traefik: ## install the helm chart for traefik (in the kube-system namespace). Input parameter EXTERNAL_IP (i.e. private ip of the master node).
+traefik: ## install the helm chart for traefik (in the kube-system namespace). @param: EXTERNAL_IP (i.e. private ip of the master node).
 	@TMP=`mktemp -d`; \
 	$(helm_add_stable_repo) && \
 	helm fetch stable/traefik --untar --untardir $$TMP && \
@@ -301,7 +303,7 @@ traefik: ## install the helm chart for traefik (in the kube-system namespace). I
 		rm -rf $$TMP ; \
 
 
-delete_traefik: ## delete the helm chart for traefik 
+delete_traefik: ## delete the helm chart for traefik. @param: EXTERNAL_IP
 	@TMP=`mktemp -d`; \
 	$(helm_add_stable_repo) && \
 	helm fetch stable/traefik --untar --untardir $$TMP && \
@@ -310,7 +312,7 @@ delete_traefik: ## delete the helm chart for traefik
 		| kubectl delete -n kube-system -f - && \
 		rm -rf $$TMP
 
-gangway: ## install gangway authentication for gitlab (in the kube-system namespace). Input parameters: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
+gangway: ## install gangway authentication for gitlab (in the kube-system namespace). @param: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
 	@TMP=`mktemp -d`; \
 	$(helm_add_stable_repo) && \
 	helm fetch stable/gangway --untar --untardir $$TMP && \
@@ -325,7 +327,7 @@ gangway: ## install gangway authentication for gitlab (in the kube-system namesp
 			| kubectl apply -n kube-system -f - && 	\
 			rm -rf $$TMP 
 
-delete_gangway: ## delete install gangway authentication for gitlab. Input parameters: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
+delete_gangway: ## delete install gangway authentication for gitlab. @param: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
 	@TMP=`mktemp -d`; \
 	$(helm_add_stable_repo) && \
 	helm fetch stable/gangway --untar --untardir $$TMP && \
@@ -340,7 +342,7 @@ delete_gangway: ## delete install gangway authentication for gitlab. Input param
 			| kubectl delete -n kube-system -f - && \
 			rm -rf $$TMP 
 
-set_context:
+set_context: ## Set current kubectl context. @param: KUBE_NAMESPACE
 	kubectl config set-context $$(kubectl config current-context) --namespace $${NAMESPACE:-$(KUBE_NAMESPACE)}
 
 get_status:

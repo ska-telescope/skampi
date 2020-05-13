@@ -194,7 +194,8 @@ all_charts:
 				 --values $(VALUES) | kubectl apply -f - ; \
 	done
 
-ordered_charts:
+DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
+deploy_subset: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of charts. @param: same as for deploy_all.
 	@echo "*******************************************************************"; \
 	echo "DEPLOYING $(DEPLOYMENT_ORDER)"; \
 	echo "*******************************************************************"; \
@@ -210,11 +211,8 @@ ordered_charts:
 					$(CHART_SET) \
 					--set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 					--values $(VALUES) | kubectl apply -f - ; \
-		make smoketest SLEEPTIME=3s; \
+		make smoketest SLEEPTIME=0s ; \
 	done
-
-DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
-deploy_subset: namespace namespace_sdp mkcerts deploy_etcd ordered_charts ## Deploy subset of charts. @param: same as for deploy_all.
 
 deploy_all: deploy_subset all_charts ## Deploy all charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
 

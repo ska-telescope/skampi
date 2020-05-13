@@ -294,7 +294,9 @@ class pilot():
         the_waiter.set_wait_for_assign_resources()
     
         multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
-        self.SubArray.allocate_from_file(cdm_file_path, multi_dish_allocation)
+        cwd, _ = os.path.split(__file__)
+        file = os.path.join(cwd, 'example_allocate.json')
+        self.SubArray.allocate_from_file(file, multi_dish_allocation)
 
         the_waiter.wait()
         self.logs = the_waiter.logs

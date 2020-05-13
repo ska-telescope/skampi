@@ -141,19 +141,5 @@ class StateChecker():
             sleep(time_left_to_sleep)  
         self._update_records(list)
 
-class StatePublisher():
 
-    def __init__(self,Device,observers=[]):
-        self.observers = observers
-        
-    
-    def subscribe(self,observer):
-        self.observers.append(observer)
-
-    def publish(self,event):
-        for observer in self.observers:
-            observer.handle(event)
-
-def handle_tango_event(event):
-    print(event)
     

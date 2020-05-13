@@ -62,12 +62,6 @@ def result():
 @pytest.mark.skip(reason="no way of currently testing this")
 def test_allocate_resources():
     """Assign Resources."""
-    cwd, _ = os.path.split(__file__)
-    cdm_file_path = os.path.join(cwd, 'example_allocate.json')
-
-    subarray = SubArray(1)
-    #result['response'] = subarray.allocate_from_file(cdm_file_path)
-    observingtasks.allocate_resources_from_file(subarray, cdm_file_path)
 
 @given("A running telescope for executing observations on a subarray")
 def set_to_running():

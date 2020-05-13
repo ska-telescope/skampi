@@ -292,8 +292,9 @@ class pilot():
     def to_be_composed_out_of(self, dishes):
         the_waiter = waiter()
         the_waiter.set_wait_for_assign_resources()
-
-        self.result = self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)]))
+    
+        multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
+        self.SubArray.allocate_from_file(cdm_file_path, multi_dish_allocation)
 
         the_waiter.wait()
         self.logs = the_waiter.logs
@@ -308,7 +309,7 @@ class pilot():
         signal.signal(signal.SIGALRM, handlde_timeout)
         signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
         try:
-            SubArray(1).configure_from_file(file, with_processing=False)
+            self.SubArray.configure_from_file(file, 2, with_processing=False)
         except:
             pytest.fail("timed out whilst configuring subarray: unable to continue with tests")
         finally:
@@ -318,7 +319,7 @@ class pilot():
     def and_release_all_resources(self):
         the_waiter = waiter()
         the_waiter.set_wait_for_tearing_down_subarray()
-        SubArray(1).deallocate()
+        self.SubArray.deallocate()
         the_waiter.wait()
         if the_waiter.timed_out:
             pytest.fail("timed out whilst releasing resources on subarray:\n {}".format(the_waiter.logs))
@@ -328,7 +329,7 @@ class pilot():
     def and_end_sb_when_ready(self):
         the_waiter = waiter()
         the_waiter.set_wait_for_ending_SB()
-        SubArray(1).end_sb()
+        self.SubArray.end_sb()
         the_waiter.wait()
         if the_waiter.timed_out:
             pytest.fail("timed out taking the subarray to IDLE:\n {}".format(the_waiter.logs))

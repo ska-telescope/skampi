@@ -94,7 +94,7 @@ def config():
     #setup a watch for subarray node to change obstate as transaction should only  be complete once it has changed
     w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
     try:
-        SubArray(1).configure_from_file(file, with_processing = False)
+        SubArray(1).configure_from_file(file, 2, with_processing = False)
     except:
         LOGGER.info("Configure Command timed out after {} seconds".format(timeout))
         LOGGER.info("Gathering logs")

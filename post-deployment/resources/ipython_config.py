@@ -182,7 +182,14 @@ c.InteractiveShell.autoindent = True
 #c.InteractiveShell.automagic = True
 
 ## The part of the banner to be printed before the profile
-#c.InteractiveShell.banner1 = "Python 3.7.3 (default, Dec 20 2019, 18:57:59) \nType 'copyright', 'credits' or 'license' for more information\nIPython 7.13.0 -- An enhanced Interactive Python. Type '?' for help.\n"
+c.InteractiveShell.banner1 = "Python 3.7.3 (default, Dec 20 2019, 18:57:59)\nThe following modules have been preloaded for you\n "+\
+"elastic_queries as el\n"+\
+"helpers as hel\n"+\
+"log_helping as log\n"+\
+'oet.domain as domain\n'+\
+'persistance_helping as per\n'+\
+'state_checking as stat\n'+\
+'and from tango DeviceProxy\n'
 
 ## The part of the banner to be printed after the profile
 #c.InteractiveShell.banner2 = ''

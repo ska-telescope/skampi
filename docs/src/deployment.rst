@@ -1,10 +1,8 @@
 ==========
 Deployment
 ==========
-
-SKAMPI deployment must be robust, repeatable, and idempotent. In this page, we will
-explain the multiple flavours of deployment for different configurations.
-
+SCAMPI deployment must be robust, repeatable, and idempotent. 
+We have multiple flavours of deployment for different configurations.
 
 Flavours
 ========
@@ -80,8 +78,8 @@ Parameters
 ==========
  
 In SKAMPI, we separated the parameters into two levels. 
-The first one can change the the behaviour of the makefile
-and the second level only change the arguments in each chart.
+The first one can change the behaviour of the makefile,
+and the second level can only change the arguments in each chart.
 
 Level 1
 -------
@@ -89,13 +87,22 @@ Level 1
 We have this hierarchy in place:
 
 1.  Command-line arguments - make deploy_ord **KUBE_NAMESPACE=integration**;
-2.  PrivateRules.mak - Create this file and add arguments. Ex: *HELM_CHART = logging*;
-3.  *Makefile* defaults - All the defaults are available by running *make* in the command-line.
-
+2.  PrivateRules.mak - Create this file and add arguments. Ex: **HELM_CHART = logging**;
+3.  *Makefile* defaults - All the defaults are available by running **make** in the command-line.
 
 
 Level 2
 -------
+
+Also here, we have a hierarchy in place using the `Values Files <https://helm.sh/docs/chart_template_guide/values_files/>`_ feature from Helm Charts.
+
+The priority file is the root directory and goes along the deploy commands. 
+Values-yaml by default but that could change using the *VALUES* argument in the *makefile*.
+
+This root values file overrides the *values.yaml* file inside each chart. 
+This chart values file can also be changed to customize your deployment needs.
+
+
 Charts
 ======
 

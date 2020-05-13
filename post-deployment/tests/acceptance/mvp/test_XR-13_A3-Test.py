@@ -57,7 +57,7 @@ def fixture():
     return {}
 
 def send_scan(duration):
-    SubArray(1).scan(duration)
+    SubArray(1).scan()
 
 @pytest.mark.skip(reason="no way of currently testing this")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational imaging scan")

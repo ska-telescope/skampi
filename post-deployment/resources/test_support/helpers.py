@@ -289,13 +289,12 @@ class pilot():
         self.SubArray = SubArray(id)
         self.logs = ""
 
-    def to_be_composed_out_of(self, dishes):
+    def to_be_composed_out_of(self, dishes, file = 'resources/test_data/example_allocate.json'):
         the_waiter = waiter()
         the_waiter.set_wait_for_assign_resources()
     
         multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
-        cwd, _ = os.path.split(__file__)
-        file = os.path.join(cwd, 'example_allocate.json')
+        
         self.SubArray.allocate_from_file(file, multi_dish_allocation)
 
         the_waiter.wait()

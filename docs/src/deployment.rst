@@ -9,7 +9,29 @@ explain the multiple flavours of deployment for different configurations.
 Flavours
 ========
 
-All the next deployments are deployed using using the makefile.
+By running *make* in the command line, we can see all 
+the **targets** and **arguments** (and their defaults) available.
+
+.. code-block:: bash
+
+    [user@pc skampi]$ make
+    make targets:
+    Makefile:delete_all            delete ALL of the helm chart release
+    Makefile:delete                delete the helm chart release. @param: same as deploy_all, plus HELM_CHART
+    Makefile:delete_etcd           Remove etcd-operator from namespace
+    Makefile:delete_gangway        delete install gangway authentication for gitlab. @param: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
+    Makefile:delete_traefik        delete the helm chart for traefik. @param: EXTERNAL_IP
+    ...
+    make vars (+defaults):
+    dev-testing.mk:hostPort        2020
+    dev-testing.mk:k8_path         $(shell echo ~/.minikube)
+    dev-testing.mk:kube_path       $(shell echo ~/.kube)
+    Makefile:API_SERVER_IP         $(THIS_HOST)## Api server IP of k8s
+    
+    Makefile:API_SERVER_PORT       6443		# Api server port of k8s
+
+
+All the next deployments are deployed using using the same makefile.
 
 Deploy
 ------
@@ -56,76 +78,19 @@ Basic parameters:
 
 Parameters
 ==========
-
-
+ 
+In SKAMPI, we separated the parameters into two levels. 
+The first one can change the the behaviour of the makefile
+and the second level only change the arguments in each chart.
 
 Level 1
 -------
 
-.. code-block:: bash
+We have this hierarchy in place:
 
-    # Parameter description
-    ARGUMENT := *default*
-
-    # Set dir of Makefile to a variable to use later
-    MAKEPATH := $(abspath $(lastword $(MAKEFILE_LIST)))
-
-    # Set base directory
-    BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
-
-    # find IP addresses of this machine, setting THIS_HOST to the first address found
-    THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
-
-    # Set display IP
-    DISPLAY := $(THIS_HOST):0
-
-    #
-    XAUTHORITYx ?= ${XAUTHORITY}
-
-    # Kubernetes Namespace
-    KUBE_NAMESPACE ?= integration
-
-    # Kubernetes Namespace to use for SDP dynamic deployments
-    KUBE_NAMESPACE_SDP ?= $(KUBE_NAMESPACE)-sdp 
-
-    # Helm release name
-    HELM_RELEASE ?= test
-
-    # Helm Chart to install (see ./charts)
-    HELM_CHART ?= tango-base
-
-    # Helm Chart to install (see ./charts)
-    HELM_CHART_TEST ?= tests
-
-    # Ingress HTTP hostname
-    INGRESS_HOST ?= integration.engageska-portugal.pt
-    
-    # Use NGINX as the Ingress Controller
-    USE_NGINX ?= false
-
-    # Api server IP of k8s
-    API_SERVER_IP ?= $(THIS_HOST)
-
-    # Api server port of k8s
-    API_SERVER_PORT ?= 6443
-
-    # For traefik installation
-    EXTERNAL_IP ?= $(THIS_HOST)
-
-    # For the gangway kubectl setup
-    CLUSTER_NAME ?= integration.cluster
-
-    # For the gangway kubectl setup, taken from Gitlab
-    CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f
-
-    # For the gangway kubectl setup, taken from Gitlab
-    CLIENT_SECRET ?= *secret*
-
-    #for additional flags you want to set when deploying (default empty)
-    CHART_SET ?= 
-
-    
-    VALUES ?= values.yaml
+1.  Command-line arguments - make deploy_ord **KUBE_NAMESPACE=integration**;
+2.  PrivateRules.mak - Create this file and add arguments. Ex: *HELM_CHART = logging*;
+3.  *Makefile* defaults - All the defaults are available by running *make* in the command-line.
 
 
 

@@ -62,6 +62,12 @@ def result():
 @pytest.mark.skip(reason="no way of currently testing this")
 def test_allocate_resources():
     """Assign Resources."""
+    cwd, _ = os.path.split(__file__)
+    cdm_file_path = os.path.join(cwd, 'example_allocate.json')
+
+    subarray = SubArray(1)
+    #result['response'] = subarray.allocate_from_file(cdm_file_path)
+    observingtasks.allocate_resources_from_file(subarray, cdm_file_path)
 
 @given("A running telescope for executing observations on a subarray")
 def set_to_running():
@@ -88,8 +94,8 @@ def allocate_four_dishes(result):
     cdm_file_path = os.path.join(cwd, 'example_allocate.json')
 
     subarray = SubArray(1)
-    result['response'] = subarray.allocate_from_file(cdm_file_path)
- 
+    four_dish_allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
+    subarray.allocate_from_file(cdm_file_path, four_dish_allocation)
 
     ####################################
     #wait for certain values to be changed (wait_for_assign_resources)

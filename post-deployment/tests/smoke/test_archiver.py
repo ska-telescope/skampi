@@ -79,7 +79,7 @@ def test_configure_attribute():
       ApiUtil.cleanup()
       configure_attribute(attribute)
       break
-    except:
+    except DevFailed as df:
       logging.info("configure_attribute exception: " + str(sys.exc_info()))
       if(x == (max_retries - 1)):
         raise df

@@ -5,6 +5,10 @@ Rest client
 -------------
 For instructions on how to use the OET rest client, see documentation in [the SKA developer portal](https://developer.skatelescope.org/projects/observation-execution-tool/en/latest/rest_client.html).
 
+Example allocation and configuration JSON is included with scripts. To use customised JSON either modify existing JSON
+ or add a new JSON file and add path to `rest.yaml`. When referring to file, make sure to give oet-command absolute 
+ path e.g. `/scripts/example_allocate.json` 
+
 The OET rest client in SKAMPI can be accessed through Jupyter or OET SSH service.
 
 ### Jupyter

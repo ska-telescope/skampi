@@ -120,7 +120,7 @@ class monitor(object):
         while (self._is_not_changed()):
             count_down -= 1
             if (count_down == 0):
-                raise Exception('timed out waiting for {}.{} to change from {} in {:d}s'.format(
+                raise Exception('timed out waiting for {}.{} to change from {} in {:f}s'.format(
                     self.resource.device_name,
                     self.attr,
                     self.current_value,

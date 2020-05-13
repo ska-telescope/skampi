@@ -43,7 +43,7 @@ def print_logs_to_file(s,d,status='ok'):
     d.implementation.print_log_to_file(filename_d,style='csv')
     s.print_records_to_file(filename_s,style='csv',filtered=False)
 
-@pytest.mark.xfail
+@pytest.mark.skip(reason="no way of currently testing this")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 def test_configure_subarray():
     """Configure Subarray."""

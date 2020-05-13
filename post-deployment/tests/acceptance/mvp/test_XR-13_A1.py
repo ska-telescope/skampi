@@ -59,7 +59,7 @@ def result():
     return {}
 
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
-@pytest.mark.xfail
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_allocate_resources():
     """Assign Resources."""
 

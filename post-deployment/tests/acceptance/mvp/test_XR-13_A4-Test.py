@@ -27,7 +27,8 @@ LOGGER = logging.getLogger(__name__)
 @pytest.fixture
 def result():
     return {}
-@pytest.mark.xfail    
+
+@pytest.mark.skip(reason="no way of currently testing this")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
 def test_deallocate_resources():
     """Deallocate Resources."""

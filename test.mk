@@ -15,8 +15,6 @@ TANGO_HOST = databaseds-tango-base-$(HELM_RELEASE):10000
 MARK ?= fast
 SLEEPTIME ?= 30s
 
-ARRAY ?= tango-base archiver cbf-proto
-
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.

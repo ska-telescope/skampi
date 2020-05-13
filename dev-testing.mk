@@ -56,11 +56,7 @@ deploy_testing_pod:
 		echo 'export GIT_USER=$(GIT_USER)' >> /home/tango/.bashrc && \
 		echo 'export VALUES=pipeline.yaml' >> /home/tango/.bashrc && \
 		echo 'export TANGO_HOST=databaseds-tango-base-test:10000' >> /home/tango/.bashrc "
-	@kubectl exec -it $(testing-pod) -- bash -c " \
-		ipython profile create &&  \
-		cp resources/ipython_config.py /home/tango/.ipython/profile_default/ipython_config.py " 
 
-	
 delete_testing_pod:
 	@kubectl delete pod $(testing-pod) --namespace $(KUBE_NAMESPACE)
 
@@ -81,10 +77,6 @@ test_as_ssh_client:
 	@kubectl cp temp $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.ssh/config
 	@rm temp
 
-
-config_git:
-	git config --global user.name '$(GIT_USER)'
-	git config --global user.email $(GIT_EMAIL)
 
 check_log_consumer_running:
 	ps aux | awk 

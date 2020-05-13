@@ -87,6 +87,21 @@ def get_logs_from_devices(time,devices = subarray_devices,source_list=device_fie
     for hit in result.scan():
         pprint.pprint(hit.to_dict()) 
 
+def search_device_logs(devices = subarray_devices,source_list=device_field_set,message=None):
+    s  = get_log_stash_search_for_today()
+    if message == None:
+        result = s.query(q_get_devices(devices)).\
+            sort('-ska_log_timestamp').\
+            source(source_list)
+    else:
+        result = s.query(q_get_devices(devices)).\
+            query(q_search_in_log_message(message)).\
+            sort('-ska_log_timestamp').\
+            source(source_list)
+    return  ResultPrinter(result)
+        
+
+
 def get_all_greater_than_time(time):
     s  = get_log_stash_search_for_today()
     result = s.query(q_get_by_time(time)).\

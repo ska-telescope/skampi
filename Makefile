@@ -175,7 +175,7 @@ delete: ## delete the helm chart release
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES) | kubectl delete -f -
 
-deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the helm chart
+all_charts:
 	@for i in charts/*; do \
 	echo "*****************************  $$i ********************************"; \
 	if [ "$$i" = "charts/auth" ] ; then \
@@ -191,6 +191,32 @@ deploy_all: namespace namespace_sdp mkcerts deploy_etcd  ## deploy ALL of the he
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES) | kubectl apply -f - ; \
 	done
+
+ordered_charts: 
+	@echo "*******************************************************************"; \
+	echo "DEPLOYING $(DEPLOYMENT_ORDER)"; \
+	echo "*******************************************************************"; \
+	for chartname in $(DEPLOYMENT_ORDER); do \
+	echo "*****************************  $$chartname ********************************"; \
+		helm template $(helm_install_shim) charts/$$chartname/ \
+					--namespace $(KUBE_NAMESPACE) \
+					--set display="$(DISPLAY)" \
+					--set xauthority="$(XAUTHORITYx)" \
+					--set ingress.hostname=$(INGRESS_HOST) \
+					--set ingress.nginx=$(USE_NGINX) \
+					--set tangoexample.debug="$(REMOTE_DEBUG)" \
+					$(CHART_SET) \
+					--set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+					--values $(VALUES) | kubectl apply -f - ; \
+		make smoketest SLEEPTIME=3s; \
+	done
+
+pre_deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## pre-deployment
+
+DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
+deploy_subset: pre_deploy_all ordered_charts ## Deploy only the charts listed in $DEPLOYMENT_ORDER
+
+deploy_all: deploy_subset all_charts ## Deploy ordered subset followed by all the remaining charts
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
 	@for i in charts/*; do \
@@ -272,7 +298,8 @@ traefik: ## install the helm chart for traefik (in the kube-system namespace). I
 	helm template $(helm_install_shim) $$TMP/traefik -n traefik0 --namespace kube-system \
 		--set externalIP="$(EXTERNAL_IP)" \
 		| kubectl apply -n kube-system -f - && \
-		rm -rf $$TMP 
+		rm -rf $$TMP ; \
+
 
 delete_traefik: ## delete the helm chart for traefik 
 	@TMP=`mktemp -d`; \

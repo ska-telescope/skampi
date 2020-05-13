@@ -77,7 +77,7 @@ class TestResource():
         item_under_test = resource(device_name)
         assert item_under_test.get('nonexistent attribute') == 'attribute not found'
 
-@mock.patch('resources.test_support.helpers.SubArray.allocate')
+@mock.patch('resources.test_support.helpers.SubArray.allocate_from_file')
 @mock.patch('resources.test_support.helpers.waiter')
 @pytest.mark.fast
 def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
@@ -87,7 +87,7 @@ def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
     take_subarray(1).to_be_composed_out_of(4)
     waiter_mock_instance.set_wait_for_assign_resources.assert_called_once()
     waiter_mock_instance.wait.assert_called_once()
-    subarray_mock_allocate.assert_called_once_with(allocation)
+    subarray_mock_allocate.assert_called_once_with('resources/test_data/example_allocate.json',allocation)
 
 @mock.patch('resources.test_support.helpers.watch')
 @mock.patch('resources.test_support.helpers.resource')
@@ -95,11 +95,14 @@ def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
 @pytest.mark.fast
 def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     the_waiter = waiter()
+    mon_mock_instance = watch_mock.return_value.for_a_change_on.return_value
+    mon_mock_instance.wait_until_value_changed.return_value = 10
     the_waiter.set_wait_for_tearing_down_subarray()
     assert_that(resource_mock.call_count).is_equal_to(5)
     #assert_that(subscriber_mock.call_count).is_equal_to(5+4)
     #assert_that(watch_mock.call_count).is_equal_to(5+4)
     the_waiter.wait()
+
 
 @pytest.mark.fast
 def test_wait_for_change():
@@ -107,11 +110,9 @@ def test_wait_for_change():
     resource_mock.device_name = "test_device"
     resource_mock.get.return_value = "value_then"
     watch = monitor(resource_mock, "value_then", "attr")
-    result = watch.wait_until_value_changed(10)
-    assert_that(result).is_equal_to("timeout")
-    resource_mock.get.return_value = "value_now"
-    result = watch.wait_until_value_changed(10)
-    assert_that(result).is_equal_to(9)
+    with pytest.raises(Exception):
+        assert watch.wait_until_value_changed(10)
+
 
 @pytest.mark.fast
 def test_state_changer():

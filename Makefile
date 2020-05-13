@@ -298,7 +298,7 @@ traefik: ## install the helm chart for traefik (in the kube-system namespace). @
 	helm template $(helm_install_shim) $$TMP/traefik -n traefik0 --namespace kube-system \
 		--set externalIP="$(EXTERNAL_IP)" \
 		| kubectl apply -n kube-system -f - && \
-		rm -rf $$TMP \
+		rm -rf $$TMP 
 
 
 delete_traefik: ## delete the helm chart for traefik. @param: EXTERNAL_IP

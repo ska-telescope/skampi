@@ -115,15 +115,3 @@ check_oet_packages:
 
 ##the following section is for developers requiring the testing pod to be instantiated with a volume mappig to skampi
 -include dev-testing.mk
-
-timestamp=$(shell date -u +"%s")
-
-sleepy_time:
-	sleep 5s
-
-measure_time:
-	time1=$$SECONDS; \
-	make sleepy_time; \
-	time2=$$SECONDS; \
-	elapsed=$$((time2 - time1)); \
-	echo $$elapsed

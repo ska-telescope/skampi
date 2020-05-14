@@ -38,8 +38,8 @@ Deploy only one Helm Chart available at charts directory.
 
 Basic arguments:
 
-- **KUBE_NAMESPACE** - integration *default*
-- **HELM_CHART** - tango-base *default*
+- **KUBE_NAMESPACE** - integration **default**
+- **HELM_CHART** - tango-base **default**
 
 .. code-block:: bash
 
@@ -53,7 +53,7 @@ Deploy every helm chart inside charts directory.
 
 Basic parameters:
 
-- **KUBE_NAMESPACE** - integration *default*
+- **KUBE_NAMESPACE** - integration **default**
 
 .. code-block:: bash
 
@@ -67,11 +67,12 @@ Deploy every helm chart inside charts directory order by its dependencies.
 
 Basic parameters:
 
-- **KUBE_NAMESPACE** - integration *default*
+- **KUBE_NAMESPACE** - integration **default**
+- **DEPLOYMENT_ORDER** - tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive archiver dsh-lmc-prototype logging skuid **default**
 
 .. code-block:: bash
 
-    make deploy_ord KUBE_NAMESPACE=integration
+    make deploy_ordered KUBE_NAMESPACE=integration
 
 
 Parameters
@@ -133,8 +134,9 @@ Forward Oriented Deployment
 
 With the help of the above parameter levels it is possible to have a forward oriented 
 deployment which means that there is the ability to declarative select the charts needed 
-for a particular configuration of the deployment. Selecting a chart with the values file 
+for a particular configuration of the deployment. Selecting a chart with the *DEPLOYMENT_ORDER* (Level 1),
 means that we need to disable or enable the charts that are needed for the specific deployment.
+
 
 
 

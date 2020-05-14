@@ -67,8 +67,8 @@ Deploy every helm chart inside charts directory order by its dependencies.
 
 Basic parameters:
 
-- **KUBE_NAMESPACE** - integration *default*
-- **DEPLOYMENT_ORDER** - tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive archiver dsh-lmc-prototype logging skuid *default*
+- **KUBE_NAMESPACE** - integration **default**
+- **DEPLOYMENT_ORDER** - tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive archiver dsh-lmc-prototype logging skuid **default**
 
 .. code-block:: bash
 

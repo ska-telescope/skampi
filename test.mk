@@ -116,14 +116,16 @@ check_oet_packages:
 ##the following section is for developers requiring the testing pod to be instantiated with a volume mappig to skampi
 -include dev-testing.mk
 
-timestamp=$(shell date -u +"%s")
+ARRAY1 = alpha bravo charlie
+ARRAY2 = alpha tango
 
-sleepy_time:
-	sleep 5s
+if_exists_shout:
+	for i in $(ARRAY2); do \
+		if [ ! "$(ARRAY1[@])" =~ "$$i" ]; then \
+			echo "$$i exists in $(ARRAY1)"; \
+		fi; \
+	done
 
-measure_time:
-	time1=$$SECONDS; \
-	make sleepy_time; \
-	time2=$$SECONDS; \
-	elapsed=$$((time2 - time1)); \
-	echo $$elapsed
+if_in_array=$(shell if [[ ! " ${array[@]} " =~ " ${value} " ]]; then \
+    # whatever you want to do when arr doesn't contain value \
+fi)

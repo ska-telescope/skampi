@@ -176,24 +176,6 @@ delete: ## delete the helm chart release. @param: same as deploy_all, plus HELM_
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES) | kubectl delete -f -
 
-all_charts: 
-	@for i in charts/*; do \
-	echo "*****************************  $$i ********************************"; \
-	if [ "$$i" = "charts/auth" ] ; then \
-		continue; \
-	fi; \
-	helm template $(helm_install_shim) $$i \
-				 --namespace $(KUBE_NAMESPACE) \
-	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITYx)" \
-				 --set ingress.hostname=$(INGRESS_HOST) \
-				 --set ingress.nginx=$(USE_NGINX) \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
-					$(CHART_SET) \
-				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-				 --values $(VALUES) | kubectl apply -f - ; \
-	done
-
 ordered_charts:
 	@echo "*******************************************************************"; \
 	echo "DEPLOYING $(DEPLOYMENT_ORDER)"; \
@@ -213,10 +195,22 @@ ordered_charts:
 		make smoketest SLEEPTIME=3s; \
 	done
 
-DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
-deploy_subset: namespace namespace_sdp mkcerts deploy_etcd ordered_charts ## Deploy subset of charts. @param: same as for deploy_all.
+pre_deployment: namespace namespace_sdp mkcerts deploy_etcd
 
-deploy_all: deploy_subset all_charts ## Deploy all charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
+DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
+deploy_subset: namespace namespace_sdp mkcerts deploy_etcd ordered_charts ## Deploy subset of charts. @param: same as for deploy_all, plus DEPLOYMENT_ORDER.
+
+deploy_ordered: deploy_subset ## Deploy all charts ordered - first the ordered list followed by remainder. @param: same as for deploy_all, plus DEPLOYMENT_ORDER.
+
+
+deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
+	@for i in charts/*; do \
+	echo "*****************************  $$i ********************************"; \
+	if [ "$$i" = "charts/auth" ] ; then \
+		continue; \
+	fi; \
+	make deploy HELM_CHART=$$i; \
+	done
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
 	@for i in charts/*; do \
@@ -298,7 +292,7 @@ traefik: ## install the helm chart for traefik (in the kube-system namespace). @
 	helm template $(helm_install_shim) $$TMP/traefik -n traefik0 --namespace kube-system \
 		--set externalIP="$(EXTERNAL_IP)" \
 		| kubectl apply -n kube-system -f - && \
-		rm -rf $$TMP \
+		rm -rf $$TMP 
 
 
 delete_traefik: ## delete the helm chart for traefik. @param: EXTERNAL_IP

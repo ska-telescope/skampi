@@ -6,21 +6,22 @@ BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
 THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
-KUBE_NAMESPACE ?= integration		# Kubernetes Namespace to use
-KUBE_NAMESPACE_SDP ?= $(KUBE_NAMESPACE)-sdp 			# Kubernetes Namespace to use for SDP dynamic deployments
-HELM_RELEASE ?= test			# Helm release name
-HELM_CHART ?= tango-base		# Helm Chart to install (see ./charts)
-HELM_CHART_TEST ?= tests		# Helm Chart to install (see ./charts)
+KUBE_NAMESPACE ?= integration# Kubernetes Namespace to use
+KUBE_NAMESPACE_SDP ?= $(KUBE_NAMESPACE)-sdp# Kubernetes Namespace to use for SDP dynamic deployments
+HELM_RELEASE ?= test# Helm release name
+HELM_CHART ?= tango-base# Helm Chart to install (see ./charts)
+HELM_CHART_TEST ?= tests# Helm Chart to install (see ./charts)
 INGRESS_HOST ?= integration.engageska-portugal.pt		# Ingress HTTP hostname
-USE_NGINX ?= false 		# Use NGINX as the Ingress Controller
+USE_NGINX ?= false# Use NGINX as the Ingress Controller
 API_SERVER_IP ?= $(THIS_HOST)	# Api server IP of k8s
-API_SERVER_PORT ?= 6443		# Api server port of k8s
-EXTERNAL_IP ?= $(THIS_HOST)		# For traefik installation
+API_SERVER_PORT ?= 6443# Api server port of k8s
+EXTERNAL_IP ?= $(THIS_HOST)# For traefik installation
 CLUSTER_NAME ?= integration.cluster		# For the gangway kubectl setup 
-CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f		# For the gangway kubectl setup, taken from Gitlab
-CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f		# For the gangway kubectl setup, taken from Gitlab
-CHART_SET ?= 		#for additional flags you want to set when deploying (default empty)
-VALUES ?= values.yaml		# root level values files. This will override the chart values files. 
+CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f# For the gangway kubectl setup, taken from Gitlab
+CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f# For the gangway kubectl setup, taken from Gitlab
+CHART_SET ?=#for additional flags you want to set when deploying (default empty)
+VALUES ?= values.yaml# root level values files. This will override the chart values files. 
+DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive## list of charts that will be deployed in order
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -176,7 +177,23 @@ delete: ## delete the helm chart release. @param: same as deploy_all, plus HELM_
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES) | kubectl delete -f -
 
-all_charts: 
+deploy_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
+	@for chartname in $(DEPLOYMENT_ORDER); do \
+	echo "*****************************  $$chartname ********************************"; \
+		helm template $(helm_install_shim) charts/$$chartname/ \
+					--namespace $(KUBE_NAMESPACE) \
+					--set display="$(DISPLAY)" \
+					--set xauthority="$(XAUTHORITYx)" \
+					--set ingress.hostname=$(INGRESS_HOST) \
+					--set ingress.nginx=$(USE_NGINX) \
+					--set tangoexample.debug="$(REMOTE_DEBUG)" \
+					$(CHART_SET) \
+					--set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+					--values $(VALUES) | kubectl apply -f - ; \
+					sleep .100s; \
+	done
+
+deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
 	@for i in charts/*; do \
 	echo "*****************************  $$i ********************************"; \
 	if [ "$$i" = "charts/auth" ] ; then \
@@ -193,32 +210,6 @@ all_charts:
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES) | kubectl apply -f - ; \
 	done
-
-ordered_charts:
-	@echo "*******************************************************************"; \
-	echo "DEPLOYING $(DEPLOYMENT_ORDER)"; \
-	echo "*******************************************************************"; \
-	for chartname in $(DEPLOYMENT_ORDER); do \
-	echo "*****************************  $$chartname ********************************"; \
-		helm template $(helm_install_shim) charts/$$chartname/ \
-					--namespace $(KUBE_NAMESPACE) \
-					--set display="$(DISPLAY)" \
-					--set xauthority="$(XAUTHORITYx)" \
-					--set ingress.hostname=$(INGRESS_HOST) \
-					--set ingress.nginx=$(USE_NGINX) \
-					--set tangoexample.debug="$(REMOTE_DEBUG)" \
-					$(CHART_SET) \
-					--set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-					--values $(VALUES) | kubectl apply -f - ; \
-		make smoketest SLEEPTIME=3s; \
-	done
-
-pre_deploy_all: namespace namespace_sdp mkcerts deploy_etcd
-
-DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
-deploy_subset: pre_deploy_all ordered_charts ## Deploy subset of charts. @param: same as for deploy_all.
-
-deploy_all: deploy_subset all_charts ## Deploy all charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
 	@for i in charts/*; do \

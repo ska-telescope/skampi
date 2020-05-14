@@ -116,16 +116,36 @@ check_oet_packages:
 ##the following section is for developers requiring the testing pod to be instantiated with a volume mappig to skampi
 -include dev-testing.mk
 
-ARRAY1 = alpha bravo charlie
-ARRAY2 = alpha tango
-
-if_exists_shout:
-	for i in $(ARRAY2); do \
-		if [ ! "$(ARRAY1[@])" =~ "$$i" ]; then \
-			echo "$$i exists in $(ARRAY1)"; \
+to_deploy=$(shell \
+dont_deploy="auth"; \
+	for j in charts/*; do \
+		for i in $(DEPLOYMENT_ORDER); do \
+			if [ "charts/$$i" = "$$j" ] ; then \
+				dont_deploy="$$dont_deploy $$i"; \
+			fi; \
+		done; \
+	done; \
+	deploy=""; \
+	for dirname in charts/*; do \
+		skip="false"; \
+		chartname=$${dirname\#\#*/}; \
+		for skipchart in $$dont_deploy; do \
+			if [ "charts/$$skipchart" = "$$dirname" ]; then \
+				skip="true"; \
+				continue; \
+			fi; \
+		done; \
+		if [ "$$skip" = "true" ]; then \
+			continue; \
+		else \
+			deploy="$$deploy $$chartname"; \
 		fi; \
-	done
+	done; \
+	printf '%s' "$$deploy")
 
-if_in_array=$(shell if [[ ! " ${array[@]} " =~ " ${value} " ]]; then \
-    # whatever you want to do when arr doesn't contain value \
-fi)
+test_function:
+	@echo $(to_deploy)
+
+quick:
+	@echo "test:"; \
+	echo $(func2)

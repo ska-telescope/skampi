@@ -198,10 +198,12 @@ ordered_charts:
 pre_deployment: namespace namespace_sdp mkcerts deploy_etcd
 
 DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
-deploy_subset: namespace namespace_sdp mkcerts deploy_etcd ordered_charts ## Deploy subset of charts. @param: same as for deploy_all, plus DEPLOYMENT_ORDER.
+deploy_subset_ordered: namespace namespace_sdp mkcerts deploy_etcd ordered_charts ## Deploy subset of charts. @param: same as for deploy_all, plus DEPLOYMENT_ORDER.
 
-deploy_ordered: deploy_subset ## Deploy all charts ordered - first the ordered list followed by remainder. @param: same as for deploy_all, plus DEPLOYMENT_ORDER.
-
+deploy_ordered_all: deploy_subset_ordered ## Deploy all charts ordered - first the ordered list followed by remainder. @param: same as for deploy_all, plus DEPLOYMENT_ORDER.
+	@for i in $(to_deploy); do \
+		make deploy HELM_CHART=$$i; \
+	done
 
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
 	@for i in charts/*; do \

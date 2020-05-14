@@ -96,17 +96,23 @@ class monitor(object):
         self.attr = attr
         self.future_value = future_value
         self.device_name = resource.device_name
-        self.current_value = self.resource.get(self.attr)
+        self.current_value = previous_value
 
     def _update(self):
         self.current_value = self.resource.get(self.attr)
 
     def _is_not_changed(self):
-        comparison = (self.previous_value == self.current_value)
-        if isinstance(comparison, ndarray):
-            return comparison.all()
-        else:
-            return comparison
+        is_changed_comparison = (self.previous_value != self.current_value)
+        if isinstance(is_changed_comparison, ndarray):
+            is_changed_comparison = is_changed_comparison.all()
+        #if no future value was given it means you can ignore (or set to true) comparison with a future
+        if self.future_value == None:
+            is_eq_to_future_comparison = True
+        else: 
+            is_eq_to_future_comparison = (self.current_value == self.future_value)
+            if isinstance(is_eq_to_future_comparison, ndarray):
+                is_eq_to_future_comparison= is_eq_to_future_comparison.all()   
+        return (not is_changed_comparison) or (not is_eq_to_future_comparison)
 
     def _compare(self,desired):
         comparison = (self.current_value == desired)
@@ -127,7 +133,7 @@ class monitor(object):
                     timeout*resolution))
             sleep(resolution)
             self._update()
-        return timeout
+        return count_down
 
     def get_value_when_changed(self, timeout=50):
         response = self._wait(timeout)
@@ -160,9 +166,9 @@ class subscriber:
     def __init__(self, resource):
         self.resource = resource
 
-    def for_a_change_on(self, attr):
+    def for_a_change_on(self, attr,changed_to=None):
         value_now = self.resource.get(attr)
-        return monitor(self.resource, value_now, attr)
+        return monitor(self.resource, value_now, attr,changed_to)
 
  
 def watch(resource):

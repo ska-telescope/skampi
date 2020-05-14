@@ -176,26 +176,7 @@ delete: ## delete the helm chart release. @param: same as deploy_all, plus HELM_
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES) | kubectl delete -f -
 
-all_charts: 
-	@for i in charts/*; do \
-	echo "*****************************  $$i ********************************"; \
-	if [ "$$i" = "charts/auth" ] ; then \
-		continue; \
-	fi; \
-	helm template $(helm_install_shim) $$i \
-				 --namespace $(KUBE_NAMESPACE) \
-	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITYx)" \
-				 --set ingress.hostname=$(INGRESS_HOST) \
-				 --set ingress.nginx=$(USE_NGINX) \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
-					$(CHART_SET) \
-				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-				 --values $(VALUES) | kubectl apply -f - ; \
-	done
-
-DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
-deploy_subset: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of charts. @param: same as for deploy_all.
+ordered_charts:
 	@echo "*******************************************************************"; \
 	echo "DEPLOYING $(DEPLOYMENT_ORDER)"; \
 	echo "*******************************************************************"; \
@@ -211,10 +192,25 @@ deploy_subset: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of c
 					$(CHART_SET) \
 					--set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 					--values $(VALUES) | kubectl apply -f - ; \
-		make smoketest SLEEPTIME=0s ; \
+		make smoketest SLEEPTIME=3s; \
 	done
 
-deploy_all: deploy_subset all_charts ## Deploy all charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
+pre_deployment: namespace namespace_sdp mkcerts deploy_etcd
+
+DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive
+deploy_subset: namespace namespace_sdp mkcerts deploy_etcd ordered_charts ## Deploy subset of charts. @param: same as for deploy_all, plus DEPLOYMENT_ORDER.
+
+deploy_ordered: deploy_subset ## Deploy all charts ordered - first the ordered list followed by remainder. @param: same as for deploy_all, plus DEPLOYMENT_ORDER.
+
+
+deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
+	@for i in charts/*; do \
+	echo "*****************************  $$i ********************************"; \
+	if [ "$$i" = "charts/auth" ] ; then \
+		continue; \
+	fi; \
+	make deploy HELM_CHART=$$i; \
+	done
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
 	@for i in charts/*; do \

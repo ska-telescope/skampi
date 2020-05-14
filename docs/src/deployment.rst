@@ -131,19 +131,12 @@ enabled (pipeline.yaml) and another one with has come charts disabled (values.ya
 The latter disable the logging chart and the archiver chart and it has been thought for a 
 minikube environment. 
 
+Please note that the two values file represent the minimum charts needed (values.yaml) for running all the fast tests (mark=fast) while the other (pipeline.yaml) is the complete deployment of SKAMPI. 
 
 Forward Oriented Deployment
 ===========================
 
 With the help of the above parameter levels it is possible to customize the deployment of SKAMPI.
 It is very important to note that it is possible to deploy the charts incrementally (forward oriented). 
-
-
-
-
-
-
-
-
 
 

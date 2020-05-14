@@ -81,34 +81,26 @@ In SKAMPI, we separated the parameters into two levels.
 The first one can change the behaviour of the makefile,
 and the second level can only change the arguments in each chart.
 
-The first one is inside the Makefile of the repository and is the top priority 
-meaning that it overrides all the parameters in any level below. Parameters of 
-this level are, for instance, the KUBE_NAMESPACE or INGRESS_HOST (for the complete 
-list of parameters, please refer to the Makefile (i.e. running *make* in the command line)) 
-and they can be personalized with the file PrivateRules.mk. 
+Level 1
+------
 
-The second level is specified with the values file (according to the helm formality). 
-The file can be selected with the parameter VALUES of the Makefile (default is values.yaml 
-present in the root folder of skampi). Those parameters ovveride all the parameters present 
-in the charts which represent the lower level parameters. 
+The first one is inside the Makefile of the repository and is the top priority 
+meaning that it overrides all the parameters in any level below. We have three ways
+to customize these parameters and they are prioritize in this order (from most to last
+important):
 
 1.  Command-line arguments - make deploy_ord **KUBE_NAMESPACE=integration**;
 2.  PrivateRules.mak - Create this file and add arguments. Ex: **HELM_CHART = logging**;
 3.  *Makefile* defaults - All the defaults are available by running **make** in the command-line.
 
-With the help of the above parameter levels it is possible to have a forward oriented 
-deployment which means that there is the ability to declarative select the charts
- needed for a particular configuration of the deployment. Selecting a chart with 
- the values file means that we need to disable or enable the charts that are needed 
- for the specific deployment. 
-
 Level 2
 -------
 
-Also here, we have a hierarchy in place using the `Values Files <https://helm.sh/docs/chart_template_guide/values_files/>`_ feature from Helm Charts.
+The second level is specified with the 
+`Values Files <https://helm.sh/docs/chart_template_guide/values_files/>`_. 
 
-The priority file is the root directory and goes along the deploy commands. 
-Values-yaml by default but that could change using the *VALUES* argument in the *makefile*.
+The priority file is the root directory and goes along the deploy commands with 
+*values.yaml* by default but that could change using the *VALUES* argument in the *makefile*.
 
 .. code-block:: bash
 
@@ -128,22 +120,27 @@ Values-yaml by default but that could change using the *VALUES* argument in the 
     minikube: true
 
 This root values file overrides the *values.yaml* file inside each chart. 
-This chart values file can also be changed to customize your deployment needs.
+All chart values files can also be changed to customize your deployment needs.
+
+In the skampi repository, there are 2 examples of values files, one that has everything 
+enabled (pipeline.yaml) and another one with has come charts disabled (values.yaml). 
+The latter disable the logging chart and the archiver chart and it has been thought for a 
+minikube environment. 
 
 
-Charts
-======
-
-
-
-Forward Oriented deployment
+Forward Oriented Deployment
 ===========================
 
 With the help of the above parameter levels it is possible to have a forward oriented 
 deployment which means that there is the ability to declarative select the charts needed 
 for a particular configuration of the deployment. Selecting a chart with the values file 
-means that we need to disable or enable the charts that are needed for the specific deployment. 
+means that we need to disable or enable the charts that are needed for the specific deployment.
 
-In the skampi repository, there are 2 examples of values files, one that has everything 
-enabled (pipeline.yaml) and another one with has come charts disabled (values.yaml). 
-The latter disable the logging chart and the archiver chart and it has been thought for a minikube environment. 
+
+
+
+
+
+
+
+

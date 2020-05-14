@@ -94,6 +94,9 @@ important):
 2.  PrivateRules.mak - Create this file and add arguments. Ex: **HELM_CHART = logging**;
 3.  *Makefile* defaults - All the defaults are available by running **make** in the command-line.
 
+Please note that one of the parameter at this level is the *DEPLOYMENT_ORDER* which allow ability to select the charts needed 
+for a particular configuration of the deployment (the charts will be deployed in the order or this parameter). 
+
 Level 2
 -------
 
@@ -132,10 +135,8 @@ minikube environment.
 Forward Oriented Deployment
 ===========================
 
-With the help of the above parameter levels it is possible to have a forward oriented 
-deployment which means that there is the ability to declarative select the charts needed 
-for a particular configuration of the deployment. Selecting a chart with the *DEPLOYMENT_ORDER* (Level 1),
-means that we need to disable or enable the charts that are needed for the specific deployment.
+With the help of the above parameter levels it is possible to customize the deployment of SKAMPI.
+It is very important to note that it is possible to deploy the charts incrementally (forward oriented). 
 
 
 

@@ -190,7 +190,7 @@ deploy_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of 
 					$(CHART_SET) \
 					--set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 					--values $(VALUES) | kubectl apply -f - ; \
-					sleep .100s; \
+					make smoketest SLEEPTIME=3s > /dev/null 2>&1; \
 	done
 
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 

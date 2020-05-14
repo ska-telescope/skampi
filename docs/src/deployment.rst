@@ -38,8 +38,8 @@ Deploy only one Helm Chart available at charts directory.
 
 Basic arguments:
 
-- **KUBE_NAMESPACE** - integration *default*
-- **HELM_CHART** - tango-base *default*
+- **KUBE_NAMESPACE** - integration **default**
+- **HELM_CHART** - tango-base **default**
 
 .. code-block:: bash
 
@@ -53,7 +53,7 @@ Deploy every helm chart inside charts directory.
 
 Basic parameters:
 
-- **KUBE_NAMESPACE** - integration *default*
+- **KUBE_NAMESPACE** - integration **default**
 
 .. code-block:: bash
 

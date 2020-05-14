@@ -79,25 +79,35 @@ Basic parameters:
 Parameters
 ==========
  
-In SKAMPI, we separated the parameters into two levels. 
-The first one can change the the behaviour of the makefile
-and the second level only change the arguments in each chart.
+In SKAMPI, we separated the parameters into three levels. 
 
-Level 1
--------
+The first one is inside the Makefile of the repository and is the top priority meaning that it overrides all the parameters in any level below. Parameters of this level are, for instance, the KUBE_NAMESPACE or INGRESS_HOST (for the complete list of parameters, please refer to the Makefile (i.e. running *make* in the command line)) and they can be personalized with the file PrivateRules.mk. 
 
-We have this hierarchy in place:
-
-1.  Command-line arguments - make deploy_ord **KUBE_NAMESPACE=integration**;
-2.  PrivateRules.mak - Create this file and add arguments. Ex: *HELM_CHART = logging*;
-3.  *Makefile* defaults - All the defaults are available by running *make* in the command-line.
+The second level is specified with the values file (according to the helm formality). The file can be selected with the parameter VALUES of the Makefile (default is values.yaml present in the root folder of skampi). Those parameters ovveride all the parameters present in the charts which represent the lower level parameters. 
 
 
+Forward Oriented deployment
+===========================
 
-Level 2
--------
-Charts
-======
+With the help of the above parameter levels it is possible to have a forward oriented deployment which means that there is the ability to declarative select the charts needed for a particular configuration of the deployment. Selecting a chart with the values file means that we need to disable or enable the charts that are needed for the specific deployment. 
 
-Forward Oriented
-================
+In the skampi repository, there are 2 examples of values files, one that has everything enabled (pipeline.yaml) and another one with has come charts disabled (values.yaml). The latter disable the logging chart and the archiver chart and it has been thought for a minikube environment. 
+
+.. code-block:: bash
+
+    elastic:
+        enabled: false
+    fluentd:
+        enabled: false
+    kibana:
+        enabled: false
+    tests:
+        enabled: false
+    hdbppdb:
+        enabled: false
+    archiver:
+        enabled: false
+
+    minikube: true
+
+The pipeline.yaml file is the one used in the gitlab pipeline for deploying the complete skampi deployment. 

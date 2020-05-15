@@ -1,6 +1,7 @@
 -r SUT_requirements.txt
 pytest
 pytest-cov
+pytest-timeout
 pytest-json-report
 pycodestyle
 pytest-bdd

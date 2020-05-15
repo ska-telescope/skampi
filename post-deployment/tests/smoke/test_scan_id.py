@@ -69,7 +69,7 @@ def subarray_config(request):
     return conf_json
 
 
-# @pytest.mark.xfail
+@pytest.mark.xfail
 @pytest.mark.timeout(60)
 @scenario("../../features/scan_id.feature", "OET requests a scan ID")
 def test_request_scan_id():

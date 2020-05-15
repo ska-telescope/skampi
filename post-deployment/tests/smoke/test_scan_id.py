@@ -1,6 +1,7 @@
 import json
 import tempfile
 import random
+import os
 
 import pytest
 
@@ -18,19 +19,24 @@ from resources.test_support.helpers import (
     restart_subarray,
 )
 
+KUBE_NAMESPACE = os.environ.get("KUBE_NAMESPACE", "integration")
+HELM_RELEASE = os.environ.get("HELM_RELEASE", "test")
+SKUID_URL = f"skuid-skuid-{KUBE_NAMESPACE}-{HELM_RELEASE}.{KUBE_NAMESPACE}.svc.cluster.local:9870"
+SUBARRAY_CONF_FILE = (
+    "/app/skampi/post-deployment/resources/test_data/polaris_b1_no_cam.json"
+)
 
-def get_next_scan_id_from_client():
+
+def get_next_scan_id_from_service():
     """Use the skuid service to retrieve a scan ID"""
-    client = SkuidClient(
-        "skuid-skuid-integration-test.integration.svc.cluster.local:9870"
-    )
+    client = SkuidClient(SKUID_URL)
     return client.fetch_scan_id()
 
 
 @pytest.fixture(scope="module")
 def pre_test_scan_id(request, autouse=True):
     """Keep the 'before' scan ID"""
-    return get_next_scan_id_from_client()
+    return get_next_scan_id_from_service()
 
 
 @pytest.fixture(scope="module")
@@ -55,10 +61,7 @@ def add_teardown(request, autouse=True):
 
 @pytest.fixture(scope="module")
 def subarray_config(request):
-    config_file = (
-        "/app/skampi/post-deployment/resources/test_data/polaris_b1_no_cam.json"
-    )
-    conf_data = Path(config_file).read_text()
+    conf_data = Path(SUBARRAY_CONF_FILE).read_text()
     conf_json = json.loads(conf_data)
     today = date.today().strftime("%Y%m%d")
     random_id = random.choice(range(1, 10000))
@@ -66,7 +69,7 @@ def subarray_config(request):
     return conf_json
 
 
-@pytest.mark.xfail
+# @pytest.mark.xfail
 @pytest.mark.timeout(60)
 @scenario("../../features/scan_id.feature", "OET requests a scan ID")
 def test_request_scan_id():
@@ -114,5 +117,5 @@ def check_scan_id(pre_test_scan_id):
     """Ensure that scan ID is as expected and has propagated through sub-array
     """
     scan_id_used = int(resource("ska_mid/tm_subarray_node/1").get("scanID"))
-    post_test_scan_id = get_next_scan_id_from_client()
+    post_test_scan_id = get_next_scan_id_from_service()
     assert_that(post_test_scan_id > scan_id_used > pre_test_scan_id)

@@ -97,6 +97,7 @@ class monitor(object):
         self.future_value = future_value
         self.device_name = resource.device_name
         self.current_value = previous_value
+        self.data_ready = False
 
     def _update(self):
         self.current_value = self.resource.get(self.attr)
@@ -105,6 +106,8 @@ class monitor(object):
         is_changed_comparison = (self.previous_value != self.current_value)
         if isinstance(is_changed_comparison, ndarray):
             is_changed_comparison = is_changed_comparison.all()
+        if is_changed_comparison:
+            self.data_ready = True
         #if no future value was given it means you can ignore (or set to true) comparison with a future
         if self.future_value == None:
             is_eq_to_future_comparison = True
@@ -112,7 +115,7 @@ class monitor(object):
             is_eq_to_future_comparison = (self.current_value == self.future_value)
             if isinstance(is_eq_to_future_comparison, ndarray):
                 is_eq_to_future_comparison= is_eq_to_future_comparison.all()   
-        return (not is_changed_comparison) or (not is_eq_to_future_comparison)
+        return (not self.data_ready) or (not is_eq_to_future_comparison)
 
     def _compare(self,desired):
         comparison = (self.current_value == desired)
@@ -168,14 +171,6 @@ class subscriber:
 
     def for_a_change_on(self, attr,changed_to=None):
         value_now = self.resource.get(attr)
-        if changed_to != None:
-            try:
-                assert(value_now != changed_to)
-            except:
-                raise Exception("{}'s '{}' you are trying to change to {} is already changed!".format(
-                       self.resource.device_name,
-                        attr,
-                        changed_to))
         return monitor(self.resource, value_now, attr,changed_to)
 
  
@@ -241,9 +236,19 @@ class waiter():
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState",changed_to='IDLE'))
         self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState",changed_to='IDLE'))
 
-    def set_wait_for_assign_resources(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='ON'))
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
+    def set_wait_for_assign_resources(self,nr_of_receptors=None):
+        ### the following is a hack to wait for items taht are not worked into the state variable
+        if nr_of_receptors is not None:
+            IDlist_ones = tuple([1 for i in range(0,nr_of_receptors)])
+            IDlist_inc = tuple([i for i in range(1,nr_of_receptors+1)])
+            self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList",changed_to=IDlist_inc))
+            self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("assignedReceptors",changed_to=IDlist_inc))
+            self.waits.append(watch(resource('mid_csp/elt/master')).for_a_change_on("receptorMembership",changed_to=IDlist_ones))
+        else:
+            self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
+            self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("assignedReceptors"))
+            self.waits.append(watch(resource('mid_csp/elt/master')).for_a_change_on("receptorMembership"))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='ON')) 
         self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State",changed_to='ON'))
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='ON'))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='ON'))

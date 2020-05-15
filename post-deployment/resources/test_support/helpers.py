@@ -2,14 +2,14 @@ from time import sleep,time
 import signal
 from numpy import ndarray
 import logging
-from datetime import date
+from datetime import date,datetime
 import os
 from math  import ceil
 import pytest
 
 ## local imports
 from resources.test_support.mappings import device_to_container
-from resources.test_support.persistance_helping import update_file
+from resources.test_support.persistance_helping import update_file,update_scan_config_file
 
 ##SUT imports
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
@@ -168,6 +168,14 @@ class subscriber:
 
     def for_a_change_on(self, attr,changed_to=None):
         value_now = self.resource.get(attr)
+        if changed_to != None:
+            try:
+                assert(value_now != changed_to)
+            except:
+                raise Exception("{}'s '{}' you are trying to change to {} is already changed!".format(
+                       self.resource.device_name,
+                        attr,
+                        changed_to))
         return monitor(self.resource, value_now, attr,changed_to)
 
  
@@ -228,36 +236,36 @@ class waiter():
         self.waits = []
 
     def set_wait_for_ending_SB(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState"))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState"))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState"))
-        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState"))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState",changed_to='IDLE'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState",changed_to='IDLE'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState",changed_to='IDLE'))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState",changed_to='IDLE'))
 
     def set_wait_for_assign_resources(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='ON'))
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
-        # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State",changed_to='ON'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='ON'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='ON'))
 
     def set_wait_for_tearing_down_subarray(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='OFF'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='OFF'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='OFF'))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State",changed_to='OFF'))
 
     def set_wait_for_going_to_standby(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='DISABLE'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='DISABLE'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='DISABLE'))
         # at the moment sdb does not go to standby
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 
     def set_wait_for_starting_up(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State"))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='OFF'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='OFF'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='OFF'))
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 
     def wait(self, timeout=30,resolution=0.1):
@@ -282,7 +290,7 @@ class waiter():
                     wait.current_value,
                     timeout - result*resolution)
         if self.timed_out:
-            raise Exception("timed out, the following timeouts occured:\n{}However the following expected changes was successfull:\n{}".format(
+            raise Exception("timed out, the following timeouts occured:\n{} Successfull changes:\n{}".format(
                 self.error_logs,
                 self.logs
         ))
@@ -294,6 +302,15 @@ class pilot():
     def __init__(self, id):
         self.SubArray = SubArray(id)
         self.logs = ""
+        self.agents = ResourceGroup(resource_names=subarray_devices)
+
+    def and_display_state(self):
+        print("state at {} is:\n{}".format(datetime.now(),self.agents.get('State')))
+        return self
+
+    def and_display_obsState(self):
+        print("state at {} is:\n{}".format(datetime.now(),self.agents.get('obsState')))
+        return self
 
     def to_be_composed_out_of(self, dishes, file = 'resources/test_data/example_allocate.json'):
         the_waiter = waiter()
@@ -309,10 +326,10 @@ class pilot():
             pytest.fail("timed out whilst composing subarray:\n {}".format(the_waiter.logs))
         return self
 
-    def and_configure_scan_by_file(self,file='resources/test_data/polaris_b1_no_cam.json'):
+    def and_configure_scan_by_file(self,file = 'resources/test_data/TMC_integration/configure1.json'):
         timeout = 30
         # update the ID of the config data so that there is no duplicate configs send during tests
-        update_file(file)
+        update_scan_config_file(file)
         signal.signal(signal.SIGALRM, handlde_timeout)
         signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
         try:

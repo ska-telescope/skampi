@@ -78,3 +78,11 @@ def print_dict_to_csv_file(filename,data):
 def load_config_from_file(filename):
     with open(filename, 'r') as file:
         return file.read()
+
+def get_csv_file(file):
+    with open('build/{}'.format(filename), 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        data = []
+        for row in reader:
+            data.append(row)
+    return data

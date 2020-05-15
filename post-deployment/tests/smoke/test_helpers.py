@@ -7,6 +7,7 @@ sys.path.append('/app')
 import importlib
 import mock
 from mock import Mock
+import logging
 import tango
 from assertpy import assert_that
 #SUT
@@ -129,6 +130,11 @@ class mock_resource():
         else:
             return value
 
+@pytest.mark.fast
+def test_except_when_already_changed():
+    with pytest.raises(Exception):
+        watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='mock_att')    
+
 
 @pytest.mark.fast
 def test_wait_for_change_and_to_future_value():
@@ -145,11 +151,6 @@ def test_wait_for_change_and_to_future_value_timeout_on_future():
 @pytest.mark.fast  
 def test_wait_for_change_timeout():
     wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('no_change')
-    with pytest.raises(Exception):
-        wait.wait_until_value_changed(timeout=9)
-
-def test_wait_for_change_with_future_timeout():
-    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('no_change',changed_to='future_value')
     with pytest.raises(Exception):
         wait.wait_until_value_changed(timeout=9)
 

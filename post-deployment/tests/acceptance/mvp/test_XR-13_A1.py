@@ -23,6 +23,7 @@ from resources.test_support.helpers import wait_for, obsState, resource, watch, 
 set_telescope_to_standby,set_telescope_to_running,take_subarray,telescope_is_in_standby
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.state_checking import StateChecker
+from resources.test_support.persistance_helping import update_resource_config_file
 
 LOGGER = logging.getLogger(__name__)
 
@@ -86,7 +87,7 @@ def allocate_four_dishes(result):
     
     cwd, _ = os.path.split(__file__)
     cdm_file_path = os.path.join(cwd, 'example_allocate.json')
-
+    update_resource_config_file(cdm_file_path)
     subarray = SubArray(1)
     four_dish_allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
     result['response'] = subarray.allocate_from_file(cdm_file_path, four_dish_allocation)

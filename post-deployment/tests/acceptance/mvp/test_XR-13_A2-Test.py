@@ -43,7 +43,7 @@ def print_logs_to_file(s,d,status='ok'):
     d.implementation.print_log_to_file(filename_d,style='csv')
     s.print_records_to_file(filename_s,style='csv',filtered=False)
 
-@pytest.mark.skip(reason="no way of currently testing this")
+
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 def test_configure_subarray():
     """Configure Subarray."""
@@ -64,7 +64,7 @@ def assign():
 
 @when("I call the configure scan execution instruction")
 def config():
-    timeout = 60
+    timeout = 120
     devices_to_log = [
         'ska_mid/tm_subarray_node/1',
         'mid_csp/elt/subarray_01',
@@ -80,8 +80,8 @@ def config():
         'mid_d0003/elt/master' : 'pointingState',
         'mid_d0004/elt/master' : 'pointingState'}
     # update the ID of the config data so that there is no duplicate configs send during tests
-    file = 'resources/test_data/polaris_b1_no_cam.json'
-    update_file(file)
+    file = 'resources/test_data/TMC_integration/configure1.json'
+    
     signal.signal(signal.SIGALRM, handlde_timeout)
     signal.alarm(timeout)  # wait for 20 seconds and timeout if still stick
     #set up logging of components

@@ -125,15 +125,18 @@ class mock_resource():
         self.get_counter +=1
         if value == 'no_change':
             return value
-        if self.get_counter >= self.nr_of_retries:
+        if self.get_counter == self.nr_of_retries:
             return "future_value"
         else:
             return value
 
+
+
 @pytest.mark.fast
-def test_except_when_already_changed():
-    with pytest.raises(Exception):
-        watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='mock_att')    
+def test_transition():
+    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='mock_att')   
+    result = wait.wait_until_value_changed(timeout=9)
+    assert_that(result).is_equal_to(4)
 
 
 @pytest.mark.fast

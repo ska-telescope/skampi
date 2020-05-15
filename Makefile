@@ -86,6 +86,37 @@ lint_all:  ## lint ALL of the helm chart
 lint:  ## lint the HELM_CHART of the helm chart
 	cd charts/$(HELM_CHART); pwd; helm lint;
 
+
+.PHONY: deploy_prometheus delete_prometheus
+deploy_prometheus: namespace ## deploy prometheus-operator into namespace
+	@if ! kubectl get pod -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.labels.app}' \
+		| grep -q prometheus-operator; then \
+		TMP=`mktemp -d`; \
+		$(helm_add_stable_repo) && \
+		helm fetch stable/prometheus-operator --untar --untardir $$TMP && \
+		helm template $(helm_install_shim) $$TMP/prometheus-operator \
+			--namespace $(KUBE_NAMESPACE) \
+		| kubectl apply -n $(KUBE_NAMESPACE) -f -; \
+		n=5; \
+    	while ! kubectl api-resources --api-group=prometheus.database.coreos.com \
+        	| grep -q prometheuscluster && [ $${n} -gt 0 ]; do \
+        	echo Waiting for prometheus CRD to become available...; sleep 1; \
+        	n=`expr $$n - 1` || true; \
+		done \
+	fi
+
+delete_prometheus: ## Remove prometheus-operator from namespace
+	-@if kubectl get pod -n $(KUBE_NAMESPACE) \
+        		-o jsonpath='{.items[*].metadata.labels.app}' \
+		| grep -q prometheus-operator; then \
+		TMP=`mktemp -d`; \
+		$(helm_add_stable_repo) && \
+		helm fetch stable/prometheus-operator --untar --untardir $$TMP && \
+		helm template $(helm_install_shim) $$TMP/prometheus-operator \
+			--namespace $(KUBE_NAMESPACE) \
+		| kubectl delete -n $(KUBE_NAMESPACE) -f -; \
+	fi
+
 .PHONY: deploy_etcd delete_etcd
 deploy_etcd: namespace ## deploy etcd-operator into namespace
 	@if ! kubectl get pod -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.labels.app}' \

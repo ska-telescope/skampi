@@ -22,8 +22,8 @@ from resources.test_support.helpers import (
 KUBE_NAMESPACE = os.environ.get("KUBE_NAMESPACE", "integration")
 HELM_RELEASE = os.environ.get("HELM_RELEASE", "test")
 SKUID_URL = f"skuid-skuid-{KUBE_NAMESPACE}-{HELM_RELEASE}.{KUBE_NAMESPACE}.svc.cluster.local:9870"
-SUBARRAY_CONF_FILE = (
-    "/app/skampi/post-deployment/resources/test_data/polaris_b1_no_cam.json"
+SUBARRAY_CONF_FILE = Path.joinpath(
+    Path(__file__).parents[2], "resources", "test_data", "polaris_b1_no_cam.json"
 )
 
 

@@ -10,5 +10,7 @@ hdbppdb:
   enabled: true
 archiver:
   enabled: true
+tangodb:
+  use_pv: false
 
 minikube: false

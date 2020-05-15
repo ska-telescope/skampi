@@ -12,18 +12,18 @@ import logging
 from time import sleep
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-from datetime import date,datetime
+
+
 #SUT
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 import oet.observingtasks as observingtasks
 #SUT infrastructure
 from tango import DeviceProxy, DevState
 ## local imports
-from resources.test_support.helpers import wait_for, obsState, resource, watch, waiter, map_dish_nr_to_device_name,\
-set_telescope_to_standby,set_telescope_to_running,take_subarray,telescope_is_in_standby
-from resources.test_support.log_helping import DeviceLogging
-from resources.test_support.state_checking import StateChecker
+from resources.test_support.helpers import resource,set_telescope_to_standby,set_telescope_to_running,take_subarray,telescope_is_in_standby
 from resources.test_support.persistance_helping import update_resource_config_file
+from resources.test_support.logging_decorators import log_it
+from resources.test_support.sync_decorators import sync_assign_resources
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,18 +41,6 @@ non_default_states_to_check = {
     'mid_d0002/elt/master' : 'pointingState',
     'mid_d0003/elt/master' : 'pointingState',
     'mid_d0004/elt/master' : 'pointingState'}
-
-def print_logs_to_file(s,d,status='ok'):
-    if status=='ok':
-        filename_d = 'logs_test_AX-13_A1_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-        filename_s = 'states_test_AX-13_A1_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-    elif status=='error':
-        filename_d = 'error_logs_test_AX-13_A1_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-        filename_s = 'error_states_test_AX-13_A1_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-    LOGGER.info("Printing log files to build/{} and build/{}".format(filename_d,filename_s))
-    d.implementation.print_log_to_file(filename_d,style='csv')
-    s.print_records_to_file(filename_s,style='csv',filtered=False)
-
 
 
 @pytest.fixture
@@ -73,36 +61,21 @@ def set_to_running():
 
 @when("I allocate 4 dishes to subarray 1")
 def allocate_four_dishes(result):
-    LOGGER.info("When I allocate 4 dishes to subarray 1")
-    ###setting up waits
-    the_waiter = waiter()
-    the_waiter.set_wait_for_assign_resources()
-    ####loging
-    s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
-    s.run(threaded=True,resolution=0.1)
-    d = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    d.update_traces(devices_to_log)
-    d.start_tracing()
-    ##system under test is being excuted
-    
-    cwd, _ = os.path.split(__file__)
-    cdm_file_path = os.path.join(cwd, 'example_allocate.json')
-    update_resource_config_file(cdm_file_path)
-    subarray = SubArray(1)
-    four_dish_allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
-    result['response'] = subarray.allocate_from_file(cdm_file_path, four_dish_allocation)
-
-    ####################################
-    #wait for certain values to be changed (wait_for_assign_resources)
-    the_waiter.wait()
-    if the_waiter.timed_out:
-        pytest.fail('timed out whilst assigning resources:\n {}'.format(the_waiter.logs))
+    LOGGER.info("When I allocate 4 dishes to subarray 1")  
+    ##############################
+    @log_it('AX-13_A1',devices_to_log,non_default_states_to_check)
+    @sync_assign_resources(4)
+    def test_SUT():
+        cwd, _ = os.path.split(__file__)
+        cdm_file_path = os.path.join(cwd, 'example_allocate.json')
+        update_resource_config_file(cdm_file_path)
+        four_dish_allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
+        subarray = SubArray(1)
+        return subarray.allocate_from_file(cdm_file_path, four_dish_allocation)
+    result['response'] = test_SUT()
+    ##############################
 
     LOGGER.info("Assign resources executed successfully")
-    LOGGER.info("Gathering logs")
-    s.stop()
-    d.stop_tracing()
-    print_logs_to_file(s,d,status='ok')
     return result
 
 @then("I have a subarray composed of 4 dishes")

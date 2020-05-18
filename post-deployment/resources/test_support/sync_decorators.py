@@ -24,7 +24,8 @@ def sync_configure(func):
         ################ 
         result = func(*args, **kwargs)
         ################ 
-        w.wait_until_value_changed_to('READY',timeout=100)
+        w.wait_until_value_changed_to('CONFIGURING')
+        w.wait_until_value_changed_to('READY',timeout=200)
         return result
     return wrapper
 

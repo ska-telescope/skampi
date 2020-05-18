@@ -175,7 +175,7 @@ class subscriber:
 
     def for_a_change_on(self, attr,changed_to=None,predicate=None):
         value_now = self.resource.get(attr)
-        return monitor(self.resource, value_now, attr,changed_to,predicate=None)
+        return monitor(self.resource, value_now, attr,changed_to,predicate)
 
  
 def watch(resource):
@@ -243,11 +243,29 @@ class waiter():
     def set_wait_for_assign_resources(self,nr_of_receptors=None):
         ### the following is a hack to wait for items taht are not worked into the state variable
         if nr_of_receptors is not None:
+            def predicate_sum(current,expected):
+                return (sum(current) == sum(expected))
+            def predicate_set_eq(current,expected):
+                if current is None:
+                    return False
+                else:
+                    return (set(current) == set(expected))
             IDlist_ones = tuple([1 for i in range(0,nr_of_receptors)])
             IDlist_inc = tuple([i for i in range(1,nr_of_receptors+1)])
-            self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList",changed_to=IDlist_inc))
-            self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("assignedReceptors",changed_to=IDlist_inc))
-            self.waits.append(watch(resource('mid_csp/elt/master')).for_a_change_on("receptorMembership",changed_to=IDlist_ones))
+            self.waits.append(watch(resource('ska_mid/tm_subarray_node/1'))
+                .for_a_change_on(
+                    "receptorIDList",
+                    changed_to=IDlist_inc,
+                    predicate=predicate_set_eq))
+            self.waits.append(watch(resource('mid_csp/elt/subarray_01'))
+                .for_a_change_on(
+                    "assignedReceptors",
+                    changed_to=IDlist_inc,
+                    predicate=predicate_set_eq))
+            self.waits.append(watch(resource('mid_csp/elt/master'))
+                .for_a_change_on("receptorMembership",
+                    changed_to=IDlist_ones,
+                    predicate=predicate_sum))
         else:
             self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
             self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("assignedReceptors"))

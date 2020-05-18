@@ -1,5 +1,5 @@
 {{ if .Values.fluentd.enabled }}
-
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -7,7 +7,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
 
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
@@ -25,7 +24,6 @@ rules:
   - watch
 
 ---
-
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:

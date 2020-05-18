@@ -8,7 +8,7 @@ import pytest
 import logging
 import sys
 
-@pytest.mark.fast
+@pytest.mark.archiver
 def test_init():
   print("Init test archiver")
   evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
@@ -68,7 +68,7 @@ def configure_attribute(attribute):
 
   conf_manager_proxy.AttributeRemove(attribute)
 
-@pytest.mark.slow
+@pytest.mark.archiver
 def test_configure_attribute():
   attribute = "sys/tg_test/1/double_scalar"
   
@@ -92,7 +92,7 @@ def test_configure_attribute():
     
     sleep(sleep_time)
 
-@pytest.mark.fast
+@pytest.mark.archiver
 def test_archiving_started():
   evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
   evt_subscriber_device_proxy = DeviceProxy(evt_subscriber_device_fqdn)

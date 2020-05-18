@@ -1,28 +1,50 @@
-import sys
-
-from tango import DeviceProxy, DevState, CmdArgType, EventType
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
-from time import sleep
+from time import sleep,time
 import signal
 from numpy import ndarray
 import logging
-import json 
 from datetime import date
-import random
-from random import choice
+import os
+from math  import ceil
+import pytest
+
+## local imports
+from resources.test_support.mappings import device_to_container
+from resources.test_support.persistance_helping import update_file
+
+##SUT imports
+from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+#SUT frameworks
+from tango import DeviceProxy, DevState, CmdArgType, EventType
+
 
 LOGGER = logging.getLogger(__name__)
 
 obsState = {"IDLE": 0}
+
+####typical device sets
+subarray_devices = [
+        'ska_mid/tm_subarray_node/1',
+        'mid_csp/elt/subarray_01',
+        'mid_csp_cbf/sub_elt/subarray_01',
+        'mid_sdp/elt/subarray_1']
 
 
 def map_dish_nr_to_device_name(dish_nr):
     digits = str(10000 + dish_nr)[1::]
     return "mid_d" + digits + "/elt/master"
     
-def handlde_timeout():
+def handlde_timeout(par1,par2):
     print("operation timeout")
     raise Exception("operation timeout")
+
+#####MVP asbtraction (tango,kubernetes ect as stateless resources)
+class ResourceGroup():
+
+    def __init__(self,resource_names=subarray_devices):
+        self.resources = resource_names
+
+    def get(self,attr):
+        return [{resource_name : resource(resource_name).get(attr)} for resource_name in self.resources]
 
 class resource:
     device_name = None
@@ -45,7 +67,7 @@ class resource:
                 return tuple(value)
             return getattr(p, attr)
 
-
+####time keepers based on above resources
 class monitor(object):
     previous_value = None
     resource = None
@@ -53,10 +75,11 @@ class monitor(object):
     device_name = None
     current_value = None
 
-    def __init__(self, resource, previous_value, attr):
+    def __init__(self, resource, previous_value, attr,future_value=None):
         self.previous_value = previous_value
         self.resource = resource
         self.attr = attr
+        self.future_value = future_value
         self.device_name = resource.device_name
         self.current_value = self.resource.get(self.attr)
 
@@ -70,12 +93,19 @@ class monitor(object):
         else:
             return comparison
 
-    def _wait(self, timeout=80):
+    def _compare(self,desired):
+        comparison = (self.current_value == desired)
+        if isinstance(comparison,ndarray):
+            return comparison.all()
+        else:
+            return comparison
+
+    def _wait(self, timeout=80,resolution=0.1):
         timeout = timeout
         while (self._is_not_changed()):
             timeout -= 1
             if (timeout == 0): return "timeout"
-            sleep(0.1)
+            sleep(resolution)
             self._update()
         return timeout
 
@@ -85,8 +115,18 @@ class monitor(object):
             return "timeout"
         return self.current_value
 
-    def wait_until_value_changed(self, timeout=50):
+    def wait_until_value_changed(self, timeout=50,resolution=0.1):
         return self._wait(timeout)
+    
+    def wait_until_value_changed_to(self,value,timeout=50,resolution=0.1):
+        timeout = timeout
+        self._update()
+        while self._compare(value):
+            timeout -= 1
+            if (timeout == 0): return "timeout"
+            sleep(resolution)
+            self._update()
+        return timeout
 
 
 class subscriber:
@@ -98,7 +138,7 @@ class subscriber:
         value_now = self.resource.get(attr)
         return monitor(self.resource, value_now, attr)
 
-
+ 
 def watch(resource):
     return subscriber(resource)
 
@@ -143,44 +183,19 @@ def wait_for(device, timeout=80):
 def take_subarray(id):
     return pilot(id)
 
-
-class pilot():
-
-    def __init__(self, id):
-        self.SubArray = SubArray(id)
-
-    def to_be_composed_out_of(self, dishes):
-        the_waiter = waiter()
-        the_waiter.set_wait_for_assign_resources()
-
-        result = self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)]))
-
-        the_waiter.wait()
-        LOGGER.info(the_waiter.logs)
-        return self
-
-    def and_configure_scan_by_file(self,file='resources/test_data/polaris_b1_no_cam.json'):
-        timeout = 80
-        # update the ID of the config data so that there is no duplicate configs send during tests
-        update_file(file)
-        signal.signal(signal.SIGALRM, handlde_timeout)
-        signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
-        try:
-            logging.info("Configuring the subarray")
-            SubArray(1).configure_from_file(file, with_processing=False)
-        except Exception as ex_obj:
-            LOGGER.info("Exception in configure command:", ex_obj)
-
-
-def restart_subarray(id):
-    pass
-
-
+### this is a composite type of waiting based on a set of predefined pre conditions expected to be true
 class waiter():
-
+    
     def __init__(self):
         self.waits = []
         self.logs = ""
+        self.timed_out = False
+
+    def set_wait_for_ending_SB(self):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState"))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState"))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState"))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState"))
 
     def set_wait_for_assign_resources(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State"))
@@ -209,48 +224,126 @@ class waiter():
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State"))
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 
-    def set_wait_for_ending_SB(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState"))
-
-    def wait(self, timeout=80):
+    def wait(self, timeout=30,resolution=0.1):
         self.logs = ""
         while self.waits:
             wait = self.waits.pop()
-            result = wait.wait_until_value_changed(timeout)
+            result = wait.wait_until_value_changed(timeout=timeout,resolution=resolution)
             if result == "timeout":
+                self.timed_out = True
                 self.logs += wait.device_name + " timed out whilst waiting for " + wait.attr + " to change from " + str(
-                    wait.previous_value) + " in " + str(timeout) + " seconds;"
+                    wait.previous_value) + " in " + str(timeout*resolution) + " seconds;"
             else:
                 self.logs += wait.device_name + " changed " + str(wait.attr) + " from " + str(
-                    wait.previous_value) + " to " + str(wait.current_value) + " after " + str(
-                    timeout - result) + " tries ;"
+                    wait.previous_value) + " to " + str(wait.current_value) + " after " + str((
+                    timeout - result)*resolution) + " seconds ;"
 
-def update_file(file):
-    import os 
-    LOGGER.info("current dir:" + os.path.dirname(os.path.realpath(__file__)))
-    LOGGER.info("current working dir:" + os.getcwd())
+#####schedulers and controllers aimed at putting the system in specified state
+
+class pilot():
+
+    def __init__(self, id):
+        self.SubArray = SubArray(id)
+        self.logs = ""
+
+    def to_be_composed_out_of(self, dishes):
+        the_waiter = waiter()
+        the_waiter.set_wait_for_assign_resources()
+
+        self.result = self.SubArray.allocate(ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)]))
+
+        the_waiter.wait()
+        self.logs = the_waiter.logs
+        if the_waiter.timed_out:
+            pytest.fail("timed out whilst composing subarray:\n {}".format(the_waiter.logs))
+        return self
+
+    def and_configure_scan_by_file(self,file='resources/test_data/polaris_b1_no_cam.json'):
+        timeout = 30
+        # update the ID of the config data so that there is no duplicate configs send during tests
+        update_file(file)
+        signal.signal(signal.SIGALRM, handlde_timeout)
+        signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
+        try:
+            SubArray(1).configure_from_file(file, with_processing=False)
+        except:
+            pytest.fail("timed out whilst configuring subarray: unable to continue with tests")
+        finally:
+            signal.alarm(0)
+        return self
+
+    def and_release_all_resources(self):
+        the_waiter = waiter()
+        the_waiter.set_wait_for_tearing_down_subarray()
+        SubArray(1).deallocate()
+        the_waiter.wait()
+        if the_waiter.timed_out:
+            pytest.fail("timed out whilst releasing resources on subarray:\n {}".format(the_waiter.logs))
+        self.logs = the_waiter.logs
+        return self
+
+    def and_end_sb_when_ready(self):
+        the_waiter = waiter()
+        the_waiter.set_wait_for_ending_SB()
+        SubArray(1).end_sb()
+        the_waiter.wait()
+        if the_waiter.timed_out:
+            pytest.fail("timed out taking the subarray to IDLE:\n {}".format(the_waiter.logs))
+        self.logs = the_waiter.logs
+        return self
+
+
+def restart_subarray(id):
+    pass
+
+def set_telescope_to_standby():
+    the_waiter = waiter()
+    the_waiter.set_wait_for_going_to_standby()
+    SKAMid().standby()
+    the_waiter.wait()
+    if the_waiter.timed_out:
+        pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
+
+def set_telescope_to_running(disable_waiting = False):
+    the_waiter = waiter()
+    the_waiter.set_wait_for_starting_up()
+    SKAMid().start_up()
+    if not disable_waiting:
+        the_waiter.wait()
+        if the_waiter.timed_out:
+            pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
+
+def telescope_is_in_standby():
+    return  [resource('ska_mid/tm_subarray_node/1').get("State"),
+            resource('mid_csp/elt/subarray_01').get("State"),
+            resource('mid_csp_cbf/sub_elt/subarray_01').get("State")] == \
+            ['DISABLE' for n in range(3)]
+
+
+def run_a_config_test():
+    assert(telescope_is_in_standby)
+    set_telescope_to_running()
     try:
-        os.chdir('post-deployment')
-    except: # ignores if this is an error (assumes then that we are already on that directory)
-        pass
-    LOGGER.info("current working dir:" + os.getcwd())
-    with open(file, 'r') as f:
-        data = json.load(f)
-    random_no = random.randint(100, 999)
-    data['scanID'] = random_no
-    data['sdp']['configure'][0]['id'] = "realtime-" + date.today().strftime("%Y%m%d") + "-" + str(choice
-                                                                                                  (range(1, 10000)))
-    fieldid = 1
-    intervalms = 1400
+        take_subarray(1).to_be_composed_out_of(4).and_configure_scan_by_file()
+    except:
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+            #this means there must have been an error
+            if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+                print("tearing down composed subarray (IDLE)")
+                take_subarray(1).and_release_all_resources() 
+            set_telescope_to_standby()
+            raise Exception("faiure in configuring subarry not configured, resources are released and put in standby")
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+            print("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
+            restart_subarray(1)
+            #raise exception since we are unable to continue with tear down
+            raise Exception("failure in configuring subarry, unable to reset the system")
+    take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+    set_telescope_to_standby()  
+        
+def run_a_config_test_series(size):
+    for i in range(size):
+        print('test run{}'.format(i))
+        run_a_config_test()
 
-    scan_details = {}
-    scan_details["fieldId"] = fieldid
-    scan_details["intervalMs"] = intervalms
-    scanParameters = {}
-    scanParameters[random_no] = scan_details
 
-    data['sdp']['configure'][0]['scanParameters'] = scanParameters
-
-    with open(file, 'w') as f:
-        json.dump(data, f)
-    

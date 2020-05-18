@@ -10,3 +10,4 @@ kubernetes
 assertpy
 mock
 importlib
+elasticsearch-dsl

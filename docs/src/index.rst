@@ -10,7 +10,9 @@ This project defines the integration between various component repository on Kub
    helm
    templates
    environments
+   deployment
    testing
+   triage
    gui
    AnA
    resources

@@ -1,5 +1,5 @@
 {{ if .Values.kibana.enabled }}
-
+---
 apiVersion: v1
 kind: Service
 metadata:

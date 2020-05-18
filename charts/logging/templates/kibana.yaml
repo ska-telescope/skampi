@@ -1,6 +1,5 @@
 {{ if .Values.kibana.enabled }}
-
-
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:

@@ -1,5 +1,5 @@
 {{ if .Values.elastic.enabled }}
-
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,7 +23,7 @@ spec:
         command:
           - sh
           - -c
-          - 'chown 1000:1000 /usr/share/elasticsearch/data' 
+          - 'chown 1000:1000 /usr/share/elasticsearch/data'
         volumeMounts:
         - name: elastic-data
           mountPath: /usr/share/elasticsearch/data
@@ -102,9 +102,9 @@ spec:
         args:
           - "-c"
           - >
-            apk add curl && 
-            curl -XPUT --retry-connrefused --connect-timeout 5 --retry 999  --retry-delay 1 "${ELASTIC_HOST}"/_ingest/pipeline/ska_log_parsing_pipeline -H "kbn-xsrf: true" -H "Content-Type: application/json" -d @/tmp/ska_log_parsing_pipeline.json && 
-            curl -XPUT --retry-connrefused --connect-timeout 5 --retry 999  --retry-delay 1 "${ELASTIC_HOST}"/_ilm/policy/ska_ilm_policy -H "kbn-xsrf: true" -H "Content-Type: application/json" -d @/tmp/ska_ilm_policy.json && 
+            apk add curl &&
+            curl -XPUT --retry-connrefused --connect-timeout 5 --retry 999  --retry-delay 1 "${ELASTIC_HOST}"/_ingest/pipeline/ska_log_parsing_pipeline -H "kbn-xsrf: true" -H "Content-Type: application/json" -d @/tmp/ska_log_parsing_pipeline.json &&
+            curl -XPUT --retry-connrefused --connect-timeout 5 --retry 999  --retry-delay 1 "${ELASTIC_HOST}"/_ilm/policy/ska_ilm_policy -H "kbn-xsrf: true" -H "Content-Type: application/json" -d @/tmp/ska_ilm_policy.json &&
             curl -XPUT --retry-connrefused --connect-timeout 5 --retry 999  --retry-delay 1 "${ELASTIC_HOST}"/_template/ska_index_template -H "kbn-xsrf: true" -H "Content-Type: application/json" -d @/tmp/ska_index_template.json
         volumeMounts:
           - name: elastic-config

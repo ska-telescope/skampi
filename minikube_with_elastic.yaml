@@ -5,12 +5,10 @@ fluentd:
 kibana:
   enabled: true
 tests:
-  enabled: true
+  enabled: false
 hdbppdb:
-  enabled: true
+  enabled: false
 archiver:
-  enabled: true
-tangodb:
-  use_pv: false
+  enabled: false
 
-minikube: false
+minikube: true

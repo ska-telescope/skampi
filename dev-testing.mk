@@ -34,7 +34,7 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 GIT_EMAIL?=user.email.com
 GIT_USER?=\"user name\"
 
-deploy_testing_pod:
+deploy_testing_pod: ## deploy a testing pod for doing developement inside a k8 pod (this is the same pod used for running CI tests)
 	@kubectl run $(testing-pod) \
 		--image=$(IMAGE_TO_TEST) \
 		--namespace $(KUBE_NAMESPACE) \
@@ -57,19 +57,20 @@ deploy_testing_pod:
 		echo 'export VALUES=pipeline.yaml' >> /home/tango/.bashrc && \
 		echo 'export TANGO_HOST=databaseds-tango-base-test:10000' >> /home/tango/.bashrc "
 
-delete_testing_pod:
+
+delete_testing_pod: # delete testing pod
 	@kubectl delete pod $(testing-pod) --namespace $(KUBE_NAMESPACE)
 
-attach_testing_pod:
+attach_testing_pod: # open a shell inside the testing pod
 	@kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) /bin/bash
 
 
-clean_skampi:
+clean_skampi: # remove any cache or build files on repo created during testing and build jobs
 	 git ls-files . --ignored --exclude-standard --others --directory | xargs rm -R -f
 
 ssh_config = "Host kube-host\n\tHostName $(THIS_HOST) \n \tUser ubuntu"
 
-test_as_ssh_client:
+test_as_ssh_client: # set up the  testing pod so that one can ssh back into the host as well as allow other clients to connect using key-pair
 	@kubectl exec -it $(testing-pod) -- bash -c "mkdir /home/tango/.ssh/ && ssh-keygen -t rsa -f /home/tango/.ssh/id_rsa -q -P ''"
 	@kubectl exec -it $(testing-pod) -- bash -c "cat /home/tango/.ssh/id_rsa.pub" >>~/.ssh/authorized_keys
 	@kubectl exec -it $(testing-pod) -- bash -c "chown tango:tango -R /home/tango/.ssh/"
@@ -78,5 +79,5 @@ test_as_ssh_client:
 	@rm temp
 
 
-check_log_consumer_running:
+check_log_consumer_running: 
 	ps aux | awk 

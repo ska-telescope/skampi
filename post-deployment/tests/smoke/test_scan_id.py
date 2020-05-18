@@ -17,6 +17,7 @@ from resources.test_support.helpers import (
     watch,
     take_subarray,
     restart_subarray,
+    telescope_is_in_standby
 )
 
 KUBE_NAMESPACE = os.environ.get("KUBE_NAMESPACE", "integration")
@@ -36,7 +37,8 @@ def get_next_scan_id_from_service():
 @pytest.fixture(scope="module")
 def pre_test_scan_id(request, autouse=True):
     """Keep the 'before' scan ID"""
-    return get_next_scan_id_from_service()
+    id = get_next_scan_id_from_service()
+    return id
 
 
 @pytest.fixture(scope="module")
@@ -54,6 +56,7 @@ def add_teardown(request, autouse=True):
             SubArray(1).deallocate()
         if resource("ska_mid/tm_subarray_node/1").get("obsState") == "CONFIGURING":
             restart_subarray(1)
+        take_subarray(1).and_release_all_resources()
         SKAMid().standby()
 
     request.addfinalizer(release)
@@ -72,8 +75,10 @@ def subarray_config(request):
 @pytest.mark.xfail
 @pytest.mark.timeout(60)
 @scenario("../../features/scan_id.feature", "OET requests a scan ID")
-def test_request_scan_id():
+def test_request_scan_id(pre_test_scan_id):
     """Test scan ID."""
+    assert pre_test_scan_id
+    assert telescope_is_in_standby()
 
 
 @given("I am accessing the console interface for the OET")
@@ -88,7 +93,7 @@ def assign():
     watch_receptor_id_list = watch(
         resource("ska_mid/tm_subarray_node/1")
     ).for_a_change_on("receptorIDList")
-    take_subarray(1).to_be_composed_out_of(4)
+    take_subarray(1).to_be_composed_out_of(1)
     watch_receptor_id_list.wait_until_value_changed()
 
 
@@ -118,4 +123,4 @@ def check_scan_id(pre_test_scan_id):
     """
     scan_id_used = int(resource("ska_mid/tm_subarray_node/1").get("scanID"))
     post_test_scan_id = get_next_scan_id_from_service()
-    assert_that(post_test_scan_id > scan_id_used > pre_test_scan_id)
+    assert post_test_scan_id > scan_id_used > pre_test_scan_id

@@ -32,6 +32,7 @@ def log_it(log_name,devices_to_log,non_default_states_to_check):
             except:
                 s.stop()
                 d.stop_tracing()
+                LOGGER.info("error in executing SUT")
                 print_logs_to_file(s,d,log_name,status='error')
                 raise
             ################

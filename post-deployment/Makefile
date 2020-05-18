@@ -36,3 +36,14 @@ start_log_consumer:
 remove_log_consumer:
 	kill $$(ps aux | grep -v grep | grep 'python3 resources/log_consumer/log_consumer.py' | awk '{print $$2}')
 	tango_admin --delete-server LogConsumer/log
+
+setup_ipython:
+	ipython profile create &&  \
+	cp resources/ipython_config.py /home/tango/.ipython/profile_default/ipython_config.py 
+
+config_git:
+	git config --global user.name '$(GIT_USER)'
+	git config --global user.email $(GIT_EMAIL)
+
+check_log_consumer_running:
+	ps aux | awk 

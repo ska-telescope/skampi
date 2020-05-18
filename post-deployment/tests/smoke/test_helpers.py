@@ -107,11 +107,51 @@ def test_wait_for_change():
     resource_mock.device_name = "test_device"
     resource_mock.get.return_value = "value_then"
     watch = monitor(resource_mock, "value_then", "attr")
-    result = watch.wait_until_value_changed(10)
-    assert_that(result).is_equal_to("timeout")
-    resource_mock.get.return_value = "value_now"
-    result = watch.wait_until_value_changed(10)
-    assert_that(result).is_equal_to(9)
+    with pytest.raises(Exception):
+        assert watch.wait_until_value_changed(10)
+
+class mock_resource():
+
+    def __init__(self,nr_of_retries=5):
+        self.get_counter = 0
+        self.nr_of_retries = nr_of_retries
+        self.device_name = 'dummy resources'
+
+    def get(self,value):
+        self.get_counter +=1
+        if value == 'no_change':
+            return value
+        if self.get_counter == self.nr_of_retries:
+            return "future_value"
+        else:
+            return value
+
+
+
+@pytest.mark.fast
+def test_transition():
+    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='mock_att')   
+    result = wait.wait_until_value_changed(timeout=9)
+    assert_that(result).is_equal_to(4)
+
+
+@pytest.mark.fast
+def test_wait_for_change_and_to_future_value():
+    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='future_value')
+    result = wait.wait_until_value_changed(timeout=9)
+    assert_that(result).is_equal_to(5)
+
+@pytest.mark.fast
+def test_wait_for_change_and_to_future_value_timeout_on_future():
+    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='missing_value')
+    with pytest.raises(Exception):
+        wait.wait_until_value_changed(timeout=9)
+
+@pytest.mark.fast  
+def test_wait_for_change_timeout():
+    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('no_change')
+    with pytest.raises(Exception):
+        wait.wait_until_value_changed(timeout=9)
 
 @pytest.mark.fast
 def test_state_changer():

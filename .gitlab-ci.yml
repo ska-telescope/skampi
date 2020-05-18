@@ -91,7 +91,7 @@ helm-template-pytest:
   environment:
     name: $CT_TEST_ENVIRONMENT
 
-.chart-pytest:
+chart-pytest:
   stage: test
   tags:
     - docker-executor
@@ -142,10 +142,7 @@ delete test environment:
   tags:
   - docker-executor
   script:
-  - make delete_all || true
-  - kubectl delete all --all -n $KUBE_NAMESPACE
-  - kubectl delete namespace $KUBE_NAMESPACE
-  - kubectl delete namespace $KUBE_NAMESPACE-sdp
+  - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
   environment:
     name: $DEPLOY_ENVIRONMENT
   only:
@@ -159,7 +156,7 @@ deploy test environment:
   tags:
   - docker-executor
   script:
-  - make deploy_all
+  - make deploy_ordered
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   retry: 2
   environment:

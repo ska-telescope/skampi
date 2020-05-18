@@ -1,3 +1,5 @@
+{{ if .Values.fluentd.enabled }}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -161,3 +163,4 @@ data:
       tag bootkube
     </source>
 
+{{ end }}

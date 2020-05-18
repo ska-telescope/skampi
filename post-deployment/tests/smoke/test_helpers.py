@@ -116,17 +116,19 @@ def test_wait_for_change():
 
 class mock_resource():
 
-    def __init__(self,nr_of_retries=5):
+    def __init__(self,nr_of_retries=5,no_change_value='no_change',future_value='future_value'):
         self.get_counter = 0
         self.nr_of_retries = nr_of_retries
         self.device_name = 'dummy resources'
+        self.no_change_value = no_change_value
+        self.future_value = future_value
 
     def get(self,value):
         self.get_counter +=1
-        if value == 'no_change':
+        if value == self.no_change_value:
             return value
         if self.get_counter == self.nr_of_retries:
-            return "future_value"
+            return self.future_value
         else:
             return value
 
@@ -138,6 +140,13 @@ def test_transition():
     result = wait.wait_until_value_changed(timeout=9)
     assert_that(result).is_equal_to(4)
 
+def test_transition_with_predicate():
+    futre_value = (1,1,0,0)
+    no_change_value = (0,0,0,0)
+    def predicate(current,expected):
+        return (sum(current) == sum(futre_value))
+    mock_r = mock_resource(nr_of_retries=5,no_change_value=no_change_value,future_value=futre_value)
+    wait = watch(mock_r).for_a_change_on('mock_att',changed_to=futre_value,predicate=predicate) 
 
 @pytest.mark.fast
 def test_wait_for_change_and_to_future_value():

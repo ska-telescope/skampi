@@ -90,7 +90,7 @@ class monitor(object):
     device_name = None
     current_value = None
 
-    def __init__(self, resource, previous_value, attr,future_value=None):
+    def __init__(self, resource, previous_value, attr,future_value=None,predicate=None):
         self.previous_value = previous_value
         self.resource = resource
         self.attr = attr
@@ -98,6 +98,7 @@ class monitor(object):
         self.device_name = resource.device_name
         self.current_value = previous_value
         self.data_ready = False
+        self.predicate = predicate
 
     def _update(self):
         self.current_value = self.resource.get(self.attr)
@@ -112,7 +113,10 @@ class monitor(object):
         if self.future_value == None:
             is_eq_to_future_comparison = True
         else: 
-            is_eq_to_future_comparison = (self.current_value == self.future_value)
+            if self.predicate == None:
+                is_eq_to_future_comparison = (self.current_value == self.future_value)
+            else:
+                is_eq_to_future_comparison = self.predicate(self.current_value,self.future_value)
             if isinstance(is_eq_to_future_comparison, ndarray):
                 is_eq_to_future_comparison= is_eq_to_future_comparison.all()   
         return (not self.data_ready) or (not is_eq_to_future_comparison)
@@ -169,9 +173,9 @@ class subscriber:
     def __init__(self, resource):
         self.resource = resource
 
-    def for_a_change_on(self, attr,changed_to=None):
+    def for_a_change_on(self, attr,changed_to=None,predicate=None):
         value_now = self.resource.get(attr)
-        return monitor(self.resource, value_now, attr,changed_to)
+        return monitor(self.resource, value_now, attr,changed_to,predicate=None)
 
  
 def watch(resource):
@@ -281,10 +285,14 @@ class waiter():
                 result = wait.wait_until_value_changed(timeout=timeout,resolution=resolution)
             except:
                 self.timed_out = True
-                self.error_logs += "{} timed out whilst waiting for {} to change from {} in {:f}s\n".format(
+                shim = ""
+                if wait.future_value is not None:
+                    shim = f" to {wait.future_value} (current val={wait.current_value})"
+                self.error_logs += "{} timed out whilst waiting for {} to change from {}{} in {:f}s\n".format(
                     wait.device_name,
                     wait.attr,
                     wait.previous_value,
+                    shim,
                     timeout*resolution
                 )
             else:

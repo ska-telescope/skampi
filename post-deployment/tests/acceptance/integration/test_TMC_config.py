@@ -2,7 +2,8 @@ from tango import DeviceProxy
 from datetime import date,datetime
 import pytest
 import logging
-from resources.test_support.helpers import waiter,watch,resource,telescope_is_in_standby
+from resources.test_support.helpers import waiter,watch,resource
+from resources.test_support.controls import telescope_is_in_standby
 from resources.test_support.state_checking import StateChecker
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file
@@ -48,7 +49,7 @@ def test_configure_scan():
         #then when I configure a subarray to perform a scan as per 'TMC_integration/configure1.json'
         @log_it('TMC_int_configure',devices_to_log,non_default_states_to_check)
         @sync_configure
-        @time_it(60)
+        @time_it(90)
         def configure_sub():
             resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
             configure1_file = 'resources/test_data/TMC_integration/configure1.json'

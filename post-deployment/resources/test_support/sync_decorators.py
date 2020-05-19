@@ -6,6 +6,7 @@ def sync_assign_resources(nr_of_receptors=4):
     def decorator_sync_assign_resources(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
+            resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
             the_waiter = waiter()
             the_waiter.set_wait_for_assign_resources(nr_of_receptors=nr_of_receptors)
             ################ 
@@ -20,6 +21,9 @@ def sync_assign_resources(nr_of_receptors=4):
 def sync_configure(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        ##Can ony configure a subarray that is in IDLE/ON
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
         w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
         ################ 
         result = func(*args, **kwargs)
@@ -32,6 +36,9 @@ def sync_configure(func):
 def sync_configure_oet(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        ##Can ony configure a subarray that is in IDLE/ON
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
         w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
         ################ 
         result = func(*args, **kwargs)
@@ -60,6 +67,8 @@ def time_it(timeout):
 def sync_start_up_telescope(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        ##Can  only start up a disabled telescope
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('DISABLE')
         the_waiter = waiter()
         the_waiter.set_wait_for_starting_up()
         func(*args, **kwargs)
@@ -69,6 +78,8 @@ def sync_start_up_telescope(func):
 def sync_end_sb(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        ##Can only return to ON/IDLE if in READY
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
         the_waiter = waiter()
         the_waiter.set_wait_for_ending_SB()
         func(*args, **kwargs)
@@ -78,6 +89,9 @@ def sync_end_sb(func):
 def sync_release_resources(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        ##Can only release resources if subarray is in ON/IDLE
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
         the_waiter = waiter()
         the_waiter.set_wait_for_tearing_down_subarray()
         func(*args, **kwargs)
@@ -87,6 +101,7 @@ def sync_release_resources(func):
 def sync_set_to_standby(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
         the_waiter = waiter()
         the_waiter.set_wait_for_going_to_standby()
         func(*args, **kwargs)
@@ -97,6 +112,7 @@ def sync_scan(timeout=200):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
+            resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
             the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
             func(*args, **kwargs)
             the_watch.wait_until_value_changed_to('SCANNING')

@@ -6,12 +6,13 @@ sys.path.append('/app')
 
 import importlib
 import mock
-from mock import Mock
+from mock import Mock,MagicMock
 import logging
 import tango
 from assertpy import assert_that
 #SUT
-from resources.test_support.helpers import resource, take_subarray, waiter, subscriber, watch,monitor,wait_for
+from resources.test_support.helpers import resource, waiter, subscriber, watch,monitor,wait_for
+from resources.test_support.controls import take_subarray
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 #SUT framework (not part of test)
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
@@ -78,17 +79,36 @@ class TestResource():
         item_under_test = resource(device_name)
         assert item_under_test.get('nonexistent attribute') == 'attribute not found'
 
-@mock.patch('resources.test_support.helpers.SubArray.allocate_from_file')
-@mock.patch('resources.test_support.helpers.waiter')
+class fake_resource():
+
+    def __init__(self,getvalue):
+        self.get_value = getvalue
+
+    def get(self,attr):
+        return self.get_value
+
+    def assert_attribute(self,attribute):
+        return fake_comparison()
+
+class fake_comparison():
+
+    def equals(self,value):
+        return None;
+
+#mock_resource = Mock(unsafe=True)
+@mock.patch('resources.test_support.sync_decorators.resource')
+@mock.patch('resources.test_support.controls.SubArray.allocate_from_file')
+@mock.patch('resources.test_support.sync_decorators.waiter')
 @pytest.mark.fast
-def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
+def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate,mock_resource):
     allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
+    mock_resource.return_value = Mock(unsafe=True)
     waiter_mock_instance = waiter_mock.return_value
     waiter_mock_instance.timed_out = False
     take_subarray(1).to_be_composed_out_of(4)
     waiter_mock_instance.set_wait_for_assign_resources.assert_called_once()
     waiter_mock_instance.wait.assert_called_once()
-    subarray_mock_allocate.assert_called_once_with('resources/test_data/example_allocate.json',allocation)
+    subarray_mock_allocate.assert_called_once_with('resources/test_data/OET_integration/example_allocate.json',allocation)
 
 @mock.patch('resources.test_support.helpers.watch')
 @mock.patch('resources.test_support.helpers.resource')

@@ -9,10 +9,7 @@ import pytest
 
 ## local imports
 from resources.test_support.mappings import device_to_container
-from resources.test_support.persistance_helping import update_file,update_scan_config_file
 
-##SUT imports
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 #SUT frameworks
 from tango import DeviceProxy, DevState, CmdArgType, EventType
 
@@ -218,10 +215,6 @@ class state_checker:
 def wait_for(device, timeout=80):
     return state_checker(device, timeout)
 
-
-def take_subarray(id):
-    return pilot(id)
-
 ### this is a composite type of waiting based on a set of predefined pre conditions expected to be true
 class waiter():
     
@@ -327,122 +320,4 @@ class waiter():
         ))
 
 #####schedulers and controllers aimed at putting the system in specified state
-
-class pilot():
-
-    def __init__(self, id):
-        self.SubArray = SubArray(id)
-        self.logs = ""
-        self.agents = ResourceGroup(resource_names=subarray_devices)
-
-    def and_display_state(self):
-        print("state at {} is:\n{}".format(datetime.now(),self.agents.get('State')))
-        return self
-
-    def and_display_obsState(self):
-        print("state at {} is:\n{}".format(datetime.now(),self.agents.get('obsState')))
-        return self
-
-    def to_be_composed_out_of(self, dishes, file = 'resources/test_data/example_allocate.json'):
-        the_waiter = waiter()
-        the_waiter.set_wait_for_assign_resources()
-    
-        multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
-        
-        self.SubArray.allocate_from_file(file, multi_dish_allocation)
-
-        the_waiter.wait()
-        self.logs = the_waiter.logs
-        if the_waiter.timed_out:
-            pytest.fail("timed out whilst composing subarray:\n {}".format(the_waiter.logs))
-        return self
-
-    def and_configure_scan_by_file(self,file = 'resources/test_data/TMC_integration/configure1.json'):
-        timeout = 30
-        # update the ID of the config data so that there is no duplicate configs send during tests
-        update_scan_config_file(file)
-        signal.signal(signal.SIGALRM, handlde_timeout)
-        signal.alarm(timeout)  # wait for 30 seconds and timeout if still stick
-        try:
-            self.SubArray.configure_from_file(file, 2, with_processing=False)
-        except:
-            pytest.fail("timed out whilst configuring subarray: unable to continue with tests")
-        finally:
-            signal.alarm(0)
-        return self
-
-    def and_release_all_resources(self):
-        the_waiter = waiter()
-        the_waiter.set_wait_for_tearing_down_subarray()
-        self.SubArray.deallocate()
-        the_waiter.wait()
-        if the_waiter.timed_out:
-            pytest.fail("timed out whilst releasing resources on subarray:\n {}".format(the_waiter.logs))
-        self.logs = the_waiter.logs
-        return self
-
-    def and_end_sb_when_ready(self):
-        the_waiter = waiter()
-        the_waiter.set_wait_for_ending_SB()
-        self.SubArray.end_sb()
-        the_waiter.wait()
-        if the_waiter.timed_out:
-            pytest.fail("timed out taking the subarray to IDLE:\n {}".format(the_waiter.logs))
-        self.logs = the_waiter.logs
-        return self
-
-
-def restart_subarray(id):
-    pass
-
-def set_telescope_to_standby():
-    the_waiter = waiter()
-    the_waiter.set_wait_for_going_to_standby()
-    SKAMid().standby()
-    the_waiter.wait()
-    if the_waiter.timed_out:
-        pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
-
-def set_telescope_to_running(disable_waiting = False):
-    the_waiter = waiter()
-    the_waiter.set_wait_for_starting_up()
-    SKAMid().start_up()
-    if not disable_waiting:
-        the_waiter.wait()
-        if the_waiter.timed_out:
-            pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
-
-def telescope_is_in_standby():
-    return  [resource('ska_mid/tm_subarray_node/1').get("State"),
-            resource('mid_csp/elt/subarray_01').get("State"),
-            resource('mid_csp_cbf/sub_elt/subarray_01').get("State")] == \
-            ['DISABLE' for n in range(3)]
-
-
-def run_a_config_test():
-    assert(telescope_is_in_standby)
-    set_telescope_to_running()
-    try:
-        take_subarray(1).to_be_composed_out_of(4).and_configure_scan_by_file()
-    except:
-        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
-            #this means there must have been an error
-            if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
-                print("tearing down composed subarray (IDLE)")
-                take_subarray(1).and_release_all_resources() 
-            set_telescope_to_standby()
-            raise Exception("failure in configuring subarry not configured, resources are released and put in standby")
-        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-            print("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
-            restart_subarray(1)
-            #raise exception since we are unable to continue with tear down
-            raise Exception("failure in configuring subarry, unable to reset the system")
-    take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
-    set_telescope_to_standby()  
-        
-def run_a_config_test_series(size):
-    for i in range(size):
-        print('test run{}'.format(i))
-        run_a_config_test()
-
 

@@ -20,9 +20,9 @@ import oet
 import pytest
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
-from resources.test_support.helpers import wait_for, obsState, resource, watch, take_subarray, restart_subarray, waiter, \
-    map_dish_nr_to_device_name,set_telescope_to_running,telescope_is_in_standby,set_telescope_to_standby
+from resources.test_support.helpers import wait_for, obsState, resource, watch, waiter, map_dish_nr_to_device_name
 import logging
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
 
 LOGGER = logging.getLogger(__name__)
 

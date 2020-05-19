@@ -2,7 +2,8 @@ from tango import DeviceProxy
 from datetime import date,datetime
 import pytest
 import logging
-from resources.test_support.helpers import waiter,watch,resource,telescope_is_in_standby
+from resources.test_support.helpers import waiter,watch,resource
+from resources.test_support.controls import telescope_is_in_standby
 from resources.test_support.state_checking import StateChecker
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file

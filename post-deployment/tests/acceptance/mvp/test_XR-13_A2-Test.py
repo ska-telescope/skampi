@@ -16,7 +16,7 @@ from  time  import sleep
 import logging
 import json
 #local dependencies
-from resources.test_support.helpers import wait_for, obsState, resource, watch, waiter, \
+from resources.test_support.helpers import obsState, resource, watch, waiter, \
     map_dish_nr_to_device_name,watch
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.state_checking import StateChecker

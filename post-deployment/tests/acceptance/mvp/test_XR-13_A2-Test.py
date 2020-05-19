@@ -22,7 +22,7 @@ from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.state_checking import StateChecker
 from resources.test_support.persistance_helping import update_scan_config_file
 from resources.test_support.logging_decorators import log_it
-from resources.test_support.sync_decorators import sync_configure,time_it
+from resources.test_support.sync_decorators import sync_configure_oet,time_it
 import pytest
 #SUT dependencies
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
@@ -67,7 +67,7 @@ def assign():
 def config():
 
     @log_it('AX-13_A2',devices_to_log,non_default_states_to_check)
-    @sync_configure
+    @sync_configure_oet
     @time_it(120)
     def test_SUT():
         file = 'resources/test_data/TMC_integration/configure1.json'

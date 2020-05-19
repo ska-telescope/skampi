@@ -16,7 +16,7 @@ def sync_assign_resources(nr_of_receptors=4):
         return wrapper
     return decorator_sync_assign_resources
 
-
+##this is only in the case of using TMC device proxies, OET command is blocking for the entire duration
 def sync_configure(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -26,6 +26,17 @@ def sync_configure(func):
         ################ 
         w.wait_until_value_changed_to('CONFIGURING')
         w.wait_until_value_changed_to('READY',timeout=200)
+        return result
+    return wrapper
+
+def sync_configure_oet(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+        ################ 
+        result = func(*args, **kwargs)
+        ################ 
+        w.wait_until_value_changed_to('READY',timeout=20)
         return result
     return wrapper
 

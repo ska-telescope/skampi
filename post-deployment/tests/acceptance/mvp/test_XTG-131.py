@@ -100,13 +100,13 @@ def test_mid_dsh_0005_from_standbyfp_to_standbylp():
 # define steps for scenario
 @given(parsers.parse("{device_name} reports {expected} Dish mode"))
 def device_proxy(device_name, expected):
-    dev_proxy = DeviceProxy(device_name)
     # update the device_proxies collection for teardown
     if device_name not in device_proxies:
+        dev_proxy = DeviceProxy(device_name)
         device_proxies[device_name] = dev_proxy
 
-    pre_condition(dev_proxy, device_name, expected)
-    return dev_proxy
+    pre_condition(device_proxies[device_name], device_name, expected)
+    return device_proxies[device_name]
 
 @when(parsers.parse("I command {device_name} to {requested} Dish mode"))
 def set_dish_mode(device_name, requested, device_proxy):

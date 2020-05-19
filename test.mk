@@ -3,16 +3,18 @@
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
-IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.4
+IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.4## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
-TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(HELM_RELEASE)
+TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(HELM_RELEASE)##name of the pod running the k8s_tests
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
 # capture the output of the test in a build folder inside the container 
 # 
 TANGO_HOST = databaseds-tango-base-$(HELM_RELEASE):10000
-MARK ?= fast
+MARK ?= fast## this will allow to add the mark parameter of pytest 
+SLEEPTIME ?= 30s ##amount of sleep time for the smoketest target
+
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
@@ -58,8 +60,8 @@ smoketest: ## check that the number of waiting containers is zero (10 attempts, 
 		waiting=`kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath='{.items[*].status.containerStatuses[*].state.waiting.reason}' | wc -w`; \
 		echo "Waiting containers=$$waiting"; \
 		if [ $$waiting -ne 0 ]; then \
-			echo "Waiting 30s for pods to become running...#$$n"; \
-			sleep 30s; \
+			echo "Waiting $(SLEEPTIME) for pods to become running...#$$n"; \
+			sleep $(SLEEPTIME); \
 		fi; \
 		if [ $$waiting -eq 0 ]; then \
 			echo "Smoke test SUCCESS"; \
@@ -113,3 +115,15 @@ check_oet_packages:
 
 ##the following section is for developers requiring the testing pod to be instantiated with a volume mappig to skampi
 -include dev-testing.mk
+
+timestamp=$(shell date -u +"%s")
+
+sleepy_time:
+	sleep 5s
+
+measure_time:
+	time1=$$SECONDS; \
+	make sleepy_time; \
+	time2=$$SECONDS; \
+	elapsed=$$((time2 - time1)); \
+	echo $$elapsed

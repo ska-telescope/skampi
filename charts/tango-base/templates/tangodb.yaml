@@ -63,15 +63,19 @@ spec:
         ports:
         - name: mysql
           containerPort: 3306
+{{ if .Values.tangodb.use_pv }}
         volumeMounts:
         - name: data
           mountPath: /var/lib/mysql
+{{ end }}
         resources:
 {{ toYaml .Values.tangodb.resources | indent 10 }}
       volumes:
+{{ if .Values.tangodb.use_pv }}
       - name: data
         persistentVolumeClaim:
           claimName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+{{ end }}    
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

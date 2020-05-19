@@ -431,7 +431,7 @@ def run_a_config_test():
                 print("tearing down composed subarray (IDLE)")
                 take_subarray(1).and_release_all_resources() 
             set_telescope_to_standby()
-            raise Exception("faiure in configuring subarry not configured, resources are released and put in standby")
+            raise Exception("failure in configuring subarry not configured, resources are released and put in standby")
         if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
             print("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
             restart_subarray(1)

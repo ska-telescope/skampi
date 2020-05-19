@@ -36,3 +36,13 @@ def release_resources():
 def set_to_standby():
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
     CentralNode.StandByTelescope()
+
+@sync_configure
+@time_it(60)
+def configure_sub():
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    configure1_file = 'resources/test_data/TMC_integration/configure1.json'
+    update_scan_config_file(configure1_file)
+    config = load_config_from_file(configure1_file)
+    SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+    SubarrayNode.Configure(config)

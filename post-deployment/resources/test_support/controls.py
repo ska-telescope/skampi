@@ -10,7 +10,7 @@ from resources.test_support.mappings import device_to_container
 from resources.test_support.helpers import subarray_devices,resource,ResourceGroup,waiter,watch
 from resources.test_support.persistance_helping import update_file,update_scan_config_file,update_resource_config_file
 from resources.test_support.sync_decorators import sync_assign_resources,sync_configure_oet,time_it,\
-    sync_release_resources,sync_release_resources,sync_end_sb
+    sync_release_resources,sync_release_resources,sync_end_sb,sync_scan_oet
 
 def take_subarray(id):
     return pilot(id)
@@ -21,6 +21,11 @@ class pilot():
         self.SubArray = SubArray(id)
         self.logs = ""
         self.agents = ResourceGroup(resource_names=subarray_devices)
+        self.state = "Empty"
+        self.rollback_order = {
+            'Composed': self.and_release_all_resources,
+            'Ready':self.and_end_sb_when_ready
+        }
 
     def and_display_state(self):
         print("state at {} is:\n{}".format(datetime.now(),self.agents.get('State')))
@@ -30,29 +35,66 @@ class pilot():
         print("state at {} is:\n{}".format(datetime.now(),self.agents.get('obsState')))
         return self
     
-    @sync_assign_resources(4)
+    ##the following methods are implemented versions of what gets tested 
+    ##unless a specic version  is tested they should be exactly the same
+    
     def to_be_composed_out_of(self, dishes, file = 'resources/test_data/OET_integration/example_allocate.json'):
-        update_resource_config_file(file)
-        multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
-        self.SubArray.allocate_from_file(file, multi_dish_allocation)
+        ##Reference tests/acceptance/mvp/test_XR-13_A1.py
+        @sync_assign_resources(dishes)
+        def assign():
+            update_resource_config_file(file)
+            multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
+            self.SubArray.allocate_from_file(file, multi_dish_allocation)
+        assign()
+        self.state = "Composed"
         return self
 
-    @sync_configure_oet
-    @time_it(120)
+
     def and_configure_scan_by_file(self,file = 'resources/test_data/TMC_integration/configure1.json'):
-        update_scan_config_file(file)
-        SubArray(1).configure_from_file(file, 2, with_processing = False)
+        ##Reference tests/acceptance/mvp/test_XR-13_A2-Test.py
+        @sync_configure_oet
+        @time_it(120)
+        def config():
+            update_scan_config_file(file)
+            self.state = "Scanning"
+            self.SubArray.configure_from_file(file, 2, with_processing = False)
+        config()
+        self.state = "Ready"
         return self
 
-    @sync_release_resources
+    def and_run_a_scan(self):
+        ##Reference tests/acceptance/mvp/test_XR-13_A3-Test.py
+        @sync_scan_oet
+        def scan():
+            self.SubArray.scan()
+        scan()
+        self.state = "Ready"
+        return self
+    
     def and_release_all_resources(self):
-        self.SubArray.deallocate()
+        @sync_release_resources
+        def de_allocate():
+            self.SubArray.deallocate()
+        de_allocate()
+        self.state = "Empty"
         return self
 
-    @sync_end_sb
     def and_end_sb_when_ready(self):
-        self.SubArray.end_sb()
+        @sync_end_sb
+        def end_sb():
+            self.SubArray.end_sb()
+        end_sb()
+        self.state = "Composed"
         return self
+
+    def roll_back(self):
+        if self.state !='Empty':
+            self.rollback_order[self.state]()
+            
+
+    def reset(self):
+        while self.state != 'Empty':
+            self.rollback_order[self.state]()
 
 
 def restart_subarray(id):

@@ -6,7 +6,8 @@ from resources.test_support.helpers import waiter,watch,resource,telescope_is_in
 from resources.test_support.state_checking import StateChecker
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file
-from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it
+from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,\
+    sync_set_to_standby,time_it,sync_scan
 from resources.test_support.logging_decorators import log_it
 import resources.test_support.tmc_helpers as tmc
 
@@ -27,7 +28,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-def test_assign_resources():
+def test_scan():
     
     try:
         # given an interface to TMC to interact with a subarray node and a central node
@@ -36,7 +37,7 @@ def test_assign_resources():
 
         # given a started up telescope
         assert(telescope_is_in_standby())
-        LOGGER.info('Staring up the Telescope')
+        LOGGER.info('Starting up the Telescope')
         tmc.start_up()
         fixture['state'] = 'Telescope On'
         
@@ -45,22 +46,25 @@ def test_assign_resources():
         tmc.compose_sub()
         fixture['state'] = 'Subarray Assigned'
 
-        #then when I configure a subarray to perform a scan as per 'TMC_integration/configure1.json'
-        @log_it('TMC_int_configure',devices_to_log,non_default_states_to_check)
-        @sync_configure
-        @time_it(20)
-        def configure_sub():
-            resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
-            configure1_file = 'resources/test_data/TMC_integration/configure1.json'
-            update_scan_config_file(configure1_file)
-            config = load_config_from_file(configure1_file)
-            LOGGER.info('Configuring a scan for subarray 1')
-            fixture['state'] = 'Subarray CONFIGURING'
-            SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
-            SubarrayNode.Configure(config)
+        #and a subarray configured to perform a scan as per 'TMC_integration/configure1.json'
+        LOGGER.info('Configuring the Subarray')
+        fixture['state'] = 'Subarray CONFIGURING'
         tmc.configure_sub()
         fixture['state'] = 'Subarray Configured for SCAN'
-    
+      
+        #When I run a scan of 10 seconds based on previos configuration
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
+        LOGGER.info('Starting a scan of 10 seconds')
+        fixture['state'] = 'Subarray SCANNING'
+        @log_it('TMC_int_scan',devices_to_log,non_default_states_to_check)
+        @sync_scan(200)
+        def scan():
+            SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+            SubarrayNode.Scan('{"id":1}')
+        scan()
+        LOGGER.info('Scan complete')
+        fixture['state'] = 'Subarray Configured for SCAN'
+        
         #tear down
         LOGGER.info('Tests complete: tearing down...')
         tmc.end_sb()

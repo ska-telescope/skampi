@@ -3,9 +3,9 @@ image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
 variables:
   DEPLOY_ENVIRONMENT: "test"
   CT_TEST_ENVIRONMENT: "ct-test"
-  KUBE_NAMESPACE: "ncra"
-  INGRESS_HOST: "ncra.engageska-portugal.pt"
-  DEPLOY_URL: "http://ncra.engageska-portugal.pt/testdb"
+  KUBE_NAMESPACE: "integration"
+  INGRESS_HOST: "integration.engageska-portugal.pt"
+  DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
   VALUES: "pipeline.yaml"
@@ -147,7 +147,7 @@ delete test environment:
     name: $DEPLOY_ENVIRONMENT
   only:
     refs:
-      - SS-37-subarray-multi-scan
+      - master
     variables:
       - $DELETE == "true"
 
@@ -164,7 +164,7 @@ deploy test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - SS-37-subarray-multi-scan
+      - master
 
 k8s_test test environment:
   stage: test
@@ -178,7 +178,7 @@ k8s_test test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - SS-37-subarray-multi-scan
+      - master
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -198,7 +198,7 @@ smoketest test environment:
     url: $DEPLOY_URL
   only:
     refs:
-      - SS-37-subarray-multi-scan
+      - master
 
 .run-debug-cmd:
   stage: debug

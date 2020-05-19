@@ -19,6 +19,7 @@ stages:
   - test
   - post_test
   - debug
+  - helm-publish
 
 .pip_install_test_requirements: &pip_install_test_requirements |-
   cd pre-deployment

@@ -82,6 +82,16 @@ def sync_set_to_standby(func):
         the_waiter.wait()
     return wrapper
 
+def sync_scan(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
+            func(*args, **kwargs)
+            the_watch.wait_until_value_changed_to('SCANNING')
+            the_watch.wait_until_value_changed_to('READY',timeout)
+        return wrapper
+    return decorator
 
 
 

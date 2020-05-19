@@ -244,3 +244,15 @@ xray_report:
   when: always
   only: [master]
   retry: 2
+
+publish-chart:
+  stage: helm-publish
+  when: manual
+  only:
+    - helm-publish
+  tags:
+    - helm-repoman
+  script:
+    - cd charts
+    - if [ $CHART_NAME == 'all' ]; then for d in */; do helm package "$d"; done; else helm package $CHART_NAME; fi
+    - for f in *.tgz; do curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file $f $HELM_HOST/repository/helm-chart/$f; rm $f; done

@@ -113,49 +113,92 @@ def test_wait_for_change():
     watch = monitor(resource_mock, "value_then", "attr")
     with pytest.raises(Exception):
         assert watch.wait_until_value_changed(10)
+# mock get attribute from a resource
+#the get method will provide three possible returns:
+#1. the value is the same as the name of the attribute -> this is what it starts at
+#2, the value is the same as the future value_> changed after nr of retries is exceeded
+#3, the value changes to a future value that is different to the expected one
+change_to_future =[
+    'old value',
+    'old value',
+    'old value',
+    'new value',
+    'too far'
+]
+change_to_none = [
+        'old value',
+        'old value',
+        'old value',
+        'old value',
+        'too far'
+]
+transition_seq = [
+        'start',
+        'start',
+        'transition',
+        'transition',
+        'start',
+        'too far']
 
-class mock_resource():
+transition_tuple = [
+        (0,0,0,0),
+        (0,0,0,0),
+        (0,0,0,0),
+        (1,1,0,0),
+        (1,1,0,0),
+        (1,1,0,0)]
 
-    def __init__(self,nr_of_retries=5):
-        self.get_counter = 0
-        self.nr_of_retries = nr_of_retries
-        self.device_name = 'dummy resources'
+class MockResource():
+    
+    def __init__(self,seq):
+        self.seq  = seq
+        self.index=-1
+        self.device_name = 'mock device'
 
-    def get(self,value):
-        self.get_counter +=1
-        if value == 'no_change':
-            return value
-        if self.get_counter == self.nr_of_retries:
-            return "future_value"
-        else:
-            return value
+    def get(self,attr):
+        self.index +=1
+        return self.seq[self.index]
+
 
 
 
 @pytest.mark.fast
 def test_transition():
-    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='mock_att')   
-    result = wait.wait_until_value_changed(timeout=9)
-    assert_that(result).is_equal_to(4)
-
-
-@pytest.mark.fast
-def test_wait_for_change_and_to_future_value():
-    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='future_value')
+    #test that the a change in value from one to another and then back to original stil gets picked up
+    mock_resource = MockResource(transition_seq)
+    wait = watch(mock_resource).for_a_change_on('mock_att',changed_to='start')   
     result = wait.wait_until_value_changed(timeout=9)
     assert_that(result).is_equal_to(5)
 
+def test_transition_with_predicate():
+    future_value = (1,1,0,0)
+    mock_resource = MockResource(transition_tuple)
+    def predicate_inst(current,expected):
+        return (sum(current) == sum(expected))
+    wait = watch(mock_resource).for_a_change_on('mock_att',changed_to=future_value,predicate=predicate_inst) 
+    result = wait.wait_until_value_changed(timeout=9)
+    assert_that(result).is_equal_to(6)
+
+@pytest.mark.fast
+def test_wait_for_change_and_to_future_value():
+    mock_resource = MockResource(change_to_future)
+    wait = watch(mock_resource).for_a_change_on('mock_att',changed_to='new value')
+    result = wait.wait_until_value_changed(timeout=9)
+    assert_that(result).is_equal_to(6)
+
 @pytest.mark.fast
 def test_wait_for_change_and_to_future_value_timeout_on_future():
-    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='missing_value')
+    mock_resource = MockResource(change_to_future)
+    wait = watch(mock_resource).for_a_change_on('mock_att',changed_to='missing_value')
     with pytest.raises(Exception):
-        wait.wait_until_value_changed(timeout=9)
+        wait.wait_until_value_changed(timeout=5)
 
 @pytest.mark.fast  
 def test_wait_for_change_timeout():
-    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('no_change')
+    mock_resource = MockResource(change_to_none)
+    wait = watch(mock_resource).for_a_change_on('no_change')
     with pytest.raises(Exception):
-        wait.wait_until_value_changed(timeout=9)
+        wait.wait_until_value_changed(timeout=3)
 
 @pytest.mark.fast
 def test_state_changer():

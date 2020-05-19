@@ -90,7 +90,7 @@ class monitor(object):
     device_name = None
     current_value = None
 
-    def __init__(self, resource, previous_value, attr,future_value=None):
+    def __init__(self, resource, previous_value, attr,future_value=None,predicate=None):
         self.previous_value = previous_value
         self.resource = resource
         self.attr = attr
@@ -98,6 +98,7 @@ class monitor(object):
         self.device_name = resource.device_name
         self.current_value = previous_value
         self.data_ready = False
+        self.predicate = predicate
 
     def _update(self):
         self.current_value = self.resource.get(self.attr)
@@ -112,7 +113,10 @@ class monitor(object):
         if self.future_value == None:
             is_eq_to_future_comparison = True
         else: 
-            is_eq_to_future_comparison = (self.current_value == self.future_value)
+            if self.predicate == None:
+                is_eq_to_future_comparison = (self.current_value == self.future_value)
+            else:
+                is_eq_to_future_comparison = self.predicate(self.current_value,self.future_value)
             if isinstance(is_eq_to_future_comparison, ndarray):
                 is_eq_to_future_comparison= is_eq_to_future_comparison.all()   
         return (not self.data_ready) or (not is_eq_to_future_comparison)
@@ -169,9 +173,9 @@ class subscriber:
     def __init__(self, resource):
         self.resource = resource
 
-    def for_a_change_on(self, attr,changed_to=None):
+    def for_a_change_on(self, attr,changed_to=None,predicate=None):
         value_now = self.resource.get(attr)
-        return monitor(self.resource, value_now, attr,changed_to)
+        return monitor(self.resource, value_now, attr,changed_to,predicate)
 
  
 def watch(resource):
@@ -239,11 +243,29 @@ class waiter():
     def set_wait_for_assign_resources(self,nr_of_receptors=None):
         ### the following is a hack to wait for items taht are not worked into the state variable
         if nr_of_receptors is not None:
+            def predicate_sum(current,expected):
+                return (sum(current) == sum(expected))
+            def predicate_set_eq(current,expected):
+                if current is None:
+                    return False
+                else:
+                    return (set(current) == set(expected))
             IDlist_ones = tuple([1 for i in range(0,nr_of_receptors)])
             IDlist_inc = tuple([i for i in range(1,nr_of_receptors+1)])
-            self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList",changed_to=IDlist_inc))
-            self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("assignedReceptors",changed_to=IDlist_inc))
-            self.waits.append(watch(resource('mid_csp/elt/master')).for_a_change_on("receptorMembership",changed_to=IDlist_ones))
+            self.waits.append(watch(resource('ska_mid/tm_subarray_node/1'))
+                .for_a_change_on(
+                    "receptorIDList",
+                    changed_to=IDlist_inc,
+                    predicate=predicate_set_eq))
+            self.waits.append(watch(resource('mid_csp/elt/subarray_01'))
+                .for_a_change_on(
+                    "assignedReceptors",
+                    changed_to=IDlist_inc,
+                    predicate=predicate_set_eq))
+            self.waits.append(watch(resource('mid_csp/elt/master'))
+                .for_a_change_on("receptorMembership",
+                    changed_to=IDlist_ones,
+                    predicate=predicate_sum))
         else:
             self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
             self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("assignedReceptors"))
@@ -281,10 +303,14 @@ class waiter():
                 result = wait.wait_until_value_changed(timeout=timeout,resolution=resolution)
             except:
                 self.timed_out = True
-                self.error_logs += "{} timed out whilst waiting for {} to change from {} in {:f}s\n".format(
+                shim = ""
+                if wait.future_value is not None:
+                    shim = f" to {wait.future_value} (current val={wait.current_value})"
+                self.error_logs += "{} timed out whilst waiting for {} to change from {}{} in {:f}s\n".format(
                     wait.device_name,
                     wait.attr,
                     wait.previous_value,
+                    shim,
                     timeout*resolution
                 )
             else:
@@ -405,7 +431,7 @@ def run_a_config_test():
                 print("tearing down composed subarray (IDLE)")
                 take_subarray(1).and_release_all_resources() 
             set_telescope_to_standby()
-            raise Exception("faiure in configuring subarry not configured, resources are released and put in standby")
+            raise Exception("failure in configuring subarry not configured, resources are released and put in standby")
         if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
             print("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
             restart_subarray(1)

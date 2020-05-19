@@ -71,8 +71,9 @@ def sync_start_up_telescope(func):
         resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('DISABLE')
         the_waiter = waiter()
         the_waiter.set_wait_for_starting_up()
-        func(*args, **kwargs)
+        result = func(*args, **kwargs)
         the_waiter.wait()
+        return result
     return wrapper
 
 def sync_end_sb(func):
@@ -82,8 +83,9 @@ def sync_end_sb(func):
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
         the_waiter = waiter()
         the_waiter.set_wait_for_ending_SB()
-        func(*args, **kwargs)
+        result = func(*args, **kwargs)
         the_waiter.wait()
+        return result
     return wrapper
 
 def sync_release_resources(func):
@@ -94,8 +96,9 @@ def sync_release_resources(func):
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
         the_waiter = waiter()
         the_waiter.set_wait_for_tearing_down_subarray()
-        func(*args, **kwargs)
+        result = func(*args, **kwargs)
         the_waiter.wait()
+        return result
     return wrapper
 
 def sync_set_to_standby(func):
@@ -104,8 +107,9 @@ def sync_set_to_standby(func):
         resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
         the_waiter = waiter()
         the_waiter.set_wait_for_going_to_standby()
-        func(*args, **kwargs)
+        result = func(*args, **kwargs)
         the_waiter.wait()
+        return result
     return wrapper
 
 def sync_scan(timeout=200):
@@ -114,11 +118,24 @@ def sync_scan(timeout=200):
         def wrapper(*args, **kwargs):
             resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
             the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
-            func(*args, **kwargs)
+            result = func(*args, **kwargs)
             the_watch.wait_until_value_changed_to('SCANNING')
             the_watch.wait_until_value_changed_to('READY',timeout)
+            return result
         return wrapper
     return decorator
+
+
+def sync_scan_oet(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
+        the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
+        result = func(*args, **kwargs)
+        the_watch.wait_until_value_changed_to('SCANNING')
+        return result
+    return wrapper
+
 
 
 

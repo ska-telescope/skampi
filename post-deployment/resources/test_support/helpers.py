@@ -7,8 +7,6 @@ import os
 from math  import ceil
 import pytest
 
-## local imports
-from resources.test_support.mappings import device_to_container
 
 #SUT frameworks
 from tango import DeviceProxy, DevState, CmdArgType, EventType

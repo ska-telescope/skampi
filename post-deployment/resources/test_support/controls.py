@@ -6,9 +6,8 @@ import os
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 
 ##local depencies
-from resources.test_support.mappings import device_to_container
 from resources.test_support.helpers import subarray_devices,resource,ResourceGroup,waiter,watch
-from resources.test_support.persistance_helping import update_file,update_scan_config_file,update_resource_config_file
+from resources.test_support.persistance_helping import update_scan_config_file,update_resource_config_file
 from resources.test_support.sync_decorators import sync_assign_resources,sync_configure_oet,time_it,\
     sync_release_resources,sync_release_resources,sync_end_sb,sync_scan_oet
 

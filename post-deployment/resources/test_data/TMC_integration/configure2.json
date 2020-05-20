@@ -11,7 +11,7 @@
         "receiverBand": "1"
     },
     "csp": {
-        "id": "sbi-mvp01-20200325-00002-calibration_B",
+        "id": "sbi-mvp01-20200325-00003-calibration_B",
         "frequencyBand": "1",
         "fsp": [
             {
@@ -27,6 +27,6 @@
         "scan_type": "calibration_B"
     },
     "tmc": {
-        "scanDuration": 2.0
+        "scanDuration": 4.0
     }
 }

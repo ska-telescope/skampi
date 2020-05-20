@@ -282,6 +282,11 @@ class waiter():
         # at the moment sdb does not go to standby
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 
+    def set_wait_for_going_into_scanning(self):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState',changed_to='SCANNING'))  
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on('obsState',changed_to='SCANNING'))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on('obsState',changed_to='SCANNING'))      
+
     def set_wait_for_starting_up(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='OFF'))
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='OFF'))

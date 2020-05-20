@@ -63,7 +63,8 @@ class pilot():
 
     def and_run_a_scan(self):
         ##Reference tests/acceptance/mvp/test_XR-13_A3-Test.py
-        @sync_scan_oet
+        ##note this is a different sync decorator as test since test performs the command as non blocking
+        #@sync_scan_oet
         def scan():
             self.SubArray.scan()
         scan()

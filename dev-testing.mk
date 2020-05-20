@@ -41,11 +41,11 @@ deploy_testing_pod: ## deploy a testing pod for doing developement inside a k8 p
 		--wait \
 		--generator=run-pod/v1 \
 		--overrides=$(testing-config)
-	@kubectl wait --for=condition=Ready pod/$(testing-pod)
-	@kubectl exec -it $(testing-pod) -- bash -c "/usr/bin/python3 -m pip install -r /home/tango/skampi/post-deployment/test_requirements.txt"
-	@kubectl cp $(kube_path) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.kube/ 
-	@kubectl cp $(k8_path) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.minikube/
-	@kubectl exec -it $(testing-pod) -- bash -c " \
+	@kubectl wait --for=condition=Ready pod/$(testing-pod) --namespace $(KUBE_NAMESPACE)
+	@kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -- bash -c "/usr/bin/python3 -m pip install -r /home/tango/skampi/post-deployment/test_requirements.txt"
+	@kubectl cp $(kube_path) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.kube/  --namespace $(KUBE_NAMESPACE)
+	@kubectl cp $(k8_path) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.minikube/ --namespace $(KUBE_NAMESPACE)
+	@kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c " \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-key=/home/tango/.minikube/client.key && \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-certificate=/home/tango/.minikube/client.crt && \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-cluster minikube --certificate-authority=/home/tango/.minikube/ca.crt && \
@@ -71,11 +71,11 @@ clean_skampi: # remove any cache or build files on repo created during testing a
 ssh_config = "Host kube-host\n\tHostName $(THIS_HOST) \n \tUser ubuntu"
 
 test_as_ssh_client: # set up the  testing pod so that one can ssh back into the host as well as allow other clients to connect using key-pair
-	@kubectl exec -it $(testing-pod) -- bash -c "mkdir /home/tango/.ssh/ && ssh-keygen -t rsa -f /home/tango/.ssh/id_rsa -q -P ''"
-	@kubectl exec -it $(testing-pod) -- bash -c "cat /home/tango/.ssh/id_rsa.pub" >>~/.ssh/authorized_keys
-	@kubectl exec -it $(testing-pod) -- bash -c "chown tango:tango -R /home/tango/.ssh/"
+	@kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -- bash -c "mkdir /home/tango/.ssh/ && ssh-keygen -t rsa -f /home/tango/.ssh/id_rsa -q -P ''"
+	@kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -- bash -c "cat /home/tango/.ssh/id_rsa.pub" >>~/.ssh/authorized_keys
+	@kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -- bash -c "chown tango:tango -R /home/tango/.ssh/"
 	@echo $(ssh_config) >temp
-	@kubectl cp temp $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.ssh/config
+	@kubectl cp temp $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.ssh/config --namespace $(KUBE_NAMESPACE)
 	@rm temp
 
 

@@ -1,6 +1,7 @@
 import functools
 from resources.test_support.helpers import waiter,watch,resource
 import signal
+import logging
 
 def sync_assign_resources(nr_of_receptors=4):
     def decorator_sync_assign_resources(func):
@@ -130,9 +131,10 @@ def sync_scan_oet(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-        the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_into_scanning()
         result = func(*args, **kwargs)
-        the_watch.wait_until_value_changed_to('SCANNING')
+        the_waiter.wait()
         return result
     return wrapper
 

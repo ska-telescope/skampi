@@ -47,20 +47,20 @@ stages:
 #    paths: [docs/build/html/]
 #    expire_in: 1 day
 #
-#create_ci_metrics:
-#  stage: .post
-#  image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
-#  when: always
-#  tags: []
-#  script:
-#    # Gitlab CI badges creation: START
-#    - apt-get -y update
-#    - apt-get install -y curl --no-install-recommends
-#    - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh
-#    # Gitlab CI badges creation: END
-#  artifacts:
-#    paths:
-#      - ./build
+create_ci_metrics:
+ stage: .post
+ image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
+ when: always
+ tags: []
+ script:
+   # Gitlab CI badges creation: START
+   - apt-get -y update
+   - apt-get install -y curl --no-install-recommends
+   - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh
+   # Gitlab CI badges creation: END
+ artifacts:
+   paths:
+     - ./build
 
 push-to-devdev:
         when: always

@@ -1,8 +1,37 @@
-from tango import DevState
+from resources.test_support.helpers import resource,watch,waiter
+from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby
 import pytest
-from time import sleep
+from tango import DeviceProxy
+import logging
+
+@pytest.mark.xfail
+def test_tm_subarray_inconsistent_at_start_up():
+    try:
+        the_waiter = waiter()
+        the_waiter.set_wait_for_starting_up()
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('DISABLE')
+        #when I Startup the telescope and the TM subbarray reports its state as being OFF
+        CentralNode = DeviceProxy('ska_mid/tm_central/central_node')  
+        the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('State')
+        CentralNode.StartUpTelescope()
+        the_watch.wait_until_value_changed_to('OFF')
+        #then the children subarray devices should also be in state OFF
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
+        resource('mid_sdp/elt/subarray_1').assert_attribute('State').equals('OFF')
+        resource('mid_csp/elt/subarray_01').assert_attribute('State').equals('OFF')
+        resource('mid_csp_cbf/sub_elt/subarray_01').assert_attribute('State').equals('OFF')
+        #teardown
+    finally:
+        if not telescope_is_in_standby():
+            the_waiter.wait()
+            set_telescope_to_standby()
 
 
+
+
+    
+#these tests are all wrong, there should not be any sleep commands to make it pass!
+'''
 @pytest.mark.fast
 def test_startup(create_centralnode_proxy, create_subarray1_proxy):
     create_centralnode_proxy.StartUpTelescope()
@@ -43,4 +72,4 @@ def test_standby(create_centralnode_proxy, create_subarray1_proxy):
     create_centralnode_proxy.StandByTelescope()
     sleep(2)
     result = create_subarray1_proxy.state()
-    assert result == DevState.DISABLE
+    assert result == DevState.DISABLE'''

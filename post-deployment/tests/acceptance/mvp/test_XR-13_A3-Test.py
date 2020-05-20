@@ -89,16 +89,16 @@ def check_ready_state(fixture):
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
     #current functionality implies TMC may be in scanning even though CSP is not yet
     #logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-   # assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
-   # logging.info("CSP-subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
-    # check that the SDP report subarray as being in the obsState = READY
-   # assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
-   # logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
+    #logging.info("CSP-subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
+    #check that the SDP report subarray as being in the obsState = READY
+    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
+    #logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
     return fixture
 
 @then("observation ends after 10 seconds as indicated by returning to READY state")
 def check_running_state(fixture):
-    fixture['future'].result(timeout=10)
+    fixture['future'].result(timeout=4)
     # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))

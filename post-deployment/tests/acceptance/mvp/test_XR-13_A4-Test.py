@@ -22,14 +22,30 @@ from tango import DeviceProxy, DevState
 from resources.test_support.helpers import  obsState, resource, watch
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,\
     telescope_is_in_standby,take_subarray,restart_subarray
+from resources.test_support.logging_decorators import log_it
+from resources.test_support.sync_decorators import sync_release_resources
 
 LOGGER = logging.getLogger(__name__)
+
+devices_to_log = [
+    'ska_mid/tm_subarray_node/1',
+    'mid_csp/elt/subarray_01',
+    'mid_csp_cbf/sub_elt/subarray_01',
+    'mid_sdp/elt/subarray_1',
+    'mid_d0001/elt/master',
+    'mid_d0002/elt/master',
+    'mid_d0003/elt/master',
+    'mid_d0004/elt/master']
+non_default_states_to_check = {
+    'mid_d0001/elt/master' : 'pointingState',
+    'mid_d0002/elt/master' : 'pointingState',
+    'mid_d0003/elt/master' : 'pointingState',
+    'mid_d0004/elt/master' : 'pointingState'}
 
 @pytest.fixture
 def result():
     return {}
 
-@pytest.mark.skip(reason="no way of currently testing this")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
 def test_deallocate_resources():
     """Deallocate Resources."""
@@ -46,7 +62,11 @@ def set_to_running(result):
 
 @when("I deallocate the resources")
 def deallocate_resources():
-    SubArray(1).deallocate()
+    @log_it('AX-13_A4',devices_to_log,non_default_states_to_check)
+    @sync_release_resources
+    def release():
+        SubArray(1).deallocate()
+    release()
     LOGGER.info("ReleaseResources command is involked on subarray ")
 
 
@@ -64,11 +84,12 @@ def subarray_state_OFF():
 
 @then('ReceptorList for "subarray 1" should be empty')
 def receptorID_list_empty():
-    watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
+   # watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
     # gather info
-    receptorIDList_val = watch_receptorIDList.get_value_when_changed()
+   # receptorIDList_val = watch_receptorIDList.get_value_when_changed()
     # confirm
-    assert_that(receptorIDList_val == [])
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('receptorIDList').equals(None)
+   # assert_that(receptorIDList_val == [])
     logging.info("ReceptorIDList is empty")
 
 def teardown_function(function):

@@ -98,7 +98,7 @@ def check_ready_state(fixture):
 
 @then("observation ends after 10 seconds as indicated by returning to READY state")
 def check_running_state(fixture):
-    fixture['future'].result(timeout=4)
+    fixture['future'].result(timeout=10)
     # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))

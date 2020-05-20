@@ -39,7 +39,6 @@ def set_to_standby():
     CentralNode.StandByTelescope()
 
 @sync_configure
-@time_it(60)
 def configure_sub():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     configure1_file = 'resources/test_data/TMC_integration/configure1.json'

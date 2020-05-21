@@ -10,6 +10,7 @@ from resources.test_support.helpers import subarray_devices,resource,ResourceGro
 from resources.test_support.persistance_helping import update_scan_config_file,update_resource_config_file
 from resources.test_support.sync_decorators import sync_assign_resources,sync_configure_oet,time_it,\
     sync_release_resources,sync_release_resources,sync_end_sb,sync_scan_oet
+from resources.test_support.mappings import device_to_subarrays
 
 def take_subarray(id):
     return pilot(id)
@@ -98,7 +99,20 @@ class pilot():
 
 
 def restart_subarray(id):
-    pass
+    devices = device_to_subarrays.keys()
+    filtered_devices = [device for device in devices if device_to_subarrays[device] == id ]
+    the_waiter = waiter()
+    the_waiter.set_wait_for_going_to_standby()
+    exceptions_raised = ""
+    for device in filtered_devices:
+        try:
+            resource(device).restart()
+        except Exception as e:
+            exceptions_raised += f'\nException raised on reseting {device}:{e}'
+    if exceptions_raised != "":
+        raise Exception(f'Error in initialising devices:{exceptions_raised}')
+    the_waiter.wait()
+    
 
 def set_telescope_to_standby():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
@@ -146,7 +160,9 @@ def run_a_config_test():
             raise Exception("failure in configuring subarry, unable to reset the system")
     take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
     set_telescope_to_standby()  
-        
+
+
+
 def run_a_config_test_series(size):
     for i in range(size):
         print('test run{}'.format(i))

@@ -48,6 +48,7 @@ def test_multi_scan():
         CentralNode = DeviceProxy('ska_mid/tm_central/central_node')   
         SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')     
         fixture = {}
+        fixture['state'] = 'Undefined'
 
         # given a started up telescope
         resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('DISABLE')
@@ -174,6 +175,9 @@ def test_multi_scan():
             raise Exception('unable to teardown subarray from being in SCANNING')
         elif fixture['state'] == 'Subarray CONFIGURING':
             raise Exception('unable to teardown subarray from being in CONFIGURING')
+        elif fixture['state'] == 'Undefined':
+            LOGGER.info('Put telescope back to standby')
+            CentralNode.StandByTelescope()
         pytest.fail("unable to complete test without exceptions")
 
     LOGGER.info("Gathering logs")

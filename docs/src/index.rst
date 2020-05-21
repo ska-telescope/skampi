@@ -23,6 +23,8 @@ This project defines the integration between various component repository on Kub
    :caption: Readme:
 
    README
+   testing-pod-readme
+   acceptance-testing-readme.md
 
 
 Indices and tables

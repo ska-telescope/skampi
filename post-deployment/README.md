@@ -20,7 +20,7 @@ The host path storage is basically a means of working inside the testing pods (e
 
 ### Using it interactively
 
-*this section assumes you are using a visul code IDE *
+*this section assumes you are using a [Visual Studio Code](https://code.visualstudio.com/) IDE *
  
 In the git repository, cloned on your kubernetes enabled machine, navigate to the root directory:
 

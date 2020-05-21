@@ -61,6 +61,7 @@ def time_it(timeout):
             ################ 
             result = func(*args, **kwargs)
             ################ 
+            signal.alarm(0)
             return result
         return wrapper
     return decorator

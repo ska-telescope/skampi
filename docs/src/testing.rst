@@ -85,7 +85,7 @@ Finally, download the SKAMPI repository and run the test in minikube:
 
 
 Kubernetes Testing Environments
-------------------------------
+-------------------------------
 At the moment 3 k8s multi-node clusters are available for testing purpose: 
 
 +--------------------------+-----------------------------------------------------------------------------------------------------------+
@@ -115,7 +115,7 @@ At the moment 3 k8s multi-node clusters are available for testing purpose:
 Kubectl setup
 ^^^^^^^^^^^^^
 
-If a cluster has the A&A module enabled it is possible to generate the instructions to let the local kubectl work with it. In order To do that, once modified the file /etc/hosts as explained above, open the [gangway](https://github.com/heptiolabs/gangway) url for `engageska-k8s-v2 <http://gangway.kubernetes-v2.engageska-portugal.pt>`_ or `kubernetes-cipro <http://gangway.kubernetes-cipro.engageska-portugal.pt >`_.
+If a cluster has the A&A module enabled it is possible to generate the instructions to let the local kubectl work with it. In order To do that, once modified the file /etc/hosts as explained above, open the `gangway <https://github.com/heptiolabs/gangway>`_ url for **engageska-k8s-v2**: http://gangway.kubernetes-v2.engageska-portugal.pt or **kubernetes-cipro**: http://gangway.kubernetes-cipro.engageska-portugal.pt.
 The *Sign In* button will redirect to gitlab.com for authentication. Once authenticated it will appear the set of commands to setup the local kubectl as shown below. 
 
 .. image:: _static/img/signin.png
@@ -147,7 +147,7 @@ Before everything, we need to install the Remote Development extension from vsco
     :alt: SKAMPI Gitlab CI pipeline
 
 Create SSH connection
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 
 On vscode, open the ``Remote-SSH: Open Configuration File...``, copy and paste these properties:
 
@@ -160,14 +160,14 @@ On vscode, open the ``Remote-SSH: Open Configuration File...``, copy and paste t
 Finally, with the command ``ssh connection-name`` starts the ssh connection.
 
 Connect to Openstack VM - Option 1
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 After you created a new ssh connection on your local machine: `Create SSH connection`_.
 
 After this, launch the remote extension inside vscode (bottom left icon or use the shortcut ``ctrl+shift+P``) 
 and select ``Remote-SSH: Connect to Host...`` and select the ``connection-name`` you previously created.
 
 Connect to Kubernetes - Option 2
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The tango-base chart available in the skampi repository defines an ssh service which can be used within the vscode extension. The service is deployed in the same IP as the host machine and the port can be discovered with the command ``kubectl get services -n integration`` which will give you the following output:
 

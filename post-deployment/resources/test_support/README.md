@@ -14,7 +14,7 @@ To ensure the test scripts are executing via the OET they have to be invoked on 
 
 Note that during interactive development the testing deployment consists of two parts:
 
-1. The git storage (Persistance Volume CLaim and Persistance Volume)
+1. The git storage (PersistentVolumeClaim and PersistentVolume)
 2. The test pod (mounting on the storage)
 
 The git storage allows the skampi repository to be mounted as a volume onto the container. This allows the tester to interactively work on the testing scripts whilst executing them on an container instance.
@@ -23,7 +23,7 @@ The git storage allows the skampi repository to be mounted as a volume onto the 
 
 ### Using it interactively
 
-*this section assumes you are using a visul code IDE *
+*this section assumes you are using a [Visual Studio Code](https://code.visualstudio.com/) IDE *
  
 In the git repository, cloned on your kubernetes enabled machine, navigate to the root directory:
 

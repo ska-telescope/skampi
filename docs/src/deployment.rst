@@ -83,7 +83,7 @@ The first one can change the behaviour of the makefile,
 and the second level can only change the arguments in each chart.
 
 Level 1
-------
+-------
 
 The first one is inside the Makefile of the repository and is the top priority 
 meaning that it overrides all the parameters in any level below. We have three ways

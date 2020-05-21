@@ -84,7 +84,7 @@ def test_log_elastic_time_window():
         lowest_minute = int(re.findall(r'(?<=^.{16}:)(\d{2})',timestamp)[0])
         current_minute = datetime.now().minute 
         break
-    assert_that(current_minute - lowest_minute).is_less_than_or_equal_to(960/60)
+    assert_that(current_minute - lowest_minute).is_less_than_or_equal_to(30)
 
 
 

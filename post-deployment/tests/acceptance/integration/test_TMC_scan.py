@@ -53,9 +53,9 @@ def test_scan():
         tmc.configure_sub()
         fixture['state'] = 'Subarray Configured for SCAN'
       
-        #When I run a scan of 10 seconds based on previos configuration
+        #When I run a scan of 4 seconds based on previos configuration
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-        LOGGER.info('Starting a scan of 10 seconds')
+        LOGGER.info('Starting a scan of 4 seconds')
         fixture['state'] = 'Subarray SCANNING'
         @log_it('TMC_int_scan',devices_to_log,non_default_states_to_check)
         @sync_scan(200)

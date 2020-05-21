@@ -34,15 +34,14 @@ def test_start_up_telescope(run_context):
   the_waiter = waiter()
   the_waiter.set_wait_for_starting_up()
   r = requests.post(url=url, json=jsonMutation, cookies=cookies)
+  the_waiter.wait()
   #print(r.text)
   parsed = json.loads(r.text)
   print(json.dumps(parsed, indent=4, sort_keys=True))
   try:
     assert parsed['data']['executeCommand']['ok'] == True
   finally:
-    
     #tear down command is ignored if it is already in standby
     if not telescope_is_in_standby():
-          #wait first for telescope to completely go to standby before switchig it off again
-          the_waiter.wait()
+          #wait first for telescope to completely go to standby before switchig it off again    
           set_telescope_to_standby()

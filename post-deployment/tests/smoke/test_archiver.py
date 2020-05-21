@@ -8,6 +8,7 @@ import pytest
 import logging
 import sys
 
+@pytest.mark.skip
 @pytest.mark.archiver
 def test_init():
   print("Init test archiver")
@@ -68,6 +69,7 @@ def configure_attribute(attribute):
 
   conf_manager_proxy.AttributeRemove(attribute)
 
+@pytest.mark.skip
 @pytest.mark.archiver
 def test_configure_attribute():
   attribute = "sys/tg_test/1/double_scalar"
@@ -92,6 +94,7 @@ def test_configure_attribute():
     
     sleep(sleep_time)
 
+@pytest.mark.skip
 @pytest.mark.archiver
 def test_archiving_started():
   evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"

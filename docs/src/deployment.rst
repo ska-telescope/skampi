@@ -60,11 +60,11 @@ Basic parameters:
     make deploy_all KUBE_NAMESPACE=integration
     
     
-Deploy All with Order
----------------------
+Deploy Ordered
+--------------
 
-Deploy every helm chart inside charts directory order by its dependencies.
-
+Deploy charts in an order based on their dependencies. The default value of **DEPLOYMENT_ORDER** includes all the charts at the end of PI6. Override with a space-separated string if you want to deploy only a subset of the integration. 
+The deployment order is visualised in a `Confluence Page of the Module Uses View <￼https://confluence.skatelescope.org/display/SWSI/Module+View#ModuleView-Primaryrepresentation:MVPUsesinKubernetesDeployment>`_ and is a Work In Progress. Developers are encouraged to continue updating this during work on the MVP.
 Basic parameters:
 
 - **KUBE_NAMESPACE** - integration **default**

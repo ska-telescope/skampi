@@ -23,7 +23,7 @@ Cheat Sheet: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 K8s Templates
 -------------
 
-Template files follow the standard conventions for writing Go templates (see the `documentation <https://golang.org/pkg/text/template/>`_ for details). 
+Template files follow the standard conventions for writing Go templates (see the `Go documentation <https://golang.org/pkg/text/template/>`_ for details). 
 For example, in the tango-base chart, the following files composes the templates for the generation of valid kubernetes manifest files: 
 
 * tangodb.yaml: define a k8s service for maria db and a statefulset attached to it
@@ -62,7 +62,7 @@ Every yaml file has a spec tag which is used to set all the parameters for a spe
 
 initContainers
 ^^^^^^^^^^^^^^
-A Pod can have multiple Containers running apps within it, but it can also have one or more Init Containers, which are run before the app Containers are started. Check `documentation <https://kubernetes.io/docs/concepts/workloads/pods/init-containers/>`_ for more information.
+A Pod can have multiple Containers running apps within it, but it can also have one or more Init Containers, which are run before the app Containers are started. Check `k8s documentation <https://kubernetes.io/docs/concepts/workloads/pods/init-containers/>`_ for more information.
 
 containers
 ^^^^^^^^^^

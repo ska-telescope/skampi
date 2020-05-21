@@ -41,7 +41,7 @@ The port number for the archiver db (HDB_MYSQL_HOST) and for the tango database 
 
 OPTION #3
 ---------
-The X Window System can also be installed into the container itself using a virtual screen. For this purpose it has been developed a docker image called tango-vnc `dockerfile <https://gitlab.com/ska-telescope/ska-docker/tree/master/docker/tango/tango-vnc>`_ to enable `vnc <https://www.realvnc.com/>`_ and no `vnc <https://novnc.com/>`_. It is possible to test this possibility in the pipeline machine at the following link: http://192.168.93.47:31955/vnc.html where the port number (31955) can be found in the `deploy_all <https://gitlab.com/ska-telescope/skampi/-/jobs/431836031#L385>`_ output: 
+The X Window System can also be installed into the container itself using a virtual screen. For this purpose it has been developed a docker image called tango-vnc `dockerfile <https://gitlab.com/ska-telescope/ska-docker/tree/master/docker/tango/tango-vnc>`_ to enable `vnc <https://www.realvnc.com/>`_ and `no vnc <https://novnc.com/>`_. It is possible to test this possibility in the pipeline machine at the following link: http://192.168.93.47:31955/vnc.html where the port number (31955) can be found in the `deploy_all <https://gitlab.com/ska-telescope/skampi/-/jobs/431836031#L385>`_ output: 
 
 .. code-block:: console
 

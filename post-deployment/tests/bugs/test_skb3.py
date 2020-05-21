@@ -2,9 +2,11 @@ from resources.test_support.helpers import resource,watch,waiter
 from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby
 import pytest
 from tango import DeviceProxy
-import logging
 
-@pytest.mark.xfail
+import logging
+LOGGER = logging.getLogger(__name__)
+
+@pytest.mark.skip
 def test_tm_subarray_inconsistent_at_start_up():
     try:
         the_waiter = waiter()
@@ -12,9 +14,10 @@ def test_tm_subarray_inconsistent_at_start_up():
         resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('DISABLE')
         #when I Startup the telescope and the TM subbarray reports its state as being OFF
         CentralNode = DeviceProxy('ska_mid/tm_central/central_node')  
-        the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('State')
+        # the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('State')
         CentralNode.StartUpTelescope()
-        the_watch.wait_until_value_changed_to('OFF')
+        the_waiter.wait()
+        # the_watch.wait_until_value_changed_to('OFF')
         #then the children subarray devices should also be in state OFF
         resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
         resource('mid_sdp/elt/subarray_1').assert_attribute('State').equals('OFF')
@@ -23,7 +26,6 @@ def test_tm_subarray_inconsistent_at_start_up():
         #teardown
     finally:
         if not telescope_is_in_standby():
-            the_waiter.wait()
             set_telescope_to_standby()
 
 

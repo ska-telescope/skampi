@@ -11,7 +11,7 @@ import logging
 import tango
 from assertpy import assert_that
 #SUT
-from resources.test_support.helpers import resource, waiter, subscriber, watch,monitor,wait_for
+from resources.test_support.helpers import resource, waiter, subscriber, watch,monitor,wait_for,AttributeWatcher
 from resources.test_support.controls import take_subarray
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 #SUT framework (not part of test)
@@ -229,3 +229,26 @@ def test_state_changer():
     assert_that(result).is_equal_to(10)
     result = wait_for(resource_mock,1).to_be({"attr":"mock_attr","value":"value_now"})
     assert_that(result).is_equal_to("timed out")
+
+@mock.patch('resources.test_support.helpers.signal')
+@mock.patch('resources.test_support.helpers.DeviceProxy')
+@mock.patch('resources.test_support.helpers.threading.Event')
+def test_subscribe_with_attribute_watcher(mock_signal,devicemock,mock_event):
+    #when I create a watch
+    w = AttributeWatcher(resource('fake_device'),'fake_attribute','fake_desired')
+    #I expect a subscription to have occurred
+    devicemock.return_value.subscribe_event.assert_called_once()
+    #given then that the device calls the callback
+    event_mock = Mock(spec = tango.EventData)
+    event_mock.attr_value.return_value = 'current value'
+    w._cb(event_mock)
+    w.result_available.set.assert_not_called()
+    #then when I wait
+    w.wait(5)
+    w.result_available.wait.assert_called_once()
+    #then if a new event is passed 
+    event_mock.attr_value.return_value = 'fake_desired'
+    w._cb(event_mock)
+    w.result_available.set.assert_called_once()
+
+    

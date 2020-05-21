@@ -6,6 +6,9 @@ from datetime import date,datetime
 import os
 from math  import ceil
 import pytest
+import threading
+import signal
+from tango import EventType,EventData
 
 
 #SUT frameworks
@@ -62,6 +65,11 @@ class resource:
                 return tuple(value)
             return getattr(p, attr)
     
+    def restart(self):
+        #current suggested method is through 'init' maybe reset would be better in future
+        p = DeviceProxy(self.device_name)
+        p.init()
+
     def assert_attribute(self,attr):
         return ObjectComparison("{}.{}".format(self.device_name,attr),self.get(attr))
 
@@ -280,6 +288,11 @@ class waiter():
         # at the moment sdb does not go to standby
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 
+    def set_wait_untill_standby(self):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='DISABLE'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='DISABLE'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='DISABLE'))
+
     def set_wait_for_going_into_scanning(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState',changed_to='SCANNING'))  
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on('obsState',changed_to='SCANNING'))
@@ -322,5 +335,86 @@ class waiter():
                 self.logs
         ))
 
-#####schedulers and controllers aimed at putting the system in specified state
+#####Waiters based on tango DevicProxy's abilitu to subscribe to events
 
+
+class AttributeWatcher():
+    '''listens to events in a device and enables waiting until a predicate is true or publish to a subscriber'''
+
+    def __init__(self,resource,attribute,desired=None,predicate=None,start_now=True,polling = 100):
+        self.device_proxy = DeviceProxy(resource.device_name)
+        self.desired = desired
+        self.polling = polling
+        self.attribute = attribute
+        self.result_available = threading.Event()
+        self.current_subscription = None
+        self.original_polling = None
+        self.value_at_start_up = None
+        self.waiting=False
+        if predicate is None:
+            self.predicate = self._default_predicate
+        if start_now:
+            self.start_listening()
+
+
+    def _default_predicate(self,current_value,desired):
+        comparison = (current_value == desired)
+        if isinstance(comparison,ndarray):
+            return comparison.all()
+        else:
+            return comparison
+
+
+    def start_listening(self):
+        if self.device_proxy.is_attribute_polled(self.attribute):
+            #must be reset to original when finished
+            self.original_polling = self.device_proxy.get_attribute_poll_period
+        self.device_proxy.poll_attribute(self.polling)
+        self.current_subscription = self.device_proxy.subscribe_event(
+            self.attribute,
+            EventType.CHANGE_EVENT,
+            self._cb)
+
+    ##this method will be called by a thread
+    def _cb(self,event):
+        self.current_value = event.attr_value()
+        if self.value_at_start_up is None:
+            #this implies it is the first event and is always treated as the value when subscription started
+            self.value_at_start = self.current_value
+        if self.desired is None:
+            self.result_available.set()
+        elif self.predicate(self.current_value,self.desired):
+            self.result_available.set()
+
+
+    def _handle_timeout(self,remaining_seconds):
+        raise Exception(f'Timed out waiting for an change on {self.device_proxy.name()}.{self.attribute} to change from {self.value_at_start} to {expected_value} (current value is {self.current_value}')
+
+    def wait(self,timeout):
+        signal.signal(signal.SIGALRM, handlde_timeout)
+        self.result_available.wait()
+        signal.signal(0)
+        self.stop_listening()
+
+    def stop_listening(self):
+        if self.original_polling is not None:
+            self.device_proxy.poll_attribute(self.original_polling)
+        self.device_proxy.unsubscribe_event(self.current_subscription)
+
+    def wait_until_value_changed_to(self,desired,timeout=2):
+        self.desired = desired
+        self.waiting = True
+        self.wait(timeout)
+
+    def wait_until_value_changed(self,timeout=2):
+        self.waiting = True
+        self.wait(timeout)
+
+
+
+
+
+        
+
+
+    

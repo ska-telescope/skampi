@@ -3,6 +3,7 @@ from resources.test_support.state_checking import StateChecker
 from resources.test_support.log_helping import DeviceLogging
 from datetime import date,datetime
 import logging
+import os
 
 VAR = os.environ.get('USE_LOCAL_ELASTIC')
 if (VAR == "True"):

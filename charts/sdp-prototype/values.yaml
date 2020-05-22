@@ -2,12 +2,11 @@
 feature:
   # Tango devices connect to configuration DB?
   config-db: "1"
-  cbf-output-link: "0"
 
 # Helm deployment controller
 helm_deploy:
   image: nexus.engageska-portugal.pt/sdp-prototype/helm-deploy
-  version: 0.4.0
+  version: 0.4.1
   imagePullPolicy: IfNotPresent
   replicas: 1
   namespace: sdp
@@ -33,35 +32,32 @@ dsconfig:
 # Processing controller
 processing_controller:
   image: nexus.engageska-portugal.pt/sdp-prototype/processing-controller
-  version: 0.4.0
+  version: 0.5.2
   replicas: 1
   resources: {}
   imagePullPolicy: IfNotPresent
   workflows:
-    url: https://gitlab.com/ska-telescope/sdp-prototype/raw/master/src/workflows/workflows.json
+    url: https://gitlab.com/ska-telescope/sdp-prototype/-/raw/master/src/workflows/workflows.json
     refresh: 300
 
 # Tango devices
 tangods:
   master:
     image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master
-    version: 0.3.1
+    version: 0.3.2
     imagePullPolicy: IfNotPresent
   subarray:
     image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray
-    version: 0.6.0
+    version: 0.8.0-hack-1
     imagePullPolicy: IfNotPresent
 
-# Parameters for sub-chart
-tango-base:
-  tangotest:
-    enabled: false
-  itango:
-    enabled: true
-  jive:
-    enabled: false
-  logviewer:
-    enabled: false
+# Console
+console:
+  image: nexus.engageska-portugal.pt/sdp-prototype/console
+  version: 0.1.0
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  enabled: true
 
 nameOverride: ""
 fullnameOverride: ""

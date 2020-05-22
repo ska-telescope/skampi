@@ -6,11 +6,13 @@ sys.path.append('/app')
 
 import importlib
 import mock
-from mock import Mock
+from mock import Mock,MagicMock
+import logging
 import tango
 from assertpy import assert_that
 #SUT
-from resources.test_support.helpers import resource, take_subarray, waiter, subscriber, watch,monitor,wait_for
+from resources.test_support.helpers import resource, waiter, subscriber, watch,monitor,wait_for,AttributeWatcher
+from resources.test_support.controls import take_subarray
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 #SUT framework (not part of test)
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
@@ -77,17 +79,36 @@ class TestResource():
         item_under_test = resource(device_name)
         assert item_under_test.get('nonexistent attribute') == 'attribute not found'
 
-@mock.patch('resources.test_support.helpers.SubArray.allocate')
-@mock.patch('resources.test_support.helpers.waiter')
+class fake_resource():
+
+    def __init__(self,getvalue):
+        self.get_value = getvalue
+
+    def get(self,attr):
+        return self.get_value
+
+    def assert_attribute(self,attribute):
+        return fake_comparison()
+
+class fake_comparison():
+
+    def equals(self,value):
+        return None;
+
+#mock_resource = Mock(unsafe=True)
+@mock.patch('resources.test_support.sync_decorators.resource')
+@mock.patch('resources.test_support.controls.SubArray.allocate_from_file')
+@mock.patch('resources.test_support.sync_decorators.waiter')
 @pytest.mark.fast
-def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
+def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate,mock_resource):
     allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
+    mock_resource.return_value = Mock(unsafe=True)
     waiter_mock_instance = waiter_mock.return_value
     waiter_mock_instance.timed_out = False
     take_subarray(1).to_be_composed_out_of(4)
     waiter_mock_instance.set_wait_for_assign_resources.assert_called_once()
     waiter_mock_instance.wait.assert_called_once()
-    subarray_mock_allocate.assert_called_once_with(allocation)
+    subarray_mock_allocate.assert_called_once_with('resources/test_data/OET_integration/example_allocate.json',allocation)
 
 @mock.patch('resources.test_support.helpers.watch')
 @mock.patch('resources.test_support.helpers.resource')
@@ -95,11 +116,14 @@ def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate):
 @pytest.mark.fast
 def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     the_waiter = waiter()
+    mon_mock_instance = watch_mock.return_value.for_a_change_on.return_value
+    mon_mock_instance.wait_until_value_changed.return_value = 10
     the_waiter.set_wait_for_tearing_down_subarray()
     assert_that(resource_mock.call_count).is_equal_to(5)
     #assert_that(subscriber_mock.call_count).is_equal_to(5+4)
     #assert_that(watch_mock.call_count).is_equal_to(5+4)
     the_waiter.wait()
+
 
 @pytest.mark.fast
 def test_wait_for_change():
@@ -109,49 +133,92 @@ def test_wait_for_change():
     watch = monitor(resource_mock, "value_then", "attr")
     with pytest.raises(Exception):
         assert watch.wait_until_value_changed(10)
+# mock get attribute from a resource
+#the get method will provide three possible returns:
+#1. the value is the same as the name of the attribute -> this is what it starts at
+#2, the value is the same as the future value_> changed after nr of retries is exceeded
+#3, the value changes to a future value that is different to the expected one
+change_to_future =[
+    'old value',
+    'old value',
+    'old value',
+    'new value',
+    'too far'
+]
+change_to_none = [
+        'old value',
+        'old value',
+        'old value',
+        'old value',
+        'too far'
+]
+transition_seq = [
+        'start',
+        'start',
+        'transition',
+        'transition',
+        'start',
+        'too far']
 
-class mock_resource():
+transition_tuple = [
+        (0,0,0,0),
+        (0,0,0,0),
+        (0,0,0,0),
+        (1,1,0,0),
+        (1,1,0,0),
+        (1,1,0,0)]
 
-    def __init__(self,nr_of_retries=5):
-        self.get_counter = 0
-        self.nr_of_retries = nr_of_retries
-        self.device_name = 'dummy resources'
+class MockResource():
+    
+    def __init__(self,seq):
+        self.seq  = seq
+        self.index=-1
+        self.device_name = 'mock device'
 
-    def get(self,value):
-        self.get_counter +=1
-        if value == 'no_change':
-            return value
-        if self.get_counter == self.nr_of_retries:
-            return "future_value"
-        else:
-            return value
+    def get(self,attr):
+        self.index +=1
+        return self.seq[self.index]
+
 
 
 
 @pytest.mark.fast
 def test_transition():
-    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='mock_att')   
-    result = wait.wait_until_value_changed(timeout=9)
-    assert_that(result).is_equal_to(4)
-
-
-@pytest.mark.fast
-def test_wait_for_change_and_to_future_value():
-    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='future_value')
+    #test that the a change in value from one to another and then back to original stil gets picked up
+    mock_resource = MockResource(transition_seq)
+    wait = watch(mock_resource).for_a_change_on('mock_att',changed_to='start')   
     result = wait.wait_until_value_changed(timeout=9)
     assert_that(result).is_equal_to(5)
 
+def test_transition_with_predicate():
+    future_value = (1,1,0,0)
+    mock_resource = MockResource(transition_tuple)
+    def predicate_inst(current,expected):
+        return (sum(current) == sum(expected))
+    wait = watch(mock_resource).for_a_change_on('mock_att',changed_to=future_value,predicate=predicate_inst) 
+    result = wait.wait_until_value_changed(timeout=9)
+    assert_that(result).is_equal_to(6)
+
+@pytest.mark.fast
+def test_wait_for_change_and_to_future_value():
+    mock_resource = MockResource(change_to_future)
+    wait = watch(mock_resource).for_a_change_on('mock_att',changed_to='new value')
+    result = wait.wait_until_value_changed(timeout=9)
+    assert_that(result).is_equal_to(6)
+
 @pytest.mark.fast
 def test_wait_for_change_and_to_future_value_timeout_on_future():
-    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('mock_att',changed_to='missing_value')
+    mock_resource = MockResource(change_to_future)
+    wait = watch(mock_resource).for_a_change_on('mock_att',changed_to='missing_value')
     with pytest.raises(Exception):
-        wait.wait_until_value_changed(timeout=9)
+        wait.wait_until_value_changed(timeout=5)
 
 @pytest.mark.fast  
 def test_wait_for_change_timeout():
-    wait = watch(mock_resource(nr_of_retries=5)).for_a_change_on('no_change')
+    mock_resource = MockResource(change_to_none)
+    wait = watch(mock_resource).for_a_change_on('no_change')
     with pytest.raises(Exception):
-        wait.wait_until_value_changed(timeout=9)
+        wait.wait_until_value_changed(timeout=3)
 
 @pytest.mark.fast
 def test_state_changer():
@@ -162,3 +229,26 @@ def test_state_changer():
     assert_that(result).is_equal_to(10)
     result = wait_for(resource_mock,1).to_be({"attr":"mock_attr","value":"value_now"})
     assert_that(result).is_equal_to("timed out")
+
+@mock.patch('resources.test_support.helpers.signal')
+@mock.patch('resources.test_support.helpers.DeviceProxy')
+@mock.patch('resources.test_support.helpers.threading.Event')
+def test_subscribe_with_attribute_watcher(mock_signal,devicemock,mock_event):
+    #when I create a watch
+    w = AttributeWatcher(resource('fake_device'),'fake_attribute','fake_desired')
+    #I expect a subscription to have occurred
+    devicemock.return_value.subscribe_event.assert_called_once()
+    #given then that the device calls the callback
+    event_mock = Mock(spec = tango.EventData)
+    event_mock.attr_value.return_value = 'current value'
+    w._cb(event_mock)
+    w.result_available.set.assert_not_called()
+    #then when I wait
+    w.wait(5)
+    w.result_available.wait.assert_called_once()
+    #then if a new event is passed 
+    event_mock.attr_value.return_value = 'fake_desired'
+    w._cb(event_mock)
+    w.result_available.set.assert_called_once()
+
+    

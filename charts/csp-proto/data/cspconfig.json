@@ -3,13 +3,13 @@
         "MidCspCapabilityMonitor": {
             "monitor": {
                 "CspCapabilityMonitor": {
-                    "mid_csp/capability_monitor/receptors": {
+                    "mid_csp/capability_monitor/vcc": {
                         "properties": {
                             "CapabilityDevices": [
-                                "mid_csp/receptors/004", 
-                                "mid_csp/receptors/003", 
-                                "mid_csp/receptors/002", 
-                                "mid_csp/receptors/001"
+                                "mid_csp/vcc/004", 
+                                "mid_csp/vcc/003", 
+                                "mid_csp/vcc/002", 
+                                "mid_csp/vcc/001"
                             ], 
                             "SkaLevel": [
                                 "2"
@@ -175,19 +175,9 @@
                                     "mid_csp/capability_monitor/vlbi_beams/capabilityState"
                                 ]
                             }, 
-                            "searchBeamAddresses": {
-                                "__root_att": [
-                                    "mid_csp/capability_monitor/search_beams/capabilityAddresses"
-                                ]
-                            }, 
                             "searchBeamMembership": {
                                 "__root_att": [
                                     "mid_csp/capability_monitor/search_beams/capabilityMembership"
-                                ]
-                            }, 
-                            "timingBeamAddresses": {
-                                "__root_att": [
-                                    "mid_csp/capability_monitor/timing_beams/capabilityAddresses"
                                 ]
                             }, 
                             "timingBeamMembership": {
@@ -235,11 +225,6 @@
                                     "mid_csp_cbf/sub_elt/master/reportVCCSubarrayMembership"
                                 ]
                             }, 
-                            "vlbiBeamAddresses": {
-                                "__root_att": [
-                                    "mid_csp/capability_monitor/vlbi_beams/capabilityAddresses"
-                                ]
-                            }, 
                             "vlbiBeamMembership": {
                                 "__root_att": [
                                     "mid_csp/capability_monitor/vlbi_beams/capabilityMembership"
@@ -262,7 +247,7 @@
                                 "mid_csp/elt/subarray_03"
                             ], 
                             "MaxCapabilities": [
-                                "Receptors:4", 
+                                "VCC:4", 
                                 "SearchBeams:1500", 
                                 "TimingBeams:16", 
                                 "VlbiBeams:20"

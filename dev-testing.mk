@@ -77,3 +77,7 @@ test_as_ssh_client: # set up the  testing pod so that one can ssh back into the 
 	@echo $(ssh_config) >temp
 	@kubectl cp temp $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.ssh/config --namespace $(KUBE_NAMESPACE)
 	@rm temp
+
+
+check_log_consumer_running: 
+	ps aux | awk 

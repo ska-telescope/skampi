@@ -8,6 +8,7 @@ import pytest
 import logging
 import sys
 
+@pytest.mark.skip
 @pytest.mark.archiver
 def test_init():
   print("Init test archiver")
@@ -68,6 +69,7 @@ def configure_attribute(attribute):
 
   conf_manager_proxy.AttributeRemove(attribute)
 
+@pytest.mark.skip
 @pytest.mark.archiver
 def test_configure_attribute():
   attribute = "sys/tg_test/1/double_scalar"
@@ -79,7 +81,7 @@ def test_configure_attribute():
       ApiUtil.cleanup()
       configure_attribute(attribute)
       break
-    except:
+    except DevFailed as df:
       logging.info("configure_attribute exception: " + str(sys.exc_info()))
       if(x == (max_retries - 1)):
         raise df
@@ -92,6 +94,7 @@ def test_configure_attribute():
     
     sleep(sleep_time)
 
+@pytest.mark.skip
 @pytest.mark.archiver
 def test_archiving_started():
   evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"

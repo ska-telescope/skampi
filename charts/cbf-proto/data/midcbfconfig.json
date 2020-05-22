@@ -787,7 +787,8 @@
                             ],
                             "FspSubarray": [
                                 "mid_csp_cbf/fspSubarray/03_01",
-                                "mid_csp_cbf/fspSubarray/03_02"
+                                "mid_csp_cbf/fspSubarray/03_02",
+                                "mid_csp_cbf/fspSubarray/03_03"
                             ],
                             "polled_attr": [
                                 "adminmode", 
@@ -924,7 +925,8 @@
                             ],
                             "FspSubarray": [
                                 "mid_csp_cbf/fspSubarray/04_01",
-                                "mid_csp_cbf/fspSubarray/04_02"
+                                "mid_csp_cbf/fspSubarray/04_02",
+                                "mid_csp_cbf/fspSubarray/04_03"
                             ],
                             "polled_attr": [
                                 "adminmode", 

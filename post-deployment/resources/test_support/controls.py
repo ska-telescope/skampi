@@ -24,7 +24,9 @@ class pilot():
         self.state = "Empty"
         self.rollback_order = {
             'Composed': self.and_release_all_resources,
-            'Ready':self.and_end_sb_when_ready
+            'Ready':self.and_end_sb_when_ready,
+            'Configuring':restart_subarray(id),
+            'Scanning':restart_subarray(id)
         }
 
     def and_display_state(self):
@@ -56,8 +58,8 @@ class pilot():
         @time_it(120)
         def config():
             update_scan_config_file(file)
-            self.state = "Scanning"
-            self.SubArray.configure_from_file(file, 2, with_processing = False)
+            self.state = "Configuring"
+            self.SubArray.configure_from_file(file, 1, with_processing = False)
         config()
         self.state = "Ready"
         return self

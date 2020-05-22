@@ -80,7 +80,11 @@ class ObjectComparison():
 
     def equals(self,value):
         try:
-            assert self.value == value
+            if isinstance(value,list):
+                #a list is assumed to mean an or condition, a tuple is assumed to be  an and condition
+                assert self.value in value
+            else:
+                assert self.value == value
         except:
             raise Exception("{} is asserted to be {} but was instead {}".format(self.object,value,self.value))
 
@@ -381,7 +385,7 @@ class AttributeWatcher():
         if self.value_at_start_up is None:
             #this implies it is the first event and is always treated as the value when subscription started
             self.value_at_start = self.current_value
-        if self.desired is None:
+        elif self.desired is None:
             self.result_available.set()
         elif self.predicate(self.current_value,self.desired):
             self.result_available.set()
@@ -391,7 +395,7 @@ class AttributeWatcher():
         raise Exception(f'Timed out waiting for an change on {self.device_proxy.name()}.{self.attribute} \
     to change from {self.value_at_start} to {self.desired} (current value is {self.current_value}')
 
-    def wait(self,timeout):
+    def _wait(self,timeout):
         signal.signal(signal.SIGALRM, handle_timeout)
         self.result_available.wait()
         signal.signal(0)
@@ -405,11 +409,11 @@ class AttributeWatcher():
     def wait_until_value_changed_to(self,desired,timeout=2):
         self.desired = desired
         self.waiting = True
-        self.wait(timeout)
+        self._wait(timeout)
 
     def wait_until_value_changed(self,timeout=2):
-        self.waiting = True
-        self.wait(timeout)
+        self._waiting = True
+        self._wait(timeout)
 
 
 

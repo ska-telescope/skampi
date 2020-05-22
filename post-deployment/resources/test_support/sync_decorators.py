@@ -38,7 +38,7 @@ def sync_configure_oet(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         ##Can ony configure a subarray that is in IDLE/ON
-        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
         resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
         w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
         ################ 

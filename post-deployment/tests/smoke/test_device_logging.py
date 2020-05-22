@@ -20,7 +20,7 @@ else:
 ###to be  moved
 from elasticsearch_dsl import Search,Q
 
-@pytest.mark.skipif(local_elastic_disabled)
+@pytest.mark.skipif(local_elastic_disabled,reason="only enabled for dev purposes")
 @pytest.mark.tracer
 def test_device_logging():
     d = DeviceLogging()
@@ -40,7 +40,7 @@ def test_device_logging():
     assert_that(dict_messages_before).is_not_equal_to(dict_messages_after)
 
 
-@pytest.mark.skipif(local_elastic_disabled)
+@pytest.mark.skipif(local_elastic_disabled,reason="only enabled for dev purposes")
 def test_logging_on_test_device_as_string():
     d = DeviceLogging()
     d.update_traces(['sys/tg_test/1'])
@@ -51,12 +51,12 @@ def test_logging_on_test_device_as_string():
     assert_that(printeable_messages).is_instance_of(str)
     assert_that(printeable_messages).contains("DataGenerator::generating data")
 
-@pytest.mark.skipif(local_elastic_disabled)
+@pytest.mark.skipif(local_elastic_disabled,reason="only enabled for dev purposes")
 def test_throw_error_():
     with pytest.raises(Exception):
         DeviceLogging("wrong implementation")
 
-@pytest.mark.skipif(local_elastic_disabled)
+@pytest.mark.skipif(local_elastic_disabled,reason="only enabled for dev purposes")
 def test_log_single_device_from_elastic():
 
     d = DeviceLoggingImplWithDBDirect()
@@ -67,7 +67,7 @@ def test_log_single_device_from_elastic():
     res = d.get_messages_as_list_dict()
     assert_that(res).is_type_of(list)
 
-@pytest.mark.skipif(local_elastic_disabled)
+@pytest.mark.skipif(local_elastic_disabled,reason="only enabled for dev purposes")
 def test_log_multiple_devices_from_elastic():
 
     d = DeviceLoggingImplWithDBDirect()
@@ -80,7 +80,7 @@ def test_log_multiple_devices_from_elastic():
         logging.info(item['ska_log_timestamp'])
     assert_that(res).is_type_of(list)
 
-@pytest.mark.skipif(local_elastic_disabled)
+@pytest.mark.skipif(local_elastic_disabled,reason="only enabled for dev purposes")
 def test_log_elastic_time_window():
 
     d = DeviceLoggingImplWithDBDirect()
@@ -155,7 +155,7 @@ def device_logging_fixture():
     if os.path.isfile('build/{}'.format(filename_json)):
         os.remove('build/{}'.format(filename_json))
 
-@pytest.mark.skipif(local_elastic_disabled)
+@pytest.mark.skipif(local_elastic_disabled,reason="only enabled for dev purposes")
 def test_print_to_csv_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_dummy_data']
@@ -171,7 +171,7 @@ def test_print_to_csv_file(device_logging_fixture):
             results.append(row)
     assert_that(results).is_equal_to(dummy_data)
 
-@pytest.mark.skipif(local_elastic_disabled)
+@pytest.mark.skipif(local_elastic_disabled,reason="only enabled for dev purposes")
 def test_print_to_json_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_dummy_data']
@@ -184,7 +184,7 @@ def test_print_to_json_file(device_logging_fixture):
         results = json.loads(file.read())
     assert_that(results).is_equal_to(dummy_data)
 
-@pytest.mark.skipif(local_elastic_disabled)
+@pytest.mark.skipif(local_elastic_disabled,reason="only enabled for dev purposes")
 def test_print_json_empty_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_empty_data']
@@ -196,7 +196,7 @@ def test_print_json_empty_file(device_logging_fixture):
         results = json.loads(file.read())
     assert_that(results).is_equal_to("no data logged")
 
-@pytest.mark.skipif(local_elastic_disabled)
+@pytest.mark.skipif(local_elastic_disabled,reason="only enabled for dev purposes")
 def test_print_csv_empty_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_empty_data']

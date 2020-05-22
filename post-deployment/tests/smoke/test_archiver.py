@@ -16,6 +16,9 @@ else:
     disable_archive_tests = True
 #by default these tests are disabled
 
+def test_can_read_env():
+  logging.info(os.environ.get('DISABLE_ARCHIVE_TESTS'))
+
 @pytest.mark.skipif(disable_archive_tests,reason="disbaled by local env")
 @pytest.mark.archiver
 def test_init():

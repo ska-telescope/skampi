@@ -27,7 +27,10 @@ def print_logs_to_file(s,d,log_name,status='ok'):
 def log_it(log_name,devices_to_log,non_default_states_to_check):
     def decorator_log_it(func):
         if local_elastic_disabled:
-            return func(*args, **kwargs)
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+            return wrapper
         else:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):

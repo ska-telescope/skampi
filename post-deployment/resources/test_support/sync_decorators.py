@@ -48,7 +48,7 @@ def sync_configure_oet(func):
         return result
     return wrapper
 
-def handlde_timeout(arg1,agr2):
+def handle_timeout(arg1,agr2):
     print("operation timeout")
     raise Exception("operation timeout")
 
@@ -56,7 +56,7 @@ def time_it(timeout):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            signal.signal(signal.SIGALRM, handlde_timeout)
+            signal.signal(signal.SIGALRM, handle_timeout)
             signal.alarm(timeout)  # wait for timeout seconds and timeout if still stick
             ################ 
             result = func(*args, **kwargs)

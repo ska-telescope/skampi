@@ -31,7 +31,7 @@ def map_dish_nr_to_device_name(dish_nr):
     digits = str(10000 + dish_nr)[1::]
     return "mid_d" + digits + "/elt/master"
     
-def handlde_timeout(par1,par2):
+def handle_timeout(par1,par2):
     print("operation timeout")
     raise Exception("operation timeout")
 
@@ -388,10 +388,11 @@ class AttributeWatcher():
 
 
     def _handle_timeout(self,remaining_seconds):
-        raise Exception(f'Timed out waiting for an change on {self.device_proxy.name()}.{self.attribute} to change from {self.value_at_start} to {expected_value} (current value is {self.current_value}')
+        raise Exception(f'Timed out waiting for an change on {self.device_proxy.name()}.{self.attribute} \
+    to change from {self.value_at_start} to {self.desired} (current value is {self.current_value}')
 
     def wait(self,timeout):
-        signal.signal(signal.SIGALRM, handlde_timeout)
+        signal.signal(signal.SIGALRM, handle_timeout)
         self.result_available.wait()
         signal.signal(0)
         self.stop_listening()

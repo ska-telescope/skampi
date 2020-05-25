@@ -26,6 +26,12 @@ from resources.test_support.sync_decorators import sync_assign_resources
 from resources.test_support.persistance_helping import update_resource_config_file
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray
 
+DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
+if DEV_TEST_TOGGLE == "False":
+    DISABLE_TESTS_UNDER_DEVELOPMENT = False
+else:
+    DISABLE_TESTS_UNDER_DEVELOPMENT = True
+
 LOGGER = logging.getLogger(__name__)
 
 devices_to_log = [
@@ -48,8 +54,8 @@ non_default_states_to_check = {
 def result():
     return {}
 
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
-@pytest.mark.skip(reason="no way of currently testing this")
 def test_allocate_resources():
     """Assign Resources."""
 

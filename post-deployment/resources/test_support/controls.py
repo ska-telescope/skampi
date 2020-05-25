@@ -25,8 +25,8 @@ class pilot():
         self.rollback_order = {
             'Composed': self.and_release_all_resources,
             'Ready':self.and_end_sb_when_ready,
-            'Configuring':restart_subarray(id),
-            'Scanning':restart_subarray(id)
+           # 'Configuring':restart_subarray,
+           # 'Scanning':restart_subarray
         }
 
     def and_display_state(self):

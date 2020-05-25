@@ -18,6 +18,7 @@ from resources.test_support.helpers import resource, watch
 
 LOGGER = logging.getLogger(__name__)
 scenario = partial(scenario, "../../../features/XTG-131.feature")
+
 mode_cmd_map = {
     "STANDBY-LP": "SetStandbyLPMode",
     "STANDBY-FP": "SetStandbyFPMode",

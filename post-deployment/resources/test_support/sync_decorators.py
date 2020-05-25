@@ -13,7 +13,7 @@ def sync_assign_resources(nr_of_receptors=4):
             ################ 
             result = func(*args, **kwargs)
             ################ 
-            the_waiter.wait(timeout=40)
+            the_waiter.wait(timeout=60)
             return result
         return wrapper
     return decorator_sync_assign_resources

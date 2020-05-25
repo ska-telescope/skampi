@@ -273,7 +273,7 @@ def test_subscribe_with_attribute_watcher(mock_signal,devicemock,mock_event):
     w._cb(event_mock)
     w.result_available.set.assert_not_called()
     #then when I wait
-    w.wait(5)
+    w._wait(5)
     w.result_available.wait.assert_called_once()
     #then if a new event is passed 
     event_mock.attr_value.return_value = 'fake_desired'

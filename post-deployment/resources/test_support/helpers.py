@@ -361,7 +361,7 @@ class waiter():
                     wait.attr,
                     wait.previous_value,
                     wait.current_value,
-                    timeout - result*resolution)
+                    (timeout - result)*resolution)
         if self.timed_out:
             raise Exception("timed out, the following timeouts occured:\n{} Successfull changes:\n{}".format(
                 self.error_logs,
@@ -386,6 +386,8 @@ class AttributeWatcher():
         self.waiting=False
         if predicate is None:
             self.predicate = self._default_predicate
+        else:
+            self.predicate = predicate
         if start_now:
             self.start_listening()
 
@@ -413,9 +415,11 @@ class AttributeWatcher():
         self.current_value = event.attr_value()
         if self.value_at_start_up is None:
             #this implies it is the first event and is always treated as the value when subscription started
-            self.value_at_start = self.current_value
+            self.value_at_start_up = self.current_value
         elif self.desired is None:
-            self.result_available.set()
+            # this means that it is only evaluating a change and not the end result of the evaluation
+            if self.current_value != self.value_at_start_up:
+                self.result_available.set()
         elif self.predicate(self.current_value,self.desired):
             self.result_available.set()
 

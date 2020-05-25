@@ -44,14 +44,6 @@ else:
 # by default these tests are disabled
 
 
-def test_can_read_env():
-    """
-    Check that we can read the toggle for development tests - if not the
-    default behaviour will be to assume the tests are disabled
-    """
-    logging.info("Current value of dev tests toggle: %s ", os.environ.get('DISABLE_DEV_TESTS'))
-
-
 @pytest.fixture(name="result")
 def fixture_result():
     """structure used to hold details of the intermediate result at each stage of the test"""
@@ -80,7 +72,7 @@ def check_resource_ready(resource_name):
 
 
 LOGGER = logging.getLogger(__name__)
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disbaled by local env")
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/XTP-826.feature", "Run more than one scan on a sub array")
 def test_multi_scan():
     """Multiscan Test."""

@@ -7,6 +7,7 @@ test_XR-13_A4-Test
 Acceptance test to deallocate the resources from subarray for MVP.
 """
 import sys
+import os
 
 import time
 import pytest
@@ -45,6 +46,8 @@ non_default_states_to_check = {
 @pytest.fixture
 def result():
     return {}
+
+
 
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
 def test_deallocate_resources():

@@ -66,13 +66,13 @@ def subarray_is_in_state(expected_state):
 def check_resource_ready(resource_name):
     "check that for the passed in resource name the reported obsState is READY"
     obstate = resource(resource_name).get('obsState')
-    assert_that(obstate.value == 'READY')
+    assert_that(obstate == 'READY')
     msg = resource_name + " obsState :" + obstate
     logging.info(msg)
 
 
 LOGGER = logging.getLogger(__name__)
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
 @scenario("../../../features/XTP-826.feature", "Run more than one scan on a sub array")
 def test_multi_scan():
     """Multiscan Test."""
@@ -137,7 +137,7 @@ def check_completion_state(result):
 
     check_resource_ready('ska_mid/tm_subarray_node/1')
     check_resource_ready('mid_csp/elt/subarray_01')
-    check_resource_ready('mid_sdp/elt/subarray_01')
+    check_resource_ready('mid_sdp/elt/subarray_1')
 
     result['test passed'] = True
 

@@ -80,8 +80,8 @@ def check_resource_ready(resource_name):
 
 
 LOGGER = logging.getLogger(__name__)
-@scenario("../../../features/XTP-826.feature", "Run more than one scan on a sub array")
 @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disbaled by local env")
+@scenario("../../../features/XTP-826.feature", "Run more than one scan on a sub array")
 def test_multi_scan():
     """Multiscan Test."""
 

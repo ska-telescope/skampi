@@ -3,6 +3,13 @@ from resources.test_support.state_checking import StateChecker
 from resources.test_support.log_helping import DeviceLogging
 from datetime import date,datetime
 import logging
+import os
+
+VAR = os.environ.get('USE_LOCAL_ELASTIC')
+if (VAR == "True"):
+    local_elastic_disabled = False
+else:
+    local_elastic_disabled = True
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,27 +26,33 @@ def print_logs_to_file(s,d,log_name,status='ok'):
 
 def log_it(log_name,devices_to_log,non_default_states_to_check):
     def decorator_log_it(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
-            s.run(threaded=True,resolution=0.1)
-            d = DeviceLogging('DeviceLoggingImplWithDBDirect')
-            d.update_traces(devices_to_log)
-            d.start_tracing()  
-            ################ 
-            try:
-                result = func(*args, **kwargs)
-            except:
+        if local_elastic_disabled:
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+            return wrapper
+        else:
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
+                s.run(threaded=True,resolution=0.1)
+                d = DeviceLogging('DeviceLoggingImplWithDBDirect')
+                d.update_traces(devices_to_log)
+                d.start_tracing()  
+                ################ 
+                try:
+                    result = func(*args, **kwargs)
+                except:
+                    s.stop()
+                    d.stop_tracing()
+                    LOGGER.info("error in executing SUT")
+                    print_logs_to_file(s,d,log_name,status='error')
+                    raise
+                ################
                 s.stop()
                 d.stop_tracing()
-                LOGGER.info("error in executing SUT")
-                print_logs_to_file(s,d,log_name,status='error')
-                raise
-            ################
-            s.stop()
-            d.stop_tracing()
-            print_logs_to_file(s,d,log_name,status='ok')
-            return result
-        return wrapper
+                print_logs_to_file(s,d,log_name,status='ok')
+                return result
+            return wrapper
     return decorator_log_it
 

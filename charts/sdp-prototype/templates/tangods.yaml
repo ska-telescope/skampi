@@ -83,8 +83,6 @@ spec:
           value: databaseds-tango-base-{{ .Release.Name }}:10000
         - name: TOGGLE_CONFIG_DB
           value: {{ quote (index .Values "feature" "config-db") }}
-        - name: TOGGLE_CBF_OUTPUT_LINK
-          value: {{ quote (index .Values "feature" "cbf-output-link") }}
         - name: TOGGLE_AUTO_REGISTER
           value: "0"
 {{- if index .Values "feature" "config-db" }}
@@ -101,8 +99,6 @@ spec:
           value: databaseds-tango-base-{{ .Release.Name }}:10000
         - name: TOGGLE_CONFIG_DB
           value: {{ quote (index .Values "feature" "config-db") }}
-        - name: TOGGLE_CBF_OUTPUT_LINK
-          value: {{ quote (index .Values "feature" "cbf-output-link") }}
         - name: TOGGLE_AUTO_REGISTER
           value: "0"
 {{- if index .Values "feature" "config-db" }}
@@ -119,8 +115,6 @@ spec:
           value: databaseds-tango-base-{{ .Release.Name }}:10000
         - name: TOGGLE_CONFIG_DB
           value: {{ quote (index .Values "feature" "config-db") }}
-        - name: TOGGLE_CBF_OUTPUT_LINK
-          value: {{ quote (index .Values "feature" "cbf-output-link") }}
         - name: TOGGLE_AUTO_REGISTER
           value: "0"
 {{- if index .Values "feature" "config-db" }}

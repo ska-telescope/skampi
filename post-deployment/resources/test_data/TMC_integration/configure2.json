@@ -1,0 +1,32 @@
+{
+    "pointing": {
+        "target": {
+            "system": "ICRS",
+            "name": "Polaris",
+            "RA": "02:31:49.0946",
+            "dec": "+89:15:50.7923"
+        }
+    },
+    "dish": {
+        "receiverBand": "1"
+    },
+    "csp": {
+        "id": "sbi-mvp01-20200325-00003-calibration_B",
+        "frequencyBand": "1",
+        "fsp": [
+            {
+                "fspID": 1,
+                "functionMode": "CORR",
+                "frequencySliceID": 1,
+                "integrationTime": 1400,
+                "corrBandwidth": 0
+            }
+        ]
+    },
+    "sdp": {
+        "scan_type": "calibration_B"
+    },
+    "tmc": {
+        "scanDuration": 4.0
+    }
+}

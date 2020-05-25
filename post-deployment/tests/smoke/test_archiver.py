@@ -7,7 +7,19 @@ from time import sleep
 import pytest
 import logging
 import sys
+import os
 
+VAR = os.environ.get('DISABLE_ARCHIVE_TESTS')
+if (VAR == "False"):
+    disable_archive_tests = False
+else:
+    disable_archive_tests = True
+#by default these tests are disabled
+
+def test_can_read_env():
+  logging.info(os.environ.get('DISABLE_ARCHIVE_TESTS'))
+
+@pytest.mark.skipif(disable_archive_tests,reason="disbaled by local env")
 @pytest.mark.archiver
 def test_init():
   print("Init test archiver")
@@ -68,6 +80,7 @@ def configure_attribute(attribute):
 
   conf_manager_proxy.AttributeRemove(attribute)
 
+@pytest.mark.skipif(disable_archive_tests,reason="disbaled by local env")
 @pytest.mark.archiver
 def test_configure_attribute():
   attribute = "sys/tg_test/1/double_scalar"
@@ -79,7 +92,7 @@ def test_configure_attribute():
       ApiUtil.cleanup()
       configure_attribute(attribute)
       break
-    except:
+    except DevFailed as df:
       logging.info("configure_attribute exception: " + str(sys.exc_info()))
       if(x == (max_retries - 1)):
         raise df
@@ -92,6 +105,7 @@ def test_configure_attribute():
     
     sleep(sleep_time)
 
+@pytest.mark.skipif(disable_archive_tests,reason="disbaled by local env")
 @pytest.mark.archiver
 def test_archiving_started():
   evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"

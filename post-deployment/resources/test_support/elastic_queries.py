@@ -91,12 +91,12 @@ def search_device_logs(devices = subarray_devices,source_list=device_field_set,m
     s  = get_log_stash_search_for_today()
     if message == None:
         result = s.query(q_get_devices(devices)).\
-            sort('-ska_log_timestamp').\
+            sort('ska_log_timestamp').\
             source(source_list)
     else:
         result = s.query(q_get_devices(devices)).\
             query(q_search_in_log_message(message)).\
-            sort('-ska_log_timestamp').\
+            sort('ska_log_timestamp').\
             source(source_list)
     return  ResultPrinter(result)
         
@@ -135,13 +135,13 @@ def search_logs_from_devices_by_timewindow(start_time,end_time,devices = subarra
     if search_for == None:
         result = s.query(q_get_by_timewindow(start_time,end_time)).\
             query(q_get_devices(devices)).\
-            sort('-ska_log_timestamp').\
+            sort('ska_log_timestamp').\
             source(source_list)
     else:    
         result = s.query(q_get_by_timewindow(start_time,end_time)).\
             query(q_get_devices(devices)).\
             query(q_search_in_log_message(search_for)).\
-            sort('-ska_log_timestamp').\
+            sort('ska_log_timestamp').\
             source(source_list)
     return ResultPrinter(result)
 

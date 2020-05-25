@@ -28,6 +28,10 @@ spec:
           value: {{ include "sdp-prototype.etcd-host" . }}
         - name: SDP_HELM_NAMESPACE
           value: {{ quote .Values.helm_deploy.namespace }}
+        - name: SDP_WORKFLOWS_URL
+          value: {{ quote .Values.processing_controller.workflows.url }}
+        - name: SDP_WORKFLOWS_REFRESH
+          value: {{ quote .Values.processing_controller.workflows.refresh }}
         {{- with .Values.processing_controller.resources }}
         resources:
           {{- toYaml . | nindent 10 }}

@@ -15,7 +15,7 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 	# 
 
 
-	@pytest.mark.xfail
+	@pytest.mark.skip(reason="no way of currently testing this")
 	@XTP-417 @XTP-494
 	Scenario: A1-Test, Sub-array resource allocation
 		Given A running telescope for executing observations on a subarray
@@ -25,7 +25,7 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 
 
 	
-    @pytest.mark.xfail
+   @pytest.mark.skip(reason="no way of currently testing this")
 	@XTP-427 @XTP-494
 	Scenario: A2-Test, Sub-array transitions from IDLE to READY state
 		Given I am accessing the console interface for the OET
@@ -34,7 +34,7 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 		Then sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome
 			
 
-	@pytest.mark.xfail
+	@pytest.mark.skip(reason="no way of currently testing this")
 	@XTP-436 @XTP-494
 	Scenario: A4-Test, Sub-array deallocation of resources
 		Given A running telescope with "4" dishes are allocated to "subarray 1"
@@ -43,7 +43,7 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 		And ReceptorList for "subarray 1" should be empty
 
 
-@pytest.mark.xfail
+	@pytest.mark.skip(reason="no way of currently testing this")
 	@XTP-428 @XTP-494
 	Scenario: A3-Test, Sub-array performs an observational imaging scan
 	    Given I am accessing the console interface for the OET

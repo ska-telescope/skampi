@@ -3,13 +3,13 @@ elastic:
 fluentd:
   enabled: true
 kibana:
-  enabled: true
+  enabled: false
 tests:
-  enabled: true
+  enabled: false
 hdbppdb:
-  enabled: true
+  enabled: false
 archiver:
-  enabled: true
+  enabled: false
 tangodb:
   use_pv: false
 

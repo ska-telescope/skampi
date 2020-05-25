@@ -6,7 +6,7 @@ test_calc
 ----------------------------------
 Acceptance tests for MVP.
 """
-import sys
+import sys, os
 import pytest
 import logging
 from time import sleep
@@ -16,13 +16,15 @@ from pytest_bdd import scenario, given, when, then
 
 #SUT
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+import oet.observingtasks as observingtasks
 #SUT infrastructure
 from tango import DeviceProxy, DevState
 ## local imports
-from resources.test_support.helpers import resource,set_telescope_to_standby,set_telescope_to_running,take_subarray,telescope_is_in_standby
-from resources.test_support.persistance_helping import update_resource_config_file
+from resources.test_support.helpers import resource
 from resources.test_support.logging_decorators import log_it
 from resources.test_support.sync_decorators import sync_assign_resources
+from resources.test_support.persistance_helping import update_resource_config_file
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray
 
 LOGGER = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ def result():
     return {}
 
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
-@pytest.mark.xfail
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_allocate_resources():
     """Assign Resources."""
 

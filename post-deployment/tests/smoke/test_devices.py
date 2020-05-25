@@ -11,10 +11,10 @@ import pytest
 def test_init():    
   print("Init test devices")
   timeSleep = 30
-  for x in range(10):
+  for _ in range(10):
       try:
           print ("Connecting to the databaseds")
-          db = Database()
+          Database()
           break
       except:
           print ("Could not connect to the databaseds. Retry after " + str(timeSleep) + " seconds.")
@@ -25,7 +25,7 @@ def test_init():
 def test_devices():
   db = Database()
   count = 0
-  server_list = db.get_server_list();
+  server_list = db.get_server_list()
   i = 0
   while i < len(server_list):
     class_list = db.get_device_class_list(server_list[i])
@@ -34,7 +34,7 @@ def test_devices():
       try:
         if not "dserver" in class_list[j]:
           print("Connecting to '" + class_list[j] + "'...\r\n")
-          dev = DeviceProxy(class_list[j])
+          DeviceProxy(class_list[j])
           count = count + 1
       except Exception as e: 
         print ("Could not connect to the '"+class_list[j]+"' DeviceProxy.\r\n")

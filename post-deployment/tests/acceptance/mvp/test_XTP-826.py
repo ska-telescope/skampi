@@ -49,7 +49,7 @@ def test_can_read_env():
     Check that we can read the toggle for development tests - if not the
     default behaviour will be to assume the tests are disabled
     """
-    logging.info(os.environ.get('DISABLE_DEV_TESTS'))
+    logging.info("Current value of dev tests toggle: %s ", os.environ.get('DISABLE_DEV_TESTS'))
 
 
 @pytest.fixture(name="result")

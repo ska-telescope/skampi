@@ -17,7 +17,7 @@ else:
 #by default these tests are disabled
 
 def test_can_read_env():
-  logging.info(os.environ.get('DISABLE_ARCHIVE_TESTS'))
+  logging.info(os.environ.get('TANGO_HOST'))
 
 @pytest.mark.skipif(disable_archive_tests,reason="disbaled by local env")
 @pytest.mark.archiver

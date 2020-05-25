@@ -202,25 +202,35 @@ class monitor(object):
 
 class subscriber:
 
-    def __init__(self, resource):
+    def __init__(self, resource,implementation='polling'):
         self.resource = resource
+        self.implementation = implementation
 
-    def for_a_change_on(self, attr,changed_to=None,predicate=None):
-        value_now = self.resource.get(attr)
-        return monitor(self.resource, value_now, attr,changed_to,predicate,require_transition=True)
+    def for_a_change_on(self, attr,changed_to,predicate=None):
+        if self.implementation == 'polling':
+            value_now = self.resource.get(attr)
+            return monitor(self.resource, value_now, attr,changed_to,predicate,require_transition=True)
+        elif self.implementation == 'tango_events':
+            return AttributeWatcher(self.resource,attr,desired=changed_to,predicate=predicate,require_transition=True,start_now=True)
 
     def to_become(self,attr,changed_to,predicate=None):
-        value_now = self.resource.get(attr)
-        return monitor(self.resource, value_now, attr,changed_to,predicate,require_transition=False)
+        if self.implementation == 'polling':
+            value_now = self.resource.get(attr)
+            return monitor(self.resource, value_now, attr,changed_to,predicate,require_transition=False)
+        elif self.implementation == 'tango_events':
+            return AttributeWatcher(self.resource,attr,desired=changed_to,predicate=predicate,require_transition=False,start_now=True)
 
     def for_any_change_on(self,attr,predicate=None):
-        value_now = self.resource.get(attr)
-        return monitor(self,resource,value_now,attr,require_transition=True)
+        if self.implementation == 'polling':
+            value_now = self.resource.get(attr)
+            return monitor(self,resource,value_now,attr,require_transition=True)
+        elif self.implementation == 'tango_events':
+            return AttributeWatcher(self.resource,attr,desired=None,predicate=predicate,require_transition=True,start_now=True)
 
 
  
-def watch(resource):
-    return subscriber(resource)
+def watch(resource,implementation='polling'):
+    return subscriber(resource,implementation)
 
 
 # this function may become depracated
@@ -304,16 +314,16 @@ class waiter():
                     changed_to=IDlist_ones,
                     predicate=predicate_sum))
         else:
-            self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
-            self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("assignedReceptors"))
-            self.waits.append(watch(resource('mid_csp/elt/master')).for_a_change_on("receptorMembership"))
+            self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_any_change_on("receptorIDList"))
+            self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_any_change_on("assignedReceptors"))
+            self.waits.append(watch(resource('mid_csp/elt/master')).for_any_change_on("receptorMembership"))
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='ON')) 
         self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("State",changed_to='ON'))
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='ON'))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='ON'))
 
     def set_wait_for_tearing_down_subarray(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_any_change_on("receptorIDList"))
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='OFF'))
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='OFF'))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='OFF'))
@@ -341,21 +351,29 @@ class waiter():
         self.logs = ""
         while self.waits:
             wait = self.waits.pop()
+            if isinstance(wait,AttributeWatcher):
+                timeout = timeout*resolution
             try:
                 result = wait.wait_until_conditions_met(timeout=timeout,resolution=resolution)
             except:
                 self.timed_out = True
-                shim = ""
+                future_value_shim = ""
+                timeout_shim = timeout*resolution
+                if isinstance(wait,AttributeWatcher):
+                    timeout_shim = timeout
                 if wait.future_value is not None:
                     shim = f" to {wait.future_value} (current val={wait.current_value})"
                 self.error_logs += "{} timed out whilst waiting for {} to change from {}{} in {:f}s\n".format(
                     wait.device_name,
                     wait.attr,
                     wait.previous_value,
-                    shim,
-                    timeout*resolution
+                    future_value_shim,
+                    timeout_shim
                 )
             else:
+                timeout_shim = (timeout - result)*resolution)
+                if isinstance(wait,AttributeWatcher):
+                    timeout_shim = result
                 self.logs += "{} changed {} from {} to {} after {:f}s \n".format(
                     wait.device_name,
                     wait.attr,
@@ -374,11 +392,13 @@ class waiter():
 class AttributeWatcher():
     '''listens to events in a device and enables waiting until a predicate is true or publish to a subscriber'''
 
-    def __init__(self,resource,attribute,desired=None,predicate=None,start_now=True,polling = 100):
+    def __init__(self,resource,attribute,desired=None,predicate=None,require_transition=False,start_now=True,polling = 100):
         self.device_proxy = DeviceProxy(resource.device_name)
         self.desired = desired
         self.polling = polling
         self.attribute = attribute
+        self.is_changed = False
+        self.require_transition = require_transition
         self.result_available = threading.Event()
         self.current_subscription = None
         self.original_polling = None
@@ -416,19 +436,30 @@ class AttributeWatcher():
         if self.value_at_start_up is None:
             #this implies it is the first event and is always treated as the value when subscription started
             self.value_at_start_up = self.current_value
-        elif self.desired is None:
+            self.start_time = event.reception_date.totime()
+        if not self.is_changed:
+            self.is_changed = (self.current_value != self.value_at_start_up)
+        if self.desired is None:
             # this means that it is only evaluating a change and not the end result of the evaluation
-            if self.current_value != self.value_at_start_up:
+            if self.is_changed:
+                self.elapsed_time= event.reception_date.totime() - self.start_time
                 self.result_available.set()
         elif self.predicate(self.current_value,self.desired):
-            self.result_available.set()
+            if self.require_transition:
+                if self.is_changed:
+                    self.elapsed_time=event.reception_date.totime() - self.start_time
+                    self.result_available.set()
+            else:
+                self.elapsed_time=event.reception_date.totime() - self.start_time
+                self.result_available.set()
 
 
     def _handle_timeout(self,remaining_seconds):
         raise Exception(f'Timed out waiting for an change on {self.device_proxy.name()}.{self.attribute} \
-    to change from {self.value_at_start} to {self.desired} (current value is {self.current_value}')
+    to change from {self.value_at_start_up} to {self.desired} in {self.timeout}s (current value is {self.current_value}')
 
     def _wait(self,timeout):
+        self.timeout = timeout
         signal.signal(signal.SIGALRM, handle_timeout)
         self.result_available.wait()
         signal.signal(0)
@@ -443,10 +474,12 @@ class AttributeWatcher():
         self.desired = desired
         self.waiting = True
         self._wait(timeout)
+        return self.elapsed_time
 
-    def wait_until_value_changed(self,timeout=2):
+    def wait_until_conditions_met(self,timeout=2):
         self._waiting = True
         self._wait(timeout)
+        return self.elapsed_time
 
 
 

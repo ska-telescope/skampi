@@ -117,7 +117,9 @@ def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate,mock_resourc
 def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     the_waiter = waiter()
     mon_mock_instance = watch_mock.return_value.for_a_change_on.return_value
-    mon_mock_instance.wait_until_value_changed.return_value = 10
+    mon_mock_instance2 = watch_mock.return_value.to_become.return_value
+    mon_mock_instance.wait_until_conditions_met.return_value = 10
+    mon_mock_instance2.wait_until_conditions_met.return_value = 10
     the_waiter.set_wait_for_tearing_down_subarray()
     assert_that(resource_mock.call_count).is_equal_to(5)
     #assert_that(subscriber_mock.call_count).is_equal_to(5+4)
@@ -126,13 +128,40 @@ def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
 
 
 @pytest.mark.fast
-def test_wait_for_change():
+def test_wait_for_change_exception():
     resource_mock = Mock(spec=resource)
     resource_mock.device_name = "test_device"
     resource_mock.get.return_value = "value_then"
-    watch = monitor(resource_mock, "value_then", "attr")
+    watch = monitor(resource_mock, "value_then", "attr",require_transition=True)
     with pytest.raises(Exception):
         assert watch.wait_until_value_changed(10)
+    
+
+
+@pytest.mark.fast
+def test_wait_for_change_success():
+    resource_mock = Mock(spec=resource)
+    resource_mock.device_name = "test_device"
+    values = ['1','1','2','2']
+    #use pop to emulate value events being pushed. the order is from left to right if we give  a param of 0
+    resource_mock.get = values.pop
+    watch = monitor(resource_mock, "1", 0,require_transition=True)
+    result = watch.wait_until_value_changed(5)
+    assert_that(result).is_equal_to(2)
+
+@pytest.mark.fast
+def test_wait_for_desired_value_no_change():
+    resource_mock = Mock(spec=resource)
+    resource_mock.device_name = "test_device"
+    values = ['1','1','2','2']
+    resource_mock.get = values.pop
+    watch = monitor(resource_mock, "1", 0,future_value="1",require_transition=False)
+    result = watch.wait_until_value_changed(5)
+    assert_that(result).is_equal_to(5)
+
+
+
+
 # mock get attribute from a resource
 #the get method will provide three possible returns:
 #1. the value is the same as the name of the attribute -> this is what it starts at

@@ -87,16 +87,28 @@ class ObjectComparison():
 
 ####time keepers based on above resources
 class monitor(object):
+    '''
+    Montitors an attribte of a given resource and allows a user to block/wait on a specific condition:
+    1. the attribite has changed in value (but it can be any value): previous value != current value
+    2. the attribute has changed in value and to a specific desired value: previous value = future value but have changed also
+    3. the attribute has changed or is already the desired value: previous value = future value
+    4. instead of a direct equality a predicate can also be used to performa the comparison
+    The value for which it must wait can also be provided by the time at calling the wait or by the time of instantiation
+    The former allows for the monitor to be used in a list that waits iteratively, the latter is when it is inline at where it sould wait
+    '''
     previous_value = None
     resource = None
     attr = None
     device_name = None
     current_value = None
 
-    def __init__(self, resource, previous_value, attr,future_value=None,predicate=None):
+    def __init__(self, resource, previous_value, attr,future_value=None,predicate=None,require_transition=False):
+        if (future_value==None) and (require_transition == None):
+            raise Exception('can not wait for a condition that doesnt require transition and no desired value')
         self.previous_value = previous_value
         self.resource = resource
         self.attr = attr
+        self.require_transition =require_transition
         self.future_value = future_value
         self.device_name = resource.device_name
         self.current_value = previous_value
@@ -106,12 +118,17 @@ class monitor(object):
     def _update(self):
         self.current_value = self.resource.get(self.attr)
 
-    def _is_not_changed(self):
-        is_changed_comparison = (self.previous_value != self.current_value)
-        if isinstance(is_changed_comparison, ndarray):
-            is_changed_comparison = is_changed_comparison.all()
-        if is_changed_comparison:
+    def _conditions_not_met(self):
+        #change comparison section (only if require_transition)
+        if self.require_transition:
+            is_changed_comparison = (self.previous_value != self.current_value)
+            if isinstance(is_changed_comparison, ndarray):
+                is_changed_comparison = is_changed_comparison.all()
+            if is_changed_comparison:
+                self.data_ready = True
+        else:
             self.data_ready = True
+        #comparison with future section (only if future value given)
         #if no future value was given it means you can ignore (or set to true) comparison with a future
         if self.future_value == None:
             is_eq_to_future_comparison = True
@@ -133,14 +150,19 @@ class monitor(object):
 
     def _wait(self, timeout=80,resolution=0.1):
         count_down = timeout
-        while (self._is_not_changed()):
+        while (self._conditions_not_met()):
             count_down -= 1
             if (count_down == 0):
-                raise Exception('timed out waiting for {}.{} to change from {} in {:f}s'.format(
+                future_shim = ""
+                if self.future_value is not None:
+                    future_shim = f" to {self.future_value}"
+                raise Exception('timed out waiting for {}.{} to change from {}{} in {:f}s (current val = {})'.format(
                     self.resource.device_name,
                     self.attr,
-                    self.current_value,
-                    timeout*resolution))
+                    self.previous_value,
+                    future_shim,
+                    timeout*resolution,
+                    self.current_value))
             sleep(resolution)
             self._update()
         return count_down
@@ -150,6 +172,9 @@ class monitor(object):
         if (response == "timeout"):
             return "timeout"
         return self.current_value
+
+    def wait_until_conditions_met(self, timeout=50,resolution=0.1):
+        return self._wait(timeout)
 
     def wait_until_value_changed(self, timeout=50,resolution=0.1):
         return self._wait(timeout)
@@ -178,7 +203,16 @@ class subscriber:
 
     def for_a_change_on(self, attr,changed_to=None,predicate=None):
         value_now = self.resource.get(attr)
-        return monitor(self.resource, value_now, attr,changed_to,predicate)
+        return monitor(self.resource, value_now, attr,changed_to,predicate,require_transition=True)
+
+    def to_become(self,attr,changed_to,predicate=None):
+        value_now = self.resource.get(attr)
+        return monitor(self.resource, value_now, attr,changed_to,predicate,require_transition=False)
+
+    def for_any_change_on(self,attr,predicate=None):
+        value_now = self.resource.get(attr)
+        return monitor(self,resource,value_now,attr,require_transition=True)
+
 
  
 def watch(resource):
@@ -234,10 +268,10 @@ class waiter():
         self.waits = []
 
     def set_wait_for_ending_SB(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState",changed_to='IDLE'))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState",changed_to='IDLE'))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState",changed_to='IDLE'))
-        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState",changed_to='IDLE'))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("obsState",changed_to='IDLE'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("obsState",changed_to='IDLE'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("obsState",changed_to='IDLE'))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("obsState",changed_to='IDLE'))
 
     def set_wait_for_assign_resources(self,nr_of_receptors=None):
         ### the following is a hack to wait for items taht are not worked into the state variable
@@ -269,39 +303,34 @@ class waiter():
             self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
             self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("assignedReceptors"))
             self.waits.append(watch(resource('mid_csp/elt/master')).for_a_change_on("receptorMembership"))
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='ON')) 
-        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State",changed_to='ON'))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='ON'))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='ON'))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='ON')) 
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("State",changed_to='ON'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='ON'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='ON'))
 
     def set_wait_for_tearing_down_subarray(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList"))
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='OFF'))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='OFF'))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='OFF'))
-        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State",changed_to='OFF'))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='OFF'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='OFF'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='OFF'))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("State",changed_to='OFF'))
 
     def set_wait_for_going_to_standby(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='DISABLE'))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='DISABLE'))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='DISABLE'))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='DISABLE'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='DISABLE'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='DISABLE'))
         # at the moment sdb does not go to standby
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 
-    def set_wait_untill_standby(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='DISABLE'))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='DISABLE'))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='DISABLE'))
-
     def set_wait_for_going_into_scanning(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState',changed_to='SCANNING'))  
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on('obsState',changed_to='SCANNING'))
-        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on('obsState',changed_to='SCANNING'))      
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become('obsState',changed_to='SCANNING'))  
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become('obsState',changed_to='SCANNING'))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become('obsState',changed_to='SCANNING'))      
 
     def set_wait_for_starting_up(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("State",changed_to='OFF'))
-        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("State",changed_to='OFF'))
-        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("State",changed_to='OFF'))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='OFF'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='OFF'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='OFF'))
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 
     def wait(self, timeout=30,resolution=0.1):
@@ -309,7 +338,7 @@ class waiter():
         while self.waits:
             wait = self.waits.pop()
             try:
-                result = wait.wait_until_value_changed(timeout=timeout,resolution=resolution)
+                result = wait.wait_until_conditions_met(timeout=timeout,resolution=resolution)
             except:
                 self.timed_out = True
                 shim = ""

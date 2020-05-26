@@ -4,7 +4,7 @@ pytest-cov
 pytest-json-report
 pycodestyle
 pytest-bdd
-pytest-ordered
+pytest-ordering
 elasticsearch
 kubernetes
 assertpy

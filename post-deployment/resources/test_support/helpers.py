@@ -377,7 +377,7 @@ class waiter():
                     wait.attr,
                     wait.previous_value,
                     wait.current_value,
-                    (timeout - result)*resolution)
+                    timeout_shim)
         if self.timed_out:
             raise Exception("timed out, the following timeouts occured:\n{} Successfull changes:\n{}".format(
                 self.error_logs,

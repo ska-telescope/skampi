@@ -50,7 +50,7 @@ SUT_EXECUTED = 'SUT executed'
 TEST_PASSED = 'Test Passed'
 SUBARRAY_USED = "subarray"
 
-
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @pytest.fixture(name="result")
 def fixture_result():
     """structure used to hold details of the intermediate result at each stage of the test"""
@@ -79,7 +79,7 @@ def check_resource_ready(resource_name):
 
 
 LOGGER = logging.getLogger(__name__)
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
 @scenario("../../../features/XTP-826.feature", "Run more than one scan on a sub array")
 def test_multi_scan():
     """Multiscan Test."""

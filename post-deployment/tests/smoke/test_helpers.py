@@ -117,7 +117,7 @@ def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate,mock_resourc
 @pytest.mark.fast
 def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     the_waiter = waiter()
-    mon_mock_instance = watch_mock.return_value.for_a_change_on.return_value
+    mon_mock_instance = watch_mock.return_value.for_any_change_on.return_value
     mon_mock_instance2 = watch_mock.return_value.to_become.return_value
     mon_mock_instance.wait_until_conditions_met.return_value = 10
     mon_mock_instance2.wait_until_conditions_met.return_value = 10

@@ -1,6 +1,7 @@
 from tango import DeviceProxy   
 from datetime import date,datetime
 import pytest
+import os
 import logging
 from resources.test_support.helpers import waiter,watch,resource
 from resources.test_support.controls import telescope_is_in_standby
@@ -10,6 +11,12 @@ from resources.test_support.persistance_helping import load_config_from_file,upd
 from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it
 from resources.test_support.logging_decorators import log_it
 import resources.test_support.tmc_helpers as tmc
+
+DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
+if DEV_TEST_TOGGLE == "False":
+    DISABLE_TESTS_UNDER_DEVELOPMENT = False
+else:
+    DISABLE_TESTS_UNDER_DEVELOPMENT = True
 
 devices_to_log = [
     'ska_mid/tm_subarray_node/1',
@@ -28,6 +35,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_assign_resources():
     
     try:

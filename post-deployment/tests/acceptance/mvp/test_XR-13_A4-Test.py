@@ -28,6 +28,12 @@ from resources.test_support.sync_decorators import sync_release_resources
 
 LOGGER = logging.getLogger(__name__)
 
+DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
+if DEV_TEST_TOGGLE == "False":
+    DISABLE_TESTS_UNDER_DEVELOPMENT = False
+else:
+    DISABLE_TESTS_UNDER_DEVELOPMENT = True
+
 devices_to_log = [
     'ska_mid/tm_subarray_node/1',
     'mid_csp/elt/subarray_01',
@@ -48,7 +54,7 @@ def result():
     return {}
 
 
-
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
 def test_deallocate_resources():
     """Deallocate Resources."""

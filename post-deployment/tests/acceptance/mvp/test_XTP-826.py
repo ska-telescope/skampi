@@ -44,10 +44,17 @@ else:
 # by default these tests are disabled
 
 
+# used as labels within the result fixture
+# this should be refactored at some point to something more elegant
+SUT_EXECUTED = 'SUT executed'
+TEST_PASSED = 'Test Passed'
+SUBARRAY_USED = "subarray"
+
+
 @pytest.fixture(name="result")
 def fixture_result():
     """structure used to hold details of the intermediate result at each stage of the test"""
-    fixture = {'SUT executed': False, "Test Passed": True, "subarray": None}
+    fixture = {SUT_EXECUTED: False, TEST_PASSED: True, SUBARRAY_USED: None}
     yield fixture
     # teardown
     end(fixture)
@@ -66,13 +73,13 @@ def subarray_is_in_state(expected_state):
 def check_resource_ready(resource_name):
     "check that for the passed in resource name the reported obsState is READY"
     obstate = resource(resource_name).get('obsState')
-    assert_that(obstate.value == 'READY')
+    assert_that(obstate == 'READY')
     msg = resource_name + " obsState :" + obstate
     logging.info(msg)
 
 
 LOGGER = logging.getLogger(__name__)
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
 @scenario("../../../features/XTP-826.feature", "Run more than one scan on a sub array")
 def test_multi_scan():
     """Multiscan Test."""
@@ -89,14 +96,14 @@ def setup_telescope_and_scan(result):
     set_telescope_to_running()
 
     LOGGER.info("Ensuring resources are assigned")
-    result['subarray'] = take_subarray(1).to_be_composed_out_of(2)
+    result[SUBARRAY_USED] = take_subarray(1).to_be_composed_out_of(2)
 
     LOGGER.info("configuring for first scan")
-    result['subarray'].and_configure_scan_by_file(
+    result[SUBARRAY_USED].and_configure_scan_by_file(
         file='resources/test_data/TMC_integration/configure1.json')
 
     LOGGER.info("executing first scan")
-    result['subarray'].and_run_a_scan()
+    result[SUBARRAY_USED].and_run_a_scan()
     return result
 
 
@@ -108,7 +115,7 @@ def configure_again(result):
     what was done for the previous scan
     """
     LOGGER.info("Configuring  second scan")
-    result['subarray'].and_configure_scan_by_file(
+    result[SUBARRAY_USED].and_configure_scan_by_file(
         file='resources/test_data/TMC_integration/configure2.json')
 
 
@@ -124,7 +131,7 @@ def execute_second_scan(result):
         SubArray(1).scan()
     scan()
     #############################################
-    result['SUT executed'] = True
+    result[SUT_EXECUTED] = True
 
 
 @then('the scan should complete without any errors or exceptions')
@@ -137,9 +144,9 @@ def check_completion_state(result):
 
     check_resource_ready('ska_mid/tm_subarray_node/1')
     check_resource_ready('mid_csp/elt/subarray_01')
-    check_resource_ready('mid_sdp/elt/subarray_01')
+    check_resource_ready('mid_sdp/elt/subarray_1')
 
-    result['test passed'] = True
+    result[TEST_PASSED] = True
 
 
 def end(result):
@@ -147,9 +154,9 @@ def end(result):
     call.
     """
     LOGGER.info("End of test: Resetting Telescope")
-    if result['subarray'] is not None:
+    if result[SUBARRAY_USED] is not None:
         LOGGER.info("Resetting subarray")
-        result['subarray'].reset()
+        result[SUBARRAY_USED].reset()
     if resource('ska_mid/tm_subarray_node/1').get("State") == "ON":
         LOGGER.info("Release all resources assigned to subarray")
         take_subarray(1).and_release_all_resources()

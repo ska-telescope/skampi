@@ -50,7 +50,7 @@ SUT_EXECUTED = 'SUT executed'
 TEST_PASSED = 'Test Passed'
 SUBARRAY_USED = "subarray"
 
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+
 @pytest.fixture(name="result")
 def fixture_result():
     """structure used to hold details of the intermediate result at each stage of the test"""

@@ -99,7 +99,7 @@ def sync_release_resources(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_tearing_down_subarray()
         result = func(*args, **kwargs)
-        the_waiter.wait()
+        the_waiter.wait(50)
         return result
     return wrapper
 
@@ -110,7 +110,7 @@ def sync_set_to_standby(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_going_to_standby()
         result = func(*args, **kwargs)
-        the_waiter.wait()
+        the_waiter.wait(50)
         return result
     return wrapper
 

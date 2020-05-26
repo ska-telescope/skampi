@@ -286,7 +286,7 @@ def load_events(events):
     mock_events = []
     for index,event in enumerate(events):
         mock_event = Mock(spec = tango.EventData)
-        mock_event.attr_value.return_value = event
+        mock_event.attr_value.value = event
         mock_event.reception_date = TimeVal(index)
         mock_events.append(mock_event)
     return mock_events
@@ -380,5 +380,5 @@ def test_get_waiting_time_attribute_watcher(stub_signal,devicestub,stub_event):
         w._cb(mock_event)
     
     elapsed_time = w.wait_until_conditions_met(5)
-    assert_that(elapsed_time).is_equal_to(5)
+    assert_that(elapsed_time).is_equal_to(4)
 

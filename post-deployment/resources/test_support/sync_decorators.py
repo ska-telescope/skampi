@@ -74,7 +74,7 @@ def sync_start_up_telescope(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_starting_up()
         result = func(*args, **kwargs)
-        the_waiter.wait()
+        the_waiter.wait(50)
         return result
     return wrapper
 

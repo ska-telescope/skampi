@@ -1,5 +1,6 @@
 import os
 import pytest
+import logging
 
 from tango import DeviceProxy
 from collections import namedtuple
@@ -20,6 +21,7 @@ def test_something(run_context):
 """
 @pytest.fixture(scope="session")
 def run_context():
+    logging.info('in run_context')
     ENV_VARS = ['HELM_RELEASE', 'KUBE_NAMESPACE', 'TANGO_HOST'] # list of required environment vars
 
     RunContext = namedtuple('RunContext', ENV_VARS)

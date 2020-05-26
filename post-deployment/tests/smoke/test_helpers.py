@@ -9,6 +9,7 @@ import mock
 from mock import Mock,MagicMock
 import logging
 import tango
+from tango import TimeVal
 from assertpy import assert_that
 #SUT
 from resources.test_support.helpers import resource, waiter, subscriber, watch,monitor,wait_for,AttributeWatcher
@@ -116,7 +117,7 @@ def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate,mock_resourc
 @pytest.mark.fast
 def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     the_waiter = waiter()
-    mon_mock_instance = watch_mock.return_value.for_a_change_on.return_value
+    mon_mock_instance = watch_mock.return_value.for_any_change_on.return_value
     mon_mock_instance2 = watch_mock.return_value.to_become.return_value
     mon_mock_instance.wait_until_conditions_met.return_value = 10
     mon_mock_instance2.wait_until_conditions_met.return_value = 10
@@ -278,6 +279,106 @@ def test_subscribe_with_attribute_watcher(mock_signal,devicemock,mock_event):
     #then if a new event is passed 
     event_mock.attr_value.return_value = 'fake_desired'
     w._cb(event_mock)
+    
+
+
+def load_events(events):
+    mock_events = []
+    for index,event in enumerate(events):
+        mock_event = Mock(spec = tango.EventData)
+        mock_event.attr_value.value = event
+        mock_event.reception_date = TimeVal(index)
+        mock_events.append(mock_event)
+    return mock_events
+
+@mock.patch('resources.test_support.helpers.signal')
+@mock.patch('resources.test_support.helpers.DeviceProxy')
+@mock.patch('resources.test_support.helpers.threading.Event') 
+def test_wait_for_desired_attribute_watcher(stub_signal,devicestub,stub_event):
+    #given
+    w = watch(resource('fake_dev'),implementation='tango_events').to_become('fake_att',changed_to='ready')
+    events = [
+        'wait',
+        'wait',
+        'wait',
+        'ready',
+        'ready'
+    ]
+    mock_events = load_events(events)
+    #when
+    for mock_event in mock_events[:3]:
+        w._cb(mock_event)
+    #then
+    w.result_available.set.assert_not_called()
+    #when
+    w._cb(mock_events[3])
     w.result_available.set.assert_called_once()
 
+@mock.patch('resources.test_support.helpers.signal')
+@mock.patch('resources.test_support.helpers.DeviceProxy')
+@mock.patch('resources.test_support.helpers.threading.Event') 
+def test_wait_for_change_attribute_watcher(stub_signal,devicestub,stub_event):
+    #given
+    w = watch(resource('fake_dev'),implementation='tango_events').for_any_change_on('fake_att')
+    events = [
+        'wait',
+        'wait',
+        'wait',
+        'wait',
+        'ready'
+    ]
+    mock_events = load_events(events)
+    #when
+    for mock_event in mock_events[:4]:
+        w._cb(mock_event)
+    #then
+    w.result_available.set.assert_not_called()
+    #when
+    w._cb(mock_events[4])
+    w.result_available.set.assert_called_once()
+
+@mock.patch('resources.test_support.helpers.signal')
+@mock.patch('resources.test_support.helpers.DeviceProxy')
+@mock.patch('resources.test_support.helpers.threading.Event') 
+def test_wait_for_transition_attribute_watcher(stub_signal,devicestub,stub_event):
+    #given
+    w = watch(resource('fake_dev'),implementation='tango_events').for_a_change_on('fake_att',changed_to='wait')
+    events = [
+        'wait',
+        'ready',
+        'ready',
+        'ready',
+        'wait'
+    ]
+    mock_events = load_events(events)
+    #when
+    for mock_event in mock_events[:4]:
+        w._cb(mock_event)
+    #then
+    w.result_available.set.assert_not_called()
+    #when
+    w._cb(mock_events[4])
+    w.result_available.set.assert_called_once()
+
+
+@mock.patch('resources.test_support.helpers.signal')
+@mock.patch('resources.test_support.helpers.DeviceProxy')
+@mock.patch('resources.test_support.helpers.threading.Event') 
+def test_get_waiting_time_attribute_watcher(stub_signal,devicestub,stub_event):
+       #given
+    w = watch(resource('fake_dev'),implementation='tango_events').for_a_change_on('fake_att',changed_to='wait')
+    events = [
+        'wait',
+        'ready',
+        'ready',
+        'ready',
+        'wait'
+    ]
+    mock_events = load_events(events)
+    #when
+    for mock_event in mock_events[:5]:
+        w._cb(mock_event)
     
+    elapsed_time = w.wait_until_conditions_met(5)
+    assert_that(elapsed_time).is_equal_to(4)
+

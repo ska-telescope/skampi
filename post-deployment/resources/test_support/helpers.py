@@ -388,8 +388,20 @@ class waiter():
 
 
 class AttributeWatcher():
-    '''listens to events in a device and enables waiting until a predicate is true or publish to a subscriber'''
-
+    '''listens to events in a device and enables waiting until a predicate is true or publish to a subscriber
+    It allows in essence for the ability to wait for three types of conditions:
+    1. The attribute value has become or was already from the start the desired future value 
+    2. The attribute value has changed from its original value into any new value
+    3. The attribute value as transitioned into the desired future value (this means it must have changed from the original)
+    These different conditions upon which to wait is specified by the constructure params. However the typical use case is to use 
+    the "watch.for_a... factory methods to instantiate the watcher (see subscriber).
+    This is also the same type of watch as implemented by the monitor class except that this one uses the tango device subscribe 
+    mechanism as opposed to a simple polling implemented by the other.
+    Thus the key mechanism is a call back with the appropriate event pushed by the device, the event in turns gets evaluated against the required 
+    conditions to determine whether a threading  event should be set (in case of all conditions being met.) This allows a wait method to hook on the event by calling 
+    the wait method (see python threading event)
+    '''
+    
     def __init__(self,resource,attribute,desired=None,predicate=None,require_transition=False,start_now=True,polling = 100):
         self.device_proxy = DeviceProxy(resource.device_name)
         self.device_name = resource.device_name

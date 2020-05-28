@@ -3,22 +3,16 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: jupyter-main-ing-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: jupyter-ingress-{{ template "oet.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   annotations:
       kubernetes.io/ingress.class: traefik
 spec:
-# {{ if .Values.ingress.tls.enabled }}
-#   tls:
-#     - hosts:
-#       - {{ tpl .Values.ingress.hostname . }}
-#       secretName: {{ tpl .Values.ingress.tls.secretname . }}
-# {{ end }}
   rules:
-    - host: jupyter-{{ tpl .Values.ingress.hostname . }}
+    - host: {{ tpl .Values.ingress.hostname . }}
       http:
         paths:
-        - path: /
+        - path: /jupyter
           backend:
            serviceName: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
            servicePort: 8888
@@ -28,9 +22,10 @@ data:
   jupyter_notebook_config.json: |-
     {
         "NotebookApp": {
-          "password": "sha1:a83c43c88b88:980ac02521dcf9f62f610e26b051f157c05a36fe"
+          "password": "sha1:a83c43c88b88:980ac02521dcf9f62f610e26b051f157c05a36fe",
+          "base_url": "/jupyter"
         }
-      }
+    }
 kind: ConfigMap
 metadata:
   name: jupyter-configmap

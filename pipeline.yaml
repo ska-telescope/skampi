@@ -1,7 +1,7 @@
 elastic:
-  enabled: true
+  enabled: false
 fluentd:
-  enabled: true
+  enabled: false
 kibana:
   enabled: false
 tests:

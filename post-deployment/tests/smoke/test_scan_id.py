@@ -1,44 +1,40 @@
-import json
-import tempfile
-import random
-import os
+"""
+The scan used in this test has been adapted from:
+https://gitlab.com/ska-telescope/observation-execution-tool/-/blob/master/scripts/notebooks/sb_observing_test.ipynb
 
+The configuration data in ../../resources/test_data/scan_id_test has been copied from:
+https://gitlab.com/ska-telescope/observation-execution-tool/-/tree/master/scripts/data
+"""
+
+import logging
+
+from datetime import timedelta
+
+import tango
 import pytest
 
-from datetime import date
-from pathlib import Path
-
-from skuid.client import SkuidClient
-from assertpy import assert_that
-from pytest_bdd import scenario, given, when, then
-from oet.domain import SKAMid, SubArray
-from resources.test_support.helpers import (
-    resource,
-    watch,
-    take_subarray,
-    restart_subarray,
-    telescope_is_in_standby
+from oet.domain import SKAMid
+from oet.domain import SubArray
+from oet import observingtasks
+from oet.command import SCAN_ID_GENERATOR
+from ska.pdm.entities.sb_definition import SBDefinition
+from ska.cdm.messages.subarray_node.configure import ConfigureRequest
+from ska.cdm.schemas import CODEC as cdm_CODEC
+from ska.pdm.entities.field_configuration import Target
+from ska.pdm.schemas import CODEC as pdm_CODEC
+from ska.cdm.messages.subarray_node.configure.core import (
+    ReceiverBand as cdm_ReceiverBand,
 )
+from resources.test_support.helpers import resource, take_subarray, watch
+
+
+LOG = logging.getLogger(__name__)
+FORMAT = "%(asctime)-15s %(message)s"
+logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 KUBE_NAMESPACE = os.environ.get("KUBE_NAMESPACE", "integration")
 HELM_RELEASE = os.environ.get("HELM_RELEASE", "test")
 SKUID_URL = f"skuid-skuid-{KUBE_NAMESPACE}-{HELM_RELEASE}.{KUBE_NAMESPACE}.svc.cluster.local:9870"
-SUBARRAY_CONF_FILE = Path.joinpath(
-    Path(__file__).parents[2], "resources", "test_data", "polaris_b1_no_cam.json"
-)
-
-
-def get_next_scan_id_from_service():
-    """Use the skuid service to retrieve a scan ID"""
-    client = SkuidClient(SKUID_URL)
-    return client.fetch_scan_id()
-
-
-@pytest.fixture(scope="module")
-def pre_test_scan_id(request, autouse=True):
-    """Keep the 'before' scan ID"""
-    id = get_next_scan_id_from_service()
-    return id
 
 
 @pytest.fixture(scope="module")
@@ -62,65 +58,84 @@ def add_teardown(request, autouse=True):
     request.addfinalizer(release)
 
 
-@pytest.fixture(scope="module")
-def subarray_config(request):
-    conf_data = Path(SUBARRAY_CONF_FILE).read_text()
-    conf_json = json.loads(conf_data)
-    today = date.today().strftime("%Y%m%d")
-    random_id = random.choice(range(1, 10000))
-    conf_json["sdp"]["configure"][0]["id"] = f"realtime-{today}-{random_id}"
-    return conf_json
-
+def get_next_scan_id_from_service():
+    """Use the skuid service to retrieve a scan ID"""
+    client = SkuidClient(SKUID_URL)
+    return client.fetch_scan_id()
 
 @pytest.mark.xfail
-@pytest.mark.timeout(60)
-@scenario("../../features/scan_id.feature", "OET requests a scan ID")
-def test_request_scan_id(pre_test_scan_id):
-    """Test scan ID."""
-    assert pre_test_scan_id
-    assert telescope_is_in_standby()
-
-
-@given("I am accessing the console interface for the OET")
-def start_up():
-    """Start up the telescope"""
-    SKAMid().start_up()
-
-
-@given("Sub-array is resourced")
-def assign():
-    """Assign resources to sub-array"""
-    watch_receptor_id_list = watch(
-        resource("ska_mid/tm_subarray_node/1")
-    ).for_a_change_on("receptorIDList")
-    take_subarray(1).to_be_composed_out_of(1)
-    watch_receptor_id_list.wait_until_value_changed()
-
-
-@when("I call the configure scan execution instruction")
-def configure(subarray_config):
-    with tempfile.NamedTemporaryFile(mode="w") as fp:
-        fp.write(json.dumps(subarray_config))
-        fp.seek(0)
-        SubArray(1).configure_from_file(fp.name)
-
-
-@then("Sub-array is in READY state")
-def check_state():
-    """Ensure that the sub-array is in READY state"""
-    assert_that(resource("ska_mid/tm_subarray_node/1").get("obsState")).is_equal_to(
-        "READY"
-    )
-    assert_that(resource("mid_csp/elt/subarray_01").get("obsState")).is_equal_to(
-        "READY"
-    )
-    assert_that(resource("mid_sdp/elt/subarray_1").get("obsState")).is_equal_to("READY")
-
-
-@then("Sub-array reports scan ID")
-def check_scan_id(pre_test_scan_id):
-    """Ensure that scan ID is as expected and has propagated through sub-array
+def test_oet_uses_skuid_service():
+    """Ensure that the oet library uses the skuid service i.e RemoteScanIdGenerator
     """
-    scan_id_used = int(resource("ska_mid/tm_subarray_node/1").get("scanID"))
-    post_test_scan_id = get_next_scan_id_from_service()
-    assert post_test_scan_id > scan_id_used > pre_test_scan_id
+    assert type(SCAN_ID_GENERATOR) == "oet.command.RemoteScanIdGenerator"
+
+@pytest.mark.xfail
+def test_scan_id():
+    """Ensure that oet uses skuid when building a scan.
+    """
+    scan_id_before_scan = get_next_scan_id_from_service()
+
+    # Make sure the state is `disabled` before running the scan
+    subarray_resource = resource("ska_mid/tm_subarray_node/1")
+    subarray_resource.assert_attribute("State").equals("DISABLE")
+
+    subarray_watch = watch(subarray_resource).for_a_change_on("State")
+    telescope = SKAMid()
+    telescope.start_up()
+    subarray_watch.wait_until_value_changed_to("OFF")
+
+    # Set up the subarray
+    subarray_id = 1
+    subarray = SubArray(subarray_id)
+    allocated = subarray.allocate_from_file(
+        "../../resources/test_data/scan_id_test/example_allocate.json"
+    )
+
+    # Set up the SB
+    sched_block: SBDefinition = pdm_CODEC.load_from_file(
+        SBDefinition, "../../resources/test_data/scan_id_test/example_sb.json"
+    )
+
+    # Set the configurations
+    cdm_config: ConfigureRequest = cdm_CODEC.load_from_file(
+        ConfigureRequest,
+        "../../resources/test_data/scan_id_test/example_configure.json",
+    )
+    scan_definitions = {
+        scan_definition.id: scan_definition
+        for scan_definition in sched_block.scan_definitions
+    }
+    field_configurations = {
+        field_configuration.id: field_configuration
+        for field_configuration in sched_block.field_configurations
+    }
+    dish_configurations = {
+        dish_configuration.id: dish_configuration
+        for dish_configuration in sched_block.dish_configurations
+    }
+    scan_definition_id = sched_block.scan_sequence[0]
+
+    scan_definition = scan_definitions[scan_definition_id]
+
+    field_configuration_id = scan_definition.field_configuration_id
+    field_configuration = field_configurations[field_configuration_id]
+    sb_scan_duration = scan_definition.scan_duration
+    cdm_config.tmc.scan_duration = timedelta(seconds=sb_scan_duration)
+    targets = field_configuration.targets
+    target: Target = targets[0]
+    cdm_config.pointing.target.coord = target.coord
+    pdm_rx = None
+    dish_configuration = dish_configurations[scan_definition.dish_configuration_id]
+    pdm_rx = dish_configuration.receiver_band
+    cdm_config.dish.receiver_band = cdm_ReceiverBand(pdm_rx.value)
+    observingtasks.configure_from_cdm(subarray_id, cdm_config)
+
+    # Do the scan
+    subarray.scan()
+
+    scan_id_after_scan = get_next_scan_id_from_service()
+
+    # expected_scan_id_used should be read as an attribute from a device
+    expected_scan_id_used = scan_id_before_scan + 1
+
+    assert scan_id_after_scan > expected_scan_id_used > scan_id_before_scan

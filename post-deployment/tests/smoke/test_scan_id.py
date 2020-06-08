@@ -7,8 +7,10 @@ https://gitlab.com/ska-telescope/observation-execution-tool/-/tree/master/script
 """
 
 import logging
+import os
 
 from datetime import timedelta
+from pathlib import Path
 
 import tango
 import pytest
@@ -25,7 +27,9 @@ from ska.pdm.schemas import CODEC as pdm_CODEC
 from ska.cdm.messages.subarray_node.configure.core import (
     ReceiverBand as cdm_ReceiverBand,
 )
-from resources.test_support.helpers import resource, take_subarray, watch
+from resources.test_support.helpers import resource, watch
+from resources.test_support.controls import take_subarray
+from skuid.client import SkuidClient
 
 
 LOG = logging.getLogger(__name__)
@@ -35,6 +39,14 @@ logging.basicConfig(level=logging.INFO, format=FORMAT)
 KUBE_NAMESPACE = os.environ.get("KUBE_NAMESPACE", "integration")
 HELM_RELEASE = os.environ.get("HELM_RELEASE", "test")
 SKUID_URL = f"skuid-skuid-{KUBE_NAMESPACE}-{HELM_RELEASE}.{KUBE_NAMESPACE}.svc.cluster.local:9870"
+
+
+TEST_DATA_PATH = Path.joinpath(
+    Path(__file__).parents[2], "resources", "test_data", "scan_id_test"
+)
+ALLOCATE_FILE = Path.joinpath(TEST_DATA_PATH, "example_allocate.json")
+SB_FILE = Path.joinpath(TEST_DATA_PATH, "example_sb.json")
+CONFIG_FILE = Path.joinpath(TEST_DATA_PATH, "example_configure.json")
 
 
 @pytest.fixture(scope="module")
@@ -89,19 +101,14 @@ def test_scan_id():
     # Set up the subarray
     subarray_id = 1
     subarray = SubArray(subarray_id)
-    allocated = subarray.allocate_from_file(
-        "../../resources/test_data/scan_id_test/example_allocate.json"
-    )
+    allocated = subarray.allocate_from_file(ALLOCATE_FILE)
 
     # Set up the SB
-    sched_block: SBDefinition = pdm_CODEC.load_from_file(
-        SBDefinition, "../../resources/test_data/scan_id_test/example_sb.json"
-    )
+    sched_block: SBDefinition = pdm_CODEC.load_from_file(SBDefinition, SB_FILE)
 
     # Set the configurations
     cdm_config: ConfigureRequest = cdm_CODEC.load_from_file(
-        ConfigureRequest,
-        "../../resources/test_data/scan_id_test/example_configure.json",
+        ConfigureRequest, CONFIG_FILE
     )
     scan_definitions = {
         scan_definition.id: scan_definition

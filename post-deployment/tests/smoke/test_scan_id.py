@@ -63,11 +63,13 @@ def get_next_scan_id_from_service():
     client = SkuidClient(SKUID_URL)
     return client.fetch_scan_id()
 
+
 @pytest.mark.xfail
 def test_oet_uses_skuid_service():
     """Ensure that the oet library uses the skuid service i.e RemoteScanIdGenerator
     """
-    assert type(SCAN_ID_GENERATOR) == "oet.command.RemoteScanIdGenerator"
+    assert "RemoteScanIdGenerator" in str(SCAN_ID_GENERATOR)
+
 
 @pytest.mark.xfail
 def test_scan_id():

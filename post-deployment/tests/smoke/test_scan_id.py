@@ -32,9 +32,7 @@ from resources.test_support.controls import take_subarray
 from skuid.client import SkuidClient
 
 
-LOG = logging.getLogger(__name__)
-FORMAT = "%(asctime)-15s %(message)s"
-logging.basicConfig(level=logging.INFO, format=FORMAT)
+LOGGER = logging.getLogger(__name__)
 
 KUBE_NAMESPACE = os.environ.get("KUBE_NAMESPACE", "integration")
 HELM_RELEASE = os.environ.get("HELM_RELEASE", "test")
@@ -66,6 +64,7 @@ def add_teardown(request, autouse=True):
             restart_subarray(1)
         take_subarray(1).and_release_all_resources()
         SKAMid().standby()
+        LOGGER.info("Released all test resources")
 
     request.addfinalizer(release)
 
@@ -84,10 +83,13 @@ def test_oet_uses_skuid_service():
 
 
 @pytest.mark.xfail
+@pytest.mark.timeout(360)
 def test_scan_id():
     """Ensure that oet uses skuid when building a scan.
     """
     scan_id_before_scan = get_next_scan_id_from_service()
+    LOGGER.info("Scan id before scan: %s", scan_id_before_scan)
+    LOGGER.info("ska_mid/tm_subarray_node/1 state :%s", resource("ska_mid/tm_subarray_node/1").get("State"))
 
     # Make sure the state is `disabled` before running the scan
     subarray_resource = resource("ska_mid/tm_subarray_node/1")
@@ -146,5 +148,7 @@ def test_scan_id():
 
     # expected_scan_id_used should be read as an attribute from a device
     expected_scan_id_used = scan_id_before_scan + 1
+    LOGGER.info("Scan id expected: %s", expected_scan_id_used)
+    LOGGER.info("Scan id after scan: %s ", scan_id_after_scan)
 
     assert scan_id_after_scan > expected_scan_id_used > scan_id_before_scan

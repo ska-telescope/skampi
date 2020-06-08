@@ -18,9 +18,10 @@ def test_restart_subarray(mock_waiter,mock_resource):
     assert_that(mock_resource_instance.restart.call_count).is_equal_to(2)
 
 @pytest.mark.fast
+@mock.patch('resources.test_support.controls.waiter')
 @mock.patch('resources.test_support.controls.resource')
 @mock.patch('resources.test_support.controls.device_to_subarrays',new=fake_device_mapping)
-def test_handle_exceptions_on_sub_array_restart(mock_resource):
+def test_handle_exceptions_on_sub_array_restart(mock_resource,mock_waiter):
     #given
     mock_resource_instance = mock_resource.return_value
     mock_resource_instance.restart.side_effect = Exception('Exception_123')

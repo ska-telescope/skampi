@@ -24,7 +24,9 @@ class pilot():
         self.state = "Empty"
         self.rollback_order = {
             'Composed': self.and_release_all_resources,
-            'Ready':self.and_end_sb_when_ready
+            'Ready':self.and_end_sb_when_ready,
+           # 'Configuring':restart_subarray,
+           # 'Scanning':restart_subarray
         }
 
     def and_display_state(self):
@@ -56,8 +58,8 @@ class pilot():
         @time_it(120)
         def config():
             update_scan_config_file(file)
-            self.state = "Scanning"
-            self.SubArray.configure_from_file(file, 2, with_processing = False)
+            self.state = "Configuring"
+            self.SubArray.configure_from_file(file, 1, with_processing = False)
         config()
         self.state = "Ready"
         return self
@@ -119,7 +121,7 @@ def set_telescope_to_standby():
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
     SKAMid().standby()
-    the_waiter.wait()
+    the_waiter.wait(50)
     if the_waiter.timed_out:
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
@@ -129,7 +131,7 @@ def set_telescope_to_running(disable_waiting = False):
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
     if not disable_waiting:
-        the_waiter.wait()
+        the_waiter.wait(50)
         if the_waiter.timed_out:
             pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 

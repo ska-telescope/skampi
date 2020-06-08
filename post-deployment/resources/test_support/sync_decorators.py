@@ -13,7 +13,7 @@ def sync_assign_resources(nr_of_receptors=4):
             ################ 
             result = func(*args, **kwargs)
             ################ 
-            the_waiter.wait(timeout=40)
+            the_waiter.wait(timeout=60)
             return result
         return wrapper
     return decorator_sync_assign_resources
@@ -38,7 +38,7 @@ def sync_configure_oet(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         ##Can ony configure a subarray that is in IDLE/ON
-        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
         resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
         w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
         ################ 
@@ -74,7 +74,7 @@ def sync_start_up_telescope(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_starting_up()
         result = func(*args, **kwargs)
-        the_waiter.wait()
+        the_waiter.wait(50)
         return result
     return wrapper
 
@@ -99,7 +99,7 @@ def sync_release_resources(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_tearing_down_subarray()
         result = func(*args, **kwargs)
-        the_waiter.wait()
+        the_waiter.wait(50)
         return result
     return wrapper
 
@@ -110,7 +110,7 @@ def sync_set_to_standby(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_going_to_standby()
         result = func(*args, **kwargs)
-        the_waiter.wait()
+        the_waiter.wait(50)
         return result
     return wrapper
 

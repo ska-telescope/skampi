@@ -27,6 +27,6 @@
         "scan_type": "science_A"
     },
     "tmc": {
-        "scanDuration": 10.0
+        "scanDuration": 1.0
     }
 }

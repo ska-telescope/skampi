@@ -339,8 +339,7 @@ set_context: ## Set current kubectl context. @param: KUBE_NAMESPACE
 get_status:
 	kubectl get pod,svc,deployments,pv,pvc,ingress -n $(KUBE_NAMESPACE)
 
-redeploy:
-	make delete delete_all && make deploy HELM_CHART=tango-base && make deploy_all && watch kubectl get pods
+redeploy: delete_all deploy_ordered get_status
 	
 wait:
 	pods=$$( kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{' '}{end}" ) && \

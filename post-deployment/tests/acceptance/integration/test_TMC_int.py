@@ -1,11 +1,19 @@
 from tango import DeviceProxy   
 from datetime import date,datetime
+import os
 import pytest
 import logging
 from resources.test_support.helpers import waiter,watch,resource
 from resources.test_support.state_checking import StateChecker
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file
+
+DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
+if DEV_TEST_TOGGLE == "False":
+    DISABLE_TESTS_UNDER_DEVELOPMENT = False
+else:
+    DISABLE_TESTS_UNDER_DEVELOPMENT = True
+
 
 devices_to_log = [
     'ska_mid/tm_subarray_node/1',
@@ -35,6 +43,7 @@ def print_logs_to_file(s,d,status='ok'):
     d.implementation.print_log_to_file(filename_d,style='csv')
     s.print_records_to_file(filename_s,style='csv',filtered=False)
 
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():
     ####loging
     s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)

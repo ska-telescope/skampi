@@ -14,6 +14,7 @@ from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 from  time  import sleep
 import logging
+import os
 import json
 #local dependencies
 from resources.test_support.helpers import obsState, resource, watch, waiter, \
@@ -27,6 +28,12 @@ from resources.test_support.controls import set_telescope_to_standby,set_telesco
 import pytest
 #SUT dependencies
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+
+DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
+if DEV_TEST_TOGGLE == "False":
+    DISABLE_TESTS_UNDER_DEVELOPMENT = False
+else:
+    DISABLE_TESTS_UNDER_DEVELOPMENT = True
 
 
 LOGGER = logging.getLogger(__name__)
@@ -46,6 +53,7 @@ non_default_states_to_check = {
     'mid_d0003/elt/master' : 'pointingState',
     'mid_d0004/elt/master' : 'pointingState'}
 
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 def test_configure_subarray():
     """Configure Subarray."""

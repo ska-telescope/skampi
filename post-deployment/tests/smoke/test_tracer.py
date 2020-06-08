@@ -8,6 +8,17 @@ from time import sleep
 from resources.log_consumer.tracer_helper import TraceHelper
 from assertpy import assert_that
 
+import os
+
+VAR = os.environ.get('DISABLE_TEST_TRACER')
+if (VAR == "True"):
+    disable_archive_tests = True
+else:
+    disable_archive_tests = False
+#by default these tests are disabled
+
+
+@pytest.mark.skipif(disable_archive_tests,reason="disabaled by local env")
 @pytest.mark.fast
 def test_init():    
   logging.info("Init test traces")
@@ -24,6 +35,7 @@ def test_init():
 
 
 
+@pytest.mark.skipif(disable_archive_tests,reason="disabaled by local env")
 @pytest.mark.fast
 @pytest.mark.tracer
 def test_tracer():
@@ -40,6 +52,7 @@ def test_tracer():
     sleep(1)
     assert n_msg == len(tracer.get_messages())
 
+@pytest.mark.skipif(disable_archive_tests,reason="disabaled by local env")
 @pytest.mark.slow
 @pytest.mark.tracer
 def test_tracer_update():

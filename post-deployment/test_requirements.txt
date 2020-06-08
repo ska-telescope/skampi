@@ -5,6 +5,7 @@ pytest-timeout
 pytest-json-report
 pycodestyle
 pytest-bdd
+pytest-ordering
 elasticsearch
 kubernetes
 assertpy

@@ -9,8 +9,9 @@ import re
 def inc_from_old_nr(oldnr,incremental=1):
     #assumes trailing 5 digits is an integer counter unless succeeded with a dash and a non digit
     #also assumes we wont get increments hgher than 50 000 in a day
-    inc =  int(re.findall(r'\d{5}(?=$|-\D)',oldnr)[0])  
-    new_inc = '{:05d}'.format(inc+incremental)
+    #inc =  int(re.findall(r'\d{5}(?=$|-\D)',oldnr)[0])  
+    #new_inc = '{:05d}'.format(inc+incremental)
+    new_inc = f'{choice(range(0,99999)):05d}'
     return re.sub(r'\d{5}(?=$|-\D)',new_inc,oldnr)
 
 def update_file(file):

@@ -54,15 +54,7 @@ spec:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/01 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/02 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/03 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/04 &&\
-            /venv/bin/python /app/tangods/CbfMaster/CbfMaster/CbfMaster.py master"
+      - "/venv/bin/python /app/tangods/CbfMaster/CbfMaster/CbfMaster.py master"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -150,6 +142,199 @@ spec:
     args:
       - -c
       - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-004"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc005
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-005"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+
+  - name: vcc006 
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-006"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc007 
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-007"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc008 
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-008"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc009
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-009"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc010
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-010"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc011
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-011"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc012
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-012"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc013
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-013"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc014
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-014"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc015
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-015"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc016
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-016"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc017
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-017"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc018
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-018"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc019
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-019"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: vcc020
+    image: "{{ .Values.midcbfmcs.image.registry }}/{{ .Values.midcbfmcs.image.image }}:{{ .Values.midcbfmcs.image.tag }}"
+    imagePullPolicy: {{ .Values.midcbfmcs.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-020"
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000

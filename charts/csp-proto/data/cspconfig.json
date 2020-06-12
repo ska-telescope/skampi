@@ -6,10 +6,26 @@
                     "mid_csp/capability_monitor/vcc": {
                         "properties": {
                             "CapabilityDevices": [
-                                "mid_csp/vcc/004", 
-                                "mid_csp/vcc/003", 
+                                "mid_csp/vcc/001", 
                                 "mid_csp/vcc/002", 
-                                "mid_csp/vcc/001"
+                                "mid_csp/vcc/003", 
+                                "mid_csp/vcc/004",
+                                "mid_csp/vcc/005",
+                                "mid_csp/vcc/006",
+                                "mid_csp/vcc/007",
+                                "mid_csp/vcc/008",
+                                "mid_csp/vcc/009",
+                                "mid_csp/vcc/010",
+                                "mid_csp/vcc/011", 
+                                "mid_csp/vcc/012", 
+                                "mid_csp/vcc/013", 
+                                "mid_csp/vcc/014",
+                                "mid_csp/vcc/015",
+                                "mid_csp/vcc/016",
+                                "mid_csp/vcc/017",
+                                "mid_csp/vcc/018",
+                                "mid_csp/vcc/019",
+                                "mid_csp/vcc/020"
                             ], 
                             "SkaLevel": [
                                 "2"
@@ -247,7 +263,7 @@
                                 "mid_csp/elt/subarray_03"
                             ], 
                             "MaxCapabilities": [
-                                "VCC:4", 
+                                "VCC:20", 
                                 "SearchBeams:1500", 
                                 "TimingBeams:16", 
                                 "VlbiBeams:20"

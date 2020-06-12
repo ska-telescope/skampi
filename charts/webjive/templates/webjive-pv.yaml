@@ -41,7 +41,7 @@ spec:
   accessModes:
   - ReadWriteOnce
 {{ else }}
-  storageClassName: nfss1
+  storageClassName: {{ .Values.pv.storageClassName }}
   accessModes:
   - ReadWriteMany
 {{ end }}

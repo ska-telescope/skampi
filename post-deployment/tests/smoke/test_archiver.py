@@ -7,17 +7,9 @@ from time import sleep
 import pytest
 import logging
 import sys
-import os
 
-VAR = os.environ.get('DISABLE_ARCHIVE_TESTS')
-if (VAR == "False"):
-    disable_archive_tests = False
-else:
-    disable_archive_tests = True
-#by default these tests are disabled
-
-@pytest.mark.skipif(disable_archive_tests,reason="disabaled by local env")
 @pytest.mark.archiver
+@pytest.mark.xfail
 def test_init():
   print("Init test archiver")
   evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
@@ -44,21 +36,13 @@ def configure_attribute(attribute):
         break
 
   if not is_already_archived:
-    # wait for the attribute to be up and running for configuring it. 
-    #logging.info("Adding attribute not archived....")
-    max_retries = 10
-    sleep_time = 30
-    for x in range(0, max_retries):
-        try:
-          att = AttributeProxy(attribute)
-          att.read()
-          #logging.info("Attribute online value=" + str(att.read()))
-          break
-        except DevFailed as df:
-          if(x == (max_retries -1)):
-            raise df
-          logging.info("DevFailed exception: " + str(df.args[0].reason) + ". Sleeping for " + str(sleep_time) + "ss")
-          sleep(sleep_time)
+    # fail if attribute is not ready to be archived
+    try:
+      att = AttributeProxy(attribute)
+      att.read()
+    except DevFailed as df:
+      logging.error("Attribute to be configured not online! Failing...")
+      raise df
   
     conf_manager_proxy.write_attribute("SetAttributeName", attribute)
     conf_manager_proxy.write_attribute("SetArchiver", evt_subscriber_device_fqdn)
@@ -77,13 +61,13 @@ def configure_attribute(attribute):
 
   conf_manager_proxy.AttributeRemove(attribute)
 
-@pytest.mark.skipif(disable_archive_tests,reason="disabaled by local env")
 @pytest.mark.archiver
+@pytest.mark.xfail
 def test_configure_attribute():
   attribute = "sys/tg_test/1/double_scalar"
   
   sleep_time = 20
-  max_retries = 10
+  max_retries = 3
   for x in range(0, max_retries):
     try:
       ApiUtil.cleanup()
@@ -102,8 +86,8 @@ def test_configure_attribute():
     
     sleep(sleep_time)
 
-@pytest.mark.skipif(disable_archive_tests,reason="disabaled by local env")
 @pytest.mark.archiver
+@pytest.mark.xfail
 def test_archiving_started():
   evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
   evt_subscriber_device_proxy = DeviceProxy(evt_subscriber_device_fqdn)

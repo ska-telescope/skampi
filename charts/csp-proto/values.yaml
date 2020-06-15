@@ -13,6 +13,50 @@ csplmc:
     tag: 0.5.7-4028dc62
     pullPolicy: IfNotPresent
 
+deviceServers:
+  - name: midcapabilitymonitor
+    command:
+      - sh
+    args:
+      - "-c"
+      - "/venv/bin/python /app/csp_lmc_mid/MidCspCapabilityMonitor.py monitor"
+
+  - name: midcspmaster
+    command:
+      - sh
+    args:
+      - "-c"
+      - "retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
+        retry --max=5 -- tango_admin --ping-device mid_csp/capability_monitor/search_beams &&\
+            /venv/bin/python /app/csp_lmc_mid/MidCspMaster.py master"
+
+  - name: midcspsubarray01
+    command:
+      - sh
+    args:
+      - "-c"
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_01 &&\
+            /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray1"
+
+  - name: midcspsubarray02
+    command:
+      - sh
+    args:
+      - "-c"
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_02 &&\
+            /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray2"
+
+  - name: midcspsubarray03
+    command:
+      - sh
+    args:
+      - "-c"
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_03 &&\
+            /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray3"
+
 dsconfig:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
@@ -25,3 +69,5 @@ nodeSelector: {}
 affinity: {}
 
 tolerations: []
+
+resources: {}

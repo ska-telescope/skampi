@@ -6,8 +6,8 @@ kind: ConfigMap
 metadata:
   name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
   namespace: {{ .Release.Namespace }}
-data: 
-  configuration.json: 
+data:
+  configuration.json:
 {{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
 
 ---
@@ -348,6 +348,10 @@ spec:
     env:
     - name: TANGO_HOST
       value: databaseds-tango-base-{{ .Release.Name }}:10000
+
+  - name: nettools
+    image: "praqma/network-multitool:latest"
+    imagePullPolicy: IfNotPresent
 
 {{- with .Values.tmcprototype.env }}
 {{ toYaml . | indent 4 }}

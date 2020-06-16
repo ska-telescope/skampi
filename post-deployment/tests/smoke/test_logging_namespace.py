@@ -42,7 +42,7 @@ def test_logging_namespace(run_context):
 
     label_namespace = "container.labels.io_kubernetes_pod_namespace"
 
-    if(local)
+    if(local):
         label_namespace = "kubernetes_namespace"
 
     search_namespace = {

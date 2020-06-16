@@ -9,6 +9,25 @@ metadata:
 data:
   midcbfconfig.json:
 {{ (tpl (.Files.Glob "data/midcbfconfig.json").AsConfig . ) | indent 2  }}
+  bootstrap.sh: |
+    #/bin/sh
+    /usr/local/bin/wait-for-it.sh databaseds-tango-base-{{ .Release.Name }}:10000 \
+      --timeout=30 \
+      --strict \
+      -- json2tango -w -a -u data/midcbfconfig.json
+    rc=$?
+    if [ $rc -eq 0 ]; then
+      echo "finished normally."
+      exit 0
+    else
+      if [ $rc -eq 2 ]; then
+        echo "finished with an update."
+        exit 0
+      else
+        echo "finished with an ERROR."
+        exit $rc
+      fi
+    fi
 
 ---
 # run once Job for loading Device Server config
@@ -26,12 +45,8 @@ spec:
         image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
         imagePullPolicy: {{ .Values.dsconfig.image.pullPolicy }}
         command: # exit code 2 is CONFIG_APPLIED - https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig/blob/master/dsconfig/utils.py#L11 !!!! this should not be an error !!!!
-          - /usr/local/bin/wait-for-it.sh
-          - databaseds-tango-base-{{ .Release.Name }}:10000
-          - --timeout=30
-          - --strict
-          - --
-          - json2tango -w -a -u data/midcbfconfig.json || if [ "$?" = "2" ]; then exit 0; else exit $?; fi
+          - sh
+          - data/bootstrap.sh
         env:
         - name: TANGO_HOST
           value: databaseds-tango-base-{{ .Release.Name }}:10000

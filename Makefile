@@ -16,11 +16,11 @@ USE_NGINX ?= false# Use NGINX as the Ingress Controller
 API_SERVER_IP ?= $(THIS_HOST)# Api server IP of k8s
 API_SERVER_PORT ?= 6443# Api server port of k8s
 EXTERNAL_IP ?= $(THIS_HOST)# For traefik installation
-CLUSTER_NAME ?= integration.cluster# For the gangway kubectl setup 
+CLUSTER_NAME ?= integration.cluster# For the gangway kubectl setup
 CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f# For the gangway kubectl setup, taken from Gitlab
 CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f# For the gangway kubectl setup, taken from Gitlab
 CHART_SET ?=#for additional flags you want to set when deploying (default empty)
-VALUES ?= values.yaml# root level values files. This will override the chart values files. 
+VALUES ?= values.yaml# root level values files. This will override the chart values files.
 DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive archiver dsh-lmc-prototype logging skuid## list of charts that will be deployed in order
 
 # activate remote debugger for VSCode (ptvsd)
@@ -161,9 +161,27 @@ show: mkcerts  ## Show the helm chart @param: same as deploy_all, plus HELM_CHAR
 				 --set ingress.hostname=$(INGRESS_HOST) \
 				 --set ingress.nginx=$(USE_NGINX) \
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
-				 $(CHART_SET)
+				 $(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES)
+
+show_all:
+	@for i in charts/*; do \
+	echo "*****************************  $$i ********************************"; \
+	if [ "$$i" = "charts/auth" ] ; then \
+		continue; \
+	fi; \
+	helm template $(helm_install_shim) $$i \
+				 --namespace $(KUBE_NAMESPACE) \
+	             --set display="$(DISPLAY)" \
+	             --set xauthority="$(XAUTHORITYx)" \
+				 --set ingress.hostname=$(INGRESS_HOST) \
+				 --set ingress.nginx=$(USE_NGINX) \
+	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
+					$(CHART_SET) \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --values $(VALUES) ; \
+	done
 
 delete: ## delete the helm chart release. @param: same as deploy_all, plus HELM_CHART
 	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
@@ -177,8 +195,8 @@ delete: ## delete the helm chart release. @param: same as deploy_all, plus HELM_
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --values $(VALUES) | kubectl delete -f -
 
-deploy_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
-	@for chartname in $(DEPLOYMENT_ORDER); do \
+deploy_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES
+	for chartname in $(DEPLOYMENT_ORDER); do \
 	echo "*****************************  $$chartname ********************************"; \
 		helm template $(helm_install_shim) charts/$$chartname/ \
 					--namespace $(KUBE_NAMESPACE) \
@@ -193,7 +211,32 @@ deploy_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of 
 					make smoketest SLEEPTIME=3s > /dev/null 2>&1; \
 	done
 
-deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES 
+
+install_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES
+	for chartname in $(DEPLOYMENT_ORDER); do \
+	echo "*****************************  $${chartname} ********************************"; \
+		helm install $${chartname}-$(HELM_RELEASE) charts/$${chartname}/ \
+					--namespace $(KUBE_NAMESPACE) \
+					--set display="$(DISPLAY)" \
+					--set xauthority="$(XAUTHORITYx)" \
+					--set ingress.hostname=$(INGRESS_HOST) \
+					--set ingress.nginx=$(USE_NGINX) \
+					--set tangoexample.debug="$(REMOTE_DEBUG)" \
+					$(CHART_SET) \
+					--set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+					--values $(VALUES) --wait; \
+					make smoketest SLEEPTIME=3s > /dev/null 2>&1; \
+	done
+
+uninstall_all: delete_etcd ## delete ALL of the helm chart release
+	@for chartname in $(DEPLOYMENT_ORDER); do \
+	echo "*****************************  $${chartname} ********************************"; \
+	  helm delete $${chartname}-$(HELM_RELEASE) $$i \
+				   --namespace $(KUBE_NAMESPACE); \
+	done
+
+
+deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES
 	@for i in charts/*; do \
 	echo "*****************************  $$i ********************************"; \
 	if [ "$$i" = "charts/auth" ] ; then \
@@ -263,6 +306,55 @@ podlogs: ## show Helm chart POD logs
 	echo ""; echo ""; echo ""; \
 	done
 
+
+tmclogs: ## show Helm chart POD logs
+	@i=pod/tmcprototype-tmc-proto-test; \
+	echo "---------------------------------------------------"; \
+	echo "Logs for $${i}"; \
+	echo kubectl -n $(KUBE_NAMESPACE) logs $${i}; \
+	echo kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"; \
+	echo "---------------------------------------------------"; \
+	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"`; do \
+	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
+	echo "initContainer: $${j}"; echo "$${RES}"; \
+	echo "---------------------------------------------------";\
+	done; \
+	echo "Main Pod logs for $${i}"; \
+	echo "---------------------------------------------------"; \
+	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.containers[*].name}"`; do \
+	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
+	echo "Container: $${j}"; echo "$${RES}"; \
+	echo "---------------------------------------------------";\
+	kubectl -n $(KUBE_NAMESPACE) exec -ti -c $${j} $${i} -- ps axf; \
+	echo "---------------------------------------------------";\
+	done; \
+	echo "---------------------------------------------------"; \
+	echo ""; echo ""; echo "";
+
+
+csplogs: ## show Helm chart POD logs
+	@i=pod/midcsplmc-csp-proto-test; \
+	echo "---------------------------------------------------"; \
+	echo "Logs for $${i}"; \
+	echo kubectl -n $(KUBE_NAMESPACE) logs $${i}; \
+	echo kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"; \
+	echo "---------------------------------------------------"; \
+	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"`; do \
+	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
+	echo "initContainer: $${j}"; echo "$${RES}"; \
+	echo "---------------------------------------------------";\
+	done; \
+	echo "Main Pod logs for $${i}"; \
+	echo "---------------------------------------------------"; \
+	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.containers[*].name}"`; do \
+	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
+	echo "Container: $${j}"; echo "$${RES}"; \
+	echo "---------------------------------------------------";\
+	done; \
+	echo "---------------------------------------------------"; \
+	echo ""; echo ""; echo "";
+
+
 localip:  ## set local Minikube IP in /etc/hosts file for Ingress $(INGRESS_HOST)
 	@new_ip=`minikube ip` && \
 	existing_ip=`grep $(INGRESS_HOST) /etc/hosts || true` && \
@@ -316,7 +408,7 @@ gangway: ## install gangway authentication for gitlab (in the kube-system namesp
 			--set gangway.apiServerURL="https://$(API_SERVER_IP):$(API_SERVER_PORT)" \
 			--set ingress.hosts="{gangway.$(INGRESS_HOST)}" \
 			| kubectl apply -n kube-system -f - && 	\
-			rm -rf $$TMP 
+			rm -rf $$TMP
 
 delete_gangway: ## delete install gangway authentication for gitlab. @param: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
 	@TMP=`mktemp -d`; \
@@ -331,7 +423,7 @@ delete_gangway: ## delete install gangway authentication for gitlab. @param: CLI
 			--set gangway.apiServerURL="https://$(API_SERVER_IP):$(API_SERVER_PORT)" \
 			--set ingress.hosts="{gangway.$(INGRESS_HOST)}" \
 			| kubectl delete -n kube-system -f - && \
-			rm -rf $$TMP 
+			rm -rf $$TMP
 
 set_context: ## Set current kubectl context. @param: KUBE_NAMESPACE
 	kubectl config set-context $$(kubectl config current-context) --namespace $${NAMESPACE:-$(KUBE_NAMESPACE)}
@@ -340,7 +432,7 @@ get_status:
 	kubectl get pod,svc,deployments,pv,pvc,ingress -n $(KUBE_NAMESPACE)
 
 redeploy: delete_all deploy_ordered get_status
-	
+
 wait:
 	pods=$$( kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{' '}{end}" ) && \
 	for pod in $$pods ;  do \
@@ -354,10 +446,10 @@ wait:
 #this is so that you can load dashboards previously saved, TODO: make the name of the pod variable
 dump_dashboards:
 	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongodump --archive > webjive-dash.dump
-	
+
 load_dashboards:
-	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongorestore --archive < webjive-dash.dump 
-	
+	kubectl exec -i pod/mongodb-webjive-test-0 -n $(KUBE_NAMESPACE) -- mongorestore --archive < webjive-dash.dump
+
 get_jupyter_port:
 	@kubectl get service -l app=jupyter-oet-test -n $(KUBE_NAMESPACE)  -o jsonpath="{range .items[0]}{'Use this url:http://$(THIS_HOST):'}{.spec.ports[0].nodePort}{'\n'}{end}"
 

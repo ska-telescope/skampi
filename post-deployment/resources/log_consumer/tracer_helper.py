@@ -28,8 +28,9 @@ class TraceHelper:
     def enable_logging(self, devName, logLevel):
         dev = DeviceProxy(devName)
         try:
-            if(hasattr(dev, "loggingTargets")):
-                dev.loggingTargets = ["syslog::'" + socket.gethostbyname(socket.gethostname())+"',514"]
+            if(hasattr(dev, "loggingTargets")): 
+                #syslog::udp://server.domain:514
+                dev.loggingTargets = ["syslog::'udp://" + socket.gethostbyname(socket.gethostname())+"':514"]
             else:
                 dev.add_logging_target("device::" + self.log_consumer_name)
 

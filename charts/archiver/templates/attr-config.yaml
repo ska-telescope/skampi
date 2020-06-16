@@ -11,6 +11,9 @@ data:
 {{ (tpl (.Files.Glob "data/attribute_fqdn.txt").AsConfig . ) | indent 2 }}
   configure_hdbpp.py:
 {{ (tpl (.Files.Glob "data/configure_hdbpp.py").AsConfig . ) | indent 2 }}
+  configuration.json: 
+{{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
+
 
 ---
 apiVersion: batch/v1
@@ -60,6 +63,40 @@ spec:
             readOnly: true
       restartPolicy: OnFailure
 
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dsconfig-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      volumes:
+      - name: configureattrconfig
+        configMap:
+          name: "attrconfig-configuration-{{ template "archiver.name" . }}-{{ .Release.Name }}"
+      containers:
+      - name: dsconfig
+        image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
+        imagePullPolicy: {{ .Values.dsconfig.image.pullPolicy }}
+        command:
+        - /usr/local/bin/wait-for-it.sh
+        - databaseds-tango-base-{{ .Release.Name }}:10000
+        - --timeout=30
+        - --strict
+        - --
+        - json2tango -w -a -u /app/data/configuration.json
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ .Release.Name }}:10000
+        volumeMounts:
+          - name: configureattrconfig
+            mountPath: /app/data
+            readOnly: true
+      restartPolicy: OnFailure
 
 {{ end }}
 

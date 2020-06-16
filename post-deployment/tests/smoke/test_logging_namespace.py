@@ -40,10 +40,15 @@ def test_logging_namespace(run_context):
                         key=lambda i: indexes[i]['settings']['index']['creation_date'],
                         reverse=True)[0]
 
+    label_namespace = "container.labels.io_kubernetes_pod_namespace"
+
+    if(local)
+        label_namespace = "kubernetes_namespace"
+
     search_namespace = {
         "query": {
             "match": {
-                "container.labels.io_kubernetes_pod_namespace": {
+                label_namespace: {
                     "query": NAMESPACE
                 }
             }
@@ -56,54 +61,20 @@ def test_logging_namespace(run_context):
                 "must_not": [
                     {
                         "term": {
-                            "container.labels.io_kubernetes_pod_namespace": NAMESPACE
+                            label_namespace: NAMESPACE
                         }
                     }
                 ],
                 "must": [
                     {
                         "exists": {
-                            "field": "container.labels.io_kubernetes_pod_namespace"
+                            "field": label_namespace
                         }
                     }
                 ]
             }
         }
     }
-
-    if(local): 
-        search_namespace = {
-            "query": {
-                "match": {
-                    "kubernetes_namespace": {
-                        "query": NAMESPACE
-                    }
-                }
-            }
-        }
-
-        search_not_namespace = {
-            "query": {
-                "bool": {
-                    "must_not": [
-                        {
-                            "term": {
-                                "kubernetes_namespace": NAMESPACE
-                            }
-                        }
-                    ],
-                    "must": [
-                        {
-                            "exists": {
-                                "field": "kubernetes_namespace"
-                            }
-                        }
-                    ]
-                }
-            }
-        }
-
-    
 
     res = es.search(index=last_index, body=search_namespace)
     assert res['hits']['total']['value'], ("Found no matches for namespace [{}] using"

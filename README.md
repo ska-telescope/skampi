@@ -197,9 +197,34 @@ If you find that sdp-prototype containers are failing, check whether there is a 
 ```
 $ make deploy_all KUBE_NAMESPACE=integration
 ```
-again. 
+again.
 
 To clean up the Helm Chart release:
 ```
 $make delete_all KUBE_NAMESPACE=integration
+```
+
+Using helm3 install
+-------------------
+
+This chart has been updated to enable the use of `helm3 install`, by creating an umbrella chart named skampi, and shifting all of the dependent charts into `charts/skampi/charts` as sub-charts - https://helm.sh/docs/chart_template_guide/subcharts_and_globals/.
+
+To launch the entire suite:
+```
+$ make install KUBE_NAMESPACE=integration
+```
+again.
+
+To clean up the Helm Chart release:
+```
+$make uninstall KUBE_NAMESPACE=integration
+```
+
+Note taht values for sub-charts are namespaced in the `values.yaml`, so to disable the archiver you must configure:
+```
+...
+archiver: # the sub-chart directory name
+  archiver:
+    enabled: false # the fully qualified value in the sub-chart values.yaml file
+...
 ```

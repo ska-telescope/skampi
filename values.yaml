@@ -1,14 +1,43 @@
+# values defined for subcharts
+logging:
+  elastic:
+    enabled: false
+  fluentd:
+    enabled: false
+  kibana:
+    enabled: false
+
+tests:
+  testrunner:
+    enabled: false
+
+archiver:
+  archiver:
+    enabled: false
+  hdbppdb:
+    enabled: false
+  # scope clash below for archiver.enabled
+  enabled: false
+
+minikube: true
+
+auth:
+  rbac:
+    enabled: false
+
+# values defined for individual charts
 elastic:
   enabled: false
 fluentd:
   enabled: false
 kibana:
   enabled: false
-tests:
-  enabled: false
-hdbppdb:
-  enabled: false
-archiver:
+
+testrunner:
   enabled: false
 
-minikube: true
+hdbppdb:
+  enabled: false
+
+rbac:
+  enabled: false

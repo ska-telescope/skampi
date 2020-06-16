@@ -9,7 +9,7 @@ XAUTHORITYx ?= ${XAUTHORITY}
 KUBE_NAMESPACE ?= integration# Kubernetes Namespace to use
 KUBE_NAMESPACE_SDP ?= $(KUBE_NAMESPACE)-sdp# Kubernetes Namespace to use for SDP dynamic deployments
 HELM_RELEASE ?= test# Helm release name
-HELM_CHART ?= tango-base# Helm Chart to install (see ./charts)
+HELM_CHART ?= skampi# Helm Chart to install (see ./charts)
 HELM_CHART_TEST ?= tests# Helm Chart to install (see ./charts)
 INGRESS_HOST ?= integration.engageska-portugal.pt# Ingress HTTP hostname
 USE_NGINX ?= false# Use NGINX as the Ingress Controller
@@ -45,6 +45,8 @@ vars: ## Display variables - pass in DISPLAY and XAUTHORITY
 	@echo "DISPLAY: $(DISPLAY)"
 	@echo "XAUTHORITY: $(XAUTHORITYx)"
 	@echo "Namespace: $(KUBE_NAMESPACE)"
+	@echo "HELM_RELEASE: $(HELM_RELEASE)"
+	@echo "VALUES: $(VALUES)"
 
 k8s: ## Which kubernetes are we connected to
 	@echo "Kubernetes cluster-info:"
@@ -80,12 +82,12 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	fi
 
 lint_all:  ## lint ALL of the helm chart
-	@for i in charts/*; do \
+	@for i in charts/skampi/charts/*; do \
 	cd $$i; pwd; helm lint ; \
 	done
 
 lint:  ## lint the HELM_CHART of the helm chart
-	cd charts/$(HELM_CHART); pwd; helm lint;
+	cd charts/skampi/charts/$(HELM_CHART); pwd; helm lint;
 
 .PHONY: deploy_etcd delete_etcd
 deploy_etcd: namespace ## Deploy etcd-operator into namespace
@@ -122,27 +124,27 @@ delete_etcd: ## Remove etcd-operator from namespace
 	fi
 
 mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
-	@if [ ! -f charts/webjive/data/tls.key ]; then \
+	@if [ ! -f charts/skampi/charts/webjive/data/tls.key ]; then \
 	CN=`echo "$(INGRESS_HOST)" | tr -d '[:space:]'`; \
 	openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
-	   -keyout charts/webjive/data/tls.key \
-		 -out charts/webjive/data/tls.crt \
+	   -keyout charts/skampi/charts/webjive/data/tls.key \
+		 -out charts/skampi/charts/webjive/data/tls.crt \
 		 -subj "/CN=$${CN}/O=Minikube"; \
 	else \
-	echo "SSL cert already exits in charts/webjive/data ... skipping"; \
+	echo "SSL cert already exits in charts/skampi/charts/webjive/data ... skipping"; \
 	fi; \
-	if [ ! -f charts/tango-base/secrets/tls.key ]; then \
+	if [ ! -f charts/skampi/charts/tango-base/secrets/tls.key ]; then \
 	CN=`echo "tango.rest.$(INGRESS_HOST)" | tr -d '[:space:]'`; \
 	openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
-	   -keyout charts/tango-base/secrets/tls.key \
-		 -out charts/tango-base/secrets/tls.crt \
+	   -keyout charts/skampi/charts/tango-base/secrets/tls.key \
+		 -out charts/skampi/charts/tango-base/secrets/tls.crt \
 		 -subj "/CN=$${CN}/O=Minikube"; \
 	else \
-	echo "SSL cert already exits in charts/tango-base/secrets ... skipping"; \
+	echo "SSL cert already exits in charts/skampi/charts/tango-base/secrets ... skipping"; \
 	fi
 
 deploy: namespace namespace_sdp mkcerts  ## Deploy one helm chart. @param: same as deploy_all, plus HELM_CHART
-	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
+	@helm template $(helm_install_shim) charts/skampi/charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
@@ -154,7 +156,7 @@ deploy: namespace namespace_sdp mkcerts  ## Deploy one helm chart. @param: same 
 				 --values $(VALUES) | kubectl apply -f -
 
 show: mkcerts  ## Show the helm chart @param: same as deploy_all, plus HELM_CHART
-	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
+	@helm template $(helm_install_shim) charts/skampi/charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
@@ -166,9 +168,9 @@ show: mkcerts  ## Show the helm chart @param: same as deploy_all, plus HELM_CHAR
 				 --values $(VALUES)
 
 show_all:
-	@for i in charts/*; do \
+	@for i in charts/skampi/charts/*; do \
 	echo "*****************************  $$i ********************************"; \
-	if [ "$$i" = "charts/auth" ] ; then \
+	if [ "$$i" = "charts/skampi/charts/auth" ] ; then \
 		continue; \
 	fi; \
 	helm template $(helm_install_shim) $$i \
@@ -184,7 +186,7 @@ show_all:
 	done
 
 delete: ## delete the helm chart release. @param: same as deploy_all, plus HELM_CHART
-	@helm template $(helm_install_shim) charts/$(HELM_CHART)/ \
+	@helm template $(helm_install_shim) charts/skampi/charts/$(HELM_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 	             --set display="$(DISPLAY)" \
 	             --set xauthority="$(XAUTHORITYx)" \
@@ -198,7 +200,7 @@ delete: ## delete the helm chart release. @param: same as deploy_all, plus HELM_
 deploy_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES
 	for chartname in $(DEPLOYMENT_ORDER); do \
 	echo "*****************************  $$chartname ********************************"; \
-		helm template $(helm_install_shim) charts/$$chartname/ \
+		helm template $(helm_install_shim) charts/skampi/charts/$$chartname/ \
 					--namespace $(KUBE_NAMESPACE) \
 					--set display="$(DISPLAY)" \
 					--set xauthority="$(XAUTHORITYx)" \
@@ -212,34 +214,56 @@ deploy_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of 
 	done
 
 
-install_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES
-	for chartname in $(DEPLOYMENT_ORDER); do \
-	echo "*****************************  $${chartname} ********************************"; \
-		helm install $${chartname}-$(HELM_RELEASE) charts/$${chartname}/ \
-					--namespace $(KUBE_NAMESPACE) \
-					--set display="$(DISPLAY)" \
-					--set xauthority="$(XAUTHORITYx)" \
-					--set ingress.hostname=$(INGRESS_HOST) \
-					--set ingress.nginx=$(USE_NGINX) \
-					--set tangoexample.debug="$(REMOTE_DEBUG)" \
-					$(CHART_SET) \
-					--set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-					--values $(VALUES) --wait; \
-					make smoketest SLEEPTIME=3s > /dev/null 2>&1; \
-	done
+show_skampi: mkcerts  ## Show entire suite
+	@helm install --dry-run --debug $(HELM_RELEASE) charts/skampi/ \
+				  --namespace $(KUBE_NAMESPACE) \
+				  --set tango-base.display="$(DISPLAY)" \
+				  --set tango-base.xauthority="$(XAUTHORITYx)" \
+				  --set archiver.display="$(DISPLAY)" \
+				  --set archiver.xauthority="$(XAUTHORITYx)" \
+				  --set logging.ingress.hostname=$(INGRESS_HOST) \
+				  --set logging.ingress.nginx=$(USE_NGINX) \
+				  --set oet.ingress.hostname=$(INGRESS_HOST) \
+				  --set oet.ingress.nginx=$(USE_NGINX) \
+				  --set skuid.ingress.hostname=$(INGRESS_HOST) \
+				  --set skuid.ingress.nginx=$(USE_NGINX) \
+				  --set tango-base.ingress.hostname=$(INGRESS_HOST) \
+				  --set tango-base.ingress.nginx=$(USE_NGINX) \
+				  --set webjive.ingress.hostname=$(INGRESS_HOST) \
+				  --set webjive.ingress.nginx=$(USE_NGINX) \
+				  $(CHART_SET) \
+				  --set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				  --values $(VALUES)
 
-uninstall_all: delete_etcd ## delete ALL of the helm chart release
-	@for chartname in $(DEPLOYMENT_ORDER); do \
-	echo "*****************************  $${chartname} ********************************"; \
-	  helm delete $${chartname}-$(HELM_RELEASE) $$i \
-				   --namespace $(KUBE_NAMESPACE); \
-	done
+install: namespace namespace_sdp mkcerts deploy_etcd ## helm install entire suite
+	helm install $(HELM_RELEASE) charts/skampi/ \
+				 --namespace $(KUBE_NAMESPACE) \
+				 --set tango-base.display="$(DISPLAY)" \
+				 --set tango-base.xauthority="$(XAUTHORITYx)" \
+				 --set archiver.display="$(DISPLAY)" \
+				 --set archiver.xauthority="$(XAUTHORITYx)" \
+				 --set logging.ingress.hostname=$(INGRESS_HOST) \
+				 --set logging.ingress.nginx=$(USE_NGINX) \
+				 --set oet.ingress.hostname=$(INGRESS_HOST) \
+				 --set oet.ingress.nginx=$(USE_NGINX) \
+				 --set skuid.ingress.hostname=$(INGRESS_HOST) \
+				 --set skuid.ingress.nginx=$(USE_NGINX) \
+				 --set tango-base.ingress.hostname=$(INGRESS_HOST) \
+				 --set tango-base.ingress.nginx=$(USE_NGINX) \
+				 --set webjive.ingress.hostname=$(INGRESS_HOST) \
+				 --set webjive.ingress.nginx=$(USE_NGINX) \
+				 $(CHART_SET) \
+				 --set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --values $(VALUES) --wait --timeout=10m0s
+	make smoketest SLEEPTIME=3s > /dev/null 2>&1
 
+uninstall: delete_etcd ## delete ALL of the helm chart release
+	helm delete $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true
 
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES
-	@for i in charts/*; do \
+	@for i in charts/skampi/charts/*; do \
 	echo "*****************************  $$i ********************************"; \
-	if [ "$$i" = "charts/auth" ] ; then \
+	if [ "$$i" = "charts/skampi/charts/auth" ] ; then \
 		continue; \
 	fi; \
 	helm template $(helm_install_shim) $$i \
@@ -255,9 +279,9 @@ deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @p
 	done
 
 delete_all: delete_etcd ## delete ALL of the helm chart release
-	@for i in charts/*; do \
+	@for i in charts/skampi/charts/*; do \
 	echo "*****************************  $$i ********************************"; \
-	if [ "$$i" = "charts/auth" ] ; then \
+	if [ "$$i" = "charts/skampi/charts/auth" ] ; then \
 		continue; \
 	fi; \
 	helm template $(helm_install_shim) $$i \
@@ -305,55 +329,6 @@ podlogs: ## show Helm chart POD logs
 	echo "---------------------------------------------------"; \
 	echo ""; echo ""; echo ""; \
 	done
-
-
-tmclogs: ## show Helm chart POD logs
-	@i=pod/tmcprototype-tmc-proto-test; \
-	echo "---------------------------------------------------"; \
-	echo "Logs for $${i}"; \
-	echo kubectl -n $(KUBE_NAMESPACE) logs $${i}; \
-	echo kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"; \
-	echo "---------------------------------------------------"; \
-	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"`; do \
-	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
-	echo "initContainer: $${j}"; echo "$${RES}"; \
-	echo "---------------------------------------------------";\
-	done; \
-	echo "Main Pod logs for $${i}"; \
-	echo "---------------------------------------------------"; \
-	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.containers[*].name}"`; do \
-	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
-	echo "Container: $${j}"; echo "$${RES}"; \
-	echo "---------------------------------------------------";\
-	kubectl -n $(KUBE_NAMESPACE) exec -ti -c $${j} $${i} -- ps axf; \
-	echo "---------------------------------------------------";\
-	done; \
-	echo "---------------------------------------------------"; \
-	echo ""; echo ""; echo "";
-
-
-csplogs: ## show Helm chart POD logs
-	@i=pod/midcsplmc-csp-proto-test; \
-	echo "---------------------------------------------------"; \
-	echo "Logs for $${i}"; \
-	echo kubectl -n $(KUBE_NAMESPACE) logs $${i}; \
-	echo kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"; \
-	echo "---------------------------------------------------"; \
-	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"`; do \
-	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
-	echo "initContainer: $${j}"; echo "$${RES}"; \
-	echo "---------------------------------------------------";\
-	done; \
-	echo "Main Pod logs for $${i}"; \
-	echo "---------------------------------------------------"; \
-	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.containers[*].name}"`; do \
-	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
-	echo "Container: $${j}"; echo "$${RES}"; \
-	echo "---------------------------------------------------";\
-	done; \
-	echo "---------------------------------------------------"; \
-	echo ""; echo ""; echo "";
-
 
 localip:  ## set local Minikube IP in /etc/hosts file for Ingress $(INGRESS_HOST)
 	@new_ip=`minikube ip` && \
@@ -457,5 +432,5 @@ test_ssl:
 	curl -v https://$(THIS_HOST) -H 'Host: $(INGRESS_HOST) '2>&1 | awk 'BEGIN { cert=0 } /^\* SSL connection/ { cert=1 } /^\*/ { if (cert) print }'
 
 clear_certificates:
-	rm charts/webjive/data/tls.*
-	rm charts/tango-base/secrets/tls.*
+	rm charts/skampi/charts/webjive/data/tls.*
+	rm charts/skampi/charts/tango-base/secrets/tls.*

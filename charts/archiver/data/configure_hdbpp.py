@@ -80,7 +80,7 @@ for opt, arg in opts:
 conf_manager_proxy = DeviceProxy(conf_manager_device_fqdn)
 evt_subscriber_proxy = DeviceProxy(evt_subscriber_device_fqdn)
 
-sleep_time = 20
+sleep_time = 6
 max_retries = 10
 for x in range(0, max_retries):
     try:
@@ -90,7 +90,7 @@ for x in range(0, max_retries):
     except:
         print("configure_attribute exception: " + str(sys.exc_info()))
         if(x == (max_retries - 1)):
-            raise df
+            sys.exit(-1)
 
     try:
         deviceAdm = DeviceProxy("dserver/hdbppcm-srv/01")

@@ -1,0 +1,95 @@
+{{ if .Values.archiver.enabled }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: arhiver-cm-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: arhiver-cm-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - name: arhiver-cm-port
+    port: 10000
+  type: NodePort
+  selector:
+    app: arhiver-cm-{{ template "archiver.name" . }}-{{ .Release.Name }}
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: arhiver-cm-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: arhiver-cm-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: arhiver-cm-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  serviceName: arhiver-cm-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: arhiver-cm-{{ template "archiver.name" . }}-{{ .Release.Name }}
+        chart: {{ template "archiver.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      containers:
+      - name: arhiver-cm-{{ template "archiver.name" . }}-{{ .Release.Name }}
+        image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
+        imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-{{ .Release.Name }}:10000
+          - --timeout=30
+          - --strict
+          - --
+          - /usr/local/bin/wait-for-it.sh
+          - archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}:3306
+          - --timeout=30
+          - --strict
+          - --
+          - ./usr/local/bin/hdbppcm-srv 01 -ORBendPoint giop:tcp::10000
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ .Release.Name }}:10000
+        - name: HdbManager
+          value: "archiving/hdbpp/confmanager01"
+        ports:
+        - name: arhiver-cm-port
+          containerPort: 10000
+        livenessProbe:
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          exec:
+            command:
+            - sh
+            - -c
+            - "tango_admin --ping-device 'archiving/hdbpp/confmanager01'"
+        resources:
+{{ toYaml .Values.archiver.resources | indent 10 }}
+      volumes:
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{ end }}

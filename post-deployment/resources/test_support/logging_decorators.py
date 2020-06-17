@@ -36,7 +36,7 @@ def log_it(log_name,devices_to_log,non_default_states_to_check):
             def wrapper(*args, **kwargs):
                 s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
                 s.run(threaded=True,resolution=0.1)
-                d = DeviceLogging('DeviceLoggingImplWithDBDirect')
+                d = DeviceLogging()
                 d.update_traces(devices_to_log)
                 d.start_tracing()  
                 ################ 

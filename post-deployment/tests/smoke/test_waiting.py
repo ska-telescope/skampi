@@ -1,4 +1,4 @@
-from resources.test_support.waiting import Listener,StrategyListenbyPolling,interfaceStrategy
+from resources.test_support.waiting import Listener,StrategyListenbyPolling,interfaceStrategy,StrategyListenbyPushing
 from tango import EventType
 from tango.asyncio import DeviceProxy
 import asyncio
@@ -85,6 +85,83 @@ def test_listener_can_start_listening(mock_device_proxy):
     assert_that(listener.current_polling).is_equal_to(100)
     mock_strategy.subscribe.assert_called_once()
 
+@mock.patch('resources.test_support.waiting.interfaceStrategy') 
+@mock.patch('tango.DeviceProxy.__init__') 
+def test_listener_can_listen_for_multiple_events(mock_device_proxy,mock_strategy):
+    # given
+    listener = Listener(mock_device_proxy,mock_strategy)
+    # when    
+    listener.listen_for('attribute1','attribute2')
+    # then I expect to remember the original polling 
+    assert_that(mock_device_proxy.is_attribute_polled.call_count).is_equal_to(2)
+    # I will subscribe both attributes
+    assert_that(mock_strategy.subscribe.call_count).is_equal_to(2)
+
+@mock.patch('tango.DeviceProxy.__init__') 
+def test_push_strategy_can_subscribe_multiple_times(mock_device_proxy):
+    # given
+    s = StrategyListenbyPushing(mock_device_proxy)
+    # when I scubscribe once
+    s.subscribe('attr1')
+    assert_that(mock_device_proxy.subscribe_event.call_count).is_equal_to(1)
+    # when I scubscribe again
+    s.subscribe('attr2')
+    assert_that(mock_device_proxy.subscribe_event.call_count).is_equal_to(2)
+    # when I unsubscribe 
+    s.unsubscribe()
+    #I expect all events to be unsubscribed
+    assert_that(mock_device_proxy.unsubscribe_event.call_count).is_equal_to(2)
+
+@mock.patch('tango.DeviceProxy.__init__') 
+def test_pull_strategy_can_subscribe_multiple_times(mock_device_proxy):
+    # given
+    s = StrategyListenbyPolling(mock_device_proxy)
+    # when I scubscribe once
+    s.subscribe('attr1')
+    assert_that(mock_device_proxy.subscribe_event.call_count).is_equal_to(1)
+    # when I scubscribe again
+    s.subscribe('attr2')
+    assert_that(mock_device_proxy.subscribe_event.call_count).is_equal_to(2)
+    # when I unsubscribe 
+    s.unsubscribe()
+    #I expect all events to be unsubscribed
+    assert_that(mock_device_proxy.unsubscribe_event.call_count).is_equal_to(2)
+
+@mock.patch('tango.DeviceProxy.__init__') 
+def test_polling_strategy_can_wait_on_multiple_events(mock_device_proxy):
+    # given
+    s = StrategyListenbyPolling(mock_device_proxy)
+    def mock_get_events(id):
+        return [id,id+1]
+    mock_device_proxy.get_events.side_effect = mock_get_events
+    # and given I have subscribed once
+    mock_device_proxy.subscribe_event.return_value = 1
+    s.subscribe('attr1')
+    mock_device_proxy.subscribe_event.return_value = 3
+    s.subscribe('attr2')
+    # when I wait for next event
+    result = s.wait_for_next_event()
+    # then both attributes should have been generating events
+    assert_that(result).is_equal_to([1,2,3,4])
+
+
+@mock.patch('resources.test_support.waiting.Queue') 
+@mock.patch('tango.DeviceProxy.__init__') 
+def test_pushing_strategy_can_wait_on_multiple_events(mock_device_proxy,mock_queue):
+    # given
+    s = StrategyListenbyPushing(mock_device_proxy)
+    # and given I have subscribed once
+    mock_device_proxy.subscribe_event.return_value = 1
+    s.subscribe('attr1')
+    mock_device_proxy.subscribe_event.return_value = 3
+    s.subscribe('attr2')
+    # when I wait for next event
+    s.wait_for_next_event()
+    # then I need to know that the queue has been called
+    mock_queue.return_value.get.assert_called_once()
+
+
+
 @mock.patch('tango.DeviceProxy.__init__')   
 def test_listener_can_start_async(mock_device_proxy):
     #given
@@ -154,7 +231,7 @@ def test_listener_can_get_events_on_async(mock_device_proxy):
 
 
 # integration tests with an actual device 
-pytest.mark.skip("only run test when test device proxu is deployed")
+@pytest.mark.skip("only run test when test device proxy is deployed")
 def test_wait_in_for_loop():
     async def async_run():
         events_received = 0
@@ -174,6 +251,30 @@ def test_wait_in_for_loop():
             if events_received > 3:
                 listener.stop_listening()
     asyncio.run(async_run())
+
+# integration tests with an actual device 
+@pytest.mark.skip("only run test when test device proxy is deployed")
+def test_wait_in_for_loop_pushing():
+    async def async_run():
+        events_received = 0
+        device_proxy = await DeviceProxy('sys/tg_test/1')
+        strategy = StrategyListenbyPushing(device_proxy)
+        listener = Listener(device_proxy,strategy)
+        async for event in listener.async_get_events_on('Status',10):
+            if events_received == 0:
+                await device_proxy.SwitchStates()
+                sleep(0.2)
+                await device_proxy.SwitchStates()
+                sleep(0.2)
+                await device_proxy.SwitchStates()
+                sleep(0.8)
+            events_received +=1
+            logging.info(event)
+            if events_received == 3:
+                listener.stop_listening()
+    asyncio.run(async_run())
+
+
             
 
 

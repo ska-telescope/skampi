@@ -4,6 +4,7 @@ import asyncio
 from time import sleep
 import threading
 from queue import Queue
+import logging
 
 class interfaceStrategy():
     
@@ -25,42 +26,61 @@ class interfaceStrategy():
 
 class StrategyListenbyPushing(interfaceStrategy):
     '''
-    Implements a listening strategy by allowing the device to pish events to the client. This results in a thread
+    Implements a listening strategy by allowing the device to push events to the client. This results in a thread
     calling a callback which in turn puts the event in a threading queue that can be waited upon by another thread
     '''
 
     def __init__(self,device_proxy):
         self.device_proxy = device_proxy
         self.queue = Queue()
+        self.current_subscriptions = []
+        self.lock = threading.Lock() 
+        self.listening = False
 
     def _cb(self,event):
-        self.queue.put(event)
+          with self.lock:
+            self.queue.put(event)
 
     def subscribe(self,attr):
         '''
         Initiates the subscribtion to an attribute on a device by suplying the calbback
         '''
-        self.current_subscription = self.device_proxy.subscribe_event(
+        self.listening = True
+        self.current_subscriptions.append(self.device_proxy.subscribe_event(
             attr,
             EventType.CHANGE_EVENT,
             self._cb
-        )
+        ))
         
     async def async_subscribe(self,attr):
-        self.subscribe(attr)
+        '''
+        Initiates the subscribtion to an attribute on a device by suplying the calbback
+        done in an asynchronous way
+        '''
+        self.listening = True
+        self.current_subscriptions.append(await self.device_proxy.subscribe_event(
+            attr,
+            EventType.CHANGE_EVENT,
+            self._cb
+        ))
 
     def wait_for_next_event(self,polling=None,timeout=5):
         '''
         waits for next event by calling get on the queue
         '''
-        return self.queue.get(timeout=timeout)
+        if self.listening:
+            return [self.queue.get(timeout=timeout)]
+        else:
+            return []
     
     async def async_wait_for_next_event(self,polling=None,timeout=5):
         return self.wait_for_next_event(polling,timeout)
     
     def unsubscribe(self):    
-        ''' stops the subcription process '''    
-        self.device_proxy.unsubscribe_event(self.current_subscription)
+        ''' stops the subcription process ''' 
+        for current_subscription in self.current_subscriptions: 
+            self.device_proxy.unsubscribe_event(current_subscription)
+        self.listening = False
 
     def wait_for_all_events_to_be_handled(self):
         '''allows for a thread to syncronise with another thread handling events withing a queue by joning it
@@ -79,17 +99,21 @@ class StrategyListenbyPolling(interfaceStrategy):
         self.device_proxy = device_proxy
         self.listening = False
         self.buffer_size = buffer_size
+        self.current_subscriptions = []
 
     def subscribe(self,attr):
         '''
         Implementation of subscription strategy on a device by means of setting a buffer size (instead of a callback)
         on the subcription command)
         '''
-        self.current_subscription = self.device_proxy.subscribe_event(
-            attr,
-            EventType.CHANGE_EVENT,
-            self.buffer_size)
-        self.attribute_being_monitored = attr
+        current_subscription = {
+            'subscription' : self.device_proxy.subscribe_event(
+                                attr,
+                                EventType.CHANGE_EVENT,
+                                self.buffer_size),
+            'attribute_being_monitored' : attr
+        }
+        self.current_subscriptions.append(current_subscription)
         self.listening = True
 
     async def async_subscribe(self,attr):
@@ -98,10 +122,14 @@ class StrategyListenbyPolling(interfaceStrategy):
         on the subcription command)
         This command allows for asnychronous calling by awaiting the results of subscription command
         '''
-        self.current_subscription = await self.device_proxy.subscribe_event(
-            attr,
-            EventType.CHANGE_EVENT,
-            self.buffer_size)
+        current_subscription = {
+            'subscription' : await self.device_proxy.subscribe_event(
+                                attr,
+                                EventType.CHANGE_EVENT,
+                                self.buffer_size),
+            'attribute_being_monitored' : attr
+        }
+        self.current_subscriptions.append(current_subscription)
         self.listening = True
     
     def _check_if_timed_out(self,timeleft):
@@ -109,8 +137,16 @@ class StrategyListenbyPolling(interfaceStrategy):
         while True:
             timeleft -= 1
             if timeleft == 0:
-                raise Exception(f"timed out wating for {self.attribute_being_monitored} to change after {timeout} seconds")
+                attributes_being_monitored = [item['attribute_being_monitored'] for item in self.current_subscriptions]
+                raise Exception(f"timed out wating for {attributes_being_monitored} to change after {timeout} seconds")
             yield
+
+    def _check_all_subscriptions_for_events(self):
+        events = []
+        for subscription in self.current_subscriptions:
+            subscription_id = subscription['subscription']
+            events += self.device_proxy.get_events(subscription_id)
+        return events
 
     async def async_wait_for_next_event(self,polling=100,timeout=5):
         '''
@@ -124,7 +160,7 @@ class StrategyListenbyPolling(interfaceStrategy):
         timeleft = int((timeout*1000)/polling)
         events = []
         while self.listening:
-            events = self.device_proxy.get_events(self.current_subscription)
+            events = self._check_all_subscriptions_for_events()
             if events == []:
                 self._check_if_timed_out(timeleft)
                 await asyncio.sleep(polling*2/1000)
@@ -143,7 +179,7 @@ class StrategyListenbyPolling(interfaceStrategy):
         timeleft = int((timeout*1000)/polling)
         events = []
         while self.listening:
-            events = self.device_proxy.get_events(self.current_subscription)
+            events = self._check_all_subscriptions_for_events()
             if events == []:
                 self._check_if_timed_out(timeleft)
                 sleep(polling*2/1000)
@@ -155,7 +191,8 @@ class StrategyListenbyPolling(interfaceStrategy):
         '''stops the current subscibing strategy on the device and clears the listening flaf (in case of used within a seperate thread)
         '''
         self.listening = False
-        self.device_proxy.unsubscribe_event(self.current_subscription)
+        for current_subscription in self.current_subscriptions: 
+            self.device_proxy.unsubscribe_event(current_subscription['subscription'])
 
 class Listener():
     '''Object that listens for an attribute on a specific tango device based on a particular
@@ -197,13 +234,14 @@ class Listener():
         await self.strategy.async_subscribe(attr)
         self.listening = True
     
-    def listen_for(self,attr,polling=100):
+    def listen_for(self,*attrs,polling=100):
         '''
         starts the listening process by calling the strategy's subcribe method
         '''
-        self._setup_device_polling(attr,polling)
-        self.strategy.subscribe()
-        self.listening = True
+        for attr in attrs:
+            self._setup_device_polling(attr,polling)
+            self.strategy.subscribe(attr)
+            self.listening = True
 
     async def async_wait_for_next_event(self,timeout=5):
         '''

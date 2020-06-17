@@ -2,14 +2,7 @@ import pytest
 import socket
 import logging
 from elasticsearch import Elasticsearch
-
-def check_port(address, port):
-    try:
-        location = (address, int(port))
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        return sock.connect_ex(location)
-    except Exception as e1: 
-        return -1
+from resources.log_consumer.tracer_helper import TraceHelper
 
 @pytest.mark.logging
 @pytest.mark.xfail(reason="until the elastic search is switched from the local one to the main one")
@@ -21,7 +14,8 @@ def test_logging_namespace(run_context):
     NAMESPACE = run_context.KUBE_NAMESPACE
     INDEX_MATCH = "lo*-*"
     local = True
-    if check_port(ES_HOST, ES_PORT) != 0:
+    tracer = TraceHelper()
+    if tracer.check_port(ES_HOST, ES_PORT) != 0:
         ES_HOST = "192.168.93.94"
         ES_PORT = "9200"
         NAMESPACE = run_context.KUBE_NAMESPACE

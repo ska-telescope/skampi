@@ -1,0 +1,145 @@
+{{ if .Values.tmcprototype.enabled }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
+  namespace: {{ .Release.Namespace }}
+data:
+  configuration.json:
+{{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
+  bootstrap.sh: |
+    #/bin/sh
+    /usr/local/bin/wait-for-it.sh databaseds-tango-base-{{ .Release.Name }}:10000 \
+      --timeout=30 \
+      --strict \
+      -- json2tango -w -a -u data/configuration.json
+    rc=$?
+    if [ $rc -eq 0 ]; then
+      echo "finished normally."
+      exit 0
+    else
+      if [ $rc -eq 2 ]; then
+        echo "finished with an update."
+        exit 0
+      else
+        echo "finished with an ERROR."
+        exit $rc
+      fi
+    fi
+
+---
+# run once Job for loading Device Server config
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tmc-proto-configurator-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: dsconfig
+        image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
+        imagePullPolicy: {{ .Values.dsconfig.image.pullPolicy }}
+        command: # exit code 2 is CONFIG_APPLIED - https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig/blob/master/dsconfig/utils.py#L11 !!!! this should not be an error !!!!
+          - sh
+          - data/bootstrap.sh
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ .Release.Name }}:10000
+        volumeMounts:
+          - name: configuration
+            mountPath: data
+            readOnly: true
+      volumes:
+        - name: configuration
+          configMap:
+            name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
+      restartPolicy: Never
+
+{{- $global := . }}
+{{- range $deviceserver := .Values.deviceServers }}
+
+---
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+  namespace: {{ $global.Release.Namespace }}
+  labels:
+    app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+    chart: {{ template "tmc-proto.chart" $global }}
+    release: {{ $global.Release.Name }}
+    heritage: {{ $global.Release.Service }}
+spec:
+  clusterIP: None
+  ports:
+  - name: dummy # Actually, no port is needed.
+    port: 1234
+    targetPort: 1234
+  selector:
+    app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+    chart: {{ template "tmc-proto.chart" $global }}
+    release: {{ $global.Release.Name }}
+
+---
+# Single Pod separate statefulset per Device Server
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+  namespace: {{ $global.Release.Namespace }}
+  labels:
+    app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+    chart: {{ template "tmc-proto.chart" $global }}
+    release: {{ $global.Release.Name }}
+    heritage: {{ $global.Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+      chart: {{ template "tmc-proto.chart" $global }}
+      release: {{ $global.Release.Name }}
+  serviceName: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+        chart: {{ template "tmc-proto.chart" $global }}
+        release: {{ $global.Release.Name }}
+        heritage: {{ $global.Release.Service }}
+    spec:
+      containers:
+      - name: deviceserver
+        image: "{{ tpl $deviceserver.image $global }}"
+        imagePullPolicy: "{{ tpl $deviceserver.imagePullPolicy $global }}"
+        command:
+{{ toYaml $deviceserver.command | indent 10 }}
+        args:
+{{ toYaml $deviceserver.args | indent 10 }}
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-{{ $global.Release.Name }}:10000
+        resources:
+{{ toYaml $global.Values.resources | indent 10 }}
+{{- with $global.Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with $global.Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with $global.Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{- end }} # end of range
+
+{{ end }}

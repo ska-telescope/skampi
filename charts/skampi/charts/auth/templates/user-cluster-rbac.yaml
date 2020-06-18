@@ -10,11 +10,11 @@ metadata:
 subjects:
 {{ range .users }}
 - kind: User
-  name: {{ . }} 
+  name: {{ . }}
   apiGroup: rbac.authorization.k8s.io
 {{ end }}
 roleRef:
-  kind: ClusterRole 
+  kind: ClusterRole
   name: auth-cluster-role
   apiGroup: rbac.authorization.k8s.io
 
@@ -26,11 +26,11 @@ metadata:
 subjects:
 {{ range .users }}
 - kind: User
-  name: {{ . }} 
+  name: {{ . }}
   apiGroup: rbac.authorization.k8s.io
 {{ end }}
 roleRef:
-  kind: ClusterRole 
+  kind: ClusterRole
   name: system:persistent-volume-provisioner
   apiGroup: rbac.authorization.k8s.io
 

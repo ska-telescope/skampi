@@ -10,6 +10,8 @@ import mock
 import os
 import csv
 from mock import MagicMock
+from tango import EventData,DeviceAttribute
+from elasticsearch import Elasticsearch
 
 VAR = os.environ.get('USE_LOCAL_ELASTIC')
 if (VAR == "True"):
@@ -21,86 +23,108 @@ else:
 from elasticsearch_dsl import Search,Q
 
 @pytest.mark.devlogging
-@pytest.mark.xfail
-def test_device_logging():
+
+@mock.patch('resources.test_support.log_helping.TraceHelper')
+def test_device_logging(mock_tracer_helper):
+    # given
+    mock_tracer_helper_instance = mock_tracer_helper.return_value
+    mock_event = MagicMock(spec=EventData)
+    mock_tracer_helper_instance.get_messages.return_value = [mock_event]
     d = DeviceLogging()
     d.update_traces(['sys/tg_test/1'])
-    logging.debug('starting traces for sys/tg_test/1')
     d.start_tracing()
     d.wait_until_message_received("DataGenerator::generating data", 20)
-    dict_messages_before = d.get_messages_as_list_dict()
     d.stop_tracing()
-    d = DeviceLogging("TracerHelper")
-    d.update_traces(['sys/tg_test/1'])
-    logging.debug('starting traces again for for sys/tg_test/1')
-    d.start_tracing()
-    sleep(3)
-    dict_messages_after = d.get_messages_as_list_dict()
-    d.stop_tracing()
-    assert_that(dict_messages_before).is_not_equal_to(dict_messages_after)
+    dict_messages = d.get_messages_as_list_dict()
+    assert_that(dict_messages[0]['message'].id).is_equal_to(mock_event.attr_value.value.id)
+
 
 
 @pytest.mark.devlogging
-@pytest.mark.xfail
-def test_logging_on_test_device_as_string():
+@mock.patch('resources.test_support.log_helping.TraceHelper')
+def test_logging_on_test_device_as_string(mock_tracer_helper):
+    mock_tracer_helper_instance = mock_tracer_helper.return_value
+    mock_event = MagicMock(spec=EventData)
+    mock_tracer_helper_instance.get_messages.return_value = [mock_event]
     d = DeviceLogging()
     d.update_traces(['sys/tg_test/1'])
-    logging.debug('starting traces for sys/tg_test/1')
     d.start_tracing()
     d.wait_until_message_received("DataGenerator::generating data", 20)
     printeable_messages = d.get_printable_messages()
     assert_that(printeable_messages).is_instance_of(str)
-    assert_that(printeable_messages).contains("DataGenerator::generating data")
 
 @pytest.mark.devlogging
-@pytest.mark.xfail
 def test_throw_error_():
     with pytest.raises(Exception):
         DeviceLogging("wrong implementation")
 
-@pytest.mark.devlogging
-@pytest.mark.xfail
-def test_log_single_device_from_elastic():
+class MockObj():
 
-    d = DeviceLoggingImplWithDBDirect()
+    def __init__(self,the_dict):
+        for key in the_dict.keys():
+            setattr(self, key, the_dict[key])
+
+
+def mock_hits():
+    mock_hit = MockObj({
+    'kubernetes': MockObj(
+        {'container_name':'container_name',
+        'pod_name':'pod_name' }),
+    'ska_log_message': 'ska_log_message',
+    'ska_log_timestamp' : 'ska_log_timestamp',
+    'container' : 'container',
+    })
+    return [mock_hit,mock_hit]
+
+def fake_an_es_search(mock_search):
+    mock_search_instance = mock_search.return_value
+    mock_search_instance.query.return_value = mock_search_instance
+    mock_search_instance.sort.return_value = mock_search_instance
+    mock_search_instance.source.return_value = mock_search_instance
+    # mock hits is two messages that should result from the query
+    mock_search_instance.scan.return_value = mock_hits()
+    return mock_search_instance
+
+def fake_device_mapping(mock_device_to_container):
+    mock_device_to_container.__getitem__.return_value = 'container_name'
+    return mock_device_to_container
+
+
+@mock.patch('resources.test_support.log_helping.device_to_container')
+@mock.patch('resources.test_support.log_helping.Elasticsearch')
+@mock.patch('resources.test_support.log_helping.Search')
+@pytest.mark.devlogging
+#@pytest.mark.xfail
+def test_log_single_device_from_elastic(mock_search,elastic_mock,mock_device_to_container):
+    # given
+    fake_an_es_search(mock_search)
+    fake_device_mapping(mock_device_to_container)
+    d = DeviceLoggingImplWithDBDirect(elastic_mock.return_value)
     d.update_devices_to_be_logged("sdp-processing-controller")
+    # when
     d.start_tracing()
-    sleep(2)  
-    d.stop_tracing()                                                                            
+    d.stop_tracing()             
+    # then                                                             
     res = d.get_messages_as_list_dict()
-    assert_that(res).is_type_of(list)
+    assert_that(res[0]['device']).is_equal_to('sdp-processing-controller')
+    assert_that(res[1]['device']).is_equal_to('sdp-processing-controller')
 
 @pytest.mark.devlogging
-@pytest.mark.xfail
-def test_log_multiple_devices_from_elastic():
-
-    d = DeviceLoggingImplWithDBDirect()
+@mock.patch('resources.test_support.log_helping.device_to_container')
+@mock.patch('resources.test_support.log_helping.Elasticsearch')
+@mock.patch('resources.test_support.log_helping.Search')
+def test_log_multiple_devices_from_elastic(mock_search,elastic_mock,mock_device_to_container):
+    # given
+    fake_an_es_search(mock_search)
+    # this will result in the same device mapping to container name 
+    fake_device_mapping(mock_device_to_container)
+    d = DeviceLoggingImplWithDBDirect(elastic_mock.return_value)
     d.update_devices_to_be_logged(["sdp-processing-controller","helm-deploy"])
-    d.start_tracing()
-    sleep(2)  
+    d.start_tracing() 
     d.stop_tracing()                                                                            
     res = d.get_messages_as_list_dict()
-    for item in res:
-        logging.info(item['ska_log_timestamp'])
-    assert_that(res).is_type_of(list)
-
-@pytest.mark.devlogging
-@pytest.mark.xfail
-def test_log_elastic_time_window():
-
-    d = DeviceLoggingImplWithDBDirect()
-    d.update_devices_to_be_logged("sdp-processing-controller")
-    d.start_time = datetime.now() - timedelta(seconds=960)
-    d._run_query()                                                                          
-    res = d.get_messages_as_list_dict()
-    for item in res:
-        timestamp = item['ska_log_timestamp']
-        lowest_minute = int(re.findall(r'(?<=^.{16}:)(\d{2})',timestamp)[0])
-        current_minute = datetime.now().minute 
-        break
-    assert_that(current_minute - lowest_minute).is_less_than_or_equal_to(30)
-
-
+    assert_that(res[0]['device']).is_equal_to('sdp-processing-controller/helm-deploy')
+    assert_that(res[1]['device']).is_equal_to('sdp-processing-controller/helm-deploy')
 
 @pytest.fixture()
 def print_to_file_fixture():
@@ -145,10 +169,11 @@ def device_logging_fixture():
     get_messages_as_list_dict_mock2 = MagicMock('resources.test_support.helpers.DeviceLoggingImplWithDBDirect.get_messages_as_list_dict')
     get_messages_as_list_dict_mock1.return_value = dict_results
     get_messages_as_list_dict_mock2.return_value = []
-    d1 = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    d2 = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    d1.implementation.get_messages_as_list_dict = get_messages_as_list_dict_mock1
-    d2.implementation.get_messages_as_list_dict = get_messages_as_list_dict_mock2
+    elastic_mock = MagicMock(Elasticsearch)
+    d1 = DeviceLoggingImplWithDBDirect(elastic_mock.return_value)
+    d2 = DeviceLoggingImplWithDBDirect(elastic_mock.return_value)
+    d1.get_messages_as_list_dict = get_messages_as_list_dict_mock1
+    d2.get_messages_as_list_dict = get_messages_as_list_dict_mock2
     fixture['mocked_device_logging_with_dummy_data'] = d1
     fixture['mocked_device_logging_with_empty_data'] = d2
     fixture['dummy_data'] = dict_results
@@ -160,14 +185,13 @@ def device_logging_fixture():
         os.remove('build/{}'.format(filename_json))
 
 @pytest.mark.devlogging
-@pytest.mark.xfail
 def test_print_to_csv_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_dummy_data']
     filename = device_logging_fixture['filename_csv']
     dummy_data = device_logging_fixture['dummy_data']
     #when
-    d.implementation.print_log_to_file(filename,style='csv')
+    d.print_log_to_file(filename,style='csv')
     #then
     with open('build/{}'.format(filename), 'r') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -177,40 +201,37 @@ def test_print_to_csv_file(device_logging_fixture):
     assert_that(results).is_equal_to(dummy_data)
 
 @pytest.mark.devlogging
-@pytest.mark.xfail
 def test_print_to_json_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_dummy_data']
     filename = device_logging_fixture['filename_json']
     dummy_data = device_logging_fixture['dummy_data']
     #when
-    d.implementation.print_log_to_file(filename,style='dict')
+    d.print_log_to_file(filename,style='dict')
     #then
     with open('build/{}'.format(filename), 'r') as file:
         results = json.loads(file.read())
     assert_that(results).is_equal_to(dummy_data)
 
 @pytest.mark.devlogging
-@pytest.mark.xfail
 def test_print_json_empty_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_empty_data']
     filename = device_logging_fixture['filename_json']
     #when
-    d.implementation.print_log_to_file(filename,style='dict')
+    d.print_log_to_file(filename,style='dict')
     #then
     with open('build/{}'.format(filename), 'r') as file:
         results = json.loads(file.read())
     assert_that(results).is_equal_to("no data logged")
 
 @pytest.mark.devlogging
-@pytest.mark.xfail
 def test_print_csv_empty_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_empty_data']
     filename = device_logging_fixture['filename_csv']
     #when
-    d.implementation.print_log_to_file(filename,style='csv')
+    d.print_log_to_file(filename,style='csv')
     #then
     with open('build/{}'.format(filename), 'r') as file:
         results = json.loads(file.read())

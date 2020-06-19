@@ -156,6 +156,9 @@ class DeviceLoggingImplWithDBDirect():
                         'host': "192.168.93.94", 
                         'port': 9200
                     }])
+        else:
+            # injected es is assumed to be local
+            self.local = True
         self.es=es
         #assumes the search is always only on todays logs
         if(self.local):

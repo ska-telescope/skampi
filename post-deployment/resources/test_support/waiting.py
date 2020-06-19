@@ -200,9 +200,12 @@ class Listener():
     in addition you can suplly it with a strategy that defines the algorithm for subscribing and obtaining the next event
     (e.g. pushing or by pulling)'''
 
-    def __init__(self,device_proxy,strategy=None):
+    def __init__(self,device_proxy,strategy=None,serverside_polling=False, client_side_polling=100):
         self.device_proxy = device_proxy
+        self.serverside_polling = serverside_polling
         self.original_polling = None
+
+        self.current_polling = client_side_polling
         if strategy is  None:
             self.strategy = StrategyListenbyPolling(device_proxy)
         else:
@@ -214,9 +217,10 @@ class Listener():
             self.original_polling = self.device_proxy.get_attribute_poll_period(attr)
 
     def _setup_device_polling(self,attr,polling):
-        self._remember_polling(attr)
-        self.device_proxy.poll_attribute(attr,polling)
-        self.current_polling = polling
+        if self.serverside_polling:
+            self._remember_polling(attr)
+            self.device_proxy.poll_attribute(attr,polling)
+            self.current_polling = polling
         
     def _restore_polling(self):
         if self.original_polling is not None:
@@ -288,5 +292,6 @@ class Listener():
         '''
         self.listening = False
         self.strategy.unsubscribe()
-        self._restore_polling()
+        if self.serverside_polling:
+            self._restore_polling()
     

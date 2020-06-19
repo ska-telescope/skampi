@@ -1,4 +1,4 @@
-from tango import DeviceProxy
+from tango import DeviceProxy,AttributeProxy
 
 class ArchiverHelper:
 
@@ -9,15 +9,27 @@ class ArchiverHelper:
         self.evt_subscriber_proxy = DeviceProxy(self.eventsubscriber)
 
     def attribute_add(self, fqdn, polling_period=1000, period_event=3000):
-        self.conf_manager_proxy.write_attribute("SetAttributeName", fqdn)
-        self.conf_manager_proxy.write_attribute("SetArchiver", self.eventsubscriber)
-        self.conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
-        self.conf_manager_proxy.write_attribute("SetPollingPeriod", int(polling_period))
-        self.conf_manager_proxy.write_attribute("SetPeriodEvent", int(period_event))
-        return self.conf_manager_proxy.AttributeAdd()
+        if not self.is_already_archived(fqdn):
+            AttributeProxy(fqdn).read()
+            self.conf_manager_proxy.write_attribute("SetAttributeName", fqdn)
+            self.conf_manager_proxy.write_attribute("SetArchiver", self.eventsubscriber)
+            self.conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
+            self.conf_manager_proxy.write_attribute("SetPollingPeriod", int(polling_period))
+            self.conf_manager_proxy.write_attribute("SetPeriodEvent", int(period_event))
+            self.conf_manager_proxy.AttributeAdd()
+            return True
+        return False
 
     def attribute_list(self):
         return self.evt_subscriber_proxy.read_attribute("AttributeList").value
+
+    def is_already_archived(self, fqdn):
+        attr_list = self.attribute_list()
+        if attr_list is not None:
+            for already_archived in attr_list:
+                if fqdn in str(already_archived).lower():
+                    return True
+        return False
 
     def start_archiving(self, fqdn=None, polling_period=1000, period_event=3000):
         if(fqdn is not None):

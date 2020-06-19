@@ -1,5 +1,6 @@
 {{ if .Values.archiver.enabled }}
 
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -19,7 +20,6 @@ spec:
     app: arhiver-cm-{{ template "archiver.name" . }}-{{ .Release.Name }}
 
 ---
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

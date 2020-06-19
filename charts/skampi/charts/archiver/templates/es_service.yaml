@@ -49,17 +49,17 @@ spec:
         image: "{{ .Values.archiver.image.registry }}/{{ .Values.archiver.image.image }}:{{ .Values.archiver.image.tag }}"
         imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
         command:
-        - /usr/local/bin/wait-for-it.sh
-        - databaseds-tango-base-{{ .Release.Name }}:10000
-        - --timeout=30
-        - --strict
-        - --
-        - /usr/local/bin/wait-for-it.sh
-        - archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}:3306
-        - --timeout=30
-        - --strict
-        - --
-        - ./usr/local/bin/hdbppes-srv 01 -ORBendPoint giop:tcp::10000
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-{{ .Release.Name }}:10000
+          - --timeout=30
+          - --strict
+          - --
+          - /usr/local/bin/wait-for-it.sh
+          - archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}:3306
+          - --timeout=30
+          - --strict
+          - --
+          - ./usr/local/bin/hdbppes-srv 01 -ORBendPoint giop:tcp::10000
         env:
         - name: TANGO_HOST
           value: databaseds-tango-base-{{ .Release.Name }}:10000
@@ -75,7 +75,7 @@ spec:
             command:
             - sh
             - -c
-            - "tango_admin --ping-device 'archiving/hdbpp/confmanager01'"
+            - "tango_admin --ping-device 'archiving/hdbpp/eventsubscriber01'"
         resources:
 {{ toYaml .Values.archiver.resources | indent 10 }}
       volumes:

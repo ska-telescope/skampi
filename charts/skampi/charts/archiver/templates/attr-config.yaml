@@ -7,8 +7,8 @@ metadata:
   name: "attrconfig-configuration-{{ template "archiver.name" . }}-{{ .Release.Name }}"
   namespace: {{ .Release.Namespace }}
 data:
-  attribute_fqdn.txt:
-{{ (tpl (.Files.Glob "data/attribute_fqdn.txt").AsConfig . ) | indent 2 }}
+  attribute2archive.json:
+{{ (tpl (.Files.Glob "data/attribute2archive.json").AsConfig . ) | indent 2 }}
   configure_hdbpp.py:
 {{ (tpl (.Files.Glob "data/configure_hdbpp.py").AsConfig . ) | indent 2 }}
   configuration.json: 
@@ -53,7 +53,7 @@ spec:
           - "/venv/bin/python data/configure_hdbpp.py \ 
               --cm=archiving/hdbpp/confmanager01 \
               --es=archiving/hdbpp/eventsubscriber01 \
-              --attrfile=data/attribute_fqdn.txt"
+              --attrfile=data/attribute2archive.json"
         env:
         - name: TANGO_HOST
           value: databaseds-tango-base-{{ .Release.Name }}:10000

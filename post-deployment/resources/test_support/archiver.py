@@ -1,4 +1,5 @@
 from tango import DeviceProxy,AttributeProxy
+from time import sleep
 
 class ArchiverHelper:
 
@@ -45,3 +46,15 @@ class ArchiverHelper:
 
     def conf_manager_attribute_status(self, fqdn):
         return self.conf_manager_proxy.AttributeStatus(fqdn)
+
+    def wait_for_start(self,fqdn,sleep_time=0.1,max_retries=30):
+        total_sleep_time = 0
+        for x in range(0, max_retries):
+            try:
+                if("Archiving          : Started" in self.conf_manager_attribute_status(fqdn)):
+                    break
+            except:
+                pass
+            sleep(sleep_time)
+            total_sleep_time += 1
+        return total_sleep_time* sleep_time

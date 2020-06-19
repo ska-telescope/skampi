@@ -20,7 +20,8 @@ def configure_attribute(attribute):
   archiver_helper = ArchiverHelper()
   archiver_helper.attribute_add(attribute,100,300)
   archiver_helper.start_archiving()
-  sleep(0.3) # the polling
+  slept_for = archiver_helper.wait_for_start(attribute)
+  logging.info("Slept for " + str(slept_for) + 's before archiving started.')
   assert "Archiving          : Started" in archiver_helper.conf_manager_attribute_status(attribute)
   assert "Archiving          : Started" in archiver_helper.evt_subscriber_attribute_status(attribute)
   archiver_helper.stop_archiving(attribute)
@@ -31,6 +32,7 @@ def test_configure_attribute():
   attribute = "sys/tg_test/1/double_scalar"
   sleep_time = 20
   max_retries = 3
+  total_slept = 0
   for x in range(0, max_retries):
     try:
       ApiUtil.cleanup()
@@ -48,6 +50,10 @@ def test_configure_attribute():
       logging.info("reset_conf_manager exception: " + str(sys.exc_info()[0]))
     
     sleep(sleep_time)
+    total_slept += 1
+
+  if(total_slept>0):
+    logging.info("Slept for " + str(total_slept*sleep_time) + 's for the test configuration!')
 
 @pytest.mark.archiver
 @pytest.mark.xfail

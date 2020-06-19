@@ -4,16 +4,39 @@ from tango import DeviceProxy,EventType
 def run_polling():
     p = DeviceProxy('test/device/1') 
     strategy1 = StrategyListenbyPolling(p) 
-    l = Listener(p, strategy1,serverside_polling=True)
+    l = Listener(p, strategy1)
     p.pushscalarchangeevents('{"attribute_name": "double_scalar", "number_of_events": 10, "rate_of_events": 1}') 
-    for event in l.get_events_on('long_scalar'):
-        print(f'Event recieved on {event.get_date().strftime("%H:%M:%S")}:\nName: {event.attr_value.name}\nValue: {event.attr_value.value}')
+    event_counter = 0
+    for event in l.get_events_on('double_scalar'):
+        print(f'Event nr {event_counter} recieved on {event.get_date().strftime("%H:%M:%S")}:\nName: {event.attr_value.name}\nValue: {event.attr_value.value}')
+        if event_counter == 9:
+            l.stop_listening()
+        event_counter +=1
 
-def subscribe_basic(p, attr):
-    return p.subscribe_event(attr,EventType.CHANGE_EVENT,10)
+def run_pushing_periodically():
+    p = DeviceProxy('test/device/1') 
+    strategy = StrategyListenbyPushing(p) 
+    l = Listener(p, strategy, serverside_polling=False)
+    p.pushscalarchangeevents('{"attribute_name": "double_scalar", "number_of_events": 10, "rate_of_events": 1}') 
+    event_counter = 0
+    for event in l.get_events_on('double_scalar'):
+        print(f'Event nr {event_counter} recieved on {event.get_date().strftime("%H:%M:%S")}:\nName: {event.attr_value.name}\nValue: {event.attr_value.value}')
+        if event_counter == 9:
+            l.stop_listening()
+        event_counter +=1
 
-def get_events(p, sub_id):
-    return p.get_events(sub_id)
+def run_pushing():
+    p = DeviceProxy('test/device/1') 
+    strategy1 = StrategyListenbyPushing(p) 
+    l = Listener(p, strategy1)
+    p.pushscalarchangeevents('{"attribute_name": "double_scalar", "number_of_events": 10, "rate_of_events": 1}') 
+    event_counter = 0
+    for event in l.get_events_on('double_scalar'):
+        print(f'Event nr {event_counter} recieved on {event.get_date().strftime("%H:%M:%S")}:\nName: {event.attr_value.name}\nValue: {event.attr_value.value}')
+        if event_counter == 9:
+            l.stop_listening()
+        event_counter +=1
+
 
 def main():
     run_polling()

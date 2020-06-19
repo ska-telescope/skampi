@@ -1,0 +1,41 @@
+[
+    {
+        "attributes": 
+                [
+                "mid_d0001/elt/master/WindSpeed",
+                "mid_d0001/elt/master/achievedPointing",
+                "mid_d0001/elt/master/desiredPointing",
+                "mid_d0002/elt/master/WindSpeed",
+                "mid_d0002/elt/master/achievedPointing",
+                "mid_d0002/elt/master/desiredPointing",
+                "mid_d0003/elt/master/WindSpeed",
+                "mid_d0003/elt/master/achievedPointing",
+                "mid_d0003/elt/master/desiredPointing",
+                "mid_d0004/elt/master/WindSpeed",
+                "mid_d0004/elt/master/achievedPointing",
+                "mid_d0004/elt/master/desiredPointing",
+                "sys/tg_test/1/ulong_scalar",
+                "sys/tg_test/1/long64_scalar",
+                "sys/tg_test/1/long_scalar"
+                ],
+        "polling_period": 1000,
+        "period_event": 3000
+    },
+    {
+        "attributes": 
+                [
+                "mid_csp/elt/subarray_01/State",
+                "mid_csp/elt/subarray_01/obsState",
+                "mid_d0001/elt/master/State",
+                "mid_d0001/elt/master/pointingState",
+                "mid_d0002/elt/master/State",
+                "mid_d0002/elt/master/pointingState",
+                "mid_sdp/elt/subarray_1/obsState",
+                "mid_sdp/elt/subarray_1/State",
+                "ska_mid/tm_subarray_node/1/State",
+                "ska_mid/tm_subarray_node/1/obsState"
+                ],
+        "polling_period": 100,
+        "period_event": 200
+    }
+]

@@ -2,31 +2,26 @@
 """
 Test archiver
 """
-from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
-from time import sleep
+import sys
 import pytest
 import logging
-import sys
+from time import sleep
+from resources.test_support.archiver import ArchiverHelper
+from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
 
 @pytest.mark.archiver
 @pytest.mark.xfail
 def test_init():
   print("Init test archiver")
-  evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
-  evt_subscriber_device_proxy = DeviceProxy(evt_subscriber_device_fqdn)
-  evt_subscriber_device_proxy.Start()
+  archiver_helper = ArchiverHelper()
+  archiver_helper.start_archiving()
   sleep(3) # the polling
 
 def configure_attribute(attribute):
-  conf_manager_proxy = DeviceProxy("archiving/hdbpp/confmanager01")
-  
-  #logging.info(conf_manager_proxy.Status())
-
-  evt_subscriber_device_fqdn = "archiving/hdbpp/eventsubscriber01"
-  evt_subscriber_device_proxy = DeviceProxy(evt_subscriber_device_fqdn)
+  archiver_helper = ArchiverHelper()
 
   is_already_archived = False
-  attr_list = evt_subscriber_device_proxy.read_attribute("AttributeList").value
+  attr_list = archiver_helper.attribute_list()
   if attr_list is not None:
     for already_archived in attr_list:
       #logging.info("Comparing: " + str(attribute) + " and " + str(already_archived).lower())
@@ -44,22 +39,17 @@ def configure_attribute(attribute):
       logging.error("Attribute to be configured not online! Failing...")
       raise df
   
-    conf_manager_proxy.write_attribute("SetAttributeName", attribute)
-    conf_manager_proxy.write_attribute("SetArchiver", evt_subscriber_device_fqdn)
-    conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
-    conf_manager_proxy.write_attribute("SetPollingPeriod", 1000)
-    conf_manager_proxy.write_attribute("SetPeriodEvent", 3000)
-    conf_manager_proxy.AttributeAdd()
-    
-  evt_subscriber_device_proxy.Start()
+    archiver_helper.attribute_add(attribute)
+  
+  archiver_helper.start_archiving()
   sleep(3) # the polling
-  result_config_manager = conf_manager_proxy.AttributeStatus(attribute)
-  result_evt_subscriber = evt_subscriber_device_proxy.AttributeStatus(attribute)
+  result_config_manager = archiver_helper.conf_manager_attribute_status(attribute)
+  result_evt_subscriber = archiver_helper.evt_subscriber_attribute_status(attribute)
   
   assert "Archiving          : Started" in result_config_manager
   assert "Archiving          : Started" in result_evt_subscriber
 
-  conf_manager_proxy.AttributeRemove(attribute)
+  archiver_helper.stop_archiving(attribute)
 
 @pytest.mark.archiver
 @pytest.mark.xfail

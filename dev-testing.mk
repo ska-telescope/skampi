@@ -24,7 +24,20 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 							"value": "$(PYTHONPATH)"}],\
 						"ports":[{\
 							"containerPort":22,\
-							"hostPort":$(hostPort)}]}],\
+							"hostPort":$(hostPort)}],\
+						"resources": { \
+							"limits": { \
+								"cpu": "300m", \
+								"memory": "500Mi" },\
+							"requests": { \
+								"cpu": "200m", \
+								"memory": "256Mi" }}}],\
+					"nodeSelector": {\
+            			"node-role.kubernetes.io/master": ""},\
+					"tolerations": [{\
+                		"effect": "NoSchedule",\
+                		"key": "node-role.kubernetes.io/master",\
+                		"operator": "Exists"}],\
 					"volumes":[{\
 						"name":"testing-volume",\
 						"hostPath":{\

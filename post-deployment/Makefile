@@ -47,3 +47,6 @@ config_git:
 
 check_log_consumer_running:
 	ps aux | awk 
+
+set_auto_complete:
+	echo 'source <(kubectl completion bash)' >>~/.bashrc

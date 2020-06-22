@@ -17,7 +17,7 @@ def run_pushing_periodically():
     p = DeviceProxy('test/device/1') 
     strategy = StrategyListenbyPushing(p) 
     l = Listener(p, strategy, serverside_polling=False)
-    p.pushscalarchangeevents('{"attribute_name": "double_scalar", "number_of_events": 10, "rate_of_events": 1}') 
+    p.PushChangeEventsPolledAttributes('{"attribute_name": "double_scalar", "number_of_events": 10, "rate_of_events": 1}') 
     event_counter = 0
     for event in l.get_events_on('double_scalar'):
         print(f'Event nr {event_counter} recieved on {event.get_date().strftime("%H:%M:%S")}:\nName: {event.attr_value.name}\nValue: {event.attr_value.value}')
@@ -29,7 +29,7 @@ def run_pushing():
     p = DeviceProxy('test/device/1') 
     strategy1 = StrategyListenbyPushing(p) 
     l = Listener(p, strategy1)
-    p.pushscalarchangeevents('{"attribute_name": "double_scalar", "number_of_events": 10, "rate_of_events": 1}') 
+    p.PushChangeEventsPolledAttributes('{"attribute_name": "double_scalar", "number_of_events": 10, "rate_of_events": 1}') 
     event_counter = 0
     for event in l.get_events_on('double_scalar'):
         print(f'Event nr {event_counter} recieved on {event.get_date().strftime("%H:%M:%S")}:\nName: {event.attr_value.name}\nValue: {event.attr_value.value}')

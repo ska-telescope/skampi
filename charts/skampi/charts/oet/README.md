@@ -17,7 +17,11 @@ Get the OET Jupyter service IP and port:
 $ kubectl describe service jupyter-oet-release-name -n integration
 ```
 
-Navigate to the IP address. In Jupyter, open an OET terminal by navigating to `New > Terminal`
+Get the NodePort and navigate to `localhost:NodePort/jupyter`. Password is oet.
+
+In Jupyter, open a terminal by navigating to `New > Terminal`.
+
+You can also use Jupyter to run scripts using notebooks. Example notebooks can be found in `scripts/data/notebooks`.
 
 ### SSH
 Get the OET SSH service NodePort:

@@ -188,8 +188,9 @@ def convert_fspconfiguration(pdm_config: pdm_FSPConfiguration) -> cdm_FSPConfigu
         function_mode=cdm_FSPFunctionMode(pdm_config.function_mode.value),
         frequency_slice_id=pdm_config.frequency_slice_id,
         integration_time=pdm_config.integration_time,
-        corr_bandwidth=pdm_config.corr_bandwidth
-        # These cannot be set on the CDM object yet as the PDM doesn't define them
-        # channel_averaging_map: List[Tuple] = None,
-        # output_link_map: List[Tuple] = None
+        corr_bandwidth=pdm_config.corr_bandwidth,
+        channel_averaging_map=pdm_config.channel_averaging_map,
+        output_link_map=pdm_config.output_link_map,
+        fsp_channel_offset=pdm_config.fsp_channel_offset,
+        zoom_window_tuning=pdm_config.zoom_window_tuning
     )

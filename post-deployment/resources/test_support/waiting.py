@@ -2,6 +2,7 @@ from tango import EventType
 from tango.asyncio import DeviceProxy
 import asyncio
 from time import sleep
+from datetime import datetime
 import threading
 from queue import Queue, Empty
 import logging
@@ -75,11 +76,13 @@ class StrategyListenbyPushing(interfaceStrategy):
         '''
         if self.listening:
             try:
+                start_time = datetime.now()
                 event = self.queue.get(timeout=timeout)
+                elapsed_time = datetime.now() - start_time
             except Empty:
                 raise ListenerTimeOut(f'Timed out after {timeout} seconds waiting for events on attributes'\
                                     f'{[s["attr"] for s in self.current_subscriptions]} for device {self.device_proxy.name()}')
-            return [event]
+            return [event],elapsed_time
         else:
             return []
     
@@ -185,13 +188,15 @@ class StrategyListenbyPolling(interfaceStrategy):
         '''
         timeout_checker = self._check_if_timed_out(timeout,polling)
         events = []
+        start_time = datetime.now()
         while self.is_listening():
             events = self._check_all_subscriptions_for_events()
             if events == []:
-                timeleft = next(timeout_checker)
+                next(timeout_checker)
                 await asyncio.sleep(polling*2/1000)
             else:
-                return events
+                elapsed_time = datetime.now() - start_time
+                return events,elapsed_time
         return []
 
     def wait_for_next_event(self,polling=100,timeout=5):
@@ -204,13 +209,15 @@ class StrategyListenbyPolling(interfaceStrategy):
         '''
         timeout_checker = self._check_if_timed_out(timeout,polling)
         events = []
+        start_time = datetime.now()
         while self.is_listening():
             events = self._check_all_subscriptions_for_events()
             if events == []:
-                timeleft = next(timeout_checker)
+                next(timeout_checker)
                 sleep(polling*2/1000)
             else:
-                return events
+                elapsed_time = datetime.now() - start_time
+                return events, elapsed_time
         return events
 
     def unsubscribe(self):
@@ -273,22 +280,30 @@ class Listener():
             self.strategy.subscribe(attr)
             self.listening = True
 
-    async def async_wait_for_next_event(self,timeout=5):
+    async def async_wait_for_next_event(self,timeout=5,get_elapsed_time=False):
         '''
         blocks (waits) for a next event to arrive; the mechanism for wiatinng depends
         on the strategy provided.
         this method allows for asyncronous calling by returning to event loop whilst waiting
         '''
-        return await self.strategy.async_wait_for_next_event(self.current_polling,timeout)
+        events,elapsed_time = await self.strategy.async_wait_for_next_event(self.current_polling,timeout)
+        if get_elapsed_time:
+            return events,elapsed_time
+        else:
+            return events
 
-    def wait_for_next_event(self,timeout=5):
+    def wait_for_next_event(self,timeout=5,get_elapsed_time=False):
         '''
         blocks (waits) for a next event to arrive; the mechanism for wiatinng depends
         on the strategy provided.
         '''
-        return self.strategy.wait_for_next_event(self.current_polling,timeout)
+        events,elapsed_time = self.strategy.wait_for_next_event(self.current_polling,timeout)
+        if get_elapsed_time:
+            return events,elapsed_time
+        else:
+            return events
 
-    async def async_get_events_on(self,attr,max_events=None):
+    async def async_get_events_on(self,attr,max_events=None,get_elapsed_time=False,timeout=5):
         '''allows for getting events in a lazy for loop as a generator. If no events are available it will wait
         untill timeout. If more than one events were gotten from a call it will iterate through the results.
         To stop wating for events you need to call `stop_listening()`.
@@ -296,20 +311,26 @@ class Listener():
         '''
         await self.async_listen_for(attr)
         while self.listening:
-            events = await self.async_wait_for_next_event()
+            events, elapsed_time = await self.async_wait_for_next_event(timeout,get_elapsed_time=True)
             for event in events:
-                yield event       
+                if get_elapsed_time:
+                    yield event, elapsed_time
+                else:
+                    yield event         
 
-    def get_events_on(self,attr,max_events=None):
+    def get_events_on(self,attr,max_events=None,get_elapsed_time=False,timeout=5):
         '''allows for getting events in a lazy for loop as a generator. If no events are available it will wait
         untill timeout. If more than one events were gotten from a call it will iterate through the results.
         To stop wating for events you need to call `stop_listening()`.
         '''
         self.listen_for(attr)
         while self.listening:
-            events = self.wait_for_next_event()
+            events, elapsed_time = self.wait_for_next_event(timeout,get_elapsed_time=True)
             for event in events:
-                yield event         
+                if get_elapsed_time:
+                    yield event, elapsed_time
+                else:
+                    yield event         
 
     def stop_listening(self):
         '''stop the threads and loops waiting for events arsing from the listening process

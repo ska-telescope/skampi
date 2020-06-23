@@ -36,22 +36,22 @@ def set(template):
 
 
 def generate_multiple_events(mock,events):
-    mock.wait_for_next_event.return_value = events
+    mock.wait_for_next_event.return_value = events,10
     return mock
 
 def generate_async_event(mock,events):
-    mock.async_wait_for_next_event.return_value = events
+    mock.async_wait_for_next_event.return_value = events,10
     return mock  
 
 def generate_iterative_events(mock,events):
     def next_event(polling,timeout):
-        return [events.pop()]
+        return [events.pop()],10
     mock.wait_for_next_event.side_effect = next_event
     return mock
 
 def generate_iterative_events_async(mock,events):
     async def next_event(polling,timeout):
-        return [events.pop()]
+        return [events.pop()],timeout
     mock.async_wait_for_next_event.side_effect = next_event
     return mock
     
@@ -137,6 +137,36 @@ def test_listener_can_listen_for_multiple_events(mock_device_proxy,mock_strategy
     # I will subscribe both attributes
     assert_that(mock_strategy.subscribe.call_count).is_equal_to(2)
 
+@mock.patch('resources.test_support.waiting.datetime')
+@mock.patch('tango.DeviceProxy.__init__') 
+def test_push_strategy_delivers_elapsed_time(mock_device_proxy,mock_time):
+    # given
+    mock_time.now.return_value = 10
+    s = StrategyListenbyPushing(mock_device_proxy)
+    # when I scubscribe and wait for an event on that subscription
+    s.subscribe('attr1')
+    s._cb('event')
+    events, elapsed_time = s.wait_for_next_event()
+    # I expect the elapsed time to be given with the event
+    # time is constantly 10 hence elapsedtime should be 0
+    assert_that(elapsed_time).is_equal_to(0)
+
+@mock.patch('resources.test_support.waiting.datetime')
+@mock.patch('tango.DeviceProxy.__init__') 
+def test_pull_strategy_delivers_elapsed_time(mock_device_proxy,mock_time):
+    # given
+    mock_time.now.return_value = 10
+    s = StrategyListenbyPolling(mock_device_proxy)
+    # when I scubscribe and wait for an event on that subscription
+    s.subscribe('attr1')
+    mock_device_proxy.get_events.return_value='event1'
+    events, elapsed_time = s.wait_for_next_event()
+    # I expect the elapsed time to be given with the event
+    # time is constantly 10 hence elapsedtime should be 0
+    assert_that(elapsed_time).is_equal_to(0)
+
+
+
 @mock.patch('tango.DeviceProxy.__init__') 
 def test_push_strategy_can_subscribe_multiple_times(mock_device_proxy):
     # given
@@ -180,7 +210,7 @@ def test_polling_strategy_can_wait_on_multiple_events(mock_device_proxy):
     mock_device_proxy.subscribe_event.return_value = 3
     s.subscribe('attr2')
     # when I wait for next event
-    result = s.wait_for_next_event()
+    result,elapsed_time = s.wait_for_next_event()
     # then both attributes should have been generating events
     assert_that(result).is_equal_to([1,2,3,4])
 
@@ -268,6 +298,33 @@ def test_listener_can_get_events_on_async(mock_device_proxy):
             if len(test_events) == 0:
                 listener.stop_listening()
     asyncio.run(async_run())
+
+@mock.patch('tango.DeviceProxy.__init__')  
+def test_listener_can_get_elapsed_time_async(mock_device_proxy):
+    test_events = ['event1','event2','event3']
+    strategy_reworks = set(interfaceStrategy()).to(generate_iterative_events_async,test_events)
+    mock_strategy = strategy_reworks.get_updated_mock()
+    listener = Listener(mock_device_proxy,mock_strategy, serverside_polling=True)
+    #when
+    async def async_run():
+        async for event, elapsed_time in listener.async_get_events_on('attr',get_elapsed_time=True, timeout=10):
+            assert_that(elapsed_time).is_equal_to(10)
+            if len(test_events) == 0:
+                listener.stop_listening()
+    asyncio.run(async_run())
+
+@mock.patch('tango.DeviceProxy.__init__')  
+def test_listener_can_get_elapsed_time(mock_device_proxy):
+    test_events = ['event1','event2','event3']
+    strategy_reworks = set(interfaceStrategy()).to(generate_iterative_events,test_events)
+    mock_strategy = strategy_reworks.get_updated_mock()
+    listener = Listener(mock_device_proxy,mock_strategy, serverside_polling=True)
+    #when
+    for event, elapsed_time in listener.get_events_on('attr',get_elapsed_time=True, timeout=10):
+        assert_that(elapsed_time).is_equal_to(10)
+        if len(test_events) == 0:
+            listener.stop_listening()
+
 
 
 # integration tests with an actual device 

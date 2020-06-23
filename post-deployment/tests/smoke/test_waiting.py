@@ -1,4 +1,4 @@
-from resources.test_support.waiting import Listener,StrategyListenbyPolling,interfaceStrategy,StrategyListenbyPushing
+from resources.test_support.waiting import Listener,StrategyListenbyPolling,interfaceStrategy,StrategyListenbyPushing,ListenerTimeOut
 from tango import EventType
 from tango.asyncio import DeviceProxy
 import asyncio
@@ -85,6 +85,23 @@ def test_listen_without_server_side_polling(mock_device_proxy):
     listener.stop_listening()
     #and I do not expect the actual polling to be updated
     mock_device_proxy.poll_attribute.assert_not_called()
+
+@mock.patch('tango.DeviceProxy.__init__')   
+def test_raises_time_out_for_pushing(mock_device_proxy):
+    strategy = StrategyListenbyPushing(mock_device_proxy)
+    mock_device_proxy.name.return_value = 'mock_device'
+    with pytest.raises(ListenerTimeOut, match=r"Timed out after 0.5 seconds waiting for events on attributes\['test'\] for device mock_device"):
+        strategy.subscribe('test')
+        strategy.wait_for_next_event(timeout=0.5)
+
+@mock.patch('tango.DeviceProxy.__init__')
+def test_raises_time_out_for_pulling(mock_device_proxy):
+    strategy = StrategyListenbyPolling(mock_device_proxy)
+    mock_device_proxy.name.return_value = 'mock_device'
+    mock_device_proxy.get_events.return_value = []
+    with pytest.raises(ListenerTimeOut, match=r"Timed out after 0.5 seconds waiting for events on attributes\['test'\] for device mock_device"):
+        strategy.subscribe('test')
+        strategy.wait_for_next_event(timeout=0.5)
 
 
 @mock.patch('tango.DeviceProxy.__init__')   

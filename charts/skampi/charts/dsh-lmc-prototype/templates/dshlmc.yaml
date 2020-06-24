@@ -28,144 +28,204 @@ kind: ConfigMap
 metadata:
   name: "dshlmc-configuration-json-{{ $dsh_lmc_prototype_name }}-{{ $release_name }}"
   namespace: {{ $release_namespace }}
+  labels:
+    app: dshlmc-configuration-json-{{ $dsh_lmc_prototype_name }}-{{ $release_name }}
+    chart: {{ $dsh_lmc_prototype_name }}
+    release: {{ $release_name }}
+    heritage: {{ $release_service }}
 data:
   configuration.json:
 {{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
 
+# Start of Range
+{{ $global := . }}
 {{- range .Values.dshlmc.dishes }}
----
 
+---
+# giving a dummy Service entry ensures that the single pod is DNS addressable
 apiVersion: v1
-kind: Pod
+kind: Service
 metadata:
-  name: {{ $dsh_lmc_prototype_name }}-{{ $release_name }}-{{ . }}
+  name: dshlmc-{{ $dsh_lmc_prototype_name }}-{{ $release_name }}-{{ . }}
   namespace: {{ $release_namespace }}
   labels:
-    app: dshlmc-{{ $dsh_lmc_prototype_name }}-{{ $release_name }}
+    app: dshlmc-{{ $dsh_lmc_prototype_name }}-{{ $release_name }}-{{ . }}
     chart: {{ $dsh_lmc_prototype_name }}
     release: {{ $release_name }}
     heritage: {{ $release_service }}
 spec:
-  volumes:
-  - name: configuration
-    configMap:
-      name: "dshlmc-configuration-json-{{ $dsh_lmc_prototype_name }}-{{ $release_name }}"
-  initContainers:
-  - name: dsconfig-init-{{ . }}
-    image: "{{ $ds_image_reg }}/{{ $ds_image_image }}:{{ $ds_image_tag }}"
-    imagePullPolicy: IfNotPresent
-    command:
-      - /usr/local/bin/wait-for-it.sh
-      - databaseds-tango-base-{{ $release_name }}:10000
-      - --timeout=30
-      - --strict
-      - --
-      - json2tango -w -a -u data/configuration.json
-    env:
-    - name: TANGO_HOST
-      value: databaseds-tango-base-{{ $release_name }}:10000
-    volumeMounts:
-    - name: configuration
-      mountPath: data
-      readOnly: true
+  clusterIP: None
+  ports:
+  - name: dummy # Actually, no port is needed.
+    port: 1234
+    targetPort: 1234
+  selector:
+    app: dshlmc-{{ $dsh_lmc_prototype_name }}-{{ $release_name }}-{{ . }}
+    chart: {{ $dsh_lmc_prototype_name }}
+    release: {{ $release_name }}
+---
+# Single Pod separate statefulset per Device Server
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $dsh_lmc_prototype_name }}-{{ $release_name }}-{{ . }}
+  namespace: {{ $release_namespace }}
+  labels:
+    app: {{ $dsh_lmc_prototype_name }}-{{ $release_name }}-{{ . }}
+    chart: {{ $dsh_lmc_prototype_name }}
+    release: {{ $release_name }}
+    heritage: {{ $release_service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ $dsh_lmc_prototype_name }}-{{ $release_name }}-{{ . }}
+      chart: {{ $dsh_lmc_prototype_name }}
+      release: {{ $release_name }}
+  serviceName: {{ $dsh_lmc_prototype_name }}-{{ $release_name }}-{{ . }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ $dsh_lmc_prototype_name }}-{{ $release_name }}-{{ . }}
+        chart: {{ $dsh_lmc_prototype_name }}
+        release: {{ $release_name }}
+        heritage: {{ $release_service }}
+    spec:
+      volumes:
+      - name: configuration
+        configMap:
+          name: "dshlmc-configuration-json-{{ $dsh_lmc_prototype_name }}-{{ $release_name }}"
+      initContainers:
+      - name: dsconfig-init-{{ . }}
+        image: "{{ $ds_image_reg }}/{{ $ds_image_image }}:{{ $ds_image_tag }}"
+        imagePullPolicy: IfNotPresent
+        command:
+        - /usr/local/bin/wait-for-it.sh
+        - {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $release_name }}:10000 {{- end }}
+        - --timeout=30
+        - --strict
+        - --
+        - json2tango -w -a -u data/configuration.json
+        env:
+        - name: TANGO_HOST
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $release_name }}:10000 {{- end }}
+        volumeMounts:
+        - name: configuration
+          mountPath: data
+          readOnly: true
 
-  containers:
-    - name: dish-master-{{ . }}
-      image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
-      imagePullPolicy: {{ $image_pull_policy }}
-      command:
+      containers:
+      - name: dish-master-{{ . }}
+        image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
+        imagePullPolicy: {{ $image_pull_policy }}
+        command:
         - sh
-      args:
+        args:
         - -c
         - "./bin/dish-master {{ . }}"
-      env:
-      - name: TANGO_HOST
-        value: databaseds-tango-base-{{ $release_name }}:10000
+        env:
+        - name: TANGO_HOST
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $release_name }}:10000 {{- end }}
 
-    - name: ds-simulator-{{ . }}
-      image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
-      imagePullPolicy: {{ $image_pull_policy }}
-      command:
+      - name: ds-simulator-{{ . }}
+        image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
+        imagePullPolicy: {{ $image_pull_policy }}
+        command:
         - sh
-      args:
+        args:
         - -c
         - "./bin/ds-simulator {{ . }}"
-      env:
-      - name: TANGO_HOST
-        value: databaseds-tango-base-{{ $release_name }}:10000
+        env:
+        - name: TANGO_HOST
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $release_name }}:10000 {{- end }}
 
-    - name: dsctrl-simulator-{{ . }}
-      image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
-      imagePullPolicy: {{ $image_pull_policy }}
-      command:
+      - name: dsctrl-simulator-{{ . }}
+        image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
+        imagePullPolicy: {{ $image_pull_policy }}
+        command:
         - sh
-      args:
+        args:
         - -c
         - "./bin/dsctrl-simulator {{ . }}"
-      env:
-      - name: TANGO_HOST
-        value: databaseds-tango-base-{{ $release_name }}:10000
+        env:
+        - name: TANGO_HOST
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $release_name }}:10000 {{- end }}
 
-    - name: lmc-logger-{{ . }}
-      image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
-      imagePullPolicy: {{ $image_pull_policy }}
-      command:
+      - name: lmc-logger-{{ . }}
+        image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
+        imagePullPolicy: {{ $image_pull_policy }}
+        command:
         - sh
-      args:
+        args:
         - -c
         - "./bin/lmc-logger {{ . }}"
-      env:
-      - name: TANGO_HOST
-        value: databaseds-tango-base-{{ $release_name }}:10000
+        env:
+        - name: TANGO_HOST
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $release_name }}:10000 {{- end }}
 
-    - name: pdu-manager-{{ . }}
-      image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
-      imagePullPolicy: {{ $image_pull_policy }}
-      command:
+      - name: pdu-manager-{{ . }}
+        image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
+        imagePullPolicy: {{ $image_pull_policy }}
+        command:
         - sh
-      args:
+        args:
         - -c
         - "sleep infinity"
-      env:
-      - name: TANGO_HOST
-        value: databaseds-tango-base-{{ $release_name }}:10000
+        env:
+        - name: TANGO_HOST
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $release_name }}:10000 {{- end }}
 
-    - name: pdu-simulator-{{ . }}
-      image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
-      imagePullPolicy: {{ $image_pull_policy }}
-      command:
+      - name: pdu-simulator-{{ . }}
+        image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
+        imagePullPolicy: {{ $image_pull_policy }}
+        command:
         - sh
-      args:
+        args:
         - -c
         - "./bin/pdu-simulator {{ . }}"
-      env:
-      - name: TANGO_HOST
-        value: databaseds-tango-base-{{ $release_name }}:10000
+        env:
+        - name: TANGO_HOST
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $release_name }}:10000 {{- end }}
 
-    - name: rx-simulator-{{ . }}
-      image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
-      imagePullPolicy: {{ $image_pull_policy }}
-      command:
+      - name: rx-simulator-{{ . }}
+        image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
+        imagePullPolicy: {{ $image_pull_policy }}
+        command:
         - sh
-      args:
+        args:
         - -c
         - "./bin/rx-simulator {{ . }}"
-      env:
-      - name: TANGO_HOST
-        value: databaseds-tango-base-{{ $release_name }}:10000
+        env:
+        - name: TANGO_HOST
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $release_name }}:10000 {{- end }}
 
-    - name: spf-simulator-{{ . }}
-      image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
-      imagePullPolicy: {{ $image_pull_policy }}
-      command:
+      - name: spf-simulator-{{ . }}
+        image: "{{ $image_reg }}/{{ $image_image }}:{{ $image_tag }}"
+        imagePullPolicy: {{ $image_pull_policy }}
+        command:
         - sh
-      args:
+        args:
         - -c
         - "./bin/spf-simulator {{ . }}"
-      env:
-      - name: TANGO_HOST
-        value: databaseds-tango-base-{{ $release_name }}:10000
+        env:
+        - name: TANGO_HOST
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $release_name }}:10000 {{- end }}
+        resources:
+{{ toYaml $global.Values.resources | indent 10 }}
+{{- with $global.Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with $global.Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with $global.Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
 
+# end of Range
   {{- end }}
 
 {{ end }}

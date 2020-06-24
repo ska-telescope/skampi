@@ -50,7 +50,7 @@ spec:
         imagePullPolicy: {{ .Values.archiver.image.pullPolicy }}
         command:
           - /usr/local/bin/wait-for-it.sh
-          - databaseds-tango-base-{{ .Release.Name }}:10000
+          - {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
           - --timeout=30
           - --strict
           - --
@@ -62,9 +62,9 @@ spec:
           - ./usr/local/bin/hdbppes-srv 01 -ORBendPoint giop:tcp::10000
         env:
         - name: TANGO_HOST
-          value: databaseds-tango-base-{{ .Release.Name }}:10000
+          value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
         - name: HdbManager
-          value: "archiving/hdbpp/confmanager01" 
+          value: "archiving/hdbpp/confmanager01"
         ports:
         - name: arhiver-es-port
           containerPort: 10000

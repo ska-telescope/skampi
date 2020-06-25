@@ -28,9 +28,9 @@ class interfaceStrategy():
 class ListenerTimeOut(Exception):
     pass
 
-class StrategyListenbyPushing(interfaceStrategy):
+class ConsumeImmediately(interfaceStrategy):
     '''
-    Implements a listening strategy by allowing the device to push events to the client. This results in a thread
+    Implements a listening strategy by enabling the client to consume events immediately upon being publised. This results in a thread
     calling a callback which in turn puts the event in a threading queue that can be waited upon by another thread
     '''
 
@@ -102,20 +102,21 @@ class StrategyListenbyPushing(interfaceStrategy):
         '''
         self.queue.join()
 
-class StrategyListenbyPolling(interfaceStrategy):
+class ConsumePeriodically(interfaceStrategy):
     '''
-    Particular strategy (for use by Listener Object) to get changed events from an attribute
-    by means of using  the device proxy to regulary poll the device and place the results in a buffer
+    Particular strategy (for use by Listener Object) to consume changed events from an attribute on a device on a periodic basis
+    by means of placing published events on a receiving buffer
     The default buffer_size (max nr of events) is 10. This means you need to start consuming the buffer (wait for next event)
-    within polling_time * 10 seconds. Note the polling time is something you specify on the device itself but for a polling time of 0.1s
-    it means the code needs to consume within 1 second.
+    within 10 divided by the expected frequency of attribite change. If the device is set to periodically publish events this can be determined
+    by investigating the poll period for the attribute
     '''
-    def __init__(self,device_proxy,buffer_size=10):
+    def __init__(self,device_proxy,buffer_size=10,polling=100):
         self.device_proxy = device_proxy
         self.listening = False
         self.buffer_size = buffer_size
         self.current_subscriptions = []
         self.lock = threading.Lock()
+        self.polling=polling
 
     def subscribe(self,attr):
         '''
@@ -148,8 +149,8 @@ class StrategyListenbyPolling(interfaceStrategy):
         self.current_subscriptions.append(current_subscription)
         self.set_to_listening()
     
-    def _check_if_timed_out(self,timeout,polling):
-        timeleft = int((timeout*1000)/polling)
+    def _check_if_timed_out(self,timeout):
+        timeleft = int((timeout*1000)/self.polling)
         while True:
             timeleft -= 1
             if timeleft == 0:
@@ -177,7 +178,7 @@ class StrategyListenbyPolling(interfaceStrategy):
         with self.lock:
             self.listening = False
 
-    async def async_wait_for_next_event(self,polling=100,timeout=5):
+    async def async_wait_for_next_event(self,timeout=5):
         '''
         Strategy for waiting for next event by means of polling the event buffer, if the event buffer is empty and the timeleft is still
         within the timeout window, the process will sleep for a period double the polling period of the device itself (e.g. it doesnt waste time
@@ -186,20 +187,20 @@ class StrategyListenbyPolling(interfaceStrategy):
         other IO tasks whilst waiting for the next event.
         If the listening flag on the object is changed to false ( by means of a thread or asyncio task) the method will return before the timeout has occured
         '''
-        timeout_checker = self._check_if_timed_out(timeout,polling)
+        timeout_checker = self._check_if_timed_out(timeout)
         events = []
         start_time = datetime.now()
         while self.is_listening():
             events = self._check_all_subscriptions_for_events()
             if events == []:
                 next(timeout_checker)
-                await asyncio.sleep(polling*2/1000)
+                await asyncio.sleep(self.polling*2/1000)
             else:
                 elapsed_time = datetime.now() - start_time
                 return events,elapsed_time
         return []
 
-    def wait_for_next_event(self,polling=100,timeout=5):
+    def wait_for_next_event(self,timeout=5):
         '''
         Strategy for waiting for next event by means of polling the event buffer, if the event buffer is empty and the timeleft is still
         within the timeout window, the process will sleep for a period double the polling period of the device itself (e.g. it doesnt waste time
@@ -207,14 +208,14 @@ class StrategyListenbyPolling(interfaceStrategy):
         Note this method is not asyncio so the thread will be blocked whilst sleeping 
         If the listening flag on the object is changed to false ( by means of a thread or asyncio task) the method will return before the timeout has occured
         '''
-        timeout_checker = self._check_if_timed_out(timeout,polling)
+        timeout_checker = self._check_if_timed_out(timeout)
         events = []
         start_time = datetime.now()
         while self.is_listening():
             events = self._check_all_subscriptions_for_events()
             if events == []:
                 next(timeout_checker)
-                sleep(polling*2/1000)
+                sleep(self.polling*2/1000)
             else:
                 elapsed_time = datetime.now() - start_time
                 return events, elapsed_time
@@ -233,50 +234,51 @@ class Listener():
     in addition you can suplly it with a strategy that defines the algorithm for subscribing and obtaining the next event
     (e.g. pushing or by pulling)'''
 
-    def __init__(self,device_proxy,strategy=None,serverside_polling=False, client_side_polling=100):
+    def __init__(self,device_proxy,strategy=None,override_serverside_polling=False, client_side_polling=100):
         self.device_proxy = device_proxy
-        self.serverside_polling = serverside_polling
-        self.original_polling = None
-
-        self.current_polling = client_side_polling
+        self.override_serverside_polling = override_serverside_polling
+        self.original_server_polling = None
+        self.client_side_polling = client_side_polling
         if strategy is  None:
-            self.strategy = StrategyListenbyPolling(device_proxy)
+            self.strategy = ConsumePeriodically(device_proxy)
         else:
             self.strategy = strategy
 
     def _remember_polling(self,attr):
         self.attribute_being_monitored = attr
         if self.device_proxy.is_attribute_polled(attr):
-            self.original_polling = self.device_proxy.get_attribute_poll_period(attr)
+            self.original_server_polling = self.device_proxy.get_attribute_poll_period(attr)
 
-    def _setup_device_polling(self,attr,polling):
-        if self.serverside_polling:
+    def _setup_device_polling(self,attr):
+        if self.override_serverside_polling:
             self._remember_polling(attr)
+            # to ensure minimum wait time the server side is set to be twice as fast as the client
+            polling = int(self.client_side_polling/2)
             self.device_proxy.poll_attribute(attr,polling)
-            self.current_polling = polling
+            self.current_server_side_polling = polling
         
     def _restore_polling(self):
-        if self.original_polling is not None:
-            self.device_proxy.poll_attribute(self.attribute_being_monitored,self.original_polling)
+        if self.original_server_polling is not None:
+            self.device_proxy.poll_attribute(self.attribute_being_monitored,self.original_server_polling)
         else:
             #TODO reset polling try to disable it entirely otherwise set to very slow
-            self.device_proxy.poll_attribute(self.attribute_being_monitored,5000)
+            self.device_proxy.poll_attribute(self.attribute_being_monitored,60000)
 
-    async def async_listen_for(self,attr,polling=100):
+    async def async_listen_for(self,attr):
         '''
         starts the listening process by calling the strategy's subcribe method
         this method allows for asyncronous calling
         '''
-        self._setup_device_polling(attr,polling)
+        self._setup_device_polling(attr)
         await self.strategy.async_subscribe(attr)
         self.listening = True
     
-    def listen_for(self,*attrs,polling=100):
+    def listen_for(self,*attrs):
         '''
         starts the listening process by calling the strategy's subcribe method
         '''
         for attr in attrs:
-            self._setup_device_polling(attr,polling)
+            self._setup_device_polling(attr)
             self.strategy.subscribe(attr)
             self.listening = True
 
@@ -286,7 +288,7 @@ class Listener():
         on the strategy provided.
         this method allows for asyncronous calling by returning to event loop whilst waiting
         '''
-        events,elapsed_time = await self.strategy.async_wait_for_next_event(self.current_polling,timeout)
+        events,elapsed_time = await self.strategy.async_wait_for_next_event(self.client_side_polling,timeout)
         if get_elapsed_time:
             return events,elapsed_time
         else:
@@ -297,7 +299,7 @@ class Listener():
         blocks (waits) for a next event to arrive; the mechanism for wiatinng depends
         on the strategy provided.
         '''
-        events,elapsed_time = self.strategy.wait_for_next_event(self.current_polling,timeout)
+        events,elapsed_time = self.strategy.wait_for_next_event(self.client_side_polling,timeout)
         if get_elapsed_time:
             return events,elapsed_time
         else:
@@ -313,6 +315,7 @@ class Listener():
         while self.listening:
             events, elapsed_time = await self.async_wait_for_next_event(timeout,get_elapsed_time=True)
             for event in events:
+                assert(event is not None)
                 if get_elapsed_time:
                     yield event, elapsed_time
                 else:
@@ -339,6 +342,6 @@ class Listener():
         '''
         self.listening = False
         self.strategy.unsubscribe()
-        if self.serverside_polling:
+        if self.override_serverside_polling:
             self._restore_polling()
     

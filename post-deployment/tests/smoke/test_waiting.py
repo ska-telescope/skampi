@@ -44,13 +44,13 @@ def generate_async_event(mock,events):
     return mock  
 
 def generate_iterative_events(mock,events):
-    def next_event(polling,timeout):
+    def next_event(timeout):
         return [events.pop()],10
     mock.wait_for_next_event.side_effect = next_event
     return mock
 
 def generate_iterative_events_async(mock,events):
-    async def next_event(polling,timeout):
+    async def next_event(timeout):
         return [events.pop()],timeout
     mock.async_wait_for_next_event.side_effect = next_event
     return mock

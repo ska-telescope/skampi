@@ -15,10 +15,10 @@ class interfaceStrategy():
     async def async_subscribe(self,attr):
         pass
 
-    async def async_wait_for_next_event(self,polling=100,timeout=5):
+    async def async_wait_for_next_event(self,timeout=5):
         pass
 
-    def wait_for_next_event(self,polling=100,timeout=5):
+    def wait_for_next_event(self,timeout=5):
         pass
 
     def unsubscribe(self):
@@ -68,7 +68,7 @@ class ConsumeImmediately(interfaceStrategy):
             self._cb
         ))
 
-    def wait_for_next_event(self,polling=None,timeout=5):
+    def wait_for_next_event(self,timeout=5):
         '''
         waits for next event by calling get on the queue
         raises ListenerTimeOut when timeout exceeds the timeout par (default 5 seconds)
@@ -86,8 +86,8 @@ class ConsumeImmediately(interfaceStrategy):
         else:
             return []
     
-    async def async_wait_for_next_event(self,polling=None,timeout=5):
-        return self.wait_for_next_event(polling,timeout)
+    async def async_wait_for_next_event(self,timeout=5):
+        return self.wait_for_next_event(timeout)
     
     def unsubscribe(self):    
         ''' stops the subcription process ''' 
@@ -234,11 +234,12 @@ class Listener():
     in addition you can suplly it with a strategy that defines the algorithm for subscribing and obtaining the next event
     (e.g. pushing or by pulling)'''
 
-    def __init__(self,device_proxy,strategy=None,override_serverside_polling=False, client_side_polling=100):
+    def __init__(self,device_proxy,strategy=None,override_serverside_polling=False, server_side_polling=None):
         self.device_proxy = device_proxy
+        self.default_server_side_polling=100
         self.override_serverside_polling = override_serverside_polling
         self.original_server_polling = None
-        self.client_side_polling = client_side_polling
+        self.server_side_polling = server_side_polling
         if strategy is  None:
             self.strategy = ConsumePeriodically(device_proxy)
         else:
@@ -252,12 +253,17 @@ class Listener():
     def _setup_device_polling(self,attr):
         if self.override_serverside_polling:
             self._remember_polling(attr)
-            if isinstance(self.strategy,ConsumePeriodically):
-                client_side_polling = self.strategy.polling
-                # to ensure minimum wait time the server side is set to be twice as fast as the client
-                polling = int(client_side_polling/2)
+            if self.server_side_polling is None:
+                #assumes the selection must be made by software itself
+                if isinstance(self.strategy,ConsumePeriodically):
+                    client_side_polling = self.strategy.polling
+                    # to ensure minimum wait time the server side is set to be twice as fast as the client
+                    polling = int(client_side_polling/2)
+                else:
+                    # selects a default polling on server of 100
+                    polling = self.default_server_side_polling
             else:
-                polling = self.client_side_polling
+                polling = self.server_side_polling
             self.device_proxy.poll_attribute(attr,polling)
             self.current_server_side_polling = polling
         
@@ -292,7 +298,7 @@ class Listener():
         on the strategy provided.
         this method allows for asyncronous calling by returning to event loop whilst waiting
         '''
-        events,elapsed_time = await self.strategy.async_wait_for_next_event(self.client_side_polling,timeout)
+        events,elapsed_time = await self.strategy.async_wait_for_next_event(timeout)
         if get_elapsed_time:
             return events,elapsed_time
         else:
@@ -303,7 +309,7 @@ class Listener():
         blocks (waits) for a next event to arrive; the mechanism for wiatinng depends
         on the strategy provided.
         '''
-        events,elapsed_time = self.strategy.wait_for_next_event(self.client_side_polling,timeout)
+        events,elapsed_time = self.strategy.wait_for_next_event(timeout)
         if get_elapsed_time:
             return events,elapsed_time
         else:

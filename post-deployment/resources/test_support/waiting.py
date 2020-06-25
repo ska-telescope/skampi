@@ -252,8 +252,12 @@ class Listener():
     def _setup_device_polling(self,attr):
         if self.override_serverside_polling:
             self._remember_polling(attr)
-            # to ensure minimum wait time the server side is set to be twice as fast as the client
-            polling = int(self.client_side_polling/2)
+            if isinstance(self.strategy,ConsumePeriodically):
+                client_side_polling = self.strategy.polling
+                # to ensure minimum wait time the server side is set to be twice as fast as the client
+                polling = int(client_side_polling/2)
+            else:
+                polling = self.client_side_polling
             self.device_proxy.poll_attribute(attr,polling)
             self.current_server_side_polling = polling
         

@@ -1,4 +1,4 @@
-from resources.test_support.waiting import Listener,StrategyListenbyPolling,interfaceStrategy,StrategyListenbyPushing,ListenerTimeOut
+from resources.test_support.waiting import Listener,ConsumePeriodically,interfaceStrategy,ConsumeImmediately,ListenerTimeOut
 from tango import EventType
 from tango.asyncio import DeviceProxy
 import asyncio
@@ -71,12 +71,12 @@ def mock_strategy_multiple():
 def test_listen_without_server_side_polling(mock_device_proxy):
     # given
     mock_strategy = set(interfaceStrategy()).get_updated_mock()
-    listener = Listener(mock_device_proxy,mock_strategy,serverside_polling=False)
+    listener = Listener(mock_device_proxy,mock_strategy,override_serverside_polling=False)
     # when I start listening
     listener.listen_for('attribute')
     #then I do not expect to remember the original polling 
     mock_device_proxy.is_attribute_polled.assert_not_called()
-    assert_that(listener.original_polling).is_equal_to(None)
+    assert_that(listener.original_server_polling).is_equal_to(None)
     #and I do not expect the actual polling to be updated
     mock_device_proxy.poll_attribute.assert_not_called()
     # but I do expect a subscription to be called
@@ -88,7 +88,7 @@ def test_listen_without_server_side_polling(mock_device_proxy):
 
 @mock.patch('tango.DeviceProxy.__init__')   
 def test_raises_time_out_for_pushing(mock_device_proxy):
-    strategy = StrategyListenbyPushing(mock_device_proxy)
+    strategy = ConsumeImmediately(mock_device_proxy)
     mock_device_proxy.name.return_value = 'mock_device'
     with pytest.raises(ListenerTimeOut, match=r"Timed out after 0.5 seconds waiting for events on attributes\['test'\] for device mock_device"):
         strategy.subscribe('test')
@@ -96,7 +96,7 @@ def test_raises_time_out_for_pushing(mock_device_proxy):
 
 @mock.patch('tango.DeviceProxy.__init__')
 def test_raises_time_out_for_pulling(mock_device_proxy):
-    strategy = StrategyListenbyPolling(mock_device_proxy)
+    strategy = ConsumePeriodically(mock_device_proxy)
     mock_device_proxy.name.return_value = 'mock_device'
     mock_device_proxy.get_events.return_value = []
     with pytest.raises(ListenerTimeOut, match=r"Timed out after 0.5 seconds waiting for events on attributes\['test'\] for device mock_device"):
@@ -105,26 +105,49 @@ def test_raises_time_out_for_pulling(mock_device_proxy):
 
 
 @mock.patch('tango.DeviceProxy.__init__')   
-def test_listen_with_server_side_polling(mock_device_proxy):
+def test_listen_with_server_side_polling_based_on_strategy(mock_device_proxy):
     #given
-    strategy_reworks = set(interfaceStrategy())
     device_reworks = MockReworker(mock_device_proxy)
-    device_reworks.customise_mock_with(is_already_polled,111)
+    strategy_reworks = set(ConsumePeriodically(mock_device_proxy))
+    device_reworks.customise_mock_with(is_already_polled,100)
     mock_strategy = strategy_reworks.get_updated_mock()
-    listener = Listener(mock_device_proxy,mock_strategy, serverside_polling=True)
+    mock_strategy.polling = 100
+    listener = Listener(mock_device_proxy,mock_strategy, override_serverside_polling=True)
     #when
     listener.listen_for('attribute')
     #then I expect to remember the original polling 
     mock_device_proxy.is_attribute_polled.assert_called_once()
-    assert_that(listener.original_polling).is_equal_to(111)
+    assert_that(listener.original_server_polling).is_equal_to(100)
     #and I expect the actual polling to be updated
-    mock_device_proxy.poll_attribute.assert_called_with('attribute',100)
-    assert_that(listener.current_polling).is_equal_to(100)
+    mock_device_proxy.poll_attribute.assert_called_with('attribute',50)
+    assert_that(listener.current_server_side_polling).is_equal_to(50)
     mock_strategy.subscribe.assert_called_once()
     # and when I stop listening
     listener.stop_listening()
     #and I expect the original polling to be restored
-    mock_device_proxy.poll_attribute.assert_called_with('attribute',111)
+    mock_device_proxy.poll_attribute.assert_called_with('attribute',100)
+
+@mock.patch('tango.DeviceProxy.__init__')   
+def test_listen_with_server_side_polling(mock_device_proxy):
+    #given
+    strategy_reworks = set(interfaceStrategy())
+    device_reworks = MockReworker(mock_device_proxy)
+    device_reworks.customise_mock_with(is_already_polled,100)
+    mock_strategy = strategy_reworks.get_updated_mock()
+    listener = Listener(mock_device_proxy,mock_strategy, override_serverside_polling=True)
+    #when
+    listener.listen_for('attribute')
+    #then I expect to remember the original polling 
+    mock_device_proxy.is_attribute_polled.assert_called_once()
+    assert_that(listener.original_server_polling).is_equal_to(100)
+    #and I expect the actual polling to be updated
+    mock_device_proxy.poll_attribute.assert_called_with('attribute',100)
+    assert_that(listener.current_server_side_polling).is_equal_to(100)
+    mock_strategy.subscribe.assert_called_once()
+    # and when I stop listening
+    listener.stop_listening()
+    #and I expect the original polling to be restored
+    mock_device_proxy.poll_attribute.assert_called_with('attribute',100)
     
 
 @mock.patch('resources.test_support.waiting.interfaceStrategy') 
@@ -139,10 +162,10 @@ def test_listener_can_listen_for_multiple_events(mock_device_proxy,mock_strategy
 
 @mock.patch('resources.test_support.waiting.datetime')
 @mock.patch('tango.DeviceProxy.__init__') 
-def test_push_strategy_delivers_elapsed_time(mock_device_proxy,mock_time):
+def test_cons_imm_delivers_elapsed_time(mock_device_proxy,mock_time):
     # given
     mock_time.now.return_value = 10
-    s = StrategyListenbyPushing(mock_device_proxy)
+    s = ConsumeImmediately(mock_device_proxy)
     # when I scubscribe and wait for an event on that subscription
     s.subscribe('attr1')
     s._cb('event')
@@ -153,10 +176,10 @@ def test_push_strategy_delivers_elapsed_time(mock_device_proxy,mock_time):
 
 @mock.patch('resources.test_support.waiting.datetime')
 @mock.patch('tango.DeviceProxy.__init__') 
-def test_pull_strategy_delivers_elapsed_time(mock_device_proxy,mock_time):
+def test_consume_per_delivers_elapsed_time(mock_device_proxy,mock_time):
     # given
     mock_time.now.return_value = 10
-    s = StrategyListenbyPolling(mock_device_proxy)
+    s = ConsumePeriodically(mock_device_proxy)
     # when I scubscribe and wait for an event on that subscription
     s.subscribe('attr1')
     mock_device_proxy.get_events.return_value='event1'
@@ -168,9 +191,9 @@ def test_pull_strategy_delivers_elapsed_time(mock_device_proxy,mock_time):
 
 
 @mock.patch('tango.DeviceProxy.__init__') 
-def test_push_strategy_can_subscribe_multiple_times(mock_device_proxy):
+def test_cons_imm_can_subscribe_multiple_times(mock_device_proxy):
     # given
-    s = StrategyListenbyPushing(mock_device_proxy)
+    s = ConsumeImmediately(mock_device_proxy)
     # when I scubscribe once
     s.subscribe('attr1')
     assert_that(mock_device_proxy.subscribe_event.call_count).is_equal_to(1)
@@ -183,9 +206,9 @@ def test_push_strategy_can_subscribe_multiple_times(mock_device_proxy):
     assert_that(mock_device_proxy.unsubscribe_event.call_count).is_equal_to(2)
 
 @mock.patch('tango.DeviceProxy.__init__') 
-def test_pull_strategy_can_subscribe_multiple_times(mock_device_proxy):
+def test_consume_per_can_subscribe_multiple_times(mock_device_proxy):
     # given
-    s = StrategyListenbyPolling(mock_device_proxy)
+    s = ConsumePeriodically(mock_device_proxy)
     # when I scubscribe once
     s.subscribe('attr1')
     assert_that(mock_device_proxy.subscribe_event.call_count).is_equal_to(1)
@@ -198,9 +221,9 @@ def test_pull_strategy_can_subscribe_multiple_times(mock_device_proxy):
     assert_that(mock_device_proxy.unsubscribe_event.call_count).is_equal_to(2)
 
 @mock.patch('tango.DeviceProxy.__init__') 
-def test_polling_strategy_can_wait_on_multiple_events(mock_device_proxy):
+def test_consume_per_can_wait_on_multiple_events(mock_device_proxy):
     # given
-    s = StrategyListenbyPolling(mock_device_proxy)
+    s = ConsumePeriodically(mock_device_proxy)
     def mock_get_events(id):
         return [id,id+1]
     mock_device_proxy.get_events.side_effect = mock_get_events
@@ -217,9 +240,9 @@ def test_polling_strategy_can_wait_on_multiple_events(mock_device_proxy):
 
 @mock.patch('resources.test_support.waiting.Queue') 
 @mock.patch('tango.DeviceProxy.__init__') 
-def test_pushing_strategy_can_wait_on_multiple_events(mock_device_proxy,mock_queue):
+def test_consume_imm_can_wait_on_multiple_events(mock_device_proxy,mock_queue):
     # given
-    s = StrategyListenbyPushing(mock_device_proxy)
+    s = ConsumeImmediately(mock_device_proxy)
     # and given I have subscribed once
     mock_device_proxy.subscribe_event.return_value = 1
     s.subscribe('attr1')
@@ -231,24 +254,23 @@ def test_pushing_strategy_can_wait_on_multiple_events(mock_device_proxy,mock_que
     mock_queue.return_value.get.assert_called_once()
 
 
-
 @mock.patch('tango.DeviceProxy.__init__')   
 def test_listen_with_server_side_polling_async(mock_device_proxy):
     #given
     strategy_reworks = set(interfaceStrategy())
     device_reworks = MockReworker(mock_device_proxy)
-    device_reworks.customise_mock_with(is_already_polled,111)
+    device_reworks.customise_mock_with(is_already_polled,100)
     mock_strategy = strategy_reworks.get_updated_mock()
-    listener = Listener(mock_device_proxy,mock_strategy, serverside_polling=True)
+    listener = Listener(mock_device_proxy,mock_strategy, override_serverside_polling=True)
     #when 
     assert(inspect.iscoroutinefunction(listener.async_listen_for))
     asyncio.run(listener.async_listen_for('attribute'))
     #then
     mock_device_proxy.is_attribute_polled.assert_called_once()
-    assert_that(listener.original_polling).is_equal_to(111)
+    assert_that(listener.original_server_polling).is_equal_to(100)
     #and I expect the actual polling to be updated
     mock_device_proxy.poll_attribute.assert_called_with('attribute',100)
-    assert_that(listener.current_polling).is_equal_to(100)
+    assert_that(listener.current_server_side_polling).is_equal_to(100)
     mock_strategy.async_subscribe.assert_called_once()
 
 
@@ -256,7 +278,7 @@ def test_listen_with_server_side_polling_async(mock_device_proxy):
 def test_listener_can_wait_events(mock_device_proxy):
     strategy_reworks = set(interfaceStrategy()).to(generate_multiple_events,['event1'])
     mock_strategy = strategy_reworks.get_updated_mock()
-    listener = Listener(mock_device_proxy,mock_strategy, serverside_polling=True)
+    listener = Listener(mock_device_proxy,mock_strategy, override_serverside_polling=True)
     #when
     listener.listen_for('attribute')
     result = listener.wait_for_next_event()
@@ -275,7 +297,7 @@ def test_listener_can_get_events_on(mock_device_proxy):
     test_events2 = test_events.copy()
     strategy_reworks = set(interfaceStrategy()).to(generate_iterative_events,test_events)
     mock_strategy = strategy_reworks.get_updated_mock()
-    listener = Listener(mock_device_proxy,mock_strategy, serverside_polling=True)
+    listener = Listener(mock_device_proxy,mock_strategy, override_serverside_polling=True)
     #when
     for event in listener.get_events_on('attr'):
         assert(listener.listening)
@@ -289,7 +311,7 @@ def test_listener_can_get_events_on_async(mock_device_proxy):
     test_events2 = test_events.copy()
     strategy_reworks = set(interfaceStrategy()).to(generate_iterative_events_async,test_events)
     mock_strategy = strategy_reworks.get_updated_mock()
-    listener = Listener(mock_device_proxy,mock_strategy, serverside_polling=True)
+    listener = Listener(mock_device_proxy,mock_strategy, override_serverside_polling=True)
     #when
     async def async_run():
         async for event in listener.async_get_events_on('attr'):
@@ -304,7 +326,7 @@ def test_listener_can_get_elapsed_time_async(mock_device_proxy):
     test_events = ['event1','event2','event3']
     strategy_reworks = set(interfaceStrategy()).to(generate_iterative_events_async,test_events)
     mock_strategy = strategy_reworks.get_updated_mock()
-    listener = Listener(mock_device_proxy,mock_strategy, serverside_polling=True)
+    listener = Listener(mock_device_proxy,mock_strategy, override_serverside_polling=True)
     #when
     async def async_run():
         async for event, elapsed_time in listener.async_get_events_on('attr',get_elapsed_time=True, timeout=10):
@@ -318,7 +340,7 @@ def test_listener_can_get_elapsed_time(mock_device_proxy):
     test_events = ['event1','event2','event3']
     strategy_reworks = set(interfaceStrategy()).to(generate_iterative_events,test_events)
     mock_strategy = strategy_reworks.get_updated_mock()
-    listener = Listener(mock_device_proxy,mock_strategy, serverside_polling=True)
+    listener = Listener(mock_device_proxy,mock_strategy, override_serverside_polling=True)
     #when
     for event, elapsed_time in listener.get_events_on('attr',get_elapsed_time=True, timeout=10):
         assert_that(elapsed_time).is_equal_to(10)
@@ -333,7 +355,7 @@ def test_wait_in_for_loop():
     async def async_run():
         events_received = 0
         device_proxy = await DeviceProxy('sys/tg_test/1')
-        strategy = StrategyListenbyPolling(device_proxy)
+        strategy = ConsumePeriodically(device_proxy)
         listener = Listener(device_proxy,strategy)
         async for event in listener.async_get_events_on('Status',10):
             if events_received == 0:
@@ -355,7 +377,7 @@ def test_wait_in_for_loop_pushing():
     async def async_run():
         events_received = 0
         device_proxy = await DeviceProxy('sys/tg_test/1')
-        strategy = StrategyListenbyPushing(device_proxy)
+        strategy = ConsumeImmediately(device_proxy)
         listener = Listener(device_proxy,strategy)
         async for event in listener.async_get_events_on('Status',10):
             if events_received == 0:

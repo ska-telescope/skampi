@@ -4,7 +4,7 @@ SKA SDP prototype deployed!
 You can connect to the configuration database by running a shell in the
 console pod. To start a bash shell, use:
 
-    $ kubectl exec -it deploy/{{ include "sdp-prototype.fullname" . }}-console bash
+    $ kubectl exec -it deploy/{{ include "sdp-prototype.fullname" . }}-console -- bash
 
 and from there you can use the sdpcfg command, e.g.:
 
@@ -12,7 +12,7 @@ and from there you can use the sdpcfg command, e.g.:
 
 Alternatively to start an iPython shell, use:
 
-    $ kubectl exec -it deploy/{{ include "sdp-prototype.fullname" . }}-console ipython
+    $ kubectl exec -it deploy/{{ include "sdp-prototype.fullname" . }}-console -- ipython
 
 and from there you can use the ska_sdp_config package, e.g.:
 

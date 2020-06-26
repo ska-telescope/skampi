@@ -5,7 +5,7 @@
       "targets": {
         "my science target": {
           "type": "sidereal",
-          "name": "α UMi B",
+          "name": "a UMi B",
           "system": "ICRS",
           "RA": "02:30:41.63",
           "dec": "+89:15:38.1"
@@ -16,7 +16,7 @@
       "targets": {
         "my calibrator target": {
           "type": "sidereal",
-          "name": "α UMi Aa",
+          "name": "a UMi Aa",
           "system": "ICRS",
           "RA": "02:31:49.09",
           "dec": "+89:15:50.8"
@@ -48,20 +48,34 @@
     },
     {
       "id": "Rx2 dish configuration",
-      "receiverBand": "2"
+      "receiverBand": "1"
     }
   ],
   "cspConfigurations": [
     {
       "id": "jeff",
       "fsp": [
-        {
-          "fspID": 1,
-          "functionMode": "CORR",
-          "frequencySliceID": 1,
-          "integrationTime" : 1400,
-          "corrBandwidth": 0
-        }
+      {
+        "fspID": 1,
+        "functionMode": "CORR",
+        "frequencySliceID": 1,
+        "integrationTime": 1400,
+        "corrBandwidth": 0,
+        "channelAveragingMap": [[0,2], [744,0]],
+        "fspChannelOffset": 0,
+        "outputLinkMap": [[0,0], [200,1]]
+      },
+      {
+        "fspID": 2,
+        "functionMode": "CORR",
+        "frequencySliceID": 2,
+        "integrationTime": 1400,
+        "corrBandwidth": 1,
+        "channelAveragingMap": [[0,2], [744,0]],
+        "fspChannelOffset": 744,
+        "outputLinkMap": [[0,4], [200,5]],
+        "zoomWindowTuning": 4700000
+      }
       ]
     }
   ]

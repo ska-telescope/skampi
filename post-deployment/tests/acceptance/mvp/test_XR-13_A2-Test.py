@@ -79,7 +79,7 @@ def config():
     @sync_configure_oet
     @time_it(120)
     def test_SUT():
-        file = 'resources/test_data/TMC_integration/configure1.json'
+        file = 'resources/test_data/OET_integration/example_configure.json'
         update_scan_config_file(file)
         SubArray(1).configure_from_file(file, 2, with_processing = False)
     test_SUT()

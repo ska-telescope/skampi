@@ -1,5 +1,6 @@
 -r SUT_requirements.txt
 pytest
+pyyaml
 pytest-cov
 pytest-json-report
 pycodestyle

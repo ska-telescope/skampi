@@ -59,5 +59,5 @@ def test_obs_state_attribute_enum_labels_are_valid():
         if not is_enum_valid(device_name):
             defaulting_classes.append(server_class)
     
-    msg = f"Devices ({defaulting_classes} don't have conforming obsState enum labels/values"
+    msg = f"Classes ({defaulting_classes} don't have a conforming obsState enum labels/values"
     assert len(defaulting_classes) == 0, msg

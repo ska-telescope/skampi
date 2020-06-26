@@ -292,12 +292,17 @@ install_subchart: namespace namespace_sdp mkcerts deploy_etcd ## helm install en
 				 $(CHART_SET) \
 				 --set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 				 --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-				 --values $(VALUES) --wait --timeout=10m0s
+				 --values $(VALUES) --wait --timeout=3m0s
+	@chart_name=$$(helm list --filter $(SUB_CHART)-$(HELM_RELEASE) -o=yaml | grep chart | awk '{print $$NF}') && \
+		kubectl get all -l chart=$$chart_name
 	make smoketest SLEEPTIME=3s > /dev/null 2>&1
 
 uninstall_subchart: delete_etcd ## delete ALL of the helm chart release
 	helm delete $(SUB_CHART)-$(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true
 
+describe_install: ## describe a current helm installation given by SUB_CHART as name
+	@chart_name=$$(helm list --all --filter $(SUB_CHART)-$(HELM_RELEASE) -o=yaml | grep chart | awk '{print $$NF}') && \
+		kubectl get all -l chart=$$chart_name
 
 
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES

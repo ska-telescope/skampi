@@ -273,7 +273,7 @@ uninstall: delete_etcd ## delete ALL of the helm chart release
 
 
 install_subchart: namespace namespace_sdp mkcerts deploy_etcd ## helm install entire suite
-	helm install $(SUB_CHART)_$(HELM_RELEASE) charts/skampi/$(SUB_CHART)/ \
+	helm install $(SUB_CHART)-$(HELM_RELEASE) charts/skampi/charts/$(SUB_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \
 				 --set tango-base.display="$(DISPLAY)" \
 				 --set tango-base.xauthority="$(XAUTHORITYx)" \
@@ -296,7 +296,7 @@ install_subchart: namespace namespace_sdp mkcerts deploy_etcd ## helm install en
 	make smoketest SLEEPTIME=3s > /dev/null 2>&1
 
 uninstall_subchart: delete_etcd ## delete ALL of the helm chart release
-	helm delete $(SUB_CHART)_$(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true
+	helm delete $(SUB_CHART)-$(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true
 
 
 

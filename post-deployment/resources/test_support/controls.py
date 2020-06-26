@@ -52,7 +52,7 @@ class pilot():
         return self
 
 
-    def and_configure_scan_by_file(self,file = 'resources/test_data/TMC_integration/configure1.json'):
+    def and_configure_scan_by_file(self,file = 'resources/test_data/OET_integration/example_configure.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A2-Test.py
         @sync_configure_oet
         @time_it(120)

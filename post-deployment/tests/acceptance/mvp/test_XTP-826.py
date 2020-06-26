@@ -100,7 +100,7 @@ def setup_telescope_and_scan(result):
 
     LOGGER.info("configuring for first scan")
     result[SUBARRAY_USED].and_configure_scan_by_file(
-        file='resources/test_data/TMC_integration/configure1.json')
+        file='resources/test_data/OET_integration/example_configure.json')
 
     LOGGER.info("executing first scan")
     result[SUBARRAY_USED].and_run_a_scan()

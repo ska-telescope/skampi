@@ -9,7 +9,7 @@
     "scan_types": [
       {
         "id": "science_A",
-        "coordinate_system": "ICRS", "ra": "02:42:40.771", "dec": "-00:00:47.84",
+        "coordinate_system": "ICRS", "ra": "21:08:47.92", "dec": "-88:57:22.9",
         "channels": [
             {
               "count": 744,
@@ -30,7 +30,7 @@
       },
       {
         "id": "calibration_B",
-        "coordinate_system": "ICRS", "ra": "12:29:06.699", "dec": "02:03:08.598",
+        "coordinate_system": "ICRS", "ra": "21:08:47.92", "dec": "-88:57:22.9",
         "channels": [
             {
               "count": 744,

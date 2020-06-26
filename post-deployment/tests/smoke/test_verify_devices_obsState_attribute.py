@@ -14,21 +14,16 @@ def _is_enum_valid(device_name):
 @pytest.mark.fast
 def test_check_obs_state_enum():
     db = Database()
-    server_list = db.get_server_list()
-
-    i = 0
+    servers = db.get_server_list()
     defaulting_devices = []
 
-    while i < len(server_list):
-        class_list = db.get_device_class_list(server_list[i])
-        j = 0
-        while j < len(class_list):
-            temp = class_list[j].split("/")
-            if all([len(temp) != 1, "dserver" not in temp]):
-                if not _is_enum_valid(class_list[j]):
-                    defaulting_devices.append(class_list[j])
-            j += 2
-        i += 1
+    for server in servers:
+        devices_and_classes = db.get_device_class_list(server)
+        for val in devices_and_classes:
+            # ignore classes and grab only devices which are not in the dserver domain
+            if not(val.lower().startswith('dserver') or len(val.split("/"))==1):
+                if not _is_enum_valid(val):
+                    defaulting_devices.append(val)
 
-    msg = f"Devices ({defaulting_devices} don't have confirming obsState enum labels/values"
+    msg = f"Devices ({defaulting_devices} don't have conforming obsState enum labels/values"
     assert len(defaulting_devices) == 0, msg

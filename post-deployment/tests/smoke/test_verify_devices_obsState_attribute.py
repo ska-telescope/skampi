@@ -44,7 +44,7 @@ def is_enum_valid(device_name):
     return _is_label_conformant(enum_labels)
 
 @pytest.mark.fast
-def test_check_obs_state_enum():
+def test_obs_state_attribute_enum_labels_are_valid():
     db = Database()
     server_classes = db.get_class_list('*')
     defaulting_classes = []

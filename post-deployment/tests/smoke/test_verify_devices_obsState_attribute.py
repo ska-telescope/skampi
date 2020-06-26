@@ -8,6 +8,8 @@ from tango import Database, DeviceProxy
 
 # obsState enums as defined in lmc base class control model
 obs_state_enums = ["IDLE", "CONFIGURING", "READY", "SCANNING", "PAUSED", "ABORTED", "FAULT"]
+default_tango_server_classes = ('DataBase', 'DServer', 'Starter', 'TangoAccessControl')
+
 
 def _is_label_conformant(enum_labels):
     label_order_correctness = []
@@ -44,16 +46,18 @@ def is_enum_valid(device_name):
 @pytest.mark.fast
 def test_check_obs_state_enum():
     db = Database()
-    servers = db.get_server_list()
-    defaulting_devices = []
+    server_classes = db.get_class_list('*')
+    defaulting_classes = []
 
-    for server in servers:
-        devices_and_classes = db.get_device_class_list(server)
-        for val in devices_and_classes:
-            # ignore classes and grab only devices which are not in the dserver domain
-            if not(val.lower().startswith('dserver') or len(val.split("/"))==1):
-                if not is_enum_valid(val):
-                    defaulting_devices.append(val)
+    for server_class in server_classes:
+        if server_class in default_tango_server_classes:
+            continue
 
-    msg = f"Devices ({defaulting_devices} don't have conforming obsState enum labels/values"
-    assert len(defaulting_devices) == 0, msg
+        device_names = db.get_device_exported_for_class(server_class)
+        # Use only one device for the test here.
+        device_name = device_names[0]
+        if not is_enum_valid(device_name):
+            defaulting_classes.append(server_class)
+    
+    msg = f"Devices ({defaulting_classes} don't have conforming obsState enum labels/values"
+    assert len(defaulting_classes) == 0, msg

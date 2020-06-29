@@ -60,7 +60,7 @@ spec:
           - name: MYSQL_ALLOW_EMPTY_PASSWORD
             value: "1"
           - name: TANGO_HOST
-            value: databaseds-tango-base-{{ .Release.Name }}:10000
+            value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
         ports:
         - name: archiverdb-port
           containerPort: 3306

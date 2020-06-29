@@ -3,11 +3,13 @@ The LMC base classes now implement a state machine with changes to the enum labe
 of the obsState attribute. This test ensures that all devices have the same labels
 and values
 """
+import logging
 import pytest
+from random import shuffle
 from tango import Database, DeviceProxy
 
-# obsState enums as defined in lmc base classes control model
-obs_state_enums = ("IDLE", "CONFIGURING", "READY", "SCANNING", "PAUSED", "ABORTED", "FAULT")
+# obsState enum as defined in lmc-base-classes 0.5.4 control model
+obs_state_enum = ("IDLE", "CONFIGURING", "READY", "SCANNING", "PAUSED", "ABORTED", "FAULT")
 default_tango_server_classes = ('DataBase', 'DServer', 'Starter', 'TangoAccessControl')
 
 
@@ -22,13 +24,13 @@ def is_enum_labels_valid(enum_labels):
     formatted_enum_labels = _remove_special_characters_from_enum_labels(enum_labels)
     label_order_correctness = []
     # First check
-    if len(formatted_enum_labels) != len(obs_state_enums):
+    if len(formatted_enum_labels) != len(obs_state_enum):
         return False
 
     for idx, label in enumerate(formatted_enum_labels):
         try:
             # Second check
-            true_index = obs_state_enums.index(label)
+            true_index = obs_state_enum.index(label)
         except ValueError:
             return False
         else:
@@ -36,12 +38,13 @@ def is_enum_labels_valid(enum_labels):
     # Third check
     return all(label_order_correctness)
 
-
-@pytest.mark.fast
-def test_obs_state_attribute_enum_labels_are_valid():
+@pytest.fixture(scope="function")
+def extract_enums():
+    """Query the database and retrieve enum labels for classes with
+    obsState attribute in their device"""
+    classes_and_enums = {}
     db = Database()
     server_classes = db.get_class_list('*')
-    defaulting_classes = []
 
     for server_class in server_classes:
         if server_class in default_tango_server_classes:
@@ -55,8 +58,48 @@ def test_obs_state_attribute_enum_labels_are_valid():
         if "obsState" not in attribute_list:
             continue
         enum_labels = dp.get_attribute_config("obsState").enum_labels
-        if not is_enum_labels_valid(enum_labels):
-            defaulting_classes.append(server_class)
+        classes_and_enums[server_class] = enum_labels
 
-    msg = f"Classes ({defaulting_classes}) don't have a conforming obsState enum labels/values"
+    return classes_and_enums
+
+
+@pytest.mark.fast
+def test_obs_state_attribute_for_invalid_enum_labels(extract_enums):
+    extracted_enums = extract_enums
+    # use only the first value from the dict
+    selected_enum = next(iter(extracted_enums.values()))
+
+    # check for right length
+    bigger_list = selected_enum + selected_enum[:]
+    logging.info(f"Verify len({bigger_list}) > {len(obs_state_enum)}")
+    assert is_enum_labels_valid(bigger_list) == False
+
+    smaller_list = selected_enum[0:4]
+    logging.info(f"Verify len({smaller_list}) < {len(obs_state_enum)}")
+    assert is_enum_labels_valid(bigger_list) == False
+
+    # check for same names
+    correct_lbl = selected_enum[0]
+    selected_enum[0] = "attr_1"
+    logging.info(f"Verify {selected_enum} has different labels from {obs_state_enum}")
+    assert is_enum_labels_valid(selected_enum) == False
+    # restore the correct label
+    selected_enum[0] = correct_lbl
+
+    # check for correct order
+    shuffle(selected_enum)
+    logging.info(f"Verify labels in {selected_enum} do not conform to the"
+                 " order of {obs_state_enum}")
+    assert is_enum_labels_valid(selected_enum) == False
+
+@pytest.mark.fast
+def test_obs_state_attribute_enum_labels_are_valid(extract_enums):
+    extracted_enums = extract_enums
+    defaulting_classes = []
+    for class_, enum_labels in extracted_enums.items():
+        logging.info(f"Checking enum labels ({enum_labels}) for class:{class_}")
+        if not is_enum_labels_valid(enum_labels):
+                defaulting_classes.append(class_)
+
+    msg = f"Classes ({defaulting_classes}) don't have a conforming obsState enum labels"
     assert len(defaulting_classes) == 0, msg

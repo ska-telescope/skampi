@@ -58,6 +58,8 @@ def extract_enums():
         if "obsState" not in attribute_list:
             continue
         enum_labels = dp.get_attribute_config("obsState").enum_labels
+        # cast label from tango._tango.StdStringVector to List
+        enum_labels = list(enum_labels)
         classes_and_enums[server_class] = enum_labels
 
     return classes_and_enums
@@ -67,39 +69,40 @@ def extract_enums():
 def test_obs_state_attribute_for_invalid_enum_labels(extract_enums):
     extracted_enums = extract_enums
     # use only the first value from the dict
-    selected_enum = next(iter(extracted_enums.values()))
+    selected_enum_labels = next(iter(extracted_enums.values()))
 
     # check for right length
-    bigger_list = selected_enum + selected_enum[:]
-    logging.info(f"Verify len({bigger_list}) > {len(obs_state_enum)}")
+    bigger_list = selected_enum_labels + selected_enum_labels[:]
+    logging.info(f"Verify there are more than {len(obs_state_enum)} elements in {bigger_list}")
     assert is_enum_labels_valid(bigger_list) == False
 
-    smaller_list = selected_enum[0:4]
-    logging.info(f"Verify len({smaller_list}) < {len(obs_state_enum)}")
+    smaller_list = selected_enum_labels[0:4]
+    logging.info(f"Verify there are less than {len(obs_state_enum)} elements in {smaller_list}")
     assert is_enum_labels_valid(bigger_list) == False
 
     # check for same names
-    correct_lbl = selected_enum[0]
-    selected_enum[0] = "attr_1"
-    logging.info(f"Verify {selected_enum} has different labels from {obs_state_enum}")
-    assert is_enum_labels_valid(selected_enum) == False
+    correct_lbl = selected_enum_labels[0]
+    selected_enum_labels[0] = "attr_1"
+    logging.info(f"Verify labels in {selected_enum_labels} differ from labels in {obs_state_enum}")
+    assert is_enum_labels_valid(selected_enum_labels) == False
     # restore the correct label
-    selected_enum[0] = correct_lbl
+    selected_enum_labels[0] = correct_lbl
 
     # check for correct order
-    shuffle(selected_enum)
-    logging.info(f"Verify labels in {selected_enum} do not conform to the"
-                 " order of {obs_state_enum}")
-    assert is_enum_labels_valid(selected_enum) == False
+    shuffle(selected_enum_labels)
+    logging.info(f"Verify labels in {selected_enum_labels} do not conform to the obsState attribute"
+                 f" labels in {obs_state_enum}")
+    assert is_enum_labels_valid(selected_enum_labels) == False
 
 @pytest.mark.fast
 def test_obs_state_attribute_enum_labels_are_valid(extract_enums):
     extracted_enums = extract_enums
     defaulting_classes = []
     for class_, enum_labels in extracted_enums.items():
-        logging.info(f"Checking enum labels ({enum_labels}) for class:{class_}")
         if not is_enum_labels_valid(enum_labels):
                 defaulting_classes.append(class_)
 
+    logging.info(f"Enum labels for {len(extracted_enums.keys())} classes were checked for"
+                 f" conformity with labels in {obs_state_enum}")
     msg = f"Classes ({defaulting_classes}) don't have a conforming obsState enum labels"
     assert len(defaulting_classes) == 0, msg

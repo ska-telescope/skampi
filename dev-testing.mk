@@ -114,7 +114,7 @@ install_testing_pod:
 
 testing-pod = $(shell echo $$(kubectl get pod -l releaseName='dev-testing' -o=jsonpath='{..metadata.name}') )
 
-set_up_dev_testing: install_testing_pod tp_config test_as_ssh_client
+set_up_dev_testing: install_testing_pod tp_pip tp_config test_as_ssh_client
 	
 
 describe_dev_testing:

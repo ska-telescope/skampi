@@ -5,6 +5,7 @@ metadata:
   labels:
     app: dev-testing
     chart: {{ template "dev_testing.chart" . }}
+    releaseName: {{ .Release.Name }}
 spec:  
   type: NodePort
   selector:
@@ -27,6 +28,7 @@ metadata:
   labels:
     app: dev-testing
     chart: {{ template "dev_testing.chart" . }}
+    releaseName: {{ .Release.Name }}
 spec:
   selector:
     matchLabels:
@@ -37,6 +39,7 @@ spec:
       labels:
         app: dev-testing
         chart: {{ template "dev_testing.chart" . }}
+        releaseName: {{ .Release.Name }}
       name: dev-testing
       namespace: integration
     spec:

@@ -82,7 +82,7 @@ tp_cp: tp_cp_kube tp_cp_minikube
 tp_config:
 	@echo "Configuring testing pod"
 	@echo "#######################";
-	kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c " \
+	@kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c " \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-key=/home/tango/.minikube/client.key && \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-certificate=/home/tango/.minikube/client.crt && \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-cluster minikube --certificate-authority=/home/tango/.minikube/ca.crt && \
@@ -99,8 +99,10 @@ deploy_testing_pod: tp_run_wait tp_pip tp_cp tp_config## deploy a testing pod fo
 sshPort=30022 
 httpPort=30080
 
+RELEASE_NAME=dev-testing
+
 install_testing_pod:
-	helm install dev-testing post-deployment/exploration/dev_testing \
+	@helm install $(RELEASE_NAME) post-deployment/exploration/dev_testing\
 		--set imageToTest=$(IMAGE_TO_TEST) \
 		--set kubeNamespace=$(KUBE_NAMESPACE) \
 		--set helmRelease=$(HELM_RELEASE) \
@@ -108,8 +110,12 @@ install_testing_pod:
 		--set sshPort=$(sshPort) \
 		--set hostPath=$(location) \
 		--wait --timeout=1m0s
-	@chart_name=$$(helm list --filter dev-testing -o=yaml | grep chart | awk '{print $$NF}') && \
-		kubectl get all -l chart=$$chart_name
+	@kubectl get all -l releaseName=$(RELEASE_NAME)
+
+testing-pod = $(shell echo $$(kubectl get pod -l releaseName='dev-testing' -o=jsonpath='{..metadata.name}') )
+
+set_up_dev_testing: install_testing_pod tp_config test_as_ssh_client
+	
 
 describe_dev_testing:
 	@chart_name=$$(helm list --filter dev-testing -o=yaml | grep chart | awk '{print $$NF}') && \
@@ -117,7 +123,7 @@ describe_dev_testing:
 
 
 uninstall_testing_pod:
-	helm delete dev-testing
+	helm delete $(RELEASE_NAME)
 
 delete_testing_pod: # delete testing pod
 	@kubectl delete pod $(testing-pod) --namespace $(KUBE_NAMESPACE)

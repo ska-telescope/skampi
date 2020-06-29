@@ -96,6 +96,28 @@ tp_config:
 
 deploy_testing_pod: tp_run_wait tp_pip tp_cp tp_config## deploy a testing pod for doing developement inside a k8 pod (this is the same pod used for running CI tests)
 
+sshPort=30022 
+httpPort=30080
+
+install_testing_pod:
+	helm install dev-testing post-deployment/exploration/dev_testing \
+		--set imageToTest=$(IMAGE_TO_TEST) \
+		--set kubeNamespace=$(KUBE_NAMESPACE) \
+		--set helmRelease=$(HELM_RELEASE) \
+		--set pythonPath=$(PYTHONPATH) \
+		--set sshPort=$(sshPort) \
+		--set hostPath=$(location) \
+		--wait --timeout=1m0s
+	@chart_name=$$(helm list --filter dev-testing -o=yaml | grep chart | awk '{print $$NF}') && \
+		kubectl get all -l chart=$$chart_name
+
+describe_dev_testing:
+	@chart_name=$$(helm list --filter dev-testing -o=yaml | grep chart | awk '{print $$NF}') && \
+		kubectl get all -l chart=$$chart_name
+
+
+uninstall_testing_pod:
+	helm delete dev-testing
 
 delete_testing_pod: # delete testing pod
 	@kubectl delete pod $(testing-pod) --namespace $(KUBE_NAMESPACE)

@@ -1,0 +1,8 @@
+
+imageToTest: nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.4
+kubeNamespace: integration
+helmRelease: test
+pythonPath: "/home/tango/skampi/:/home/tango/skampi/post-deployment/:"
+sshPort: 30022
+httpPort: 30080
+hostPath: /home/ubuntu/skampi

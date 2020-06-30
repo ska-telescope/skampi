@@ -35,7 +35,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_configure_scan():
     
     try:
@@ -51,23 +51,23 @@ def test_configure_scan():
         
         # and a subarray composed of two resources configured as perTMC_integration/assign_resources.json
         LOGGER.info('Composing the Subarray')
-        tmc.compose_sub()
+        sdp_block = tmc.compose_sub()
         fixture['state'] = 'Subarray Assigned'
 
         #then when I configure a subarray to perform a scan as per 'TMC_integration/configure1.json'
-        @log_it('TMC_int_configure',devices_to_log,non_default_states_to_check)
+        #@log_it('TMC_int_configure',devices_to_log,non_default_states_to_check)
         @sync_configure
         @time_it(90)
-        def configure_sub():
+        def configure_sub(sdp_block):
             resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
             configure1_file = 'resources/test_data/TMC_integration/configure1.json'
-            update_scan_config_file(configure1_file)
+            update_scan_config_file(configure1_file, sdp_block)
             config = load_config_from_file(configure1_file)
             LOGGER.info('Configuring a scan for subarray 1')
             fixture['state'] = 'Subarray CONFIGURING'
             SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
             SubarrayNode.Configure(config)
-        configure_sub()
+        configure_sub(sdp_block)
         fixture['state'] = 'Subarray Configured for SCAN'
     
         #tear down

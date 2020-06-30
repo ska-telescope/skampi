@@ -50,11 +50,11 @@ def test_assign_resources():
         fixture['state'] = 'Telescope On'
         
         # then when I assign a subarray composed of two resources configured as perTMC_integration/assign_resources.json
-        @log_it('TMC_int_comp',devices_to_log,non_default_states_to_check)
+        #@log_it('TMC_int_comp',devices_to_log,non_default_states_to_check)
         @sync_assign_resources(2)
         def compose_sub():
             resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
-            assign_resources_file = 'resources/test_data/TMC_integration/assign_resources.json'
+            assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
             update_resource_config_file(assign_resources_file)
             config = load_config_from_file(assign_resources_file)
             CentralNode = DeviceProxy('ska_mid/tm_central/central_node')

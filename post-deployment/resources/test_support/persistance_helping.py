@@ -4,6 +4,10 @@ from random import choice
 from datetime import date
 import csv
 import re
+import string
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 
 def inc_from_old_nr(oldnr,incremental=1):
@@ -51,22 +55,35 @@ def update_resource_config_file(file):
         data['sdp']['processing_blocks'][index]['id'] = inc_from_old_nr(item['id'],incremental)
         if 'dependencies' in item.keys():
             for index2,item2 in enumerate(item['dependencies']):
-                data['sdp']['processing_blocks'][index]['dependencies'][index2]['pb_id'] = inc_from_old_nr(item2['pb_id'],incremental)
+                data['sdp']['processing_blocks'][index]['dependencies'][index2]['pb_id'] = data['sdp']['processing_blocks'][0]['id']
     with open(file, 'w') as f:
         json.dump(data, f)
+    LOGGER.info("________ AssignResources Updated string for next iteration_______" + str(data))
+    return data['sdp']
+    LOGGER.info("________ SDP block is_______" + str(data['sdp']))
 
-def update_scan_config_file(file):
+
+def update_scan_config_file(file, sdp_block):
+    #N = 5
     with open(file, 'r') as f:
         data = json.load(f)
-    data['csp']['id'] = inc_from_old_nr(data['csp']['id'])
+    scan_type_list = []
+    for scan_block in sdp_block['scan_types']:
+        scan_type_list.append(scan_block['id'])
+
+    LOGGER.info("___________Scan types list________" + str(scan_type_list))
+    data['sdp']['scan_type'] = random.choice(scan_type_list)
+    sdp_sbi_id = sdp_block['id']
+    data['csp']['id'] = sdp_sbi_id + '-' + data['sdp']['scan_type']
     with open(file, 'w') as f:
         json.dump(data, f)
-
+    LOGGER.info("________ Configure Updated string for next iteration_______" + str(data))
 
 
 def print_dict_to_file(filename,data):
     with open(filename, 'w') as file:
-        file.write(json.dumps(data)) 
+        file.write(json.dumps(data))
+
 
 def print_dict_to_csv_file(filename,data):
     csv_columns = data[0].keys()

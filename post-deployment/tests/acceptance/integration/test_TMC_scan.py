@@ -36,7 +36,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_scan():
     
     try:
@@ -52,20 +52,20 @@ def test_scan():
         
         # and a subarray composed of two resources configured as perTMC_integration/assign_resources.json
         LOGGER.info('Composing the Subarray')
-        tmc.compose_sub()
+        sdp_block = tmc.compose_sub()
         fixture['state'] = 'Subarray Assigned'
 
         #and a subarray configured to perform a scan as per 'TMC_integration/configure1.json'
         LOGGER.info('Configuring the Subarray')
         fixture['state'] = 'Subarray CONFIGURING'
-        tmc.configure_sub()
+        tmc.configure_sub(sdp_block)
         fixture['state'] = 'Subarray Configured for SCAN'
       
         #When I run a scan of 4 seconds based on previos configuration
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
         LOGGER.info('Starting a scan of 4 seconds')
         fixture['state'] = 'Subarray SCANNING'
-        @log_it('TMC_int_scan',devices_to_log,non_default_states_to_check)
+        #@log_it('TMC_int_scan',devices_to_log,non_default_states_to_check)
         @sync_scan(200)
         def scan():
             SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')

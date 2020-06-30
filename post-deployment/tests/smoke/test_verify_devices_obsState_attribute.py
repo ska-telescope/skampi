@@ -10,7 +10,8 @@ from tango import Database, DeviceProxy
 
 # obsState enum as defined in lmc-base-classes 0.5.4 control model
 obs_state_enum = ("IDLE", "CONFIGURING", "READY", "SCANNING", "PAUSED", "ABORTED", "FAULT")
-default_tango_server_classes = ('DataBase', 'DServer', 'Starter', 'TangoAccessControl')
+default_tango_server_classes = ('DataBaseds', 'DServer', 'Starter',
+                                'TangoAccessControl', 'TangoRestServer')
 
 
 def _remove_special_characters_from_enum_labels(enum_labels):
@@ -42,27 +43,27 @@ def is_enum_labels_valid(enum_labels):
 def extract_enums():
     """Query the database and retrieve enum labels for classes with
     obsState attribute in their device"""
-    classes_and_enums = {}
+    devices_and_enums = {}
     db = Database()
-    server_classes = db.get_class_list('*')
+    server_instances = db.get_server_list()
 
-    for server_class in server_classes:
-        if server_class in default_tango_server_classes:
+    for server_instance in server_instances:
+        server = server_instance.split("/")[0]
+        if server in default_tango_server_classes:
             continue
-        device_names = db.get_device_exported_for_class(server_class)
-        # List of devices implementing the same server class will have the same
-        # interface/implementation. Hence, use only one device for the test
-        device_name = device_names[0]
-        dp = DeviceProxy(device_name)
-        attribute_list = dp.get_attribute_list()
-        if "obsState" not in attribute_list:
-            continue
-        enum_labels = dp.get_attribute_config("obsState").enum_labels
-        # cast label from tango._tango.StdStringVector to List
-        enum_labels = list(enum_labels)
-        classes_and_enums[server_class] = enum_labels
+        devices_and_classes = db.get_device_class_list(server_instance)
+        for val in devices_and_classes:
+            if not(val.lower().startswith('dserver') or len(val.split("/"))==1):
+                dp = DeviceProxy(val)
+                attribute_list = dp.get_attribute_list()
+                if "obsState" not in attribute_list:
+                    continue
+                enum_labels = dp.get_attribute_config("obsState").enum_labels
+                # cast label from tango._tango.StdStringVector to List
+                enum_labels = list(enum_labels)
+                devices_and_enums[val] = enum_labels
 
-    return classes_and_enums
+    return devices_and_enums
 
 
 @pytest.mark.fast
@@ -97,12 +98,12 @@ def test_obs_state_attribute_for_invalid_enum_labels(extract_enums):
 @pytest.mark.fast
 def test_obs_state_attribute_enum_labels_are_valid(extract_enums):
     extracted_enums = extract_enums
-    defaulting_classes = []
-    for class_, enum_labels in extracted_enums.items():
+    defaulting_devices = []
+    for device, enum_labels in extracted_enums.items():
         if not is_enum_labels_valid(enum_labels):
-                defaulting_classes.append(class_)
+                defaulting_devices.append(device)
 
-    logging.info(f"Enum labels for {len(extracted_enums.keys())} classes were checked for"
+    logging.info(f"Enum labels for {len(extracted_enums.keys())} devices were checked for"
                  f" conformity with labels in {obs_state_enum}")
-    msg = f"Classes ({defaulting_classes}) don't have a conforming obsState enum labels"
-    assert len(defaulting_classes) == 0, msg
+    msg = f"Devices ({defaulting_devices}) don't have a conforming obsState enum labels"
+    assert len(defaulting_devices) == 0, msg

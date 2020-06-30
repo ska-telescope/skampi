@@ -23,21 +23,7 @@ def _remove_special_characters_from_enum_labels(enum_labels):
 def is_enum_labels_valid(enum_labels):
     """verfiy enum labels have the right length, correct names and order"""
     formatted_enum_labels = _remove_special_characters_from_enum_labels(enum_labels)
-    label_order_correctness = []
-    # First check
-    if len(formatted_enum_labels) != len(obs_state_enum):
-        return False
-
-    for idx, label in enumerate(formatted_enum_labels):
-        try:
-            # Second check
-            true_index = obs_state_enum.index(label)
-        except ValueError:
-            return False
-        else:
-            label_order_correctness.append(true_index==idx)
-    # Third check
-    return all(label_order_correctness)
+    return formatted_enum_labels == list(obs_state_enum)
 
 @pytest.fixture(scope="function")
 def extract_enums():
@@ -101,7 +87,8 @@ def test_obs_state_attribute_enum_labels_are_valid(extract_enums):
     defaulting_devices = []
     for device, enum_labels in extracted_enums.items():
         if not is_enum_labels_valid(enum_labels):
-                defaulting_devices.append(device)
+            logging.info(f"Device: {device}, enum labels: {enum_labels}.")
+            defaulting_devices.append(device)
 
     logging.info(f"Enum labels for {len(extracted_enums.keys())} devices were checked for"
                  f" conformity with labels in {obs_state_enum}")

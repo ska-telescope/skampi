@@ -26,7 +26,7 @@ def is_enum_labels_valid(enum_labels):
     return formatted_enum_labels == list(obs_state_enum)
 
 @pytest.fixture(scope="function")
-def extract_enums():
+def device_enum_labels_map():
     """Query the database and retrieve enum labels for classes with
     obsState attribute in their device"""
     devices_and_enums = {}
@@ -53,10 +53,9 @@ def extract_enums():
 
 
 @pytest.mark.fast
-def test_obs_state_attribute_for_invalid_enum_labels(extract_enums):
-    extracted_enums = extract_enums
+def test_obs_state_attribute_for_invalid_enum_labels(device_enum_labels_map):
     # use only the first value from the dict
-    selected_enum_labels = next(iter(extracted_enums.values()))
+    selected_enum_labels = next(iter(device_enum_labels_map.values()))
 
     # check for right length
     bigger_list = selected_enum_labels + selected_enum_labels[:]
@@ -82,15 +81,14 @@ def test_obs_state_attribute_for_invalid_enum_labels(extract_enums):
     assert is_enum_labels_valid(selected_enum_labels) == False
 
 @pytest.mark.fast
-def test_obs_state_attribute_enum_labels_are_valid(extract_enums):
-    extracted_enums = extract_enums
+def test_obs_state_attribute_enum_labels_are_valid(device_enum_labels_map):
     defaulting_devices = []
-    for device, enum_labels in extracted_enums.items():
+    for device, enum_labels in device_enum_labels_map.items():
         if not is_enum_labels_valid(enum_labels):
             logging.info(f"Device: {device}, enum labels: {enum_labels}.")
             defaulting_devices.append(device)
 
-    logging.info(f"Enum labels for {len(extracted_enums.keys())} devices were checked for"
+    logging.info(f"Enum labels for {len(device_enum_labels_map.keys())} devices were checked for"
                  f" conformity with labels in {obs_state_enum}")
     msg = f"Devices ({defaulting_devices}) don't have a conforming obsState enum labels"
     assert len(defaulting_devices) == 0, msg

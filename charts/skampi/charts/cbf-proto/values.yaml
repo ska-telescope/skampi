@@ -36,17 +36,17 @@ deviceServers:
   - name: cbfsubarray01
     args:
       - -c
-      - "retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
+      - "retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
             /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-01"
   - name: cbfsubarray02
     args:
       - -c
-      - "retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
+      - "retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
             /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-02"
   - name: cbfsubarray03
     args:
       - -c
-      - "retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
+      - "retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
             /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-03"
   - name: vcc001
     args:
@@ -64,6 +64,70 @@ deviceServers:
     args:
       - -c
       - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-004"
+  - name: vcc005
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-005"
+  - name: vcc006
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-006"
+  - name: vcc007
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-007"
+  - name: vcc008
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-008"
+  - name: vcc009
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-009"
+  - name: vcc010
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-010"
+  - name: vcc011
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-011"
+  - name: vcc012
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-012"
+  - name: vcc013
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-013"
+  - name: vcc014
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-014"
+  - name: vcc015
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-015"
+  - name: vcc016
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-016"
+  - name: vcc017
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-017"
+  - name: vcc018
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-018"
+  - name: vcc019
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-019"
+  - name: vcc020
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-020"
   - name: fsp01
     args:
       - -c
@@ -71,6 +135,22 @@ deviceServers:
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/005 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/006 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/007 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/008 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/009 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/010 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/011 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/012 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/013 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/014 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/015 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/016 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/017 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/018 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/019 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/020 &&\
             /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-01"
   - name: fsp02
     args:
@@ -79,6 +159,22 @@ deviceServers:
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/005 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/006 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/007 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/008 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/009 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/010 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/011 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/012 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/013 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/014 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/015 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/016 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/017 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/018 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/019 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/020 &&\
             /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-02"
   - name: fsp03
     args:
@@ -87,6 +183,22 @@ deviceServers:
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/005 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/006 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/007 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/008 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/009 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/010 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/011 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/012 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/013 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/014 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/015 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/016 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/017 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/018 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/019 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/020 &&\
             /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-03"
   - name: fsp04
     args:
@@ -95,6 +207,22 @@ deviceServers:
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/005 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/006 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/007 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/008 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/009 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/010 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/011 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/012 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/013 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/014 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/015 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/016 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/017 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/018 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/019 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/020 &&\
             /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-04"
 
 nodeSelector: {}

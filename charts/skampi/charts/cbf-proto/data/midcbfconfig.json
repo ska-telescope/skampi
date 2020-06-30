@@ -31,15 +31,31 @@
                                 "mid_csp_cbf/fsp/04"
                             ],
                             "MaxCapabilities": [
-                                "VCC:4",
+                                "VCC:20",
                                 "FSP:4",
-                                "Subarray:2"
+                                "Subarray:3"
                             ],
                             "VCC": [
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ],
                             "polled_attr": [
                                 "reportfspstate",
@@ -155,7 +171,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ],
                             "polled_attr": [
                                 "state",
@@ -298,7 +330,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ],
                             "polled_attr": [
                                 "configid",
@@ -442,7 +490,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ],
                             "polled_attr": [
                                 "state",
@@ -614,7 +678,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -636,7 +716,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -658,7 +754,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     }
@@ -682,7 +794,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -704,7 +832,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -726,7 +870,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     }
@@ -825,7 +985,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -847,7 +1023,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -869,7 +1061,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     }
@@ -893,7 +1101,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -915,7 +1139,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -937,7 +1177,26 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/001",
+                                "mid_csp_cbf/vcc/002",
+                                "mid_csp_cbf/vcc/003",
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     }
@@ -1036,7 +1295,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -1058,7 +1333,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -1080,7 +1371,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     }
@@ -1104,7 +1411,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -1126,7 +1449,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -1148,7 +1487,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     }
@@ -1247,7 +1602,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -1269,7 +1640,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -1291,7 +1678,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     }
@@ -1315,7 +1718,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -1337,7 +1756,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     },
@@ -1359,7 +1794,23 @@
                                 "mid_csp_cbf/vcc/001",
                                 "mid_csp_cbf/vcc/002",
                                 "mid_csp_cbf/vcc/003",
-                                "mid_csp_cbf/vcc/004"
+                                "mid_csp_cbf/vcc/004",
+                                "mid_csp_cbf/vcc/005",
+                                "mid_csp_cbf/vcc/006",
+                                "mid_csp_cbf/vcc/007",
+                                "mid_csp_cbf/vcc/008",
+                                "mid_csp_cbf/vcc/009",
+                                "mid_csp_cbf/vcc/010",
+                                "mid_csp_cbf/vcc/011",
+                                "mid_csp_cbf/vcc/012",
+                                "mid_csp_cbf/vcc/013",
+                                "mid_csp_cbf/vcc/014",
+                                "mid_csp_cbf/vcc/015",
+                                "mid_csp_cbf/vcc/016",
+                                "mid_csp_cbf/vcc/017",
+                                "mid_csp_cbf/vcc/018",
+                                "mid_csp_cbf/vcc/019",
+                                "mid_csp_cbf/vcc/020"
                             ]
                         }
                     }
@@ -1682,6 +2133,1206 @@
                 "VccSearchWindow": {
                     "mid_csp_cbf/vcc_sw1/004": {},
                     "mid_csp_cbf/vcc_sw2/004": {}
+                }
+            },
+            "vcc-005": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/005": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/005"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/005"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/005"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/005"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/005"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/005"
+                            ], 
+                            "VccID": [
+                                "5"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/005": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/005": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/005": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/005": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/005": {}, 
+                    "mid_csp_cbf/vcc_sw2/005": {}
+                }
+            },
+            "vcc-006": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/006": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/006"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/006"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/006"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/006"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/006"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/006"
+                            ], 
+                            "VccID": [
+                                "6"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/006": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/006": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/006": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/006": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/006": {}, 
+                    "mid_csp_cbf/vcc_sw2/006": {}
+                }
+            },
+            "vcc-007": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/007": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/007"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/007"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/007"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/007"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/007"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/007"
+                            ], 
+                            "VccID": [
+                                "7"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/007": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/007": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/007": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/007": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/007": {}, 
+                    "mid_csp_cbf/vcc_sw2/007": {}
+                }
+            },
+            "vcc-008": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/008": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/008"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/008"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/008"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/008"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/008"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/008"
+                            ], 
+                            "VccID": [
+                                "8"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/008": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/008": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/008": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/008": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/008": {}, 
+                    "mid_csp_cbf/vcc_sw2/008": {}
+                }
+            },
+            "vcc-009": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/009": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/009"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/009"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/009"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/009"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/009"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/009"
+                            ], 
+                            "VccID": [
+                                "9"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/009": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/009": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/009": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/009": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/009": {}, 
+                    "mid_csp_cbf/vcc_sw2/009": {}
+                }
+            },
+            "vcc-010": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/010": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/010"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/010"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/010"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/010"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/010"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/010"
+                            ], 
+                            "VccID": [
+                                "10"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/010": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/010": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/010": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/010": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/010": {}, 
+                    "mid_csp_cbf/vcc_sw2/010": {}
+                }
+            },
+            "vcc-011": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/011": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/011"
+                            ],
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/011"
+                            ],
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/011"
+                            ],
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/011"
+                            ],
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/011"
+                            ],
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/011"
+                            ],
+                            "VccID": [
+                                "11"
+                            ],
+                            "polled_attr": [
+                                "state",
+                                "1000",
+                                "healthstate",
+                                "1000",
+                                "adminmode",
+                                "1000",
+                                "subarraymembership",
+                                "1000"
+                            ]
+                        }
+                    }
+                },
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/011": {}
+                },
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/011": {}
+                },
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/011": {}
+                },
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/011": {}
+                },
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/011": {},
+                    "mid_csp_cbf/vcc_sw2/011": {}
+                }
+            },
+            "vcc-012": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/012": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/012"
+                            ],
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/012"
+                            ],
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/012"
+                            ],
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/012"
+                            ],
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/012"
+                            ],
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/012"
+                            ],
+                            "VccID": [
+                                "12"
+                            ],
+                            "polled_attr": [
+                                "state",
+                                "1000",
+                                "healthstate",
+                                "1000",
+                                "adminmode",
+                                "1000",
+                                "subarraymembership",
+                                "1000"
+                            ]
+                        }
+                    }
+                },
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/012": {}
+                },
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/012": {}
+                },
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/012": {}
+                },
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/012": {}
+                },
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/012": {},
+                    "mid_csp_cbf/vcc_sw2/012": {}
+                }
+            },
+            "vcc-013": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/013": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/013"
+                            ],
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/013"
+                            ],
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/013"
+                            ],
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/013"
+                            ],
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/013"
+                            ],
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/013"
+                            ],
+                            "VccID": [
+                                "13"
+                            ],
+                            "polled_attr": [
+                                "state",
+                                "1000",
+                                "healthstate",
+                                "1000",
+                                "adminmode",
+                                "1000",
+                                "subarraymembership",
+                                "1000"
+                            ]
+                        }
+                    }
+                },
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/013": {}
+                },
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/013": {}
+                },
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/013": {}
+                },
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/013": {}
+                },
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/013": {},
+                    "mid_csp_cbf/vcc_sw2/013": {}
+                }
+            },
+            "vcc-014": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/014": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "healthState": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            },
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1",
+                                    "1"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/014"
+                            ],
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/014"
+                            ],
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/014"
+                            ],
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/014"
+                            ],
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/014"
+                            ],
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/014"
+                            ],
+                            "VccID": [
+                                "14"
+                            ],
+                            "polled_attr": [
+                                "state",
+                                "1000",
+                                "healthstate",
+                                "1000",
+                                "adminmode",
+                                "1000",
+                                "subarraymembership",
+                                "1000"
+                            ]
+                        }
+                    }
+                },
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/014": {}
+                },
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/014": {}
+                },
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/014": {}
+                },
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/014": {}
+                },
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/014": {},
+                    "mid_csp_cbf/vcc_sw2/014": {}
+                }
+            },
+            "vcc-015": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/015": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/015"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/015"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/015"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/015"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/015"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/015"
+                            ], 
+                            "VccID": [
+                                "15"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/015": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/015": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/015": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/015": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/015": {}, 
+                    "mid_csp_cbf/vcc_sw2/015": {}
+                }
+            },
+            "vcc-016": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/016": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/016"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/016"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/016"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/016"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/016"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/016"
+                            ], 
+                            "VccID": [
+                                "16"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/016": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/016": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/016": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/016": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/016": {}, 
+                    "mid_csp_cbf/vcc_sw2/016": {}
+                }
+            },
+            "vcc-017": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/017": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/017"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/017"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/017"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/017"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/017"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/017"
+                            ], 
+                            "VccID": [
+                                "17"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/017": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/017": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/017": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/017": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/017": {}, 
+                    "mid_csp_cbf/vcc_sw2/017": {}
+                }
+            },
+            "vcc-018": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/018": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/018"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/018"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/018"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/018"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/018"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/018"
+                            ], 
+                            "VccID": [
+                                "18"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/018": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/018": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/018": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/018": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/018": {}, 
+                    "mid_csp_cbf/vcc_sw2/018": {}
+                }
+            },
+            "vcc-019": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/019": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/019"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/019"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/019"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/019"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/019"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/019"
+                            ], 
+                            "VccID": [
+                                "19"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/019": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/019": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/019": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/019": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/019": {}, 
+                    "mid_csp_cbf/vcc_sw2/019": {}
+                }
+            },
+            "vcc-020": {
+                "Vcc": {
+                    "mid_csp_cbf/vcc/020": {
+                        "attribute_properties": {
+                            "adminMode": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "healthState": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }, 
+                            "subarrayMembership": {
+                                "abs_change": [
+                                    "-1", 
+                                    "1"
+                                ]
+                            }
+                        }, 
+                        "properties": {
+                            "Band1And2Address": [
+                                "mid_csp_cbf/vcc_band12/020"
+                            ], 
+                            "Band3Address": [
+                                "mid_csp_cbf/vcc_band3/020"
+                            ], 
+                            "Band4Address": [
+                                "mid_csp_cbf/vcc_band4/020"
+                            ], 
+                            "Band5Address": [
+                                "mid_csp_cbf/vcc_band5/020"
+                            ], 
+                            "SW1Address": [
+                                "mid_csp_cbf/vcc_sw1/020"
+                            ], 
+                            "SW2Address": [
+                                "mid_csp_cbf/vcc_sw2/020"
+                            ], 
+                            "VccID": [
+                                "20"
+                            ], 
+                            "polled_attr": [
+                                "state", 
+                                "1000", 
+                                "healthstate", 
+                                "1000", 
+                                "adminmode", 
+                                "1000", 
+                                "subarraymembership", 
+                                "1000"
+                            ]
+                        }
+                    }
+                }, 
+                "VccBand1And2": {
+                    "mid_csp_cbf/vcc_band12/020": {}
+                }, 
+                "VccBand3": {
+                    "mid_csp_cbf/vcc_band3/020": {}
+                }, 
+                "VccBand4": {
+                    "mid_csp_cbf/vcc_band4/020": {}
+                }, 
+                "VccBand5": {
+                    "mid_csp_cbf/vcc_band5/020": {}
+                }, 
+                "VccSearchWindow": {
+                    "mid_csp_cbf/vcc_sw1/020": {}, 
+                    "mid_csp_cbf/vcc_sw2/020": {}
                 }
             }
         },

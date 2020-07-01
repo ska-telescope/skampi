@@ -86,6 +86,13 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
 
+package: ## package all existing charts into a git based repo
+	mkdir -p repository
+	@for i in charts/skampi/charts/*; do \
+	helm package $${i} --destination ./repository ; \
+	done
+	cd ./repository && helm repo index .
+
 lint_all:  ## lint ALL of the helm chart
 	@for i in charts/skampi/charts/*; do \
 	cd $$i; pwd; helm lint ; \

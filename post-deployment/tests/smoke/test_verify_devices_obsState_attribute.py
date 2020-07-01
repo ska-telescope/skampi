@@ -85,10 +85,9 @@ def test_obs_state_attribute_enum_labels_are_valid(device_enum_labels_map):
     defaulting_devices = []
     for device, enum_labels in device_enum_labels_map.items():
         if not is_enum_labels_valid(enum_labels):
-            logging.info(f"Device: {device}, enum labels: {enum_labels}.")
             defaulting_devices.append(device)
 
-    logging.info(f"Enum labels for {len(device_enum_labels_map.keys())} devices were checked for"
-                 f" conformity with labels in {obs_state_enum}")
-    msg = f"Devices ({defaulting_devices}) don't have a conforming obsState enum labels"
+    logging.info(f"ObsState enum labels for {len(device_enum_labels_map.keys())} devices were"
+                 f" checked for conformity with labels in {obs_state_enum}")
+    msg = f"ObsState enum labels for {defaulting_devices} don't conform to {obs_state_enum}"
     assert len(defaulting_devices) == 0, msg

@@ -1,0 +1,171 @@
+apiVersion: v1
+entries:
+  archiver:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.815943061+12:00"
+    description: A Helm chart for deploying the HDB++ archiver for the MVP on Kubernetes
+    digest: 043df34a9ed833da9d938e300c85e027a3048561eccf421053eb709b83b6979b
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: archiver
+    urls:
+    - archiver-0.2.0.tgz
+    version: 0.2.0
+  auth:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.81704433+12:00"
+    description: A Helm chart for RBAC SKA
+    digest: 9278faf86c2157372b59f4d3771f75eca40ada28d74a730a7119cde6fd7b1531
+    name: auth
+    urls:
+    - auth-0.1.0.tgz
+    version: 0.1.0
+  cbf-proto:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.817651522+12:00"
+    description: A Helm chart for deploying the CSP_Mid.LMC CBF prototype on Kubernetes
+    digest: 9c1ffcc37ff3157c7ebc9d58a9595a6da4ddbd51f3bad434785733dcd0903507
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: cbf-proto
+    urls:
+    - cbf-proto-0.4.0.tgz
+    version: 0.4.0
+  csp-proto:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.818231868+12:00"
+    description: A Helm chart for deploying the Mid_CSP prototype on Kubernetes
+    digest: 904480314c328272d5bd9fa3fe1285f7eaed4a2c6807a4771ee1c1c4ca64f4ea
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: csp-proto
+    urls:
+    - csp-proto-0.5.3.tgz
+    version: 0.5.3
+  dsh-lmc-prototype:
+  - apiVersion: v2
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.819326691+12:00"
+    description: A Helm chart for deploying the DSH LMC prototype on Kubernetes
+    digest: f8e8825876285169dbb57591eb8f3488adb05e4b965b1ac1f1f7a2ebc21b0769
+    home: https://gitlab.com/ska-telescope/dsh-lmc-prototype/
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: dsh-lmc-prototype
+    sources:
+    - https://gitlab.com/ska-telescope/dsh-lmc-prototype/
+    urls:
+    - dsh-lmc-prototype-0.0.1.tgz
+    version: 0.0.1
+  logging:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.819917791+12:00"
+    description: A Helm chart for deploying the EFK stack
+    digest: 5ae5fdbc5b0ba60cb1bedea775e8a68c7542f3b1ba44889582758147c57d9e58
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    maintainers:
+    - email: aventer@ska.ac.za
+      name: Johan Venter
+    - email: swai@ska.ac.za
+      name: Sett Wai
+    name: logging
+    sources:
+    - https://gitlab.com/ska-telescope/skampi
+    urls:
+    - logging-0.1.0.tgz
+    version: 0.1.0
+  oet:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.82073947+12:00"
+    description: A Helm chart for deploying the Observation Execution Tool on Kubernetes
+    digest: 585434549654332930b6c58a3afa4e3d915ff959ba14f18b6eab85ace4c8af9c
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: oet
+    urls:
+    - oet-0.1.0.tgz
+    version: 0.1.0
+  sdp-prototype:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.821206784+12:00"
+    description: Helm chart to deploy the SDP Prototype
+    digest: 6421eb08b3936de04eac9fec977d9f53232bd75cdc3e36ab8fdc8ff514d0510c
+    home: https://developer.skatelescope.org/projects/sdp-prototype/
+    icon: http://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    maintainers:
+    - email: pw410@cam.ac.uk
+      name: Peter Wortmann
+    - email: vla22@mrao.cam.ac.uk
+      name: vla22
+    - email: maja1@mrao.cam.ac.uk
+      name: Mark Ashdown
+    name: sdp-prototype
+    sources:
+    - https://gitlab.com/ska-telescope/sdp-prototype
+    urls:
+    - sdp-prototype-0.4.0.tgz
+    version: 0.4.0
+  skuid:
+  - apiVersion: v1
+    appVersion: "0.1"
+    created: "2020-07-01T16:25:50.821510327+12:00"
+    description: Service that returns unique IDs for use by SKA
+    digest: aa63223fbfc565061e7ac727128923856208cbbbd9df72390c7c40e3a4e271ad
+    home: https://gitlab.com/ska-telescope/skuid/
+    icon: http://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    keywords:
+    - SKA
+    - UID
+    - skuid
+    name: skuid
+    sources:
+    - https://gitlab.com/ska-telescope/skuid/
+    urls:
+    - skuid-0.0.1.tgz
+    version: 0.0.1
+  tango-base:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.82221518+12:00"
+    description: A Helm chart for deploying the TANGO base system on Kubernetes
+    digest: 402e4b7056701055c404bc4b18831c42e610ffe95b3f1c0ced2d3a2899baa3b4
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: tango-base
+    urls:
+    - tango-base-0.1.0.tgz
+    version: 0.1.0
+  tests:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.822410092+12:00"
+    description: A Helm chart for integration testing
+    digest: ab7ea230802bbb8a3fccb2e25aea05d2c5e22a991f17fba91b44cefc92ef1470
+    name: tests
+    urls:
+    - tests-0.1.0.tgz
+    version: 0.1.0
+  tmc-proto:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.823347868+12:00"
+    description: A Helm chart for deploying the TMC prototype on Kubernetes
+    digest: 062a2614cd694d0dd082b96f6e2cab53657d35e223584f8035eef7816406af29
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: tmc-proto
+    urls:
+    - tmc-proto-0.1.0.tgz
+    version: 0.1.0
+  webjive:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-01T16:25:50.823835175+12:00"
+    description: A Helm chart for deploying the WebJive on Kubernetes
+    digest: 29713705300a8084b8571579f3ba4fd3fb3720973577a7aed8b8cd41224e7813
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: webjive
+    urls:
+    - webjive-0.1.0.tgz
+    version: 0.1.0
+generated: "2020-07-01T16:25:50.815367846+12:00"

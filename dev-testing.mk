@@ -102,7 +102,7 @@ httpPort=30080
 RELEASE_NAME=dev-testing
 
 install_testing_pod:
-	@helm install $(RELEASE_NAME) post-deployment/exploration/dev_testing\
+	@helm install $(RELEASE_NAME) post-deployment/exploration/dev_testing \
 		--set imageToTest=$(IMAGE_TO_TEST) \
 		--set kubeNamespace=$(KUBE_NAMESPACE) \
 		--set helmRelease=$(HELM_RELEASE) \
@@ -110,17 +110,22 @@ install_testing_pod:
 		--set sshPort=$(sshPort) \
 		--set hostPath=$(location) \
 		--wait --timeout=1m0s
-	@kubectl get all -l releaseName=$(RELEASE_NAME)
+	@kubectl get all,ing -l releaseName=$(RELEASE_NAME)
 
-testing-pod = $(shell echo $$(kubectl get pod -l releaseName='dev-testing' -o=jsonpath='{..metadata.name}') )
+testing-pod = $(shell echo $$(kubectl get pod -l releaseName=$(RELEASE_NAME) -o=jsonpath='{..metadata.name}') )
 
-set_up_dev_testing: install_testing_pod tp_pip tp_config test_as_ssh_client
-	
+attach:
+	kubectl attach -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c testing-container
+
+set_up_dev_testing: install_testing_pod tp_config test_as_ssh_client
+
+install_web_dependencies:
+	@echo "Installing Python packages on web container";
+	@echo "##########################";
+	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c web-pytest -- bash -c "/usr/bin/python3 -m pip install -r /home/tango/skampi/post-deployment/test_requirements.txt"	
 
 describe_dev_testing:
-	@chart_name=$$(helm list --filter dev-testing -o=yaml | grep chart | awk '{print $$NF}') && \
-		kubectl get all -l chart=$$chart_name
-
+	kubectl get all -l releaseName=$(RELEASE_NAME)
 
 uninstall_testing_pod:
 	helm delete $(RELEASE_NAME)
@@ -145,6 +150,11 @@ test_as_ssh_client: # set up the  testing pod so that one can ssh back into the 
 	kubectl cp temp $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.ssh/config --namespace $(KUBE_NAMESPACE); \
 	rm temp
 
+get_web_shell:
+	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c web-pytest bash
 
 check_log_consumer_running: 
 	ps aux | awk 
+
+ping_web_py:
+	@curl -H "HOST: integration.engageska-portugal.pt" http://$(THIS_HOST)/dev-testing/ping

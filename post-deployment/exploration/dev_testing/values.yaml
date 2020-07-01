@@ -6,3 +6,4 @@ pythonPath: "/home/tango/skampi/:/home/tango/skampi/post-deployment/:"
 sshPort: 30022
 httpPort: 30080
 hostPath: /home/ubuntu/skampi
+hostName: integration.engageska-portugal.pt

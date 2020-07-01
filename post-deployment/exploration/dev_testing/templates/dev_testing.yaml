@@ -60,6 +60,39 @@ spec:
         - name: ssh
           containerPort: 22
           protocol: TCP
+        resources:
+          requests:
+            cpu: 200m     # 200m = 0.2 CPU
+            memory: 256Mi # 256Mi = 0.25 GB mem
+          limits:
+              cpu: 300m     # 200m = 0.2 CPU
+              memory: 500Mi # 256Mi = 0.25 GB mem   
+        command:
+          - /bin/sh
+          - -c
+        args:
+          - "/usr/bin/python3 -m pip install -r /home/tango/skampi/post-deployment/test_requirements.txt && /usr/sbin/sshd -D"
+        volumeMounts:
+        - mountPath: /home/tango/skampi/
+          name: testing-volume
+      - name: web-pytest
+        image: {{ .Values.imageToTest }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - -c
+        args:
+          - "/usr/bin/python3 -m pip install -r /home/tango/skampi/post-deployment/test_requirements.txt && sleep infinity"
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+        - name: KUBE_NAMESPACE
+          value: {{ .Values.kubeNamespace }}
+        - name: HELM_RELEASE
+          value: {{ .Values.helmRelease }}
+        - name: PYTHONPATH
+          value: "{{ .Values.pythonPath }}"
+        ports:
         - name: http
           containerPort: 8010
           protocol: TCP
@@ -69,12 +102,12 @@ spec:
             memory: 256Mi # 256Mi = 0.25 GB mem
           limits:
               cpu: 300m     # 200m = 0.2 CPU
-              memory: 500Mi # 256Mi = 0.25 GB mem   
+              memory: 500Mi # 256Mi = 0.25 GB mem 
         volumeMounts:
         - mountPath: /home/tango/skampi/
           name: testing-volume
       volumes:
-      - hostPath:
+      - name: testing-volume
+        hostPath:
           path: {{ .Values.hostPath }}
           type: Directory
-        name: testing-volume

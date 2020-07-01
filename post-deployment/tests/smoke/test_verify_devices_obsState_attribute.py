@@ -8,21 +8,11 @@ import pytest
 from random import shuffle
 from tango import Database, DeviceProxy, DevFailed
 
-# obsState enum as defined in lmc-base-classes 0.5.4 control model
-obs_state_enum = ("IDLE", "CONFIGURING", "READY", "SCANNING", "PAUSED", "ABORTED", "FAULT")
-
 def _remove_special_characters_from_enum_labels(enum_labels):
     for idx, label in enumerate(enum_labels):
         new_label = ''.join(char for char in label if char.isalnum())
         enum_labels[idx] = new_label.upper()
     return enum_labels
-
-
-def is_enum_labels_valid(enum_labels):
-    """verfiy enum labels have the right length, correct names and order"""
-    formatted_enum_labels = _remove_special_characters_from_enum_labels(enum_labels)
-    return formatted_enum_labels == list(obs_state_enum)
-
 
 @pytest.fixture(scope="function")
 def device_enum_labels_map():
@@ -52,36 +42,40 @@ def device_enum_labels_map():
 
 
 @pytest.mark.fast
-def test_obs_state_attribute_for_invalid_enum_labels(device_enum_labels_map):
-    # use only the first value from the dict
-    selected_enum_labels = next(iter(device_enum_labels_map.values()))
+def test_obs_state_attribute_for_different_enum_labels(device_enum_labels_map):
+    selected_enum_labels = list(device_enum_labels_map.values())[0]
+    list_of_enums = [selected_enum_labels[:] for _ in range(3)]
+    enum_variations = set()
 
-    # check for right length
-    bigger_list = selected_enum_labels + selected_enum_labels[:]
-    logging.info(f"Verify there are more than {len(obs_state_enum)} elements in {bigger_list}")
-    assert is_enum_labels_valid(bigger_list) == False
+    def perform_check(list_of_enums, msg):
+        for enum_labels in list_of_enums:
+            enum_variations.add(tuple(enum_labels))
+        logging.info(f"{msg}: {enum_variations}")
+        assert len(enum_variations) == 2
+        enum_variations.clear()
 
-    smaller_list = selected_enum_labels[0:4]
-    logging.info(f"Verify there are less than {len(obs_state_enum)} elements in {smaller_list}")
-    assert is_enum_labels_valid(bigger_list) == False
+    # check for different length
+    list_of_enums[0].append("new_label") # add one more label to first list
+    msg = "Verify two enum variations are detected due to different sizes"
+    perform_check(list_of_enums, msg)
+    list_of_enums[0].pop()
 
-    # check for same names
-    correct_lbl = selected_enum_labels[0]
-    selected_enum_labels[0] = "attr_1"
-    logging.info(f"Verify labels in {selected_enum_labels} differ from labels in {obs_state_enum}")
-    assert is_enum_labels_valid(selected_enum_labels) == False
-    # restore the correct label
-    selected_enum_labels[0] = correct_lbl
+    # check for same length but different names
+    list_of_enums[0][0] = "new_label" # change a label in first list
+    msg = "Verify two enum variations are detected due to different names"
+    perform_check(list_of_enums, msg)
 
-    # check for correct order
-    shuffle(selected_enum_labels)
-    logging.info(f"Verify labels in {selected_enum_labels} do not conform to the obsState attribute"
-                 f" labels in {obs_state_enum}")
-    assert is_enum_labels_valid(selected_enum_labels) == False
+    # check for lists with different order
+    list_of_enums.pop(0) # remove first list
+    # shuffle labels in each list
+    for enum_labels in list_of_enums:
+        shuffle(enum_labels)
+    msg = "Verify two enum variations are detected due to different order"
+    perform_check(list_of_enums, msg)
 
 
 @pytest.mark.fast
-def test_obs_state_attribute_enum_labels_are_valid(device_enum_labels_map):
+def test_obs_state_attribute_enum_labels_are_the_same(device_enum_labels_map):
     enum_variations = set()
     for device, enum_labels in device_enum_labels_map.items():
         formatted_enum_labels = _remove_special_characters_from_enum_labels(enum_labels)

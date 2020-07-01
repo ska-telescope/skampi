@@ -15,7 +15,7 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 	# 
 
 
-	@pytest.mark.skip(reason="no way of currently testing this")
+	#@pytest.mark.skip(reason="no way of currently testing this")
 	@XTP-417 @XTP-494
 	Scenario: A1-Test, Sub-array resource allocation
 		Given A running telescope for executing observations on a subarray

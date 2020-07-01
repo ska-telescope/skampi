@@ -70,16 +70,23 @@ def set_to_running():
 def allocate_four_dishes(result):
     LOGGER.info("When I allocate 4 dishes to subarray 1")  
     ##############################
-    @log_it('AX-13_A1',devices_to_log,non_default_states_to_check)
-    @sync_assign_resources(4)
+    #@log_it('AX-13_A1',devices_to_log,non_default_states_to_check)
+    @sync_assign_resources(2)
     def test_SUT():
-        cwd, _ = os.path.split(__file__)
-        cdm_file_path = os.path.join(cwd, 'example_allocate.json')
+        # cwd, _ = os.path.split(__file__)
+        # cdm_file_path = os.path.join(cwd, 'example_allocate.json')
+        cdm_file_path = 'resources/test_data/OET_integration/example_allocate.json'
+        LOGGER.info("_______cdm_file_path______" + str(cdm_file_path))
         update_resource_config_file(cdm_file_path)
-        four_dish_allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
+        LOGGER.info("_______Updated cdm_file_path______" + str(cdm_file_path))
+        four_dish_allocation = ResourceAllocation(dishes=[Dish(1), Dish(2)])
+        LOGGER.info("________four_dish_allocation_______" + str(four_dish_allocation))
         subarray = SubArray(1)
+        LOGGER.info("______Allocate Subarray is_______" + str(subarray))
         return subarray.allocate_from_file(cdm_file_path, four_dish_allocation)
+        LOGGER.info("______Subarray allocation success_______")
     result['response'] = test_SUT()
+    LOGGER.info("________test_SUT() response is_______" + str(result['response']))
     ##############################
 
     LOGGER.info("Assign resources executed successfully")
@@ -89,12 +96,12 @@ def allocate_four_dishes(result):
 def check_subarray_composition(result):
 
     #check that there was no error in response
-    assert_that(result['response']).is_equal_to(ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)]))
+    assert_that(result['response']).is_equal_to(ResourceAllocation(dishes=[Dish(1), Dish(2)]))
     #check that this is reflected correctly on TMC side
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
+    assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2))
     #check that this is reflected correctly on CSP side
-    assert_that(resource('mid_csp/elt/subarray_01').get('assignedReceptors')).is_equal_to((1, 2, 3, 4))
-    assert_that(resource('mid_csp/elt/master').get('receptorMembership')).is_equal_to((1, 1, 1, 1))
+    assert_that(resource('mid_csp/elt/subarray_01').get('assignedReceptors')).is_equal_to((1, 2))
+    assert_that(resource('mid_csp/elt/master').get('receptorMembership')).is_equal_to((1, 1))
     #TODO need to find a better way of testing sets with sets
     #assert_that(set(resource('mid_csp/elt/master').get('availableReceptorIDs'))).is_subset_of(set((4,3)))
     #check that this is reflected correctly on SDP side - no code at the current implementation

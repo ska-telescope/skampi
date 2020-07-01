@@ -64,17 +64,13 @@ def update_resource_config_file(file):
 
 
 def update_scan_config_file(file, sdp_block):
-    #N = 5
     with open(file, 'r') as f:
         data = json.load(f)
-    scan_type_list = []
-    for scan_block in sdp_block['scan_types']:
-        scan_type_list.append(scan_block['id'])
-
-    LOGGER.info("___________Scan types list________" + str(scan_type_list))
-    data['sdp']['scan_type'] = random.choice(scan_type_list)
+    LOGGER.info("________Configure string before update function _______" + str(file))
     sdp_sbi_id = sdp_block['id']
+    LOGGER.info("________Updated sdp_sbi_id from configure string _______" + str(sdp_sbi_id))
     data['csp']['id'] = sdp_sbi_id + '-' + data['sdp']['scan_type']
+    LOGGER.info("________Updated csp-id from configure string _______" + str(data['csp']['id']))
     with open(file, 'w') as f:
         json.dump(data, f)
     LOGGER.info("________ Configure Updated string for next iteration_______" + str(data))

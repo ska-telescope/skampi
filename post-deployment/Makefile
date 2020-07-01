@@ -50,3 +50,10 @@ check_log_consumer_running:
 
 set_auto_complete:
 	echo 'source <(kubectl completion bash)' >>~/.bashrc
+
+run_http:
+	python3 exploration/web_pytest/web_pytest.py &
+
+ping_http:
+	curl http:30080//dev-testing/ping -v
+

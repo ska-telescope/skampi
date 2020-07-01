@@ -12,3 +12,6 @@ assertpy
 mock
 importlib
 elasticsearch-dsl
+aiohttp
+aiojobs
+pytest-asyncio

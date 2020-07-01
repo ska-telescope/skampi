@@ -11,7 +11,7 @@ data:
 {{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
   bootstrap.sh: |
     #/bin/sh
-    /usr/local/bin/wait-for-it.sh databaseds-tango-base-{{ .Release.Name }}:10000 \
+    /usr/local/bin/wait-for-it.sh {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }} \
       --timeout=30 \
       --strict \
       -- json2tango -w -a -u data/configuration.json
@@ -49,7 +49,7 @@ spec:
           - data/bootstrap.sh
         env:
         - name: TANGO_HOST
-          value: databaseds-tango-base-{{ .Release.Name }}:10000
+          value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
         volumeMounts:
           - name: configuration
             mountPath: data
@@ -124,7 +124,7 @@ spec:
 {{ toYaml $deviceserver.args | indent 10 }}
         env:
         - name: TANGO_HOST
-          value: databaseds-tango-base-{{ $global.Release.Name }}:10000
+          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ $global.Release.Name }}:10000 {{- end }}
         resources:
 {{ toYaml $global.Values.resources | indent 10 }}
 {{- with $global.Values.nodeSelector }}

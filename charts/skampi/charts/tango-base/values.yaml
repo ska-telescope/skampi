@@ -26,6 +26,7 @@ tangodb:
 
 databaseds:
   enabled: true
+  domian_tag: test
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-cpp

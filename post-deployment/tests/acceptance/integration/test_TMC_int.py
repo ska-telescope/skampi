@@ -43,14 +43,14 @@ def print_logs_to_file(s,d,status='ok'):
     d.implementation.print_log_to_file(filename_d,style='csv')
     s.print_records_to_file(filename_s,style='csv',filtered=False)
 
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():
     ####loging
-    s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
-    s.run(threaded=True,resolution=0.1)
-    d = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    d.update_traces(devices_to_log)
-    d.start_tracing()
+    # s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
+    # s.run(threaded=True,resolution=0.1)
+    # d = DeviceLogging('DeviceLoggingImplWithDBDirect')
+    # d.update_traces(devices_to_log)
+    # d.start_tracing()
     ####
     try:
         # given an interface to TMC to interact with a subarray node and a central node
@@ -74,8 +74,8 @@ def test_multi_scan():
         the_waiter.clear_watches()
         the_waiter.set_wait_for_assign_resources()
         LOGGER.info('assigning two dishes to subarray 1')
-        assign_resources_file = 'resources/test_data/TMC_integration/assign_resources.json'
-        update_resource_config_file(assign_resources_file)
+        assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
+        sdp_block = update_resource_config_file(assign_resources_file)
         config = load_config_from_file(assign_resources_file)
         CentralNode.AssignResources(config)
         the_waiter.wait()
@@ -85,12 +85,12 @@ def test_multi_scan():
         resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
         the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
         configure1_file = 'resources/test_data/TMC_integration/configure1.json'
-        update_scan_config_file(configure1_file)
+        update_scan_config_file(configure1_file, sdp_block)
         config = load_config_from_file(configure1_file)
         LOGGER.info('Configuring a scan for subarray 1')
-        fixture['state'] = 'Subarray CONFIGURING'
+        # fixture['state'] = 'Subarray CONFIGURING'
         SubarrayNode.Configure(config)
-        the_watch.wait_until_value_changed_to('CONFIGURING')
+        # the_watch.wait_until_value_changed_to('CONFIGURING')
         the_watch.wait_until_value_changed_to('READY',timeout=200)
         fixture['state'] = 'Subarray Configured for SCAN'
         
@@ -108,12 +108,12 @@ def test_multi_scan():
         #then when I load a  new configuration to perform a can as per TMC_integration/configure2.json
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
         configure2_file = 'resources/test_data/TMC_integration/configure2.json'
-        update_scan_config_file(configure2_file)
+        update_scan_config_file(configure2_file, sdp_block)
         config = load_config_from_file(configure2_file)
         LOGGER.info('Doing a new configuration for a scan on subarray 1 (testing part)')
         SubarrayNode.Configure(config)
-        the_watch.wait_until_value_changed_to('CONFIGURING')
-        fixture['state'] = 'Subarray CONFIGURING'
+        # the_watch.wait_until_value_changed_to('CONFIGURING')
+        # fixture['state'] = 'Subarray CONFIGURING'
         the_watch.wait_until_value_changed_to('READY',timeout=200)
         fixture['state'] = 'Subarray Configured for SCAN'
         
@@ -155,9 +155,9 @@ def test_multi_scan():
    
     except:        
         LOGGER.info("Gathering logs")
-        s.stop()
-        d.stop_tracing()
-        print_logs_to_file(s,d,status='error')
+        # s.stop()
+        # d.stop_tracing()
+        # print_logs_to_file(s,d,status='error')
         LOGGER.info('Tearing down failed test, state = {}'.format(fixture['state']))
         if fixture['state'] == 'Telescope On':
             LOGGER.info('Put telescope back to standby')
@@ -190,6 +190,6 @@ def test_multi_scan():
         pytest.fail("unable to complete test without exceptions")
 
     LOGGER.info("Gathering logs")
-    s.stop()
-    d.stop_tracing()
-    print_logs_to_file(s,d,status='ok')
+    # s.stop()
+    # d.stop_tracing()
+    # print_logs_to_file(s,d,status='ok')

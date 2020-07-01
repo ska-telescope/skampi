@@ -59,8 +59,9 @@ def update_resource_config_file(file):
     with open(file, 'w') as f:
         json.dump(data, f)
     LOGGER.info("________ AssignResources Updated string for next iteration_______" + str(data))
-    return data['sdp']
     LOGGER.info("________ SDP block is_______" + str(data['sdp']))
+    return data['sdp']
+
 
 
 def update_scan_config_file(file, sdp_block):

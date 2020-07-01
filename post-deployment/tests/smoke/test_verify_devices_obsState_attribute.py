@@ -6,13 +6,10 @@ and values
 import logging
 import pytest
 from random import shuffle
-from tango import Database, DeviceProxy
+from tango import Database, DeviceProxy, DevFailed
 
 # obsState enum as defined in lmc-base-classes 0.5.4 control model
 obs_state_enum = ("IDLE", "CONFIGURING", "READY", "SCANNING", "PAUSED", "ABORTED", "FAULT")
-default_tango_server_classes = ('DataBaseds', 'DServer', 'Starter',
-                                'TangoAccessControl', 'TangoRestServer')
-
 
 def _remove_special_characters_from_enum_labels(enum_labels):
     for idx, label in enumerate(enum_labels):
@@ -29,27 +26,27 @@ def is_enum_labels_valid(enum_labels):
 
 @pytest.fixture(scope="function")
 def device_enum_labels_map():
-    """Query the database and retrieve enum labels for classes with
+    """Query the database and retrieve enum labels for devices with
     obsState attribute in their device"""
     devices_and_enums = {}
     db = Database()
-    server_instances = db.get_server_list()
+    device_names = db.get_device_name("*", "*")
 
-    for server_instance in server_instances:
-        server = server_instance.split("/")[0]
-        if server in default_tango_server_classes:
-            continue
-        devices_and_classes = db.get_device_class_list(server_instance)
-        for val in devices_and_classes:
-            if not(val.lower().startswith('dserver') or len(val.split("/"))==1):
-                dp = DeviceProxy(val)
+    for dev_name in device_names:
+        if not(dev_name.lower().startswith('dserver') or len(dev_name.split("/")) == 1):
+            dp = DeviceProxy(dev_name)
+            try:
                 attribute_list = dp.get_attribute_list()
-                if "obsState" not in attribute_list:
-                    continue
-                enum_labels = dp.get_attribute_config("obsState").enum_labels
-                # cast label from tango._tango.StdStringVector to List
-                enum_labels = list(enum_labels)
-                devices_and_enums[val] = enum_labels
+            except DevFailed:
+                # Skip devices (from the default tango server classes) which are not exported
+                continue
+            # skip all devices without the obsState attribute
+            if "obsState" not in attribute_list:
+                continue
+            enum_labels = dp.get_attribute_config("obsState").enum_labels
+            # cast label from tango._tango.StdStringVector to List
+            enum_labels = list(enum_labels)
+            devices_and_enums[dev_name] = enum_labels
 
     return devices_and_enums
 
@@ -93,4 +90,3 @@ def test_obs_state_attribute_enum_labels_are_valid(device_enum_labels_map):
 
     msg = f"ObsState enum labels varies for some devices. The enum variations: {enum_variations}"
     assert len(enum_variations) == 1, msg
-

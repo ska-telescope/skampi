@@ -20,10 +20,12 @@ def _remove_special_characters_from_enum_labels(enum_labels):
         enum_labels[idx] = new_label.upper()
     return enum_labels
 
+
 def is_enum_labels_valid(enum_labels):
     """verfiy enum labels have the right length, correct names and order"""
     formatted_enum_labels = _remove_special_characters_from_enum_labels(enum_labels)
     return formatted_enum_labels == list(obs_state_enum)
+
 
 @pytest.fixture(scope="function")
 def device_enum_labels_map():
@@ -80,14 +82,15 @@ def test_obs_state_attribute_for_invalid_enum_labels(device_enum_labels_map):
                  f" labels in {obs_state_enum}")
     assert is_enum_labels_valid(selected_enum_labels) == False
 
+
 @pytest.mark.fast
 def test_obs_state_attribute_enum_labels_are_valid(device_enum_labels_map):
-    defaulting_devices = []
+    enum_variations = set()
     for device, enum_labels in device_enum_labels_map.items():
-        if not is_enum_labels_valid(enum_labels):
-            defaulting_devices.append(device)
+        formatted_enum_labels = _remove_special_characters_from_enum_labels(enum_labels)
+        enum_variations.add(tuple(formatted_enum_labels))
+        logging.info(f"Device: {device}, enum labels: {formatted_enum_labels}.")
 
-    logging.info(f"ObsState enum labels for {len(device_enum_labels_map.keys())} devices were"
-                 f" checked for conformity with labels in {obs_state_enum}")
-    msg = f"ObsState enum labels for {defaulting_devices} don't conform to {obs_state_enum}"
-    assert len(defaulting_devices) == 0, msg
+    msg = f"ObsState enum labels varies for some devices. The enum variations: {enum_variations}"
+    assert len(enum_variations) == 1, msg
+

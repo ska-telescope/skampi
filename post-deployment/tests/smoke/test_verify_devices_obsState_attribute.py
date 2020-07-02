@@ -20,23 +20,18 @@ def device_enum_labels_map():
     obsState attribute in their device"""
     devices_and_enums = {}
     db = Database()
-    device_names = db.get_device_name("*", "*")
+    device_names = db.get_device_exported("*")
 
     for dev_name in device_names:
-        if not dev_name.lower().startswith('dserver'):
-            dp = DeviceProxy(dev_name)
-            try:
-                attribute_list = dp.get_attribute_list()
-            except DevFailed:
-                # Skip devices (from the default tango server classes) which are not exported
-                continue
-            # skip all devices without the obsState attribute
-            if "obsState" not in attribute_list:
-                continue
-            enum_labels = dp.get_attribute_config("obsState").enum_labels
-            # cast label from tango._tango.StdStringVector to List
-            enum_labels = list(enum_labels)
-            devices_and_enums[dev_name] = enum_labels
+        dp = DeviceProxy(dev_name)
+        attribute_list = dp.get_attribute_list()
+        # skip all devices without the obsState attribute
+        if "obsState" not in attribute_list:
+            continue
+        enum_labels = dp.get_attribute_config("obsState").enum_labels
+        # cast label from tango._tango.StdStringVector to List
+        enum_labels = list(enum_labels)
+        devices_and_enums[dev_name] = enum_labels
 
     return devices_and_enums
 

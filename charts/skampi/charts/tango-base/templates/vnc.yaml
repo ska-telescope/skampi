@@ -70,7 +70,7 @@ spec:
         - name: HELM_RELEASE
           value: {{ .Release.Name }}
         - name: TANGO_HOST
-          value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
+          value: "{{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000"
         resources:
 {{ toYaml .Values.vnc.resources | indent 10 }}
 {{- with .Values.nodeSelector }}

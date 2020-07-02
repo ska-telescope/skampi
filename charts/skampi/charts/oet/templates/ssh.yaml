@@ -26,7 +26,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   environment: |
-    TANGO_HOST={{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
+    TANGO_HOST={{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
     OET_REST_URI=http://rest-{{ template "oet.name" . }}-{{ .Release.Name }}:5000/api/v1.0/procedures
   profile: |
     export PATH=/venv/bin:${PATH}
@@ -61,7 +61,7 @@ spec:
         image: "{{ .Values.ssh.image.registry }}/{{ .Values.ssh.image.image }}:{{ .Values.ssh.image.tag }}"
         command:
           - /usr/local/bin/wait-for-it.sh
-          - {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
+          - {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
           - --timeout=30
           - --strict
           - --
@@ -75,7 +75,7 @@ spec:
             containerPort: 22
         env:
           - name: TANGO_HOST
-            value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }} {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
+            value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
         volumeMounts:
           - name: ssh-configmap-volume
             mountPath: /home/tango/.profile

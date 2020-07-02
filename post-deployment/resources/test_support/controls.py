@@ -15,7 +15,6 @@ from resources.test_support.mappings import device_to_subarrays
 
 LOGGER = logging.getLogger(__name__)
 
-
 def take_subarray(id):
     return pilot(id)
 
@@ -142,6 +141,12 @@ def set_telescope_to_running(disable_waiting = False):
             pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 
 def telescope_is_in_standby():
+    LOGGER.info('resource("ska_mid/tm_subarray_node/1").get("State")'+ str(resource('ska_mid/tm_subarray_node/1').get("State")))
+    LOGGER.info('resource("mid_csp/elt/subarray_01").get("State")' +
+                str(resource('mid_csp/elt/subarray_01').get("State")))
+    LOGGER.info('resource("mid_csp_cbf/sub_elt/subarray_01").get("State")' +
+                str(resource('mid_csp_cbf/sub_elt/subarray_01').get("State")))
+
     return  [resource('ska_mid/tm_subarray_node/1').get("State"),
             resource('mid_csp/elt/subarray_01').get("State"),
             resource('mid_csp_cbf/sub_elt/subarray_01').get("State")] == \

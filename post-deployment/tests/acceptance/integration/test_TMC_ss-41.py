@@ -7,6 +7,9 @@ from resources.test_support.helpers import waiter,watch,resource
 from resources.test_support.state_checking import StateChecker
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file
+import resources.test_support.tmc_helpers as tmc
+from resources.test_support.controls import telescope_is_in_standby
+from resources.test_support.sync_decorators import sync_scan
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -43,7 +46,7 @@ def print_logs_to_file(s,d,status='ok'):
     d.implementation.print_log_to_file(filename_d,style='csv')
     s.print_records_to_file(filename_s,style='csv',filtered=False)
 
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():
     ####loging
     # s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
@@ -111,10 +114,10 @@ def test_multi_scan():
         @sync_scan(200)
         def scan1():
             SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
-            SubarrayNode.Scan1('{"id":1}')
+            SubarrayNode.Scan('{"id":1}')
 
-        scan()
-        LOGGER.info('Scan complete')
+        scan1()
+        LOGGER.info('Scan1 complete')
         fixture['state'] = 'Subarray Configured for SCAN'
 
 
@@ -159,9 +162,9 @@ def test_multi_scan():
         @sync_scan(200)
         def scan2():
             SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
-            SubarrayNode.Scan2('{"id":2}')
-        scan()
-        LOGGER.info('Scan complete')
+            SubarrayNode.Scan('{"id":2}')
+        scan2()
+        LOGGER.info('Scan2 complete')
         fixture['state'] = 'Subarray Configured for SCAN'
 
         #the scanning should complete without any exceptions
@@ -233,7 +236,8 @@ def test_multi_scan():
             raise Exception('unable to teardown subarray from being in CONFIGURING')
         elif fixture['state'] == 'Unknown':
             LOGGER.info('Put telescope back to standby')
-            CentralNode.StandByTelescope()
+            # CentralNode.StandByTelescope()
+            tmc.set_to_standby()
         pytest.fail("unable to complete test without exceptions")
 
     LOGGER.info("Gathering logs")

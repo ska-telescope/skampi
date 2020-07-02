@@ -24,6 +24,7 @@ def compose_sub():
     config = load_config_from_file(assign_resources_file)
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
     CentralNode.AssignResources(config)
+    LOGGER.info('Invoked AssignResources on CentralNode')
     return sdp_block
 
 @sync_end_sb
@@ -31,19 +32,21 @@ def end_sb():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
     SubarrayNode.EndSB()
-
+    LOGGER.info('Invoked EndSB on Subarray')
 
 @sync_release_resources
 def release_resources():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
     CentralNode.ReleaseResources('{"subarrayID":1,"releaseALL":true,"receptorIDList":[]}')
+    LOGGER.info('Invoked ReleaseResources on Subarray')
 
 
 @sync_set_to_standby
 def set_to_standby():
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
     CentralNode.StandByTelescope()
+    LOGGER.info('Standby the Telescope')
 
 @sync_configure
 def configure_sub(sdp_block, configure_file):
@@ -52,3 +55,4 @@ def configure_sub(sdp_block, configure_file):
     config = load_config_from_file(configure_file)
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
     SubarrayNode.Configure(config)
+    LOGGER.info('Invoked Configure on Subarray')

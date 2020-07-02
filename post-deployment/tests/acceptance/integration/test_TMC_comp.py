@@ -59,6 +59,7 @@ def test_assign_resources():
             config = load_config_from_file(assign_resources_file)
             CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
             CentralNode.AssignResources(config)
+            LOGGER.info('Invoked AssignResources on CentralNode')
         compose_sub()
    
         #tear down

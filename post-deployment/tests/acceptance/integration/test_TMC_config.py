@@ -67,6 +67,7 @@ def test_configure_scan():
             fixture['state'] = 'Subarray CONFIGURING'
             SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
             SubarrayNode.Configure(config)
+            LOGGER.info('Invoked Configure on Subarray')
         configure_sub(sdp_block)
         fixture['state'] = 'Subarray Configured for SCAN'
     

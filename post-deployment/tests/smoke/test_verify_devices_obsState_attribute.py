@@ -23,7 +23,7 @@ def device_enum_labels_map():
     device_names = db.get_device_name("*", "*")
 
     for dev_name in device_names:
-        if not(dev_name.lower().startswith('dserver') or len(dev_name.split("/")) == 1):
+        if not dev_name.lower().startswith('dserver'):
             dp = DeviceProxy(dev_name)
             try:
                 attribute_list = dp.get_attribute_list()

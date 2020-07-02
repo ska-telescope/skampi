@@ -1,6 +1,7 @@
 import pytest
 from datetime import date,datetime
 import os
+import logging
 
 ##SUT imports
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
@@ -11,6 +12,9 @@ from resources.test_support.persistance_helping import update_scan_config_file,u
 from resources.test_support.sync_decorators import sync_assign_resources,sync_configure_oet,time_it,\
     sync_release_resources,sync_release_resources,sync_end_sb,sync_scan_oet
 from resources.test_support.mappings import device_to_subarrays
+
+LOGGER = logging.getLogger(__name__)
+
 
 def take_subarray(id):
     return pilot(id)
@@ -44,12 +48,14 @@ class pilot():
         ##Reference tests/acceptance/mvp/test_XR-13_A1.py
         @sync_assign_resources(dishes)
         def assign():
-            update_resource_config_file(file)
+            sdp_block = update_resource_config_file(file)
             multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
             self.SubArray.allocate_from_file(file, multi_dish_allocation)
-        assign()
+            return sdp_block
+        sdp_block = assign()
         self.state = "Composed"
-        return self
+        LOGGER.info("_________Sdp block from composed function_______" + str(self) +str(sdp_block))
+        return self, sdp_block
 
 
     def and_configure_scan_by_file(self,file = 'resources/test_data/OET_integration/example_configure.json'):

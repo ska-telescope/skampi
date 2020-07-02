@@ -3,9 +3,9 @@ entries:
   archiver:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.815943061+12:00"
+    created: "2020-07-02T14:05:42.925913353+12:00"
     description: A Helm chart for deploying the HDB++ archiver for the MVP on Kubernetes
-    digest: 043df34a9ed833da9d938e300c85e027a3048561eccf421053eb709b83b6979b
+    digest: 605d7cb7d42885eb6ccf8929ec24e4cd20e1a3d21af107e764f1c079a1e03a39
     icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
     name: archiver
     urls:
@@ -14,9 +14,9 @@ entries:
   auth:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.81704433+12:00"
+    created: "2020-07-02T14:05:42.927023626+12:00"
     description: A Helm chart for RBAC SKA
-    digest: 9278faf86c2157372b59f4d3771f75eca40ada28d74a730a7119cde6fd7b1531
+    digest: a911d979968ff966c60ef7c632f883a619a795a6816461b128fb64c9b63479cf
     name: auth
     urls:
     - auth-0.1.0.tgz
@@ -24,9 +24,9 @@ entries:
   cbf-proto:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.817651522+12:00"
+    created: "2020-07-02T14:05:42.928296596+12:00"
     description: A Helm chart for deploying the CSP_Mid.LMC CBF prototype on Kubernetes
-    digest: 9c1ffcc37ff3157c7ebc9d58a9595a6da4ddbd51f3bad434785733dcd0903507
+    digest: 490dab1d04cd366cc6d3f7afd0fb29ae9cc8e71dd03782ff0b1183416a216131
     icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
     name: cbf-proto
     urls:
@@ -35,9 +35,9 @@ entries:
   csp-proto:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.818231868+12:00"
+    created: "2020-07-02T14:05:42.928805868+12:00"
     description: A Helm chart for deploying the Mid_CSP prototype on Kubernetes
-    digest: 904480314c328272d5bd9fa3fe1285f7eaed4a2c6807a4771ee1c1c4ca64f4ea
+    digest: 241a6c94fa13839012428bb93300b3baabfc61d9631bb52c14838c3f4bdb2fc6
     icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
     name: csp-proto
     urls:
@@ -46,9 +46,9 @@ entries:
   dsh-lmc-prototype:
   - apiVersion: v2
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.819326691+12:00"
+    created: "2020-07-02T14:05:42.929376957+12:00"
     description: A Helm chart for deploying the DSH LMC prototype on Kubernetes
-    digest: f8e8825876285169dbb57591eb8f3488adb05e4b965b1ac1f1f7a2ebc21b0769
+    digest: 0f185124ea7165cff9999b96aab29a6128e9f76dcc9f9cf205d126b7fe0e4a1d
     home: https://gitlab.com/ska-telescope/dsh-lmc-prototype/
     icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
     name: dsh-lmc-prototype
@@ -60,9 +60,9 @@ entries:
   logging:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.819917791+12:00"
+    created: "2020-07-02T14:05:42.929965877+12:00"
     description: A Helm chart for deploying the EFK stack
-    digest: 5ae5fdbc5b0ba60cb1bedea775e8a68c7542f3b1ba44889582758147c57d9e58
+    digest: 3815fa8eee351c3747bb68e67aa889ad1375edd704824fbae65fb7f23195aee3
     icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
     maintainers:
     - email: aventer@ska.ac.za
@@ -78,9 +78,9 @@ entries:
   oet:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.82073947+12:00"
+    created: "2020-07-02T14:05:42.9307858+12:00"
     description: A Helm chart for deploying the Observation Execution Tool on Kubernetes
-    digest: 585434549654332930b6c58a3afa4e3d915ff959ba14f18b6eab85ace4c8af9c
+    digest: ce07cf68daddfaba121810950b6d1790a3bed8b4960ea728a59df8420373be0c
     icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
     name: oet
     urls:
@@ -89,9 +89,9 @@ entries:
   sdp-prototype:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.821206784+12:00"
+    created: "2020-07-02T14:05:42.93127802+12:00"
     description: Helm chart to deploy the SDP Prototype
-    digest: 6421eb08b3936de04eac9fec977d9f53232bd75cdc3e36ab8fdc8ff514d0510c
+    digest: 81441ffd3c623d682c4ff61fa2909f1151115a553f5112edc27e288a0b973a5c
     home: https://developer.skatelescope.org/projects/sdp-prototype/
     icon: http://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
     maintainers:
@@ -110,9 +110,9 @@ entries:
   skuid:
   - apiVersion: v1
     appVersion: "0.1"
-    created: "2020-07-01T16:25:50.821510327+12:00"
+    created: "2020-07-02T14:05:42.931702703+12:00"
     description: Service that returns unique IDs for use by SKA
-    digest: aa63223fbfc565061e7ac727128923856208cbbbd9df72390c7c40e3a4e271ad
+    digest: 43620502bdd9497448fc8cc16fad6dd781fd30486efe77b7ef3a2cbd8bfd6f28
     home: https://gitlab.com/ska-telescope/skuid/
     icon: http://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
     keywords:
@@ -128,7 +128,17 @@ entries:
   tango-base:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.82221518+12:00"
+    created: "2020-07-02T14:05:42.933590313+12:00"
+    description: A Helm chart for deploying the TANGO base system on Kubernetes
+    digest: 1c398002decf511a7fe14e904105cca0ddee024f4d69efc29c842cfe973feaf4
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: tango-base
+    urls:
+    - tango-base-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-07-02T14:05:42.932644784+12:00"
     description: A Helm chart for deploying the TANGO base system on Kubernetes
     digest: 402e4b7056701055c404bc4b18831c42e610ffe95b3f1c0ced2d3a2899baa3b4
     icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
@@ -139,9 +149,9 @@ entries:
   tests:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.822410092+12:00"
+    created: "2020-07-02T14:05:42.934247313+12:00"
     description: A Helm chart for integration testing
-    digest: ab7ea230802bbb8a3fccb2e25aea05d2c5e22a991f17fba91b44cefc92ef1470
+    digest: de59d6176479babf15fc0b912a68024729459cbd1b6c32614f1fba409bc5937c
     name: tests
     urls:
     - tests-0.1.0.tgz
@@ -149,9 +159,9 @@ entries:
   tmc-proto:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.823347868+12:00"
+    created: "2020-07-02T14:05:42.935812246+12:00"
     description: A Helm chart for deploying the TMC prototype on Kubernetes
-    digest: 062a2614cd694d0dd082b96f6e2cab53657d35e223584f8035eef7816406af29
+    digest: efd717c5ce39ada77e8e6c591b2dd55fd257c0e4a405d7a214af602e305be44b
     icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
     name: tmc-proto
     urls:
@@ -160,12 +170,12 @@ entries:
   webjive:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-07-01T16:25:50.823835175+12:00"
+    created: "2020-07-02T14:05:42.936567434+12:00"
     description: A Helm chart for deploying the WebJive on Kubernetes
-    digest: 29713705300a8084b8571579f3ba4fd3fb3720973577a7aed8b8cd41224e7813
+    digest: d2b25200e206bba9f1c6a539e00d5cda0f8f9367e9425a9254f64df0c8d32ed3
     icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
     name: webjive
     urls:
     - webjive-0.1.0.tgz
     version: 0.1.0
-generated: "2020-07-01T16:25:50.815367846+12:00"
+generated: "2020-07-02T14:05:42.925344321+12:00"

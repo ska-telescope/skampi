@@ -26,7 +26,9 @@ tangodb:
 
 databaseds:
   enabled: true
-  domian_tag: test
+  # domain tag was the .Release.Name set it as default empty
+  # so that the old behaviour can still happen in the chart
+  domainTag:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-cpp

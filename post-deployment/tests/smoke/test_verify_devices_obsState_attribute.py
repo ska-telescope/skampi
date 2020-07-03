@@ -76,5 +76,6 @@ def test_obs_state_attribute_enum_labels_are_the_same(device_enum_labels_map):
         formatted_enum_labels = _remove_special_characters_from_enum_labels(enum_labels)
         enum_variations.add(tuple(formatted_enum_labels))
 
-    msg = f"ObsState enum labels varies for some devices. The enum variations: {enum_variations}"
+    msg = (f"ObsState enum labels varies for some devices. The enum variations: {enum_variations}."
+           f"\nDevice info: {device_enum_labels_map}")
     assert len(enum_variations) == 1, msg

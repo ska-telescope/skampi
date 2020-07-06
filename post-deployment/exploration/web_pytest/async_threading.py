@@ -19,7 +19,7 @@ def singleton(cls):
 class AsyncThreadRunner():
 
     def __init__(self, max_workers=5):
-        self.loop = asyncio.get_running_loop()
+        self.loop = asyncio.get_event_loop()
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
     
     async def run_thread_and_await_result(self,func,*args,**kwargs):

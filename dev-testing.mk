@@ -109,10 +109,11 @@ install_testing_pod:
 		--set pythonPath=$(PYTHONPATH) \
 		--set sshPort=$(sshPort) \
 		--set hostPath=$(location) \
+		--namespace $(KUBE_NAMESPACE) \
 		--wait --timeout=1m0s
-	@kubectl get all,ing -l releaseName=$(RELEASE_NAME)
+	@kubectl get all,ing -l releaseName=$(RELEASE_NAME) --namespace $(KUBE_NAMESPACE)
 
-testing-pod = $(shell echo $$(kubectl get pod -l releaseName=$(RELEASE_NAME) -o=jsonpath='{..metadata.name}') )
+testing-pod = $(shell echo $$(kubectl get pod -l releaseName=$(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) -o=jsonpath='{..metadata.name}') )
 
 attach:
 	kubectl attach -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c testing-container
@@ -128,7 +129,7 @@ describe_dev_testing:
 	kubectl get all -l releaseName=$(RELEASE_NAME)
 
 uninstall_testing_pod:
-	helm delete $(RELEASE_NAME)
+	helm delete $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE)
 
 delete_testing_pod: # delete testing pod
 	@kubectl delete pod $(testing-pod) --namespace $(KUBE_NAMESPACE)
@@ -151,7 +152,7 @@ test_as_ssh_client: # set up the  testing pod so that one can ssh back into the 
 	rm temp
 
 get_web_shell:
-	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c web-pytest bash
+	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c web-pytest -- bash -c "cd /home/tango/skampi/post-deployment/exploration/web_pytest/ && python3 web_pytest.py"
 
 check_log_consumer_running: 
 	ps aux | awk 

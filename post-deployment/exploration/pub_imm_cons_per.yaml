@@ -1,0 +1,14 @@
+- name: 'consuming immediately from immediate server updates'
+  devices:
+    - deviceName: 'test/device/1'
+      nrOfevents: 1000
+      changePeriod: 0.05
+      nrOfAttributes: 1
+      debug: False
+      assertFail: False
+      consumerStrategy:
+        immediateConsumption:
+          clientSidePolling: 500
+          clientBuffer: 50
+      producerStrategy:
+        immediatePublish: 

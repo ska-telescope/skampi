@@ -40,8 +40,6 @@ spec:
             - git
           args:
             - clone
-            - -b
-            - SAR-108-implement-tango-test-device-server
             - https://gitlab.com/ska-telescope/tango-example.git
           volumeMounts:
             - name: git-repo

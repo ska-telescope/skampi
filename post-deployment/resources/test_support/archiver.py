@@ -47,6 +47,9 @@ class ArchiverHelper:
     def conf_manager_attribute_status(self, fqdn):
         return self.conf_manager_proxy.AttributeStatus(fqdn)
 
+    def is_started(self, fqdn):
+        return "Archiving          : Started" in self.evt_subscriber_attribute_status(fqdn)
+
     def wait_for_start(self,fqdn,sleep_time=0.1,max_retries=30):
         total_sleep_time = 0
         for x in range(0, max_retries):

@@ -82,7 +82,7 @@ tp_cp: tp_cp_kube tp_cp_minikube
 tp_config:
 	@echo "Configuring testing pod"
 	@echo "#######################";
-	kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c " \
+	@kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c " \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-key=/home/tango/.minikube/client.key && \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-certificate=/home/tango/.minikube/client.crt && \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-cluster minikube --certificate-authority=/home/tango/.minikube/ca.crt && \
@@ -96,6 +96,39 @@ tp_config:
 
 deploy_testing_pod: tp_run_wait tp_pip tp_cp tp_config## deploy a testing pod for doing developement inside a k8 pod (this is the same pod used for running CI tests)
 
+sshPort=30022 
+httpPort=30080
+
+RELEASE_NAME=dev-testing
+
+install_testing_pod:
+	@helm install $(RELEASE_NAME) post-deployment/exploration/dev_testing \
+		--set imageToTest=$(IMAGE_TO_TEST) \
+		--set kubeNamespace=$(KUBE_NAMESPACE) \
+		--set helmRelease=$(HELM_RELEASE) \
+		--set pythonPath=$(PYTHONPATH) \
+		--set sshPort=$(sshPort) \
+		--set hostPath=$(location) \
+		--wait --timeout=1m0s
+	@kubectl get all,ing -l releaseName=$(RELEASE_NAME)
+
+testing-pod = $(shell echo $$(kubectl get pod -l releaseName=$(RELEASE_NAME) -o=jsonpath='{..metadata.name}') )
+
+attach:
+	kubectl attach -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c testing-container
+
+set_up_dev_testing: install_testing_pod tp_config test_as_ssh_client
+
+install_web_dependencies:
+	@echo "Installing Python packages on web container";
+	@echo "##########################";
+	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c web-pytest -- bash -c "/usr/bin/python3 -m pip install -r /home/tango/skampi/post-deployment/test_requirements.txt"	
+
+describe_dev_testing:
+	kubectl get all -l releaseName=$(RELEASE_NAME)
+
+uninstall_testing_pod:
+	helm delete $(RELEASE_NAME)
 
 delete_testing_pod: # delete testing pod
 	@kubectl delete pod $(testing-pod) --namespace $(KUBE_NAMESPACE)
@@ -117,6 +150,11 @@ test_as_ssh_client: # set up the  testing pod so that one can ssh back into the 
 	kubectl cp temp $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.ssh/config --namespace $(KUBE_NAMESPACE); \
 	rm temp
 
+get_web_shell:
+	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c web-pytest bash
 
 check_log_consumer_running: 
 	ps aux | awk 
+
+ping_web_py:
+	@curl -H "HOST: integration.engageska-portugal.pt" http://$(THIS_HOST)/dev-testing/ping

@@ -82,7 +82,7 @@ spec:
           - /bin/sh
           - -c
         args:
-          - "/usr/bin/python3 -m pip install -r /home/tango/skampi/post-deployment/test_requirements.txt && sleep infinity"
+          - "/usr/bin/python3 -m pip install -r /home/tango/skampi/post-deployment/test_requirements.txt && cd /home/tango/skampi/post-deployment/exploration/web_pytest/ && python3 web_pytest.py"
         env:
         - name: TANGO_HOST
           value: databaseds-tango-base-test:10000

@@ -16,3 +16,4 @@ aiohttp
 aiojobs
 pytest-asyncio
 ska_logging
+aiohttp_cors

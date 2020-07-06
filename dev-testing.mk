@@ -152,10 +152,14 @@ test_as_ssh_client: # set up the  testing pod so that one can ssh back into the 
 	rm temp
 
 get_web_shell:
-	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c web-pytest -- bash -c "cd /home/tango/skampi/post-deployment/exploration/web_pytest/ && python3 web_pytest.py"
+	kubectl attach -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c web-pytest
+	#-- bash -c "cd /home/tango/skampi/post-deployment/exploration/web_pytest/ && python3 web_pytest.py"
 
 check_log_consumer_running: 
 	ps aux | awk 
 
+make get_web_logs:
+	kubectl logs $(testing-pod) --namespace $(KUBE_NAMESPACE) -c web-pytest 
+
 ping_web_py:
-	@curl -H "HOST: integration.engageska-portugal.pt" http://$(THIS_HOST)/dev-testing/ping
+	@curl -H "HOST: dev-testing.engageska-portugal.pt" http://$(THIS_HOST)/dev-testing/ping

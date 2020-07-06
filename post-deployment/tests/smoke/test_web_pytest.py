@@ -7,10 +7,16 @@ from time import sleep
 from assertpy import assert_that
 from aiohttp.test_utils import TestClient, TestServer
 import  mock
+
 # the SUT
 from exploration.web_pytest import web_pytest
 from exploration.web_pytest import async_threading
 
+def test_mock():
+    # run a mock test to verify tests can run from remote browser
+    logging.info('running a test')
+    sleep(2)
+    logging.info('test complete')
 
 
 

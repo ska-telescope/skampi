@@ -5,6 +5,7 @@ and values
 """
 import logging
 import pytest
+from collections import defaultdict
 from random import shuffle
 from tango import Database, DeviceProxy, DevFailed
 
@@ -31,7 +32,8 @@ def device_enum_labels_map():
         enum_labels = dp.get_attribute_config("obsState").enum_labels
         # cast label from tango._tango.StdStringVector to List
         enum_labels = list(enum_labels)
-        devices_and_enums[dev_name] = enum_labels
+        formatted_enum_labels = _remove_special_characters_from_enum_labels(enum_labels)
+        devices_and_enums[dev_name] = formatted_enum_labels
 
     return devices_and_enums
 
@@ -71,11 +73,13 @@ def test_obs_state_attribute_for_different_enum_labels(device_enum_labels_map):
 
 @pytest.mark.fast
 def test_obs_state_attribute_enum_labels_are_the_same(device_enum_labels_map):
-    enum_variations = set()
-    for device, enum_labels in device_enum_labels_map.items():
-        formatted_enum_labels = _remove_special_characters_from_enum_labels(enum_labels)
-        enum_variations.add(tuple(formatted_enum_labels))
+    enum_variations = defaultdict(list)
 
-    msg = (f"ObsState enum labels varies for some devices. The enum variations: {enum_variations}."
-           f"\nDevice info: {device_enum_labels_map}")
-    assert len(enum_variations) == 1, msg
+    for device, enum_labels in device_enum_labels_map.items():
+        # Keys are the labels. Value is a list of device names
+        enum_variations[tuple(enum_labels)].append(device)
+
+    for labels, device_list in enum_variations.items():
+        logging.info(f"Devices {device_list} has obsState enum labels: {labels}\n")
+
+    assert len(enum_variations) == 1, "ObsState enum labels vary for some devices"

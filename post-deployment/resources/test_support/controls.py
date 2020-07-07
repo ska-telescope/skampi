@@ -57,15 +57,17 @@ class pilot():
         return self, sdp_block
 
 
-    def and_configure_scan_by_file(self,file = 'resources/test_data/OET_integration/example_configure.json'):
+    def and_configure_scan_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/configure2.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A2-Test.py
         @sync_configure_oet
         @time_it(120)
-        def config():
-            update_scan_config_file(file)
+        def config(file, sdp_block):
+            update_scan_config_file(file, sdp_block)
+            LOGGER.info("___________Input file in configure_oet_____________" + str(file))
             self.state = "Configuring"
-            self.SubArray.configure_from_file(file, 1, with_processing = False)
-        config()
+            self.SubArray.configure_from_file(file, 6, with_processing = False)
+        LOGGER.info("___________SDP block from configure_oet_____________" + str(sdp_block))
+        config(file, sdp_block)
         self.state = "Ready"
         return self
 

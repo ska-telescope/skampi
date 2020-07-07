@@ -35,7 +35,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_configure_scan():
     
     try:
@@ -72,11 +72,15 @@ def test_configure_scan():
         fixture['state'] = 'Subarray Configured for SCAN'
     
         #tear down
-        LOGGER.info('Tests complete: tearing down...')
+        LOGGER.info('TMC-configure tests complete: tearing down...')
         tmc.end_sb()
+        LOGGER.info('Invoked EndSB on Subarray')
         tmc.release_resources()
+        LOGGER.info('Invoked ReleaseResources on Subarray')
         tmc.set_to_standby()
-   
+        LOGGER.info('Invoked StandBy on Subarray')
+
+
     except:        
         LOGGER.info('Tearing down failed test, state = {}'.format(fixture['state']))
         if fixture['state'] == 'Telescope On':
@@ -85,6 +89,7 @@ def test_configure_scan():
             tmc.release_resources()
             tmc.set_to_standby()
         elif fixture['state'] == 'Subarray Configured for SCAN':
+            LOGGER.info('Tearing down in , state = {}'.format(fixture['state']))
             tmc.end_sb()
             tmc.release_resources()
             tmc.set_to_standby()

@@ -4,8 +4,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
+  name: "{{ template "tmc-proto.name" . }}-tmc-proto-configuration-json"
   namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "tmc-proto.name" . }}
+    component: tmc-proto-configuration-json
+    chart: {{ template "tmc-proto.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 data:
   configuration.json:
 {{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
@@ -34,8 +40,14 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: tmc-proto-configurator-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+  name: {{ template "tmc-proto.name" . }}-tmc-proto-configurator
   namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "tmc-proto.name" . }}
+    component: tmc-proto-configurator
+    chart: {{ template "tmc-proto.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   ttlSecondsAfterFinished: 100
   template:
@@ -57,7 +69,7 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
+            name: "{{ template "tmc-proto.name" . }}-tmc-proto-configuration-json"
       restartPolicy: Never
 
 {{- $global := . }}
@@ -68,10 +80,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+  name: {{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}
   namespace: {{ $global.Release.Namespace }}
   labels:
-    app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+    app: tmcprototype
+    component: {{ $deviceserver.name }}
     chart: {{ template "tmc-proto.chart" $global }}
     release: {{ $global.Release.Name }}
     heritage: {{ $global.Release.Service }}
@@ -82,7 +95,8 @@ spec:
     port: 1234
     targetPort: 1234
   selector:
-    app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+    app: tmcprototype
+    component: {{ $deviceserver.name }}
     chart: {{ template "tmc-proto.chart" $global }}
     release: {{ $global.Release.Name }}
 
@@ -91,28 +105,30 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+  name: {{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}
   namespace: {{ $global.Release.Namespace }}
   labels:
-    app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+    app: {{ template "tmc-proto.name" $global }}
+    component: {{ $deviceserver.name }}
     chart: {{ template "tmc-proto.chart" $global }}
     release: {{ $global.Release.Name }}
     heritage: {{ $global.Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+      app: {{ template "tmc-proto.name" $global }}
+      component: {{ $deviceserver.name }}
       chart: {{ template "tmc-proto.chart" $global }}
       release: {{ $global.Release.Name }}
-  serviceName: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+  serviceName: {{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+        app: {{ template "tmc-proto.name" $global }}
+        component: {{ $deviceserver.name }}
         chart: {{ template "tmc-proto.chart" $global }}
         release: {{ $global.Release.Name }}
-        heritage: {{ $global.Release.Service }}
     spec:
       containers:
       - name: deviceserver

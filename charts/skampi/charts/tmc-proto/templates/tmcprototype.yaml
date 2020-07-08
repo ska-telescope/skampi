@@ -95,7 +95,7 @@ spec:
     port: 1234
     targetPort: 1234
   selector:
-    app: tmcprototype
+    app: {{ template "tmc-proto.name" $global }}
     component: {{ $deviceserver.name }}
     chart: {{ template "tmc-proto.chart" $global }}
     release: {{ $global.Release.Name }}

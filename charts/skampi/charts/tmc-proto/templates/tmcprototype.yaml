@@ -129,6 +129,7 @@ spec:
         component: {{ $deviceserver.name }}
         chart: {{ template "tmc-proto.chart" $global }}
         release: {{ $global.Release.Name }}
+        heritage: {{ $global.Release.Service }}
     spec:
       containers:
       - name: deviceserver

@@ -3,7 +3,7 @@ from resources.test_support.helpers import waiter,watch,resource
 import signal
 import logging
 
-def sync_assign_resources(nr_of_receptors=4):
+def sync_assign_resources(nr_of_receptors=4,timeout=60):
     def decorator_sync_assign_resources(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -13,7 +13,7 @@ def sync_assign_resources(nr_of_receptors=4):
             ################ 
             result = func(*args, **kwargs)
             ################ 
-            the_waiter.wait(timeout=60)
+            the_waiter.wait(timeout=timeout)
             return result
         return wrapper
     return decorator_sync_assign_resources
@@ -29,7 +29,7 @@ def sync_configure(func):
         ################ 
         result = func(*args, **kwargs)
         ################ 
-        w.wait_until_value_changed_to('CONFIGURING')
+        #w.wait_until_value_changed_to('CONFIGURING')
         w.wait_until_value_changed_to('READY',timeout=200)
         return result
     return wrapper
@@ -121,7 +121,7 @@ def sync_scan(timeout=200):
             resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
             the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
             result = func(*args, **kwargs)
-            the_watch.wait_until_value_changed_to('SCANNING')
+            the_watch.wait_until_value_changed_to('SCANNING',timeout)
             the_watch.wait_until_value_changed_to('READY',timeout)
             return result
         return wrapper

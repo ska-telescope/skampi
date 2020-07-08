@@ -127,7 +127,8 @@ def test_multi_scan():
         LOGGER.info('Invoked StandBy on Subarray')
         LOGGER.info('Tests complete: tearing down...')
 
-    except:        
+    except Exception as e:     
+        logging.info(f'Exception raised: {e.args}')  
         LOGGER.info("Gathering logs")
         # s.stop()
         # d.stop_tracing()

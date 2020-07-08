@@ -1,15 +1,17 @@
 from tango import DeviceProxy   
 from datetime import date,datetime
+from time import sleep
 import os
 import pytest
 import logging
 from resources.test_support.helpers import waiter,watch,resource
 from resources.test_support.state_checking import StateChecker
 from resources.test_support.log_helping import DeviceLogging
+from resources.test_support.logging_decorators import log_states
 from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file
 import resources.test_support.tmc_helpers as tmc
 from resources.test_support.controls import telescope_is_in_standby
-from resources.test_support.sync_decorators import sync_scan
+from resources.test_support.sync_decorators import sync_scanning
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -35,16 +37,6 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-def print_logs_to_file(s,d,status='ok'):
-    if status=='ok':
-        filename_d = 'logs_test_TMC_int_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-        filename_s = 'states_test_TMC_int__{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-    elif status=='error':
-        filename_d = 'error_logs_test_TMC_int__{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-        filename_s = 'error_states_test_TMC_int__{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-    LOGGER.info("Printing log files to build/{} and build/{}".format(filename_d,filename_s))
-    d.implementation.print_log_to_file(filename_d,style='csv')
-    s.print_records_to_file(filename_s,style='csv',filtered=False)
 
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():
@@ -84,13 +76,12 @@ def test_multi_scan():
         LOGGER.info('Starting a scan of 6 seconds')
         fixture['state'] = 'Subarray SCANNING'
 
-        @sync_scan(200)
-        def scan1():
-            SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
-            SubarrayNode.Scan('{"id":1}')
-            LOGGER.info("Scan 1  is executing on Subarray")
-            
-        scan1()
+        with log_states('TMC_ss-41-scan1',devices_to_log,non_default_states_to_check):
+            with sync_scanning(200):
+                SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+                SubarrayNode.Scan('{"id":1}')
+                LOGGER.info("Scan 1  is executing on Subarray")
+
         LOGGER.info('Scan1 complete')
         fixture['state'] = 'Subarray Configured for SCAN'
 
@@ -108,7 +99,7 @@ def test_multi_scan():
 
         with log_states('TMC_ss-41-scan2',devices_to_log,non_default_states_to_check):
             with sync_scanning(200):
-            SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+                SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
                 SubarrayNode.Scan('{"id":1}')
         LOGGER.info('Scan2 complete')
         fixture['state'] = 'Subarray Configured for SCAN'
@@ -144,7 +135,7 @@ def test_multi_scan():
             tmc.set_to_standby()
         elif fixture['state'] == 'Subarray SCANNING':
             if resource('ska_mid/tm_subarray_node/1').get('obsState') == 'SCANNING':
-            raise Exception('unable to teardown subarray from being in SCANNING')
+                raise Exception('unable to teardown subarray from being in SCANNING')
             else:
                 #sleep arbitrary number here to handle possible failures in un-idempotentcy
                 sleep(3)

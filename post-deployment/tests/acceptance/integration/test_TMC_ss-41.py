@@ -143,7 +143,15 @@ def test_multi_scan():
             tmc.release_resources()
             tmc.set_to_standby()
         elif fixture['state'] == 'Subarray SCANNING':
+            if resource('ska_mid/tm_subarray_node/1').get('obsState') == 'SCANNING':
             raise Exception('unable to teardown subarray from being in SCANNING')
+            else:
+                #sleep arbitrary number here to handle possible failures in un-idempotentcy
+                sleep(3)
+                tmc.end_sb()
+                tmc.release_resources()
+                tmc.set_to_standby()
+                raise e
         elif fixture['state'] == 'Subarray CONFIGURING':
             raise Exception('unable to teardown subarray from being in CONFIGURING')
         elif fixture['state'] == 'Unknown':

@@ -83,7 +83,7 @@ metadata:
   name: {{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}
   namespace: {{ $global.Release.Namespace }}
   labels:
-    app: tmcprototype
+    app: {{ template "tmc-proto.name" $global }}
     component: {{ $deviceserver.name }}
     chart: {{ template "tmc-proto.chart" $global }}
     release: {{ $global.Release.Name }}

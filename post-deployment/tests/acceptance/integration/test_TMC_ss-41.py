@@ -56,20 +56,10 @@ def test_multi_scan():
     # d.start_tracing()
     ####
     try:
-        # given an interface to TMC to interact with a subarray node and a central node
-        CentralNode = DeviceProxy('ska_mid/tm_central/central_node')   
-        SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')     
         fixture = {}
         fixture['state'] = 'Unknown'
 
         # given a started up telescope
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('DISABLE')
-        # the_waiter = waiter()
-        # the_waiter.set_wait_for_starting_up()
-        # LOGGER.info('starting up telescope')
-        # fixture['state'] = 'Telescope Standby'
-        # CentralNode.StartUpTelescope()
-        # the_waiter.wait()
         LOGGER.info('Checking if Telescope is in StandBy')
         assert (telescope_is_in_standby())
         LOGGER.info('Telescope is in StandBy')
@@ -77,40 +67,21 @@ def test_multi_scan():
         LOGGER.info('Staring up the Telescope')
         fixture['state'] = 'Telescope On'
 
-        # and a subarray composed of two resources configured as perTMC_integration/assign_resources.json
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
-        # the_waiter.clear_watches()
-        # the_waiter.set_wait_for_assign_resources()
-        # LOGGER.info('assigning two dishes to subarray 1')
-        # assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
-        # sdp_block = update_resource_config_file(assign_resources_file)
-        # config = load_config_from_file(assign_resources_file)
-        # CentralNode.AssignResources(config)
-        # the_waiter.wait()
+        # and a subarray composed of two resources configured as perTMC_integration/assign_resources1.json
         sdp_block = tmc.compose_sub()
         LOGGER.info('Composing the Subarray')
         fixture['state'] = 'Subarray Assigned'
 
         #and for which the subarray is configured to perform a scan as per 'TMC_integration/configure1.json'
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
-        # the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
-        # configure1_file = 'resources/test_data/TMC_integration/configure1.json'
-        # update_scan_config_file(configure1_file, sdp_block)
-        # config = load_config_from_file(configure1_file)
-        # LOGGER.info('Configuring a scan for subarray 1')
-        # # fixture['state'] = 'Subarray CONFIGURING'
-        # SubarrayNode.Configure(config)
-        # # the_watch.wait_until_value_changed_to('CONFIGURING')
-        # the_watch.wait_until_value_changed_to('READY',timeout=200)
         fixture['state'] = 'Subarray CONFIGURING'
         configure_file = 'resources/test_data/TMC_integration/configure1.json'
         tmc.configure_sub(sdp_block, configure_file)
         LOGGER.info('Configuring the Subarray')
         fixture['state'] = 'Subarray Configured for SCAN'
         
-        #and for which the subarray has successfully completed a scan durating 10 seconds based on previos configuration
+        #and for which the subarray has successfully completed a scan durating 6 seconds based on previos configuration
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-        LOGGER.info('Starting a scan of 10 seconds')
+        LOGGER.info('Starting a scan of 6 seconds')
         fixture['state'] = 'Subarray SCANNING'
 
         @sync_scan(200)
@@ -123,43 +94,16 @@ def test_multi_scan():
         LOGGER.info('Scan1 complete')
         fixture['state'] = 'Subarray Configured for SCAN'
 
-
-        # SubarrayNode.Scan('{"id":1}')
-        # the_watch.wait_until_value_changed_to('SCANNING')
-        # fixture['state'] = 'Subarray SCANNING'
-        # #200 = 200*0.1 = 20 seconds timeout assuming scan takes 10 seconds
-        # the_watch.wait_until_value_changed_to('READY',timeout=200)
-        # LOGGER.info('Scan complete')
-        # fixture['state'] = 'Subarray Configured for SCAN'
-
         #then when I load a  new configuration to perform a can as per TMC_integration/configure2.json
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-        # configure2_file = 'resources/test_data/TMC_integration/configure2.json'
-        # update_scan_config_file(configure2_file, sdp_block)
-        # config = load_config_from_file(configure2_file)
-        # LOGGER.info('Doing a new configuration for a scan on subarray 1 (testing part)')
-        # SubarrayNode.Configure(config)
-        # # the_watch.wait_until_value_changed_to('CONFIGURING')
-        # # fixture['state'] = 'Subarray CONFIGURING'
-        # the_watch.wait_until_value_changed_to('READY',timeout=200)
-
         LOGGER.info('Configuring the Subarray')
         fixture['state'] = 'Subarray CONFIGURING'
         configure_file = 'resources/test_data/TMC_integration/configure2.json'
         tmc.configure_sub(sdp_block, configure_file)
         fixture['state'] = 'Subarray Configured for SCAN'
         
-        # and run a new scan bsed on that configruation
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-        # LOGGER.info('Staring new scan of 10 seconds based on  new config (testing part)')
-        # SubarrayNode.Scan('{"id":1}')
-        # the_watch.wait_until_value_changed_to('SCANNING')
-        # fixture['state'] = 'Subarray SCANNING'
-        # #200 = 200*0.1 = 20 seconds timeout assuming scan takes 10 seconds
-        # the_watch.wait_until_value_changed_to('READY',timeout=200)
-
+        # and run a new scan bsed on that configuration
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-        LOGGER.info('Starting a scan of 10 seconds')
+        LOGGER.info('Starting a scan of 6 seconds')
         fixture['state'] = 'Subarray SCANNING'
 
         @sync_scan(200)
@@ -181,28 +125,8 @@ def test_multi_scan():
         LOGGER.info('Invoked ReleaseResources on Subarray')
         tmc.set_to_standby()
         LOGGER.info('Invoked StandBy on Subarray')
-        # LOGGER.info('Tests complete: tearing down...')
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-        # the_waiter.clear_watches()
-        # the_waiter.set_wait_for_ending_SB()
-        # LOGGER.info('Ending SB (take subarry back to IDLE)')
-        # SubarrayNode.EndSB()
-        # the_waiter.wait()
-        #
-        # the_waiter.clear_watches()
-        # the_waiter.set_wait_for_tearing_down_subarray()
-        # LOGGER.info('Releasing Resources (take subarray back to OFF)')
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
-        # CentralNode.ReleaseResources('{"subarrayID":1,"releaseALL":true,"receptorIDList":[]}')
-        # the_waiter.wait()
-        #
-        # the_waiter.clear_watches()
-        # the_waiter.set_wait_for_going_to_standby()
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
-        # LOGGER.info('Put telescope back to standby')
-        # CentralNode.StandByTelescope()
-        # the_waiter.wait()
-   
+        LOGGER.info('Tests complete: tearing down...')
+
     except:        
         LOGGER.info("Gathering logs")
         # s.stop()
@@ -211,31 +135,13 @@ def test_multi_scan():
         LOGGER.info('Tearing down failed test, state = {}'.format(fixture['state']))
         if fixture['state'] == 'Telescope On':
             tmc.set_to_standby()
-            # LOGGER.info('Put telescope back to standby')
-            # the_waiter.clear_watches()
-            # the_waiter.set_wait_for_going_to_standby()
-            # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
-            # LOGGER.info('Put telescope back to standby')
-            # CentralNode.StandByTelescope()
-            # the_waiter.wait()
         elif fixture['state'] == 'Subarray Assigned':
             tmc.release_resources()
             tmc.set_to_standby()
-            # the_waiter.clear_watches()
-            # the_waiter.set_wait_for_tearing_down_subarray()
-            # LOGGER.info('Releasing Resources (take subarry back to OFF)')
-            # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
-            # CentralNode.ReleaseResources('{"subarrayID":1,"releaseALL":true,"receptorIDList":[]}')
-            # the_waiter.wait()
         elif fixture['state'] == 'Subarray Configured for SCAN':
             tmc.end_sb()
             tmc.release_resources()
             tmc.set_to_standby()
-            # the_waiter.clear_watches()
-            # the_waiter.set_wait_for_ending_SB()
-            # LOGGER.info('Ending SB (take subarry back to IDLE)')
-            # SubarrayNode.EndSB()
-            # the_waiter.wait()
         elif fixture['state'] == 'Subarray SCANNING':
             raise Exception('unable to teardown subarray from being in SCANNING')
         elif fixture['state'] == 'Subarray CONFIGURING':

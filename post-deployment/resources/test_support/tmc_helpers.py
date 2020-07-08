@@ -15,7 +15,7 @@ def start_up():
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')   
     CentralNode.StartUpTelescope()
 
-@sync_assign_resources(2)
+@sync_assign_resources(2,150)
 def compose_sub():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
     assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'

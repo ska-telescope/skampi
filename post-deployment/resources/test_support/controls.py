@@ -45,7 +45,7 @@ class pilot():
     
     def to_be_composed_out_of(self, dishes, file = 'resources/test_data/OET_integration/example_allocate.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A1.py
-        @sync_assign_resources(dishes)
+        @sync_assign_resources(dishes,150)
         def assign():
             sdp_block = update_resource_config_file(file)
             multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
@@ -128,7 +128,9 @@ def set_telescope_to_standby():
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
     SKAMid().standby()
-    the_waiter.wait(50)
+    #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
+    #therefore timeout is given as 12 sec
+    the_waiter.wait(120)
     if the_waiter.timed_out:
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
@@ -154,7 +156,7 @@ def telescope_is_in_standby():
             resource('mid_csp_cbf/sub_elt/subarray_01').get("State")] == \
             ['DISABLE' for n in range(3)]
 
-
+## currently this function is not used in any testcase
 def run_a_config_test():
     assert(telescope_is_in_standby)
     set_telescope_to_running()

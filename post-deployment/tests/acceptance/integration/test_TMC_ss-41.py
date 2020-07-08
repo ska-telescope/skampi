@@ -106,11 +106,10 @@ def test_multi_scan():
         LOGGER.info('Starting a scan of 6 seconds')
         fixture['state'] = 'Subarray SCANNING'
 
-        @sync_scan(200)
-        def scan2():
+        with log_states('TMC_ss-41-scan2',devices_to_log,non_default_states_to_check):
+            with sync_scanning(200):
             SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
-            SubarrayNode.Scan('{"id":2}')
-        scan2()
+                SubarrayNode.Scan('{"id":1}')
         LOGGER.info('Scan2 complete')
         fixture['state'] = 'Subarray Configured for SCAN'
 

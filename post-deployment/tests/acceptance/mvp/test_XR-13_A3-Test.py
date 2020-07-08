@@ -25,7 +25,8 @@ from resources.test_support.helpers import  obsState, resource, watch, waiter, m
 from resources.test_support.logging_decorators import log_it
 import logging
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
-from resources.test_support.sync_decorators import  sync_scan_oet
+from resources.test_support.sync_decorators import  sync_scan_oet,sync_configure_oet,time_it
+
 LOGGER = logging.getLogger(__name__)
 
 import json
@@ -57,7 +58,7 @@ non_default_states_to_check = {
     'mid_d0003/elt/master' : 'pointingState',
     'mid_d0004/elt/master' : 'pointingState'}
 
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational imaging scan")
 def test_subarray_scan():
     """Imaging Scan Operation."""
@@ -65,13 +66,17 @@ def test_subarray_scan():
 @given("I am accessing the console interface for the OET")
 def start_up():
     LOGGER.info("Given I am accessing the console interface for the OETy")
+    LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
 
 @given("Sub-array is in READY state")
 def set_to_ready():
-    take_subarray(1).to_be_composed_out_of(4).and_configure_scan_by_file()
+    pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
+    LOGGER.info("AssignResources is invoke on Subarray")
+    take_subarray(1).and_configure_scan_by_file(sdp_block)
+    LOGGER.info("Configure is invoke on Subarray")
 
 @given("duration of scan is 10 seconds")
 def scan_duration(fixture):
@@ -81,14 +86,18 @@ def scan_duration(fixture):
 @when("I call the execution of the scan instruction")
 def invoke_scan_command(fixture):
     #TODO add method to clear thread in case of failure
-    @log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
+    #@log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
     @sync_scan_oet
     def scan():
         def send_scan(duration):
             SubArray(1).scan()
-        executor = futures.ThreadPoolExecutor(max_workers=1)  
+        LOGGER.info("________Scan is invoked on Subarray_________")
+        executor = futures.ThreadPoolExecutor(max_workers=1)
+        LOGGER.info("________After Threadpool executor_________")
         return executor.submit(send_scan,fixture['scans'])
+    LOGGER.info("__________fixture['scans']___________" + str(fixture['scans']))
     fixture['future'] = scan()
+    LOGGER.info("__________fixture['future']___________" + str(fixture['future']))
     return fixture
 
 @then("Sub-array changes to a SCANNING state")

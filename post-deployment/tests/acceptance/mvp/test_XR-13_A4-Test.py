@@ -54,7 +54,7 @@ def result():
     return {}
 
 
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
 def test_deallocate_resources():
     """Deallocate Resources."""
@@ -67,7 +67,7 @@ def set_to_running(result):
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
     LOGGER.info("Assigning 4 dishes")
-    take_subarray(1).to_be_composed_out_of(4)
+    take_subarray(1).to_be_composed_out_of(2)
 
 @when("I deallocate the resources")
 def deallocate_resources():

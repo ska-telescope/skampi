@@ -35,7 +35,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_configure_scan():
     
     try:
@@ -55,7 +55,7 @@ def test_configure_scan():
         fixture['state'] = 'Subarray Assigned'
 
         #then when I configure a subarray to perform a scan as per 'TMC_integration/configure1.json'
-        #@log_it('TMC_int_configure',devices_to_log,non_default_states_to_check)
+        @log_it('TMC_int_configure',devices_to_log,non_default_states_to_check)
         @sync_configure
         @time_it(90)
         def configure_sub(sdp_block):

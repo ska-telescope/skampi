@@ -57,4 +57,5 @@ def configure_sub(sdp_block, configure_file):
     config = load_config_from_file(configure_file)
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
     SubarrayNode.Configure(config)
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
     LOGGER.info('Invoked Configure on Subarray')

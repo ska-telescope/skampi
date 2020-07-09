@@ -41,11 +41,11 @@ LOGGER = logging.getLogger(__name__)
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():
     ####loging
-    # s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
-    # s.run(threaded=True,resolution=0.1)
-    # d = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    # d.update_traces(devices_to_log)
-    # d.start_tracing()
+    s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
+    s.run(threaded=True,resolution=0.1)
+    d = DeviceLogging('DeviceLoggingImplWithDBDirect')
+    d.update_traces(devices_to_log)
+    d.start_tracing()
     ####
     try:
         the_waiter = waiter()
@@ -81,6 +81,7 @@ def test_multi_scan():
                 SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
                 SubarrayNode.Scan('{"id":1}')
                 fixture['state'] = 'Subarray SCANNING'
+                LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
                 LOGGER.info("Scan 1  is executing on Subarray")
 
         LOGGER.info('Scan1 complete')
@@ -103,6 +104,7 @@ def test_multi_scan():
                 SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
                 SubarrayNode.Scan('{"id":1}')
                 fixture['state'] = 'Subarray SCANNING'
+                LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
         LOGGER.info('Scan2 complete')
         fixture['state'] = 'Subarray Configured for SCAN'
 
@@ -125,9 +127,9 @@ def test_multi_scan():
     except Exception as e:     
         logging.info(f'Exception raised: {e.args}')  
         LOGGER.info("Gathering logs")
-        # s.stop()
-        # d.stop_tracing()
-        # print_logs_to_file(s,d,status='error')
+        s.stop()
+        d.stop_tracing()
+        print_logs_to_file(s,d,status='error')
         LOGGER.info('Tearing down failed test, state = {}'.format(fixture['state']))
         if fixture['state'] == 'Telescope On':
             tmc.set_to_standby()
@@ -161,12 +163,11 @@ def test_multi_scan():
             raise Exception('unable to teardown subarray from being in CONFIGURING')
         elif fixture['state'] == 'Unknown':
             LOGGER.info('Put telescope back to standby')
-            # CentralNode.StandByTelescope()
             tmc.set_to_standby()
             the_waiter.wait()
         pytest.fail("unable to complete test without exceptions")
 
     LOGGER.info("Gathering logs")
-    # s.stop()
-    # d.stop_tracing()
-    # print_logs_to_file(s,d,status='ok')
+    s.stop()
+    d.stop_tracing()
+    print_logs_to_file(s,d,status='ok')

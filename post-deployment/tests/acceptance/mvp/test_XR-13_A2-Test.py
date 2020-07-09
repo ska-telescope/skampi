@@ -57,7 +57,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 def test_configure_subarray():
     """Configure Subarray."""
@@ -84,8 +84,7 @@ def assign(result):
 
 @when("I call the configure scan execution instruction")
 def config(result):
-
-    #@log_it('AX-13_A2',devices_to_log,non_default_states_to_check)
+    @log_it('AX-13_A2',devices_to_log,non_default_states_to_check)
     @sync_configure_oet
     @time_it(120)
     def test_SUT(sdp_block):

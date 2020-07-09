@@ -58,7 +58,7 @@ non_default_states_to_check = {
     'mid_d0003/elt/master' : 'pointingState',
     'mid_d0004/elt/master' : 'pointingState'}
 
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational imaging scan")
 def test_subarray_scan():
     """Imaging Scan Operation."""
@@ -86,18 +86,15 @@ def scan_duration(fixture):
 @when("I call the execution of the scan instruction")
 def invoke_scan_command(fixture):
     #TODO add method to clear thread in case of failure
-    #@log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
+    @log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
     @sync_scan_oet
     def scan():
         def send_scan(duration):
             SubArray(1).scan()
         LOGGER.info("Scan is invoked on Subarray 1")
         executor = futures.ThreadPoolExecutor(max_workers=1)
-        #LOGGER.info("After Threadpool executor")
         return executor.submit(send_scan,fixture['scans'])
-    #LOGGER.info("fixture['scans'] :" + str(fixture['scans']))
     fixture['future'] = scan()
-    #LOGGER.info("fixture['future'] :" + str(fixture['future']))
     return fixture
 
 @then("Sub-array changes to a SCANNING state")

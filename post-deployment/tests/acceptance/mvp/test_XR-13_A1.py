@@ -54,7 +54,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
 def test_allocate_resources():
     """Assign Resources."""
@@ -70,15 +70,12 @@ def set_to_running():
 def allocate_four_dishes(result):
     LOGGER.info("When I allocate 2 dishes to subarray 1")
     ##############################
-    #@log_it('AX-13_A1',devices_to_log,non_default_states_to_check)
+    @log_it('AX-13_A1',devices_to_log,non_default_states_to_check)
     @sync_assign_resources(2,150)
     def test_SUT():
-        # cwd, _ = os.path.split(__file__)
-        # cdm_file_path = os.path.join(cwd, 'example_allocate.json')
         cdm_file_path = 'resources/test_data/OET_integration/example_allocate.json'
         LOGGER.info("cdm_file_path :" + str(cdm_file_path))
         update_resource_config_file(cdm_file_path)
-        #LOGGER.info("Updated cdm_file_path :" + str(cdm_file_path))
         dish_allocation = ResourceAllocation(dishes=[Dish(1), Dish(2)])
         LOGGER.info("dish_allocation :" + str(dish_allocation))
         subarray = SubArray(1)
@@ -86,7 +83,6 @@ def allocate_four_dishes(result):
         return subarray.allocate_from_file(cdm_file_path, dish_allocation)
         LOGGER.info("AssignResource command is invoked")
     result['response'] = test_SUT()
-    #LOGGER.info("test_SUT() response is :" + str(result['response']))
     ##############################
     LOGGER.info("AssignResource command is executed successfully")
     return result
@@ -109,7 +105,6 @@ def check_subarray_composition(result):
 
 @then("the subarray is in the condition that allows scan configurations to take place")
 def check_subarry_state():
-    
     #check that the TMC report subarray as being in the ON state and obsState = IDLE
     assert_that(resource('ska_mid/tm_subarray_node/1').get("State")).is_equal_to("ON")
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')

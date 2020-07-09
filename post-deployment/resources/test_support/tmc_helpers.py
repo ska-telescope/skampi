@@ -24,6 +24,8 @@ def compose_sub():
     config = load_config_from_file(assign_resources_file)
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
     CentralNode.AssignResources(config)
+    the_waiter = waiter()
+    the_waiter.wait()
     LOGGER.info('Invoked AssignResources on CentralNode')
     return sdp_block
 
@@ -55,4 +57,5 @@ def configure_sub(sdp_block, configure_file):
     config = load_config_from_file(configure_file)
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
     SubarrayNode.Configure(config)
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
     LOGGER.info('Invoked Configure on Subarray')

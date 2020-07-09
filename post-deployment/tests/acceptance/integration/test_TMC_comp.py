@@ -35,7 +35,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_assign_resources():
     
     try:
@@ -50,7 +50,7 @@ def test_assign_resources():
         fixture['state'] = 'Telescope On'
         
         # then when I assign a subarray composed of two resources configured as perTMC_integration/assign_resources.json
-        #@log_it('TMC_int_comp',devices_to_log,non_default_states_to_check)
+        @log_it('TMC_int_comp',devices_to_log,non_default_states_to_check)
         @sync_assign_resources(2,150)
         def compose_sub():
             resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')

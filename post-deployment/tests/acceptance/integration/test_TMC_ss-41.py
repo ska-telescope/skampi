@@ -41,13 +41,14 @@ LOGGER = logging.getLogger(__name__)
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():
     ####loging
-    # s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
-    # s.run(threaded=True,resolution=0.1)
-    # d = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    # d.update_traces(devices_to_log)
-    # d.start_tracing()
+    s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
+    s.run(threaded=True,resolution=0.1)
+    d = DeviceLogging('DeviceLoggingImplWithDBDirect')
+    d.update_traces(devices_to_log)
+    d.start_tracing()
     ####
     try:
+        the_waiter = waiter()
         fixture = {}
         fixture['state'] = 'Unknown'
 
@@ -74,12 +75,13 @@ def test_multi_scan():
         #and for which the subarray has successfully completed a scan durating 6 seconds based on previos configuration
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
         LOGGER.info('Starting a scan of 6 seconds')
-        fixture['state'] = 'Subarray SCANNING'
 
         with log_states('TMC_ss-41-scan1',devices_to_log,non_default_states_to_check):
             with sync_scanning(200):
                 SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
                 SubarrayNode.Scan('{"id":1}')
+                fixture['state'] = 'Subarray SCANNING'
+                LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
                 LOGGER.info("Scan 1  is executing on Subarray")
 
         LOGGER.info('Scan1 complete')
@@ -90,17 +92,19 @@ def test_multi_scan():
         fixture['state'] = 'Subarray CONFIGURING'
         configure_file = 'resources/test_data/TMC_integration/configure2.json'
         tmc.configure_sub(sdp_block, configure_file)
+        LOGGER.info('Configuring the Subarray')
         fixture['state'] = 'Subarray Configured for SCAN'
         
         # and run a new scan bsed on that configuration
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
         LOGGER.info('Starting a scan of 6 seconds')
-        fixture['state'] = 'Subarray SCANNING'
 
         with log_states('TMC_ss-41-scan2',devices_to_log,non_default_states_to_check):
             with sync_scanning(200):
                 SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
                 SubarrayNode.Scan('{"id":1}')
+                fixture['state'] = 'Subarray SCANNING'
+                LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
         LOGGER.info('Scan2 complete')
         fixture['state'] = 'Subarray Configured for SCAN'
 
@@ -110,29 +114,38 @@ def test_multi_scan():
         #tear down
         LOGGER.info('TMC-multiscan tests complete: tearing down...')
         tmc.end_sb()
+        the_waiter.wait()
         LOGGER.info("Invoked EndSB on Subarray")
         tmc.release_resources()
+        the_waiter.wait()
         LOGGER.info('Invoked ReleaseResources on Subarray')
         tmc.set_to_standby()
+        the_waiter.wait()
         LOGGER.info('Invoked StandBy on Subarray')
         LOGGER.info('Tests complete: tearing down...')
 
     except Exception as e:     
         logging.info(f'Exception raised: {e.args}')  
         LOGGER.info("Gathering logs")
-        # s.stop()
-        # d.stop_tracing()
-        # print_logs_to_file(s,d,status='error')
+        s.stop()
+        d.stop_tracing()
+        print_logs_to_file(s,d,status='error')
         LOGGER.info('Tearing down failed test, state = {}'.format(fixture['state']))
         if fixture['state'] == 'Telescope On':
             tmc.set_to_standby()
+            the_waiter.wait()
         elif fixture['state'] == 'Subarray Assigned':
             tmc.release_resources()
+            the_waiter.wait()
             tmc.set_to_standby()
+            the_waiter.wait()
         elif fixture['state'] == 'Subarray Configured for SCAN':
             tmc.end_sb()
+            the_waiter.wait()
             tmc.release_resources()
+            the_waiter.wait()
             tmc.set_to_standby()
+            the_waiter.wait()
         elif fixture['state'] == 'Subarray SCANNING':
             if resource('ska_mid/tm_subarray_node/1').get('obsState') == 'SCANNING':
                 raise Exception('unable to teardown subarray from being in SCANNING')
@@ -140,18 +153,21 @@ def test_multi_scan():
                 #sleep arbitrary number here to handle possible failures in un-idempotentcy
                 sleep(3)
                 tmc.end_sb()
+                the_waiter.wait()
                 tmc.release_resources()
+                the_waiter.wait()
                 tmc.set_to_standby()
+                the_waiter.wait()
                 raise e
         elif fixture['state'] == 'Subarray CONFIGURING':
             raise Exception('unable to teardown subarray from being in CONFIGURING')
         elif fixture['state'] == 'Unknown':
             LOGGER.info('Put telescope back to standby')
-            # CentralNode.StandByTelescope()
             tmc.set_to_standby()
+            the_waiter.wait()
         pytest.fail("unable to complete test without exceptions")
 
     LOGGER.info("Gathering logs")
-    # s.stop()
-    # d.stop_tracing()
-    # print_logs_to_file(s,d,status='ok')
+    s.stop()
+    d.stop_tracing()
+    print_logs_to_file(s,d,status='ok')

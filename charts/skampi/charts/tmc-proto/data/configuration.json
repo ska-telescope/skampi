@@ -150,7 +150,7 @@
                 "obsmode",
                 "1000",
                 "obsstate",
-                "1000",
+                "50",
                 "receptoridlist",
                 "1000"
               ]
@@ -233,7 +233,7 @@
                 "obsmode",
                 "1000",
                 "obsstate",
-                "1000",
+                "50",
                 "receptoridlist",
                 "1000"
               ]
@@ -316,7 +316,7 @@
                 "obsmode",
                 "1000",
                 "obsstate",
-                "1000",
+                "50",
                 "receptoridlist",
                 "1000"
               ]

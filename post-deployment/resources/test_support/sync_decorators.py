@@ -14,7 +14,7 @@ class WaitScanning():
         self.the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
 
     def wait(self,timeout):
-        self.the_watch.wait_until_value_changed_to('SCANNING')
+        self.the_watch.wait_until_value_changed_to('SCANNING',timeout)
         self.the_watch.wait_until_value_changed_to('READY',timeout)
 
 

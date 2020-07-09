@@ -2,6 +2,21 @@ import functools
 from resources.test_support.helpers import waiter,watch,resource
 import signal
 import logging
+from contextlib import contextmanager
+
+def check_going_out_of_configured():
+    ##Can only return to ON/IDLE if in READY
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
+
+class WaitScanning():
+    
+    def __init__(self):
+        self.the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
+
+    def wait(self,timeout):
+        self.the_watch.wait_until_value_changed_to('SCANNING')
+        self.the_watch.wait_until_value_changed_to('READY',timeout)
+
 
 def sync_assign_resources(nr_of_receptors=4,timeout=60):
     def decorator_sync_assign_resources(func):
@@ -121,11 +136,21 @@ def sync_scan(timeout=200):
             resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
             the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
             result = func(*args, **kwargs)
+            logging.info("scan command dispatched, checking that the state transitioned to SCANNING")
             the_watch.wait_until_value_changed_to('SCANNING',timeout)
+            logging.info("state transitioned to SCANNING, waiting for it to return to READY")
             the_watch.wait_until_value_changed_to('READY',timeout)
             return result
         return wrapper
     return decorator
+
+# defined as a context manager
+@contextmanager
+def sync_scanning(timeout=200):
+    check_going_out_of_configured()
+    w = WaitScanning()
+    yield
+    w.wait(timeout)
 
 
 def sync_scan_oet(func):

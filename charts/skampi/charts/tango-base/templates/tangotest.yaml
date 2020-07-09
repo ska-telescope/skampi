@@ -18,7 +18,7 @@ spec:
     imagePullPolicy: {{ .Values.tangotest.image.pullPolicy }}
     command:
       - /usr/local/bin/wait-for-it.sh
-      - databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}:10000
+      - "{{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000"
       - --timeout=30
       - --strict
       - --
@@ -26,7 +26,7 @@ spec:
       - test
     env:
     - name: TANGO_HOST
-      value: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}:10000
+      value: "{{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000"
   restartPolicy: Always
 {{- with .Values.nodeSelector }}
   nodeSelector:

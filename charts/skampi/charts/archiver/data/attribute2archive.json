@@ -20,22 +20,5 @@
                 ],
         "polling_period": 1000,
         "period_event": 3000
-    },
-    {
-        "attributes": 
-                [
-                "mid_csp/elt/subarray_01/State",
-                "mid_csp/elt/subarray_01/obsState",
-                "mid_d0001/elt/master/State",
-                "mid_d0001/elt/master/pointingState",
-                "mid_d0002/elt/master/State",
-                "mid_d0002/elt/master/pointingState",
-                "mid_sdp/elt/subarray_1/obsState",
-                "mid_sdp/elt/subarray_1/State",
-                "ska_mid/tm_subarray_node/1/State",
-                "ska_mid/tm_subarray_node/1/obsState"
-                ],
-        "polling_period": 100,
-        "period_event": 200
     }
 ]

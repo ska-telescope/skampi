@@ -27,8 +27,8 @@ spec:
     - name: HELM_RELEASE
       value: {{ .Release.Name }}
     - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000 
-      
+      value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
+
 
   restartPolicy: OnFailure
 {{- with .Values.nodeSelector }}

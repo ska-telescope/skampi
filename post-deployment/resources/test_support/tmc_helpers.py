@@ -24,6 +24,8 @@ def compose_sub():
     config = load_config_from_file(assign_resources_file)
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
     CentralNode.AssignResources(config)
+    the_waiter = waiter()
+    the_waiter.wait()
     LOGGER.info('Invoked AssignResources on CentralNode')
     return sdp_block
 

@@ -56,16 +56,19 @@ def restore_dish_state(request):
     request.addfinalizer(put_dish_in_standby_fp_mode)
 
 # mid_d0001/elt/master
+@pytest.mark.xfail
 @pytest.mark.xfail(reason="SetStandbyLPMode not allowed when the device is in STANDBY state")
 @scenario("mid_d0001/elt/master from STANDBY-LP to STANDBY-FP")
 def test_mid_d0001_from_standbylp_to_standbyfp_mode():
     pass
 
+@pytest.mark.xfail
 @pytest.mark.fast
 @scenario("mid_d0001/elt/master from STANDBY-FP to OPERATE")
 def test_mid_d0001_from_standbyfp_to_operate_mode():
     pass
 
+@pytest.mark.xfail
 @pytest.mark.fast
 @scenario("mid_d0001/elt/master from OPERATE to STANDBY-FP")
 def test_mid_d0001_from_operate_to_standbyfp():

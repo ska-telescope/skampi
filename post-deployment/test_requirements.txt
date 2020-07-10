@@ -1,5 +1,6 @@
 -r SUT_requirements.txt
 pytest
+pyyaml
 pytest-cov
 pytest-json-report
 pycodestyle
@@ -11,3 +12,8 @@ assertpy
 mock
 importlib
 elasticsearch-dsl
+aiohttp
+aiojobs
+pytest-asyncio
+ska_logging
+aiohttp_cors

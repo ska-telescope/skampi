@@ -38,14 +38,10 @@ non_default_states_to_check = {
 LOGGER = logging.getLogger(__name__)
 
 
+
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():
-    ####loging
-    s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
-    s.run(threaded=True,resolution=0.1)
-    d = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    d.update_traces(devices_to_log)
-    d.start_tracing()
+
     ####
     try:
         the_waiter = waiter()
@@ -127,9 +123,6 @@ def test_multi_scan():
     except Exception as e:     
         logging.info(f'Exception raised: {e.args}')  
         LOGGER.info("Gathering logs")
-        s.stop()
-        d.stop_tracing()
-        print_logs_to_file(s,d,status='error')
         LOGGER.info('Tearing down failed test, state = {}'.format(fixture['state']))
         if fixture['state'] == 'Telescope On':
             tmc.set_to_standby()
@@ -167,7 +160,3 @@ def test_multi_scan():
             the_waiter.wait()
         pytest.fail("unable to complete test without exceptions")
 
-    LOGGER.info("Gathering logs")
-    s.stop()
-    d.stop_tracing()
-    print_logs_to_file(s,d,status='ok')

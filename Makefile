@@ -10,6 +10,7 @@ KUBE_NAMESPACE ?= integration# Kubernetes Namespace to use
 KUBE_NAMESPACE_SDP ?= $(KUBE_NAMESPACE)-sdp# Kubernetes Namespace to use for SDP dynamic deployments
 HELM_RELEASE ?= test# Helm release name
 HELM_CHART ?= skampi# Helm Chart to install (see ./charts)
+SUB_CHART ?= tmc-proto# SubChart to install/uninstall
 HELM_CHART_TEST ?= tests# Helm Chart to install (see ./charts)
 INGRESS_HOST ?= integration.engageska-portugal.pt# Ingress HTTP hostname
 USE_NGINX ?= false# Use NGINX as the Ingress Controller
@@ -22,6 +23,9 @@ CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107
 CHART_SET ?=#for additional flags you want to set when deploying (default empty)
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive archiver dsh-lmc-prototype logging skuid## list of charts that will be deployed in order
+DOMAIN_TAG ?= test ## always set for TANGO_DATABASE_DS
+
+TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG) ## Stable name for the Tango DB
 
 # activate remote debugger for VSCode (ptvsd)
 REMOTE_DEBUG ?= false
@@ -47,6 +51,7 @@ vars: ## Display variables - pass in DISPLAY and XAUTHORITY
 	@echo "Namespace: $(KUBE_NAMESPACE)"
 	@echo "HELM_RELEASE: $(HELM_RELEASE)"
 	@echo "VALUES: $(VALUES)"
+	@echo "TANGO_DATABASE_DS: $(TANGO_DATABASE_DS)"
 
 k8s: ## Which kubernetes are we connected to
 	@echo "Kubernetes cluster-info:"
@@ -80,6 +85,13 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	then kubectl describe namespace $(KUBE_NAMESPACE_SDP) ; \
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
+
+package: ## package all existing charts into a git based repo
+	mkdir -p repository
+	@for i in charts/skampi/charts/*; do \
+	helm package $${i} --destination ./repository ; \
+	done
+	cd ./repository && helm repo index .
 
 lint_all:  ## lint ALL of the helm chart
 	@for i in charts/skampi/charts/*; do \
@@ -153,6 +165,8 @@ deploy: namespace namespace_sdp mkcerts  ## Deploy one helm chart. @param: same 
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 				 $(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+				 --set databaseds.domainTag=$(DOMAIN_TAG) \
 				 --values $(VALUES) | kubectl apply -f -
 
 show: mkcerts  ## Show the helm chart @param: same as deploy_all, plus HELM_CHART
@@ -165,6 +179,8 @@ show: mkcerts  ## Show the helm chart @param: same as deploy_all, plus HELM_CHAR
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 				 $(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+				 --set databaseds.domainTag=$(DOMAIN_TAG) \
 				 --values $(VALUES)
 
 show_all:
@@ -182,6 +198,8 @@ show_all:
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 					$(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+				 --set databaseds.domainTag=$(DOMAIN_TAG) \
 				 --values $(VALUES) ; \
 	done
 
@@ -195,6 +213,8 @@ delete: ## delete the helm chart release. @param: same as deploy_all, plus HELM_
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 				 $(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+				 --set databaseds.domainTag=$(DOMAIN_TAG) \
 				 --values $(VALUES) | kubectl delete -f -
 
 deploy_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of charts. @param: DEPLOYMENT_ORDER, KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES
@@ -209,10 +229,11 @@ deploy_ordered: namespace namespace_sdp mkcerts deploy_etcd ## Deploy subset of 
 					--set tangoexample.debug="$(REMOTE_DEBUG)" \
 					$(CHART_SET) \
 					--set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				    --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+				    --set databaseds.domainTag=$(DOMAIN_TAG) \
 					--values $(VALUES) | kubectl apply -f - ; \
 					make smoketest SLEEPTIME=3s > /dev/null 2>&1; \
 	done
-
 
 show_skampi: mkcerts  ## Show entire suite
 	@helm install --dry-run --debug $(HELM_RELEASE) charts/skampi/ \
@@ -233,6 +254,7 @@ show_skampi: mkcerts  ## Show entire suite
 				  --set webjive.ingress.nginx=$(USE_NGINX) \
 				  $(CHART_SET) \
 				  --set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				  --set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 				  --values $(VALUES)
 
 install: namespace namespace_sdp mkcerts deploy_etcd ## helm install entire suite
@@ -254,11 +276,49 @@ install: namespace namespace_sdp mkcerts deploy_etcd ## helm install entire suit
 				 --set webjive.ingress.nginx=$(USE_NGINX) \
 				 $(CHART_SET) \
 				 --set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 				 --values $(VALUES) --wait --timeout=10m0s
 	make smoketest SLEEPTIME=3s > /dev/null 2>&1
 
 uninstall: delete_etcd ## delete ALL of the helm chart release
 	helm delete $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true
+
+show_subchart: namespace namespace_sdp mkcerts deploy_etcd ## helm show sub-chart
+	helm install --dry-run --debug $(SUB_CHART)-$(HELM_RELEASE) \
+	             charts/skampi/charts/$(SUB_CHART)/ \
+				 --namespace $(KUBE_NAMESPACE) \
+				 --set display="$(DISPLAY)" \
+				 --set xauthority="$(XAUTHORITYx)" \
+				 --set ingress.hostname=$(INGRESS_HOST) \
+				 --set ingress.nginx=$(USE_NGINX) \
+				 $(CHART_SET) \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+				 --set databaseds.domainTag=$(DOMAIN_TAG) \
+				 --values $(VALUES)
+
+install_subchart: namespace namespace_sdp mkcerts deploy_etcd ## helm install sub-chart
+	helm install $(SUB_CHART)-$(HELM_RELEASE) charts/skampi/charts/$(SUB_CHART)/ \
+				 --namespace $(KUBE_NAMESPACE) \
+				 --set display="$(DISPLAY)" \
+				 --set xauthority="$(XAUTHORITYx)" \
+				 --set ingress.hostname=$(INGRESS_HOST) \
+				 --set ingress.nginx=$(USE_NGINX) \
+				 $(CHART_SET) \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+				 --set databaseds.domainTag=$(DOMAIN_TAG) \
+				 --values $(VALUES) --wait --timeout=3m0s
+	@chart_name=$$(helm list --filter $(SUB_CHART)-$(HELM_RELEASE) -o=yaml | grep chart | awk '{print $$NF}') && \
+		kubectl get all -l chart=$$chart_name
+	make smoketest SLEEPTIME=3s > /dev/null 2>&1
+
+uninstall_subchart: delete_etcd ## delete sub-chart release
+	helm delete $(SUB_CHART)-$(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true
+
+describe_install: ## describe a current helm installation given by SUB_CHART as name
+	@chart_name=$$(helm list --all --filter $(SUB_CHART)-$(HELM_RELEASE) -o=yaml | grep chart | awk '{print $$NF}') && \
+		kubectl get all -l chart=$$chart_name
 
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES
 	@for i in charts/skampi/charts/*; do \
@@ -275,6 +335,8 @@ deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @p
 	             --set tangoexample.debug="$(REMOTE_DEBUG)" \
 					$(CHART_SET) \
 				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+				 --set databaseds.domainTag=$(DOMAIN_TAG) \
 				 --values $(VALUES) | kubectl apply -f - ; \
 	done
 

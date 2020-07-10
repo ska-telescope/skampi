@@ -78,7 +78,7 @@ spec:
         image: "{{ .Values.rest.image.registry }}/{{ .Values.rest.image.image }}:{{ .Values.rest.image.tag }}"
         command:
           - /usr/local/bin/wait-for-it.sh
-          - databaseds-tango-base-{{ .Release.Name }}:10000
+          - {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
           - --timeout=30
           - --strict
           - --
@@ -91,7 +91,7 @@ spec:
         args: ["-c", "/$HOME/.local/bin/flask run -h 0.0.0.0"]
         env:
           - name: TANGO_HOST
-            value: databaseds-tango-base-{{ .Release.Name }}:10000
+            value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
           - name: FLASK_APP
             value: /app/oet/procedure/application/restserver:create_app
           - name: SKUID_URL

@@ -30,7 +30,7 @@ spec:
     - name: DISPLAY
       value: "{{ .Values.display }}"
     - name: TANGO_HOST
-      value: databaseds-tango-base-{{ .Release.Name }}:10000
+      value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
     - name: HDB_TYPE
       value: "mysql"
     - name: HDB_MYSQL_HOST

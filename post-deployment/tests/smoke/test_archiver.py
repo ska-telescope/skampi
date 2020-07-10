@@ -40,15 +40,14 @@ def test_configure_attribute():
       break
     except DevFailed as df:
       logging.info("configure_attribute exception: " + str(sys.exc_info()))
+      try:
+        deviceAdm = DeviceProxy("dserver/hdbppcm-srv/01")
+        deviceAdm.RestartServer()
+      except:
+        logging.info("reset_conf_manager exception: " + str(sys.exc_info()[0]))
       if(x == (max_retries - 1)):
         raise df
-    
-    try:
-      deviceAdm = DeviceProxy("dserver/hdbppcm-srv/01")
-      deviceAdm.RestartServer()
-    except:
-      logging.info("reset_conf_manager exception: " + str(sys.exc_info()[0]))
-    
+
     sleep(sleep_time)
     total_slept += 1
 
@@ -59,6 +58,4 @@ def test_configure_attribute():
 @pytest.mark.xfail
 def test_archiving_started():
   archiver_helper = ArchiverHelper()
-  result_evt_subscriber = archiver_helper.evt_subscriber_attribute_status("mid_d0001/elt/master/WindSpeed")
-  assert "Archiving          : Started" in result_evt_subscriber
-
+  assert archiver_helper.is_started("mid_d0001/elt/master/WindSpeed")

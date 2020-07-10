@@ -37,25 +37,11 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-def print_logs_to_file(s,d,status='ok'):
-    if status=='ok':
-        filename_d = 'logs_test_TMC_int_{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-        filename_s = 'states_test_TMC_int__{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-    elif status=='error':
-        filename_d = 'error_logs_test_TMC_int__{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-        filename_s = 'error_states_test_TMC_int__{}.csv'.format(datetime.now().strftime('%d_%m_%Y-%H_%M'))
-    LOGGER.info("Printing log files to build/{} and build/{}".format(filename_d,filename_s))
-    d.implementation.print_log_to_file(filename_d,style='csv')
-    s.print_records_to_file(filename_s,style='csv',filtered=False)
+
 
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():
-    ####loging
-    s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
-    s.run(threaded=True,resolution=0.1)
-    d = DeviceLogging('DeviceLoggingImplWithDBDirect')
-    d.update_traces(devices_to_log)
-    d.start_tracing()
+
     ####
     try:
         the_waiter = waiter()
@@ -137,9 +123,6 @@ def test_multi_scan():
     except Exception as e:     
         logging.info(f'Exception raised: {e.args}')  
         LOGGER.info("Gathering logs")
-        s.stop()
-        d.stop_tracing()
-        print_logs_to_file(s,d,status='error')
         LOGGER.info('Tearing down failed test, state = {}'.format(fixture['state']))
         if fixture['state'] == 'Telescope On':
             tmc.set_to_standby()
@@ -177,7 +160,3 @@ def test_multi_scan():
             the_waiter.wait()
         pytest.fail("unable to complete test without exceptions")
 
-    LOGGER.info("Gathering logs")
-    s.stop()
-    d.stop_tracing()
-    print_logs_to_file(s,d,status='ok')

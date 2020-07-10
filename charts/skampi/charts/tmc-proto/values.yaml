@@ -10,7 +10,7 @@ tmcprototype:
   image:
     registry: nexus.engageska-portugal.pt/tango-example
     image: tmcprototype
-    tag: 0.1.11
+    tag: 0.2.1
     pullPolicy: IfNotPresent
 
 tmalarmhandler:
@@ -36,7 +36,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "/venv/bin/DishMasterDS 01"
+      - "/usr/local/bin/DishMasterDS 01"
   - name: dishmaster2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -44,7 +44,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "/venv/bin/DishMasterDS 02"
+      - "/usr/local/bin/DishMasterDS 02"
   - name: dishmaster3
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -52,7 +52,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "/venv/bin/DishMasterDS 03"
+      - "/usr/local/bin/DishMasterDS 03"
   - name: dishmaster4
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -60,7 +60,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "/venv/bin/DishMasterDS 04"
+      - "/usr/local/bin/DishMasterDS 04"
   - name: dishleafnode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -68,8 +68,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_d0001/elt/master &&\
-             /venv/bin/DishLeafNodeDS 01"
+      - "retry --max=10 -- tango_admin --ping-device mid_d0001/elt/master && /usr/local/bin/DishLeafNodeDS 01"
   - name: dishleafnode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -77,8 +76,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - " retry --max=10 -- tango_admin --ping-device mid_d0002/elt/master &&\
-             /venv/bin/DishLeafNodeDS 02"
+      - " retry --max=10 -- tango_admin --ping-device mid_d0002/elt/master && /usr/local/bin/DishLeafNodeDS 02"
   - name: dishleafnode3
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -86,8 +84,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_d0003/elt/master &&\
-             /venv/bin/DishLeafNodeDS 03"
+      - "retry --max=10 -- tango_admin --ping-device mid_d0003/elt/master && /usr/local/bin/DishLeafNodeDS 03"
   - name: dishleafnode4
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -95,8 +92,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_d0004/elt/master &&\
-             /venv/bin/DishLeafNodeDS 04"
+      - "retry --max=10 -- tango_admin --ping-device mid_d0004/elt/master && /usr/local/bin/DishLeafNodeDS 04"
   - name: cspsubarrayleafnode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -104,8 +100,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_01 &&\
-             /venv/bin/CspSubarrayLeafNodeDS 01"
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_01 && /usr/local/bin/CspSubarrayLeafNodeDS 01"
   - name: cspsubarrayleafnode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -113,8 +108,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_02 &&\
-             /venv/bin/CspSubarrayLeafNodeDS 02"
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_02 && /usr/local/bin/CspSubarrayLeafNodeDS 02"
   - name: cspsubarrayleafnode3
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -122,8 +116,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_03 &&\
-             /venv/bin/CspSubarrayLeafNodeDS 03"
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_03 && /usr/local/bin/CspSubarrayLeafNodeDS 03"
   - name: cspmasterleafnode
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -131,8 +124,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
-             /venv/bin/CspMasterLeafNodeDS 01"
+      - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master && /usr/local/bin/CspMasterLeafNodeDS 01"
   - name: sdpsubarrayleafnode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -140,8 +132,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_1 &&\
-             /venv/bin/SdpSubarrayLeafNodeDS 01"
+      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_1 && /usr/local/bin/SdpSubarrayLeafNodeDS 01"
   - name: sdpsubarrayleafnode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -149,8 +140,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_2 &&\
-             /venv/bin/SdpSubarrayLeafNodeDS 02"
+      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_2 && /usr/local/bin/SdpSubarrayLeafNodeDS 02"
   - name: sdpsubarrayleafnode3
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -158,8 +148,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_3 &&\
-             /venv/bin/SdpSubarrayLeafNodeDS 03"
+      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_3 && /usr/local/bin/SdpSubarrayLeafNodeDS 03"
   - name: sdpmasterleafnode
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -167,8 +156,7 @@ deviceServers:
       - sh
     args:
       - -c
-      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/master &&\
-             /venv/bin/SdpMasterLeafNodeDS 01"
+      - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/master && /usr/local/bin/SdpMasterLeafNodeDS 01"
   - name: subarraynode1
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -182,7 +170,7 @@ deviceServers:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_subarray01 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray01 &&\
-             /venv/bin/SubarrayNodeDS sa1"
+             /usr/local/bin/SubarrayNodeDS sa1"
   - name: subarraynode2
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -196,7 +184,7 @@ deviceServers:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_subarray02 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray02 &&\
-             /venv/bin/SubarrayNodeDS sa2"
+             /usr/local/bin/SubarrayNodeDS sa2"
   - name: subarraynode3
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -210,7 +198,7 @@ deviceServers:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/d0004 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/csp_subarray03 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray03 &&\
-             /venv/bin/SubarrayNodeDS sa3"
+             /usr/local/bin/SubarrayNodeDS sa3"
   - name: centralnode
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
@@ -223,7 +211,7 @@ deviceServers:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/1 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/2 &&\
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/3 &&\
-             /venv/bin/CentralNodeDS 01"
+             /usr/local/bin/CentralNodeDS 01"
   - name: tm-alarmhandler
     image: "{{ .Values.tmalarmhandler.image.registry }}/{{ .Values.tmalarmhandler.image.image }}:{{ .Values.tmalarmhandler.image.tag }}"
     imagePullPolicy: "{{ .Values.tmalarmhandler.image.pullPolicy }}"

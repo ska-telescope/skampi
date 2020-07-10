@@ -12,6 +12,9 @@ from resources.test_support.helpers import waiter
 from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby
 import logging
 
+LOGGER = logging.getLogger(__name__)
+
+
 @pytest.mark.fast
 def test_init():    
   print("Init start-up-telescope")
@@ -45,3 +48,4 @@ def test_start_up_telescope(run_context):
     if not telescope_is_in_standby():
           #wait first for telescope to completely go to standby before switchig it off again    
           set_telescope_to_standby()
+    LOGGER.info("Telescope is in STANDBY")

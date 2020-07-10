@@ -62,12 +62,12 @@ def test_deallocate_resources():
 
 @given('A running telescope with "4" dishes are allocated to "subarray 1"')
 def set_to_running(result):
-    LOGGER.info("A running telescope with '4' dishes are allocated to 'subarray 1'")
+    LOGGER.info("A running telescope with '2' dishes are allocated to 'subarray 1'")
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    LOGGER.info("Assigning 4 dishes")
-    take_subarray(1).to_be_composed_out_of(4)
+    LOGGER.info("Assigning 2 dishes")
+    take_subarray(1).to_be_composed_out_of(2)
 
 @when("I deallocate the resources")
 def deallocate_resources():

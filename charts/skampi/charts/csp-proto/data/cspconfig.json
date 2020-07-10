@@ -73,12 +73,7 @@
                                     "-1", 
                                     "1"
                                 ]
-                            }, 
-                            "fspMembership": {
-                                "__root_att": [
-                                    "mid_csp_cbf/sub_elt/master/reportFSPSubarrayMembership"
-                                ]
-                            }, 
+                            },
                             "healthState": {
                                 "abs_change": [
                                     "-1", 
@@ -377,11 +372,6 @@
                                 "__root_att": [
                                     "mid_csp_cbf/sub_elt/subarray_01/vccState"
                                 ]
-                            }, 
-                            "cbfOutputLink": {
-                                "__root_att": [
-                                    "mid_csp_cbf/sub_elt/subarray_01/outputLinksDistribution"
-                                ]
                             }
                         }, 
                         "properties": {
@@ -418,7 +408,7 @@
 				"healthstate",
                                 "1000",
 				"obsstate",
-                                "1000",
+                                "50",
                                 "obsmode",
                                 "1000",
                                 "failureraisedflag", 
@@ -549,13 +539,8 @@
                                 "__root_att": [
                                     "mid_csp_cbf/sub_elt/subarray_02/vccState"
                                 ]
-                            }, 
-                            "cbfOutputLink": {
-                                "__root_att": [
-                                    "mid_csp_cbf/sub_elt/subarray_02/outputLinksDistribution"
-                                ]
                             }
-                        }, 
+			},
                         "properties": {
                             "CbfSubarray": [
                                 "mid_csp_cbf/sub_elt/subarray_02"
@@ -590,7 +575,7 @@
 				"healthstate",
                                 "1000",
 				"obsstate",
-                                "1000",
+                                "50",
                                 "obsmode",
                                 "1000",
                                 "failureraisedflag", 
@@ -721,11 +706,6 @@
                                 "__root_att": [
                                     "mid_csp_cbf/sub_elt/subarray_03/vccState"
                                 ]
-                            }, 
-                            "cbfOutputLink": {
-                                "__root_att": [
-                                    "mid_csp_cbf/sub_elt/subarray_03/outputLinksDistribution"
-                                ]
                             }
                         }, 
                         "properties": {
@@ -762,7 +742,7 @@
 				"healthstate",
                                 "1000",
 				"obsstate",
-                                "1000",
+                                "50",
                                 "obsmode",
                                 "1000",
                                 "failureraisedflag", 

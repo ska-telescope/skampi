@@ -17,3 +17,4 @@ aiojobs
 pytest-asyncio
 ska_logging
 aiohttp_cors
+tango-simlib

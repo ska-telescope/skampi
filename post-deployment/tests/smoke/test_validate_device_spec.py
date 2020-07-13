@@ -16,18 +16,7 @@ SPEC_URLS = {
 
 SPECS_TO_CHECK = {"ska_tango_guide_ska_wide": ("mid_d0001/elt/master",)}
 
-# Marked as XFAIL for now, failing with:
-# E AssertionError: Device [mid_d0001/elt/master] with specification from
-#   [https://gitlab.com/ska-telescope/telescope-model/-/raw/user/johan/SAR-115/
-#    Add_YAML_device_spec/tango_device_specifications/ska_wide/
-#    ska_tango_guide_ska_wide.yaml] has the following differences:
-# E   Attribute differs, [state] specified but missing in device
-# E assert not 'Attribute differs, [state] specified but missing in device'
-#
-# Device has attribute "State"
 
-
-@pytest.mark.xfail
 @pytest.mark.fast
 def test_device_conforms_to_spec():
     """Run through all the specifications and the devices against which to test them"""

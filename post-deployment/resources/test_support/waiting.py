@@ -3,6 +3,7 @@ from tango.asyncio import DeviceProxy
 import asyncio
 from time import sleep
 from datetime import datetime
+from functools import reduce
 import threading
 from queue import Queue, Empty
 import logging
@@ -353,6 +354,8 @@ class Listener():
         untill timeout. If more than one events were gotten from a call it will iterate through the results.
         To stop wating for events you need to call `stop_listening()`.
         '''
+        if isinstance(attr,list):
+            attr = tuple(attr)
         self.listen_for(attr)
         while self.listening:
             events, elapsed_time = self.wait_for_next_event(timeout,get_elapsed_time=True)
@@ -379,4 +382,130 @@ class Listener():
         self.strategy.unsubscribe()
         if self.override_serverside_polling:
             self._restore_polling()
+
+class Tracer():
+
+    def __init__(self,message=None):
+        if message is None:
+            self.messages = []
+        else:
+            self.messages = [message]
+
+    def message(self,message):
+        self.messages.append(message)
+
+    def print_messages(self):
+        return reduce(lambda x,y: f'{x}\n{y}',self.messages)
+
+class HandeableEvent():
+
+    def __init__(self,handler,event,elapsed_time):
+        self.handler = handler
+        self.event = event
+        self.elapsed_time = elapsed_time
+
+    def handle(self,*args,supply_elapsed_time=False,):
+        if supply_elapsed_time:
+            args = (self.event,self.elapsed_time)+args
+        else:
+            args = (self.event,)+args
+        if callable(self.handler):
+            # e.g. it is a function or a class
+            self.handler(*args)
+        else:
+            self.handler.handle_event(*args)
+
+class Timer():
+
+    def __init__(self,timeout,resolution):
+        self.resolution = resolution
+        self.time = 0
+        self.timeout =timeout
+
+    def tick(self):
+        self.time += self.resolution
+
+    def sleep_tick(self):
+        sleep(self.resolution)
+        self.tick()
+
+    async def async_tick(self):
+        await asyncio.sleep(self.resolution)
+        self.tick()
+
+    def reset(self):
+        self.time = 0
+
+    def time_up(self):
+        return self.time >= self.timeout
+
+    def time_not_up(self):
+        return not self.time_up()
+
+class Gatherer():
+
+    def __init__(self):
+        self.listeners = {}
+
+    def _new_binding(self,handler,*attr):
+        binding = {}
+        attrs = {}
+        for attribute in attr:
+            attrs[attribute] = handler 
+        binding['attrs'] = attrs
+        binding['tracer'] = Tracer(f'new binding: {attr} to {handler}')
+        return binding
     
+    def _update_binding(self,binding,handler,*attr):
+        attrs = binding['attrs']
+        tracer = binding['tracer']
+        for attribute in attr:
+            attrs[attribute] = handler
+        tracer.message(f'binded {attr} to {handler}')
+        
+
+    def bind(self,listener,handler,*attr):
+        binding = self.listeners.get(listener)
+        if binding is None:
+            self.listeners[listener] = self._new_binding(handler,*attr)
+        else:
+            self._update_binding(binding,handler,*attr)
+
+    def start_listening(self):
+        exceptions = []
+        for the_listener,binding in self.listeners.items():
+            the_tracer = binding['tracer']
+            the_attrs = binding['attrs']
+            try:
+                the_listener.listen_for(the_attrs)
+            except Exception as e:
+                exceptions.append(e)
+            the_tracer.message(f'started listening at {datetime.now()}')
+            
+    def get_events(self,timeout,resolution=0.001):
+        timer = Timer(timeout,resolution)
+        while timer.time_not_up():
+            empty_run = True
+            # the run
+            for the_listener,binding in self.listeners.items():
+                the_tracer = binding['tracer']
+                the_attrs = binding['attrs']
+                events = the_listener.query()
+                if events is not None:
+                    empty_run = False
+                    for event in events:
+                        attr = event.attr_name
+                        the_handler = the_attrs[attr]
+                        assert(the_handler is not None)
+                        the_tracer.message(f'yielding event {event} for {attr}'
+                                           f' to be handled by {the_handler}'
+                                           f' at {datetime.now()}')
+                        yield HandeableEvent(the_handler,event,timer.time) 
+            # end of the run
+            if empty_run:
+                timer.sleep_tick()
+            else:
+                # reset the counter and run again without sleeping
+                timer.reset()    
+            
+        return Exception(f'timed out whilst getting events after {timeout}')

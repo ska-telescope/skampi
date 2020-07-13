@@ -1,11 +1,14 @@
-from resources.test_support.waiting import Listener,ConsumePeriodically,interfaceStrategy,ConsumeImmediately,ListenerTimeOut
-from tango import EventType
+from resources.test_support.waiting import Listener,ConsumePeriodically,\
+    interfaceStrategy,ConsumeImmediately,ListenerTimeOut, Gatherer,\
+    HandeableEvent
+from tango import EventData
 from tango.asyncio import DeviceProxy
+import tango
 import asyncio
 import mock
 import logging
 from time import sleep
-from mock import Mock
+from mock import Mock,call
 import pytest
 from assertpy import assert_that
 import inspect
@@ -461,7 +464,212 @@ def test_query_events_immediate(mock_device_proxy):
     # I expect it to return with the event test_event
     assert_that(spy_strategy.query.call_count).is_equal_to(2)
     assert_that(event).is_equal_to(['test_event'])
-            
 
 
-    
+@pytest.fixture()
+def fixture_for_two_listeners_immediate():
+    return build_me_a_gatherer(2,ConsumeImmediately)
+
+def build_me_a_gatherer(nr_of_devices, Strategy):
+
+    class Binder():
+
+        def __init__(self,producer):
+            self.producer = producer
+
+        def bind_subscription(self,*args):
+            callback = args[2]
+            self.producer.subscribe(callback)
+
+
+    output = {}
+    # setup a series of mock_instantiations to be delivered
+    # for each call
+    for device_nr in range(nr_of_devices):
+        the_mock = Mock(tango.DeviceProxy)     
+        the_strategy = Strategy(the_mock)
+        strategy_spy = Mock(Strategy)
+        # bind the spy to real implementations
+        strategy_spy.query.side_effect = the_strategy.query
+        strategy_spy.subscribe.side_effect = the_strategy.subscribe
+        p = Producer()
+        # change the effect of subscription to bind to a mock 
+        # producer 
+        the_mock.producer = p
+        binder = Binder(p)
+        the_mock.subscribe_event.side_effect = binder.bind_subscription
+        the_listener = Listener(the_mock,strategy_spy)
+        output[f'producer{device_nr+1}'] = p
+        output[f'mock_device_proxy_instance{device_nr+1}'] = the_mock
+        output[f'listener{device_nr+1}'] = the_listener
+        output[f'strategy{device_nr+1}'] = strategy_spy
+    return output
+
+def get_mock_event(event,attr):
+    event = Mock(EventData,name=event)
+    event.attr_name = attr
+    event.event = event
+    return event
+
+def test_listen_as_a_group(fixture_for_two_listeners_immediate):
+    # given 2 event listeners listening for events
+    # coming from two mock devices that emulate
+    # a subscription and two producers that create independant events
+    the_fixture = fixture_for_two_listeners_immediate
+
+    p1 = the_fixture['producer1']
+    p2 = the_fixture['producer2']
+
+    mock_events = []
+    for i in range(4):
+        event = get_mock_event(f'event{i}','attr')
+        mock_events.append(event)
+
+    def push_new_events(i):
+        if i == 4:
+            return
+        elif (i % 2) == 0:
+            p1.push(mock_events[i])
+        else:
+            p2.push(mock_events[i])
+    # then when
+    gatherer = Gatherer()
+    listener1 = the_fixture['listener1']
+    listener2 = the_fixture['listener2']
+    handler1 = Mock(name='handler1')
+    handler2 = Mock(name='handler2')
+    gatherer.bind(listener1,handler1,'attr')
+    gatherer.bind(listener2,handler2,'attr')
+    gatherer.start_listening()
+    start_event = get_mock_event('event_start','attr')
+    p1.push(start_event)
+    for i,handeable_event in enumerate(gatherer.get_events(1)):
+        handeable_event.handle()
+        push_new_events(i)
+
+    # I expect handler 1 to have been called two times with
+    #  event1 and event2 
+    # and handler 2 to have been called two times with event 3 and
+    # event 4
+    handler1.assert_has_calls([
+        call(start_event),
+        call(mock_events[0]),
+        call(mock_events[2]),
+
+    ])
+    handler2.assert_has_calls([
+        call(mock_events[1]),
+        call(mock_events[3])
+    ])
+    for listener,binding in gatherer.listeners.items():
+        logging.debug(f'messages on {listener}:\n'
+                     f'{binding["tracer"].print_messages()}')
+
+def test_listen_as_a_group_multiple_attr(fixture_for_two_listeners_immediate):
+    # given 2 event listeners listening for events
+    # coming from two mock devices that emulate
+    # a subscription and two producers that create independant events
+    the_fixture = fixture_for_two_listeners_immediate
+
+    p1 = the_fixture['producer1']
+    p2 = the_fixture['producer2']
+
+    mock_events = []
+    for i in range(4):
+        event = get_mock_event(f'event{i}',f'attr{i}')
+        mock_events.append(event)
+
+    def push_new_events(i):
+        if i == 4:
+            return
+        elif (i % 2) == 0:
+            p1.push(mock_events[i])
+        else:
+            p2.push(mock_events[i])
+    # then when
+    gatherer = Gatherer()
+    listener1 = the_fixture['listener1']
+    listener2 = the_fixture['listener2']
+    handler0 = Mock(name='handler0')
+    handler1 = Mock(name='handler1')
+    handler2 = Mock(name='handler2')
+    gatherer.bind(listener1,handler0,'attr_start')
+    gatherer.bind(listener1,handler1,
+        'attr0',
+        'attr2')
+    gatherer.bind(listener2,handler2,
+        'attr1',
+        'attr3'
+    )
+    gatherer.start_listening()
+    start_event = get_mock_event('event_start','attr_start')
+    p1.push(start_event)
+    for i,handeable_event in enumerate(gatherer.get_events(1)):
+        handeable_event.handle()
+        push_new_events(i)
+
+    # I expect handler 1 to have been called two times with
+    #  event1 and event2 
+    # and handler 2 to have been called two times with event 3 and
+    # event 4
+    handler0.assert_has_calls([
+        call(start_event)
+    ])
+    handler1.assert_has_calls([
+        call(mock_events[0]),
+        call(mock_events[2]),
+
+    ])
+    handler2.assert_has_calls([
+        call(mock_events[1]),
+        call(mock_events[3])
+    ])
+    for listener,binding in gatherer.listeners.items():
+        logging.debug(f'messages on {listener}:\n'
+                     f'{binding["tracer"].print_messages()}')
+  
+def test_handeable_event():
+    #given a handeable_event
+    handler = Mock(name='handler')
+    event = Mock(name='event')
+    elapsed_time = Mock(name='elapsed_time')
+    h = HandeableEvent(
+        handler,
+        event,
+        elapsed_time
+    )
+    # when I call the handleable event without elapsed_time
+    h.handle()
+    handler.assert_called_with(event)
+    # when I call the handleable event with elapsed_time
+    h.handle(supply_elapsed_time=True)
+    handler.assert_called_with(event,elapsed_time)
+    # when I call the handler with extra args
+    h.handle('arg1','arg2')
+    handler.assert_called_with(event,'arg1','arg2')
+    # when I call the handler with extra args and with elapsed_time
+    h.handle('arg1','arg2',supply_elapsed_time=True)
+    handler.assert_called_with(event,elapsed_time,'arg1','arg2')
+
+    class FakeHandler():
+        def handle_event(self,*args,**kwargs):
+            handler(*args,**kwargs)
+
+    handler_object = FakeHandler()
+    h = HandeableEvent(
+        handler_object,
+        event,
+        elapsed_time
+    )
+    # when I call the handeable event without elapsed_time
+    h.handle()
+    handler.assert_called_with(event)
+    # when I call the handleable event with elapsed_time
+    h.handle(supply_elapsed_time=True)
+    handler.assert_called_with(event,elapsed_time)
+    # when I call the handler with extra args
+    h.handle('arg1','arg2')
+    handler.assert_called_with(event,'arg1','arg2')
+    # when I call the handler with extra args and with elapsed_time
+    h.handle('arg1','arg2',supply_elapsed_time=True)
+    handler.assert_called_with(event,elapsed_time,'arg1','arg2')

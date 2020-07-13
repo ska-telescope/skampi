@@ -552,14 +552,14 @@ def test_listen_as_a_group(fixture_for_two_listeners_immediate):
     # and handler 2 to have been called two times with event 3 and
     # event 4
     handler1.assert_has_calls([
-        call(start_event),
-        call(mock_events[0]),
-        call(mock_events[2]),
+        call(start_event,listener1),
+        call(mock_events[0],listener1),
+        call(mock_events[2],listener1),
 
     ])
     handler2.assert_has_calls([
-        call(mock_events[1]),
-        call(mock_events[3])
+        call(mock_events[1],listener2),
+        call(mock_events[3],listener2)
     ])
     for listener,binding in gatherer.listeners.items():
         logging.debug(f'messages on {listener}:\n'
@@ -613,16 +613,16 @@ def test_listen_as_a_group_multiple_attr(fixture_for_two_listeners_immediate):
     # and handler 2 to have been called two times with event 3 and
     # event 4
     handler0.assert_has_calls([
-        call(start_event)
+        call(start_event,listener1)
     ])
     handler1.assert_has_calls([
-        call(mock_events[0]),
-        call(mock_events[2]),
+        call(mock_events[0],listener1),
+        call(mock_events[2],listener1),
 
     ])
     handler2.assert_has_calls([
-        call(mock_events[1]),
-        call(mock_events[3])
+        call(mock_events[1],listener2),
+        call(mock_events[3],listener2)
     ])
     for listener,binding in gatherer.listeners.items():
         logging.debug(f'messages on {listener}:\n'

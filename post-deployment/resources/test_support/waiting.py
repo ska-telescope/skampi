@@ -399,16 +399,17 @@ class Tracer():
 
 class HandeableEvent():
 
-    def __init__(self,handler,event,elapsed_time):
+    def __init__(self,handler,event,elapsed_time,listener):
         self.handler = handler
         self.event = event
+        self.listener = listener
         self.elapsed_time = elapsed_time
 
     def handle(self,*args,supply_elapsed_time=False,):
         if supply_elapsed_time:
-            args = (self.event,self.elapsed_time)+args
+            args = (self.event,self.listener,self.elapsed_time)+args
         else:
-            args = (self.event,)+args
+            args = (self.event,self.listener)+args
         if callable(self.handler):
             # e.g. it is a function or a class
             self.handler(*args)
@@ -500,7 +501,7 @@ class Gatherer():
                         the_tracer.message(f'yielding event {event} for {attr}'
                                            f' to be handled by {the_handler}'
                                            f' at {datetime.now()}')
-                        yield HandeableEvent(the_handler,event,timer.time) 
+                        yield HandeableEvent(the_handler,event,timer.time,the_listener) 
             # end of the run
             if empty_run:
                 timer.sleep_tick()

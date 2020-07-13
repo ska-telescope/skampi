@@ -485,7 +485,7 @@ class Gatherer():
             
     def get_events(self,timeout,resolution=0.001):
         timer = Timer(timeout,resolution)
-        while timer.time_not_up():
+        while True:
             empty_run = True
             # the run
             for the_listener,binding in self.listeners.items():
@@ -502,11 +502,19 @@ class Gatherer():
                                            f' to be handled by {the_handler}'
                                            f' at {datetime.now()}')
                         yield HandeableEvent(the_handler,event,timer.time,the_listener) 
+                if not the_listener.listening:
+                    self.active_listeners.pop(the_listener)
             # end of the run
+            # if all listeners have been stopped get out
+            if not self.active_listeners:
+                return
+            # if no events were picked up in the run then sleep
             if empty_run:
+                if timer.time_up():
+                    raise GatheringTimeout(timer.timeout,self)
+                else:
                 timer.sleep_tick()
             else:
                 # reset the counter and run again without sleeping
                 timer.reset()    
             
-        return Exception(f'timed out whilst getting events after {timeout}')

@@ -470,6 +470,11 @@ def test_query_events_immediate(mock_device_proxy):
 def fixture_for_two_listeners_immediate():
     return build_me_a_gatherer(2,ConsumeImmediately)
 
+@pytest.fixture()
+def fixture_for_one_listener_immediate():
+    return build_me_a_gatherer(1,ConsumeImmediately)
+
+
 def build_me_a_gatherer(nr_of_devices, Strategy):
 
     class Binder():
@@ -505,10 +510,10 @@ def build_me_a_gatherer(nr_of_devices, Strategy):
         output[f'strategy{device_nr+1}'] = strategy_spy
     return output
 
-def get_mock_event(event,attr):
-    event = Mock(EventData,name=event)
+def get_mock_event(event_name,attr):
+    event = Mock(EventData,name=event_name)
     event.attr_name = attr
-    event.event = event
+    event.event = event_name
     return event
 
 def test_listen_as_a_group(fixture_for_two_listeners_immediate):
@@ -519,6 +524,8 @@ def test_listen_as_a_group(fixture_for_two_listeners_immediate):
 
     p1 = the_fixture['producer1']
     p2 = the_fixture['producer2']
+    strategy_spy1 = the_fixture['strategy1']
+    strategy_spy2 = the_fixture['strategy2']
 
     mock_events = []
     for i in range(4):
@@ -532,12 +539,21 @@ def test_listen_as_a_group(fixture_for_two_listeners_immediate):
             p1.push(mock_events[i])
         else:
             p2.push(mock_events[i])
+
+    def handler1_side_effect(event,listener):
+        if event.event == 'event2':
+            listener.stop_listening()
+
+    def handler2_side_effect(event,listener):
+        if event.event == 'event3':
+            listener.stop_listening()
+
     # then when
     gatherer = Gatherer()
     listener1 = the_fixture['listener1']
     listener2 = the_fixture['listener2']
-    handler1 = Mock(name='handler1')
-    handler2 = Mock(name='handler2')
+    handler1 = Mock(name='handler1',side_effect=handler1_side_effect)
+    handler2 = Mock(name='handler2',side_effect=handler2_side_effect)
     gatherer.bind(listener1,handler1,'attr')
     gatherer.bind(listener2,handler2,'attr')
     gatherer.start_listening()
@@ -557,13 +573,34 @@ def test_listen_as_a_group(fixture_for_two_listeners_immediate):
         call(mock_events[2],listener1),
 
     ])
+    strategy_spy1.unsubscribe.assert_called()
     handler2.assert_has_calls([
         call(mock_events[1],listener2),
         call(mock_events[3],listener2)
     ])
+    strategy_spy2.unsubscribe.assert_called()
     for listener,binding in gatherer.listeners.items():
         logging.debug(f'messages on {listener}:\n'
                      f'{binding["tracer"].print_messages()}')
+
+def test_raise_timout_on_gather(fixture_for_one_listener_immediate):
+        # given 2 event listeners listening for events
+    # coming from two mock devices that emulate
+    # a subscription and two producers that create independant events
+    the_fixture = fixture_for_one_listener_immediate
+    p1 = the_fixture['producer1']
+    gatherer = Gatherer()
+    listener1 = the_fixture['listener1']
+    handler1 = Mock(name='handler1')
+    gatherer.bind(listener1,handler1,'attr')
+    gatherer.start_listening()
+    start_event = get_mock_event('event_start','attr')
+    p1.push(start_event)
+    with pytest.raises(GatheringTimeout):
+        for handeable_event in gatherer.get_events(0.002):
+            handeable_event.handle()
+
+
 
 def test_listen_as_a_group_multiple_attr(fixture_for_two_listeners_immediate):
     # given 2 event listeners listening for events
@@ -586,13 +623,21 @@ def test_listen_as_a_group_multiple_attr(fixture_for_two_listeners_immediate):
             p1.push(mock_events[i])
         else:
             p2.push(mock_events[i])
+
+    def handler1_side_effect(event,listener):
+        if event.event == 'event2':
+            listener.stop_listening()
+
+    def handler2_side_effect(event,listener):
+        if event.event == 'event3':
+            listener.stop_listening()
     # then when
     gatherer = Gatherer()
     listener1 = the_fixture['listener1']
     listener2 = the_fixture['listener2']
     handler0 = Mock(name='handler0')
-    handler1 = Mock(name='handler1')
-    handler2 = Mock(name='handler2')
+    handler1 = Mock(name='handler1',side_effect=handler1_side_effect)
+    handler2 = Mock(name='handler2',side_effect=handler2_side_effect)
     gatherer.bind(listener1,handler0,'attr_start')
     gatherer.bind(listener1,handler1,
         'attr0',

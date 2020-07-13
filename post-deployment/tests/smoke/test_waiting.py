@@ -393,7 +393,74 @@ def test_wait_in_for_loop_pushing():
                 listener.stop_listening()
     asyncio.run(async_run())
 
+@mock.patch('tango.DeviceProxy.__init__')  
+def test_query_events_periodic(mock_device_proxy):
+    # given a listener that consumes events periodically
+    strategy = ConsumePeriodically(mock_device_proxy)
+    # and a fake device that emulates a subscription action plus
+    # returns events of none and 'test_event' in sequence
+    mock_device_proxy.subscribe_event.return_value = 1
+    mock_device_proxy.get_events.side_effect = [[],['test_event']]
+    spy_strategy = Mock(interfaceStrategy)
+    # and a spy that listens to query and subscribe of my strategy
+    spy_strategy.query.side_effect =  strategy.query
+    spy_strategy.subscribe.side_effect = strategy.subscribe
+    listener = Listener(mock_device_proxy,spy_strategy)
+    # when I start listening for a fake attribute on the fake device
+    listener.listen_for('dummy_attribute')
+    # and then I query the listener the first time
+    event = listener.query()
+    # I expect it to return my query with a None
+    assert_that(spy_strategy.query.call_count).is_equal_to(1)
+    assert_that(event).is_none()
+    # when I query again
+    event = listener.query()
+    # I expect it to return with the event test_event
+    assert_that(spy_strategy.query.call_count).is_equal_to(2)
+    assert_that(event).is_equal_to(['test_event'])
 
+class Producer():
+
+    def subscribe(self,callback):
+        self.callback = callback
+
+    def push(self, event):
+        self.callback(event)
+
+
+@mock.patch('tango.DeviceProxy.__init__')  
+def test_query_events_immediate(mock_device_proxy):
+    # given a listener that consumes events immediately
+    strategy = ConsumeImmediately(mock_device_proxy)
+    # and a fake device that emulates a subscription action 
+    # that registers a call back on a mock producer
+
+    mock_producer = Producer()
+    def mock_subscribe(*args):
+        callback = args[2]
+        mock_producer.subscribe(callback)
+        return 1
+
+    mock_device_proxy.subscribe_event.side_effect = mock_subscribe
+    spy_strategy = Mock(interfaceStrategy)
+    # and a spy that listens to query and subscribe of my strategy
+    spy_strategy.query.side_effect =  strategy.query
+    spy_strategy.subscribe.side_effect = strategy.subscribe
+    listener = Listener(mock_device_proxy,spy_strategy)
+    # when I start listening for a fake attribute on the fake device
+    listener.listen_for('dummy_attribute')
+    # and then I query the listener the first time
+    event = listener.query()
+    # I expect it to return my query with a None
+    assert_that(spy_strategy.query.call_count).is_equal_to(1)
+    assert_that(event).is_none()
+    # if a event is generated on the mock producer
+    mock_producer.push('test_event')
+    # when I query again
+    event = listener.query()
+    # I expect it to return with the event test_event
+    assert_that(spy_strategy.query.call_count).is_equal_to(2)
+    assert_that(event).is_equal_to(['test_event'])
             
 
 

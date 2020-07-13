@@ -24,6 +24,9 @@ class interfaceStrategy():
     def unsubscribe(self):
         pass
 
+    def query(self):
+        pass
+
 
 class ListenerTimeOut(Exception):
     pass
@@ -101,6 +104,13 @@ class ConsumeImmediately(interfaceStrategy):
         '''allows for a thread to syncronise with another thread handling events withing a queue by joning it
         '''
         self.queue.join()
+
+    def query(self):
+        with self.lock:
+            if self.queue.empty():
+                return None
+            else:
+                return [self.queue.get_nowait()]
 
 class ConsumePeriodically(interfaceStrategy):
     '''
@@ -220,6 +230,13 @@ class ConsumePeriodically(interfaceStrategy):
                 elapsed_time = datetime.now() - start_time
                 return events, elapsed_time
         return events
+
+    def query(self):
+        events = self._check_all_subscriptions_for_events()
+        if events == []:
+            return None
+        else:
+            return events
 
     def unsubscribe(self):
         '''stops the current subscribing strategy on the device and clears the listening flag (in case of used within a seperate thread)
@@ -344,6 +361,14 @@ class Listener():
                     yield event, elapsed_time
                 else:
                     yield event         
+
+    def query(self):
+        '''query a current listening implementation for any imcoming events
+        if present it shall return with a  list of one or more events, else it shall return
+        with None
+        '''
+        return self.strategy.query()
+        
 
     def stop_listening(self):
         '''stop the threads and loops waiting for events arsing from the listening process

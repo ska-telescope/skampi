@@ -231,7 +231,7 @@ def sync_set_to_standby(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_going_to_standby()
         result = func(*args, **kwargs)
-        the_waiter.wait(100)
+        the_waiter.wait(150)
         return result
     return wrapper
 

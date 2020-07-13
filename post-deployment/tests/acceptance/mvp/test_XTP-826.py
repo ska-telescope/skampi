@@ -128,7 +128,7 @@ def execute_second_scan(result):
     """
     LOGGER.info("Executing second scan")
     #####################SUT is execucted#################
-    @log_it('XTP-826', DEVICES_TO_LOG, NON_DEFAULT_DEVICES_TO_CHECK)
+    # @log_it('XTP-826', DEVICES_TO_LOG, NON_DEFAULT_DEVICES_TO_CHECK)
     def scan():
         SubArray(1).scan()
     scan()

@@ -27,6 +27,8 @@ spec:
     env:
     - name: TANGO_HOST
       value: "{{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000"
+    resources:
+{{ toYaml .Values.tangotest.resources | indent 6 }}
   restartPolicy: Always
 {{- with .Values.nodeSelector }}
   nodeSelector:

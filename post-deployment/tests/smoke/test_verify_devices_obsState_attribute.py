@@ -8,6 +8,14 @@ import pytest
 from collections import defaultdict
 from random import shuffle
 from tango import Database, DeviceProxy, DevFailed
+import os
+
+DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
+if DEV_TEST_TOGGLE == "False":
+    DISABLE_TESTS_UNDER_DEVELOPMENT = False
+else:
+    DISABLE_TESTS_UNDER_DEVELOPMENT = True
+# by default these tests are disabled
 
 def _remove_special_characters_from_enum_labels(enum_labels):
     for idx, label in enumerate(enum_labels):
@@ -37,7 +45,7 @@ def device_enum_labels_map():
 
     return devices_and_enums
 
-
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @pytest.mark.fast
 def test_obs_state_attribute_for_different_enum_labels(device_enum_labels_map):
     selected_enum_labels = list(device_enum_labels_map.values())[0]
@@ -70,7 +78,7 @@ def test_obs_state_attribute_for_different_enum_labels(device_enum_labels_map):
     msg = "Verify two enum variations are detected due to different order"
     perform_check(list_of_enums, msg)
 
-
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @pytest.mark.fast
 def test_obs_state_attribute_enum_labels_are_the_same(device_enum_labels_map):
     enum_variations = defaultdict(list)

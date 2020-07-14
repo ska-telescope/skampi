@@ -15,7 +15,6 @@ if DEV_TEST_TOGGLE == "False":
     DISABLE_TESTS_UNDER_DEVELOPMENT = False
 else:
     DISABLE_TESTS_UNDER_DEVELOPMENT = True
-# by default these tests are disabled
 
 def _remove_special_characters_from_enum_labels(enum_labels):
     for idx, label in enumerate(enum_labels):

@@ -7,10 +7,9 @@ from tango_simlib.utilities.validate_device import validate_device_from_url
 
 SPEC_URLS = {
     "ska_tango_guide_ska_wide": (
-        "https://gitlab.com/ska-telescope/telescope-model/-"
-        "/raw/user/johan/SAR-115/Add_YAML_device_spec/"
-        "tango_device_specifications/ska_wide/"
-        "ska_tango_guide_ska_wide.yaml"
+        "https://gitlab.com/ska-telescope/telescope-model/-/raw/SAR-114/"
+        "Create-a-minimal-spec-for-TM-DSH-interface/tango_device_specifications/"
+        "ska_wide/ska_tango_guide_ska_wide.yaml"
     )
 }
 

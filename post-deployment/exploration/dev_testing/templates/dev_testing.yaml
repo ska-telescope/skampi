@@ -62,11 +62,11 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: 200m     # 200m = 0.2 CPU
-            memory: 256Mi # 256Mi = 0.25 GB mem
+            cpu: {{ .Values.testingContainer.cpuRequirement.request }}
+            memory: {{ .Values.testingContainer.memoryRequirement.request }}
           limits:
-              cpu: 300m     # 200m = 0.2 CPU
-              memory: 500Mi # 256Mi = 0.25 GB mem   
+            cpu: {{ .Values.testingContainer.cpuRequirement.limit }}
+            memory: {{ .Values.testingContainer.memoryRequirement.limit }}
         command:
           - /bin/sh
           - -c
@@ -75,6 +75,7 @@ spec:
         volumeMounts:
         - mountPath: /home/tango/skampi/
           name: testing-volume
+      {{ if .Values.webPytest.enabled}}
       - name: web-pytest
         image: {{ .Values.imageToTest }}
         imagePullPolicy: IfNotPresent
@@ -98,14 +99,15 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: 200m     # 200m = 0.2 CPU
-            memory: 256Mi # 256Mi = 0.25 GB mem
+            cpu: {{ .Values.webPyTestContainer.cpuRequirement.request }}
+            memory: {{ .Values.webPyTestContainer.memoryRequirement.request }}
           limits:
-              cpu: 300m     # 200m = 0.2 CPU
-              memory: 500Mi # 256Mi = 0.25 GB mem 
+            cpu: {{ .Values.webPyTestContainer.cpuRequirement.limit }}
+            memory: {{ .Values.webPyTestContainer.memoryRequirement.limit }}
         volumeMounts:
         - mountPath: /home/tango/skampi/
           name: testing-volume
+      {{ end }}
       volumes:
       - name: testing-volume
         hostPath:

@@ -7,3 +7,22 @@ sshPort: 30022
 httpPort: 30080
 hostPath: /home/ubuntu/skampi
 hostName: dev-testing.engageska-portugal.pt
+webPytest:
+    enabled: False
+testingContainer:
+    cpuRequirement:
+        request: 600m  # 600m = 0.6 CPU
+        limit: 900m 
+    memoryRequirement:
+        request: 1100Mi
+        limit: 1200Mi
+webPyTestContainer:
+    cpuRequirement:
+        request: 600m  # 600m = 0.6 CPU
+        limit: 700m 
+    memoryRequirement:
+        request: 500Mi
+        limit: 600Mi
+
+
+

@@ -404,7 +404,7 @@
                             ], 
                             "polled_attr": [
 				"state",
-                                "1000",
+                                "50",
 				"healthstate",
                                 "1000",
 				"obsstate",
@@ -571,7 +571,7 @@
                             ], 
                             "polled_attr": [
 				"state",
-                                "1000",
+                                "50",
 				"healthstate",
                                 "1000",
 				"obsstate",
@@ -738,7 +738,7 @@
                             ], 
                             "polled_attr": [
 				"state",
-                                "1000",
+                                "50",
 				"healthstate",
                                 "1000",
 				"obsstate",

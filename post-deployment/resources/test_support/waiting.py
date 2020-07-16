@@ -101,7 +101,7 @@ class ConsumeImmediately(interfaceStrategy):
     
     def unsubscribe(self,*attrs):    
         ''' stops the subcription process ''' 
-        if attrs == None:
+        if attrs == ():
             for current_subscription in self.current_subscriptions: 
                 self.device_proxy.unsubscribe_event(current_subscription['subscription'])
             self.listening = False
@@ -253,7 +253,7 @@ class ConsumePeriodically(interfaceStrategy):
     def unsubscribe(self,*attrs):
         '''stops the current subscribing strategy on the device and clears the listening flag (in case of used within a seperate thread)
         '''
-        if attrs == None:
+        if attrs == ():
             self.clear_listening()
             for current_subscription in self.current_subscriptions: 
                 self.device_proxy.unsubscribe_event(current_subscription['subscription'])
@@ -514,7 +514,7 @@ class Gatherer():
             
     def _time_events(self,timeout,resolution):
         for the_listener,binding in self.listeners.items():
-            for attr in binding['attrs']:
+            for attr in binding['attrs'].values():
                 the_handler = attr['handler']
                 context = {
                     'handler':the_handler,
@@ -522,7 +522,7 @@ class Gatherer():
                 attr['timer'] = Timer(timeout,resolution,context)
 
     def _tick_attrs(self,attrs):
-        for attr in attrs:
+        for attr in attrs.values():
             timer = attr['timer']
             timer.tick()
             if timer.time_up:
@@ -530,6 +530,7 @@ class Gatherer():
 
     def get_events(self,timeout,resolution=0.001):
         timer = Timer(timeout,resolution)
+        self._time_events(timeout,resolution)
         sleepy = False
         while True:
             empty_run = True

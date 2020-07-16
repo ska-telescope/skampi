@@ -32,6 +32,12 @@ class interfaceStrategy():
 class ListenerTimeOut(Exception):
     pass
 
+class HandeableListenerTimeOut(ListenerTimeOut):
+
+    def __init__(self,message,handler):
+        self.handler = handler
+        super().__init__(message)
+
 class ConsumeImmediately(interfaceStrategy):
     '''
     Implements a listening strategy by enabling the client to consume events immediately upon being publised. This results in a thread
@@ -93,12 +99,13 @@ class ConsumeImmediately(interfaceStrategy):
     async def async_wait_for_next_event(self,timeout=5):
         return self.wait_for_next_event(timeout)
     
-    def unsubscribe(self):    
+    def unsubscribe(self,*attrs):    
         ''' stops the subcription process ''' 
-        for current_subscription in self.current_subscriptions: 
-            self.device_proxy.unsubscribe_event(current_subscription['subscription'])
-        self.listening = False
-        self.current_subscriptions = []
+        if attrs == None:
+            for current_subscription in self.current_subscriptions: 
+                self.device_proxy.unsubscribe_event(current_subscription['subscription'])
+            self.listening = False
+            self.current_subscriptions = []
 
 
     def wait_for_all_events_to_be_handled(self):
@@ -126,6 +133,7 @@ class ConsumePeriodically(interfaceStrategy):
         self.listening = False
         self.buffer_size = buffer_size
         self.current_subscriptions = []
+        self.current_subscriptions2 = {}
         self.lock = threading.Lock()
         self.polling=polling
 
@@ -141,6 +149,7 @@ class ConsumePeriodically(interfaceStrategy):
                                 self.buffer_size),
             'attribute_being_monitored' : attr
         }
+        self.current_subscriptions2[attr] = current_subscription['subscription']
         self.current_subscriptions.append(current_subscription)
         self.set_to_listening()
 
@@ -157,6 +166,7 @@ class ConsumePeriodically(interfaceStrategy):
                                 self.buffer_size),
             'attribute_being_monitored' : attr
         }
+        self.current_subscriptions2[attr] = current_subscription['subscription']
         self.current_subscriptions.append(current_subscription)
         self.set_to_listening()
     
@@ -165,7 +175,8 @@ class ConsumePeriodically(interfaceStrategy):
         while True:
             timeleft -= 1
             if timeleft == 0:
-                attributes_being_monitored = [item['attribute_being_monitored'] for item in self.current_subscriptions]
+                # attributes_being_monitored = [item['attribute_being_monitored'] for item in self.current_subscriptions]
+                attributes_being_monitored = list(self.current_subscriptions2.keys())
                 raise ListenerTimeOut(f'Timed out after {timeout} seconds waiting for events on attributes'\
                                     f'{attributes_being_monitored} for device {self.device_proxy.name()}')
             yield timeleft
@@ -239,12 +250,19 @@ class ConsumePeriodically(interfaceStrategy):
         else:
             return events
 
-    def unsubscribe(self):
+    def unsubscribe(self,*attrs):
         '''stops the current subscribing strategy on the device and clears the listening flag (in case of used within a seperate thread)
         '''
-        self.clear_listening()
-        for current_subscription in self.current_subscriptions: 
-            self.device_proxy.unsubscribe_event(current_subscription['subscription'])
+        if attrs == None:
+            self.clear_listening()
+            for current_subscription in self.current_subscriptions: 
+                self.device_proxy.unsubscribe_event(current_subscription['subscription'])
+        else:
+            for attr in attrs:
+                for current_subscription in self.current_subscriptions: 
+                    if current_subscription['attribute_being_monitored'] == attr:
+                        self.device_proxy.unsubscribe_event(current_subscription['subscription'])
+
 
 class Listener():
     '''Object that listens for an attribute on a specific tango device based on a particular
@@ -418,10 +436,11 @@ class HandeableEvent():
 
 class Timer():
 
-    def __init__(self,timeout,resolution):
+    def __init__(self,timeout,resolution,context=None):
         self.resolution = resolution
         self.time = 0
         self.timeout =timeout
+        self.context = context
 
     def tick(self):
         self.time += self.resolution
@@ -443,17 +462,25 @@ class Timer():
     def time_not_up(self):
         return not self.time_up()
 
+class GatheringTimeout(Exception):
+
+    def __init__(self,time,gatherer):
+        self.time = time
+        self.gatherer = gatherer
+        super().__init__(f'Timed out out gathering events after {self.time} seconds')
+
 
 class Gatherer():
 
     def __init__(self):
         self.listeners = {}
-
+        self.active_listeners = {}
+        
     def _new_binding(self,handler,*attr):
         binding = {}
         attrs = {}
         for attribute in attr:
-            attrs[attribute] = handler 
+            attrs[attribute] = {'handler':handler,'timer':None}
         binding['attrs'] = attrs
         binding['tracer'] = Tracer(f'new binding: {attr} to {handler}')
         return binding
@@ -462,7 +489,7 @@ class Gatherer():
         attrs = binding['attrs']
         tracer = binding['tracer']
         for attribute in attr:
-            attrs[attribute] = handler
+            attrs[attribute] = {'handler':handler,'timer':None}
         tracer.message(f'binded {attr} to {handler}')
         
 
@@ -480,24 +507,46 @@ class Gatherer():
             the_attrs = binding['attrs']
             try:
                 the_listener.listen_for(the_attrs)
+                self.active_listeners[the_listener] = None
             except Exception as e:
                 exceptions.append(e)
             the_tracer.message(f'started listening at {datetime.now()}')
             
+    def _time_events(self,timeout,resolution):
+        for the_listener,binding in self.listeners.items():
+            for attr in binding['attrs']:
+                the_handler = attr['handler']
+                context = {
+                    'handler':the_handler,
+                    'listener':the_listener }
+                attr['timer'] = Timer(timeout,resolution,context)
+
+    def _tick_attrs(self,attrs):
+        for attr in attrs:
+            timer = attr['timer']
+            timer.tick()
+            if timer.time_up:
+                attr['timeout'] = True
+
     def get_events(self,timeout,resolution=0.001):
         timer = Timer(timeout,resolution)
+        sleepy = False
         while True:
             empty_run = True
             # the run
             for the_listener,binding in self.listeners.items():
                 the_tracer = binding['tracer']
                 the_attrs = binding['attrs']
+                if sleepy:
+                    self._tick_attrs(the_attrs)
                 events = the_listener.query()
                 if events is not None:
                     empty_run = False
                     for event in events:
                         attr = event.attr_name
-                        the_handler = the_attrs[attr]
+                        the_handler = the_attrs[attr]['handler']
+                        the_timer = the_attrs[attr]['timer']
+                        the_timer.reset()
                         assert(the_handler is not None)
                         the_tracer.message(f'yielding event {event} for {attr}'
                                            f' to be handled by {the_handler}'
@@ -514,8 +563,9 @@ class Gatherer():
                 if timer.time_up():
                     raise GatheringTimeout(timer.timeout,self)
                 else:
-                timer.sleep_tick()
+                    timer.sleep_tick()
+                    sleepy= True
             else:
                 # reset the counter and run again without sleeping
-                timer.reset()    
-            
+                sleepy = False
+                timer.reset()     

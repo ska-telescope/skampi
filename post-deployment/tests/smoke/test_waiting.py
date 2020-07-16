@@ -1,6 +1,6 @@
 from resources.test_support.waiting import Listener,ConsumePeriodically,\
     interfaceStrategy,ConsumeImmediately,ListenerTimeOut, Gatherer,\
-    HandeableEvent
+    HandeableEvent, GatheringTimeout
 from tango import EventData
 from tango.asyncio import DeviceProxy
 import tango
@@ -678,23 +678,25 @@ def test_handeable_event():
     handler = Mock(name='handler')
     event = Mock(name='event')
     elapsed_time = Mock(name='elapsed_time')
+    listener = Mock(name = 'listener')
     h = HandeableEvent(
         handler,
         event,
-        elapsed_time
+        elapsed_time,
+        listener
     )
     # when I call the handleable event without elapsed_time
     h.handle()
-    handler.assert_called_with(event)
+    handler.assert_called_with(event,listener)
     # when I call the handleable event with elapsed_time
     h.handle(supply_elapsed_time=True)
-    handler.assert_called_with(event,elapsed_time)
+    handler.assert_called_with(event,listener,elapsed_time)
     # when I call the handler with extra args
     h.handle('arg1','arg2')
-    handler.assert_called_with(event,'arg1','arg2')
+    handler.assert_called_with(event,listener,'arg1','arg2')
     # when I call the handler with extra args and with elapsed_time
     h.handle('arg1','arg2',supply_elapsed_time=True)
-    handler.assert_called_with(event,elapsed_time,'arg1','arg2')
+    handler.assert_called_with(event,listener,elapsed_time,'arg1','arg2')
 
     class FakeHandler():
         def handle_event(self,*args,**kwargs):
@@ -704,17 +706,18 @@ def test_handeable_event():
     h = HandeableEvent(
         handler_object,
         event,
-        elapsed_time
+        elapsed_time,
+        listener
     )
     # when I call the handeable event without elapsed_time
     h.handle()
-    handler.assert_called_with(event)
+    handler.assert_called_with(event,listener)
     # when I call the handleable event with elapsed_time
     h.handle(supply_elapsed_time=True)
-    handler.assert_called_with(event,elapsed_time)
+    handler.assert_called_with(event,listener,elapsed_time)
     # when I call the handler with extra args
     h.handle('arg1','arg2')
-    handler.assert_called_with(event,'arg1','arg2')
+    handler.assert_called_with(event,listener,'arg1','arg2')
     # when I call the handler with extra args and with elapsed_time
     h.handle('arg1','arg2',supply_elapsed_time=True)
-    handler.assert_called_with(event,elapsed_time,'arg1','arg2')
+    handler.assert_called_with(event,listener,elapsed_time,'arg1','arg2')

@@ -1,6 +1,7 @@
 import pytest
 from datetime import date,datetime
 import os
+import logging
 
 ##SUT imports
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
@@ -11,6 +12,8 @@ from resources.test_support.persistance_helping import update_scan_config_file,u
 from resources.test_support.sync_decorators import sync_assign_resources,sync_configure_oet,time_it,\
     sync_release_resources,sync_release_resources,sync_end_sb,sync_scan_oet
 from resources.test_support.mappings import device_to_subarrays
+
+LOGGER = logging.getLogger(__name__)
 
 def take_subarray(id):
     return pilot(id)
@@ -42,25 +45,29 @@ class pilot():
     
     def to_be_composed_out_of(self, dishes, file = 'resources/test_data/OET_integration/example_allocate.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A1.py
-        @sync_assign_resources(dishes)
+        @sync_assign_resources(dishes,200)
         def assign():
-            update_resource_config_file(file)
+            sdp_block = update_resource_config_file(file)
             multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
             self.SubArray.allocate_from_file(file, multi_dish_allocation)
-        assign()
+            return sdp_block
+        sdp_block = assign()
         self.state = "Composed"
-        return self
+        LOGGER.info("_________Sdp block from composed function_______" + str(self) +str(sdp_block))
+        return self, sdp_block
 
 
-    def and_configure_scan_by_file(self,file = 'resources/test_data/TMC_integration/configure1.json'):
+    def and_configure_scan_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/configure2.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A2-Test.py
         @sync_configure_oet
         @time_it(120)
-        def config():
-            update_scan_config_file(file)
+        def config(file, sdp_block):
+            update_scan_config_file(file, sdp_block)
+            LOGGER.info("___________Input file in configure_oet_____________" + str(file))
             self.state = "Configuring"
-            self.SubArray.configure_from_file(file, 1, with_processing = False)
-        config()
+            self.SubArray.configure_from_file(file, 6, with_processing = False)
+        LOGGER.info("___________SDP block from configure_oet_____________" + str(sdp_block))
+        config(file, sdp_block)
         self.state = "Ready"
         return self
 
@@ -121,7 +128,9 @@ def set_telescope_to_standby():
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
     SKAMid().standby()
-    the_waiter.wait(50)
+    #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
+    #therefore timeout is given as 12 sec
+    the_waiter.wait(120)
     if the_waiter.timed_out:
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
@@ -131,17 +140,23 @@ def set_telescope_to_running(disable_waiting = False):
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
     if not disable_waiting:
-        the_waiter.wait(50)
+        the_waiter.wait(100)
         if the_waiter.timed_out:
             pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 
 def telescope_is_in_standby():
+    LOGGER.info('resource("ska_mid/tm_subarray_node/1").get("State")'+ str(resource('ska_mid/tm_subarray_node/1').get("State")))
+    LOGGER.info('resource("mid_csp/elt/subarray_01").get("State")' +
+                str(resource('mid_csp/elt/subarray_01').get("State")))
+    LOGGER.info('resource("mid_csp_cbf/sub_elt/subarray_01").get("State")' +
+                str(resource('mid_csp_cbf/sub_elt/subarray_01').get("State")))
+
     return  [resource('ska_mid/tm_subarray_node/1').get("State"),
             resource('mid_csp/elt/subarray_01').get("State"),
             resource('mid_csp_cbf/sub_elt/subarray_01').get("State")] == \
             ['DISABLE' for n in range(3)]
 
-
+## currently this function is not used in any testcase
 def run_a_config_test():
     assert(telescope_is_in_standby)
     set_telescope_to_running()

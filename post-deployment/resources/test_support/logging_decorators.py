@@ -4,6 +4,7 @@ from resources.test_support.log_helping import DeviceLogging
 from datetime import date,datetime
 import logging
 import os
+from contextlib import contextmanager
 
 VAR = os.environ.get('USE_LOCAL_ELASTIC')
 if (VAR == "True"):
@@ -55,4 +56,29 @@ def log_it(log_name,devices_to_log,non_default_states_to_check):
                 return result
             return wrapper
     return decorator_log_it
+
+
+def print_states_logs_to_file(s,log_name,status='ok'):
+    if status=='ok':
+        filename_s = 'states_test_{}_{}.csv'.format(log_name,datetime.now().strftime('%d_%m_%Y-%H_%M'))
+    elif status=='error':
+        filename_s = 'error_states_test_{}_{}.csv'.format(log_name,datetime.now().strftime('%d_%m_%Y-%H_%M'))
+    LOGGER.info(f"Printing log files to build/{filename_s}")
+    s.print_records_to_file(filename_s,style='csv',filtered=False)
+
+@contextmanager
+def log_states(log_name,devices_to_log,non_default_states_to_check):
+    s = StateChecker(devices_to_log,specific_states=non_default_states_to_check)
+    s.run(threaded=True,resolution=0.05)
+    try:
+        yield
+    except Exception as e:
+        s.stop()
+        LOGGER.info("error in executing SUT")
+        print_states_logs_to_file(s,log_name,status='error')
+        raise e
+    s.stop()
+    print_states_logs_to_file(s,log_name,status='ok')
+
+
 

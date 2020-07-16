@@ -10,7 +10,7 @@ csplmc:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: mid-csp-lmc
-    tag: 0.5.7-4028dc62
+    tag: 0.5.9-3f01bac
     pullPolicy: IfNotPresent
 
 deviceServers:

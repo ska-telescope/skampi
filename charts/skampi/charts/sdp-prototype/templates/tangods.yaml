@@ -85,6 +85,8 @@ spec:
           value: {{ quote (index .Values "feature" "config-db") }}
         - name: TOGGLE_AUTO_REGISTER
           value: "0"
+        - name: TOGGLE_RECEIVE_ADDRESSES_HACK
+          value: {{ quote (index .Values "feature" "receive-addresses-hack") }}
 {{- if index .Values "feature" "config-db" }}
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp-prototype.etcd-host" . }}
@@ -101,6 +103,8 @@ spec:
           value: {{ quote (index .Values "feature" "config-db") }}
         - name: TOGGLE_AUTO_REGISTER
           value: "0"
+        - name: TOGGLE_RECEIVE_ADDRESSES_HACK
+          value: {{ quote (index .Values "feature" "receive-addresses-hack") }}
 {{- if index .Values "feature" "config-db" }}
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp-prototype.etcd-host" . }}
@@ -117,6 +121,8 @@ spec:
           value: {{ quote (index .Values "feature" "config-db") }}
         - name: TOGGLE_AUTO_REGISTER
           value: "0"
+        - name: TOGGLE_RECEIVE_ADDRESSES_HACK
+          value: {{ quote (index .Values "feature" "receive-addresses-hack") }}
 {{- if index .Values "feature" "config-db" }}
         - name: SDP_CONFIG_HOST
           value: {{ include "sdp-prototype.etcd-host" . }}

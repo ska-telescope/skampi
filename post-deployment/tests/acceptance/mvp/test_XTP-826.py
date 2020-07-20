@@ -80,6 +80,7 @@ def check_resource_ready(resource_name):
 
 LOGGER = logging.getLogger(__name__)
 
+@pytest.mark.select
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
 @scenario("../../../features/XTP-826.feature", "Run more than one scan on a sub array")
 def test_multi_scan():
@@ -128,7 +129,7 @@ def execute_second_scan(result):
     """
     LOGGER.info("Executing second scan")
     #####################SUT is execucted#################
-    @log_it('XTP-826', DEVICES_TO_LOG, NON_DEFAULT_DEVICES_TO_CHECK)
+    # @log_it('XTP-826', DEVICES_TO_LOG, NON_DEFAULT_DEVICES_TO_CHECK)
     def scan():
         SubArray(1).scan()
     scan()

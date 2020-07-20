@@ -45,7 +45,7 @@ class pilot():
     
     def to_be_composed_out_of(self, dishes, file = 'resources/test_data/OET_integration/example_allocate.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A1.py
-        @sync_assign_resources(dishes,150)
+        @sync_assign_resources(dishes,200)
         def assign():
             sdp_block = update_resource_config_file(file)
             multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
@@ -140,7 +140,7 @@ def set_telescope_to_running(disable_waiting = False):
     the_waiter.set_wait_for_starting_up()
     SKAMid().start_up()
     if not disable_waiting:
-        the_waiter.wait(50)
+        the_waiter.wait(100)
         if the_waiter.timed_out:
             pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 

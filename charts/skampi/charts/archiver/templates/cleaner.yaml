@@ -1,4 +1,4 @@
-{{ if eq .Values.minikube "false"}}
+{{ if eq .Values.minikube false}}
 ---
 apiVersion: batch/v1beta1
 kind: CronJob

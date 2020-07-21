@@ -10,7 +10,7 @@ tmcprototype:
   image:
     registry: nexus.engageska-portugal.pt/tango-example
     image: tmcprototype
-    tag: 0.2.3
+    tag: 0.2.4
     pullPolicy: IfNotPresent
 
 tmalarmhandler:

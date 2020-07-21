@@ -160,7 +160,7 @@ def end(result):
     if result[SUBARRAY_USED] is not None:
         LOGGER.info("Resetting subarray")
         result[SUBARRAY_USED].reset()
-    if resource('ska_mid/tm_subarray_node/1').get("State") == "ON":
+    if resource('ska_mid/tm_subarray_node/1').get("obsState") == "IDLE":
         LOGGER.info("Release all resources assigned to subarray")
         take_subarray(1).and_release_all_resources()
     if telescope_is_in_standby():

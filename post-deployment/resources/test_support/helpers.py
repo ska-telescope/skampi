@@ -315,20 +315,23 @@ class waiter():
             self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_any_change_on("receptorIDList"))
             self.waits.append(watch(resource('mid_csp/elt/subarray_01')).for_any_change_on("assignedReceptors"))
             self.waits.append(watch(resource('mid_csp/elt/master')).for_any_change_on("receptorMembership"))
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='ON')) 
+        #self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='ON'))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("obsState",changed_to='RESOURCING'))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("obsState",changed_to='IDLE'))
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("State",changed_to='ON'))
         # self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='ON'))
         # self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='ON'))
 
     def set_wait_for_tearing_down_subarray(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).for_any_change_on("receptorIDList"))
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='OFF'))
+        #self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='OFF'))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("obsState",changed_to='EMPTY'))
         # self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='OFF'))
         # self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='OFF'))
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("State",changed_to='OFF'))
 
     def set_wait_for_going_to_standby(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='DISABLE'))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='OFF'))
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='DISABLE'))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='DISABLE'))
         # at the moment sdb does not go to standby
@@ -340,7 +343,7 @@ class waiter():
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become('obsState',changed_to='SCANNING'))
 
     def set_wait_for_starting_up(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='OFF'))
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='ON'))
         # self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='OFF'))
         # self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='OFF'))
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))

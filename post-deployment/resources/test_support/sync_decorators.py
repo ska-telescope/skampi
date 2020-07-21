@@ -7,7 +7,8 @@ from contextlib import contextmanager
 
 # pre cheks
 def check_going_out_of_empty():
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
+    ##verify once for obstate = EMPTY
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
 
 def check_going_into_configure():
     ##Can ony configure a subarray that is in IDLE/ON
@@ -16,7 +17,7 @@ def check_going_into_configure():
 
 def check_coming_out_of_standby():
     ##Can  only start up a disabled telescope
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('DISABLE')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
 
 def check_going_out_of_configured():
     ##Can only return to ON/IDLE if in READY
@@ -28,7 +29,8 @@ def check_going_into_empty():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
 
 def check_going_into_standby():
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
+    ##verify once for state = ON
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 # pre waitings
 

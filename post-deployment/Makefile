@@ -61,3 +61,13 @@ export_extensions:
 	cd ~ && \
 	tar -cvzf vscode-server.tar .vscode-server && \
 	mv vscode-server.tar ~/skampi/vscode-server.tar
+
+get_mem_usage:
+	@raw=$$(cat /sys/fs/cgroup/memory/memory.usage_in_bytes) && \
+	mb=$$(expr 1024 \* 1024) && \
+	MB=$$(expr $$raw / $$mb) && \
+	echo "$$MB"MB
+
+get_cpu_usage:
+	@raw=$$(cat /sys/fs/cgroup/cpu/cpu.shares ) && \
+	echo $$raw

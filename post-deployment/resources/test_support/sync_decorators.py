@@ -3,6 +3,7 @@ from resources.test_support.helpers import waiter,watch,resource
 from contextlib import contextmanager
 import signal
 import logging
+from contextlib import contextmanager
 
 # pre cheks
 def check_going_out_of_empty():
@@ -37,23 +38,25 @@ class WaitConfigure():
         self.w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
 
     def wait(self):
-        self.w.wait_until_value_changed_to('CONFIGURING')
+        # self.w.wait_until_value_changed_to('CONFIGURING')
         self.w.wait_until_value_changed_to('READY',timeout=200)
 
     def wait_oet(self):
         self.w.wait_until_value_changed_to('READY',timeout=200)
 
 class WaitScanning():
-
     def __init__(self):
         self.the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
 
     def wait(self,timeout):
-        self.the_watch.wait_until_value_changed_to('SCANNING')
+        logging.info("scan command dispatched, checking that the state transitioned to SCANNING")
+        self.the_watch.wait_until_value_changed_to('SCANNING',timeout)
+        logging.info("state transitioned to SCANNING, waiting for it to return to READY")
         self.the_watch.wait_until_value_changed_to('READY',timeout)
 
+
+def sync_assign_resources(nr_of_receptors=4,timeout=60):
 # defined as a decorator
-def sync_assign_resources(nr_of_receptors=4):
     def decorator_sync_assign_resources(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -63,7 +66,7 @@ def sync_assign_resources(nr_of_receptors=4):
             ################ 
             result = func(*args, **kwargs)
             ################ 
-            the_waiter.wait(timeout=60)
+            the_waiter.wait(timeout=timeout)
             return result
         return wrapper
     return decorator_sync_assign_resources
@@ -82,6 +85,16 @@ def sync_assigned_resources(nr_of_receptors=4):
 def sync_configure(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        ##Can ony configure a subarray that is in IDLE/ON
+        # Branch changes
+        # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
+        # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+        # w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+        # ################
+        # result = func(*args, **kwargs)
+        # ################
+        # #w.wait_until_value_changed_to('CONFIGURING')
+        # w.wait_until_value_changed_to('READY',timeout=200)
         check_going_into_configure()
         w  = WaitConfigure()
         ################ 
@@ -162,12 +175,12 @@ def sync_start_up_telescope(func):
 
 # defined as a context manager
 @contextmanager
-def sync_telescope_starting_up():
+def sync_telescope_starting_up(timeout=50):
     check_coming_out_of_standby()
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
     yield
-    the_waiter.wait(50)
+    the_waiter.wait(timeout)
 
 def sync_end_sb(func):
     @functools.wraps(func)
@@ -202,13 +215,13 @@ def sync_release_resources(func):
 
 # defined as a context manager
 @contextmanager
-def sync_resources_releasing():
+def sync_resources_releasing(timeout=50):
     # Can only release resources if subarray is in ON/IDLE
     check_going_into_empty()
     the_waiter = waiter()
     the_waiter.set_wait_for_tearing_down_subarray()
     yield
-    the_waiter.wait(50)
+    the_waiter.wait(timeout)
 
 
 def sync_set_to_standby(func):
@@ -218,19 +231,18 @@ def sync_set_to_standby(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_going_to_standby()
         result = func(*args, **kwargs)
-        the_waiter.wait(50)
+        the_waiter.wait(100)
         return result
     return wrapper
 
 # defined as a context manager
 @contextmanager
-def sync_going_to_standby():
+def sync_going_to_standby(timeout=50):
     check_going_into_standby()
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
     yield
-    the_waiter.wait(50)
-
+    the_waiter.wait(timeout)
 
 def sync_scan(timeout=200):
     def decorator(func):

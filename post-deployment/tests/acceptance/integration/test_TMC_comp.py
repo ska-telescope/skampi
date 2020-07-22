@@ -35,7 +35,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_assign_resources():
     
     try:
@@ -51,14 +51,15 @@ def test_assign_resources():
         
         # then when I assign a subarray composed of two resources configured as perTMC_integration/assign_resources.json
         @log_it('TMC_int_comp',devices_to_log,non_default_states_to_check)
-        @sync_assign_resources(2)
+        @sync_assign_resources(2,150)
         def compose_sub():
             resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
-            assign_resources_file = 'resources/test_data/TMC_integration/assign_resources.json'
+            assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
             update_resource_config_file(assign_resources_file)
             config = load_config_from_file(assign_resources_file)
             CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
             CentralNode.AssignResources(config)
+            LOGGER.info('Invoked AssignResources on CentralNode')
         compose_sub()
    
         #tear down

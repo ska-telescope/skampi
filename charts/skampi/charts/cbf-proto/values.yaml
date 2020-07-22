@@ -1,0 +1,104 @@
+# Default values for csp-proto.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+display: ":0"
+xauthority: "~/.Xauthority"
+
+midcbfmcs:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: mid-cbf-mcs
+    tag: 0.4.3-44e9ac7
+    pullPolicy: IfNotPresent
+
+dsconfig:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: 1.2.5.1
+    pullPolicy: IfNotPresent
+
+deviceServers:
+  - name: cbfmaster
+    args:
+      - -c
+      - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/01 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/02 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/03 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/04 &&\
+            /venv/bin/python /app/tangods/CbfMaster/CbfMaster/CbfMaster.py master"
+  - name: cbfsubarray01
+    args:
+      - -c
+      - "retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
+            /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-01"
+  - name: cbfsubarray02
+    args:
+      - -c
+      - "retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
+            /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-02"
+  - name: cbfsubarray03
+    args:
+      - -c
+      - "retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
+            /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-03"
+  - name: vcc001
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-001"
+  - name: vcc002
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-002"
+  - name: vcc003
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-003"
+  - name: vcc004
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-004"
+  - name: fsp01
+    args:
+      - -c
+      - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-01"
+  - name: fsp02
+    args:
+      - -c
+      - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-02"
+  - name: fsp03
+    args:
+      - -c
+      - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-03"
+  - name: fsp04
+    args:
+      - -c
+      - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-04"
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

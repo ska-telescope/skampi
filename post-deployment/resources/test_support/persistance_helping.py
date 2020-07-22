@@ -4,13 +4,18 @@ from random import choice
 from datetime import date
 import csv
 import re
+import string
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 
 def inc_from_old_nr(oldnr,incremental=1):
     #assumes trailing 5 digits is an integer counter unless succeeded with a dash and a non digit
     #also assumes we wont get increments hgher than 50 000 in a day
-    inc =  int(re.findall(r'\d{5}(?=$|-\D)',oldnr)[0])  
-    new_inc = '{:05d}'.format(inc+incremental)
+    #inc =  int(re.findall(r'\d{5}(?=$|-\D)',oldnr)[0])  
+    #new_inc = '{:05d}'.format(inc+incremental)
+    new_inc = f'{choice(range(0,99999)):05d}'
     return re.sub(r'\d{5}(?=$|-\D)',new_inc,oldnr)
 
 def update_file(file):
@@ -50,22 +55,32 @@ def update_resource_config_file(file):
         data['sdp']['processing_blocks'][index]['id'] = inc_from_old_nr(item['id'],incremental)
         if 'dependencies' in item.keys():
             for index2,item2 in enumerate(item['dependencies']):
-                data['sdp']['processing_blocks'][index]['dependencies'][index2]['pb_id'] = inc_from_old_nr(item2['pb_id'],incremental)
+                data['sdp']['processing_blocks'][index]['dependencies'][index2]['pb_id'] = data['sdp']['processing_blocks'][0]['id']
     with open(file, 'w') as f:
         json.dump(data, f)
+    LOGGER.info("________ AssignResources Updated string for next iteration_______" + str(data))
+    LOGGER.info("________ SDP block is_______" + str(data['sdp']))
+    return data['sdp']
 
-def update_scan_config_file(file):
+
+
+def update_scan_config_file(file, sdp_block):
     with open(file, 'r') as f:
         data = json.load(f)
-    data['csp']['id'] = inc_from_old_nr(data['csp']['id'])
+    LOGGER.info("________Configure string before update function _______" + str(file))
+    sdp_sbi_id = sdp_block['id']
+    LOGGER.info("________Updated sdp_sbi_id from configure string _______" + str(sdp_sbi_id))
+    data['csp']['id'] = sdp_sbi_id + '-' + data['sdp']['scan_type']
+    LOGGER.info("________Updated csp-id from configure string _______" + str(data['csp']['id']))
     with open(file, 'w') as f:
         json.dump(data, f)
-
+    LOGGER.info("________ Configure Updated string for next iteration_______" + str(data))
 
 
 def print_dict_to_file(filename,data):
     with open(filename, 'w') as file:
-        file.write(json.dumps(data)) 
+        file.write(json.dumps(data))
+
 
 def print_dict_to_csv_file(filename,data):
     csv_columns = data[0].keys()

@@ -68,3 +68,11 @@ class TraceHelper:
             if(time.time() - startTime > timeout):
                 raise Exception("Timeout occurred")
             time.sleep(0.1)
+
+    def check_port(self, address, port):
+        try:
+            location = (address, int(port))
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            return sock.connect_ex(location)
+        except Exception as e1: 
+            return -1

@@ -1,0 +1,121 @@
+# Default values for oet.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+minikube: true
+
+ssh:
+  enabled: true
+  nodePort:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: observation-execution-tool-ssh
+    tag: 2.0.0
+    pullPolicy: IfNotPresent
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+itango:
+  enabled: true
+  nodePort:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: observation-execution-tool-ssh
+    tag: 2.0.0
+    pullPolicy: IfNotPresent
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+rest:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: observation-execution-tool
+    tag: 2.0.0
+    pullPolicy: IfNotPresent
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+jupyter:
+  enabled: true
+  nodePort:
+  storage:
+    enabled: true
+    hostPath: /home/ubuntu/skampi-hostpath/build/jupyter/
+    capacity: 0.1G
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: observation-execution-tool-jupyter
+    tag: 2.0.0
+    pullPolicy: IfNotPresent
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+# Configure Ingress
+ingress:
+  enabled: true
+  nginx: false
+  hostname: integration.engageska-portugal.pt
+
+  # Ingress annotations
+  annotations: {}
+
+  # Ingress TLS configuration
+  #
+  tls:
+    enabled: true
+    secretname: 'tls-secret-{{ template "oet.name" . }}-{{ .Release.Name }}'
+    hostname: "{{ .Values.ingress.hostname }}"
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

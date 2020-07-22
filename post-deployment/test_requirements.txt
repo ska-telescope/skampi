@@ -1,8 +1,9 @@
 -r SUT_requirements.txt
 pytest
+pyyaml
 pytest-cov
 pytest-json-report
-pycodestyle
+pycodestyle<2.7.0,>=2.6.0a1
 pytest-bdd
 pytest-ordering
 elasticsearch
@@ -11,3 +12,9 @@ assertpy
 mock
 importlib
 elasticsearch-dsl
+aiohttp
+aiojobs
+pytest-asyncio
+ska_logging
+aiohttp_cors
+flake8

@@ -28,6 +28,12 @@ from resources.test_support.sync_decorators import sync_release_resources
 
 LOGGER = logging.getLogger(__name__)
 
+DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
+if DEV_TEST_TOGGLE == "False":
+    DISABLE_TESTS_UNDER_DEVELOPMENT = False
+else:
+    DISABLE_TESTS_UNDER_DEVELOPMENT = True
+
 devices_to_log = [
     'ska_mid/tm_subarray_node/1',
     'mid_csp/elt/subarray_01',
@@ -48,7 +54,7 @@ def result():
     return {}
 
 
-
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
 def test_deallocate_resources():
     """Deallocate Resources."""
@@ -56,12 +62,12 @@ def test_deallocate_resources():
 
 @given('A running telescope with "4" dishes are allocated to "subarray 1"')
 def set_to_running(result):
-    LOGGER.info("A running telescope with '4' dishes are allocated to 'subarray 1'")
+    LOGGER.info("A running telescope with '2' dishes are allocated to 'subarray 1'")
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    LOGGER.info("Assigning 4 dishes")
-    take_subarray(1).to_be_composed_out_of(4)
+    LOGGER.info("Assigning 2 dishes")
+    take_subarray(1).to_be_composed_out_of(2)
 
 @when("I deallocate the resources")
 def deallocate_resources():

@@ -1,6 +1,0 @@
-apiVersion: v1
-appVersion: "1.0"
-description: A Helm chart for deploying the TANGO base system on Kubernetes
-name: tango-base
-version: 0.1.0
-icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png

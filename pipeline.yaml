@@ -1,15 +1,15 @@
 elastic:
-  enabled: true
+  enabled: false
 fluentd:
-  enabled: true
+  enabled: false
 kibana:
   enabled: false
 tests:
   enabled: false
 hdbppdb:
-  enabled: false
+  enabled: true
 archiver:
-  enabled: false
+  enabled: true
 tangodb:
   use_pv: false
 

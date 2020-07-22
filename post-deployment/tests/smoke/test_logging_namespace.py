@@ -1,5 +1,8 @@
 import pytest
+import socket
+import logging
 from elasticsearch import Elasticsearch
+from resources.log_consumer.tracer_helper import TraceHelper
 
 @pytest.mark.logging
 @pytest.mark.xfail(reason="until the elastic search is switched from the local one to the main one")
@@ -10,6 +13,14 @@ def test_logging_namespace(run_context):
     ES_PORT = "9200"
     NAMESPACE = run_context.KUBE_NAMESPACE
     INDEX_MATCH = "lo*-*"
+    local = True
+    tracer = TraceHelper()
+    if tracer.check_port(ES_HOST, ES_PORT) != 0:
+        ES_HOST = "192.168.93.94"
+        ES_PORT = "9200"
+        NAMESPACE = run_context.KUBE_NAMESPACE
+        INDEX_MATCH = "fi*-*"
+        local = False
 
     es = Elasticsearch(["{}:{}".format(ES_HOST, ES_PORT)],
                        use_ssl=False,
@@ -17,15 +28,21 @@ def test_logging_namespace(run_context):
                        ssl_show_warn=False)
 
     indexes = es.indices.get(INDEX_MATCH)
+    
     assert indexes, "No indexes found that match [{}]".format(INDEX_MATCH)
     last_index = sorted(indexes,
                         key=lambda i: indexes[i]['settings']['index']['creation_date'],
                         reverse=True)[0]
 
+    label_namespace = "container.labels.io_kubernetes_pod_namespace"
+
+    if(local):
+        label_namespace = "kubernetes_namespace"
+
     search_namespace = {
         "query": {
             "match": {
-                "kubernetes_namespace": {
+                label_namespace: {
                     "query": NAMESPACE
                 }
             }
@@ -38,14 +55,14 @@ def test_logging_namespace(run_context):
                 "must_not": [
                     {
                         "term": {
-                            "kubernetes_namespace": NAMESPACE
+                            label_namespace: NAMESPACE
                         }
                     }
                 ],
                 "must": [
                     {
                         "exists": {
-                            "field": "kubernetes_namespace"
+                            "field": label_namespace
                         }
                     }
                 ]
@@ -56,5 +73,6 @@ def test_logging_namespace(run_context):
     res = es.search(index=last_index, body=search_namespace)
     assert res['hits']['total']['value'], ("Found no matches for namespace [{}] using"
                                            " index [{}]".format(NAMESPACE, last_index))
-    res = es.search(index=last_index, body=search_not_namespace)
-    assert not res['hits']['total']['value'], "Found matches on other namespaces"
+    if(local):
+        res = es.search(index=last_index, body=search_not_namespace)
+        assert not res['hits']['total']['value'], "Found matches on other namespaces"

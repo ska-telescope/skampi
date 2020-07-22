@@ -1,0 +1,24 @@
+logging:
+  elastic:
+    enabled: false
+  fluentd:
+    enabled: false
+  kibana:
+    enabled: false
+
+tests:
+  testrunner:
+    enabled: false
+
+archiver:
+  archiver:
+    enabled: false
+  hdbppdb:
+    enabled: false
+
+minikube: true
+
+auth:
+  rbac:
+    enabled: false
+

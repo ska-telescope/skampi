@@ -52,13 +52,14 @@ def test_scan():
         
         # and a subarray composed of two resources configured as perTMC_integration/assign_resources.json
         LOGGER.info('Composing the Subarray')
-        tmc.compose_sub()
+        sdp_block = tmc.compose_sub()
         fixture['state'] = 'Subarray Assigned'
 
         #and a subarray configured to perform a scan as per 'TMC_integration/configure1.json'
         LOGGER.info('Configuring the Subarray')
         fixture['state'] = 'Subarray CONFIGURING'
-        tmc.configure_sub()
+        configure_file = 'resources/test_data/TMC_integration/configure2.json'
+        tmc.configure_sub(sdp_block, configure_file)
         fixture['state'] = 'Subarray Configured for SCAN'
       
         #When I run a scan of 4 seconds based on previos configuration
@@ -75,10 +76,13 @@ def test_scan():
         fixture['state'] = 'Subarray Configured for SCAN'
         
         #tear down
-        LOGGER.info('Tests complete: tearing down...')
+        LOGGER.info('TMC-Scan tests complete: tearing down...')
         tmc.end_sb()
+        LOGGER.info('Invoked EndSB on Subarray')
         tmc.release_resources()
+        LOGGER.info('Invoked ReleaseResources on Subarray')
         tmc.set_to_standby()
+        LOGGER.info('Invoked StandBy on Subarray')
    
     except:        
         LOGGER.info('Tearing down failed test, state = {}'.format(fixture['state']))

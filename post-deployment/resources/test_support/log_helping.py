@@ -140,26 +140,32 @@ class DeviceLogging():
         return self._shim['get_messages_as_list_dict']()
 
 
-def get_log_stash_db(port=9200,elastic_name='elastic-logging'):
-    
-    HELM_RELEASE = os.environ.get('HELM_RELEASE')
-    elastic_host = '{}-{}'.format(elastic_name,HELM_RELEASE)
-    elastic_port = port
-    host_details = {
-        'host': elastic_host, 
-        'port': elastic_port
-    }  
-    return Elasticsearch([host_details]) 
-
 class DeviceLoggingImplWithDBDirect():
 
     def __init__(self,es=None):
  
         if es == None:
-            es = get_log_stash_db()
+            self.local = self.is_local()
+            if self.local:
+                es = Elasticsearch([{
+                        'host': '{}-{}'.format('elastic-logging',os.environ.get('HELM_RELEASE')), 
+                        'port': 9200
+                    }])
+            else:
+                es = Elasticsearch([{
+                        'host': "192.168.93.94", 
+                        'port': 9200
+                    }])
+        else:
+            # injected es is assumed to be local
+            self.local = True
         self.es=es
         #assumes the search is always only on todays logs
-        index = "logstash-{}".format(date.today().strftime("%Y.%m.%d"))
+        if(self.local):
+            index = "logstash-{}".format(date.today().strftime("%Y.%m.%d"))
+        else:
+            index = "filebeat-{}".format(date.today().strftime("%Y.%m.%d"))
+
         self.search = Search(using=es,index=index)
         self.containers_to_devices ={}
         self.Qs = None
@@ -167,6 +173,12 @@ class DeviceLoggingImplWithDBDirect():
         self.running = False
         self.source_includes = ['ska_log_message','ska_log_timestamp','kubernetes.container_name','kubernetes.pod_name']
     
+    def is_local(self,port=9200,elastic_name='elastic-logging'):
+        HELM_RELEASE = os.environ.get('HELM_RELEASE')
+        elastic_host = '{}-{}'.format(elastic_name,HELM_RELEASE)
+        tracer = TraceHelper()
+        return tracer.check_port(elastic_host, port) == 0
+
     def start_tracing(self):   
 
         self.start_time = datetime.now()

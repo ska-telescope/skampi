@@ -1,6 +1,4 @@
-
-
-[![Documentation Status](https://readthedocs.org/projects/ska-docker/badge/?version=latest)](https://developer.skatelescope.org/projects/skampi/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/ska-telescope-skampi/badge/?version=latest)](https://developer.skatelescope.org/projects/skampi/en/latest/?badge=latest)
 
 
 SKA Integration on Kubernetes
@@ -197,9 +195,67 @@ If you find that sdp-prototype containers are failing, check whether there is a 
 ```
 $ make deploy_all KUBE_NAMESPACE=integration
 ```
-again. 
+again.
 
 To clean up the Helm Chart release:
 ```
 $make delete_all KUBE_NAMESPACE=integration
+```
+
+Using helm3 install
+-------------------
+
+This chart has been updated to enable the use of `helm3 install`, by creating an umbrella chart named skampi, and shifting all of the dependent charts into `charts/skampi/charts` as sub-charts - https://helm.sh/docs/chart_template_guide/subcharts_and_globals/.
+
+To launch the entire suite:
+```
+$ make install KUBE_NAMESPACE=integration
+```
+again.
+
+To clean up the Helm Chart release:
+```
+$make uninstall KUBE_NAMESPACE=integration
+```
+
+Note taht values for sub-charts are namespaced in the `values.yaml`, so to disable the archiver you must configure:
+```
+...
+archiver: # the sub-chart directory name
+  archiver:
+    enabled: false # the fully qualified value in the sub-chart values.yaml file
+...
+```
+
+Charts and Repositories
+-----------------------
+
+A sample chart repository has been created in Skampi.  This can be accessed with:
+```
+helm repo add skampi https://gitlab.com/ska-telescope/skampi/-/raw/master/repository/
+helm repo update
+helm search repo skampi
+```
+
+Which will show a list of charts like:
+```
+NAME                    	CHART VERSION	APP VERSION	DESCRIPTION
+skampi/archiver         	0.2.0        	1.0        	A Helm chart for deploying the HDB++ archiver f...
+skampi/auth             	0.1.0        	1.0        	A Helm chart for RBAC SKA
+skampi/cbf-proto        	0.4.0        	1.0        	A Helm chart for deploying the CSP_Mid.LMC CBF ...
+skampi/csp-proto        	0.5.3        	1.0        	A Helm chart for deploying the Mid_CSP prototyp...
+skampi/dsh-lmc-prototype	0.0.1        	1.0        	A Helm chart for deploying the DSH LMC prototyp...
+skampi/logging          	0.1.0        	1.0        	A Helm chart for deploying the EFK stack
+skampi/oet              	0.1.0        	1.0        	A Helm chart for deploying the Observation Exec...
+skampi/sdp-prototype    	0.4.0        	1.0        	Helm chart to deploy the SDP Prototype
+skampi/skuid            	0.0.1        	0.1        	Service that returns unique IDs for use by SKA
+skampi/tango-base       	0.1.0        	1.0        	A Helm chart for deploying the TANGO base syste...
+skampi/tests            	0.1.0        	1.0        	A Helm chart for integration testing
+skampi/tmc-proto        	0.1.0        	1.0        	A Helm chart for deploying the TMC prototype on...
+skampi/webjive          	0.1.0        	1.0        	A Helm chart for deploying the WebJive on Kuber...
+```
+
+Note: the repository is regenerated using:
+```
+$ make repository
 ```

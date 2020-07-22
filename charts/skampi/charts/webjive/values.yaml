@@ -1,0 +1,79 @@
+# Default values for webjive.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+display: ":0"
+xauthority: "~/.Xauthority"
+minikube: true
+
+itango:
+  enabled: false
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-itango
+    tag: latest
+    pullPolicy: IfNotPresent
+
+webjive:
+  enabled: true
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: webjive
+    tag: 1.0.0-develop-38
+    pullPolicy: Always
+
+authserver:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: webjive-auth
+    tag: 1.0.0-develop-14
+    pullPolicy: Always
+
+redis:
+  image:
+    image: redis
+    tag: latest
+    pullPolicy: IfNotPresent
+
+mongodb:
+  image:
+    image: mongo
+    tag: 3.6-stretch
+    pullPolicy: IfNotPresent
+
+dashboards:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: dashboard-repo
+    tag: 1.0.0-develop-2
+    pullPolicy: Always
+
+tangogql:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-telescope
+    image: web-maxiv-tangogql
+    tag: 1.0.0-develop-1
+    pullPolicy: Always
+
+# Configure Ingress resource that allow you to access the Tango REST API
+ingress:
+  enabled: true
+  nginx: false
+  hostname: integration.engageska-portugal.pt
+
+  # Ingress annotations
+  annotations: {}
+
+  # Ingress TLS configuration
+  #
+  tls:
+    enabled: true
+    secretname: "tls-secret-{{ template \"webjive.name\" . }}-{{ .Release.Name }}"
+    hostname: "{{ .Values.ingress.hostname }}"
+
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

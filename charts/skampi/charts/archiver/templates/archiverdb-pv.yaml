@@ -1,0 +1,52 @@
+{{ if .Values.pv.enabled }}
+
+{{ if .Values.minikube }}
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: Recycle
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/archiverdb-{{ template "archiver.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
+
+{{ end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+{{ if .Values.minikube }}
+  storageClassName: standard
+  accessModes:
+  - ReadWriteOnce
+{{ else }}
+  storageClassName: nfss1
+  accessModes:
+  - ReadWriteMany
+{{ end }}
+  resources:
+    requests:
+      storage: 10Gi
+
+
+{{ end }}

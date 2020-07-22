@@ -1,0 +1,82 @@
+{
+  "id": "sbi-mvp01-20200325-00001",
+  "fieldConfigurations": {
+    "science field": {
+      "targets": {
+        "my science target": {
+          "type": "sidereal",
+          "name": "a UMi B",
+          "system": "ICRS",
+          "RA": "02:30:41.63",
+          "dec": "+89:15:38.1"
+        }
+      }
+    },
+    "calibrator field": {
+      "targets": {
+        "my calibrator target": {
+          "type": "sidereal",
+          "name": "a UMi Aa",
+          "system": "ICRS",
+          "RA": "02:31:49.09",
+          "dec": "+89:15:50.8"
+        }
+      }
+    }
+  },
+  "scanDefinitions": {
+    "calibrator scan": {
+      "scanDuration": 3.0,
+      "fieldConfiguration": "calibrator field",
+      "dishConfiguration": "Rx1 dish configuration",
+      "cspConfiguration": "jeff"
+    },
+    "science scan": {
+      "scanDuration": 6.0,
+      "fieldConfiguration": "science field",
+      "dishConfiguration": "Rx2 dish configuration",
+      "cspConfiguration": "jeff"
+    }
+  },
+  "scanSequence": [
+    "calibrator scan", "science scan", "science scan", "calibrator scan"
+  ],
+  "dishConfigurations" : [
+    {
+      "id": "Rx1 dish configuration",
+      "receiverBand": "1"
+    },
+    {
+      "id": "Rx2 dish configuration",
+      "receiverBand": "1"
+    }
+  ],
+  "cspConfigurations": [
+    {
+      "id": "jeff",
+      "fsp": [
+      {
+        "fspID": 1,
+        "functionMode": "CORR",
+        "frequencySliceID": 1,
+        "integrationTime": 1400,
+        "corrBandwidth": 0,
+        "channelAveragingMap": [[0,2], [744,0]],
+        "fspChannelOffset": 0,
+        "outputLinkMap": [[0,0], [200,1]]
+      },
+      {
+        "fspID": 2,
+        "functionMode": "CORR",
+        "frequencySliceID": 2,
+        "integrationTime": 1400,
+        "corrBandwidth": 1,
+        "channelAveragingMap": [[0,2], [744,0]],
+        "fspChannelOffset": 744,
+        "outputLinkMap": [[0,4], [200,5]],
+        "zoomWindowTuning": 4700000
+      }
+      ]
+    }
+  ]
+}

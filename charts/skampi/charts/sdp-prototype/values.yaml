@@ -1,0 +1,65 @@
+# Feature toggles
+feature:
+  # Tango devices connect to configuration DB?
+  config-db: 1
+  # Old receive addresses behaviour?
+  receive-addresses-hack: 0
+
+# Helm deployment controller
+helm_deploy:
+  image: nexus.engageska-portugal.pt/sdp-prototype/helm-deploy
+  version: 0.5.1
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  namespace: sdp
+  chart_repo:
+    url: https://gitlab.com/ska-telescope/sdp-prototype.git
+    ref: master
+    path: src/helm_deploy/charts
+    refresh: 300
+
+# Configuration database
+etcd:
+  version: "3.3"
+  replicas: 1
+
+# ds config
+dsconfig:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: 1.2.5.1
+    pullPolicy: IfNotPresent
+
+# Processing controller
+processing_controller:
+  image: nexus.engageska-portugal.pt/sdp-prototype/processing-controller
+  version: 0.6.0
+  replicas: 1
+  resources: {}
+  imagePullPolicy: IfNotPresent
+  workflows:
+    url: https://gitlab.com/ska-telescope/sdp-prototype/-/raw/master/src/workflows/workflows.json
+    refresh: 300
+
+# Tango devices
+tangods:
+  master:
+    image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master
+    version: 0.3.3
+    imagePullPolicy: IfNotPresent
+  subarray:
+    image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray
+    version: 0.10.1-604858f8
+    imagePullPolicy: IfNotPresent
+
+# Console
+console:
+  image: nexus.engageska-portugal.pt/sdp-prototype/console
+  version: 0.2.0
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  enabled: true
+
+nameOverride: ""
+fullnameOverride: ""

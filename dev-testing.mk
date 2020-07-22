@@ -3,7 +3,7 @@ location:= $(shell pwd)
 kube_path ?= $(shell echo ~/.kube)
 k8_path ?= $(shell echo ~/.minikube)
 PYTHONPATH=/home/tango/skampi/:/home/tango/skampi/post-deployment/:
-testing-pod?=testing-pod
+testing-pod?=testing-pod-0
 #the port mapping to host
 hostPort ?= 2020
 testing-config := '{ "apiVersion": "v1","spec":{\
@@ -27,13 +27,11 @@ testing-config := '{ "apiVersion": "v1","spec":{\
 							"hostPort":$(hostPort)}],\
 						"resources": { \
 							"limits": { \
-								"cpu": "300m", \
+								"cpu": "600m", \
 								"memory": "500Mi" },\
 							"requests": { \
-								"cpu": "200m", \
-								"memory": "256Mi" }}}],\
-					"nodeSelector": {\
-            			"node-role.kubernetes.io/master": ""},\
+								"cpu": "600m", \
+								"memory": "500Mi" }}}],\
 					"tolerations": [{\
                 		"effect": "NoSchedule",\
                 		"key": "node-role.kubernetes.io/master",\
@@ -79,6 +77,14 @@ tp_cp_minikube:
 
 tp_cp: tp_cp_kube tp_cp_minikube
 
+tp_bash_install:
+	@echo "installing bash"
+	@echo "#######################";
+	@kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c " \
+		apt update && sudo apt install bash-completion -y"
+
+
+
 tp_config:
 	@echo "Configuring testing pod"
 	@echo "#######################";
@@ -102,7 +108,7 @@ httpPort=30080
 RELEASE_NAME=dev-testing
 
 install_testing_pod:
-	@helm install $(RELEASE_NAME) post-deployment/exploration/dev_testing \
+	@helm upgrade --install $(RELEASE_NAME) post-deployment/exploration/dev_testing \
 		--set imageToTest=$(IMAGE_TO_TEST) \
 		--set kubeNamespace=$(KUBE_NAMESPACE) \
 		--set helmRelease=$(HELM_RELEASE) \
@@ -113,12 +119,12 @@ install_testing_pod:
 		--wait --timeout=1m0s
 	@kubectl get all,ing -l releaseName=$(RELEASE_NAME) --namespace $(KUBE_NAMESPACE)
 
-testing-pod = $(shell echo $$(kubectl get pod -l releaseName=$(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) -o=jsonpath='{..metadata.name}') )
+#testing-pod = $(shell echo $$(kubectl get pod -l releaseName=$(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) -o=jsonpath='{..metadata.name}') )
 
 attach:
 	kubectl attach -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c testing-container
 
-set_up_dev_testing: install_testing_pod tp_config test_as_ssh_client
+set_up_dev_testing: install_testing_pod test_as_ssh_client tp_config tp_bash_install
 
 install_web_dependencies:
 	@echo "Installing Python packages on web container";

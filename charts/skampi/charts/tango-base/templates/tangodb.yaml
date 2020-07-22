@@ -75,7 +75,7 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-{{ end }}    
+{{ end }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

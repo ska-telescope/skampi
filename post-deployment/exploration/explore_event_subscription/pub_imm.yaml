@@ -1,9 +1,9 @@
 - name: 'consuming immediately from immediate server updates'
   devices:
     - deviceName: 'test/device/1'
-      nrOfevents: 144000
+      nrOfevents: 1000
       changePeriod: 0.1
-      nrOfAttributes: 1
+      nrOfAttributes: 2
       debug: False
       assertFail: False
       consumerStrategy:

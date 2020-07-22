@@ -26,6 +26,21 @@ test: install
 
 .PHONY: all test install
 
+TEST_RUN_SPEC = example.yaml
+
+test_multiple_runs: install
+	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \
+	(python3 resources/log_consumer/log_consumer.py log &); \
+	mkdir -p build && \
+	find . -name "*.pyc" -type f -delete && \
+	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment python3 exploration/test_runs/run_it.py \
+		-f exploration/test_runs/specs/$(TEST_RUN_SPEC) | tee pytest.stdout; \
+	status=$$?; \
+	(tango_admin --delete-server log_consumer/log &) && \
+	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
+	exit $$status
+
+
 install:
 	pip3 install -r test_requirements.txt
 
@@ -57,3 +72,21 @@ run_http:
 ping_http:
 	curl http:30080//dev-testing/ping -v
 
+export_extensions:
+	cd ~ && \
+	tar -cvzf vscode-server.tar .vscode-server && \
+	mv vscode-server.tar ~/skampi/vscode-server.tar
+
+get_mem_usage:
+	@raw=$$(cat /sys/fs/cgroup/memory/memory.usage_in_bytes) && \
+	mb=$$(expr 1024 \* 1024) && \
+	MB=$$(expr $$raw / $$mb) && \
+	echo "$$MB"MB
+
+get_cpu_usage:
+	@raw=$$(cat /sys/fs/cgroup/cpu/cpu.shares ) && \
+	echo $$raw
+
+SPEC=example.yaml
+run_multiple:
+	python3 exploration/test_runs/run_it.py -f exploration/test_runs/specs/$(SPEC)

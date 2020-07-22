@@ -37,9 +37,9 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-
-
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+#@pytest.mark.skip(reason="Fails randomly")
+@pytest.mark.select
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():
 
     ####

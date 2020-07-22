@@ -1,0 +1,38 @@
+{{ if eq .Values.minikube false}}
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+    name: archiverdb-cleaner-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    namespace: {{ .Release.Namespace }}
+    labels:
+      app: archiverdb-cleaner-{{ template "archiver.name" . }}-{{ .Release.Name }}
+      chart: {{ template "archiver.chart" . }}
+      release: {{ .Release.Name }}
+      heritage: {{ .Release.Service }}
+spec:
+  schedule: "* 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cleaner
+            image: "{{ .Values.hdbppdb.image.registry }}/{{ .Values.hdbppdb.image.image }}:{{ .Values.hdbppdb.image.tag }}"
+            imagePullPolicy: {{ .Values.hdbppdb.image.pullPolicy }}
+            env:
+              - name: MYSQL_ROOT_PASSWORD
+                value: "{{ .Values.hdbppdb.db.rootpw }}"
+              - name: MYSQL_DATABASE
+                value: "{{ .Values.hdbppdb.db.db }}"
+              - name: MYSQL_USER
+                value: "{{ .Values.hdbppdb.db.user }}"
+              - name: MYSQL_PASSWORD
+                value: "{{ .Values.hdbppdb.db.password }}"
+              - name: MYSQL_ALLOW_EMPTY_PASSWORD
+                value: "1"
+            command: 
+                - mysql -u tango -ptango hdbpp -e "$(mysql -u tango -ptango hdbpp -e "select concat('delete from ', table_name, ';') from information_schema.TABLES WHERE table_schema = 'hdbpp' and table_name not in ('att_conf', 'att_conf_data_type', 'att_parameter', 'att_error_desc', 'att_history', 'att_history_event');" -s)"
+          restartPolicy: OnFailure
+
+{{ end }}

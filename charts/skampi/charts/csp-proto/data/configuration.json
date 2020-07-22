@@ -165,7 +165,7 @@
                             ], 
                             "polled_attr": [
                                 "state", 
-                                "1000", 
+                                "50",
                                 "healthstate", 
                                 "1000", 
                                 "adminmode", 
@@ -231,7 +231,7 @@
                             ],
                             "polled_attr": [
                                 "state",
-                                "1000",
+                                "50",
                                 "healthstate",
                                 "1000",
                                 "adminmode",
@@ -297,7 +297,7 @@
                             ],
                             "polled_attr": [
                                 "state",
-                                "1000",
+                                "50",
                                 "healthstate",
                                 "1000",
                                 "adminmode",
@@ -478,7 +478,7 @@
                             ], 
                             "polled_attr": [
                                 "state", 
-                                "1000", 
+                                "50",
                                 "healthstate", 
                                 "1000", 
                                 "adminmode", 
@@ -572,7 +572,7 @@
                                 "healthstate",
                                 "1000",
                                 "state",
-                                "1000",
+                                "50",
                                 "obsstate",
                                 "50",
                                 "vcchealthstate",
@@ -660,7 +660,7 @@
                                 "healthstate",
                                 "1000",
                                 "state",
-                                "1000",
+                                "50",
                                 "obsstate",
                                 "50",
                                 "vcchealthstate",

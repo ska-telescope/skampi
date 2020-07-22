@@ -1,0 +1,13 @@
+group: 
+  runs: 3
+  path: "exploration/tests/"
+  modules:
+    - path: "test_module1.py"
+      tests:
+        - name: "test1"
+        - name: "test2"
+    - path: "test_module2.py"
+      tests:
+        - name: "test1"
+        - name: "test2"
+      

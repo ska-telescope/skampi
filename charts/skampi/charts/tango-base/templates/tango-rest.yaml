@@ -73,6 +73,8 @@ spec:
         - name: rest
           containerPort: 8080
           protocol: TCP
+        resources:
+{{ toYaml .Values.tangorest.resources | indent 10 }}
       restartPolicy: Always
 {{- with .Values.nodeSelector }}
       nodeSelector:

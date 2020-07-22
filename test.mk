@@ -3,7 +3,8 @@
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
-IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.4## docker image that will be run for testing purpose
+#nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.6-dirty
+IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.7## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(HELM_RELEASE)##name of the pod running the k8s_tests
 #
@@ -51,6 +52,18 @@ k8s_test: smoketest## test the application on K8s
 		base64 -d | tar -xzf -; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		exit $$status
+
+TEST_RUN_SPEC=example.yaml
+k8s_multiple_test_runs:
+	$(call k8s_test,test_multiple_runs,TEST_RUN_SPEC=$$(TEST_RUN_SPEC)); \
+		status=$$?; \
+		rm -fr build; \
+		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
+		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
+		base64 -d | tar -xzf -; \
+		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
+		exit $$status
+
 
 
 smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).

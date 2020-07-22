@@ -53,6 +53,18 @@ k8s_test: smoketest## test the application on K8s
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		exit $$status
 
+TEST_RUN_SPEC=example.yaml
+k8s_multiple_test_runs:
+	$(call k8s_test,test_multiple_runs,TEST_RUN_SPEC=$$(TEST_RUN_SPEC)); \
+		status=$$?; \
+		rm -fr build; \
+		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
+		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
+		base64 -d | tar -xzf -; \
+		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
+		exit $$status
+
+
 
 smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).
 	@echo "Smoke test START"; \

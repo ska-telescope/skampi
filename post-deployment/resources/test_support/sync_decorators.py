@@ -175,12 +175,12 @@ def sync_start_up_telescope(func):
 
 # defined as a context manager
 @contextmanager
-def sync_telescope_starting_up():
+def sync_telescope_starting_up(timeout=50):
     check_coming_out_of_standby()
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
     yield
-    the_waiter.wait(50)
+    the_waiter.wait(timeout)
 
 def sync_end_sb(func):
     @functools.wraps(func)
@@ -215,13 +215,13 @@ def sync_release_resources(func):
 
 # defined as a context manager
 @contextmanager
-def sync_resources_releasing():
+def sync_resources_releasing(timeout=50):
     # Can only release resources if subarray is in ON/IDLE
     check_going_into_empty()
     the_waiter = waiter()
     the_waiter.set_wait_for_tearing_down_subarray()
     yield
-    the_waiter.wait(50)
+    the_waiter.wait(timeout)
 
 
 def sync_set_to_standby(func):
@@ -237,12 +237,12 @@ def sync_set_to_standby(func):
 
 # defined as a context manager
 @contextmanager
-def sync_going_to_standby():
+def sync_going_to_standby(timeout=50):
     check_going_into_standby()
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
     yield
-    the_waiter.wait(50)
+    the_waiter.wait(timeout)
 
 def sync_scan(timeout=200):
     def decorator(func):

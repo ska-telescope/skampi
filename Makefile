@@ -24,6 +24,7 @@ CHART_SET ?=#for additional flags you want to set when deploying (default empty)
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive archiver dsh-lmc-prototype logging skuid## list of charts that will be deployed in order
 DOMAIN_TAG ?= test ## always set for TANGO_DATABASE_DS
+CHART_FILE ?= post-deployment/exploration/chart_sets.txt # for using an input file of subcharts to deploy one after the other
 
 TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG) ## Stable name for the Tango DB
 
@@ -297,6 +298,49 @@ show_subchart: namespace namespace_sdp mkcerts deploy_etcd ## helm show sub-char
 				 --set databaseds.domainTag=$(DOMAIN_TAG) \
 				 --values $(VALUES)
 
+install_subcharts: namespace namespace_sdp mkcerts deploy_etcd $(eval SHELL:=/bin/bash)
+	@while read chart; do \
+		if [[ $$chart == //* ]]; then \
+			echo "****skipping $$chart*******"; \
+		else \
+			echo "****installing $$chart*******"; \
+			chart_check=$$(helm list --filter $$chart-$(HELM_RELEASE) -o=yaml | grep chart); \
+			if [[ $$chart_check = "" ]]; then \
+				helm install $$chart-$(HELM_RELEASE) charts/skampi/charts/$$chart/ \
+				 --namespace $(KUBE_NAMESPACE) \
+				 --set display="$(DISPLAY)" \
+				 --set xauthority="$(XAUTHORITYx)" \
+				 --set ingress.hostname=$(INGRESS_HOST) \
+				 --set ingress.nginx=$(USE_NGINX) \
+				 $(CHART_SET) \
+				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+				 --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+				 --set databaseds.domainTag=$(DOMAIN_TAG) \
+				 --values $(VALUES) --wait --timeout=3m0s; \
+				chart_name=$$(helm list --filter $$chart-$(HELM_RELEASE) -o=yaml | grep chart | awk '{print $$NF}') && \
+					kubectl get all -l chart=$$chart_name; \
+			else \
+				echo "**$$chart already exists: $$chart_check, skipping**"; \
+			fi \
+		fi \
+	done < $(CHART_FILE)
+
+uninstall_subcharts:$(eval SHELL:=/bin/bash)
+	@while read chart; do \
+		if [[ $$chart == //* ]]; then \
+			echo "****skipping $$chart*******"; \
+		else \
+			echo "****uninstalling $$chart*******"; \
+			chart_check=$$(helm list --filter $$chart-$(HELM_RELEASE) -o=yaml | grep chart); \
+			if [[ $$chart_check = "" ]]; then \
+				echo "**$$chart not installed skipping**"; \
+			else \
+				echo "**deleting $$chart_check**"; \
+				helm delete $$chart-$(HELM_RELEASE); \
+			fi \
+		fi \
+	done < $(CHART_FILE)
+	
 install_subchart: namespace namespace_sdp mkcerts deploy_etcd ## helm install sub-chart
 	helm install $(SUB_CHART)-$(HELM_RELEASE) charts/skampi/charts/$(SUB_CHART)/ \
 				 --namespace $(KUBE_NAMESPACE) \

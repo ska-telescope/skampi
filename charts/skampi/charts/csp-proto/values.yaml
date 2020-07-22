@@ -22,26 +22,26 @@ deviceServers:
     args:
       - "-c"
       - "retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
-        retry --max=5 -- tango_admin --ping-device mid_csp/capability_monitor/search_beams &&\
-            /venv/bin/python /app/csp_lmc_mid/MidCspMaster.py master"
+         retry --max=5 -- tango_admin --ping-device mid_csp/capability_monitor/search_beams &&\
+         /venv/bin/python /app/csp_lmc_mid/MidCspMaster.py master"
   - name: midcspsubarray01
     args:
       - "-c"
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_01 &&\
-            /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray1"
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_01 &&\
+         /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray1"
   - name: midcspsubarray02
     args:
       - "-c"
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_02 &&\
-            /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray2"
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_02 &&\
+         /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray2"
   - name: midcspsubarray03
     args:
       - "-c"
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_03 &&\
-            /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray3"
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_03 &&\
+         /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray3"
 
 dsconfig:
   image:

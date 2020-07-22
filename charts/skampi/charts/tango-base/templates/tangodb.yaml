@@ -63,6 +63,26 @@ spec:
         ports:
         - name: mysql
           containerPort: 3306
+        {{- if .Values.tangodb.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command: ["sh", "-c", "exec mysqladmin status -uroot -p{{ .Values.tangodb.db.rootpw }}"]
+          initialDelaySeconds: {{ .Values.tangodb.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.tangodb.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.tangodb.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.tangodb.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.tangodb.livenessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.tangodb.readinessProbe.enabled }}
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "exec mysqladmin status -uroot -p{{ .Values.tangodb.db.rootpw }}"]
+          initialDelaySeconds: {{ .Values.tangodb.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.tangodb.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.tangodb.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.tangodb.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.tangodb.readinessProbe.failureThreshold }}
+        {{- end }}
 {{ if .Values.tangodb.use_pv }}
         volumeMounts:
         - name: data
@@ -75,7 +95,7 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-{{ end }}    
+{{ end }}
 {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

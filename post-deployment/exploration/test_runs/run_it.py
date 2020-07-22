@@ -2,7 +2,9 @@ import pytest
 import getopt
 import sys
 import yaml
-import functools
+from pytest import ExitCode
+from functools import reduce
+from typing import Tuple
 import os
 
 def from_args(argv):
@@ -48,6 +50,7 @@ class TestRun():
                     self.tests.append(test)
                         
     def run_it(self) -> None:
+        self.test_outputs = {}
         for i in range(self.runs):
             args = [test.test_path for test in self.tests]
             print(f'\n'
@@ -55,7 +58,39 @@ class TestRun():
                   f'*************** starting test run {i} ***************'
                   f'*****************************************************'
                   f'\n')
-            pytest.main(args)
+            output = {}
+            output['result'] = pytest.main(args)
+            self.test_outputs[i] =output
+        self.summarise_outputs()
+
+    def passed(self,value) -> bool:
+        passed = ExitCode(0)
+        return (value == passed)
+
+    def failed(self,value) -> bool:
+        failed = ExitCode(1)
+        return (value == failed)
+
+    def calculate_test_summary(self) -> Tuple[int,int,float,int]:
+        output = self.test_outputs.values()
+        mapped_passed = [output['result'] for output in output if self.passed(output['result'])]
+        mapped_failed = [output['result'] for output in output if self.failed(output['result'])]
+        passed = len(mapped_passed)
+        failed = len(mapped_failed)
+        passeable = passed+failed
+        other = len(output) - passeable
+        failure_rate = failed/passeable
+        return passed,failed,failure_rate,other
+
+
+    def summarise_outputs(self) -> None:
+        test_passed,test_failed,failure_rate,other = self.calculate_test_summary()
+        print(f'Nr of tests failed: {test_failed}, '
+              f'Nr of tests passed: {test_passed}, '
+              f'Failure rate: {failure_rate}, '
+              f'Other: {other}')
+        
+
 
 class SpecFault(Exception):
     pass

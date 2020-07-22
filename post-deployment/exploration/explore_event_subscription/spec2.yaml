@@ -1,7 +1,7 @@
 - name: 'Pull from immediate server updates'
   devices:
     - deviceName: 'test/device/1'
-      nrOfevents: 144000
+      nrOfevents: 110
       changePeriod: 1
       nrOfAttributes: 1
       debug: False

@@ -26,6 +26,21 @@ test: install
 
 .PHONY: all test install
 
+TEST_RUN_SPEC = example.yaml
+
+test_multiple_runs: install
+	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \
+	(python3 resources/log_consumer/log_consumer.py log &); \
+	mkdir -p build && \
+	find . -name "*.pyc" -type f -delete && \
+	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment python3 exploration/test_runs/run_it.py \
+		-f exploration/test_runs/specs/$(TEST_RUN_SPEC) | tee pytest.stdout; \
+	status=$$?; \
+	(tango_admin --delete-server log_consumer/log &) && \
+	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
+	exit $$status
+
+
 install:
 	pip3 install -r test_requirements.txt
 
@@ -71,3 +86,7 @@ get_mem_usage:
 get_cpu_usage:
 	@raw=$$(cat /sys/fs/cgroup/cpu/cpu.shares ) && \
 	echo $$raw
+
+SPEC=example.yaml
+run_multiple:
+	python3 exploration/test_runs/run_it.py -f exploration/test_runs/specs/$(SPEC)

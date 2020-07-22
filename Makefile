@@ -364,6 +364,11 @@ describe_install: ## describe a current helm installation given by SUB_CHART as 
 	@chart_name=$$(helm list --all --filter $(SUB_CHART)-$(HELM_RELEASE) -o=yaml | grep chart | awk '{print $$NF}') && \
 		kubectl get all -l chart=$$chart_name
 
+quotas: ## delete and create the kubernetes namespace with quotas
+	kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 && kubectl delete namespace $(KUBE_NAMESPACE)
+	kubectl create namespace $(KUBE_NAMESPACE)
+	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
+
 deploy_all: namespace namespace_sdp mkcerts deploy_etcd ## Deploy all charts. @param: KUBE_NAMESPACE, DISPLAY, XAUTHORITYx, INGRESS_HOST, USE_NGINX, REMOTE_DEBUG, KUBE_NAMESPACE_SDP, CHART_SET, VALUES
 	@for i in charts/skampi/charts/*; do \
 	echo "*****************************  $$i ********************************"; \

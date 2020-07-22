@@ -67,6 +67,8 @@ spec:
       - mountPath: /app/scripts
         name: itango-scripts-{{ .Release.Name }}
         readOnly: true
+    resources:
+{{ toYaml .Values.itango.resources | indent 6 }}
   restartPolicy: Always
 {{- with .Values.nodeSelector }}
   nodeSelector:

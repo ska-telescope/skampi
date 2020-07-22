@@ -15,10 +15,10 @@ spec:
   containers:
   - name: jive
     image: "{{ .Values.jive.image.registry }}/{{ .Values.jive.image.image }}:{{ .Values.jive.image.tag }}"
-    imagePullPolicy: {{ .Values.jive.image.pullPolicy }}
+    imagePullPolicy: "{{ .Values.jive.image.pullPolicy }}"
     command:
       - /usr/local/bin/wait-for-it.sh
-      - {{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000
+      - "{{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000"
       - --timeout=30
       - --strict
       - --
@@ -29,11 +29,13 @@ spec:
     - name: DISPLAY
       value: "{{ .Values.display }}"
     - name: TANGO_HOST
-      value: {{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000
+      value: "{{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000"
     volumeMounts:
       - name: xauthority
         mountPath: /tmp/.Xauthority
         readOnly: true
+    resources:
+{{ toYaml .Values.jive.resources | indent 6 }}
   volumes:
   - hostPath:
       path: {{ .Values.xauthority }}

@@ -3,7 +3,7 @@ location:= $(shell pwd)
 kube_path ?= $(shell echo ~/.kube)
 k8_path ?= $(shell echo ~/.minikube)
 PYTHONPATH=/home/tango/skampi/:/home/tango/skampi/post-deployment/:
-testing-pod?=testing-pod
+testing-pod?=testing-pod-0
 #the port mapping to host
 hostPort ?= 2020
 testing-config := '{ "apiVersion": "v1","spec":{\
@@ -119,7 +119,7 @@ install_testing_pod:
 		--wait --timeout=1m0s
 	@kubectl get all,ing -l releaseName=$(RELEASE_NAME) --namespace $(KUBE_NAMESPACE)
 
-testing-pod = $(shell echo $$(kubectl get pod -l releaseName=$(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) -o=jsonpath='{..metadata.name}') )
+#testing-pod = $(shell echo $$(kubectl get pod -l releaseName=$(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) -o=jsonpath='{..metadata.name}') )
 
 attach:
 	kubectl attach -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c testing-container

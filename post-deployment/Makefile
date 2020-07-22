@@ -57,3 +57,7 @@ run_http:
 ping_http:
 	curl http:30080//dev-testing/ping -v
 
+export_extensions:
+	cd ~ && \
+	tar -cvzf vscode-server.tar .vscode-server && \
+	mv vscode-server.tar ~/skampi/vscode-server.tar

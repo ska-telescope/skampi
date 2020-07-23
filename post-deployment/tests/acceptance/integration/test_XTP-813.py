@@ -61,15 +61,12 @@ def test_mid_d0001_from_standbylp_to_standbyfp_mode():
     pass
 
 
-# @pytest.mark.xfail
 @pytest.mark.fast
 @scenario("mid_d0001/elt/master from STANDBY-FP to OPERATE")
 def test_mid_d0001_from_standbyfp_to_operate_mode():
     pass
 
 
-
-# @pytest.mark.xfail
 @pytest.mark.fast
 @scenario("mid_d0001/elt/master from OPERATE to STANDBY-FP")
 def test_mid_d0001_from_operate_to_standbyfp():
@@ -80,21 +77,25 @@ def test_mid_d0001_from_operate_to_standbyfp():
 def test_mid_d0001_from_standbyfp_to_standbylp():
     pass
 
+
 # mid_dsh_0005/elt/master
 @pytest.mark.xfail
 @scenario("mid_dsh_0005/elt/master from STANDBY-LP to STANDBY-FP")
 def test_mid_dsh_0005_from_standbylp_to_standbyfp_mode():
     pass
 
+
 @pytest.mark.xfail
 @scenario("mid_dsh_0005/elt/master from STANDBY-FP to OPERATE")
 def test_mid_dsh_0005_from_standbyfp_to_operate_mode():
     pass
 
+
 @pytest.mark.xfail
 @scenario("mid_dsh_0005/elt/master from OPERATE to STANDBY-FP")
 def test_mid_dsh_0005_from_operate_to_standbyfp():
     pass
+
 
 @pytest.mark.xfail
 @scenario("mid_dsh_0005/elt/master from STANDBY-FP to STANDBY-LP")
@@ -113,15 +114,18 @@ def device_proxy(device_name, expected):
     pre_condition(device_proxies[device_name], device_name, expected)
     return device_proxies[device_name]
 
+
 @when(parsers.parse("I command {device_name} to {requested} Dish mode"))
 def set_dish_mode(device_name, requested, device_proxy):
     _change_dish_mode(device_proxy, mode_cmd_map[requested], device_name)
     LOGGER.info(device_name + ' requested dishMode: ' + resource(device_name).get('dishMode'))
 
+
 @then(parsers.parse("{device_name} reports {desired} Dish mode"))
 def check_dish_mode(device_name, desired):
     assert_that(resource(device_name).get('dishMode')).is_equal_to(desired)
     LOGGER.info(device_name + ' desired dishMode: ' + resource(device_name).get('dishMode'))
+
 
 @then(parsers.parse("{device_name} is in {desired} state"))
 def check_master_device_state(device_name, desired):

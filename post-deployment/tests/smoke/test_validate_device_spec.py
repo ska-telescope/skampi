@@ -1,5 +1,3 @@
-import os
-import socket
 import pytest
 
 from tango import DeviceProxy

@@ -7,6 +7,18 @@ Expand the name of the chart.
 {{- end -}}
 
 {{/*
+Common labels
+*/}}
+{{- define "csp-proto.labels" }}
+app: {{ template "csp-proto.name" . }}
+chart: {{ template "csp-proto.chart" . }}
+release: {{ .Release.Name }}
+heritage: {{ .Release.Service }}
+system: {{ .Values.system }}
+telescope: {{ .Values.telescope }}
+{{- end }}
+
+{{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.

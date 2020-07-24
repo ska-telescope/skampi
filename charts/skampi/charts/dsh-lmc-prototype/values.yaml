@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 dshlmc:
-  enabled: true
+  enabled: false
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: dsh_lmc_prototype

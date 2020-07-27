@@ -1,21 +1,55 @@
-apiVersion: apps/v1
-kind: Deployment
+---
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
 metadata:
-  name: {{ include "sdp-prototype.fullname" . }}-processing-controller
+  name: {{ template "sdp-prototype.name" . }}-{{ .Values.processing_controller.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "sdp-prototype.labels" . | indent 4 }}
+    {{- include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.processing_controller.component }}
+    subsystem: {{ .Values.processing_controller.subsystem }}
+    function: {{ .Values.processing_controller.function }}
+    domain: {{ .Values.processing_controller.domain }}
+    intent: production
+spec:
+  clusterIP: None
+  ports:
+  - name: dummy # Actually, no port is needed.
+    port: 1234
+    targetPort: 1234
+  selector:
+    component: {{ .Values.processing_controller.component }}
+    subsystem: {{ .Values.processing_controller.subsystem }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "sdp-prototype.name" . }}-{{ .Values.processing_controller.component }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.processing_controller.component }}
+    subsystem: {{ .Values.processing_controller.subsystem }}
+    function: {{ .Values.processing_controller.function }}
+    domain: {{ .Values.processing_controller.domain }}
+    intent: production
 spec:
   replicas: {{ .Values.processing_controller.replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}-processing-controller
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      component: {{ .Values.processing_controller.component }}
+      subsystem: {{ .Values.processing_controller.subsystem }}
+  serviceName: {{ template "sdp-prototype.name" . }}-{{ .Values.processing_controller.component }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}-processing-controller
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "sdp-prototype.labels" . | indent 8 }}
+        component: {{ .Values.processing_controller.component }}
+        subsystem: {{ .Values.processing_controller.subsystem }}
+        function: {{ .Values.processing_controller.function }}
+        domain: {{ .Values.processing_controller.domain }}
+        intent: production
     spec:
       initContainers:
       {{ include "sdp-prototype.wait-for-etcd" . | nindent 6 }}

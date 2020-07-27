@@ -24,8 +24,9 @@ SPEC_URLS = {
 
 
 def check_mid_low(device_name):
-    """Check if a device name contains mid or low"""
-    if "mid" in device_name or "low" in device_name:
+    """Check if a device domain contains mid or low"""
+    domain, *_ = device_name.split("/")
+    if "mid" in domain or "low" in domain:
         return True
     return False
 
@@ -53,7 +54,7 @@ def test_ska_devices():
         SPEC_URLS["ska_tango_guide_ska_wide"],
     )
     for result, devices in test_result.items():
-        logging.info("Devices %s\nHas the following issues:\n%s", devices, result)
+        logging.info(">>> Devices %s\nHave the following issues:\n%s\n", devices, result)
 
     assert not test_result.keys()
 

@@ -5,7 +5,8 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
-system: csp-lmc-mid
+system: csp
+subsystem: csp-lmc
 telescope: SKA-mid
 
 csplmc:
@@ -18,15 +19,13 @@ csplmc:
 
 deviceServers:
   - name: midcapabilitymonitor
-    subsystem: monitoring-system
-    function: capability-monitoring
+    function: csp-capability-monitoring
     domain: csp-monitoring
     args:
       - "-c"
       - "/venv/bin/python /app/csp_lmc_mid/MidCspCapabilityMonitor.py monitor"
   - name: midcspmaster
-    subsystem: monitoring-system
-    function: central-control
+    function: csp-central-control
     domain: csp-monitoring
     args:
       - "-c"
@@ -34,8 +33,7 @@ deviceServers:
         retry --max=5 -- tango_admin --ping-device mid_csp/capability_monitor/search_beams &&\
             /venv/bin/python /app/csp_lmc_mid/MidCspMaster.py master"
   - name: midcspsubarray01
-    subsystem: subarray1
-    function: observation-execution
+    function: csp-subarray-observation
     domain: subarray
     args:
       - "-c"
@@ -43,8 +41,7 @@ deviceServers:
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_01 &&\
             /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray1"
   - name: midcspsubarray02
-    subsystem: subarray2
-    function: observation-execution
+    function: csp-subarray-observation
     domain: subarray
     args:
       - "-c"
@@ -52,8 +49,7 @@ deviceServers:
             retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_02 &&\
             /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray2"
   - name: midcspsubarray03
-    subsystem: subarray3
-    function: observation-execution
+    function: csp-subarray-observation
     domain: subarray
     args:
       - "-c"

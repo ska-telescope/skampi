@@ -10,7 +10,6 @@ metadata:
   labels:
     {{- include "csp-proto.labels" . | indent 4 }}
     component: configurator
-    subsystem: enabling-system
     function: deployment
     intent: enabling
     domain: self-configuration
@@ -47,7 +46,6 @@ metadata:
   labels:
     {{- include "csp-proto.labels" . | indent 4 }}
     component: configurator
-    subsystem: enabling-system
     function: deployment
     intent: enabling
     domain: self-configuration
@@ -88,7 +86,9 @@ metadata:
   labels:
     {{- include "csp-proto.labels" $global | indent 4 }}
     component: {{ $deviceserver.name }}
-    subsystem: {{ $deviceserver.subsystem }}
+    function: {{ $deviceserver.function }}
+    domain: {{ $deviceserver.domain }}
+    subsystem: {{ $global.Values.subsystem }}
     intent: production
 spec:
   clusterIP: None
@@ -97,7 +97,7 @@ spec:
     port: 1234
     targetPort: 1234
   selector:
-    subsystem: {{ $deviceserver.subsystem }}
+    subsystem: {{ $global.Values.subsystem }}
     component: {{ $deviceserver.name }}
 
 ---
@@ -110,16 +110,15 @@ metadata:
   labels:
     {{- include "csp-proto.labels" $global | indent 4 }}
     component: {{ $deviceserver.name }}
-    subsystem: {{ $deviceserver.subsystem }}
     function: {{ $deviceserver.function }}
     domain: {{ $deviceserver.domain }}
-    intent: production
-    
+    subsystem: {{ $global.Values.subsystem }}
+    intent: production 
 spec:
   selector:
     matchLabels:
       component: {{ $deviceserver.name }}
-      subsystem: {{ $deviceserver.subsystem }}
+      subsystem: {{ $global.Values.subsystem }}
   serviceName: {{ template "csp-proto.name" $global }}-{{ $deviceserver.name }}
   replicas: 1
   template:
@@ -127,9 +126,9 @@ spec:
       labels:
         {{- include "csp-proto.labels" $global | indent 8 }}
         component: {{ $deviceserver.name }}
-        subsystem: {{ $deviceserver.subsystem }}
         function: {{ $deviceserver.function }}
         domain: {{ $deviceserver.domain }}
+        subsystem: {{ $global.Values.subsystem }}
         intent: production
     spec:
       containers:

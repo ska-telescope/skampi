@@ -18,6 +18,7 @@ def start_up():
 @sync_assign_resources(2,200)
 def compose_sub():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
     assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
     sdp_block = update_resource_config_file(assign_resources_file)
     LOGGER.info("_______sdp_block________" + str(sdp_block))
@@ -52,7 +53,7 @@ def set_to_standby():
 
 @sync_configure
 def configure_sub(sdp_block, configure_file):
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    #resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     update_scan_config_file(configure_file, sdp_block)
     config = load_config_from_file(configure_file)
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')

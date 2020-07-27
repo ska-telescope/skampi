@@ -84,8 +84,8 @@ def subarray_state_OFF():
     LOGGER.info("Now deallocating resources ... ")
     LOGGER.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
     # Confirm
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("State") == "OFF")
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
+    #assert_that(resource('ska_mid/tm_subarray_node/1').get("State") == "OFF")
+    assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("EMPTY")
     LOGGER.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
     # Confirm
     LOGGER.info("Subarray is now deallocated")

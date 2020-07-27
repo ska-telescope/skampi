@@ -59,7 +59,9 @@ def test_configure_scan():
         @sync_configure
         @time_it(90)
         def configure_sub(sdp_block):
-            resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+            #commented because below asserts are already checked in @sync_configure
+            # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+            # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
             configure1_file = 'resources/test_data/TMC_integration/configure1.json'
             update_scan_config_file(configure1_file, sdp_block)
             config = load_config_from_file(configure1_file)

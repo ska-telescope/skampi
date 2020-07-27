@@ -4,8 +4,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "mid-cbf-configuration-json-{{ template "cbf-proto.name" . }}-{{ .Release.Name }}"
+  name: "{{ template "cbf-proto.name" . }}-configuration"
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "cbf-proto.labels" . | indent 4 }}
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
 data:
   midcbfconfig.json:
 {{ (tpl (.Files.Glob "data/midcbfconfig.json").AsConfig . ) | indent 2  }}
@@ -31,8 +37,14 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: mid-cbf-configurator-{{ template "cbf-proto.name" . }}-{{ .Release.Name }}
+  name: {{ template "cbf-proto.name" . }}-configurator
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "cbf-proto.labels" . | indent 4 }}
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
 spec:
   ttlSecondsAfterFinished: 100
   template:
@@ -65,7 +77,7 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: "mid-cbf-configuration-json-{{ template "cbf-proto.name" . }}-{{ .Release.Name }}"
+            name: "{{ template "cbf-proto.name" . }}-configuration"
       restartPolicy: Never
 
 {{- $global := . }}
@@ -76,13 +88,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mid-cbf-{{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+  name: {{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}
   namespace: {{ $global.Release.Namespace }}
   labels:
-    app: mid-cbf-{{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
-    chart: {{ template "cbf-proto.chart" $global }}
-    release: {{ $global.Release.Name }}
-    heritage: {{ $global.Release.Service }}
+    {{- include "cbf-proto.labels" $global | indent 4 }}
+    component: {{ $deviceserver.name }}
+    function: {{ $deviceserver.function }}
+    domain: {{ $deviceserver.domain }}
+    intent: production 
 spec:
   clusterIP: None
   ports:
@@ -90,37 +103,37 @@ spec:
     port: 1234
     targetPort: 1234
   selector:
-    app: mid-cbf-{{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
-    chart: {{ template "cbf-proto.chart" $global }}
-    release: {{ $global.Release.Name }}
+    subsystem: {{ $global.Values.subsystem }}
+    component: {{ $deviceserver.name }}
 
 ---
 # Single Pod separate statefulset per Device Server
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mid-cbf-{{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+  name: {{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}
   namespace: {{ $global.Release.Namespace }}
   labels:
-    app: mid-cbf-{{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
-    chart: {{ template "cbf-proto.chart" $global }}
-    release: {{ $global.Release.Name }}
-    heritage: {{ $global.Release.Service }}
+    {{- include "cbf-proto.labels" $global | indent 4 }}
+    component: {{ $deviceserver.name }}
+    function: {{ $deviceserver.function }}
+    domain: {{ $deviceserver.domain }}
+    intent: production 
 spec:
   selector:
     matchLabels:
-      app: mid-cbf-{{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
-      chart: {{ template "cbf-proto.chart" $global }}
-      release: {{ $global.Release.Name }}
-  serviceName: mid-cbf-{{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+      component: {{ $deviceserver.name }}
+      subsystem: {{ $global.Values.subsystem }}
+  serviceName: {{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: mid-cbf-{{ template "cbf-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
-        chart: {{ template "cbf-proto.chart" $global }}
-        release: {{ $global.Release.Name }}
-        heritage: {{ $global.Release.Service }}
+        {{- include "cbf-proto.labels" $global | indent 8 }}
+        component: {{ $deviceserver.name }}
+        function: {{ $deviceserver.function }}
+        domain: {{ $deviceserver.domain }}
+        intent: production
     spec:
       initContainers:
       - name: check-databaseds-ready

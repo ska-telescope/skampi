@@ -5,6 +5,10 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
+system: csp
+subsystem: csp-lmc
+telescope: SKA-mid
+
 csplmc:
   enabled: true
   image:
@@ -15,28 +19,38 @@ csplmc:
 
 deviceServers:
   - name: midcapabilitymonitor
+    function: csp-capability-monitoring
+    domain: csp-monitoring
     args:
       - "-c"
       - "/venv/bin/python /app/csp_lmc_mid/MidCspCapabilityMonitor.py monitor"
   - name: midcspmaster
+    function: csp-central-control
+    domain: csp-monitoring
     args:
       - "-c"
       - "retry --max=20 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
          retry --max=5 -- tango_admin --ping-device mid_csp/capability_monitor/search_beams &&\
          /venv/bin/python /app/csp_lmc_mid/MidCspMaster.py master"
   - name: midcspsubarray01
+    function: csp-subarray-observation
+    domain: subarray
     args:
       - "-c"
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
          retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_01 &&\
          /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray1"
   - name: midcspsubarray02
+    function: csp-subarray-observation
+    domain: subarray
     args:
       - "-c"
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\
          retry --max=10 -- tango_admin --ping-device mid_csp_cbf/sub_elt/subarray_02 &&\
          /venv/bin/python /app/csp_lmc_mid/MidCspSubarray.py subarray2"
   - name: midcspsubarray03
+    function: csp-subarray-observation
+    domain: subarray
     args:
       - "-c"
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master &&\

@@ -1,22 +1,55 @@
 {{- if .Values.console.enabled }}
-apiVersion: apps/v1
-kind: Deployment
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
 metadata:
-  name: {{ include "sdp-prototype.fullname" . }}-console
+  name: {{ include "sdp-prototype.name" . }}-console
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "sdp-prototype.labels" . | indent 4 }}
+    {{- include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.console.component }}
+    subsystem: {{ .Values.console.subsystem }}
+    function: {{ .Values.console.function }}
+    domain: {{ .Values.console.domain }}
+    intent: production
+spec:
+  clusterIP: None
+  ports:
+  - name: dummy # Actually, no port is needed.
+    port: 1234
+    targetPort: 1234
+  selector:
+    component: {{ .Values.console.component }}
+    subsystem: {{ .Values.console.subsystem }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "sdp-prototype.name" . }}-console
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.console.component }}
+    subsystem: {{ .Values.console.subsystem }}
+    function: {{ .Values.console.function }}
+    domain: {{ .Values.console.domain }}
+    intent: production
 spec:
   replicas: {{ .Values.console.replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}-console
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      component: {{ .Values.console.component }}
+      subsystem: {{ .Values.console.subsystem }}
+  serviceName: {{ include "sdp-prototype.name" . }}-console
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}-console
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "sdp-prototype.labels" . | indent 8 }}
+        component: {{ .Values.console.component }}
+        subsystem: {{ .Values.console.subsystem }}
+        function: {{ .Values.console.function }}
+        domain: {{ .Values.console.domain }}
+        intent: production
     spec:
       initContainers:
       {{ include "sdp-prototype.wait-for-etcd" . | nindent 6 }}
@@ -29,5 +62,5 @@ spec:
           value: {{ include "sdp-prototype.etcd-host" . }}
         - name: SDP_HELM_NAMESPACE
           value: {{ quote .Values.helm_deploy.namespace }}
-      serviceAccountName: {{ include "sdp-prototype.fullname" . }}-helm
+      serviceAccountName: {{ include "sdp-prototype.name" . }}-helm
 {{- end }}

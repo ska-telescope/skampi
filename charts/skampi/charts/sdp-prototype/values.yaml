@@ -28,6 +28,10 @@ helm_deploy:
 
 # Configuration database
 etcd:
+  component: config-database
+  subsystem: execution-control
+  function: sdp-configuration
+  domain: science-data-processing
   version: "3.3"
   replicas: 1
 

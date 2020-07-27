@@ -34,19 +34,20 @@ Create chart name and version as used by the chart label.
 {{/*
 Common labels
 */}}
-{{- define "sdp-prototype.labels" -}}
-app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}
-helm.sh/chart: {{ include "sdp-prototype.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- define "sdp-prototype.labels" }}
+app: {{ template "sdp-prototype.name" . }}
+chart: {{ template "sdp-prototype.chart" . }}
+release: {{ .Release.Name }}
+heritage: {{ .Release.Service }}
+system: {{ .Values.system }}
+telescope: {{ .Values.telescope }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
 {{/* Init container to wait for configuration database availability */}}
 {{- define "sdp-prototype.etcd-host" -}}
-{{ include "sdp-prototype.fullname" . }}-etcd-client.{{ .Release.Namespace }}.svc.cluster.local
+{{ include "sdp-prototype.name" . }}-etcd-client.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 {{- define "sdp-prototype.wait-for-etcd" -}}
 - image: quay.io/coreos/etcd:v{{ .Values.etcd.version }}

@@ -3,7 +3,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: jupyter-ingress-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.itango.component }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "oet.labels" . | indent 4 }}
@@ -34,7 +34,7 @@ data:
     }
 kind: ConfigMap
 metadata:
-  name: jupyter-configmap
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-notebook-config
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "oet.labels" . | indent 4 }}
@@ -46,7 +46,7 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
-  name: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "oet.labels" . | indent 4 }}
@@ -68,7 +68,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: jupyter-storage-pv-{{ .Release.Namespace }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-workspace-storage
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "oet.labels" . | indent 4 }}
@@ -90,7 +90,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: jupyter-storage-pvc-{{ .Release.Namespace }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-workspace-storage
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "oet.labels" . | indent 4 }}
@@ -116,7 +116,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: jupyter-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-env-settings
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "oet.labels" . | indent 4 }}
@@ -134,10 +134,14 @@ data:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
   namespace: {{ .Release.Namespace }}
   labels:
+    {{- include "oet.labels" . | indent 4 }}
     component: {{ .Values.jupyter.component }}
+    function: {{ .Values.jupyter.function }}
+    domain: {{ .Values.jupyter.domain }}
+    intent: production
 spec:
   selector:
     matchLabels:
@@ -156,7 +160,7 @@ spec:
       volumes:
         - name: jupyter-configmap-volume
           configMap:
-            name: jupyter-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
+            name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-env-settings
             items:
             - key: environment
               path: environment
@@ -164,10 +168,9 @@ spec:
               path: venv.sh
         - name: storage
           persistentVolumeClaim:
-            claimName: jupyter-storage-pvc-{{ .Release.Namespace }}
-        - name: config
+            claimName: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-workspace-storage
           configMap:
-            name: jupyter-configmap
+            name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-notebook-config
         - name: workdir
           emptyDir: {}
       initContainers:

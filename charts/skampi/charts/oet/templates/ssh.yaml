@@ -82,10 +82,10 @@ spec:
           - name: TANGO_HOST
             value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
         volumeMounts:
-          - name: ssh-configmap-volume
+          - name: env-settings
             mountPath: /home/tango/.profile
             subPath: .profile
-          - name: ssh-configmap-volume
+          - name: env-settings
             mountPath: /etc/environment
             subPath: environment
         readinessProbe:
@@ -105,7 +105,7 @@ spec:
           successThreshold: {{ .Values.ssh.livenessProbe.successThreshold }}
           failureThreshold: {{ .Values.ssh.livenessProbe.failureThreshold }}
       volumes:
-        - name: ssh-configmap-volume
+        - name: env-settings
           configMap:
             name: {{ template "oet.name" . }}-{{ .Values.ssh.component }}-env-settings
             items:

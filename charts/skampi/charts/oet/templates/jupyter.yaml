@@ -61,7 +61,8 @@ spec:
       port: 8888
       nodePort: {{ .Values.jupyter.nodePort }}
   selector:
-    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+    app: {{ template "oet.name" . }}
+    component: {{ .Values.jupyter.component }}
 ---
 {{if .Values.jupyter.storage.enabled}}
 {{ if .Values.minikube }}
@@ -145,8 +146,9 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
-  serviceName: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+      app: {{ template "oet.name" . }}
+      component: {{ .Values.jupyter.component }}
+  serviceName: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
   replicas: 1
   template:
     metadata:

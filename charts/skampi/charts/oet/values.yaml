@@ -62,7 +62,7 @@ itango:
 rest:
   enabled: true
   component: script-executioner
-  functions: script-execution
+  function: script-execution
   domain: operations
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope

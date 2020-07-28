@@ -3,6 +3,9 @@
 # Declare variables to be passed into your templates.
 minikube: true
 
+system: TM-mid
+telescope: SKA-mid
+subsystem: observation-execution-tool
 ssh:
   enabled: true
   nodePort:
@@ -73,6 +76,9 @@ rest:
 
 jupyter:
   enabled: true
+  component: jupyter-console
+  function: interactive-script-execution
+  domain: operations
   nodePort:
   storage:
     enabled: true

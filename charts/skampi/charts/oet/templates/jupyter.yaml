@@ -5,6 +5,12 @@ kind: Ingress
 metadata:
   name: jupyter-ingress-{{ template "oet.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.jupyter.component }}
+    domain: self-configuration
+    function: ingress-configuration
+    intent: production
   annotations:
       kubernetes.io/ingress.class: traefik
 spec:
@@ -30,6 +36,12 @@ kind: ConfigMap
 metadata:
   name: jupyter-configmap
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.jupyter.component }}
+    domain: self-configuration
+    function: notebook-configuration
+    intent: production 
 ---
 apiVersion: v1
 kind: Service
@@ -37,10 +49,11 @@ metadata:
   name: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.jupyter.component }}
+    function: {{ .Values.jupyter.function }}
+    domain: {{ .Values.jupyter.domain }}
+    intent: production
 spec:
   type: NodePort
   ports:
@@ -58,8 +71,12 @@ metadata:
   name: jupyter-storage-pv-{{ .Release.Namespace }}
   namespace: {{ .Release.Namespace }}
   labels:
+    {{- include "oet.labels" . | indent 4 }}
     type: jupyter_storage
-    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+    component: {{ .Values.jupyter.component }}
+    function: workspace-storage
+    domain: storage
+    intent: enabling
 spec:
   storageClassName: jupyter
   capacity:
@@ -76,8 +93,11 @@ metadata:
   name: jupyter-storage-pvc-{{ .Release.Namespace }}
   namespace: {{ .Release.Namespace }}
   labels:
+    {{- include "oet.labels" . | indent 4 }}
     type: jupyter_storage
-    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+    function: workspace-storage
+    domain: storage
+    intent: production
 spec:
 {{ if .Values.minikube }}
   storageClassName: jupyter
@@ -98,6 +118,12 @@ kind: ConfigMap
 metadata:
   name: jupyter-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.jupyter.component }}
+    domain: self-configuration
+    function: environmental-settings
+    intent: production 
 data:
   environment: |
     TANGO_HOST={{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
@@ -111,10 +137,7 @@ metadata:
   name: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    component: {{ .Values.jupyter.component }}
 spec:
   selector:
     matchLabels:
@@ -124,10 +147,11 @@ spec:
   template:
     metadata:
       labels:
-        app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
-        chart: {{ template "oet.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "oet.labels" . | indent 8 }}
+        component: {{ .Values.jupyter.component }}
+        function: {{ .Values.jupyter.function }}
+        domain: {{ .Values.jupyter.domain }}
+        intent: production
     spec:
       volumes:
         - name: jupyter-configmap-volume

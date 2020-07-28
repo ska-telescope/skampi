@@ -5,6 +5,20 @@ Expand the name of the chart.
 {{- define "tango-base.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+{{/*
+service-name based on values in order to make it constant accross the deplpyent namespace
+*/}}
+{{- define "tango-base.service-name" -}}
+{{- if .Values.tangoDatabaseDS }}
+{{- .Values.tangoDatabaseDS }}
+{{- else }}
+    {{- if .Values.databaseds.domainTag -}}
+databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}
+    {{- else -}}
+databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    {{- end }}
+{{- end }}
+{{- end }}
 
 {{/*
 Create a default fully qualified app name.
@@ -23,7 +37,17 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 {{- end -}}
 {{- end -}}
-
+{{/*
+Common labels
+*/}}
+{{- define "tango-base.labels" }}
+app: {{ template "tango-base.name" . }}
+chart: {{ template "tango-base.chart" . }}
+release: {{ .Release.Name }}
+heritage: {{ .Release.Service }}
+system: {{ .Values.system }}
+telescope: {{ .Values.telescope }}
+{{- end }}
 {{/*
 Create chart name and version as used by the chart label.
 */}}

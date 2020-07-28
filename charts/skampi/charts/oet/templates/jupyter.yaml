@@ -161,7 +161,7 @@ spec:
         intent: production
     spec:
       volumes:
-        - name: jupyter-configmap-volume
+        - name: jupyter-env-settings
           configMap:
             name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-env-settings
             items:
@@ -169,9 +169,10 @@ spec:
               path: environment
             - key: venv.sh
               path: venv.sh
-        - name: storage
+        - name: workspace-storage
           persistentVolumeClaim:
             claimName: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-workspace-storage
+        - name: notebook-config
           configMap:
             name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-notebook-config
         - name: workdir
@@ -181,7 +182,7 @@ spec:
         volumeMounts:
         - name: workdir
           mountPath: /temp
-        - name: config
+        - name: notebook-config
           mountPath: /config
         image: "{{ .Values.jupyter.image.registry }}/{{ .Values.jupyter.image.image }}:{{ .Values.jupyter.image.tag }}"
         command: ["/bin/sh","-c"]
@@ -203,14 +204,14 @@ spec:
           - name: SKUID_URL
             value: "skuid-skuid-{{ .Release.Namespace }}-{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:9870"
         volumeMounts:
-          - name: storage
+          - name: workspace-storage
             mountPath: /app/jupyter_storage
           - name: workdir
             mountPath: /home/tango/.jupyter
-          - name: jupyter-configmap-volume
+          - name: jupyter-env-settings
             mountPath: /etc/environment
             subPath: environment
-          - name: jupyter-configmap-volume
+          - name: jupyter-env-settings
             mountPath: /etc/profile.d/venv.sh
             subPath: venv.sh
         readinessProbe:

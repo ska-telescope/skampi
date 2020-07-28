@@ -9,6 +9,9 @@ subsystem: observation-execution-tool
 ssh:
   enabled: true
   nodePort:
+  component: ssh-console
+  function: maintenance-interface
+  domain: operations
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh

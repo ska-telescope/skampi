@@ -14,6 +14,13 @@ spec:
   size: {{ .Values.etcd.replicas }}
   version: "{{ .Values.etcd.version }}"
   pod:
+    annotations:
+      {{- include "sdp-prototype.labels" . | indent 6 }}
+      component: {{ .Values.etcd.component }}
+      subsystem: {{ .Values.etcd.subsystem }}
+      function: {{ .Values.etcd.function }}
+      domain: {{ .Values.etcd.domain }}
+      intent: production
     antiAffinity: false
     nodeSelector: {}
 ---

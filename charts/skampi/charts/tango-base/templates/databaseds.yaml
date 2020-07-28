@@ -87,6 +87,7 @@ spec:
         ports:
         - name: ds
           containerPort: 10000
+        {{- if .Values.databaseds.livenessProbe.enabled }}
         readinessProbe:
           tcpSocket:
             port: 10000
@@ -95,6 +96,8 @@ spec:
           timeoutSeconds: {{ .Values.databaseds.readinessProbe.timeoutSeconds }}
           successThreshold: {{ .Values.databaseds.readinessProbe.successThreshold }}
           failureThreshold: {{ .Values.databaseds.readinessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.databaseds.readinessProbe.enabled }}
         livenessProbe:
           tcpSocket:
             port: 10000
@@ -103,6 +106,7 @@ spec:
           timeoutSeconds: {{ .Values.databaseds.livenessProbe.timeoutSeconds }}
           successThreshold: {{ .Values.databaseds.livenessProbe.successThreshold }}
           failureThreshold: {{ .Values.databaseds.livenessProbe.failureThreshold }}
+        {{- end }}
         resources:
 {{ toYaml .Values.databaseds.resources | indent 10 }}
 {{- with .Values.nodeSelector }}

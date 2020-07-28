@@ -59,7 +59,10 @@ databaseds:
       ephemeral-storage: 1Gi
 
 itango:
-  enabled: true
+  component: itango-console
+  function: generic-tango-console
+  domain: interactive-testing
+  intent: enabling
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-itango

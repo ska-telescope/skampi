@@ -8,7 +8,7 @@ Expand the name of the chart.
 {{/*
 service-name based on values in order to make it constant accross the deplpyent namespace
 */}}
-{{- define "tango-base.service-name" -}}
+{{- define "tango-base.dbservice-name" -}}
 {{- if .Values.tangoDatabaseDS }}
 {{- .Values.tangoDatabaseDS }}
 {{- else }}

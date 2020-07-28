@@ -106,6 +106,7 @@ spec:
   - ReadWriteOnce
 {{ else }}
   storageClassName: nfss1
+  persistentVolumeReclaimPolicy: {{ .Values.jupyter.storage.reclaimPolicy}}
   accessModes:
   - ReadWriteMany
 {{ end }}

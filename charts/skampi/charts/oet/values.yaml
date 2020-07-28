@@ -84,6 +84,7 @@ jupyter:
     enabled: true
     hostPath: /home/ubuntu/skampi-hostpath/build/jupyter/
     capacity: 0.1G
+    reclaimPolicy: Delete
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-jupyter

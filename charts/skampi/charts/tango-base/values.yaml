@@ -6,6 +6,11 @@ display: ":0"
 xauthority: "~/.Xauthority"
 minikube: true
 
+system: SW-infrastructure
+subsystem: tango-base
+telescope: SKA-mid
+
+
 tangodb:
   enabled: true
   use_pv: false

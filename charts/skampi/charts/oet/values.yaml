@@ -6,6 +6,7 @@ minikube: true
 system: TM-mid
 telescope: SKA-mid
 subsystem: observation-execution-tool
+
 ssh:
   enabled: true
   nodePort:
@@ -60,6 +61,9 @@ itango:
 
 rest:
   enabled: true
+  component: script-executioner
+  functions: script-execution
+  domain: operations
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool

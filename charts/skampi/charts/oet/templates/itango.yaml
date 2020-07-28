@@ -3,13 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.itango.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.itango.component }}
+    function: {{ .Values.itango.function }}
+    domain: {{ .Values.itango.domain }}
+    intent: production
 spec:
   type: NodePort
   ports:
@@ -17,13 +18,17 @@ spec:
       port: 22
       nodePort: {{ .Values.itango.nodePort }}
   selector:
-    app: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+    app: {{ template "oet.name" . }}
+    component: {{ .Values.itango.component }}
+
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: itango-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oet.labels" . | indent 4 }}
 data:
   environment: |
     TANGO_HOST={{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
@@ -35,26 +40,29 @@ data:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.itango.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.itango.component }}
+    function: {{ .Values.itango.function }}
+    domain: {{ .Values.itango.domain }}
+    intent: production
 spec:
   selector:
     matchLabels:
-      app: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
-  serviceName: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
+      app: {{ template "oet.name" . }}
+      component: {{ .Values.itango.component }}
+  serviceName: {{ template "oet.name" . }}-{{ .Values.itango.component }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: itango-{{ template "oet.name" . }}-{{ .Release.Name }}
-        chart: {{ template "oet.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "oet.labels" . | indent 8 }}
+        component: {{ .Values.itango.component }}
+        function: {{ .Values.itango.function }}
+        domain: {{ .Values.itango.domain }}
+        intent: production
     spec:
       restartPolicy: Always
       initContainers:

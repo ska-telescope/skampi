@@ -25,6 +25,19 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
+Common labels
+*/}}
+{{- define "oet.labels" }}
+app: {{ template "oet.name" . }}
+chart: {{ template "oet.chart" . }}
+release: {{ .Release.Name }}
+heritage: {{ .Release.Service }}
+system: {{ .Values.system }}
+subsystem: {{ .Values.subsystem }}
+telescope: {{ .Values.telescope }}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "oet.chart" -}}

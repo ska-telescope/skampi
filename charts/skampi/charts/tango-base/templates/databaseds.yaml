@@ -53,8 +53,8 @@ spec:
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
-      containers:
-      - name: databaseds
+      initContainers:
+      - name: check-db-ready
         image: "{{ .Values.databaseds.image.registry }}/{{ .Values.databaseds.image.image }}:{{ .Values.databaseds.image.tag }}"
         imagePullPolicy: {{ .Values.databaseds.image.pullPolicy }}
         command:
@@ -63,6 +63,12 @@ spec:
           - --timeout=30
           - --strict
           - --
+          - echo waiting for database complete
+      containers:
+      - name: databaseds
+        image: "{{ .Values.databaseds.image.registry }}/{{ .Values.databaseds.image.image }}:{{ .Values.databaseds.image.tag }}"
+        imagePullPolicy: {{ .Values.databaseds.image.pullPolicy }}
+        command:
           - /usr/local/bin/DataBaseds
           - "2"
           - -ORBendPoint
@@ -81,6 +87,22 @@ spec:
         ports:
         - name: ds
           containerPort: 10000
+        readinessProbe:
+          tcpSocket:
+            port: 10000
+          initialDelaySeconds: {{ .Values.databaseds.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.databaseds.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.databaseds.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.databaseds.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.databaseds.readinessProbe.failureThreshold }}
+        livenessProbe:
+          tcpSocket:
+            port: 10000
+          initialDelaySeconds: {{ .Values.databaseds.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.databaseds.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.databaseds.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.databaseds.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.databaseds.livenessProbe.failureThreshold }}
         resources:
 {{ toYaml .Values.databaseds.resources | indent 10 }}
 {{- with .Values.nodeSelector }}

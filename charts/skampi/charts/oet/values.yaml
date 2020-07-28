@@ -32,6 +32,9 @@ ssh:
 itango:
   enabled: true
   nodePort:
+  component: itango-console
+  function: interactive-script-execution
+  domain: operations
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh

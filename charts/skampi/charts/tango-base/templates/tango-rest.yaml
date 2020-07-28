@@ -4,44 +4,49 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+   {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.tangorest.component }}
+    function: {{ .Values.tangorest.function }}
+    domain: {{ .Values.tangorest.domain }}
+    intent: {{ .Values.tangorest.intent }}
 spec:
   type: NodePort
   ports:
   - name: rest
     port: 8080
   selector:
-    app: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    app: {{ template "tango-base.name" . }}
+    component: {{ .Values.tangorest.component }}
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.tangorest.component }}
+    function: {{ .Values.tangorest.function }}
+    domain: {{ .Values.tangorest.domain }}
+    intent: {{ .Values.tangorest.intent }}
 spec:
   selector:
     matchLabels:
-      app: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+      app: {{ template "tango-base.name" . }}
+      component: {{ .Values.tangorest.component }}
   replicas: {{ .Values.tangorest.replicas }}
   template:
     metadata:
       labels:
-        app: tango-rest-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-        chart: {{ template "tango-base.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "tango-base.labels" . | indent 8 }}
+        component: {{ .Values.tangorest.component }}
+        function: {{ .Values.tangorest.function }}
+        domain: {{ .Values.tangorest.domain }}
+        intent: {{ .Values.tangorest.intent }}
     spec:
       {{- if .Values.pullSecrets }}
       imagePullSecrets:

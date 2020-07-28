@@ -12,7 +12,10 @@ data:
 {{ (tpl (.Files.Glob "data/cspconfig.json").AsConfig . ) | indent 2  }}
   bootstrap.sh: |
     #/bin/sh
-    json2tango -w -a -u data/cspconfig.json
+    /usr/local/bin/wait-for-it.sh {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }} \
+      --timeout=30 \
+      --strict \
+      -- json2tango -w -a -u data/cspconfig.json
     rc=$?
     if [ $rc -eq 0 ]; then
       echo "finished normally."
@@ -38,17 +41,6 @@ spec:
   ttlSecondsAfterFinished: 100
   template:
     spec:
-      initContainers:
-      - name: check-databaseds-ready
-        image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
-        imagePullPolicy: {{ .Values.dsconfig.image.pullPolicy }}
-        command:
-          - /usr/local/bin/wait-for-it.sh
-          - {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
-          - --timeout=30
-          - --strict
-          - --
-          - echo databaseds ready
       containers:
       - name: dsconfig
         image: "{{ .Values.dsconfig.image.registry }}/{{ .Values.dsconfig.image.image }}:{{ .Values.dsconfig.image.tag }}"
@@ -123,21 +115,6 @@ spec:
         release: {{ $global.Release.Name }}
         heritage: {{ $global.Release.Service }}
     spec:
-      initContainers:
-      - name: check-databaseds-ready
-        image: {{ $global.Values.dsconfig.image.registry }}/{{ $global.Values.dsconfig.image.image }}:{{ $global.Values.dsconfig.image.tag }}
-        imagePullPolicy: {{ $global.Values.dsconfig.image.pullPolicy }}
-        # 'tango_admin --check-device' will exit 0 once databaseds is alive and the dsconfig job is complete
-        command:
-          - retry
-          - --max=10
-          - --
-          - tango_admin
-          - --check-device
-          - mid_csp/elt/master
-        env:
-        - name: TANGO_HOST
-          value: {{ if $global.Values.tangoDatabaseDS -}} {{ $global.Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ $global.Release.Name }}:10000 {{- end }}
       containers:
       - name: deviceserver
         image: "{{ $global.Values.csplmc.image.registry }}/{{ $global.Values.csplmc.image.image }}:{{ $global.Values.csplmc.image.tag }}"

@@ -6,17 +6,19 @@ metadata:
   name: {{ template "oet.name" . }}-{{ .Values.rest.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.rest.component }}
+    function: {{ .Values.rest.function }}
+    domain: {{ .Values.rest.domain }}
+    intent: production
 spec:
   ports:
   - name: oet-rest
     port: 5000
   clusterIP: None
   selector:
-    app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+    app: {{ template "oet.name" . }}
+    component: {{ .Values.jupyter.component }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -55,23 +57,26 @@ metadata:
   name: {{ template "oet.name" . }}-{{ .Values.rest.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.rest.component }}
+    function: {{ .Values.rest.function }}
+    domain: {{ .Values.rest.domain }}
+    intent: production
 spec:
   selector:
     matchLabels:
-      app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+      app: {{ template "oet.name" . }}
+      component: {{ .Values.jupyter.component }}
   serviceName: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
-        chart: {{ template "oet.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "oet.labels" . | indent 8 }}
+        component: {{ .Values.rest.component }}
+        function: {{ .Values.rest.function }}
+        domain: {{ .Values.rest.domain }}
+        intent: production
     spec:
       initContainers:
       - name: check-databaseds-ready

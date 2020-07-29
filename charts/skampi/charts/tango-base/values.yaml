@@ -5,6 +5,7 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 minikube: true
+homeDir: /home/ubuntu
 
 system: SW-infrastructure
 subsystem: tango-base
@@ -96,7 +97,10 @@ tangotest:
       ephemeral-storage: 1Gi
 
 jive:
-  enabled: false
+  component: jive-gui
+  function: generic-tango-jive-gui
+  domain: interactive-testing
+  intent: enabling
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-java

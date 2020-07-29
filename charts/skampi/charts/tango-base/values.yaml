@@ -176,7 +176,10 @@ tangorest:
       ephemeral-storage: 256Mi
 
 logviewer:
-  enabled: false
+  component: logviewer
+  function: tango-log-inspection
+  domain: interactive-testing
+  intent: enabling
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-java

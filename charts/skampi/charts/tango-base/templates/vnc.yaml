@@ -4,13 +4,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.vnc.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.vnc.component }}
+    function: {{ .Values.vnc.function }}
+    domain: {{ .Values.vnc.domain }}
+    intent: {{ .Values.vnc.intent }}
 spec:
   type: NodePort
   ports:
@@ -27,33 +28,37 @@ spec:
     nodePort: {{ .Values.vnc.nodeport_novnc }}
 {{end}}
   selector:
-    app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    app: {{ template "tango-base.name" . }}
+    component: {{ .Values.vnc.component }}
 
 ---
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.vnc.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.vnc.component }}
+    function: {{ .Values.vnc.function }}
+    domain: {{ .Values.vnc.domain }}
+    intent: {{ .Values.vnc.intent }}
 spec:
   selector:
     matchLabels:
-      app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-  serviceName: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+      app: {{ template "tango-base.name" . }}
+      component: {{ .Values.vnc.component }}
+  serviceName: {{ template "tango-base.name" . }}-{{ .Values.vnc.component }}
   replicas:  {{ .Values.vnc.replicas }}
   template:
     metadata:
       labels:
-        app: vnc-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-        chart: {{ template "tango-base.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "tango-base.labels" . | indent 8 }}
+        component: {{ .Values.vnc.component }}
+        function: {{ .Values.vnc.function }}
+        domain: {{ .Values.vnc.domain }}
+        intent: {{ .Values.vnc.intent }}
     spec:
       containers:
       - name: vnc

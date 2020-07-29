@@ -4,13 +4,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.vscode.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.vscode.component }}
+    function: {{ .Values.vscode.function }}
+    domain: {{ .Values.vscode.domain }}
+    intent: {{ .Values.vscode.intent }}
 spec:
   type: NodePort
   ports:
@@ -21,33 +22,37 @@ spec:
     nodePort: {{ .Values.vscode.nodeport }}
 {{end}}
   selector:
-    app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    app: {{ template "tango-base.name" . }}
+    component: {{ .Values.vscode.component }}
 
 ---
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.vscode.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.vscode.component }}
+    function: {{ .Values.vscode.function }}
+    domain: {{ .Values.vscode.domain }}
+    intent: {{ .Values.vscode.intent }}
 spec:
   selector:
     matchLabels:
-      app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-  serviceName: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+      app: {{ template "tango-base.name" . }}
+      component: {{ .Values.vscode.component }}
+  serviceName: {{ template "tango-base.name" . }}-{{ .Values.vscode.component }}
   replicas:  {{ .Values.vscode.replicas }}
   template:
     metadata:
       labels:
-        app: vscode-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-        chart: {{ template "tango-base.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "tango-base.labels" . | indent 8 }}
+        component: {{ .Values.vscode.component }}
+        function: {{ .Values.vscode.function }}
+        domain: {{ .Values.vscode.domain }}
+        intent: {{ .Values.vscode.intent }}
     spec:
       containers:
       - name: vscode

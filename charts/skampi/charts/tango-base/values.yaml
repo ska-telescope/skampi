@@ -5,10 +5,19 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 minikube: true
+homeDir: /home/ubuntu
+
+system: SW-infrastructure
+subsystem: tango-base
+telescope: SKA-mid
 
 tangodb:
   enabled: true
   use_pv: false
+  component: tangodb
+  function: tango-device-configuration
+  domain: tango-configuration
+  intent: production
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-db
@@ -47,6 +56,9 @@ databaseds:
   enabled: true
   # domain tag was the .Release.Name set it as default empty
   # so that the old behaviour can still happen in the chart
+  component: databaseds
+  function: tangodb-interface
+  domain: tango-configuration
   domainTag:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
@@ -78,7 +90,11 @@ databaseds:
     failureThreshold: 3
 
 itango:
-  enabled: true
+  enabled: false
+  component: itango-console
+  function: generic-tango-console
+  domain: interactive-testing
+  intent: enabling
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-itango
@@ -95,7 +111,11 @@ itango:
       ephemeral-storage: 512Mi
 
 tangotest:
-  enabled: true
+  enabled: false
+  component: testdevice
+  function: tango-client-validation-testing
+  domain: interactive-testing
+  intent: enabling
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-java
@@ -113,6 +133,10 @@ tangotest:
 
 jive:
   enabled: false
+  component: jive-gui
+  function: generic-tango-jive-gui
+  domain: interactive-testing
+  intent: enabling
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-java
@@ -129,7 +153,11 @@ jive:
       ephemeral-storage: 256Mi
 
 vnc:
-  enabled: true
+  enabled: false
+  component: vnc-gui
+  function: generic-tango-vnc-gui
+  domain: interactive-testing
+  intent: enabling
   nodeport_enabled: false
   nodeport_vnc: 32081
   nodeport_novnc: 32082
@@ -151,6 +179,10 @@ vnc:
 
 vscode:
   enabled: false
+  component:  vscode-remote
+  function: remote-developement
+  domain: interactive-testing
+  intent: enabling
   nodeport_enabled: false
   nodeport: 32080
   replicas: 1
@@ -170,8 +202,12 @@ vscode:
       ephemeral-storage: 256Mi
 
 tangorest:
-  enabled: true
+  enabled: false
   replicas: 1
+  component: tango-rest
+  function: tango-http-interface
+  domain: tango-configuration
+  intent: enabling
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-rest
@@ -189,6 +225,10 @@ tangorest:
 
 logviewer:
   enabled: false
+  component: logviewer
+  function: tango-log-inspection
+  domain: interactive-testing
+  intent: enabling
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-java
@@ -206,7 +246,7 @@ logviewer:
 
 # Configure Ingress resource that allow you to access the Tango REST API
 ingress:
-  enabled: true
+  enabled: false
   hostname: tango-base.minikube.local
 
   # Ingress annotations

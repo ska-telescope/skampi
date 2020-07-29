@@ -4,54 +4,51 @@
 apiVersion: v1
 kind: Service
 metadata:
-{{- if .Values.tangoDatabaseDS }}
-  name: {{ .Values.tangoDatabaseDS }}
-{{- else -}}
-{{ if .Values.databaseds.domainTag }}
-  name: databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}
-{{- else }}
-  name: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-{{- end }}
-{{- end }}
+  name: {{ include "tango-base.dbservice-name" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.databaseds.component }}
+    function: {{ .Values.databaseds.function }}
+    domain: {{ .Values.databaseds.domain }}
+    intent: production
 spec:
   ports:
   - name: ds
     port: 10000
   type: NodePort
   selector:
-    app: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    app: {{ template "tango-base.name" . }}
+    component: {{ .Values.databaseds.component }}
 
 ---
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ include "tango-base.dbservice-name" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.databaseds.component }}
+    function: {{ .Values.databaseds.function }}
+    domain: {{ .Values.databaseds.domain }}
+    intent: production
 spec:
   selector:
     matchLabels:
-      app: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+      app: {{ template "tango-base.name" . }}
+      component: {{ .Values.databaseds.component }}
   serviceName: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-        chart: {{ template "tango-base.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "tango-base.labels" . | indent 8 }}
+        component: {{ .Values.databaseds.component }}
+        function: {{ .Values.databaseds.function }}
+        domain: {{ .Values.databaseds.domain }}
+        intent: production
     spec:
       initContainers:
       - name: check-db-ready
@@ -59,7 +56,7 @@ spec:
         imagePullPolicy: {{ .Values.databaseds.image.pullPolicy }}
         command:
           - /usr/local/bin/wait-for-it.sh
-          - tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}:3306
+          - {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}:3306
           - --timeout=30
           - --strict
           - --
@@ -75,7 +72,7 @@ spec:
           - giop:tcp::10000
         env:
           - name: MYSQL_HOST
-            value: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}:3306
+            value: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}:3306
           - name: MYSQL_DATABASE
             value: "{{ .Values.tangodb.db.db }}"
           - name: MYSQL_USER
@@ -83,7 +80,7 @@ spec:
           - name: MYSQL_PASSWORD
             value: "{{ .Values.tangodb.db.password }}"
           - name: TANGO_HOST
-            value: databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}:10000
+            value: {{ include "tango-base.dbservice-name" . }}:10000
         ports:
         - name: ds
           containerPort: 10000

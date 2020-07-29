@@ -81,6 +81,10 @@ itango:
 
 tangotest:
   enabled: true
+  component: testdevice
+  function: tango-client-validation-testing
+  domain: interactive-testing
+  intent: enabling
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-java

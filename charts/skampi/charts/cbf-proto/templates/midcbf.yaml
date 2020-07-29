@@ -56,7 +56,7 @@ spec:
         command:
           - /usr/local/bin/wait-for-it.sh
           - {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
-          - --timeout=30
+          - --timeout=180
           - --strict
           - --
           - echo databaseds ready

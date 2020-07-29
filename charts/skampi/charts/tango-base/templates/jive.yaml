@@ -40,7 +40,7 @@ spec:
   volumes:
     - name: xauthority
       hostPath:
-        path: {{ .Values.homeDir }}/.Xauthority"
+        path: {{ .Values.homeDir }}/.Xauthority
   restartPolicy: Always
 {{- with .Values.nodeSelector }}
   nodeSelector:

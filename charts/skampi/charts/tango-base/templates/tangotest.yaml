@@ -12,8 +12,8 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  containers:
-  - name: tangotest
+  initContainers:
+  - name: check-databaseds-ready
     image: "{{ .Values.tangotest.image.registry }}/{{ .Values.tangotest.image.image }}:{{ .Values.tangotest.image.tag }}"
     imagePullPolicy: {{ .Values.tangotest.image.pullPolicy }}
     command:
@@ -22,6 +22,12 @@ spec:
       - --timeout=30
       - --strict
       - --
+      - echo databaseds ready
+  containers:
+  - name: tangotest
+    image: "{{ .Values.tangotest.image.registry }}/{{ .Values.tangotest.image.image }}:{{ .Values.tangotest.image.tag }}"
+    imagePullPolicy: {{ .Values.tangotest.image.pullPolicy }}
+    command:
       - /usr/local/bin/TangoTest
       - test
     env:

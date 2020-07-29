@@ -28,6 +28,20 @@ tangodb:
       cpu: 200m     # 200m = 0.2 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
       ephemeral-storage: 2Gi
+  livenessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
 
 databaseds:
   enabled: true
@@ -48,6 +62,20 @@ databaseds:
       cpu: 200m     # 200m = 0.2 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
       ephemeral-storage: 1Gi
+  livenessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
 
 itango:
   enabled: true

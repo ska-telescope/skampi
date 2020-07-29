@@ -74,7 +74,7 @@ spec:
 {{ if .Values.tangodb.use_pv }}
       - name: data
         persistentVolumeClaim:
-          claimName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+          claimName: {{ template "tango-base.name" . }}-tangodb-storage
 {{ end }}
 {{- with .Values.nodeSelector }}
       nodeSelector:

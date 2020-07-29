@@ -4,46 +4,51 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.tangodb.component }}
+    function: {{ .Values.tangodb.function }}
+    domain: {{ .Values.tangodb.domain }}
+    intent: {{ .Values.tangodb.intent }}
 spec:
   ports:
   - name: mysql
     port: 3306
   type: NodePort
   selector:
-    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    app: {{ template "tango-base.name" . }}
+    component: {{ .Values.tangodb.component }}
 
 ---
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.tangodb.component }}
+    function: {{ .Values.tangodb.function }}
+    domain: {{ .Values.tangodb.domain }}
+    intent: {{ .Values.tangodb.intent }}
 spec:
   selector:
     matchLabels:
-      app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-  serviceName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+      app: {{ template "tango-base.name" . }}
+      component: {{ .Values.tangodb.component }}
+  serviceName: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-        chart: {{ template "tango-base.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "tango-base.labels" . | indent 8 }}
+        component: {{ .Values.tangodb.component }}
+        function: {{ .Values.tangodb.function }}
+        domain: {{ .Values.tangodb.domain }}
+        intent: {{ .Values.tangodb.intent }}
     spec:
       containers:
       - name: tangodb

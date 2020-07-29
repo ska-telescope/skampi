@@ -26,10 +26,11 @@ def check_going_out_of_configured():
 def check_going_into_empty():
     ##Can only release resources if subarray is in ON/IDLE
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    print ("In here error")
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
 
 def check_going_into_standby():
-    ##verify once for state = ON
+    print ("In check_going_into_standby")
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 # pre waitings
@@ -211,7 +212,7 @@ def sync_release_resources(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_tearing_down_subarray()
         result = func(*args, **kwargs)
-        the_waiter.wait(50)
+        the_waiter.wait(100)
         return result
     return wrapper
 

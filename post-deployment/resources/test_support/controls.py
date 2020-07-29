@@ -154,7 +154,7 @@ def telescope_is_in_standby():
     return  [resource('ska_mid/tm_subarray_node/1').get("State"),
             resource('mid_csp/elt/subarray_01').get("State"),
             resource('mid_csp_cbf/sub_elt/subarray_01').get("State")] == \
-            ['OFF','DISABLE','DISABLE']
+            ['OFF','OFF','OFF']
 
 ## currently this function is not used in any testcase
 def run_a_config_test():

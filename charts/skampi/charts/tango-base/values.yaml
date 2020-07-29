@@ -11,7 +11,6 @@ system: SW-infrastructure
 subsystem: tango-base
 telescope: SKA-mid
 
-
 tangodb:
   enabled: true
   use_pv: false
@@ -43,6 +42,9 @@ databaseds:
   enabled: true
   # domain tag was the .Release.Name set it as default empty
   # so that the old behaviour can still happen in the chart
+  component: databaseds
+  function: tangodb-interface
+  domain: tango-configuration
   domainTag:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
@@ -60,6 +62,7 @@ databaseds:
       ephemeral-storage: 1Gi
 
 itango:
+  enabled: false
   component: itango-console
   function: generic-tango-console
   domain: interactive-testing
@@ -80,7 +83,7 @@ itango:
       ephemeral-storage: 512Mi
 
 tangotest:
-  enabled: true
+  enabled: false
   component: testdevice
   function: tango-client-validation-testing
   domain: interactive-testing
@@ -101,6 +104,7 @@ tangotest:
       ephemeral-storage: 1Gi
 
 jive:
+  enabled: false
   component: jive-gui
   function: generic-tango-jive-gui
   domain: interactive-testing
@@ -121,7 +125,11 @@ jive:
       ephemeral-storage: 256Mi
 
 vnc:
-  enabled: true
+  enabled: false
+  component: vnc-gui
+  function: generic-tango-vnc-gui
+  domain: interactive-testing
+  intent: enabling
   nodeport_enabled: false
   nodeport_vnc: 32081
   nodeport_novnc: 32082
@@ -142,6 +150,7 @@ vnc:
       ephemeral-storage: 256Mi
 
 vscode:
+  enabled: false
   component:  vscode-remote
   function: remote-developement
   domain: interactive-testing
@@ -165,8 +174,12 @@ vscode:
       ephemeral-storage: 256Mi
 
 tangorest:
-  enabled: true
+  enabled: false
   replicas: 1
+  component: tango-rest
+  function: tango-http-interface
+  domain: tango-configuration
+  intent: enabling
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-rest
@@ -183,6 +196,7 @@ tangorest:
       ephemeral-storage: 256Mi
 
 logviewer:
+  enabled: false
   component: logviewer
   function: tango-log-inspection
   domain: interactive-testing
@@ -204,7 +218,7 @@ logviewer:
 
 # Configure Ingress resource that allow you to access the Tango REST API
 ingress:
-  enabled: true
+  enabled: false
   hostname: tango-base.minikube.local
 
   # Ingress annotations

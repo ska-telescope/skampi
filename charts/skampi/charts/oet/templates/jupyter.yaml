@@ -3,7 +3,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ template "oet.name" . }}-{{ .Values.itango.component }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "oet.labels" . | indent 4 }}
@@ -20,7 +20,7 @@ spec:
         paths:
         - path: /jupyter
           backend:
-           serviceName: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+           serviceName: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
            servicePort: 8888
 ---
 apiVersion: v1

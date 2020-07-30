@@ -10,7 +10,7 @@ midcbfmcs:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: mid-cbf-mcs
-    tag: 0.4.3-44e9ac7
+    tag: 0.4.4-bb69bb4
     pullPolicy: IfNotPresent
 
 dsconfig:

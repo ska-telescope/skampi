@@ -281,9 +281,13 @@ class waiter():
 
     def set_wait_for_ending_SB(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("obsState",changed_to='IDLE'))
-        # self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("obsState",changed_to='IDLE'))
-        # self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("obsState",changed_to='IDLE'))
-        # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("obsState",changed_to='IDLE'))
+        self.waits.append(watch(resource('mid_d0001/elt/master')).to_become("pointingState",changed_to='READY'))
+        self.waits.append(watch(resource('mid_d0002/elt/master')).to_become("pointingState",changed_to='READY'))
+        self.waits.append(watch(resource('mid_d0003/elt/master')).to_become("pointingState",changed_to='READY'))
+        self.waits.append(watch(resource('mid_d0004/elt/master')).to_become("pointingState",changed_to='READY'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("obsState",changed_to='IDLE'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("obsState",changed_to='IDLE'))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("obsState",changed_to='IDLE'))
 
     def set_wait_for_assign_resources(self,nr_of_receptors=None):
         ### the following is a hack to wait for items taht are not worked into the state variable

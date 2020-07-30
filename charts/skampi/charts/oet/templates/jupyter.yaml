@@ -3,8 +3,14 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: jupyter-ingress-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.itango.component }}
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.jupyter.component }}
+    domain: self-configuration
+    function: ingress-configuration
+    intent: production
   annotations:
       kubernetes.io/ingress.class: traefik
 spec:
@@ -20,16 +26,18 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.jupyter.component }}
+    function: {{ .Values.jupyter.function }}
+    domain: {{ .Values.jupyter.domain }}
+    intent: production
 spec:
   selector:
-    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+    app: {{ template "oet.name" . }}
+    component: {{ .Values.jupyter.component }}
   ports:
     - protocol: TCP
       port: 8888
@@ -39,11 +47,15 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: jupyter-storage-pv-{{ .Release.Namespace }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-workspace-storage
   namespace: {{ .Release.Namespace }}
   labels:
+    {{- include "oet.labels" . | indent 4 }}
     type: jupyter_storage
-    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+    component: {{ .Values.jupyter.component }}
+    function: workspace-storage
+    domain: storage
+    intent: enabling
 spec:
   storageClassName: jupyter
   capacity:
@@ -57,11 +69,14 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: jupyter-storage-pvc-{{ .Release.Namespace }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-workspace-storage
   namespace: {{ .Release.Namespace }}
   labels:
+    {{- include "oet.labels" . | indent 4 }}
     type: jupyter_storage
-    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+    function: workspace-storage
+    domain: storage
+    intent: production
 spec:
 {{ if .Values.minikube }}
   storageClassName: jupyter
@@ -69,6 +84,7 @@ spec:
   - ReadWriteOnce
 {{ else }}
   storageClassName: nfss1
+  persistentVolumeReclaimPolicy: {{ .Values.jupyter.storage.reclaimPolicy}}
   accessModes:
   - ReadWriteMany
 {{ end }}
@@ -80,8 +96,14 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: jupyter-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.jupyter.component }}
+    domain: self-configuration
+    function: jupyter-configuration
+    intent: production 
 data:
   environment: |
     TANGO_HOST={{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
@@ -99,30 +121,34 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.jupyter.component }}
+    function: {{ .Values.jupyter.function }}
+    domain: {{ .Values.jupyter.domain }}
+    intent: production
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+      app: {{ template "oet.name" . }}
+      component: {{ .Values.jupyter.component }}
   template:
     metadata:
       labels:
-        app: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
-        chart: {{ template "oet.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "oet.labels" . | indent 8 }}
+        component: {{ .Values.jupyter.component }}
+        component: {{ .Values.jupyter.component }}
+        function: {{ .Values.jupyter.function }}
+        domain: {{ .Values.jupyter.domain }}
+        intent: production
     spec:
       volumes:
-        - name: jupyter-configmap-volume
+        - name: configuration
           configMap:
-            name: jupyter-configmap-{{ template "oet.name" .}}-{{ .Release.Name }}
+            name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
             items:
             - key: environment
               path: environment
@@ -130,9 +156,9 @@ spec:
               path: venv.sh
             - key: jupyter_notebook_config.json
               path: jupyter_notebook_config.json
-        - name: storage
+        - name: workspace-storage
           persistentVolumeClaim:
-            claimName: jupyter-storage-pvc-{{ .Release.Namespace }}
+            claimName: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-workspace-storage
         - name: workdir
           emptyDir: {}
       initContainers:
@@ -162,17 +188,17 @@ spec:
           - name: SKUID_URL
             value: "skuid-skuid-{{ .Release.Namespace }}-{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:9870"
         volumeMounts:
-          - name: storage
+          - name: workspace-storage
             mountPath: /app/jupyter_storage
           - name: workdir
             mountPath: /home/tango/.jupyter
-          - name: jupyter-configmap-volume
+          - name: configuration
             mountPath: /etc/environment
             subPath: environment
-          - name: jupyter-configmap-volume
+          - name: configuration
             mountPath: /etc/profile.d/venv.sh
             subPath: venv.sh
-          - name: jupyter-configmap-volume
+          - name: configuration
             mountPath: /home/tango/.jupyter/jupyter_notebook_config.json
             subPath: jupyter_notebook_config.json
         readinessProbe:

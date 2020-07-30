@@ -1,7 +1,7 @@
 //tango-base
-sdp-prototype
+//sdp-prototype
 //cbf-proto
-//csp-proto
+csp-proto
 //tmc-proto
 //skuid
 //oet

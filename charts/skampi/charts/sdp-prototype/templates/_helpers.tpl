@@ -34,19 +34,18 @@ Create chart name and version as used by the chart label.
 {{/*
 Common labels
 */}}
-{{- define "sdp-prototype.labels" -}}
-app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}
-helm.sh/chart: {{ include "sdp-prototype.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- define "sdp-prototype.labels" }}
+app: {{ template "sdp-prototype.name" . }}
+chart: {{ template "sdp-prototype.chart" . }}
+release: {{ .Release.Name }}
+heritage: {{ .Release.Service }}
+system: {{ .Values.system }}
+telescope: {{ .Values.telescope }}
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end -}}
 
 {{/* Init container to wait for configuration database availability */}}
 {{- define "sdp-prototype.etcd-host" -}}
-{{ include "sdp-prototype.fullname" . }}-etcd-client.{{ .Release.Namespace }}.svc.cluster.local
+{{ include "sdp-prototype.name" . }}-etcd-client.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 {{- define "sdp-prototype.wait-for-etcd" -}}
 - image: quay.io/coreos/etcd:v{{ .Values.etcd.version }}
@@ -58,3 +57,24 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
   - name: ETCDCTL_API
     value: "3"
 {{- end -}}
+
+{{/* for populating env variables based on the presence of env names for
+item */}}
+{{- define "sdp-proto.get_env"}}
+{{- if index .global.Values "feature" "config-db" }}
+  {{- if hasKey .deviceserver.env "TOGGLE_CONFIG_DB" }}
+- name: TOGGLE_CONFIG_DB
+  value: {{ quote (index .global.Values "feature" "config-db") }}
+- name: SDP_CONFIG_HOST
+  value: {{ include "sdp-prototype.etcd-host" .global }}
+  {{- end }}
+{{- end}}
+{{- if hasKey .deviceserver.env "TOGGLE_AUTO_REGISTER" }}
+- name: TOGGLE_AUTO_REGISTER
+  value: "0"
+{{- end }}
+{{- if hasKey .deviceserver.env "TOGGLE_RECEIVE_ADDRESSES_HACK" }}
+- name: TOGGLE_RECEIVE_ADDRESSES_HACK
+  value: {{ quote (index .global.Values "feature" "receive-addresses-hack") }}
+{{- end }}
+{{- end}}

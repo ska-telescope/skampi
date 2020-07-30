@@ -1,21 +1,54 @@
-apiVersion: apps/v1
-kind: Deployment
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
 metadata:
-  name: {{ include "sdp-prototype.fullname" . }}-helm-deploy
+  name: {{ include "sdp-prototype.name" . }}-helm-deploy
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "sdp-prototype.labels" . | indent 4 }}
+    {{- include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.helm_deploy.component }}
+    subsystem: {{ .Values.helm_deploy.subsystem }}
+    function: {{ .Values.helm_deploy.function }}
+    domain: {{ .Values.helm_deploy.domain }}
+    intent: production
+spec:
+  clusterIP: None
+  ports:
+  - name: dummy # Actually, no port is needed.
+    port: 1234
+    targetPort: 1234
+  selector:
+    component: {{ .Values.helm_deploy.component }}
+    subsystem: {{ .Values.helm_deploy.subsystem }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "sdp-prototype.name" . }}-helm-deploy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.helm_deploy.component }}
+    subsystem: {{ .Values.helm_deploy.subsystem }}
+    function: {{ .Values.helm_deploy.function }}
+    domain: {{ .Values.helm_deploy.domain }}
+    intent: production
 spec:
   replicas: {{ .Values.helm_deploy.replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}-helm-deploy
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      component: {{ .Values.helm_deploy.component }}
+      subsystem: {{ .Values.helm_deploy.subsystem }}
+  serviceName: {{ include "sdp-prototype.name" . }}-helm-deploy
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "sdp-prototype.name" . }}-helm-deploy
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "sdp-prototype.labels" . | indent 8 }}
+        component: {{ .Values.helm_deploy.component }}
+        subsystem: {{ .Values.helm_deploy.subsystem }}
+        function: {{ .Values.helm_deploy.function }}
+        domain: {{ .Values.helm_deploy.domain }}
+        intent: production
     spec:
       initContainers:
       {{ include "sdp-prototype.wait-for-etcd" . | nindent 6 }}
@@ -36,54 +69,74 @@ spec:
           value: "{{ .Values.helm_deploy.chart_repo.path }}"
         - name: SDP_CHART_REPO_REFRESH
           value: "{{ .Values.helm_deploy.chart_repo.refresh }}"
-      serviceAccountName: {{ include "sdp-prototype.fullname" . }}-helm
+      serviceAccountName: {{ include "sdp-prototype.name" . }}-helm
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ include "sdp-prototype.fullname" . }}-helm
+  name: {{ include "sdp-prototype.name" . }}-helm
   namespace: {{ .Release.Namespace }}
   labels:
 {{ include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.helm_deploy.component }}
+    subsystem: {{ .Values.helm_deploy.subsystem }}
+    function: {{ .Values.helm_deploy.function }}
+    domain: {{ .Values.helm_deploy.domain }}
+    intent: production
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "sdp-prototype.fullname" . }}-helm
+  name: {{ include "sdp-prototype.name" . }}-helm
   namespace: {{ .Values.helm_deploy.namespace }}
   labels:
 {{ include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.helm_deploy.component }}
+    subsystem: {{ .Values.helm_deploy.subsystem }}
+    function: {{ .Values.helm_deploy.function }}
+    domain: {{ .Values.helm_deploy.domain }}
+    intent: production
 subjects:
 - kind: ServiceAccount
-  name: {{ include "sdp-prototype.fullname" . }}-helm
+  name: {{ include "sdp-prototype.name" . }}-helm
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
-  name: {{ include "sdp-prototype.fullname" . }}-helm
+  name: {{ include "sdp-prototype.name" . }}-helm
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "sdp-prototype.fullname" . }}-helm-global
+  name: {{ include "sdp-prototype.name" . }}-helm-global
   labels:
 {{ include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.helm_deploy.component }}
+    subsystem: {{ .Values.helm_deploy.subsystem }}
+    function: {{ .Values.helm_deploy.function }}
+    domain: {{ .Values.helm_deploy.domain }}
+    intent: production
 subjects:
 - kind: ServiceAccount
-  name: {{ include "sdp-prototype.fullname" . }}-helm
+  name: {{ include "sdp-prototype.name" . }}-helm
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ include "sdp-prototype.fullname" . }}-helm-global
+  name: {{ include "sdp-prototype.name" . }}-helm-global
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "sdp-prototype.fullname" . }}-helm
+  name: {{ include "sdp-prototype.name" . }}-helm
   namespace: {{ .Values.helm_deploy.namespace }}
   labels:
 {{ include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.helm_deploy.component }}
+    subsystem: {{ .Values.helm_deploy.subsystem }}
+    function: {{ .Values.helm_deploy.function }}
+    domain: {{ .Values.helm_deploy.domain }}
+    intent: production
 rules:
 - apiGroups: [""]
   resources: ["namespaces"]
@@ -96,9 +149,14 @@ rules:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "sdp-prototype.fullname" . }}-helm-global
+  name: {{ include "sdp-prototype.name" . }}-helm-global
   labels:
 {{ include "sdp-prototype.labels" . | indent 4 }}
+    component: {{ .Values.helm_deploy.component }}
+    subsystem: {{ .Values.helm_deploy.subsystem }}
+    function: {{ .Values.helm_deploy.function }}
+    domain: {{ .Values.helm_deploy.domain }}
+    intent: production
 rules:
 - apiGroups: [""]
   resources: ["persistentvolumes"]

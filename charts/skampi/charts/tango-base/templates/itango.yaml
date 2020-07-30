@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: itango-configuration-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.itango.component }}-configuration
   namespace: {{ .Release.Namespace }}
 data:
   sdp-subarray-configure-0001.json:
@@ -17,7 +17,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: itango-scripts-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.itango.component }}-scripts
   namespace: {{ .Release.Namespace }}
 data:
   load_config.py:
@@ -28,21 +28,22 @@ data:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: itango-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.itango.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: itango-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.itango.component }}
+    function: {{ .Values.itango.function }}
+    domain: {{ .Values.itango.domain }}
+    intent: {{ .Values.itango.intent }}
 spec:
   volumes:
-    - name: itango-configuration-{{ .Release.Name }}
+    - name: configuration
       configMap:
-        name: itango-configuration-{{ .Release.Name }}
-    - name: itango-scripts-{{ .Release.Name }}
+        name: {{ template "tango-base.name" . }}-{{ .Values.itango.component }}-configuration
+    - name: scripts
       configMap:
-        name: itango-scripts-{{ .Release.Name }}
+        name: {{ template "tango-base.name" . }}-{{ .Values.itango.component }}-scripts
 
   containers:
   - name: itango
@@ -50,7 +51,7 @@ spec:
     imagePullPolicy: {{ .Values.itango.image.pullPolicy }}
     command:
       - /usr/local/bin/wait-for-it.sh
-      - "{{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000"
+      - "{{ include "tango-base.dbservice-name" . }}:10000"
       - --timeout=30
       - --strict
       - --
@@ -59,13 +60,13 @@ spec:
       # - /venv/bin/itango3
     env:
     - name: TANGO_HOST
-      value: "{{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000"
+      value: "{{ include "tango-base.dbservice-name" . }}:10000"
     volumeMounts:
       - mountPath: /app/data
-        name: itango-configuration-{{ .Release.Name }}
+        name: configuration
         readOnly: true
       - mountPath: /app/scripts
-        name: itango-scripts-{{ .Release.Name }}
+        name: scripts
         readOnly: true
     resources:
 {{ toYaml .Values.itango.resources | indent 6 }}

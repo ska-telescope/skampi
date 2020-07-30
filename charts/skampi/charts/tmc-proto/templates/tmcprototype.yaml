@@ -4,8 +4,15 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
+  name: "{{ template "tmc-proto.name" . }}-configuration"
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tmc-proto.labels" . | indent 4 }}
+    component: configurator
+    subsystem: enabling-system
+    function: deployment
+    intent: enabling
+    domain: self-configuration
 data:
   configuration.json:
 {{ (tpl (.Files.Glob "data/configuration.json").AsConfig . ) | indent 2  }}
@@ -31,8 +38,15 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: tmc-proto-configurator-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}
+  name: {{ template "tmc-proto.name" . }}-configurator
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tmc-proto.labels" . | indent 4 }}
+    component: configurator
+    subsystem: enabling-system
+    function: deployment
+    intent: enabling
+    domain: self-configuration
 spec:
   ttlSecondsAfterFinished: 100
   template:
@@ -65,7 +79,7 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: "tmc-proto-configuration-json-{{ template "tmc-proto.name" . }}-{{ .Release.Name }}"
+            name: "{{ template "tmc-proto.name" . }}-configuration"
       restartPolicy: Never
 
 {{- $global := . }}
@@ -76,13 +90,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+  name: {{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}
   namespace: {{ $global.Release.Namespace }}
   labels:
-    app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
-    chart: {{ template "tmc-proto.chart" $global }}
-    release: {{ $global.Release.Name }}
-    heritage: {{ $global.Release.Service }}
+    {{- include "tmc-proto.labels" $global | indent 4 }}
+    component: {{ $deviceserver.name }}
+    subsystem: {{ $deviceserver.subsystem }}
+    intent: production
 spec:
   clusterIP: None
   ports:
@@ -90,37 +104,42 @@ spec:
     port: 1234
     targetPort: 1234
   selector:
-    app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
-    chart: {{ template "tmc-proto.chart" $global }}
-    release: {{ $global.Release.Name }}
+    subsystem: {{ $deviceserver.subsystem }}
+    component: {{ $deviceserver.name }}
+
 
 ---
 # Single Pod separate statefulset per Device Server
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+  name: {{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}
   namespace: {{ $global.Release.Namespace }}
   labels:
-    app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
-    chart: {{ template "tmc-proto.chart" $global }}
-    release: {{ $global.Release.Name }}
-    heritage: {{ $global.Release.Service }}
+    {{- include "tmc-proto.labels" $global | indent 4 }}
+    component: {{ $deviceserver.name }}
+    subsystem: {{ $deviceserver.subsystem }}
+    function: {{ $deviceserver.function }}
+    domain: {{ $deviceserver.domain }}
+    intent: production
+    
 spec:
   selector:
     matchLabels:
-      app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
-      chart: {{ template "tmc-proto.chart" $global }}
-      release: {{ $global.Release.Name }}
-  serviceName: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
+      component: {{ $deviceserver.name }}
+      subsystem: {{ $deviceserver.subsystem }}
+  serviceName: {{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: tmcprototype-{{ template "tmc-proto.name" $global }}-{{ $deviceserver.name }}-{{ $global.Release.Name }}
-        chart: {{ template "tmc-proto.chart" $global }}
-        release: {{ $global.Release.Name }}
-        heritage: {{ $global.Release.Service }}
+        {{- include "tmc-proto.labels" $global | indent 8 }}
+        component: {{ $deviceserver.name }}
+        subsystem: {{ $deviceserver.subsystem }}
+        function: {{ $deviceserver.function }}
+        domain: {{ $deviceserver.domain }}
+        intent: production
+    
     spec:
       initContainers:
       - name: check-databaseds-ready

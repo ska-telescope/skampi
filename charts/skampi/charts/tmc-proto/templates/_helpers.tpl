@@ -2,10 +2,20 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "tmc-proto.name" -}}
+{{- define "tmc-proto.name" }}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
+{{- end }}
+{{/*
+Common labels
+*/}}
+{{- define "tmc-proto.labels" }}
+app: {{ template "tmc-proto.name" . }}
+chart: {{ template "tmc-proto.chart" . }}
+release: {{ .Release.Name }}
+heritage: {{ .Release.Service }}
+system: {{ .Values.system }}
+telescope: {{ .Values.telescope }}
+{{- end }}
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).

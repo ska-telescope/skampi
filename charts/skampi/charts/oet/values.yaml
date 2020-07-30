@@ -61,7 +61,7 @@ itango:
 
 rest:
   enabled: true
-  component: script-executioner
+  component: rest
   function: script-execution
   domain: operations
   image:
@@ -86,7 +86,7 @@ rest:
 
 jupyter:
   enabled: true
-  component: jupyter-console
+  component: jupyter
   function: interactive-script-execution
   domain: operations
   nodePort:

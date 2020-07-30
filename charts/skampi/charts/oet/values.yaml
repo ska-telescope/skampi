@@ -3,13 +3,20 @@
 # Declare variables to be passed into your templates.
 minikube: true
 
+system: TM-mid
+telescope: SKA-mid
+subsystem: observation-execution-tool
+
 ssh:
   enabled: true
   nodePort:
+  component: ssh-console
+  function: maintenance-interface
+  domain: operations
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh
-    tag: 2.0.0
+    tag: 2.1.1
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
@@ -29,10 +36,13 @@ ssh:
 itango:
   enabled: true
   nodePort:
+  component: itango-console
+  function: interactive-script-execution
+  domain: operations
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh
-    tag: 2.0.0
+    tag: 2.1.1
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
@@ -51,10 +61,13 @@ itango:
 
 rest:
   enabled: true
+  component: rest
+  function: script-execution
+  domain: operations
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool
-    tag: 2.0.0
+    tag: 2.1.1
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
@@ -73,15 +86,19 @@ rest:
 
 jupyter:
   enabled: true
+  component: jupyter
+  function: interactive-script-execution
+  domain: operations
   nodePort:
   storage:
     enabled: true
     hostPath: /home/ubuntu/skampi-hostpath/build/jupyter/
     capacity: 0.1G
+    reclaimPolicy: Delete
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-jupyter
-    tag: 2.0.0
+    tag: 2.1.1
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true

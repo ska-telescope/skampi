@@ -3,25 +3,27 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.rest.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.rest.component }}
+    function: {{ .Values.rest.function }}
+    domain: {{ .Values.rest.domain }}
+    intent: production
 spec:
   ports:
   - name: oet-rest
     port: 5000
   clusterIP: None
   selector:
-    app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+    app: {{ template "oet.name" . }}
+    component: {{ .Values.rest.component }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: oet-scripts-{{ template "oet.name" .}}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.rest.component }}-scripts
   namespace: {{ .Release.Namespace }}
 binaryData:
   hello_world.py: |-
@@ -52,26 +54,29 @@ binaryData:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+  name: {{ template "oet.name" . }}-{{ .Values.rest.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
-    chart: {{ template "oet.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "oet.labels" . | indent 4 }}
+    component: {{ .Values.rest.component }}
+    function: {{ .Values.rest.function }}
+    domain: {{ .Values.rest.domain }}
+    intent: production
 spec:
   selector:
     matchLabels:
-      app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
+      app: {{ template "oet.name" . }}
+      component: {{ .Values.rest.component }}
   serviceName: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: rest-{{ template "oet.name" . }}-{{ .Release.Name }}
-        chart: {{ template "oet.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "oet.labels" . | indent 8 }}
+        component: {{ .Values.rest.component }}
+        function: {{ .Values.rest.function }}
+        domain: {{ .Values.rest.domain }}
+        intent: production
     spec:
       initContainers:
       - name: check-databaseds-ready
@@ -121,7 +126,7 @@ spec:
       volumes:
         - name: oet-scripts-volume
           configMap:
-            name: oet-scripts-{{ template "oet.name" .}}-{{ .Release.Name }}
+            name: {{ template "oet.name" . }}-{{ .Values.rest.component }}-scripts
             items:
               - key: hello_world.py
                 path: hello_world.py

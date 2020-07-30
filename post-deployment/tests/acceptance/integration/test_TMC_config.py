@@ -11,6 +11,7 @@ from resources.test_support.persistance_helping import load_config_from_file,upd
 from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it
 from resources.test_support.logging_decorators import log_it
 import resources.test_support.tmc_helpers as tmc
+import time
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -34,8 +35,8 @@ non_default_states_to_check = {
     'mid_d0004/elt/master' : 'pointingState'}
 
 LOGGER = logging.getLogger(__name__)
-
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.select
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_configure_scan():
     
     try:
@@ -59,7 +60,9 @@ def test_configure_scan():
         @sync_configure
         @time_it(90)
         def configure_sub(sdp_block):
-            resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+            #commented because below asserts are already checked in @sync_configure
+            # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+            # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
             configure1_file = 'resources/test_data/TMC_integration/configure1.json'
             update_scan_config_file(configure1_file, sdp_block)
             config = load_config_from_file(configure1_file)
@@ -75,8 +78,23 @@ def test_configure_scan():
         LOGGER.info('TMC-configure tests complete: tearing down...')
         tmc.end_sb()
         LOGGER.info('Invoked EndSB on Subarray')
+        DishMaster1 = DeviceProxy('mid_d0001/elt/master')
+        DishMaster2 = DeviceProxy('mid_d0002/elt/master')
+        LOGGER.info('After EndSB pointingState of Dish1:' + str(DishMaster1.pointingState))
+        LOGGER.info('After EndSB pointingState of Dish2:' + str(DishMaster2.pointingState))
+        
+        SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+        
+        LOGGER.info('Before Release Resource Subarray State and ObsState:' + str(SubarrayNode.State()) + str(SubarrayNode.obsState))
+        LOGGER.info('Before Release Resource pointingState of Dish1:' + str(DishMaster1.pointingState))
+        LOGGER.info('Before Release Resource pointingState of Dish2:' + str(DishMaster2.pointingState))
+        
         tmc.release_resources()
         LOGGER.info('Invoked ReleaseResources on Subarray')
+        LOGGER.info('Subarray State and ObsState:' + str(SubarrayNode.State()) + str(SubarrayNode.obsState))
+        LOGGER.info('Before standby pointingState of Dish1:' + str(DishMaster1.pointingState))
+        LOGGER.info('Before standby pointingState of Dish2:' + str(DishMaster2.pointingState))
+        
         tmc.set_to_standby()
         LOGGER.info('Invoked StandBy on Subarray')
 

@@ -5,7 +5,18 @@ Expand the name of the chart.
 {{- define "cbf-proto.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
-
+{{/*
+Common labels
+*/}}
+{{- define "cbf-proto.labels" }}
+app: {{ template "cbf-proto.name" . }}
+chart: {{ template "cbf-proto.chart" . }}
+release: {{ .Release.Name }}
+heritage: {{ .Release.Service }}
+system: {{ .Values.system }}
+subsystem: {{ .Values.subsystem }}
+telescope: {{ .Values.telescope }}
+{{- end }}
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).

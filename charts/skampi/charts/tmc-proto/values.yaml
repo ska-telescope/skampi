@@ -5,12 +5,15 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
+system: TM-mid
+telescope: SKA-mid
+
 tmcprototype:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/tango-example
     image: tmcprototype
-    tag: 0.2.3
+    tag: 0.2.7
     pullPolicy: IfNotPresent
 
 tmalarmhandler:
@@ -30,6 +33,9 @@ dsconfig:
 
 deviceServers:
   - name: dishmaster1
+    subsystem: enabling
+    function: receptor-simulation
+    domain: sensing
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -38,6 +44,9 @@ deviceServers:
       - -c
       - "/usr/local/bin/DishMasterDS 01"
   - name: dishmaster2
+    subsystem: enabling
+    function: receptor-simulation
+    domain: sensing
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -46,6 +55,9 @@ deviceServers:
       - -c
       - "/usr/local/bin/DishMasterDS 02"
   - name: dishmaster3
+    subsystem: enabling
+    function: receptor-simulation
+    domain: sensing
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -54,6 +66,9 @@ deviceServers:
       - -c
       - "/usr/local/bin/DishMasterDS 03"
   - name: dishmaster4
+    subsystem: enabling
+    function: receptor-simulation
+    domain: sensing
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -62,6 +77,9 @@ deviceServers:
       - -c
       - "/usr/local/bin/DishMasterDS 04"
   - name: dishleafnode1
+    subsystem: general-monitoring
+    function: dish-monitoring
+    domain: general-monitoring
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -70,6 +88,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_d0001/elt/master && /usr/local/bin/DishLeafNodeDS 01"
   - name: dishleafnode2
+    subsystem: general-monitoring
+    function: dish-monitoring
+    domain: general-monitoring
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -78,6 +99,9 @@ deviceServers:
       - -c
       - " retry --max=10 -- tango_admin --ping-device mid_d0002/elt/master && /usr/local/bin/DishLeafNodeDS 02"
   - name: dishleafnode3
+    subsystem: general-monitoring
+    function: dish-monitoring
+    domain: general-monitoring
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -86,6 +110,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_d0003/elt/master && /usr/local/bin/DishLeafNodeDS 03"
   - name: dishleafnode4
+    subsystem: general-monitoring
+    function: dish-monitoring
+    domain: general-monitoring
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -94,6 +121,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_d0004/elt/master && /usr/local/bin/DishLeafNodeDS 04"
   - name: cspsubarrayleafnode1
+    subsystem: subarray1
+    function: observation-execution
+    domain: subarray
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -102,6 +132,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_01 && /usr/local/bin/CspSubarrayLeafNodeDS 01"
   - name: cspsubarrayleafnode2
+    subsystem: subarray2
+    function: observation-execution
+    domain: subarray
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -110,6 +143,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_02 && /usr/local/bin/CspSubarrayLeafNodeDS 02"
   - name: cspsubarrayleafnode3
+    subsystem: subarray3
+    function: observation-execution
+    domain: subarray
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -118,6 +154,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/subarray_03 && /usr/local/bin/CspSubarrayLeafNodeDS 03"
   - name: cspmasterleafnode
+    subsystem: monitoring
+    function: csp-monitoring
+    domain: general-monitoring
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -126,6 +165,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp/elt/master && /usr/local/bin/CspMasterLeafNodeDS 01"
   - name: sdpsubarrayleafnode1
+    subsystem: subarray1
+    function: observation-execution
+    domain: subarray
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -134,6 +176,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_1 && /usr/local/bin/SdpSubarrayLeafNodeDS 01"
   - name: sdpsubarrayleafnode2
+    subsystem: subarray2
+    function: observation-execution
+    domain: subarray
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -142,6 +187,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_2 && /usr/local/bin/SdpSubarrayLeafNodeDS 02"
   - name: sdpsubarrayleafnode3
+    subsystem: subarray3
+    function: observation-execution
+    domain: subarray
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -150,6 +198,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/subarray_3 && /usr/local/bin/SdpSubarrayLeafNodeDS 03"
   - name: sdpmasterleafnode
+    subsystem: monitoring
+    function: sdp-monitoring
+    domain: general-monitoring
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -158,6 +209,9 @@ deviceServers:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_sdp/elt/master && /usr/local/bin/SdpMasterLeafNodeDS 01"
   - name: subarraynode1
+    subsystem: subarray1
+    function: observation-execution
+    domain: subarray
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -172,6 +226,9 @@ deviceServers:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray01 &&\
              /usr/local/bin/SubarrayNodeDS sa1"
   - name: subarraynode2
+    subsystem: subarray2
+    function: observation-execution
+    domain: subarray
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -186,6 +243,9 @@ deviceServers:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray02 &&\
              /usr/local/bin/SubarrayNodeDS sa2"
   - name: subarraynode3
+    subsystem: subarray3
+    function: observation-execution
+    domain: subarray
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -200,6 +260,9 @@ deviceServers:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_leaf_node/sdp_subarray03 &&\
              /usr/local/bin/SubarrayNodeDS sa3"
   - name: centralnode
+    subsystem: monitoring
+    function: telescope-monitoring
+    domain: general-monitoring
     image: "{{ .Values.tmcprototype.image.registry }}/{{ .Values.tmcprototype.image.image }}:{{ .Values.tmcprototype.image.tag }}"
     imagePullPolicy: "{{ .Values.tmcprototype.image.pullPolicy }}"
     command:
@@ -213,6 +276,9 @@ deviceServers:
              retry --max=10 -- tango_admin --ping-device ska_mid/tm_subarray_node/3 &&\
              /usr/local/bin/CentralNodeDS 01"
   - name: tm-alarmhandler
+    subsystem: alarm-management
+    function: alarm-management
+    domain: general-monitoring
     image: "{{ .Values.tmalarmhandler.image.registry }}/{{ .Values.tmalarmhandler.image.image }}:{{ .Values.tmalarmhandler.image.tag }}"
     imagePullPolicy: "{{ .Values.tmalarmhandler.image.pullPolicy }}"
     command:

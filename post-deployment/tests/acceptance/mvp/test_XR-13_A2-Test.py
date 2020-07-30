@@ -114,9 +114,9 @@ def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+    if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
         #this means there must have been an error
-        if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
             take_subarray(1).and_release_all_resources()  
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):

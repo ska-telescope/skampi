@@ -4,13 +4,14 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: logviewer-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.logviewer.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: logviewer-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.logviewer.component }}
+    function: {{ .Values.logviewer.function }}
+    domain: {{ .Values.logviewer.domain }}
+    intent: {{ .Values.logviewer.intent }}
 spec:
   containers:
   - name: logviewer
@@ -18,7 +19,7 @@ spec:
     imagePullPolicy: {{ .Values.logviewer.image.pullPolicy }}
     command:
       - /usr/local/bin/wait-for-it.sh
-      - "{{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000"
+      - "{{ include "tango-base.dbservice-name" . }}:10000"
       - --timeout=30
       - --strict
       - --
@@ -29,7 +30,7 @@ spec:
     - name: DISPLAY
       value: "{{ .Values.display }}"
     - name: TANGO_HOST
-      value: "{{- if .Values.tangoDatabaseDS }}{{ .Values.tangoDatabaseDS }}{{- else -}}{{ if .Values.databaseds.domainTag }}databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}{{- else }}databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}{{- end }}{{- end }}:10000"
+      value: "{{ include "tango-base.dbservice-name" . }}:10000"
     volumeMounts:
       - name: xauthority
         mountPath: /tmp/.Xauthority
@@ -37,11 +38,9 @@ spec:
     resources:
 {{ toYaml .Values.logviewer.resources | indent 6 }}
   volumes:
-  - hostPath:
-      path: {{ .Values.xauthority }}
-      type: File
-    name: xauthority
-  restartPolicy: Always
+    - name: xauthority
+      hostPath:
+        path: {{ .Values.homeDir }}/.Xauthority
 {{- with .Values.nodeSelector }}
   nodeSelector:
 {{ toYaml . | indent 4 }}

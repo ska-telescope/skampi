@@ -12,12 +12,14 @@ LOGGER = logging.getLogger(__name__)
 
 @sync_start_up_telescope
 def start_up():
-    CentralNode = DeviceProxy('ska_mid/tm_central/central_node')   
+    CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
+    LOGGER.info("Before Sending StartupTelescope command on CentralNode state :" + str(CentralNode.State()))   
     CentralNode.StartUpTelescope()
 
 @sync_assign_resources(2,200)
 def compose_sub():
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
     assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
     sdp_block = update_resource_config_file(assign_resources_file)
     LOGGER.info("_______sdp_block________" + str(sdp_block))
@@ -33,14 +35,16 @@ def compose_sub():
 def end_sb():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
-    SubarrayNode.EndSB()
-    LOGGER.info('Invoked EndSB on Subarray')
+    SubarrayNode.End()
+    LOGGER.info('Invoked End on Subarray')
 
 @sync_release_resources
 def release_resources():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
     CentralNode.ReleaseResources('{"subarrayID":1,"releaseALL":true,"receptorIDList":[]}')
+    SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+    LOGGER.info('After Release Resource SubarrayNode State and ObsState:' + str(SubarrayNode.State()) + str(SubarrayNode.ObsState))
     LOGGER.info('Invoked ReleaseResources on Subarray')
 
 
@@ -48,11 +52,14 @@ def release_resources():
 def set_to_standby():
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
     CentralNode.StandByTelescope()
+    SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+    LOGGER.info('After Standby SubarrayNode State and ObsState:' + str(SubarrayNode.State()) + str(SubarrayNode.ObsState))
+    LOGGER.info('After Standby CentralNode State:' + str(CentralNode.State()))
     LOGGER.info('Standby the Telescope')
 
 @sync_configure
 def configure_sub(sdp_block, configure_file):
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    #resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     update_scan_config_file(configure_file, sdp_block)
     config = load_config_from_file(configure_file)
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')

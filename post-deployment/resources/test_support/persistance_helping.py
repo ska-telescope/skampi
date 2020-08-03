@@ -2,6 +2,7 @@ import json
 import random
 from random import choice
 from datetime import date
+from datetime import datetime
 import csv
 import re
 import string
@@ -9,13 +10,20 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
-
 def inc_from_old_nr(oldnr,incremental=1):
     #assumes trailing 5 digits is an integer counter unless succeeded with a dash and a non digit
     #also assumes we wont get increments hgher than 50 000 in a day
-    #inc =  int(re.findall(r'\d{5}(?=$|-\D)',oldnr)[0])  
-    #new_inc = '{:05d}'.format(inc+incremental)
-    new_inc = f'{choice(range(0,99999)):05d}'
+    # TODO : Commenting this logic to generate the number inc by 1
+    LOGGER.info("Old nr:" + str(oldnr))
+    # inc =  int(re.findall(r'\d{5}(?=$|-\D)',oldnr)[0])
+    # LOGGER.info("Last 5 digits of ID:" + str(inc))  
+    # old_inc = '{:05d}'.format(inc+incremental)
+    # LOGGER.info("With inc by 1 logic updated increamented ID: " + str(old_inc))
+    # random.seed(datetime.now())
+    # new_inc = f'{choice(range(0,99999)):05d}'
+    (dt, micro) = datetime.utcnow().strftime('%S.%f').split('.')
+    new_inc = "%s%03d" % (dt, int(micro) / 1000)
+    LOGGER.info("With random generation logic updated ID:" + str(re.sub(r'\d{5}(?=$|-\D)',new_inc,oldnr)))
     return re.sub(r'\d{5}(?=$|-\D)',new_inc,oldnr)
 
 def update_file(file):
@@ -47,6 +55,7 @@ def update_file(file):
 def update_resource_config_file(file):
     with open(file, 'r') as f:
         data = json.load(f)
+    LOGGER.info("READ file before update:" + str(data))
     data['sdp']['id'] = inc_from_old_nr(data['sdp']['id'])
     #assumes index nrs are following inbrokenly from loweest nr to highest nr in the list
     #this means each indix needs to inc by their range = size of the list
@@ -58,8 +67,12 @@ def update_resource_config_file(file):
                 data['sdp']['processing_blocks'][index]['dependencies'][index2]['pb_id'] = data['sdp']['processing_blocks'][0]['id']
     with open(file, 'w') as f:
         json.dump(data, f)
+        #f.write(json.dump(data))
     LOGGER.info("________ AssignResources Updated string for next iteration_______" + str(data))
     LOGGER.info("________ SDP block is_______" + str(data['sdp']))
+    with open(file, 'r') as f:
+        data1 = json.load(f)
+    LOGGER.info("READ file after update:" + str(data1))
     return data['sdp']
 
 

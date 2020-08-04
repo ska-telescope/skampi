@@ -1,4 +1,4 @@
-from resources.test_support.subscribing import EventData,MessageBoard,MessageHandler,DeviceProxy,Handling,Tuple,List,SubscriptionId
+from resources.test_support.subscribing import EventData,MessageBoard,MessageHandler,Tuple,List
 from collections import namedtuple
 from logging import Logger
 from contextlib import contextmanager
@@ -7,13 +7,31 @@ from typing import Callable, ClassVar,Tuple, Set
 from functools import partial
 from time import sleep
 
-BuildSpec = namedtuple('BuildSpec',['attr','device','handler'])
+BuildSpec = namedtuple('BuildSpec',['attr','device','handler','polling'])
 
-subarray_devices = [
-        'ska_mid/tm_subarray_node/1',
-        'mid_csp/elt/subarray_01',
-        'mid_csp_cbf/sub_elt/subarray_01',
-        'mid_sdp/elt/subarray_1']
+
+master_devices = {"mid_csp_cbf/fsp_corr/01",
+        "ska_mid/tm_central/central_node",
+        "mid_csp_cbf/sub_elt/master",
+        "mid_csp/elt/master",
+        "ska_mid/tm_leaf_node/csp_master",
+        "ska_mid/tm_leaf_node/sdp_master",
+        "mid_d0002/elt/master",
+        "mid_d0003/elt/master",
+        "mid_d0001/elt/master",
+        "mid_d0004/elt/master",
+        "mid_sdp/elt/master"}
+
+subarray1_devices = {"mid_csp_cbf/fspcorrsubarray/01_01",
+                    "mid_csp_cbf/fspcorrsubarray/02_01",
+                    "mid_csp_cbf/fspcorrsubarray/03_01",
+                    "mid_csp_cbf/fspcorrsubarray/04_01",
+                    "mid_csp_cbf/sub_elt/subarray_01",
+                    "mid_csp/elt/subarray_01",
+                    "mid_sdp/elt/subarray_1",
+                    "ska_mid/tm_subarray_node/1",
+                    "ska_mid/tm_leaf_node/csp_subarray01",
+                    "ska_mid/tm_leaf_node/sdp_subarray01"}
 
 ### event handlers ###
 #NOTE this mechanism sometimes get events from previous subscriptions when there 
@@ -28,17 +46,32 @@ class WaitUntilEqual(MessageHandler):
         super(WaitUntilEqual,self).__init__(board)
         self.attr = attr
         self.device = device
-        self.value = value
+        self.desired_value = value
+        self.events =[]
 
-    def condition_met(self, event) -> bool:
-        return (str(event.attr_value.value)== self.value)
+    def _is_first_element(self) -> bool:
+        return len(self.events) == 1
 
-    def handle_event(self, event: EventData, id: SubscriptionId, logger) -> None:
-        self._print_event(event)
-        if self.condition_met(event):
-            self.unsubscribe(id)
-        super(WaitUntilEqual,self).handle_event(event,id)
+    def condition_met(self) -> bool:
+        # always ignore the first event as it gets set on subscription an not on behaviour change
+        if self._is_first_element():
+            return False
+        else:
+            event = self.events[-1]
+            current_value = event.attr_value.value
+            return (str(current_value)== self.desired_value)
 
+    def update(self, event: EventData) -> None:
+        self.events.append(event)
+        self.tracer.message(f'new event added to list, current list size is {len(self.events)}')
+
+
+    def handle_event(self,event: EventData, subscription: object, logger) -> None:
+        with self.handle_context(event,subscription):
+            self.update(event)
+            if self.condition_met():
+                self.unsubscribe(subscription)
+        
     def supress_timeout(self) -> bool:
         return False
 
@@ -59,20 +92,19 @@ class WaitUntilChanged(MessageHandler):
         assert self.starting_value is not None
         return self.starting_value != self.current_value
 
-    def update(self,event):
+    def update(self,event: EventData):
         value = str(event.attr_value.value)
         if self.starting_value is None:
             self.starting_value = value
             self.tracer.message(f'first event received, starting state = {self.starting_value}')
         self.current_value = value
 
-    def handle_event(self, event: EventData, id: SubscriptionId, logger) -> None:
-        self._print_event(event)
-        self.update(event)
-        if self.condition_met():
-            self.unsubscribe(id)
-            self.base_evaluation_met = True
-        super(WaitUntilChanged,self).handle_event(event,id)
+    def handle_event(self,event: EventData, subscription: object, logger) -> None:
+        with self.handle_context(event,subscription):
+            self.update(event)
+            if self.condition_met():
+                self.unsubscribe(subscription)
+
 
 class ObserveEvent(MessageHandler):
     '''
@@ -83,10 +115,6 @@ class ObserveEvent(MessageHandler):
         super(ObserveEvent,self).__init__(board)
         self.attr = attr
         self.device = device
-    
-    def handle_event(self, event: EventData, id: SubscriptionId,logger) -> None:
-        self._print_event(event)
-        super(ObserveEvent,self).handle_event(event,id)
 
     def supress_timeout(self) -> bool:
         return True
@@ -98,16 +126,18 @@ class ForAttr():
     intermediate class for buildinng a rule based spec
     takes input device and attribute and returns an condition for evaluating the attribute
     '''
-    def __init__(self,attr,device,builder) -> None:
+    def __init__(self,attr,device,builder,polling=False) -> None:
         self.attr = attr
         self.device = device
         self.builder = builder
+        self.polling = polling
 
     def _add_spec(self, handler: MessageHandler) -> BuildSpec:
         spec = BuildSpec(
             self.attr,
             self.device,
-            handler
+            handler,
+            self.polling
         )
         self.builder.add_spec(spec)
         return spec
@@ -149,8 +179,8 @@ class SetWatingOn():
         self.device = device
         self.builder = builder
 
-    def for_attribute(self, attr: str):
-        return ForAttr(attr,self.device,self.builder)
+    def for_attribute(self, attr: str,polling=False):
+        return ForAttr(attr,self.device,self.builder,polling)
 
 class MessageBoardBuilder():
 
@@ -167,7 +197,8 @@ class MessageBoardBuilder():
     def setup_board(self):
         for _,spec in enumerate(self.specs):
             handler = spec.handler
-            self.board.add_subscription(spec.device,spec.attr,handler)
+            polling = spec.polling
+            self.board.add_subscription(spec.device,spec.attr,handler,polling)
         return self.board
 
 ### rule based pre and post conditions ###
@@ -175,33 +206,50 @@ class MessageBoardBuilder():
 
 def set_wating_for_start_up() -> MessageBoardBuilder:
     b = MessageBoardBuilder()
-    #b.set_waiting_on('ska_mid/tm_subarray_node/1').for_attribute('State').to_become_equal_to('ON')
-    #b.set_waiting_on('mid_csp/elt/subarray_01').for_attribute('State').to_become_equal_to('ON')
-    #b.set_waiting_on('mid_csp_cbf/sub_elt/subarray_01').for_attribute('State').to_become_equal_to('ON')
+    # master devices
+    # ignoring sdp master as it doesnt have polling set up
+    b.set_waiting_on('mid_d0001/elt/master').for_attribute('State').to_become_equal_to('ON')
+    b.set_waiting_on('mid_d0002/elt/master').for_attribute('State').to_become_equal_to('ON')
+    b.set_waiting_on('mid_d0003/elt/master').for_attribute('State').to_become_equal_to('ON')
+    b.set_waiting_on('mid_d0004/elt/master').for_attribute('State').to_become_equal_to('ON')
+    b.set_waiting_on('mid_csp_cbf/sub_elt/master').for_attribute('State').to_become_equal_to('ON')
     b.set_waiting_on('mid_csp/elt/master').for_attribute('State').to_become_equal_to('ON')
-    # TODO disabled because it does not have polling set up
-    #b.set_waiting_on('mid_sdp/elt/master').for_attribute('State').to_become_equal_to('ON')
     b.set_waiting_on('ska_mid/tm_central/central_node').for_attribute('State').to_become_equal_to('ON')
+    # subarray devices
+    b.set_waiting_on('ska_mid/tm_subarray_node/1').for_attribute('State').to_become_equal_to('ON')
+    b.set_waiting_on('mid_csp_cbf/sub_elt/subarray_01').for_attribute('State').to_become_equal_to('ON')
+    b.set_waiting_on('mid_csp/elt/subarray_01').for_attribute('State').to_become_equal_to('ON')
+    b.set_waiting_on('ska_mid/tm_subarray_node/1').for_attribute('State').to_become_equal_to('ON')
+    b.set_waiting_on('mid_sdp/elt/subarray_1').for_attribute('State').to_become_equal_to('ON')
     return b
 
 ## telescope shutting down
 def set_wating_for_shut_down() -> MessageBoardBuilder:
     b = MessageBoardBuilder()
+    # master devices
+    # ignoring sdp master as it doesnt have polling set up
+    b.set_waiting_on('mid_d0001/elt/master').for_attribute('State').to_become_equal_to('STANDBY')
+    b.set_waiting_on('mid_d0002/elt/master').for_attribute('State').to_become_equal_to('STANDBY')
+    b.set_waiting_on('mid_d0003/elt/master').for_attribute('State').to_become_equal_to('STANDBY')
+    b.set_waiting_on('mid_d0004/elt/master').for_attribute('State').to_become_equal_to('STANDBY')
+    b.set_waiting_on('mid_csp_cbf/sub_elt/master').for_attribute('State').to_become_equal_to('STANDBY')
     b.set_waiting_on('mid_csp/elt/master').for_attribute('State').to_become_equal_to('STANDBY')
-    #b.set_waiting_on('mid_csp/elt/subarray_01').for_attribute('State').to_become_equal_to('OFF')
-    #b.set_waiting_on('mid_csp_cbf/sub_elt/subarray_01').for_attribute('State').to_become_equal_to('OFF')
-    # TODO disabled because it does not have polling set up
-    # b.set_waiting_on('mid_sdp/elt/master').for_attribute('State').to_become_equal_to('ON')
     b.set_waiting_on('ska_mid/tm_central/central_node').for_attribute('State').to_become_equal_to('OFF')
+    # subarray devices
+    b.set_waiting_on('ska_mid/tm_subarray_node/1').for_attribute('State').to_become_equal_to('OFF')
+    b.set_waiting_on('mid_csp_cbf/sub_elt/subarray_01').for_attribute('State').to_become_equal_to('OFF')
+    b.set_waiting_on('mid_csp/elt/subarray_01').for_attribute('State').to_become_equal_to('OFF')
+    b.set_waiting_on('ska_mid/tm_subarray_node/1').for_attribute('State').to_become_equal_to('OFF')
+    b.set_waiting_on('mid_sdp/elt/subarray_1').for_attribute('State').to_become_equal_to('OFF')
     return b
     
 ## generic helpers for context managers and sync
 def wait(board:MessageBoard, timeout: float, logger: Logger):
-    print_message = ''
+    print_message = 'incoming events'
     for item in board.get_items(timeout):
-        event,id,handler = (item.event,item.subscription,item.handler)
-        handler.handle_event(event,id,logger)
-        print_message = f'{print_message}{handler.print_event(event)}'
+        handler = item.handler
+        handler.handle_event(item.event,item.subscription,logger)
+        print_message = f'{print_message}{handler.print_event(item.event,ignore_first=True)}'
     logger.info(print_message)
 
 ### context managers and decorators for using rule based pre/post control
@@ -220,8 +268,12 @@ def sync_telescope_starting_up(logger,timeout=5):
     builder = set_wating_for_start_up()
     board = builder.setup_board()
     yield
-    wait(board,timeout,logger)
-    logger.info(board.replay_subscriptions())  
+    try:
+        wait(board,timeout,logger)
+    finally:
+        pass
+        #logger.info(board.replay_self())
+        #logger.info(board.replay_subscriptions())  
 
 
 # telescope shutting down
@@ -231,18 +283,31 @@ def sync_telescope_shutting_down(logger,timeout=5):
     builder = set_wating_for_shut_down()
     board = builder.setup_board()
     yield
-    wait(board,timeout,logger)
+    try:
+        wait(board,timeout,logger)
+    except Exception as e:
+        logger.info(board.replay_self())
+        logger.info(board.replay_subscriptions()) 
+        raise e 
+    finally:
+        pass
 
 watchSpec = namedtuple('watchSpec',['device','attr'])
 @contextmanager
 def observe_states(specs:List[Tuple[str,str]],logger,timeout=5):
     b = MessageBoardBuilder()
     for spec in  specs:
-        b.set_waiting_on(spec.device).for_attribute(spec.attr).and_observe()
+        b.set_waiting_on(spec.device).for_attribute(spec.attr,polling=True).and_observe()
     board = b.setup_board()
     yield
-    wait(board,timeout,logger)
-    logger.info(board.replay_subscriptions())   
+    try:
+        wait(board,timeout,logger)
+    except Exception as e:
+        logger.info(board.replay_self())
+        logger.info(board.replay_subscriptions()) 
+        raise e 
+    finally:
+        pass
 
 
 

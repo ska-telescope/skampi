@@ -1,7 +1,15 @@
+import logging
+
+from tempfile import NamedTemporaryFile
+
+import requests
 import pytest
 
-from tango import DeviceProxy
-from tango_simlib.utilities.validate_device import validate_device_from_url
+from tango import Database
+from tango_simlib.utilities.validate_device import (
+    validate_device_from_path,
+    validate_device_from_url,
+)
 
 SPEC_URLS = {
     "ska_tango_guide_ska_wide": (
@@ -14,24 +22,55 @@ SPEC_URLS = {
     ),
 }
 
-SPECS_TO_CHECK = {
-    "ska_tango_guide_ska_wide": ("mid_d0001/elt/master",),
-    "dish_master": ("mid_d0001/elt/master",),
-}
+
+def check_mid_low(device_name):
+    """Check if a device domain contains mid or low"""
+    domain, *_ = device_name.split("/")
+    if "mid" in domain or "low" in domain:
+        return True
+    return False
 
 
-@pytest.fixture(params=SPECS_TO_CHECK.items())
-def spec_devices(request):
-    return request.param
+@pytest.mark.xfail(reason="Not all SKA devices complies to spec at present")
+def test_ska_devices():
+    """Check SKA devices against the Tango developers guide."""
+    devices = Database().get_device_exported("*")
+    devices = list(filter(check_mid_low, devices))
+
+    test_result = {}
+    with NamedTemporaryFile(mode="wb") as tmp_file:
+        spec_response = requests.get(SPEC_URLS["ska_tango_guide_ska_wide"])
+        tmp_file.write(spec_response.content)
+        tmp_file.seek(0)
+
+        for device in devices:
+            result = validate_device_from_path(device, tmp_file.name, False)
+            if result:
+                test_result.setdefault(result, []).append(device)
+
+    logging.info(
+        "Checked %s devices against spec, %s\n",
+        len(devices),
+        SPEC_URLS["ska_tango_guide_ska_wide"],
+    )
+    for result, devices in test_result.items():
+        logging.info(">>> Devices %s\nHave the following issues:\n%s\n", devices, result)
+
+    assert not test_result.keys()
 
 
-@pytest.mark.fast
-def test_device_conforms_to_spec(spec_devices):
-    """Run through all the specifications and the devices against which to test them"""
-    spec = spec_devices[0]
-    devices = spec_devices[1]
-    for test_device in devices:
-        print("\nChecking device {} against {}".format(test_device, spec))
-        result = validate_device_from_url(test_device, SPEC_URLS[spec], False)
-        # Printing differences for now, rather than asserting
-        print("Differences:\n{}".format(result))
+def test_dishmaster_conforms_to_tango_wide():
+    """Check that dishmaster conforms to tango developers guide"""
+    result = validate_device_from_url(
+        "mid_d0001/elt/master", SPEC_URLS["ska_tango_guide_ska_wide"], False
+    )
+    assert not result
+
+
+@pytest.mark.xfail(reason="dishmaster does not comply with the spec currently")
+def test_dishmaster_conforms_to_dishmaster_spec():
+    """Check that dishmaster device conforms to dishmaster specification"""
+    result = validate_device_from_url(
+        "mid_d0001/elt/master", SPEC_URLS["dish_master"], False
+    )
+    assert not result

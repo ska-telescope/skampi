@@ -19,7 +19,7 @@ LOGGER = logging.getLogger(__name__)
 def test_init():    
   print("Init start-up-telescope")
 
-@pytest.mark.skip(reason="Fails randomly")
+@pytest.mark.skip
 @pytest.mark.fast
 def test_start_up_telescope(run_context):
   assert(telescope_is_in_standby)
@@ -34,14 +34,18 @@ def test_start_up_telescope(run_context):
   # with open('test-harness/files/mutation.json', 'r') as file:
   #   mutation = file.read().replace('\n', '')
   mutation = '{"query":"mutation {\\n  executeCommand(device: \\"ska_mid/tm_central/central_node\\", command: \\"StartUpTelescope\\") {\\n    ok\\n    output\\n    message\\n  }\\n}\\n","variables":"null"}'
+  LOGGER.info("Mutation " + str(mutation))
   jsonMutation = json.loads(mutation)
+  LOGGER.info("jsonMutation "+ str(jsonMutation))
   the_waiter = waiter()
   the_waiter.set_wait_for_starting_up()
   r = requests.post(url=url, json=jsonMutation, cookies=cookies)
   the_waiter.wait()
-  #print(r.text)
+  LOGGER.info("r.text " + str(r.text))
   parsed = json.loads(r.text)
+  LOGGER.info("parsed r.text is " + str(parsed))
   print(json.dumps(parsed, indent=4, sort_keys=True))
+  LOGGER.info("sorted pasrsed r.text " + str(json.dumps(parsed, indent=4, sort_keys=True)))
   try:
     assert parsed['data']['executeCommand']['ok'] == True
   finally:

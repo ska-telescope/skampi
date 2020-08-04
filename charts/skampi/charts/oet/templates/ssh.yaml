@@ -29,7 +29,7 @@ metadata:
 data:
   environment: |
     TANGO_HOST={{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
-    OET_REST_URI=http://rest-{{ template "oet.name" . }}-{{ .Release.Name }}:5000/api/v1.0/procedures
+    OET_REST_URI=http://{{ template "oet.name" . }}-rest:5000/api/v1.0/procedures
   profile: |
     export PATH=/venv/bin:${PATH}
 ---

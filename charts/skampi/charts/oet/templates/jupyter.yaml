@@ -3,7 +3,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ template "oet.name" . }}-{{ .Values.itango.component }}
+  name: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "oet.labels" . | indent 4 }}
@@ -20,7 +20,7 @@ spec:
         paths:
         - path: /jupyter
           backend:
-           serviceName: jupyter-{{ template "oet.name" . }}-{{ .Release.Name }}
+           serviceName: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}
            servicePort: 8888
 ---
 apiVersion: v1
@@ -109,7 +109,7 @@ data:
     TANGO_HOST={{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
   venv.sh: |
     export PATH="/venv/bin:${PATH}"
-    export OET_REST_URI=http://rest-{{ template "oet.name" . }}-{{ .Release.Name }}:5000/api/v1.0/procedures
+    export OET_REST_URI=http://{{ template "oet.name" . }}-rest:5000/api/v1.0/procedures
   jupyter_notebook_config.json: |-
     {
         "NotebookApp": {
@@ -184,7 +184,7 @@ spec:
           - name: SHELL
             value: /bin/bash
           - name: OET_REST_URI
-            value: http://rest-{{ template "oet.name" . }}-{{ .Release.Name }}:5000/api/v1.0/procedures
+            value: http://{{ template "oet.name" . }}-rst:5000/api/v1.0/procedures
           - name: SKUID_URL
             value: "skuid-skuid-{{ .Release.Namespace }}-{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:9870"
         volumeMounts:

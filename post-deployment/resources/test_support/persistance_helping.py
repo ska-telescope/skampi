@@ -2,6 +2,7 @@ import json
 import random
 from random import choice
 from datetime import date
+from datetime import datetime
 import csv
 import re
 import string
@@ -9,13 +10,22 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
-
 def inc_from_old_nr(oldnr,incremental=1):
     #assumes trailing 5 digits is an integer counter unless succeeded with a dash and a non digit
     #also assumes we wont get increments hgher than 50 000 in a day
-    #inc =  int(re.findall(r'\d{5}(?=$|-\D)',oldnr)[0])  
-    #new_inc = '{:05d}'.format(inc+incremental)
+    # TODO : Commenting this logic to generate the number inc by 1
+    LOGGER.info("Old nr:" + str(oldnr))
+    # with 1 increment in id value
+    # inc =  int(re.findall(r'\d{5}(?=$|-\D)',oldnr)[0])
+    # LOGGER.info("Last 5 digits of ID:" + str(inc))  
+    # old_inc = '{:05d}'.format(inc+incremental)
+    # LOGGER.info("With inc by 1 logic updated increamented ID: " + str(old_inc))
+    # Id generation with random numbers
     new_inc = f'{choice(range(0,99999)):05d}'
+    # with timestamp value
+    # (dt, micro) = datetime.utcnow().strftime('%S.%f').split('.')
+    # new_inc = "%s%03d" % (dt, int(micro) / 1000)
+    # LOGGER.info("With random generation logic updated ID:" + str(re.sub(r'\d{5}(?=$|-\D)',new_inc,oldnr)))
     return re.sub(r'\d{5}(?=$|-\D)',new_inc,oldnr)
 
 def update_file(file):
@@ -47,19 +57,31 @@ def update_file(file):
 def update_resource_config_file(file):
     with open(file, 'r') as f:
         data = json.load(f)
+    LOGGER.info("READ file before update:" + str(data))
     data['sdp']['id'] = inc_from_old_nr(data['sdp']['id'])
     #assumes index nrs are following inbrokenly from loweest nr to highest nr in the list
     #this means each indix needs to inc by their range = size of the list
     incremental = len(data['sdp']['processing_blocks'])
     for index,item in enumerate(data['sdp']['processing_blocks']):
-        data['sdp']['processing_blocks'][index]['id'] = inc_from_old_nr(item['id'],incremental)
+        if(index==0):
+            data['sdp']['processing_blocks'][index]['id'] = inc_from_old_nr(item['id'],incremental)
+            first_pb_id_num = data['sdp']['processing_blocks'][index]['id']
+            next_pb_id_num =  int(re.findall(r'\d{5}(?=$|-\D)',first_pb_id_num)[0])
+            LOGGER.info("Last 5 digits of ID:" + str(next_pb_id_num)) 
+        else:
+            next_pb_id_num += 1
+            data['sdp']['processing_blocks'][index]['id'] =  re.sub(r'\d{5}(?=$|-\D)',str(next_pb_id_num).zfill(5),first_pb_id_num)
         if 'dependencies' in item.keys():
             for index2,item2 in enumerate(item['dependencies']):
                 data['sdp']['processing_blocks'][index]['dependencies'][index2]['pb_id'] = data['sdp']['processing_blocks'][0]['id']
     with open(file, 'w') as f:
         json.dump(data, f)
+        #f.write(json.dump(data))
     LOGGER.info("________ AssignResources Updated string for next iteration_______" + str(data))
     LOGGER.info("________ SDP block is_______" + str(data['sdp']))
+    with open(file, 'r') as f:
+        data1 = json.load(f)
+    LOGGER.info("READ file after update:" + str(data1))
     return data['sdp']
 
 

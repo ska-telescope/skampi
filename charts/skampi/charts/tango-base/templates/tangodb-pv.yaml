@@ -6,13 +6,10 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-tangodb-storage
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
 spec:
   storageClassName: standard
   persistentVolumeReclaimPolicy: Recycle
@@ -21,20 +18,17 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /data/tangodb-{{ template "tango-base.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
+    path: {{ template "tango-base.name" . }}-tangodb-storage-{{ .Release.Name }}/
 {{ end }}
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-tangodb-storage
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
 spec:
 {{ if .Values.minikube }}
   storageClassName: standard

@@ -26,7 +26,7 @@ def check_going_out_of_configured():
 def check_going_into_empty():
     ##Can only release resources if subarray is in ON/IDLE
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
-    print ("In here error")
+    print ("In check_going_into_empty")
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
 
 def check_going_into_standby():
@@ -192,7 +192,7 @@ def sync_end_sb(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_ending_SB()
         result = func(*args, **kwargs)
-        the_waiter.wait()
+        the_waiter.wait(100)
         return result
     return wrapper
 
@@ -208,17 +208,18 @@ def sync_sb_ending():
 def sync_release_resources(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        print("In sync_release_resources")
         check_going_into_empty()
         the_waiter = waiter()
         the_waiter.set_wait_for_tearing_down_subarray()
         result = func(*args, **kwargs)
-        the_waiter.wait(100)
+        the_waiter.wait(150)
         return result
     return wrapper
 
 # defined as a context manager
 @contextmanager
-def sync_resources_releasing(timeout=50):
+def sync_resources_releasing(timeout=100):
     # Can only release resources if subarray is in ON/IDLE
     check_going_into_empty()
     the_waiter = waiter()

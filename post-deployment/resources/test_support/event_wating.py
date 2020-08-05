@@ -43,11 +43,14 @@ class WaitUntilEqual(MessageHandler):
     '''
 
     def __init__(self,board, attr: str, value: str, device: str) -> None:
-        super(WaitUntilEqual,self).__init__(board)
         self.attr = attr
         self.device = device
         self.desired_value = value
         self.events =[]
+        super(WaitUntilEqual,self).__init__(board)
+
+    def describe_self(self) -> str:
+        return f'handler that waits for {self.attr} on device {self.device} to be equal to {self.desired_value}'
 
     def _is_first_element(self) -> bool:
         return len(self.events) == 1
@@ -58,8 +61,12 @@ class WaitUntilEqual(MessageHandler):
             return False
         else:
             event = self.events[-1]
-            current_value = event.attr_value.value
-            return (str(current_value)== self.desired_value)
+            if event.err:
+                # continue wiating if an error event was recieved
+                return False
+            else:
+                current_value = self._get_attr_value_as_str(event.attr_value)
+                return (str(current_value)== self.desired_value)
 
     def update(self, event: EventData) -> None:
         self.events.append(event)
@@ -83,10 +90,13 @@ class WaitUntilChanged(MessageHandler):
     '''
 
     def __init__(self,board,attr: str, device: str) -> None:
-        super(WaitUntilChanged,self).__init__(board)
         self.attr = attr
         self.device = device
         self.starting_value = None
+        super(WaitUntilChanged,self).__init__(board)
+
+    def describe_self(self) -> str:
+        return f'handler that waits for any change on {self.attr} on device {self.device}'
 
     def condition_met(self) -> bool:
         assert self.starting_value is not None
@@ -112,9 +122,12 @@ class ObserveEvent(MessageHandler):
     purposes but does not perform any waits on it
     '''
     def __init__(self,board, attr: str, device: str) -> None:
-        super(ObserveEvent,self).__init__(board)
         self.attr = attr
         self.device = device
+        super(ObserveEvent,self).__init__(board)
+
+    def describe_self(self) -> str:
+        return f'handler that records {self.attr} on device {self.device} and stops after a predefined timeout set on the messageboard'
 
     def supress_timeout(self) -> bool:
         return True
@@ -264,7 +277,7 @@ def wait(board:MessageBoard, timeout: float, logger: Logger):
         handler = item.handler
         handler.handle_event(item.event,item.subscription,logger)
         print_message = f'{print_message}{handler.print_event(item.event,ignore_first=True)}'
-    logger.info(print_message)
+    logger.debug(print_message)
 
 ### context managers and decorators for using rule based pre/post control
 
@@ -277,10 +290,13 @@ def sync_telescope_starting_up(logger,timeout=10):
     yield
     try:
         wait(board,timeout,logger)
+    except Exception as e:
+        logger.info(board.replay_self())
+        logger.info(board.replay_subscriptions()) 
+        raise e 
     finally:
         pass
-        #logger.info(board.replay_self())
-        #logger.info(board.replay_subscriptions())  
+
 
 
 # telescope shutting down
@@ -307,10 +323,12 @@ def sync_subarray1_assigning(logger,timeout=10):
     yield
     try:
         wait(board,timeout,logger)
+    except Exception as e:
+        logger.info(board.replay_self())
+        logger.info(board.replay_subscriptions())
+        raise e 
     finally:
-        pass
-        #logger.info(board.replay_self())
-        #logger.info(board.replay_subscriptions())  
+        pass  
 
 
 # releasing

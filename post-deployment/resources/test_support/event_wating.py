@@ -93,7 +93,7 @@ class WaitUntilChanged(MessageHandler):
         return self.starting_value != self.current_value
 
     def update(self,event: EventData):
-        value = str(event.attr_value.value)
+        value = self._get_attr_value_as_str(event.attr_value)
         if self.starting_value is None:
             self.starting_value = value
             self.tracer.message(f'first event received, starting state = {self.starting_value}')
@@ -243,6 +243,20 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
     b.set_waiting_on('mid_sdp/elt/subarray_1').for_attribute('State').to_become_equal_to('OFF')
     return b
     
+## assigning resources
+
+def set_waiting_for_assign_resources():
+    b = MessageBoardBuilder()
+    b.set_waiting_on('ska_mid/tm_subarray_node/1').for_attribute('obsState').to_become_equal_to('ObsState.IDLE')
+    return b
+
+def set_waiting_for_release_resources():
+    b = MessageBoardBuilder()
+    b.set_waiting_on('ska_mid/tm_subarray_node/1').for_attribute('obsState').to_become_equal_to('ObsState.EMPTY')
+    return b
+
+
+
 ## generic helpers for context managers and sync
 def wait(board:MessageBoard, timeout: float, logger: Logger):
     print_message = 'incoming events'
@@ -254,17 +268,10 @@ def wait(board:MessageBoard, timeout: float, logger: Logger):
 
 ### context managers and decorators for using rule based pre/post control
 
-## checks ##
-def check_coming_out_of_standby():
-    pass
-
-def check_going_into_standby():
-    pass
 
 # telescope starting up
 @contextmanager
-def sync_telescope_starting_up(logger,timeout=5):
-    check_coming_out_of_standby()
+def sync_telescope_starting_up(logger,timeout=10):
     builder = set_wating_for_start_up()
     board = builder.setup_board()
     yield
@@ -278,9 +285,38 @@ def sync_telescope_starting_up(logger,timeout=5):
 
 # telescope shutting down
 @contextmanager
-def sync_telescope_shutting_down(logger,timeout=5):
-    check_going_into_standby()
+def sync_telescope_shutting_down(logger,timeout=10):
     builder = set_wating_for_shut_down()
+    board = builder.setup_board()
+    yield
+    try:
+        wait(board,timeout,logger)
+    except Exception as e:
+        logger.info(board.replay_self())
+        logger.info(board.replay_subscriptions()) 
+        raise e 
+    finally:
+        pass
+
+## assigning resources
+# assigning
+@contextmanager
+def sync_subarray1_assigning(logger,timeout=10):
+    builder = set_waiting_for_assign_resources()
+    board = builder.setup_board()
+    yield
+    try:
+        wait(board,timeout,logger)
+    finally:
+        pass
+        #logger.info(board.replay_self())
+        #logger.info(board.replay_subscriptions())  
+
+
+# releasing
+@contextmanager
+def sync_subarray1_releasing(logger,timeout=10):
+    builder = set_waiting_for_release_resources()
     board = builder.setup_board()
     yield
     try:
@@ -294,10 +330,10 @@ def sync_telescope_shutting_down(logger,timeout=5):
 
 watchSpec = namedtuple('watchSpec',['device','attr'])
 @contextmanager
-def observe_states(specs:List[Tuple[str,str]],logger,timeout=5):
+def observe_states(specs:List[Tuple[str,str]],logger,timeout=10):
     b = MessageBoardBuilder()
     for spec in  specs:
-        b.set_waiting_on(spec.device).for_attribute(spec.attr,polling=True).and_observe()
+        b.set_waiting_on(spec.device).for_attribute(spec.attr,polling=False).and_observe()
     board = b.setup_board()
     yield
     try:

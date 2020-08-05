@@ -34,6 +34,8 @@ binaryData:
 {{ .Files.Get "data/example_allocate.py" | b64enc | indent 4 }}
   allocate_from_file.py: |-
 {{ .Files.Get "data/allocate_from_file.py" | b64enc | indent 4 }}
+  allocate_from_file_sb.py: |-
+{{ .Files.Get "data/allocate_from_file_sb.py" | b64enc | indent 4 }}
   deallocate.py: |-
 {{ .Files.Get "data/deallocate.py" | b64enc | indent 4 }}
   startup.py: |-
@@ -136,6 +138,8 @@ spec:
                 path: example_allocate.py
               - key: allocate_from_file.py
                 path: allocate_from_file.py
+              - key: allocate_from_file_sb.py
+                path: allocate_from_file_sb.py
               - key: deallocate.py
                 path: deallocate.py
               - key: startup.py

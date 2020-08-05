@@ -12,12 +12,12 @@ Example allocation and configuration JSON is included with scripts. To use custo
 The OET rest client in SKAMPI can be accessed through Jupyter or OET SSH service.
 
 ### Jupyter
-Get the OET Jupyter service IP and port:
-```
-$ kubectl describe service jupyter-oet-release-name -n integration
-```
+OET Jupyter can be accessed at `http://<hostname>/jupyter`. Password is oet.
 
-Get the NodePort and navigate to `localhost:NodePort/jupyter`. Password is oet.
+Find the hostname: 
+```
+$ kubectl describe ingress oet-jupyter -n integration
+```
 
 In Jupyter, open a terminal by navigating to `New > Terminal`.
 
@@ -26,7 +26,7 @@ You can also use Jupyter to run scripts using notebooks. Example notebooks can b
 ### SSH
 Get the OET SSH service NodePort:
 ```
-$ kubectl describe service ssh-oet-release-name -n integration
+$ kubectl describe service oet-ssh-console -n integration
 ```
 
 SSH to OET container:
@@ -41,7 +41,7 @@ iTango
 
 Get the OET iTango service NodePort:
 ```
-$ kubectl describe service itango-oet-release-name -n integration
+$ kubectl describe service oet-itango-console -n integration
 ```
 
 SSH to the iTango session:

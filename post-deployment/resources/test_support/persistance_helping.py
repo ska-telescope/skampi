@@ -20,12 +20,12 @@ def inc_from_old_nr(oldnr,incremental=1):
     # LOGGER.info("Last 5 digits of ID:" + str(inc))  
     # old_inc = '{:05d}'.format(inc+incremental)
     # LOGGER.info("With inc by 1 logic updated increamented ID: " + str(old_inc))
-    # Id generation with random numbers
-    new_inc = f'{choice(range(0,99999)):05d}'
-    # with timestamp value
+    # random.seed(datetime.now())
+    # new_inc = f'{choice(range(0,99999)):05d}'
     # (dt, micro) = datetime.utcnow().strftime('%S.%f').split('.')
     # new_inc = "%s%03d" % (dt, int(micro) / 1000)
-    # LOGGER.info("With random generation logic updated ID:" + str(re.sub(r'\d{5}(?=$|-\D)',new_inc,oldnr)))
+    new_inc = datetime.utcnow().strftime('%M%3S')
+    LOGGER.info("With random generation logic updated ID:" + str(re.sub(r'\d{5}(?=$|-\D)',new_inc,oldnr)))
     return re.sub(r'\d{5}(?=$|-\D)',new_inc,oldnr)
 
 def update_file(file):

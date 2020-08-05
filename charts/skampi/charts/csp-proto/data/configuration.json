@@ -165,13 +165,13 @@
                             ], 
                             "polled_attr": [
                                 "state", 
-                                "50",
+                                "1000",
                                 "healthstate", 
                                 "1000", 
                                 "adminmode", 
                                 "1000", 
                                 "obsstate", 
-                                "50",
+                                "1000",
                                 "obsmode", 
                                 "1000"
                             ]
@@ -231,13 +231,13 @@
                             ],
                             "polled_attr": [
                                 "state",
-                                "50",
+                                "1000",
                                 "healthstate",
                                 "1000",
                                 "adminmode",
                                 "1000",
                                 "obsstate",
-                                "50",
+                                "1000",
                                 "obsmode",
                                 "1000"
                             ]
@@ -297,13 +297,13 @@
                             ],
                             "polled_attr": [
                                 "state",
-                                "50",
+                                "1000",
                                 "healthstate",
                                 "1000",
                                 "adminmode",
                                 "1000",
                                 "obsstate",
-                                "50",
+                                "1000",
                                 "obsmode",
                                 "1000"
                             ]
@@ -321,13 +321,6 @@
                         "properties": {
                         }
                     }
-                }
-            }
-        },
-        "DataBaseds": {
-            "2": {
-                "DataBase": {
-                    "sys/database/2": {}
                 }
             }
         },
@@ -478,7 +471,7 @@
                             ], 
                             "polled_attr": [
                                 "state", 
-                                "50",
+                                "1000",
                                 "healthstate", 
                                 "1000", 
                                 "adminmode", 
@@ -492,7 +485,7 @@
                                 "vcchealthstate", 
                                 "1000", 
                                 "obsstate", 
-                                "50",
+                                "1000",
                                 "scanid", 
                                 "1000",
 				"outputLinksDistribution",
@@ -572,9 +565,9 @@
                                 "healthstate",
                                 "1000",
                                 "state",
-                                "50",
+                                "1000",
                                 "obsstate",
-                                "50",
+                                "1000",
                                 "vcchealthstate",
                                 "1000",
                                 "adminmode",
@@ -660,9 +653,9 @@
                                 "healthstate",
                                 "1000",
                                 "state",
-                                "50",
+                                "1000",
                                 "obsstate",
-                                "50",
+                                "1000",
                                 "vcchealthstate",
                                 "1000",
                                 "adminmode",

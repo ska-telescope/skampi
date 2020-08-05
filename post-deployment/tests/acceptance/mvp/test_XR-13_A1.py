@@ -54,6 +54,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
+#@pytest.mark.select
 @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
 def test_allocate_resources():
@@ -106,15 +107,15 @@ def check_subarray_composition(result):
 @then("the subarray is in the condition that allows scan configurations to take place")
 def check_subarry_state():
     #check that the TMC report subarray as being in the ON state and obsState = IDLE
-    #assert_that(resource('ska_mid/tm_subarray_node/1').get("State")).is_equal_to("ON")
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('RESOURCING')
+    assert_that(resource('ska_mid/tm_subarray_node/1').get("State")).is_equal_to("ON")
+    #assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('RESOURCING')
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
     #check that the CSP report subarray as being in the ON state and obsState = IDLE
-    # assert_that(resource('mid_csp/elt/subarray_01').get('State')).is_equal_to('ON')
-    # assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
+    assert_that(resource('mid_csp/elt/subarray_01').get('State')).is_equal_to('ON')
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
     # #check that the SDP report subarray as being in the ON state and obsState = IDLE
-    # assert_that(resource('mid_sdp/elt/subarray_1').get('State')).is_equal_to('ON')
-    # assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('IDLE')
+    assert_that(resource('mid_sdp/elt/subarray_1').get('State')).is_equal_to('ON')
+    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('IDLE')
     LOGGER.info("Then the subarray is in the condition that allows scan configurations to take place: PASSED")
 
 def teardown_function(function):

@@ -171,7 +171,7 @@
                                 "adminmode", 
                                 "1000", 
                                 "obsstate", 
-                                "1000",
+                                "50",
                                 "obsmode", 
                                 "1000"
                             ]
@@ -237,7 +237,7 @@
                                 "adminmode",
                                 "1000",
                                 "obsstate",
-                                "1000",
+                                "50",
                                 "obsmode",
                                 "1000"
                             ]
@@ -303,7 +303,7 @@
                                 "adminmode",
                                 "1000",
                                 "obsstate",
-                                "1000",
+                                "50",
                                 "obsmode",
                                 "1000"
                             ]
@@ -485,7 +485,7 @@
                                 "vcchealthstate", 
                                 "1000", 
                                 "obsstate", 
-                                "1000",
+                                "50",
                                 "scanid", 
                                 "1000",
 				"outputLinksDistribution",
@@ -567,7 +567,7 @@
                                 "state",
                                 "1000",
                                 "obsstate",
-                                "1000",
+                                "50",
                                 "vcchealthstate",
                                 "1000",
                                 "adminmode",
@@ -655,7 +655,7 @@
                                 "state",
                                 "1000",
                                 "obsstate",
-                                "1000",
+                                "50",
                                 "vcchealthstate",
                                 "1000",
                                 "adminmode",

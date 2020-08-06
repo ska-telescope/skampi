@@ -53,7 +53,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
-
+#@pytest.mark.select
 @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A4-Test, Sub-array deallocation of resources")
 def test_deallocate_resources():
@@ -84,8 +84,8 @@ def subarray_state_OFF():
     LOGGER.info("Now deallocating resources ... ")
     LOGGER.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
     # Confirm
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("State") == "OFF")
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("IDLE")
+    #assert_that(resource('ska_mid/tm_subarray_node/1').get("State") == "OFF")
+    assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("EMPTY")
     LOGGER.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
     # Confirm
     LOGGER.info("Subarray is now deallocated")

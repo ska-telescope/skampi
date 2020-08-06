@@ -57,6 +57,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
+#@pytest.mark.select
 @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 def test_configure_subarray():
@@ -104,9 +105,9 @@ def check_state():
     # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     # check that the CSP report subarray as being in the obsState = READY
-    #assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
     # check that the SDP report subarray as being in the obsState = READY
-    #assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
+    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
     LOGGER.info("Results OK")
 
 
@@ -114,9 +115,9 @@ def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+    if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
         #this means there must have been an error
-        if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
             take_subarray(1).and_release_all_resources()  
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):

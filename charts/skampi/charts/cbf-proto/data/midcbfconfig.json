@@ -50,8 +50,6 @@
                                 "1000",
                                 "receptortovcc",
                                 "1000",
-                                "reportvccsubarraymembership",
-                                "1000",
                                 "reportfspCorrSubarraymembership",
                                 "1000",
                                 "reportfsphealthstate",
@@ -159,7 +157,7 @@
                             ],
                             "polled_attr": [
                                 "state",
-                                "50",
+                                "1000",
                                 "healthstate",
                                 "1000",
                                 "adminmode",
@@ -306,7 +304,7 @@
                                 "healthstate",
                                 "1000",
                                 "state",
-                                "50",
+                                "1000",
                                 "obsstate",
                                 "50",
                                 "vcchealthstate",
@@ -446,7 +444,7 @@
                             ],
                             "polled_attr": [
                                 "state",
-                                "50",
+                                "1000",
                                 "healthstate",
                                 "1000",
                                 "adminmode",
@@ -1435,8 +1433,6 @@
                                 "healthstate",
                                 "1000",
                                 "adminmode",
-                                "1000",
-                                "subarraymembership",
                                 "1000"
                             ]
                         }
@@ -1510,8 +1506,6 @@
                                 "healthstate",
                                 "1000",
                                 "adminmode",
-                                "1000",
-                                "subarraymembership",
                                 "1000"
                             ]
                         }
@@ -1585,8 +1579,6 @@
                                 "healthstate",
                                 "1000",
                                 "adminmode",
-                                "1000",
-                                "subarraymembership",
                                 "1000"
                             ]
                         }
@@ -1660,8 +1652,6 @@
                                 "healthstate",
                                 "1000",
                                 "adminmode",
-                                "1000",
-                                "subarraymembership",
                                 "1000"
                             ]
                         }

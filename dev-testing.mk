@@ -3,7 +3,7 @@ location:= $(shell pwd)
 kube_path ?= $(shell echo ~/.kube)
 k8_path ?= $(shell echo ~/.minikube)
 PYTHONPATH=/home/tango/skampi/:/home/tango/skampi/post-deployment/:
-testing-pod?=testing-pod-0
+testing-pod?=dev-testing-0
 #the port mapping to host
 hostPort ?= 2020
 testing-config := '{ "apiVersion": "v1","spec":{\

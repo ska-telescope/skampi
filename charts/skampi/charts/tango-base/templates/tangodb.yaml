@@ -4,46 +4,51 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.tangodb.component }}
+    function: {{ .Values.tangodb.function }}
+    domain: {{ .Values.tangodb.domain }}
+    intent: {{ .Values.tangodb.intent }}
 spec:
   ports:
   - name: mysql
     port: 3306
   type: NodePort
   selector:
-    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+    app: {{ template "tango-base.name" . }}
+    component: {{ .Values.tangodb.component }}
 
 ---
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "tango-base.labels" . | indent 4 }}
+    component: {{ .Values.tangodb.component }}
+    function: {{ .Values.tangodb.function }}
+    domain: {{ .Values.tangodb.domain }}
+    intent: {{ .Values.tangodb.intent }}
 spec:
   selector:
     matchLabels:
-      app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-  serviceName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+      app: {{ template "tango-base.name" . }}
+      component: {{ .Values.tangodb.component }}
+  serviceName: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-        chart: {{ template "tango-base.chart" . }}
-        release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
+        {{- include "tango-base.labels" . | indent 8 }}
+        component: {{ .Values.tangodb.component }}
+        function: {{ .Values.tangodb.function }}
+        domain: {{ .Values.tangodb.domain }}
+        intent: {{ .Values.tangodb.intent }}
     spec:
       containers:
       - name: tangodb
@@ -63,6 +68,26 @@ spec:
         ports:
         - name: mysql
           containerPort: 3306
+        {{- if .Values.tangodb.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command: ["sh", "-c", "exec mysqladmin status -uroot -p{{ .Values.tangodb.db.rootpw }}"]
+          initialDelaySeconds: {{ .Values.tangodb.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.tangodb.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.tangodb.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.tangodb.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.tangodb.livenessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.tangodb.readinessProbe.enabled }}
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "exec mysqladmin status -uroot -p{{ .Values.tangodb.db.rootpw }}"]
+          initialDelaySeconds: {{ .Values.tangodb.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.tangodb.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.tangodb.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.tangodb.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.tangodb.readinessProbe.failureThreshold }}
+        {{- end }}
 {{ if .Values.tangodb.use_pv }}
         volumeMounts:
         - name: data
@@ -74,7 +99,7 @@ spec:
 {{ if .Values.tangodb.use_pv }}
       - name: data
         persistentVolumeClaim:
-          claimName: tangodb-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+          claimName: {{ template "tango-base.name" . }}-tangodb-storage
 {{ end }}
 {{- with .Values.nodeSelector }}
       nodeSelector:

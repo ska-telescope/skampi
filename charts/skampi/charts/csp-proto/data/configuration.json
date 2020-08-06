@@ -165,7 +165,7 @@
                             ], 
                             "polled_attr": [
                                 "state", 
-                                "50",
+                                "1000",
                                 "healthstate", 
                                 "1000", 
                                 "adminmode", 
@@ -231,7 +231,7 @@
                             ],
                             "polled_attr": [
                                 "state",
-                                "50",
+                                "1000",
                                 "healthstate",
                                 "1000",
                                 "adminmode",
@@ -297,7 +297,7 @@
                             ],
                             "polled_attr": [
                                 "state",
-                                "50",
+                                "1000",
                                 "healthstate",
                                 "1000",
                                 "adminmode",
@@ -321,13 +321,6 @@
                         "properties": {
                         }
                     }
-                }
-            }
-        },
-        "DataBaseds": {
-            "2": {
-                "DataBase": {
-                    "sys/database/2": {}
                 }
             }
         },
@@ -478,7 +471,7 @@
                             ], 
                             "polled_attr": [
                                 "state", 
-                                "50",
+                                "1000",
                                 "healthstate", 
                                 "1000", 
                                 "adminmode", 
@@ -572,7 +565,7 @@
                                 "healthstate",
                                 "1000",
                                 "state",
-                                "50",
+                                "1000",
                                 "obsstate",
                                 "50",
                                 "vcchealthstate",
@@ -660,7 +653,7 @@
                                 "healthstate",
                                 "1000",
                                 "state",
-                                "50",
+                                "1000",
                                 "obsstate",
                                 "50",
                                 "vcchealthstate",

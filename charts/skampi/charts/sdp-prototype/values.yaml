@@ -5,8 +5,16 @@ feature:
   # Old receive addresses behaviour?
   receive-addresses-hack: 0
 
+system: sdp
+telescope: SKA-mid
+
+
 # Helm deployment controller
 helm_deploy:
+  component: helm-deploy
+  subsystem: execution-control
+  function: runtime-deployment
+  domain: science-data-processing
   image: nexus.engageska-portugal.pt/sdp-prototype/helm-deploy
   version: 0.5.1
   imagePullPolicy: IfNotPresent
@@ -20,6 +28,10 @@ helm_deploy:
 
 # Configuration database
 etcd:
+  component: config-database
+  subsystem: execution-control
+  function: sdp-configuration
+  domain: science-data-processing
   version: "3.3"
   replicas: 1
 
@@ -33,6 +45,10 @@ dsconfig:
 
 # Processing controller
 processing_controller:
+  component: processing-controller
+  subsystem: execution-control
+  function: PB-execution
+  domain: science-data-processing
   image: nexus.engageska-portugal.pt/sdp-prototype/processing-controller
   version: 0.6.0
   replicas: 1
@@ -44,17 +60,73 @@ processing_controller:
 
 # Tango devices
 tangods:
+  component: subarray-controller
+  subsystem: execution-control
+  function: sdp-monitoring-and-control
+  domain: subarray
   master:
     image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_master
     version: 0.3.3
     imagePullPolicy: IfNotPresent
   subarray:
     image: nexus.engageska-portugal.pt/sdp-prototype/tangods_sdp_subarray
-    version: 0.10.1-604858f8
+    version: 0.11.0
     imagePullPolicy: IfNotPresent
+
+deviceServers:
+  - name: master
+    subsystem: execution-control
+    function: sdp-central-control
+    domain: sdp-monitoring
+    env:
+      TANGO_HOST:
+      TOGGLE_AUTO_REGISTER:
+    image: "{{ .Values.tangods.master.image }}:{{ .Values.tangods.master.version }}"
+    imagePullPolicy: "{{ .Values.tangods.master.imagePullPolicy }}"
+  - name: subarray1
+    subsystem: execution-control
+    function: sdp-subarray-observation
+    domain: subarray
+    env:
+      TANGO_HOST:
+      TOGGLE_AUTO_REGISTER:
+      TOGGLE_RECEIVE_ADDRESSES_HACK:
+      TOGGLE_CONFIG_DB:
+    image: "{{ .Values.tangods.subarray.image }}:{{ .Values.tangods.subarray.version }}"
+    imagePullPolicy: "{{ .Values.tangods.subarray.imagePullPolicy }}"
+    args: ["1", "-v4"]
+  - name: subarray2
+    subsystem: execution-control
+    function: sdp-subarray-observation
+    domain: subarray
+    env:
+      TANGO_HOST:
+      TOGGLE_AUTO_REGISTER:
+      TOGGLE_RECEIVE_ADDRESSES_HACK:
+      TOGGLE_CONFIG_DB:
+    image: "{{ .Values.tangods.subarray.image }}:{{ .Values.tangods.subarray.version }}"
+    imagePullPolicy: "{{ .Values.tangods.subarray.imagePullPolicy }}"
+    args: ["2", "-v4"]
+  - name: subarray3
+    subsystem: execution-control
+    function: sdp-subarray-observation
+    domain: subarray
+    env:
+      TANGO_HOST:
+      TOGGLE_AUTO_REGISTER:
+      TOGGLE_RECEIVE_ADDRESSES_HACK:
+      TOGGLE_CONFIG_DB:
+    image: "{{ .Values.tangods.subarray.image }}:{{ .Values.tangods.subarray.version }}"
+    imagePullPolicy: "{{ .Values.tangods.subarray.imagePullPolicy }}"
+    args: ["3", "-v4"]
+
 
 # Console
 console:
+  component: maintenance-interface
+  subsystem: execution-control
+  function: maintenance-control
+  domain: science-data-processing
   image: nexus.engageska-portugal.pt/sdp-prototype/console
   version: 0.2.0
   imagePullPolicy: IfNotPresent
@@ -63,3 +135,9 @@ console:
 
 nameOverride: ""
 fullnameOverride: ""
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

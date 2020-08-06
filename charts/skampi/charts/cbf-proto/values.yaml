@@ -5,12 +5,16 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
+system: csp
+subsystem: cbfmcs-mid
+telescope: SKA-mid
+
 midcbfmcs:
   enabled: true
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: mid-cbf-mcs
-    tag: 0.4.3-44e9ac7
+    tag: 0.4.4-bb69bb4
     pullPolicy: IfNotPresent
 
 dsconfig:
@@ -22,80 +26,104 @@ dsconfig:
 
 deviceServers:
   - name: cbfmaster
+    function: cbf-central-control
+    domain: csp-monitoring
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/01 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/02 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/03 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/04 &&\
-            /venv/bin/python /app/tangods/CbfMaster/CbfMaster/CbfMaster.py master"
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/01 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/02 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/03 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/fsp/04 &&\
+         /venv/bin/python /app/tangods/CbfMaster/CbfMaster/CbfMaster.py master"
   - name: cbfsubarray01
+    function: cbf-subarray-observation
+    domain: subarray
     args:
       - -c
       - "retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
-            /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-01"
+         /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-01"
   - name: cbfsubarray02
+    function: cbf-subarray-observation
+    domain: subarray
     args:
       - -c
       - "retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
-            /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-02"
+         /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-02"
   - name: cbfsubarray03
+    function: cbf-subarray-observation
+    domain: subarray
     args:
       - -c
       - "retry --max=5 -- tango_admin --ping-device mid_csp_cbf/sub_elt/master &&\
-            /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-03"
+         /venv/bin/python /app/tangods/CbfSubarray/CbfSubarrayMulti/CbfSubarrayMulti.py cbfSubarray-03"
   - name: vcc001
+    function: coarse-channelisation
+    domain: sensing
     args:
       - -c
       - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-001"
   - name: vcc002
+    function: coarse-channelisation
+    domain: sensing
     args:
       - -c
       - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-002"
   - name: vcc003
+    function: coarse-channelisation
+    domain: sensing
     args:
       - -c
       - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-003"
   - name: vcc004
+    function: coarse-channelisation
+    domain: sensing
     args:
       - -c
       - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-004"
   - name: fsp01
+    function: fsp-processing
+    domain: signal-processing
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-01"
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+         /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-01"
   - name: fsp02
+    function: fsp-processing
+    domain: signal-processing
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-02"
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+         /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-02"
   - name: fsp03
+    function: fsp-processing
+    domain: signal-processing
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-03"
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+         /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-03"
   - name: fsp04
+    function: fsp-processing
+    domain: signal-processing
     args:
       - -c
       - "retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/001 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
-            retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
-            /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-04"
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/002 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/003 &&\
+         retry --max=10 -- tango_admin --ping-device mid_csp_cbf/vcc/004 &&\
+         /venv/bin/python /app/tangods/Fsp/FspMulti/FspMulti.py fsp-04"
 
 nodeSelector: {}
 

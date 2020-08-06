@@ -58,6 +58,7 @@ non_default_states_to_check = {
     'mid_d0003/elt/master' : 'pointingState',
     'mid_d0004/elt/master' : 'pointingState'}
 
+#@pytest.mark.select
 @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational imaging scan")
 def test_subarray_scan():
@@ -127,8 +128,8 @@ def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
-        if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+    if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
             take_subarray(1).and_release_all_resources()  
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):

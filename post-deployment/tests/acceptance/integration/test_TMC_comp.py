@@ -34,8 +34,8 @@ non_default_states_to_check = {
     'mid_d0004/elt/master' : 'pointingState'}
 
 LOGGER = logging.getLogger(__name__)
-
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.select
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_assign_resources():
     
     try:
@@ -53,7 +53,8 @@ def test_assign_resources():
         @log_it('TMC_int_comp',devices_to_log,non_default_states_to_check)
         @sync_assign_resources(2,150)
         def compose_sub():
-            resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
+            resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+            resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
             assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
             update_resource_config_file(assign_resources_file)
             config = load_config_from_file(assign_resources_file)

@@ -6,6 +6,7 @@ from tango import DevState, TimeVal
 from typing import Callable, ClassVar,Tuple, Set
 from functools import partial
 from time import sleep
+from concurrent import futures
 
 BuildSpec = namedtuple('BuildSpec',['attr','device','handler','polling'])
 
@@ -42,15 +43,21 @@ class WaitUntilEqual(MessageHandler):
     device and attribute they have become equal upon which it removes the subscription
     '''
 
-    def __init__(self,board, attr: str, value: str, device: str) -> None:
+    def __init__(self,board, attr: str, value: str, device: str,master: bool = False) -> None:
         self.attr = attr
         self.device = device
         self.desired_value = value
         self.events =[]
+        self.master = master
         super(WaitUntilEqual,self).__init__(board)
+        if self.master:
+            self.annotate_print_out = ' (master)'
 
     def describe_self(self) -> str:
-        return f'handler that waits for {self.attr} on device {self.device} to be equal to {self.desired_value}'
+        master_shim = ''
+        if self.master:
+            master_shim = ' (master)'
+        return f'handler that waits for {self.attr} on device {self.device} to be equal to {self.desired_value}{master_shim}'
 
     def _is_first_element(self) -> bool:
         return len(self.events) == 1
@@ -78,6 +85,9 @@ class WaitUntilEqual(MessageHandler):
             self.update(event)
             if self.condition_met():
                 self.unsubscribe(subscription)
+                if self.master:
+                    # unscubrive any other subscriptions slaved onto this one
+                    self.unsubscribe_all()
         
     def supress_timeout(self) -> bool:
         return False
@@ -155,13 +165,13 @@ class ForAttr():
         self.builder.add_spec(spec)
         return spec
 
-    def to_become_equal_to(self,value: str) -> None:
+    def to_become_equal_to(self,value: str,master=False) -> None:
         '''
         adds a spec on the builder by choosing
         a handler for the condition to become equal
         '''
         board = self.builder.board
-        handler = WaitUntilEqual(board,self.attr,value,self.device)
+        handler = WaitUntilEqual(board,self.attr,value,self.device,master)
         spec = self._add_spec(handler)
         return spec
 
@@ -258,14 +268,18 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
     
 ## assigning resources
 
-def set_waiting_for_assign_resources():
+def set_waiting_for_assign_resources(id: int):
     b = MessageBoardBuilder()
-    b.set_waiting_on('ska_mid/tm_subarray_node/1').for_attribute('obsState').to_become_equal_to('ObsState.IDLE')
+    b.set_waiting_on(f'ska_mid/tm_subarray_node/{id}').for_attribute('obsState').to_become_equal_to('ObsState.IDLE',master=True)
+    b.set_waiting_on(f'mid_csp/elt/subarray_{id:02d}').for_attribute('obsState').and_observe()
+    b.set_waiting_on(f'mid_sdp/elt/subarray_{id}').for_attribute('obsState').and_observe()
     return b
 
-def set_waiting_for_release_resources():
+def set_waiting_for_release_resources(id: int):
     b = MessageBoardBuilder()
-    b.set_waiting_on('ska_mid/tm_subarray_node/1').for_attribute('obsState').to_become_equal_to('ObsState.EMPTY')
+    b.set_waiting_on(f'ska_mid/tm_subarray_node/{id}').for_attribute('obsState').to_become_equal_to('ObsState.EMPTY',master=True)
+    b.set_waiting_on(f'mid_csp/elt/subarray_{id:02d}').for_attribute('obsState').and_observe()
+    b.set_waiting_on(f'mid_sdp/elt/subarray_{id}').for_attribute('obsState').and_observe()
     return b
 
 
@@ -277,19 +291,21 @@ def wait(board:MessageBoard, timeout: float, logger: Logger):
         handler = item.handler
         handler.handle_event(item.event,item.subscription,logger)
         print_message = f'{print_message}{handler.print_event(item.event,ignore_first=True)}'
-    logger.debug(print_message)
+    return print_message
 
 ### context managers and decorators for using rule based pre/post control
 
 
 # telescope starting up
 @contextmanager
-def sync_telescope_starting_up(logger,timeout=10):
+def sync_telescope_starting_up(logger,timeout=10,log_enabled=False):
     builder = set_wating_for_start_up()
     board = builder.setup_board()
     yield
     try:
-        wait(board,timeout,logger)
+        result = wait(board,timeout,logger)
+        if log_enabled:
+            logger.info(result)
     except Exception as e:
         logger.info(board.replay_self())
         logger.info(board.replay_subscriptions()) 
@@ -297,16 +313,16 @@ def sync_telescope_starting_up(logger,timeout=10):
     finally:
         pass
 
-
-
 # telescope shutting down
 @contextmanager
-def sync_telescope_shutting_down(logger,timeout=10):
+def sync_telescope_shutting_down(logger,timeout=10,log_enabled=False):
     builder = set_wating_for_shut_down()
     board = builder.setup_board()
     yield
     try:
-        wait(board,timeout,logger)
+        result = wait(board,timeout,logger)
+        if log_enabled:
+            logger.info(result)
     except Exception as e:
         logger.info(board.replay_self())
         logger.info(board.replay_subscriptions()) 
@@ -317,13 +333,19 @@ def sync_telescope_shutting_down(logger,timeout=10):
 ## assigning resources
 # assigning
 @contextmanager
-def sync_subarray1_assigning(logger,timeout=10):
-    builder = set_waiting_for_assign_resources()
+def sync_subarray_assigning(id,logger,timeout=10,log_enabled=False):
+    builder = set_waiting_for_assign_resources(id)
     board = builder.setup_board()
-    yield
+    executor = futures.ThreadPoolExecutor(max_workers=1)
+    future_wait_result = executor.submit(wait,board,timeout,logger)
     try:
-        wait(board,timeout,logger)
+        yield
+        result = future_wait_result.result(timeout)
+        if log_enabled:
+            logger.info(result)
     except Exception as e:
+        result = future_wait_result.result(timeout)
+        logger.info(result)
         logger.info(board.replay_self())
         logger.info(board.replay_subscriptions())
         raise e 
@@ -333,13 +355,19 @@ def sync_subarray1_assigning(logger,timeout=10):
 
 # releasing
 @contextmanager
-def sync_subarray1_releasing(logger,timeout=10):
-    builder = set_waiting_for_release_resources()
+def sync_subarray_releasing(id: int,logger,timeout=10,log_enabled=False):
+    builder = set_waiting_for_release_resources(id)
     board = builder.setup_board()
-    yield
+    executor = futures.ThreadPoolExecutor(max_workers=1)
+    future_wait_result = executor.submit(wait,board,timeout,logger)
     try:
-        wait(board,timeout,logger)
+        yield
+        result = future_wait_result.result(timeout)
+        if log_enabled:
+            logger.info(result)
     except Exception as e:
+        result = future_wait_result.result(timeout)
+        logger.info(result)
         logger.info(board.replay_self())
         logger.info(board.replay_subscriptions()) 
         raise e 
@@ -348,14 +376,16 @@ def sync_subarray1_releasing(logger,timeout=10):
 
 watchSpec = namedtuple('watchSpec',['device','attr'])
 @contextmanager
-def observe_states(specs:List[Tuple[str,str]],logger,timeout=10):
+def observe_states(specs:List[Tuple[str,str]],logger,timeout=10,log_enabled=True):
     b = MessageBoardBuilder()
     for spec in  specs:
         b.set_waiting_on(spec.device).for_attribute(spec.attr,polling=False).and_observe()
     board = b.setup_board()
     yield
     try:
-        wait(board,timeout,logger)
+        result = wait(board,timeout,logger)
+        if log_enabled:
+            logger.info(result)
     except Exception as e:
         logger.info(board.replay_self())
         logger.info(board.replay_subscriptions()) 

@@ -80,7 +80,7 @@ def check_resource_ready(resource_name):
 
 LOGGER = logging.getLogger(__name__)
 
-@pytest.mark.select
+#@pytest.mark.select
 @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
 @scenario("../../../features/XTP-826.feature", "Run more than one scan on a sub array")
 def test_multi_scan():
@@ -146,8 +146,8 @@ def check_completion_state(result):
     LOGGER.info("checking completion status")
 
     check_resource_ready('ska_mid/tm_subarray_node/1')
-    # check_resource_ready('mid_csp/elt/subarray_01')
-    # check_resource_ready('mid_sdp/elt/subarray_1')
+    check_resource_ready('mid_csp/elt/subarray_01')
+    check_resource_ready('mid_sdp/elt/subarray_1')
 
     result[TEST_PASSED] = True
 

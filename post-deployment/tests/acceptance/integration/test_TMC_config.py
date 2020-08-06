@@ -36,7 +36,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 @pytest.mark.select
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_configure_scan():
     
     try:
@@ -83,17 +83,8 @@ def test_configure_scan():
         LOGGER.info('After EndSB pointingState of Dish1:' + str(DishMaster1.pointingState))
         LOGGER.info('After EndSB pointingState of Dish2:' + str(DishMaster2.pointingState))
         
-        SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
-        
-        LOGGER.info('Before Release Resource Subarray State and ObsState:' + str(SubarrayNode.State()) + str(SubarrayNode.obsState))
-        LOGGER.info('Before Release Resource pointingState of Dish1:' + str(DishMaster1.pointingState))
-        LOGGER.info('Before Release Resource pointingState of Dish2:' + str(DishMaster2.pointingState))
-        
         tmc.release_resources()
         LOGGER.info('Invoked ReleaseResources on Subarray')
-        LOGGER.info('Subarray State and ObsState:' + str(SubarrayNode.State()) + str(SubarrayNode.obsState))
-        LOGGER.info('Before standby pointingState of Dish1:' + str(DishMaster1.pointingState))
-        LOGGER.info('Before standby pointingState of Dish2:' + str(DishMaster2.pointingState))
         
         tmc.set_to_standby()
         LOGGER.info('Invoked StandBy on Subarray')

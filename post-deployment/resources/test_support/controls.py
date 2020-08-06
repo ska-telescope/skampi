@@ -124,7 +124,7 @@ def restart_subarray(id):
     
 
 def set_telescope_to_standby():
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
     SKAMid().standby()

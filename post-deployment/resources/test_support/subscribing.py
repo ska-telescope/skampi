@@ -1,27 +1,28 @@
+
 import sys
 from functools import reduce
 from datetime import datetime
-from numpy.core.arrayprint import DatetimeFormat
-from tango import device_proxy
-sys.path.append('/home/tango/skampi/post-deployment/')
-from tango import DeviceProxy,EventType,EventData,TimeVal,DeviceAttribute
-CHANGE_EVENT = EventType.CHANGE_EVENT
-from datetime import datetime
-from queue import Empty, Queue
-from time import sleep, time
-from collections import namedtuple
-from resources.test_support.waiting import Listener, listen_for
-from concurrent import futures
-import threading
-from assertpy import assert_that
-import re
-# types
-from typing import ContextManager, Mapping,  Tuple, List, Callable, Dict, Set
+from tango import DeviceProxy,EventType,EventData,DeviceAttribute
 from contextlib import contextmanager
 from ska.base.subarray_device import ObsState
+from datetime import datetime
+from queue import Empty, Queue
+from time import sleep
+from collections import namedtuple
+from concurrent import futures
+import threading
+import re
+# types
+from typing import Tuple, List, Set
+
+
 TracerMessageType = Tuple[datetime,str]
 TracerMessage = namedtuple('TracerMessage',['time','message'])
 SubscriptionId: Tuple[DeviceProxy, int] = namedtuple('SubscriptionId',['device','id'])
+
+CHANGE_EVENT = EventType.CHANGE_EVENT
+sys.path.append('/home/tango/skampi/post-deployment/')
+
 
 ## helpers for reading an event
 def get_attr_value_as_str(attr: DeviceAttribute) -> str:

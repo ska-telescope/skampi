@@ -75,10 +75,10 @@ def test_message_handler_from_Event_Item():
     item = EventItem(mock_event,mock_subscription,m)
     handler = item.handler
     # when I call its handle
-    handler.handle_event()
+    handler.handle_event(mock_event, mock_subscription)
     messages = handler.tracer.print_messages()
     message1 = 'Handler created'
-    message2 = 'handler loaded with event on the queue'
+    message2 = 'Event received:'
     message3 = 'event handling started'
     message4 = 'event handled'
     assert_that(messages).contains(message1,message2,message3,message4)
@@ -91,7 +91,8 @@ def test_events_pusher():
     handler = subscribing.MessageHandler(room)
     queue =  Queue()
     p = subscribing.EventsPusher(queue,handler)
-    subscription = 1
+    subscription = mock.Mock(subscribing.Subscription)
+    subscription.describe.return_value = {"dummy_device_name",'dummy_attr',1}
     p.set_subscription(subscription)
     # when I push an event
     mock_event = subscribing.EventData()

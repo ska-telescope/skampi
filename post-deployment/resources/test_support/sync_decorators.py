@@ -101,14 +101,14 @@ def sync_abort(func):
     def wrapper(*args, **kwargs):
         ##Can ony configure a subarray that is in IDLE/ON
         # Branch changes
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
+        # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY','SCANNING','CONFIGURING'])
         # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
         # w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
         # ################
         # result = func(*args, **kwargs)
         # ################
-        # #w.wait_until_value_changed_to('CONFIGURING')
-        # w.wait_until_value_changed_to('READY',timeout=200)
+        # #w.wait_until_value_changed_to('ABORTING')
+        # w.wait_until_value_changed_to('ABORTED',timeout=200)
         check_going_into_abort()
         w = WaitAbort()
         ################
@@ -116,7 +116,6 @@ def sync_abort(func):
         ################
         w.wait()
         return result
-
     return wrapper
 
 # defined as a context manager

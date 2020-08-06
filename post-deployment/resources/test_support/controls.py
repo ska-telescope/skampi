@@ -92,7 +92,7 @@ class pilot():
     def and_end_sb_when_ready(self):
         @sync_end_sb
         def end_sb():
-            self.SubArray.end_sb()
+            self.SubArray.end()
         end_sb()
         self.state = "Composed"
         return self

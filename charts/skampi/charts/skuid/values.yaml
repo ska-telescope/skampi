@@ -12,7 +12,7 @@ skuid:
     basePath: /skuid
   service_port: 9870
   config:
-    generator_id: T0001
+    generator_id: t0001
     data_dir: /data
     config_dir: /etc/skuid
     entity_types:

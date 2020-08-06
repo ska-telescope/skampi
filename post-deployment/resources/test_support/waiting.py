@@ -1,5 +1,4 @@
-from tango import EventType
-from tango.asyncio import DeviceProxy
+from tango import EventType,DeviceProxy
 import asyncio
 from time import sleep
 from datetime import datetime
@@ -7,6 +6,7 @@ from functools import reduce
 import threading
 from queue import Queue, Empty
 import logging
+
 
 class interfaceStrategy():
     
@@ -469,6 +469,8 @@ class GatheringTimeout(Exception):
         self.gatherer = gatherer
         super().__init__(f'Timed out out gathering events after {self.time} seconds')
 
+def heads(dictionary):
+    return tuple(dictionary.keys())
 
 class Gatherer():
 
@@ -504,13 +506,14 @@ class Gatherer():
         exceptions = []
         for the_listener,binding in self.listeners.items():
             the_tracer = binding['tracer']
-            the_attrs = binding['attrs']
+            the_attrs = heads(binding['attrs'])
             try:
                 the_listener.listen_for(the_attrs)
                 self.active_listeners[the_listener] = None
             except Exception as e:
                 exceptions.append(e)
             the_tracer.message(f'started listening at {datetime.now()}')
+        # if exceptions: raise Exception(f'{exceptions}')
             
     def _time_events(self,timeout,resolution):
         for the_listener,binding in self.listeners.items():
@@ -570,3 +573,21 @@ class Gatherer():
                 # reset the counter and run again without sleeping
                 sleepy = False
                 timer.reset()     
+
+# factories
+
+class ListenFor():
+
+    def __init__(self,devicename: str) -> None:
+        self.devicename = devicename
+
+    def by_immediate_consumption(self,*args) -> Listener:
+        device_proxy = DeviceProxy(self.devicename)
+        strategy = ConsumeImmediately(device_proxy)
+        listener = Listener(device_proxy,strategy,*args)
+        return listener
+
+    
+
+def listen_for(devicename: str):
+    return ListenFor(devicename)

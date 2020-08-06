@@ -1,25 +1,70 @@
+
 import sys
 from functools import reduce
 from datetime import datetime
-from numpy.core.arrayprint import DatetimeFormat
-from tango import device_proxy
-sys.path.append('/home/tango/skampi/post-deployment/')
-from tango import DeviceProxy,EventType,EventData,TimeVal
-CHANGE_EVENT = EventType.CHANGE_EVENT
+from tango import DeviceProxy,EventType,EventData,DeviceAttribute
+from contextlib import contextmanager
+from ska.base.subarray_device import ObsState
 from datetime import datetime
 from queue import Empty, Queue
-from time import sleep, time
+from time import sleep
 from collections import namedtuple
-from resources.test_support.waiting import Listener, listen_for
 from concurrent import futures
 import threading
+import re
 # types
-from typing import ContextManager, Tuple, List, Callable, Dict, Set
-from contextlib import contextmanager
+from typing import Tuple, List, Set
+
 
 TracerMessageType = Tuple[datetime,str]
 TracerMessage = namedtuple('TracerMessage',['time','message'])
 SubscriptionId: Tuple[DeviceProxy, int] = namedtuple('SubscriptionId',['device','id'])
+
+CHANGE_EVENT = EventType.CHANGE_EVENT
+sys.path.append('/home/tango/skampi/post-deployment/')
+
+
+## helpers for reading an event
+def get_attr_value_as_str(attr: DeviceAttribute) -> str:
+    if attr.name == 'obsState' :
+        return str(ObsState(attr.value))
+    if attr.name == 'obsstate' :
+        return str(ObsState(attr.value))
+    else:
+        return str(attr.value)
+    #TODO add extractions for other types of attributes
+
+
+def get_date_lodged(event: EventData) -> datetime:
+        return event.attr_value.time.todatetime()
+
+def get_device_name(event: EventData) -> str:
+    return event.device.name()
+    
+def get_attr_name(event: EventData) -> str:
+    if event.attr_value is None:
+        return  re.search(r"\w*(?<=$)", event.attr_name).group(0) 
+    return event.attr_value.name
+
+def get_attr_value_str(event: EventData) -> str:
+    if event.attr_value is None:
+
+        if event.err:
+            return str(event.errors)
+    else:
+        return get_attr_value_as_str(event.attr_value)
+
+def get_date_lodged_isoformat(event: EventData,init_date: datetime = datetime.now()) ->str:
+    if event.attr_value is None:
+        return init_date.isoformat()
+    return event.attr_value.time.isoformat()
+
+def describe_event(event: EventData,init_date: datetime = datetime.now()) -> Tuple[str,str,str,str]:
+    device_name = get_device_name(event)
+    attr = get_attr_name(event)
+    date = get_date_lodged_isoformat(event,init_date)
+    value = get_attr_value_str(event)
+    return device_name,attr,value,date
 
 
 class Tracer():
@@ -47,21 +92,31 @@ class MessageHandler():
     tracer: Tracer
 
     def __init__(self, board) -> None:
-        self.tracer = Tracer(f"Handler created")
+        self.tracer = Tracer(f"Handler created: {self.describe_self()}")
         self.board = board
         self.cancel_at_next_event = False
         self.cancelled_by_base_class= False
         self.current_subscription = None
         self.second_event_received = False
         self.first_event_received = False
+        self.annotate_print_out = ''
 
+    def describe_self(self) -> str:
+        return ''
+
+    def _get_attr_value_as_str(self, attr: DeviceAttribute) -> str:
+        return get_attr_value_as_str(attr)
+
+    def _get_attr_value_as_int(self, attr: DeviceAttribute) -> int:
+        #TODO
+        pass
+
+    def _get_attr_value_as_list(self, attr: DeviceAttribute) -> List:
+        #TODO
+        pass
 
     def _describe_event(self,event: EventData) -> Tuple[str,str,str,str]:
-        device_name = event.device.name()
-        attr_name = event.attr_value.name
-        attr_value = str(event.attr_value.value)
-        time = event.attr_value.time.isoformat()
-        return device_name,attr_name,attr_value,time
+        return describe_event(event)
 
     def _print_event(self,event: EventData) -> str:
         device_name,attr_name,attr_value,time = self._describe_event(event)
@@ -101,6 +156,9 @@ class MessageHandler():
         self.current_event = event
         self.current_subscription = subscription
 
+    def unsubscribe_all(self):
+        self.board.remove_all_subcriptions()
+        self.tracer.message(f"All subscriptions removed from message board by handler, no more messages expected")
 
     def unsubscribe(self,subscription: object):
         if self.cancelled_by_base_class:
@@ -129,8 +187,8 @@ class MessageHandler():
         if ignore_first:
             if not self.second_event_received:
                 return ''
-        device_name,attr_name,attr_value,time = self._describe_event(event)
-        message = f'\n{time:<30}{device_name:<40}{attr_name:<10}{attr_value:<10}'
+        device_name,attr_name,attr_value,time = describe_event(event)
+        message = f'\n{time:<30}{device_name:<40}{attr_name:<10}{attr_value:<10}{self.annotate_print_out}'
         return message
 
 
@@ -146,28 +204,36 @@ class EventItem():
         self.event = event
         self.subscription = subscription
         self.handler = handler
+        self.init_date = datetime.now()
 
     def get_date_lodged(self) -> datetime:
         return self.event.attr_value.time.todatetime()
+
+    def get_date_init(self) -> datetime:
+        return self.init_date
 
     def get_device_name(self) -> str:
         return self.event.device.name()
         
     def get_attr_name(self) -> str:
+        if self.event.attr_value is None:
+            return  re.search(r"\w*(?<=$)", self.event.attr_name).group(0) 
         return self.event.attr_value.name
 
     def get_attr_value_str(self) -> str:
-        return str(self.event.attr_value.value)
+        if self.event.attr_value is None:
+            if self.event.err:
+                return str(self.event.errors)
+        else:
+            return get_attr_value_as_str(self.event.attr_value)
 
     def get_date_lodged_isoformat(self) ->str:
+        if self.event.attr_value is None:
+            return self.init_date.isoformat()
         return self.event.attr_value.time.isoformat()
 
     def describe(self) -> Tuple[str,str,str,str]:
-        device_name = self.get_device_name()
-        attr = self.get_attr_name()
-        value = self.get_attr_value_str()
-        date = self.get_date_lodged_isoformat()
-        return device_name,attr,value,date
+        return describe_event(self.event,self.init_date)
 
 
 class EventsPusher():
@@ -205,8 +271,12 @@ class EventsPusher():
         and its corresponding subscription id from a device
         onto a shared buffer
         '''
-        self.tracer.message(f'new event received: {event.attr_value.name} '
-                            f'is {str(event.attr_value.value)} on device '
+
+        if event.attr_value is None:
+            self.tracer.message(f'event pushed without a Device attribute {event}')
+        else:
+            self.tracer.message(f'new event received: {event.attr_value.name} '
+                            f'is {get_attr_value_as_str(event.attr_value)} on device '
                             f'{event.device.name()}')
         if self.event_pushed_unidempotently():
             # always keep record of the first event for diagnostic purposes
@@ -237,13 +307,15 @@ class Subscription():
     '''
     def __init__(self,device: DeviceProxy,
                     attr: str,
-                    handler: MessageHandler) -> None:
+                    handler: MessageHandler,
+                    master: bool = False) -> None:
         self.device = device
         self.id = None
         self.handler = handler
         self.attr = attr
         self.polled = False
         self.tracer = Tracer()
+        self.master = master
         self.eventsPusher = None
 
     def handle_timedout(self,*args)-> str:
@@ -252,7 +324,7 @@ class Subscription():
             self.attr,
             *args)
 
-    def describe(self) -> Tuple[str,str]:
+    def describe(self) -> Tuple[str,str,int]:
         device_name = self.device.name()
         attr = self.attr
         id = self.id
@@ -268,7 +340,11 @@ class Subscription():
 
     def unsubscribe(self):
         assert self.id is not None
-        self.device.unsubscribe_event(self.id)
+        try:
+            self.device.unsubscribe_event(self.id)
+        except KeyError:
+            self.tracer.message(f'NOTE: subscription with id {self.id} is aready unsubscribed on {self.device} for attr {self.attr}')
+            return
         self.tracer.message(f'subscription with id {self.id} removed from {self.device} for attr {self.attr}')
 
     def subscribe_by_callback(self, board: Queue) -> None:

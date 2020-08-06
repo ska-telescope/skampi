@@ -68,13 +68,17 @@ def running_telescope() -> None:
         raise e
     try:
         yield
-    finally:
         if is_telescope_running():
             set_telescope_to_standby()
+    finally:
+        pass
+        # actions to do irrespective of errors
+
+
 
 @pytest.fixture
 def resource_config_file() -> str:
     assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
-    update_resource_config_file(assign_resources_file)
+    update_resource_config_file(assign_resources_file,disable_logging=True)
     config = load_config_from_file(assign_resources_file)
     yield config

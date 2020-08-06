@@ -19,3 +19,4 @@ ska_logging
 aiohttp_cors
 flake8
 tango-simlib
+lmcbaseclasses

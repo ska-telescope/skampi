@@ -10,8 +10,8 @@ from collections import deque
 
 from resources.test_support.subscribing import DevicePool, EventItem, MessageBoard, MessageHandler, Subscription, SubscriptionId
 
-@mock.patch('resources.test_support.subscribing.EventsPusher') 
-@mock.patch('resources.test_support.subscribing.DeviceProxy') 
+@mock.patch('resources.test_support.subscribing.EventsPusher')
+@mock.patch('resources.test_support.subscribing.DeviceProxy')
 def test_subscription(Mock_device,Mock_events_pusher):
     # given a Subscription
     mock_device = Mock_device()
@@ -237,7 +237,7 @@ def test_get_pushed_items_polled(Mock_device):
     # when a new event occurs
     event1 = mock.Mock(subscribing.EventData)
     p.push(event1)
-    # I expect to get the item from the message 
+    # I expect to get the item from the message
     item = next(m.get_items())
     assert_that(item.event).is_equal_to(event1)
     assert_that(item.subscription).is_equal_to(subscription)
@@ -255,7 +255,6 @@ def test_get_pushed_items_polled(Mock_device):
     # I expect iteration to stop
     with pytest.raises(StopIteration):
         next(m.get_items())
-    
 
 
 
@@ -265,5 +264,6 @@ def test_get_pushed_items_polled(Mock_device):
 
 
 
-    
+
+
 

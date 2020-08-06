@@ -28,7 +28,6 @@ class interfaceStrategy():
     def query(self):
         pass
 
-
 class ListenerTimeOut(Exception):
     pass
 

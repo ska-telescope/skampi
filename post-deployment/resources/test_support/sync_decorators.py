@@ -15,6 +15,11 @@ def check_going_into_configure():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
+def check_going_into_abort():
+    ##Can ony invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+
 def check_coming_out_of_standby():
     ##Can  only start up a disabled telescope
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
@@ -47,6 +52,22 @@ class WaitConfigure():
     def wait_oet(self):
         self.w.wait_until_value_changed_to('READY',timeout=200)
 
+class WaitAbort():
+
+    def __init__(self):
+        self.w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.w  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
+        self.w  = watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState")
+        self.w  = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
+
+    def wait(self):
+        # self.w.wait_until_value_changed_to('ABORTING')
+        self.w.wait_until_value_changed_to('ABORTED',timeout=200)
+
+    def wait_oet(self):
+        self.w.wait_until_value_changed_to('ABORTED',timeout=200)
+
+
 class WaitScanning():
     def __init__(self):
         self.the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
@@ -73,6 +94,30 @@ def sync_assign_resources(nr_of_receptors=4,timeout=60):
             return result
         return wrapper
     return decorator_sync_assign_resources
+
+
+def sync_abort(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        ##Can ony configure a subarray that is in IDLE/ON
+        # Branch changes
+        # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
+        # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+        # w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+        # ################
+        # result = func(*args, **kwargs)
+        # ################
+        # #w.wait_until_value_changed_to('CONFIGURING')
+        # w.wait_until_value_changed_to('READY',timeout=200)
+        check_going_into_abort()
+        w = WaitAbort()
+        ################
+        result = func(*args, **kwargs)
+        ################
+        w.wait()
+        return result
+
+    return wrapper
 
 # defined as a context manager
 @contextmanager

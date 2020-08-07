@@ -16,7 +16,7 @@ def start_up():
     LOGGER.info("Before Sending StartupTelescope command on CentralNode state :" + str(CentralNode.State()))   
     CentralNode.StartUpTelescope()
 
-@sync_assign_resources(2,200)
+@sync_assign_resources(2,300)
 def compose_sub():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
@@ -34,6 +34,9 @@ def compose_sub():
 @sync_end_sb
 def end_sb():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
+    resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('READY')
+    resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('READY')
+    LOGGER.info('Before invoking End Command all the devices obsstate is ready')
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
     SubarrayNode.End()
     LOGGER.info('Invoked End on Subarray')

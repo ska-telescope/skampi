@@ -91,11 +91,20 @@ def test_multi_scan():
         fixture['state'] = 'Subarray Configured for SCAN'
         
         # and run a new scan bsed on that configuration
+        resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('READY')
+        resource('mid_csp_cbf/sub_elt/subarray_01').assert_attribute('obsState').equals('READY')
+        resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('READY')
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
         LOGGER.info('Starting a scan of 6 seconds')
 
         with log_states('TMC_ss-41-scan2',devices_to_log,non_default_states_to_check):
             with sync_scanning(200):
+                LOGGER.info('Check obsstate again before starting 2nd scan')
+                resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
+                resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('READY')
+                resource('mid_csp_cbf/sub_elt/subarray_01').assert_attribute('obsState').equals('READY')
+                resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('READY')
+        
                 SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
                 SubarrayNode.Scan('{"id":1}')
                 fixture['state'] = 'Subarray SCANNING'

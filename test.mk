@@ -65,7 +65,7 @@ k8s_multiple_test_runs:
 		exit $$status
 
 clear_sdp_config:
-	kubectl exec -n integration sdp-proto-console-0 -- sdpcfg delete -R /
+	kubectl exec -n $(KUBE_NAMESPACE) sdp-proto-console-0 -- sdpcfg delete -R /
 
 smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).
 	@echo "Smoke test START"; \

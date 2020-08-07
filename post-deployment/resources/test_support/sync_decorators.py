@@ -20,6 +20,12 @@ def check_going_into_abort():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
+def check_going_into_restart():
+    ##Can ony invoke restart on a subarray when in ABORTED, FAULT
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['ABORTED','FAULT'])
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+
+
 def check_coming_out_of_standby():
     ##Can  only start up a disabled telescope
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
@@ -27,6 +33,10 @@ def check_coming_out_of_standby():
 def check_going_out_of_configured():
     ##Can only return to ON/IDLE if in READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
+
+def check_going_out_of_abort():
+    ##Can only return to ON/IDLE if in READY
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
 def check_going_into_empty():
     ##Can only release resources if subarray is in ON/IDLE
@@ -55,17 +65,26 @@ class WaitConfigure():
 class WaitAbort():
 
     def __init__(self):
-        self.w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
-        self.w  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
-        self.w  = watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState")
-        self.w  = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
+        self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
 
-    def wait(self):
-        # self.w.wait_until_value_changed_to('ABORTING')
-        self.w.wait_until_value_changed_to('ABORTED',timeout=200)
 
-    def wait_oet(self):
-        self.w.wait_until_value_changed_to('ABORTED',timeout=200)
+    def wait(self,timeout):
+        logging.info("Abort command dispatched, checking that the state transitioned to ABORTING")
+        self.the_watch.wait_until_value_changed_to('ABORTING',timeout)
+        logging.info("state transitioned to ABORTING, waiting for it to return to ABORTED")
+        self.the_watch.wait_until_value_changed_to('ABORTED',timeout)
+
+
+class WaitRestart():
+
+    def __init__(self):
+        self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+
+    def wait(self,timeout):
+        logging.info("Restart command dispatched, checking that the state transitioned to RESTARTING")
+        self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
+        logging.info("state transitioned to RESTARTING, waiting for it to return to EMPTY")
+        self.the_watch.wait_until_value_changed_to('EMPTY',timeout)
 
 
 class WaitScanning():
@@ -95,28 +114,6 @@ def sync_assign_resources(nr_of_receptors=4,timeout=60):
         return wrapper
     return decorator_sync_assign_resources
 
-
-def sync_abort(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        ##Can ony configure a subarray that is in IDLE/ON
-        # Branch changes
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY','SCANNING','CONFIGURING'])
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
-        # w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
-        # ################
-        # result = func(*args, **kwargs)
-        # ################
-        # #w.wait_until_value_changed_to('ABORTING')
-        # w.wait_until_value_changed_to('ABORTED',timeout=200)
-        check_going_into_abort()
-        w = WaitAbort()
-        ################
-        result = func(*args, **kwargs)
-        ################
-        w.wait()
-        return result
-    return wrapper
 
 # defined as a context manager
 @contextmanager
@@ -299,6 +296,34 @@ def sync_scan(timeout=200):
             check_going_out_of_configured()
             w = WaitScanning()
             result = func(*args, **kwargs)
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
+
+def sync_abort(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_into_abort()
+            w = WaitAbort()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
+
+def sync_restart(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_into_restart()
+            w = WaitRestart()
+            ################
+            result = func(*args, **kwargs)
+            ################
             w.wait(timeout)
             return result
         return wrapper

@@ -32,6 +32,8 @@ fluentd:
   enabled: false
 kibana:
   enabled: false
+tangotest:
+  enabled: true
 
 testrunner:
   enabled: false

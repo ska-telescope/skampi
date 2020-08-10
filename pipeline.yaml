@@ -12,5 +12,7 @@ archiver:
   enabled: true
 tangodb:
   use_pv: false
+tangotest:
+  enabled: true
 
 minikube: false

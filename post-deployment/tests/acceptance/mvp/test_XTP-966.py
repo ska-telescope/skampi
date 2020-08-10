@@ -6,6 +6,7 @@ test_XTP-966
 ----------------------------------
 Scheduling Block Test for OET
 """
+import os
 
 import logging
 from multiprocessing.pool import ThreadPool
@@ -33,6 +34,11 @@ from resources.test_support.persistance_helping import update_resource_config_fi
 from resources.test_support.controls import set_telescope_to_standby, set_telescope_to_running
 from resources.test_support.controls import telescope_is_in_standby, take_subarray
 
+DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
+if DEV_TEST_TOGGLE == "False":
+    DISABLE_TESTS_UNDER_DEVELOPMENT = False
+else:
+    DISABLE_TESTS_UNDER_DEVELOPMENT = True
 # used as labels within the result fixture
 # this should be refactored at some point to something more elegant
 SUT_EXECUTED = 'SUT executed'
@@ -258,7 +264,8 @@ def allocate_resources(result, oet_rest_cli):
     return result[TEST_PASSED]
 
 
-@pytest.mark.select
+# @pytest.mark.select
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/XTP-966.feature", "Scheduling Block Resource allocation")
 def test_sb_resource_allocation():
     """Scheduling Block Resource allocation test."""

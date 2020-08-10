@@ -122,7 +122,7 @@ def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     mon_mock_instance.wait_until_conditions_met.return_value = 10
     mon_mock_instance2.wait_until_conditions_met.return_value = 10
     the_waiter.set_wait_for_tearing_down_subarray()
-    assert_that(resource_mock.call_count).is_equal_to(2)
+    assert_that(resource_mock.call_count).is_equal_to(3)
     #assert_that(subscriber_mock.call_count).is_equal_to(5+4)
     #assert_that(watch_mock.call_count).is_equal_to(5+4)
     the_waiter.wait()

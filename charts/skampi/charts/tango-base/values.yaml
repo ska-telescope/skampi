@@ -179,7 +179,7 @@ vnc:
 
 vscode:
   enabled: false
-  component:  vscode-remote
+  component: vscode-remote
   function: remote-developement
   domain: interactive-testing
   intent: enabling

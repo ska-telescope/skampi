@@ -129,7 +129,7 @@ class TestSkuidDeployment:
         resp_json = json.loads(resp_json)
         assert "ska_uid" in resp_json
         assert "generator_id" in resp_json
-        assert resp_json["generator_id"] == "T0001"
+        assert resp_json["generator_id"] == "t0001"
 
         command_str = "curl -s  -X GET http://0.0.0.0:9870/skuid/ska_scan_id"
         resp = skuid_chart_deployment.pod_exec_bash(skuid_pod_name, command_str)

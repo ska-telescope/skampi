@@ -274,8 +274,8 @@ def allocate_resources(result, oet_rest_cli):
     return result[TEST_PASSED]
 
 
-# @pytest.mark.select
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.select
+# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/XTP-966.feature", "Scheduling Block Resource allocation")
 def test_sb_resource_allocation():
     """Scheduling Block Resource allocation test."""
@@ -408,7 +408,7 @@ def end():
     """
     LOGGER.info("End of test: Resetting Telescope")
     LOGGER.debug("Telescope is in %s ",
-                resource('ska_mid/tm_subarray_node/1').get("obsState"))
+                 resource('ska_mid/tm_subarray_node/1').get("obsState"))
 
     if subarray_is("CONFIGURING"):
         LOGGER.info(
@@ -421,7 +421,7 @@ def end():
     if subarray_is("IDLE"):
         take_subarray(1).and_release_all_resources()
         set_telescope_to_standby()
-       
+
     if subarray_is("ON"):
         LOGGER.info("tearing down composed subarray (IDLE)")
         take_subarray(1).and_release_all_resources()
@@ -430,4 +430,4 @@ def end():
         LOGGER.info("Put Telescope back to standby")
         set_telescope_to_standby()
     LOGGER.debug("Telescope is in %s ",
-                resource('ska_mid/tm_subarray_node/1').get("obsState"))
+                 resource('ska_mid/tm_subarray_node/1').get("obsState"))

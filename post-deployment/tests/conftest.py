@@ -6,6 +6,9 @@ from tango import DeviceProxy
 from collections import namedtuple
 from kubernetes import config, client
 
+## shared fixtures
+from resources.test_support.fixtures import run_context
+
 """
 RunContext is a metadata object to access values from the environment, 
 i.e. data that is injected in by the Makefile. Useful if tests need to 
@@ -19,19 +22,6 @@ def test_something(run_context):
     HOSTNAME = 'some-pod-{}'.format(run_context.HELM_RELEASE)
 
 """
-@pytest.fixture(scope="session")
-def run_context():
-    logging.info('in run_context')
-    ENV_VARS = ['HELM_RELEASE', 'KUBE_NAMESPACE', 'TANGO_HOST'] # list of required environment vars
-
-    RunContext = namedtuple('RunContext', ENV_VARS)
-    values = list()
-
-    for var in ENV_VARS:
-        assert os.environ.get(var) # all ENV_VARS must have values set
-        values.append(os.environ.get(var))
-
-    return RunContext(*values)
 
 @pytest.fixture(scope="class")
 def create_centralnode_proxy():

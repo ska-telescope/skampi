@@ -472,9 +472,23 @@ class MessageBoard():
 
 
     def replay_subscriptions(self) -> str:
-        logs = [self.replay_subscription(s) for s in self.archived_subscriptions]
-        reduced = reduce(lambda x,y: f'{x}\n{y}',logs)
-        return f'\n\n{reduced}'
+        reduced_archived_logs =''
+        reduced_active_subscription_logs = ''
+        if self.archived_subscriptions:
+            archived_logs = [self.replay_subscription(s) for s in self.archived_subscriptions]
+            if archived_logs:
+                reduced_archived_logs = reduce(lambda x,y: f'{x}\n{y}',archived_logs)
+            else:
+                reduced_archived_logs = "no archived messages lodged"
+            reduced_archived_logs = f'archived subscriptions ({len(self.subscriptions)}):{reduced_archived_logs}'
+        if self.subscriptions:
+            active_subscription_logs = [self.replay_subscription(s) for s in self.subscriptions]
+            if active_subscription_logs:
+                reduced_active_subscription_logs = reduce(lambda x,y: f'{x}\n{y}',active_subscription_logs)
+            else:
+                reduced_active_subscription_logs = "no active messages lodged"
+            reduced_active_subscription_logs = f'active subscriptions ({len(self.subscriptions)}):{reduced_active_subscription_logs}'
+        return f'\n\n{reduced_active_subscription_logs}{reduced_archived_logs}'
 
     def replay_self(self) -> str:
         header = 'logs from Messageboard'

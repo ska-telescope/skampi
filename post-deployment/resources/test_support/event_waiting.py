@@ -286,7 +286,7 @@ def set_waiting_for_release_resources(id: int):
 
 
 ## generic helpers for context managers and sync
-def wait(board:MessageBoard, timeout: float, logger: Logger):
+def wait(board:MessageBoard, timeout: float, logger: Logger,print_message=''):
     print_message = 'incoming events'
     for item in board.get_items(timeout):
         handler = item.handler
@@ -302,34 +302,36 @@ def wait(board:MessageBoard, timeout: float, logger: Logger):
 def sync_telescope_starting_up(logger,timeout=10,log_enabled=False):
     builder = set_wating_for_start_up()
     board = builder.setup_board()
+    result = ''
     yield
     try:
-        result = wait(board,timeout,logger)
+        result = wait(board,timeout,logger,result)
         if log_enabled:
             logger.info(result)
     except Exception as e:
+        logger.info(result)
         logger.info(board.replay_self())
+        logger.info('subscription logs')
         logger.info(board.replay_subscriptions()) 
         raise e 
-    finally:
-        pass
 
 # telescope shutting down
 @contextmanager
 def sync_telescope_shutting_down(logger,timeout=10,log_enabled=False):
     builder = set_wating_for_shut_down()
     board = builder.setup_board()
+    result = ''
     yield
     try:
-        result = wait(board,timeout,logger)
+        result = wait(board,timeout,logger,result)
         if log_enabled:
             logger.info(result)
     except Exception as e:
+        logger.info(result)
         logger.info(board.replay_self())
+        logger.info('subscription logs')
         logger.info(board.replay_subscriptions()) 
         raise e 
-    finally:
-        pass
 
 ## assigning resources
 # assigning
@@ -338,17 +340,20 @@ def sync_subarray_assigning(id,logger,timeout=10,log_enabled=False):
     builder = set_waiting_for_assign_resources(id)
     board = builder.setup_board()
     executor = futures.ThreadPoolExecutor(max_workers=1)
-    future_wait_result = executor.submit(wait,board,timeout,logger)
+    result = ''
+    future_wait_result = executor.submit(wait,board,timeout,logger,result)
     try:
         yield
         result = future_wait_result.result(timeout)
         if log_enabled:
             logger.info(result)
     except Exception as e:
-        result = future_wait_result.result(timeout)
-        logger.info(result)
-        logger.info(board.replay_self())
-        logger.info(board.replay_subscriptions())
+        try:
+            result = future_wait_result.result(timeout)
+        finally:
+            logger.info(result)
+            logger.info(board.replay_self())
+            logger.info(f'subscription logs{board.replay_subscriptions()}')
         raise e 
     finally:
         pass  
@@ -360,17 +365,21 @@ def sync_subarray_releasing(id: int,logger,timeout=10,log_enabled=False):
     builder = set_waiting_for_release_resources(id)
     board = builder.setup_board()
     executor = futures.ThreadPoolExecutor(max_workers=1)
-    future_wait_result = executor.submit(wait,board,timeout,logger)
+    result = ''
+    future_wait_result = executor.submit(wait,board,timeout,logger,result)
     try:
         yield
         result = future_wait_result.result(timeout)
         if log_enabled:
             logger.info(result)
     except Exception as e:
-        result = future_wait_result.result(timeout)
-        logger.info(result)
-        logger.info(board.replay_self())
-        logger.info(board.replay_subscriptions()) 
+        try:
+            logger.info('exception raised trying to wait for subarray logging thread to finish')
+            result = future_wait_result.result(timeout)
+        finally:
+            logger.info(result)
+            logger.info(board.replay_self())
+            logger.info(board.replay_subscriptions()) 
         raise e 
     finally:
         pass

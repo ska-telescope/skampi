@@ -66,11 +66,14 @@ class WaitAbort():
 
     def __init__(self):
         self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.the_watch  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
+        self.the_watch  = watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState")
+        self.the_watch  = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
 
 
     def wait(self,timeout):
         logging.info("Abort command dispatched, checking that the state transitioned to ABORTING")
-        self.the_watch.wait_until_value_changed_to('ABORTING',timeout)
+        #self.the_watch.wait_until_value_changed_to('ABORTING',timeout)
         logging.info("state transitioned to ABORTING, waiting for it to return to ABORTED")
         self.the_watch.wait_until_value_changed_to('ABORTED',timeout)
 
@@ -319,7 +322,8 @@ def sync_restart(timeout=200):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            check_going_into_restart()
+            #check_going_into_restart()
+            check_going_out_of_abort()
             w = WaitRestart()
             ################
             result = func(*args, **kwargs)

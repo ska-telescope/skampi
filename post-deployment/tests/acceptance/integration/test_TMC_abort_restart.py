@@ -36,7 +36,7 @@ LOGGER = logging.getLogger(__name__)
 
 @pytest.mark.select
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-def test_abort():
+def test_abort_restart():
     try:
         # given an interface to TMC to interact with a subarray node and a central node
         fixture = {}
@@ -59,10 +59,8 @@ def test_abort():
         @log_it('TMC_int_abort', devices_to_log, non_default_states_to_check)
         @sync_abort(100)
         def abort():
-            print("_______Inside Abort_______")
             resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
             resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
-            print("_______Obstate is IDLE_______")
             SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
             SubarrayNode.Abort()
             LOGGER.info('Invoked Abort on Subarray')
@@ -107,4 +105,6 @@ def test_abort():
         elif fixture['state'] == 'Subarray Restarting':
             #restart_subarray(1)
             raise Exception('unable to teardown subarray from being in Restarting')
+        elif fixture['state'] == 'Subarray empty':
+            tmc.set_to_standby()
         pytest.fail("unable to complete test without exceptions")

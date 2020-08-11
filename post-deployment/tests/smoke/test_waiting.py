@@ -2,7 +2,7 @@ from resources.test_support.waiting import Listener,ConsumePeriodically,\
     interfaceStrategy,ConsumeImmediately,ListenerTimeOut, Gatherer,\
     HandeableEvent, GatheringTimeout
 from tango import EventData
-from tango.asyncio import DeviceProxy
+from tango import DeviceProxy
 import tango
 import asyncio
 import mock

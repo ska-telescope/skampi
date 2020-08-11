@@ -124,7 +124,7 @@ install_testing_pod:
 attach:
 	kubectl attach -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -c testing-container
 
-set_up_dev_testing: install_testing_pod test_as_ssh_client tp_config tp_bash_install
+set_up_dev_testing: install_testing_pod test_as_ssh_client tp_cp tp_config tp_bash_install
 
 install_web_dependencies:
 	@echo "Installing Python packages on web container";

@@ -322,7 +322,7 @@ def get_from_dict(dict,key,default=None,error_message=None):
             error_message=f'Error in parsing spec: {key} not specified'
         raise SpecFault(error_message)
     else:
-        return None
+        return default
 
 def assert_one_root(dict, error_message=None):
     if len(dict.keys()) > 1:

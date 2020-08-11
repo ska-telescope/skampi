@@ -59,8 +59,14 @@ class TestRun():
                   f'*****************************************************'
                   f'\n')
             output = {}
-            output['result'] = pytest.main(args)
+            result = pytest.main(args)
+            output['result'] = result
             self.test_outputs[i] =output
+            if self.passed(result):
+                continue
+            else:
+                print('exiting test run as a failure have been generated')
+                break
         self.summarise_outputs()
 
     def passed(self,value) -> bool:

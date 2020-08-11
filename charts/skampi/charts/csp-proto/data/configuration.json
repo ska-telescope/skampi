@@ -169,9 +169,7 @@
                                 "healthstate", 
                                 "1000", 
                                 "adminmode", 
-                                "1000", 
-                                "obsstate", 
-                                "50",
+                                "1000",
                                 "obsmode", 
                                 "1000"
                             ]
@@ -236,8 +234,6 @@
                                 "1000",
                                 "adminmode",
                                 "1000",
-                                "obsstate",
-                                "50",
                                 "obsmode",
                                 "1000"
                             ]
@@ -566,8 +562,6 @@
                                 "1000",
                                 "state",
                                 "1000",
-                                "obsstate",
-                                "50",
                                 "vcchealthstate",
                                 "1000",
                                 "adminmode",
@@ -654,8 +648,6 @@
                                 "1000",
                                 "state",
                                 "1000",
-                                "obsstate",
-                                "50",
                                 "vcchealthstate",
                                 "1000",
                                 "adminmode",

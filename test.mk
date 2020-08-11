@@ -12,6 +12,7 @@ TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(HELM_RELEASE
 # and then runs the requested make target in the container.
 # capture the output of the test in a build folder inside the container 
 # 
+TESTING_ACCOUNT = testing-pod ## this is the service acount name that is used by testing pod enabling it roles to manipulate k8 
 TANGO_HOST = databaseds-tango-base-$(HELM_RELEASE):10000
 MARK ?= fast## this will allow to add the mark parameter of pytest 
 SLEEPTIME ?= 30s ##amount of sleep time for the smoketest target
@@ -26,7 +27,8 @@ k8s_test = tar -c post-deployment/ | \
 		kubectl run $(TEST_RUNNER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
-		--image=$(IMAGE_TO_TEST) -- \
+		--image=$(IMAGE_TO_TEST) \
+		--serviceaccount=$(TESTING_ACCOUNT) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
 		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK) TEST_RUN_SPEC=$(TEST_RUN_SPEC) $1 && \
 		tar -czvf /tmp/build.tgz build && \
@@ -43,7 +45,7 @@ k8s_test = tar -c post-deployment/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-k8s_test: clear_sdp_config smoketest## test the application on K8s
+k8s_test: enable_test_auth smoketest## test the application on K8s
 	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \
@@ -53,8 +55,8 @@ k8s_test: clear_sdp_config smoketest## test the application on K8s
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		exit $$status
 
-TEST_RUN_SPEC=example.yaml
-k8s_multiple_test_runs:
+TEST_RUN_SPEC=spec2.yaml
+k8s_multiple_test_runs: enable_test_auth
 	$(call k8s_test,test_multiple_runs); \
 		status=$$?; \
 		rm -fr build; \
@@ -90,6 +92,16 @@ smoketest: ## check that the number of waiting containers is zero (10 attempts, 
 		fi; \
 		n=`expr $$n - 1`; \
 	done
+
+disable_test_auth = helm delete testing-auth
+
+enable_test_auth:
+	@helm upgrade --install testing-auth post-deployment/resources/testing_auth \
+		--set namespace=$(KUBE_NAMESPACE) \
+		--set accountName=$(TESTING_ACCOUNT)
+
+disable_test_auth:
+	@$(call disable_test_auth)
 
 template_tests:
 	rc=0; \

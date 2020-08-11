@@ -7,8 +7,7 @@ from collections import namedtuple
 from kubernetes import config, client
 
 ## shared fixtures
-# TODO enable run_context by setting up correct role bindings
-#from resources.test_support.fixtures import run_context
+from resources.test_support.fixtures import *
 
 """
 RunContext is a metadata object to access values from the environment, 

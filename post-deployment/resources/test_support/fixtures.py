@@ -2,9 +2,10 @@
 import logging
 import functools
 import os
+from sys import exec_prefix
 from kubernetes.stream import stream
 from contextlib import contextmanager
-from kubernetes import config, client
+from kubernetes import config, client 
 from collections import namedtuple
 import pytest
 from tango import DeviceProxy
@@ -152,8 +153,13 @@ class K8_env():
     ensure tests are not effected by dirty environments
     '''
     def __init__(self, run_context:RunContext ) -> None:
-        _, active_context = config.list_kube_config_contexts()
-        config.load_kube_config(context=active_context['name'])
+        try:
+            config.load_incluster_config()
+        except config.ConfigException:
+            # if Config exception try loading it from config file
+            # assumes this is therefore run from a bash shell with different user than root
+            _, active_context = config.list_kube_config_contexts()
+            config.load_kube_config(context=active_context['name'])
         self.v1 = client.CoreV1Api()
         self.extensions_v1_beta1 = client.ExtensionsV1beta1Api()
         self.env = run_context

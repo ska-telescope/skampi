@@ -92,6 +92,7 @@ tp_config:
 		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-key=/home/tango/.minikube/client.key && \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-certificate=/home/tango/.minikube/client.crt && \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-cluster minikube --certificate-authority=/home/tango/.minikube/ca.crt && \
+		chown tango:tango /home/tango/.kube && \
 		echo 'source <(kubectl completion bash)' >>/home/tango/.bashrc && \
 		echo 'export HELM_RELEASE=$(HELM_RELEASE)' >> /home/tango/.bashrc && \
 		echo 'export KUBE_NAMESPACE=$(KUBE_NAMESPACE)' >> /home/tango/.bashrc && \
@@ -107,7 +108,7 @@ httpPort=30080
 
 RELEASE_NAME=dev-testing
 
-install_testing_pod:
+install_testing_pod: enable_test_auth
 	@helm upgrade --install $(RELEASE_NAME) post-deployment/exploration/dev_testing \
 		--set imageToTest=$(IMAGE_TO_TEST) \
 		--set kubeNamespace=$(KUBE_NAMESPACE) \

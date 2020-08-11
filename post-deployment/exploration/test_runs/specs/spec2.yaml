@@ -1,8 +1,8 @@
 group: 
   runs: 10
-  path: "tests/acceptance/mvp/"
+  path: "tests/acceptance/integration/"
   modules:
-    - path: "test_XTP-826.py"
+    - path: "test_TMC_config.py"
       tests:
-        - name: "test_multi_scan"
+        - name: "test_configure_scan"
 

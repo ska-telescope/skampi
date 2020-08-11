@@ -171,9 +171,10 @@ class K8_env():
         component_name = 'maintenance-interface'
         namespace = self.env.KUBE_NAMESPACE
         pods = self.v1.list_namespaced_pod(namespace).items
+        assert pods is not None, f'error in cleaning config db: no pods installed in namespace {namespace} not found'
         pod = [p.metadata.name for p in pods if p.metadata.labels.get('component') == component_name]   
-        assert len(pod) > 0, f'error in cleaning config db: pod labeled as {component_name} not fpound'
-        assert len(pod) < 2, f'error in cleaning config db: duplicate pods labeled as {component_name} foound'
+        assert len(pod) > 0, f'error in cleaning config db: pod labeled as {component_name} not found'
+        assert len(pod) < 2, f'error in cleaning config db: duplicate pods labeled as {component_name} found'
         pod = pod[0]
         resp = stream(self.v1.connect_get_namespaced_pod_exec, 
                 pod, 

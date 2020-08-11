@@ -165,14 +165,20 @@ class K8_env():
         self.env = run_context
         self.clean_config_etcd()
 
+    def _lookup_by(self,item,key: str,value: str) -> bool:
+        if item.metadata.labels is not None:
+           return item.metadata.labels.get(key) == value
+        else:
+            return False
 
     def clean_config_etcd(self) -> None:
         exec_command = [ 'sdpcfg', 'delete', '-R','/'] 
         component_name = 'maintenance-interface'
         namespace = self.env.KUBE_NAMESPACE
+        logging.info(f'lookging for sdp in namespace:{namespace}')
         pods = self.v1.list_namespaced_pod(namespace).items
         assert pods is not None, f'error in cleaning config db: no pods installed in namespace {namespace} not found'
-        pod = [p.metadata.name for p in pods if p.metadata.labels.get('component') == component_name]   
+        pod = [p.metadata.name for p in pods if self._lookup_by(p,'component',component_name)]   
         assert len(pod) > 0, f'error in cleaning config db: pod labeled as {component_name} not found'
         assert len(pod) < 2, f'error in cleaning config db: duplicate pods labeled as {component_name} found'
         pod = pod[0]

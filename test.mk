@@ -28,7 +28,6 @@ k8s_test = tar -c post-deployment/ | \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
 		--image=$(IMAGE_TO_TEST) \
-		--serviceaccount=$(TESTING_ACCOUNT) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
 		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK) TEST_RUN_SPEC=$(TEST_RUN_SPEC) $1 && \
 		tar -czvf /tmp/build.tgz build && \
@@ -45,7 +44,7 @@ k8s_test = tar -c post-deployment/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-k8s_test: enable_test_auth smoketest## test the application on K8s
+k8s_test: smoketest## test the application on K8s
 	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \

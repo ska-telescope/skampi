@@ -175,5 +175,5 @@ KEY_NAME=""
 
 cp_key:
 	kubectl exec -i $(testing-pod) --namespace $(KUBE_NAMESPACE) \
-	-- /bin/bash -c 'cat > /home/tango/.ssh/authorized_keys' < $$HOME/.ssh/public_keys/$(KEY_NAME).pub
+	-- /bin/bash -c 'cat >> /home/tango/.ssh/authorized_keys' < $$HOME/.ssh/public_keys/$(KEY_NAME).pub
 

@@ -8,6 +8,8 @@ from kubernetes import config, client
 
 ## shared fixtures
 from resources.test_support.fixtures import run_context
+from resources.test_support.fixtures import k8
+
 
 """
 RunContext is a metadata object to access values from the environment, 

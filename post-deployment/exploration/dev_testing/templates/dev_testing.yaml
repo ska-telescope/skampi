@@ -43,6 +43,7 @@ spec:
       name: dev-testing
       namespace: integration
     spec:
+      serviceAccount: {{.Values.serviceAccount}}
       containers:
       - name: testing-container
         image: {{ .Values.imageToTest }}

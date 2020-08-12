@@ -91,7 +91,7 @@ jupyter:
   domain: operations
   nodePort:
   storage:
-    enabled: true
+    enabled: false
     hostPath: /home/ubuntu/skampi-hostpath/build/jupyter/
     capacity: 0.1G
     reclaimPolicy: Delete

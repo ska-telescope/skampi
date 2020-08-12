@@ -49,7 +49,7 @@ OET_TASK_ID = 'OET Task ID'
 # arbitrary number, this only needs to be this big to cover a science scan of several seconds
 DEFAUT_LOOPS_DEFORE_TIMEOUT = 10000
 # avoids swamping the rest server but short enough to avoid delaying the test
-PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS = 0.1
+PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS = 5
 # OET task completion can occur before TMC has completed its activity - so allow time for the
 # last transitions to take place
 PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS = 10
@@ -153,10 +153,12 @@ def become_expected_state(device: str, expected_state: ObsState, timeout=DEFAUT_
                     current_state)
                 last_state = current_state
             else:
-                LOGGER.info("STATE MONITORING: State has changed to %s", current_state)
+                LOGGER.info(
+                    "STATE MONITORING: State has changed to %s", current_state)
                 return current_state == expected_state
         timeout -= 1
-    LOGGER.info("STATE MONITORING: Timeout occured before expected sequence complete")
+    LOGGER.info(
+        "STATE MONITORING: Timeout occured before expected sequence complete")
     return False
 
 
@@ -325,7 +327,8 @@ def attempt_to_clean_subarray_to_idle():
     'the OET allocates resources with the script {script} for the SB {scheduling_block}'
 ))
 def allocate_resources(result, oet_rest_cli, script, scheduling_block):
-    LOGGER.info("PROCESS: Allocating resources for the SB %s ", scheduling_block)
+    LOGGER.info("PROCESS: Allocating resources for the SB %s ",
+                scheduling_block)
     resp = oet_rest_cli.create(script)
     # confirm that create worked and we have a valid id
     result[OET_TASK_ID] = confirm_script_status_and_return_id(resp, 'READY')
@@ -422,8 +425,8 @@ def check_transitions(result):
     Args:
         result ([type]): [description]
     """
-    
-    time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)  
+
+    time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
     thread_result = result[STATE_CHECK].get()
     result[TEST_PASSED] = thread_result
     assert thread_result

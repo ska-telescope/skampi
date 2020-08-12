@@ -6,8 +6,8 @@ from tango import DeviceProxy
 from collections import namedtuple
 from kubernetes import config, client
 
-## shared fixtures
-# from resources.test_support.fixtures import *
+# shared fixtures
+from resources.test_support.fixtures import *
 
 """
 RunContext is a metadata object to access values from the environment, 
@@ -23,35 +23,42 @@ def test_something(run_context):
 
 """
 
+
 @pytest.fixture(scope="class")
 def create_centralnode_proxy():
     centralnode_proxy = DeviceProxy("ska_mid/tm_central/central_node")
     return centralnode_proxy
+
 
 @pytest.fixture(scope="class")
 def create_subarray1_proxy():
     subarray1_proxy = DeviceProxy("ska_mid/tm_subarray_node/1")
     return subarray1_proxy
 
+
 @pytest.fixture(scope="class")
 def create_subarray2_proxy():
     subarray2_proxy = DeviceProxy("ska_mid/tm_subarray_node/2")
     return subarray2_proxy
+
 
 @pytest.fixture(scope="class")
 def create_subarray3_proxy():
     subarray3_proxy = DeviceProxy("ska_mid/tm_subarray_node/3")
     return subarray3_proxy
 
+
 @pytest.fixture(scope="class")
 def create_cspsubarray1_proxy():
     cspsubarray1_proxy = DeviceProxy("mid_csp/elt/subarray_01")
     return cspsubarray1_proxy
 
+
 @pytest.fixture(scope="class")
 def create_sdpsubarray1_proxy():
     sdpsubarray1_proxy = DeviceProxy("mid_sdp/elt/subarray_1")
     return sdpsubarray1_proxy
+
 
 """
 Client that provides access to the Kubernetes API from the namespace the test 
@@ -60,6 +67,8 @@ runner pod is running in.
 https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
 
 """
+
+
 @pytest.fixture(scope="session")
 def k8s_api():
     config.load_incluster_config()

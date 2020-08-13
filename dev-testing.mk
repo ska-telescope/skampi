@@ -148,13 +148,13 @@ attach_testing_pod: # open a shell inside the testing pod
 clean_skampi: # remove any cache or build files on repo created during testing and build jobs
 	 git ls-files . --ignored --exclude-standard --others --directory | xargs rm -R -f
 
-ssh_config = "Host kube-host\n\tHostName $(THIS_HOST) \n \tUser ubuntu"
+ssh_config = 'Host kube-host\n\tHostName $(THIS_HOST) \n\tUser ubuntu'
 
 test_as_ssh_client: # set up the  testing pod so that one can ssh back into the host as well as allow other clients to connect using key-pair
-	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -- bash -c "mkdir /home/tango/.ssh/ && ssh-keygen -t rsa -f /home/tango/.ssh/id_rsa -q -P ''"; \
+	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -- bash -c "mkdir -p /home/tango/.ssh/ && ssh-keygen -t rsa -f /home/tango/.ssh/id_rsa -q -P ''"; \
 	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -- bash -c "cat /home/tango/.ssh/id_rsa.pub" >>~/.ssh/authorized_keys; \
 	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -- bash -c "chown tango:tango -R /home/tango/.ssh/"; \
-	echo $(ssh_config) >temp; \
+	printf $(ssh_config) >temp; \
 	kubectl cp temp $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.ssh/config --namespace $(KUBE_NAMESPACE); \
 	rm temp
 

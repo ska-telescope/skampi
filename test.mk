@@ -44,7 +44,7 @@ k8s_test = tar -c post-deployment/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-k8s_test: clear_sdp_config smoketest## test the application on K8s
+k8s_test: enable_test_auth smoketest## test the application on K8s
 	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \
@@ -64,9 +64,6 @@ k8s_multiple_test_runs: enable_test_auth
 		base64 -d | tar -xzf -; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		exit $$status
-
-temp2:
-	@echo hallo world
 
 clear_sdp_config:
 	@echo "clearing the sdp config db using a temporary call on the console pod on namespace: $(KUBE_NAMESPACE)"
@@ -100,7 +97,7 @@ disable_test_auth = helm delete testing-auth
 
 enable_test_auth:
 	@helm upgrade --install testing-auth post-deployment/resources/testing_auth \
-		--set namespace=$(KUBE_NAMESPACE) \
+		--namespace $(KUBE_NAMESPACE) \
 		--set accountName=$(TESTING_ACCOUNT)
 
 disable_test_auth:

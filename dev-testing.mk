@@ -70,10 +70,20 @@ tp_pip:
 	kubectl exec -it $(testing-pod) --namespace $(KUBE_NAMESPACE) -- bash -c "/usr/bin/python3 -m pip install -r /home/tango/skampi/post-deployment/test_requirements.txt"
 
 tp_cp_kube:
+	@kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c " rm -rf /home/tango/.kube "
 	sudo kubectl cp $(kube_path) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.kube/  --namespace $(KUBE_NAMESPACE)
+	@kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c "chown tango:tango -R /home/tango/.kube"
 
+kube_crt = $(shell kubectl config view --minify -o jsonpath='{.users[0].user.client-certificate}')
+kube_key = $(shell kubectl config view --minify -o jsonpath='{.users[0].user.client-key}')
+kube_ca = $(shell kubectl config view --minify -o jsonpath='{.clusters[0].cluster.certificate-authority}')
 tp_cp_minikube:
-	sudo kubectl cp $(k8_path) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.minikube/ --namespace $(KUBE_NAMESPACE)
+	@kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c " rm -rf /home/tango/.minikube "
+	@kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c " mkdir /home/tango/.minikube "
+	sudo kubectl cp $(kube_crt) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.minikube/client.crt --namespace $(KUBE_NAMESPACE)
+	sudo kubectl cp $(kube_key) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.minikube/client.key --namespace $(KUBE_NAMESPACE)
+	sudo kubectl cp $(kube_ca) $(KUBE_NAMESPACE)/$(testing-pod):/home/tango/.minikube/ca.crt --namespace $(KUBE_NAMESPACE)
+	@kubectl exec -it --namespace $(KUBE_NAMESPACE) $(testing-pod) -- bash -c "chown tango:tango -R /home/tango/.minikube"
 
 tp_cp: tp_cp_kube tp_cp_minikube
 
@@ -84,7 +94,6 @@ tp_bash_install:
 		apt update && sudo apt install bash-completion -y"
 
 
-
 tp_config:
 	@echo "Configuring testing pod"
 	@echo "#######################";
@@ -92,7 +101,6 @@ tp_config:
 		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-key=/home/tango/.minikube/client.key && \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-credentials minikube --client-certificate=/home/tango/.minikube/client.crt && \
 		kubectl config --kubeconfig=/home/tango/.kube/config set-cluster minikube --certificate-authority=/home/tango/.minikube/ca.crt && \
-		chown tango:tango /home/tango/.kube && \
 		echo 'source <(kubectl completion bash)' >>/home/tango/.bashrc && \
 		echo 'export HELM_RELEASE=$(HELM_RELEASE)' >> /home/tango/.bashrc && \
 		echo 'export KUBE_NAMESPACE=$(KUBE_NAMESPACE)' >> /home/tango/.bashrc && \

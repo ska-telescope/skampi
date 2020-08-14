@@ -1,6 +1,7 @@
 """
 Example script for resource allocation from file
 """
+import functools
 import logging
 import os
 
@@ -17,12 +18,23 @@ FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 
-def main(allocate_json, subarray_id=1, update_uids=True):
+def main(*args, **kwargs):
+    LOG.warning('Deprecated! Calling main before sub-array is bound will be removed for PI9')
+    _main(*args, **kwargs)
+
+
+def init(subarray_id: int):
+    global main
+    main = functools.partial(_main, subarray_id)
+    LOG.info(f'Script bound to sub-array {subarray_id}')
+
+
+def _main(subarray_id, allocate_json, update_uids=True):
     """
     Allocate resources to a target sub-array.
 
-    :param allocate_json: name of configuration file
     :param subarray_id: numeric subarray ID
+    :param allocate_json: name of configuration file
     :param update_uids: True if UIDs should be updated
     :return:
     """

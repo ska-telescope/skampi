@@ -12,6 +12,10 @@ FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 
+def init(subarray_id):
+    pass
+
+
 def main(*args, **kwargs):
     """
     Start up telescope.

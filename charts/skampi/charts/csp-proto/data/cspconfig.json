@@ -403,8 +403,6 @@
                                 "mid_csp/elt/vlbi-01"
                             ], 
                             "polled_attr": [
-				"state",
-                                "1000",
 				"healthstate",
                                 "1000",
                                 "obsmode",
@@ -568,8 +566,6 @@
                                 "mid_csp/elt/vlbi-02"
                             ], 
                             "polled_attr": [
-				"state",
-                                "1000",
 				"healthstate",
                                 "1000",
                                 "obsmode",
@@ -733,8 +729,6 @@
                                 "mid_csp/elt/vlbi-03"
                             ], 
                             "polled_attr": [
-				"state",
-                                "1000",
 				"healthstate",
                                 "1000",
                                 "obsmode",

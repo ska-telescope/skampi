@@ -6,33 +6,29 @@ test_XTP-966
 ----------------------------------
 Scheduling Block Test for OET
 """
-import os
-
-import logging
-from multiprocessing.pool import ThreadPool
-
-import re
 import enum
+import logging
+from os import environ
 import time
-from typing import List
+from multiprocessing import Process, Manager
 
 import pytest
-
 from assertpy import assert_that
-from pytest_bdd import scenario, given, when, then, parsers
-
-
 # SUT import
 from oet.procedure.application.restclient import RestClientUI
+from pytest_bdd import given, parsers, scenario, then, when
+
+from resources.test_support.controls import (restart_subarray,
+                                             set_telescope_to_running,
+                                             set_telescope_to_standby,
+                                             take_subarray,
+                                             telescope_is_in_standby)
+from resources.test_support.helpers import resource
 
 # local imports
 
-from resources.test_support.helpers import resource
-from resources.test_support.logging_decorators import log_it
-from resources.test_support.controls import set_telescope_to_standby, set_telescope_to_running
-from resources.test_support.controls import restart_subarray, telescope_is_in_standby, take_subarray
 
-DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
+DEV_TEST_TOGGLE = environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
     DISABLE_TESTS_UNDER_DEVELOPMENT = False
 else:
@@ -41,9 +37,10 @@ else:
 # this should be refactored at some point to something more elegant
 SUT_EXECUTED = 'SUT executed'
 TEST_PASSED = 'Test Passed'
-SUBARRAY_USED = "subarray"
 STATE_CHECK = "State Transitions"
 OET_TASK_ID = 'OET Task ID'
+SCHEDULING_BLOCK = 'Scheduling Block'
+SUBARRAY = 'Subarray Used'
 
 # test tuning parameters
 # arbitrary number, this only needs to be this big to cover a science scan of several seconds
@@ -80,33 +77,17 @@ class ObsState(enum.Enum):
         return str(self.name)
 
 
-devices_to_log = [
-    'ska_mid/tm_subarray_node/1',
-    'mid_csp/elt/subarray_01',
-    'mid_csp_cbf/sub_elt/subarray_01',
-    'mid_sdp/elt/subarray_1',
-    'mid_d0001/elt/master',
-    'mid_d0002/elt/master',
-    'mid_d0003/elt/master',
-    'mid_d0004/elt/master']
-non_default_states_to_check = {
-    'mid_d0001/elt/master': 'pointingState',
-    'mid_d0002/elt/master': 'pointingState',
-    'mid_d0003/elt/master': 'pointingState',
-    'mid_d0004/elt/master': 'pointingState'}
-
-
 @pytest.fixture(name="result")
 def fixture_result():
     """structure used to hold details of the intermediate result at each stage of the test
-    we also use this to track the task id - not convinced this is the best way to do
-    this, it may make more sense as part of the OET REST CLI fixture.
+    we also use this to track the task id and the scheduling block - not convinced this
+    is the best way to do this, it may make more sense as part of the OET REST CLI fixture.
     """
-    fixture = {SUT_EXECUTED: False, TEST_PASSED: True,
-               SUBARRAY_USED: None, STATE_CHECK: None, OET_TASK_ID: None}
+    fixture = {SUT_EXECUTED: False, TEST_PASSED: True, SCHEDULING_BLOCK: None,
+               STATE_CHECK: None, OET_TASK_ID: None}
     yield fixture
     # teardown
-    end()
+    end(fixture[SUBARRAY])
 
 
 @pytest.fixture(name="oet_rest_cli")
@@ -116,73 +97,59 @@ def fixture_rest_client():
     yield rest_cli
 
 
-def get_obsstate(device: str):
-    """Get the current state of the device
+class Subarray:
 
-    Args:
-        device (str): id of the subarray to be checked
+    resource = None
 
-    Returns:
-        str : Current state of the device
-    """
-    return resource(device).get('obsState')
+    def __init__(self, device):
+        self.resource = resource(device)
+
+    def get_obsstate(self):
+        return self.resource.get('obsState')
+
+    def get_state(self):
+        return self.resource.get('State')
+
+    def state_is(self, state):
+        current_state = self.get_state()
+        return current_state == state
+
+    def obsstate_is(self, state):
+        current_state = self.get_obsstate()
+        return current_state == state
 
 
-def become_expected_state(device: str, expected_state: ObsState, timeout=DEFAUT_LOOPS_DEFORE_TIMEOUT):
-    """Wait for the subarray to transition to the expected state
+class Poller:
+    proc = None
+    device = None
+    results = []
 
-    Args:
-        device (str): device to check
-        expected_state (ObsState): expected state
-        timeout (int, optional): time to wait for transiution before failing 
+    def __init__(self, device):
+        self.device = device
 
-    Returns:
-        [type]: [description]
-    """
-    last_state = get_obsstate(device)
-    if last_state == expected_state:
-        msg = "STATE MONITORING: State has changed to " + " obsState :" + last_state
-        LOGGER.info(msg)
-        return True
-    while timeout != 0:
-        current_state = get_obsstate(device)
-        if current_state != last_state:
-            if current_state == 'READY' and expected_state != 'READY':
-                LOGGER.info(
-                    "STATE MONITORING: State has changed to %s - counting as transitory",
-                    current_state)
-                last_state = current_state
-            else:
+    def start_polling(self):
+        manager = Manager()
+        self.results = manager.list()
+        self.proc = Process(target=self.track_obsstates,
+                            args=(self.device, self.results,))
+        self.proc.start()
+        print("Starting")
+
+    def stop_polling(self):
+        if self.proc is not None:
+            self.proc.terminate()
+
+    def get_results(self):
+        return self.results
+
+    def track_obsstates(self, device, recorded_states):
+        LOGGER.info("STATE MONITORING: Started Tracking")
+        while True:
+            current_state = device.get_obsstate()
+            if len(recorded_states) == 0 or current_state != recorded_states[-1]:
                 LOGGER.info(
                     "STATE MONITORING: State has changed to %s", current_state)
-                return current_state == expected_state
-        timeout -= 1
-    LOGGER.info(
-        "STATE MONITORING: Timeout occured before expected sequence complete")
-    return False
-
-
-def track_obsstates(device: str, obstate_flow: List[ObsState], timeout=DEFAUT_LOOPS_DEFORE_TIMEOUT):
-    """For a given list of obs states will track the state chnges on the
-    device to confirm that the state chages to the next one on the list
-    if a change that doesn't match the predicted order is detected then
-    it returns False
-
-    Args:
-        device (str): device id for the subarray or other device being tracked
-        obstate_flow (List[ObsState]): list of states in order
-        timeout (int, optional): time to wait for transiution before failing . 
-
-    Returns:
-        result (boolean): True if all states were matched, 
-                          False if the expecte order is not followed
-    """
-    for obs_state in obstate_flow:
-        msg = "STATE MONITORING: Waiting for state obsState :" + obs_state
-        LOGGER.info(msg)
-        if not become_expected_state(device, obs_state, timeout):
-            return False
-    return True
+                recorded_states.append(current_state)
 
 
 def parse_rest_response(resp):
@@ -236,7 +203,7 @@ def task_has_status(task, expected_status, resp):
 
     Args:
         task (str): OET ID for the task
-        expected_status (str): Expected status 
+        expected_status (str): Expected status
         resp ([type]): [description]
 
     Returns:
@@ -246,7 +213,9 @@ def task_has_status(task, expected_status, resp):
 
 
 def confirm_script_status_and_return_id(resp, expected_status='READY'):
-
+    """
+    Confirm that the script is in a given state and return the ID
+    """
     details = parse_rest_response(resp)
     assert_that(
         len(details), "Expected a valid reply when creating the script").is_equal_to(1)
@@ -262,20 +231,61 @@ def confirm_script_status_and_return_id(resp, expected_status='READY'):
 LOGGER = logging.getLogger(__name__)
 
 
-def subarray_is(state):
-    current_state = resource('ska_mid/tm_subarray_node/1').get("obsState")
-    return (current_state == state)
+def attempt_to_clean_subarray_to_idle(subarray: Subarray):
+    """
+    Ideally the telescope would always be in the same state
+    when running the test - this method will cleanup the
+    subarray provided to the expected IDLE state where
+    this test starts
+    """
+
+    if telescope_is_in_standby():
+        LOGGER.info("PROCESS: Starting up telescope")
+        set_telescope_to_running()
+    if subarray.obsstate_is('READY'):
+        take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+
+    LOGGER.info("PROCESS: Telescope is in %s ", subarray.get_obsstate())
+
+
+
+def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block, additional_json=None):
+
+    oet_task_id = None
+    resp = oet_rest_cli.create(script)
+    # confirm that creating the task worked and we have a valid ID
+    oet_task_id = confirm_script_status_and_return_id(resp, 'READY')
+    # we  can now start the observing task passing in the scheduling block as a parameter
+    if additional_json is not None:
+        resp = oet_rest_cli.start(scheduling_block, additional_json)
+    else:
+        resp = oet_rest_cli.start(scheduling_block)
+    # confirm that it didn't fail on starting
+    oet_task_id = confirm_script_status_and_return_id(resp, 'RUNNING')
+
+    timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT  # arbitrary number
+    while timeout != 0:
+        resp = oet_rest_cli.list()
+        if not task_has_status(oet_task_id, 'RUNNING', resp):
+            LOGGER.info(
+                "PROCESS: Task has run to completion - no longer present on task list")
+            return True
+        time.sleep(PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS)
+        timeout -= 1
+    # if we get here we timed out so need to fail the test
+    return False
 
 
 @pytest.mark.select
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("../../../features/XTP-966.feature", "Scheduling Block Resource allocation")
+@scenario("../../../features/XTP-966.feature",
+          "Scheduling Block Resource Allocation and Observation")
 def test_sb_resource_allocation():
     """Scheduling Block Resource allocation test."""
 
 
-@given(parsers.parse('the subarray {subarray} and the expected states {ex_states}'))
-def setup_telescope(result, subarray, ex_states):
+@given(parsers.parse('the subarray {subarray_name} and the SB {scheduling_block}'))
+def setup_telescope(result, subarray_name, scheduling_block):
     """Setup and check the subarray is in the right
     state to begin the test - this will be the first
     state in the list passed in.
@@ -286,74 +296,36 @@ def setup_telescope(result, subarray, ex_states):
         subarray ([type]): the subarray to be used for the test
     """
 
-    #expected_states = [map(str.strip, expected_states.split(','))]
-    expected_states = re.split(' *, *', ex_states.strip())
-
-    attempt_to_clean_subarray_to_idle()
-
-    # if the subarray is not in the expected initial state
-    # then we fail the test without doing anything else
-    intial_subarray_state = get_obsstate(subarray)
-    assert_that(
-        intial_subarray_state,
-        "Expected subarray to be in the right initial state"
-    ).is_equal_to(expected_states[0])
+    subarray = Subarray(subarray_name)
+    attempt_to_clean_subarray_to_idle(subarray)
 
     # start the track_obsstate function in a separate thread
-    pool = ThreadPool(processes=1)
-    result[SUBARRAY_USED] = subarray
-    result[STATE_CHECK] = pool.apply_async(
-        track_obsstates, (subarray, expected_states))
+
+    poller = Poller(subarray)
+    poller.start_polling()
+
+    result[SCHEDULING_BLOCK] = scheduling_block
+    result[SUBARRAY] = subarray
+    result[STATE_CHECK] = poller
 
 
-def attempt_to_clean_subarray_to_idle():
+@when(parsers.parse('the OET allocates resources for the SB with the script {script}'))
+def allocate_resources(result, oet_rest_cli, script):
     """
-    Ideally the telescope would always be in the same state
-    when running the test - this method will cleanup the 
-    subarray provided to the expected IDLE state where 
-    this test starts 
+    Use the OET Rest API to allocate resources for the Scheduling Block
     """
-    if telescope_is_in_standby():
-        LOGGER.info("PROCESS: Starting up telescope")
-        set_telescope_to_running()
-    if subarray_is('READY'):
-        take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
-
-    LOGGER.info("PROCESS: Telescope is in %s ",
-                resource('ska_mid/tm_subarray_node/1').get("obsState"))
-
-
-@when(parsers.parse(
-    'the OET allocates resources with the script {script} for the SB {scheduling_block}'
-))
-def allocate_resources(result, oet_rest_cli, script, scheduling_block):
     LOGGER.info("PROCESS: Allocating resources for the SB %s ",
-                scheduling_block)
-    resp = oet_rest_cli.create(script)
-    # confirm that create worked and we have a valid id
-    result[OET_TASK_ID] = confirm_script_status_and_return_id(resp, 'READY')
-    # we  can now start the observing task passing in the scheduling block as a parameter
-    resp = oet_rest_cli.start(scheduling_block)
-    # confirm that it didn't fail on starting
-    result[OET_TASK_ID] = confirm_script_status_and_return_id(resp, 'RUNNING')
-    timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT
-    while timeout != 0:
-        if not task_is_running(result[OET_TASK_ID], oet_rest_cli):
-            LOGGER.info("PROCESS: Allocation of resources is complete")
-            result[TEST_PASSED] = True
-            return result[TEST_PASSED]
-        time.sleep(PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS)
-        timeout -= 1
-    LOGGER.info("PROCESS Timeout waiting for task to complete")
-    result[TEST_PASSED] = False
-    return result[TEST_PASSED]
+                result[SCHEDULING_BLOCK])
+    result[TEST_PASSED] = run_task_using_oet_rest_client(
+        oet_rest_cli,
+        script=script,
+        scheduling_block=result[SCHEDULING_BLOCK]
+    )
+    assert result[TEST_PASSED],  "PROCESS: Resource Allocation failed"
 
 
-@then(parsers.parse(
-    'the OET observes the SB {scheduling_block} with the script {script}'
-))
-@log_it('XTP-966', devices_to_log, non_default_states_to_check)
-def run_scheduling_block(scheduling_block, script, result, oet_rest_cli):
+@then(parsers.parse('the OET observes the SB with the script {script}'))
+def run_scheduling_block(result, oet_rest_cli, script):
     """[summary]
 
     Args:
@@ -361,65 +333,27 @@ def run_scheduling_block(scheduling_block, script, result, oet_rest_cli):
         oet_rest_cli ([type]): [description]
     """
     LOGGER.info("PROCESS: Starting to observe the SB %s using script %s",
-                scheduling_block, script)
-    resp = oet_rest_cli.create(script)
-    # confirm that create worked and we have a valid id
-    result[OET_TASK_ID] = confirm_script_status_and_return_id(resp, 'READY')
-    # we  can now start the observing task passing in the scheduling block as a parameter
-    resp = oet_rest_cli.start(
-        scheduling_block, 'scripts/data/example_configure.json')
-    # confirm that it didn't fail on starting
-    result[OET_TASK_ID] = confirm_script_status_and_return_id(resp, 'RUNNING')
+                result[SCHEDULING_BLOCK], script)
+
+    #TODO additional_json seems to be manadatory for configure at the moment but should be optional
+    result[TEST_PASSED] = run_task_using_oet_rest_client(
+        oet_rest_cli,
+        script=script,
+        scheduling_block=result[SCHEDULING_BLOCK],
+        additional_json='scripts/data/example_configure.json'
+    )
+    assert result[TEST_PASSED],  "PROCESS: Observation failed"
 
 
-def task_is_running(task, oet_rest_cli):
-    """Use the OET REST API to confirm the task with the given id
-    is running
-
-    Args:
-        task ([type]): [description]
-        oet_rest_cli ([type]): [description]
-
-    Returns:
-        [type]: [description]
-    """
-    resp = oet_rest_cli.list()
-    return task_has_status(task, 'RUNNING', resp)
-
-
-@then('the task runs to completion')
-def check_task_completed(result, oet_rest_cli):
-    """Confirm the task completes
-    The task can be counted as completing when
-    it is no longer visible on the OET client
-
-    At the moment this is done by polling and
-    checking the list an arbitrary timeout
-
-    Args:
-        result ([type]): [description]
-        oet_rest_cli ([type]): the OET REST API
-    """
-    timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT  # arbitrary number
-    while timeout != 0:
-        if not task_is_running(result[OET_TASK_ID], oet_rest_cli):
-            LOGGER.info(
-                "PROCESS: Task has run to completion - no longer present on task list")
-            result[TEST_PASSED] = True
-            return
-        time.sleep(PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS)
-        timeout -= 1
-    # if we get here we timed out so need to fail the test
-    result[TEST_PASSED] = False
-
-
-@then('the SubArrayNode ObsState passed through the expected states')
-def check_transitions(result):
+@then(parsers.parse(
+    'the SubArrayNode obsState passes in order through the following states {expected_states}'
+))
+def check_transitions(expected_states, result):
     """Check that the device passed through the expected
     obsState transitions. This has been being monitored
     on a separate thread in the background.
 
-    The method deliberately pauses at the start to allow TMC time 
+    The method deliberately pauses at the start to allow TMC time
     to complete any operation still in progress.
 
     Args:
@@ -427,29 +361,38 @@ def check_transitions(result):
     """
 
     time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
-    thread_result = result[STATE_CHECK].get()
-    result[TEST_PASSED] = thread_result
-    assert thread_result
+    expected_states = [x.strip() for x in expected_states.split(',')]
+
+    result[STATE_CHECK].stop_polling()
+    recorded_states = result[STATE_CHECK].get_results()
+
+    # ignore 'READY' as it can be a transitory state so we don't rely
+    # on it being present in the list to be matched
+    recorded_states = list(filter(('READY').__ne__, recorded_states))
+    LOGGER.info("Comparing the list of states observed with the expected states")
+    for expected_state, recorded_state in zip(expected_states, recorded_states):
+        LOGGER.info("Expected %s was %s ", expected_state, recorded_state)
+        assert expected_state == recorded_state, "State observeed was not as expected"
 
 
-def end():
+def end(subarray: Subarray):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
 
-    if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON") and (subarray_is("IDLE")):
+    if (subarray.state_is("ON")) and (subarray.obsstate_is("IDLE")):
         LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
         take_subarray(1).and_release_all_resources()
-    if subarray_is("READY"):
+    if subarray.obsstate_is("READY"):
         LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
         take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
-    if subarray_is("CONFIGURING"):
+    if subarray.obsstate_is("CONFIGURING"):
         LOGGER.warning(
             "Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
         # raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
-    if subarray_is("SCANNING"):
+    if subarray.obsstate_is("SCANNING"):
         LOGGER.warning(
             "Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
@@ -457,4 +400,4 @@ def end():
         raise Exception("Unable to tear down test setup")
     set_telescope_to_standby()
     LOGGER.info("CLEANUP: Telescope is in %s ",
-                resource('ska_mid/tm_subarray_node/1').get("obsState"))
+                subarray.get_obsstate())

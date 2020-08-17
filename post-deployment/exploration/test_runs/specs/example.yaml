@@ -1,13 +1,10 @@
 group: 
   runs: 3
-  path: "exploration/tests/"
+  path: "tests/acceptance/mvp/"
   modules:
-    - path: "test_module1.py"
+    - path: "test_XTP-966.py"
       tests:
-        - name: "test1"
-        - name: "test2"
-    - path: "test_module2.py"
-      tests:
-        - name: "test1"
-        - name: "test2"
+        - name: "test_sb_resource_allocation"
+
+
       

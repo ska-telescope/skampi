@@ -329,7 +329,7 @@ def attempt_to_clean_subarray_to_idle():
 def allocate_resources(result, oet_rest_cli, script, scheduling_block):
     LOGGER.info("PROCESS: Allocating resources for the SB %s ",
                 scheduling_block)
-    resp = oet_rest_cli.create(script)
+    resp = oet_rest_cli.create(script, subarray_id=1)
     # confirm that create worked and we have a valid id
     result[OET_TASK_ID] = confirm_script_status_and_return_id(resp, 'READY')
     # we  can now start the observing task passing in the scheduling block as a parameter
@@ -362,7 +362,7 @@ def run_scheduling_block(scheduling_block, script, result, oet_rest_cli):
     """
     LOGGER.info("PROCESS: Starting to observe the SB %s using script %s",
                 scheduling_block, script)
-    resp = oet_rest_cli.create(script)
+    resp = oet_rest_cli.create(script, subarray_id=1)
     # confirm that create worked and we have a valid id
     result[OET_TASK_ID] = confirm_script_status_and_return_id(resp, 'READY')
     # we  can now start the observing task passing in the scheduling block as a parameter

@@ -1,10 +1,11 @@
 """
 Example script for resource allocation
 """
+import functools
 import logging
 import os
 
-from oet.domain import Dish, ResourceAllocation, SKAMid, SubArray
+from oet.domain import Dish, ResourceAllocation, SubArray
 
 LOG = logging.getLogger(__name__)
 FORMAT = '%(asctime)-15s %(message)s'
@@ -12,7 +13,18 @@ FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 
-def main(subarray_id=1, dish_ids=None):
+def main(*args, **kwargs):
+    LOG.warning('Deprecated! Calling main before sub-array is bound will be removed for PI9')
+    _main(*args, **kwargs)
+
+
+def init(subarray_id: int):
+    global main
+    main = functools.partial(_main, subarray_id)
+    LOG.info(f'Script bound to sub-array {subarray_id}')
+
+
+def _main(subarray_id: int, dish_ids=None):
     """
     Allocate resources to a target sub-array.
 

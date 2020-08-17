@@ -30,8 +30,6 @@ binaryData:
 {{ .Files.Get "data/hello_world.py" | b64enc | indent 4 }}
   allocate.py: |-
 {{ .Files.Get "data/allocate.py" | b64enc | indent 4 }}
-  example_allocate.py: |-
-{{ .Files.Get "data/example_allocate.py" | b64enc | indent 4 }}
   allocate_from_file.py: |-
 {{ .Files.Get "data/allocate_from_file.py" | b64enc | indent 4 }}
   allocate_from_file_sb.py: |-
@@ -46,12 +44,20 @@ binaryData:
 {{ .Files.Get "data/observe.py" | b64enc | indent 4 }}
   observe_sb.py: |-
 {{ .Files.Get "data/observe_sb.py" | b64enc | indent 4 }}
+  abort.py: |-
+{{ .Files.Get "data/abort.py" | b64enc | indent 4 }}
+  restart.py: |-
+{{ .Files.Get "data/restart.py" | b64enc | indent 4 }}
+  reset.py: |-
+{{ .Files.Get "data/reset.py" | b64enc | indent 4 }}
   example_allocate.json: |-
 {{ .Files.Get "data/example_allocate.json" | b64enc | indent 4 }}
   example_configure.json: |-
 {{ .Files.Get "data/example_configure.json" | b64enc | indent 4 }}
   example_sb.json: |-
 {{ .Files.Get "data/example_sb.json" | b64enc | indent 4 }}
+  long_sb.json: |-
+{{ .Files.Get "data/long_sb.json" | b64enc | indent 4 }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -134,8 +140,6 @@ spec:
                 path: hello_world.py
               - key: allocate.py
                 path: allocate.py
-              - key: example_allocate.py
-                path: example_allocate.py
               - key: allocate_from_file.py
                 path: allocate_from_file.py
               - key: allocate_from_file_sb.py
@@ -150,10 +154,20 @@ spec:
                 path: observe.py
               - key: observe_sb.py
                 path: observe_sb.py
+              - key: abort.py
+                path: abort.py
+              - key: restart.py
+                path: restart.py
+              - key: reset.py
+                path: reset.py
               - key: example_allocate.json
                 path: example_allocate.json
               - key: example_configure.json
                 path: example_configure.json
+              - key: example_sb.json
+                path: example_sb.json
+              - key: long_sb.json
+                path: long_sb.json
       resources:
   {{ toYaml .Values.rest.resources | indent 10 }}
   {{- with .Values.nodeSelector }}

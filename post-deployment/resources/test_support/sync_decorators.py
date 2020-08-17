@@ -36,6 +36,9 @@ def check_going_out_of_configured():
 
 def check_going_out_of_abort():
     ##Can only return to ON/IDLE if in READY
+    print ("Checking aborting obsState verification")
+    # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('ABORTED')
+    # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('ABORTED')
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
 def check_going_into_empty():
@@ -70,17 +73,15 @@ class WaitAbort():
 
     def __init__(self):
         self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
-        self.the_watch  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
+        # self.the_watch  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
         # self.the_watch  = watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState")
-        self.the_watch  = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
-
+        # self.the_watch  = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
 
     def wait(self,timeout):
         logging.info("Abort command dispatched, checking that the state transitioned to ABORTING")
         # self.the_watch.wait_until_value_changed_to('ABORTING',timeout)
         logging.info("state transitioned to ABORTING, waiting for it to return to ABORTED")
-        self.the_watch.wait_until_value_changed_to('ABORTED',timeout=200)
-
+        self.the_watch.wait_until_value_changed_to('ABORTED',timeout=400)
 
 class WaitRestart():
 
@@ -308,15 +309,17 @@ def sync_scan(timeout=200):
         return wrapper
     return decorator
 
-def sync_abort(timeout=200):
+def sync_abort(timeout=800):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             check_going_into_abort()
             w = WaitAbort()
+            logging.info("=============//////After waitAbort() in synch decorator")
             ################
             result = func(*args, **kwargs)
             ################
+            logging.info("===========After result statement ..may be Abort is invoked.confirm it ")
             w.wait(timeout)
             return result
         return wrapper

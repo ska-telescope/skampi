@@ -41,7 +41,7 @@ def test_abort_restart():
         # given an interface to TMC to interact with a subarray node and a central node
         fixture = {}
         fixture['state'] = 'Unknown'
-        the_waiter = waiter()
+        the_waiter=waiter()
 
         # given a started up telescope
         assert (telescope_is_in_standby())
@@ -66,7 +66,7 @@ def test_abort_restart():
             SubarrayNode.Abort()
             LOGGER.info('Invoked Abort on Subarray')
         abort()
-        the_waiter.wait(timeout = 200)
+        the_waiter.wait()
 
         LOGGER.info('Abort is complete on Subarray')
         fixture['state'] = 'Subarray Aborted'
@@ -75,8 +75,12 @@ def test_abort_restart():
         @sync_restart()
         def restart():
             resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
-            resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+            # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('ABORTED')
+            # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('ABORTED')
             SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+            # the_waiter.wait()
+            LOGGER.info("Subarray obsState before Aborted assertion check is: " + str(SubarrayNode.obsState))
+            resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
             SubarrayNode.restart()
             LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
             LOGGER.info('Invoked restart on Subarray')

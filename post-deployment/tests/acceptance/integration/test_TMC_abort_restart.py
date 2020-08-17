@@ -67,6 +67,7 @@ def test_abort_restart():
             LOGGER.info('Invoked Abort on Subarray')
         abort()
         the_waiter.wait()
+
         LOGGER.info('Abort is complete on Subarray')
         fixture['state'] = 'Subarray Aborted'
 

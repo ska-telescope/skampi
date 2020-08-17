@@ -1,5 +1,5 @@
 """
-Example script for resource deallocation
+Example script for abort sub-array activity
 """
 import functools
 import logging
@@ -24,19 +24,28 @@ def init(subarray_id: int):
     LOG.info(f'Script bound to sub-array {subarray_id}')
 
 
-def _main(subarray_id: int):
+def _main(subarray_id: int, *args, **kwargs):
     """
-    Deallocate sub-array resources.
+    Send the 'abort' command to the SubArrayNode, halt the subarray
+    activity.
 
     :param subarray_id: numeric subarray ID
     :return:
     """
-    LOG.info(f'Running deallocate script in OS process {os.getpid()}')
-    LOG.info(f'Called with main(subarray_id={subarray_id}')
+    LOG.info(f'Running abort script in OS process {os.getpid()}')
+
+    if args:
+        LOG.warning('Got unexpected positional args: %s', args)
+    if kwargs:
+        LOG.warning('Got unexpected named args: %s', kwargs)
+
+    LOG.info(f'Called with main(subarray_id={subarray_id})')
 
     subarray = SubArray(subarray_id)
 
-    LOG.info(f'Deallocating resources...')
-    subarray.deallocate()
+    LOG.info(f'aborting subarray {subarray_id} activity')
 
-    LOG.info('Deallocation script complete')
+    subarray.abort()
+
+    LOG.info('Observation script complete')
+

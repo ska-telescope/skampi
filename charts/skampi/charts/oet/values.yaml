@@ -16,7 +16,7 @@ ssh:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh
-    tag: 2.2.2
+    tag: 2.3.0
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
@@ -42,7 +42,7 @@ itango:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-ssh
-    tag: 2.2.2
+    tag: 2.3.0
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
@@ -67,7 +67,7 @@ rest:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool
-    tag: 2.2.2
+    tag: 2.3.0
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true
@@ -91,14 +91,14 @@ jupyter:
   domain: operations
   nodePort:
   storage:
-    enabled: false
+    enabled: true
     hostPath: /home/ubuntu/skampi-hostpath/build/jupyter/
     capacity: 0.1G
     reclaimPolicy: Delete
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: observation-execution-tool-jupyter
-    tag: 2.2.2
+    tag: 2.3.0
     pullPolicy: IfNotPresent
   livenessProbe:
     enabled: true

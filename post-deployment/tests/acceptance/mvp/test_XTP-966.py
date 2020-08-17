@@ -369,35 +369,38 @@ def check_transitions(expected_states, result):
     # ignore 'READY' as it can be a transitory state so we don't rely
     # on it being present in the list to be matched
     recorded_states = list(filter(('READY').__ne__, recorded_states))
+    result[TEST_PASSED] = False
     LOGGER.info("Comparing the list of states observed with the expected states")
     for expected_state, recorded_state in zip(expected_states, recorded_states):
         LOGGER.info("Expected %s was %s ", expected_state, recorded_state)
         assert expected_state == recorded_state, "State observeed was not as expected"
+    LOGGER.info("All states match")
+    result[TEST_PASSED] = True
 
 
 def end(subarray: Subarray):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-
-    if (subarray.state_is("ON")) and (subarray.obsstate_is("IDLE")):
-        LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
-        take_subarray(1).and_release_all_resources()
-    if subarray.obsstate_is("READY"):
-        LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
-        take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
-    if subarray.obsstate_is("CONFIGURING"):
-        LOGGER.warning(
-            "Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
-        restart_subarray(1)
-        # raise exception since we are unable to continue with tear down
-        raise Exception("Unable to tear down test setup")
-    if subarray.obsstate_is("SCANNING"):
-        LOGGER.warning(
-            "Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
-        restart_subarray(1)
-        # raise exception since we are unable to continue with tear down
-        raise Exception("Unable to tear down test setup")
-    set_telescope_to_standby()
-    LOGGER.info("CLEANUP: Telescope is in %s ",
-                subarray.get_obsstate())
+    if subarray is not None:
+        if (subarray.state_is("ON")) and (subarray.obsstate_is("IDLE")):
+            LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
+            take_subarray(1).and_release_all_resources()
+        if subarray.obsstate_is("READY"):
+            LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
+            take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+        if subarray.obsstate_is("CONFIGURING"):
+            LOGGER.warning(
+                "Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
+            restart_subarray(1)
+            # raise exception since we are unable to continue with tear down
+            raise Exception("Unable to tear down test setup")
+        if subarray.obsstate_is("SCANNING"):
+            LOGGER.warning(
+                "Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
+            restart_subarray(1)
+            # raise exception since we are unable to continue with tear down
+            raise Exception("Unable to tear down test setup")
+        set_telescope_to_standby()
+        LOGGER.info("CLEANUP: Telescope is in %s ",
+                    subarray.get_obsstate())

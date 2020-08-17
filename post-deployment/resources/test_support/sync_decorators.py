@@ -71,15 +71,15 @@ class WaitAbort():
     def __init__(self):
         self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
         self.the_watch  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
-        self.the_watch  = watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState")
+        # self.the_watch  = watch(resource('mid_csp_cbf/sub_elt/subarray_01')).for_a_change_on("obsState")
         self.the_watch  = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
 
 
     def wait(self,timeout):
         logging.info("Abort command dispatched, checking that the state transitioned to ABORTING")
-        #self.the_watch.wait_until_value_changed_to('ABORTING',timeout)
+        # self.the_watch.wait_until_value_changed_to('ABORTING',timeout)
         logging.info("state transitioned to ABORTING, waiting for it to return to ABORTED")
-        self.the_watch.wait_until_value_changed_to('ABORTED',timeout)
+        self.the_watch.wait_until_value_changed_to('ABORTED',timeout=200)
 
 
 class WaitRestart():
@@ -89,9 +89,9 @@ class WaitRestart():
 
     def wait(self,timeout):
         logging.info("Restart command dispatched, checking that the state transitioned to RESTARTING")
-        self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
+        # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
         logging.info("state transitioned to RESTARTING, waiting for it to return to EMPTY")
-        self.the_watch.wait_until_value_changed_to('EMPTY',timeout)
+        self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
 
 
 class WaitScanning():

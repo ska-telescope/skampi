@@ -15,6 +15,17 @@ def check_going_into_configure():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
+def check_going_into_abort():
+    ##Can ony invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+
+def check_going_into_restart():
+    ##Can ony invoke restart on a subarray when in ABORTED, FAULT
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['ABORTED','FAULT'])
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+
+
 def check_coming_out_of_standby():
     ##Can  only start up a disabled telescope
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
@@ -22,6 +33,13 @@ def check_coming_out_of_standby():
 def check_going_out_of_configured():
     ##Can only return to ON/IDLE if in READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
+
+def check_going_out_of_abort():
+    ##Can only return to ON/IDLE if in READY
+    print ("Checking aborting obsState verification")
+    # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('ABORTED')
+    # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('ABORTED')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
 def check_going_into_empty():
     ##Can only release resources if subarray is in ON/IDLE
@@ -51,6 +69,29 @@ class WaitConfigure():
     def wait_oet(self):
         self.w.wait_until_value_changed_to('READY',timeout=200)
 
+class WaitAbort():
+
+    def __init__(self):
+        self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+
+    def wait(self,timeout):
+        logging.info("Abort command dispatched, checking that the state transitioned to ABORTING")
+        # self.the_watch.wait_until_value_changed_to('ABORTING',timeout)
+        logging.info("state transitioned to ABORTING, waiting for it to return to ABORTED")
+        self.the_watch.wait_until_value_changed_to('ABORTED',timeout=200)
+
+class WaitRestart():
+
+    def __init__(self):
+        self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+
+    def wait(self,timeout):
+        logging.info("Restart command dispatched, checking that the state transitioned to RESTARTING")
+        # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
+        logging.info("state transitioned to RESTARTING, waiting for it to return to EMPTY")
+        self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
+
+
 class WaitScanning():
     def __init__(self):
         self.the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
@@ -77,6 +118,7 @@ def sync_assign_resources(nr_of_receptors=4,timeout=60):
             return result
         return wrapper
     return decorator_sync_assign_resources
+
 
 # defined as a context manager
 @contextmanager
@@ -224,8 +266,6 @@ def sync_release_resources(func):
 # defined as a context manager
 @contextmanager
 def sync_resources_releasing(timeout=100):
-    # Can only release resources if subarray is in ON/IDLE
-    check_going_into_empty()
     the_waiter = waiter()
     the_waiter.set_wait_for_tearing_down_subarray()
     yield
@@ -259,6 +299,35 @@ def sync_scan(timeout=200):
             check_going_out_of_configured()
             w = WaitScanning()
             result = func(*args, **kwargs)
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
+
+def sync_abort(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_into_abort()
+            w = WaitAbort()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
+
+def sync_restart(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            #check_going_into_restart()
+            check_going_out_of_abort()
+            w = WaitRestart()
+            ################
+            result = func(*args, **kwargs)
+            ################
             w.wait(timeout)
             return result
         return wrapper

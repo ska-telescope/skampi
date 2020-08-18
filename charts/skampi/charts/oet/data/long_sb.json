@@ -136,6 +136,18 @@
     }
   },
   "scanSequence": [
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
+    "calibrator scan", "science scan", "science scan", "calibrator scan",
     "calibrator scan", "science scan", "science scan", "calibrator scan"
   ],
   "dishConfigurations" : [

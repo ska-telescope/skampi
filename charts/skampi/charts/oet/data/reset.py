@@ -1,5 +1,5 @@
 """
-Example script for resource deallocation
+Example script for resetting sub-array. Resetting will keep allocated dishes.
 """
 import functools
 import logging
@@ -24,19 +24,21 @@ def init(subarray_id: int):
     LOG.info(f'Script bound to sub-array {subarray_id}')
 
 
-def _main(subarray_id: int):
+def _main(subarray_id: int, *args, **kwargs):
     """
-    Deallocate sub-array resources.
+    Reset SubArray. SubArray state should be IDLE if reset is successful.
 
     :param subarray_id: numeric subarray ID
-    :return:
     """
-    LOG.info(f'Running deallocate script in OS process {os.getpid()}')
-    LOG.info(f'Called with main(subarray_id={subarray_id}')
+    LOG.info(f'Running SubArray reset script in OS process {os.getpid()}')
 
+    if args:
+        LOG.warning('Got unexpected positional args: %s', args)
+    if kwargs:
+        LOG.warning('Got unexpected named args: %s', kwargs)
+
+    LOG.info(f'Executing reset...')
     subarray = SubArray(subarray_id)
+    subarray.reset()
 
-    LOG.info(f'Deallocating resources...')
-    subarray.deallocate()
-
-    LOG.info('Deallocation script complete')
+    LOG.info('SubArray reset script complete')

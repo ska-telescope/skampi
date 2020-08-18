@@ -1,11 +1,11 @@
 """
 Example script for resource allocation
 """
-import os
+import functools
 import logging
+import os
 
 from oet.domain import SubArray
-
 
 LOG = logging.getLogger(__name__)
 FORMAT = '%(asctime)-15s %(message)s'
@@ -13,13 +13,24 @@ FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 
-def main(configuration, scan_duration, subarray_id=1, repeat=1, process_json=True):
+def main(*args, **kwargs):
+    LOG.warning('Deprecated! Calling main before sub-array is bound will be removed for PI9')
+    _main(*args, **kwargs)
+
+
+def init(subarray_id: int):
+    global main
+    main = functools.partial(_main, subarray_id)
+    LOG.info(f'Script bound to sub-array {subarray_id}')
+
+
+def _main(subarray_id: int, configuration, scan_duration, repeat=1, process_json=True):
     """
     Configure a sub-array and perform the scan.
 
+    :param subarray_id: numeric subarray ID
     :param configuration: name of configuration file
     :param scan_duration: scan duration in seconds
-    :param subarray_id: numeric subarray ID
     :param repeat: number of times to repeat the scan
     :param process_json: set to False to pass JSON directly to TMC without processing
     :return:
@@ -46,6 +57,6 @@ def main(configuration, scan_duration, subarray_id=1, repeat=1, process_json=Tru
         subarray.scan()
 
     LOG.info('End scheduling block')
-    subarray.end_sb()
+    subarray.end()
 
     LOG.info('Observation script complete')

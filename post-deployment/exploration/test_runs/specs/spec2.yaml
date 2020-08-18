@@ -2,7 +2,7 @@ group:
   runs: 10
   path: "tests/acceptance/integration/"
   modules:
-    - path: "test_TMC_config.py"
+    - path: "test_TMC_abort_restart.py"
       tests:
-        - name: "test_configure_scan"
+        - name: "test_abort_restart"
 

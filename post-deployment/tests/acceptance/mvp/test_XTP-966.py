@@ -248,11 +248,10 @@ def attempt_to_clean_subarray_to_idle(subarray: Subarray):
     LOGGER.info("PROCESS: Telescope is in %s ", subarray.get_obsstate())
 
 
-
 def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block, additional_json=None):
 
     oet_task_id = None
-    resp = oet_rest_cli.create(script)
+    resp = oet_rest_cli.create(script, subarray_id=1)
     # confirm that creating the task worked and we have a valid ID
     oet_task_id = confirm_script_status_and_return_id(resp, 'READY')
     # we  can now start the observing task passing in the scheduling block as a parameter
@@ -276,8 +275,8 @@ def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block, addit
     return False
 
 
-@pytest.mark.select
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+# @pytest.mark.select
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("../../../features/XTP-966.feature",
           "Scheduling Block Resource Allocation and Observation")
 def test_sb_resource_allocation():
@@ -335,7 +334,7 @@ def run_scheduling_block(result, oet_rest_cli, script):
     LOGGER.info("PROCESS: Starting to observe the SB %s using script %s",
                 result[SCHEDULING_BLOCK], script)
 
-    #TODO additional_json seems to be manadatory for configure at the moment but should be optional
+    # TODO additional_json seems to be manadatory for configure at the moment but should be optional
     result[TEST_PASSED] = run_task_using_oet_rest_client(
         oet_rest_cli,
         script=script,
@@ -388,7 +387,8 @@ def end(subarray: Subarray):
             take_subarray(1).and_release_all_resources()
         if subarray.obsstate_is("READY"):
             LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
-            take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+            take_subarray(1).and_end_sb_when_ready(
+            ).and_release_all_resources()
         if subarray.obsstate_is("CONFIGURING"):
             LOGGER.warning(
                 "Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")

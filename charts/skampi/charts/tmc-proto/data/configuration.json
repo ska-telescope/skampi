@@ -1124,7 +1124,7 @@
                 "healthstate",
                 "1000",
                 "pointingstate",
-                "1000",
+                "100",
                 "windspeed",
                 "1000"
               ]
@@ -1211,7 +1211,7 @@
                 "healthstate",
                 "1000",
                 "pointingstate",
-                "1000",
+                "100",
                 "windspeed",
                 "1000"
               ]
@@ -1298,7 +1298,7 @@
                 "healthstate",
                 "1000",
                 "pointingstate",
-                "1000",
+                "100",
                 "windspeed",
                 "1000"
               ]
@@ -1385,7 +1385,7 @@
                 "healthstate",
                 "1000",
                 "pointingstate",
-                "1000",
+                "100",
                 "windspeed",
                 "1000"
               ]

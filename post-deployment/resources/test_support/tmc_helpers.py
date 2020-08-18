@@ -1,4 +1,4 @@
-from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it
+from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it,sync_abort,sync_restart
 from resources.test_support.logging_decorators import log_it
 from tango import DeviceProxy   
 from resources.test_support.helpers import waiter,watch,resource
@@ -69,3 +69,21 @@ def configure_sub(sdp_block, configure_file):
     SubarrayNode.Configure(config)
     LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
     LOGGER.info('Invoked Configure on Subarray')
+
+@sync_abort
+def abort():
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
+    SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+    SubarrayNode.Abort()
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
+    LOGGER.info('Invoked Abort on Subarray')
+
+@sync_restart
+def restart():
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+    SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+    SubarrayNode.restart()
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
+    LOGGER.info('Invoked restart on Subarray')

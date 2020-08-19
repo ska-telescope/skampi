@@ -11,5 +11,5 @@ LOGGER = logging.getLogger(__name__)
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish, ResourceAllocation
 
 
-def test_configure_subarray(idle_subarray):
+def test_configure_subarray(configured_subarray):
    pass

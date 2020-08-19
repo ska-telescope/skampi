@@ -86,7 +86,7 @@ def describe_event(event: EventData,init_date: datetime = datetime.now()) -> Tup
     value = get_attr_value_str(event)
     return device_name,attr,value,date
 
-def upack_event(event: EventData,init_date: datetime = datetime.now()) -> Tuple[str,str,str,datetime]:
+def unpack_event(event: EventData,init_date: datetime = datetime.now()) -> Tuple[str,str,str,datetime]:
     device_name = get_device_name(event)
     attr = get_attr_name(event)
     date = get_date_lodged(event,init_date)
@@ -217,7 +217,7 @@ class MessageHandler():
         if ignore_first:
             if not self.second_event_received:
                 return ''
-        device_name,attr_name,attr_value,time = upack_event(event)
+        device_name,attr_name,attr_value,time = unpack_event(event)
         message = f'{device_name:<40}{attr_name:<20}{attr_value:<10}{self.annotate_print_out}'
         self.board.log(message,time)
         return message

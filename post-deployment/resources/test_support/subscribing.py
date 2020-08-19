@@ -4,7 +4,7 @@ from functools import reduce
 from datetime import datetime
 from tango import DeviceProxy,EventType,EventData,DeviceAttribute
 from contextlib import contextmanager
-from ska.base.subarray_device import ObsState
+from ska.base.control_model import ObsState
 from datetime import datetime
 from queue import Empty, Queue
 from time import sleep
@@ -12,6 +12,7 @@ from collections import namedtuple
 from concurrent import futures
 import threading
 import re
+import enum
 # types
 from typing import Tuple, List, Set
 
@@ -25,18 +26,33 @@ sys.path.append('/home/tango/skampi/post-deployment/')
 
 
 ## helpers for reading an event
+class PointingState(enum.IntEnum):
+    """
+    Pointing state of the dish
+    """
+    READY = 0
+    SLEW = 1
+    TRACK = 2
+    SCAN = 3
+
 def get_attr_value_as_str(attr: DeviceAttribute) -> str:
     if attr.name == 'obsState' :
         return str(ObsState(attr.value))
     if attr.name == 'obsstate' :
         return str(ObsState(attr.value))
+    if attr.name == 'dishpointingstate':
+        return str(PointingState(attr.value))
+    if attr.name == 'dishPointingstate':
+        return str(PointingState(attr.value)) 
+    if attr.name == 'pointingstate':
+        return str(PointingState(attr.value)) 
+    if attr.name == 'pointingState': 
+        return str(PointingState(attr.value)) 
+    if attr.name == 'dishPointingState':
+        return str(PointingState(attr.value)) 
     else:
         return str(attr.value)
     #TODO add extractions for other types of attributes
-
-
-def get_date_lodged(event: EventData) -> datetime:
-        return event.attr_value.time.todatetime()
 
 def get_device_name(event: EventData) -> str:
     return event.device.name()
@@ -48,11 +64,15 @@ def get_attr_name(event: EventData) -> str:
 
 def get_attr_value_str(event: EventData) -> str:
     if event.attr_value is None:
-
         if event.err:
             return str(event.errors)
     else:
         return get_attr_value_as_str(event.attr_value)
+
+def get_date_lodged(event: EventData,init_date: datetime = datetime.now()) -> datetime:
+    if event.attr_value is None:
+        return init_date
+    return event.attr_value.time.todatetime()
 
 def get_date_lodged_isoformat(event: EventData,init_date: datetime = datetime.now()) ->str:
     if event.attr_value is None:
@@ -65,6 +85,16 @@ def describe_event(event: EventData,init_date: datetime = datetime.now()) -> Tup
     date = get_date_lodged_isoformat(event,init_date)
     value = get_attr_value_str(event)
     return device_name,attr,value,date
+
+def upack_event(event: EventData,init_date: datetime = datetime.now()) -> Tuple[str,str,str,datetime]:
+    device_name = get_device_name(event)
+    attr = get_attr_name(event)
+    date = get_date_lodged(event,init_date)
+    value = get_attr_value_str(event)
+    return device_name,attr,value,date
+
+
+
 
 
 class Tracer():
@@ -187,8 +217,9 @@ class MessageHandler():
         if ignore_first:
             if not self.second_event_received:
                 return ''
-        device_name,attr_name,attr_value,time = describe_event(event)
-        message = f'\n{time:<30}{device_name:<40}{attr_name:<10}{attr_value:<10}{self.annotate_print_out}'
+        device_name,attr_name,attr_value,time = upack_event(event)
+        message = f'{device_name:<40}{attr_name:<20}{attr_value:<10}{self.annotate_print_out}'
+        self.board.log(message,time)
         return message
 
 
@@ -382,6 +413,27 @@ class EventTimedOut(Empty):
         args = (message,exception.args)
         super(EventTimedOut,self).__init__(args)
 
+LogMessage: Tuple[datetime,str] = namedtuple('LogMessage',['time','log'])
+
+class LogBook():
+
+    def __init__(self):
+        
+        self.messages: List[Tuple[LogMessage]] = []
+        self.logbook_lock = threading.Lock()
+
+    def log(self, message: str,timestamp: datetime = None):
+        with self.logbook_lock:
+            if timestamp is None:
+                timestamp = datetime.now()
+            logMessage = LogMessage(timestamp,message)
+            self.messages.append(logMessage)
+
+    def read(self) -> str:
+        self.messages.sort(key=lambda log: log.time)
+        logs = [f'{m.time.isoformat():<30}{m.log}' for m in self.messages]
+        return reduce(lambda x,y: f'{x}\n{y}',logs)
+
 
 class MessageBoard():
     '''
@@ -396,6 +448,14 @@ class MessageBoard():
         self.archived_subscriptions: Set[Subscription] = set()
         self.polling = threading.Event()
         self.tracer = Tracer()
+        self.logbook = []
+        self.logBook = LogBook()
+
+    def log(self,message: str,time: datetime = None) -> None:
+        self.logBook.log(message,time)
+
+    def play_log_book(self) -> str:
+        return self.logBook.read()
 
     def add_subscription(self,
                         device_name: str,

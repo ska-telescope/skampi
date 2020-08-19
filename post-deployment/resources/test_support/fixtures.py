@@ -99,7 +99,7 @@ def assign_subarray(subArray,resource_config_file: str) -> None:
     #assert_telescope_is_running()
     #assert_subarray_is_empty(subArray.id)
     # command
-    with sync_subarray_assigning(subArray.id,LOGGER,10,log_enabled = True):
+    with sync_subarray_assigning(subArray.id,LOGGER,10,log_enabled = False):
         multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, 2 + 1)])
         subArray.allocate_from_file(resource_config_file, multi_dish_allocation)
     return
@@ -108,20 +108,20 @@ def release_subarray(subArray) -> None:
     # pre conditions
     # TODO assertions removed as they guve unreliable answers 
     #assert_subarray_is_idle(subArray.id)
-    with sync_subarray_releasing(subArray.id, LOGGER,10,log_enabled = True):
+    with sync_subarray_releasing(subArray.id, LOGGER,10,log_enabled = False):
         LOGGER.info('releasing resources')
         subArray.deallocate()
 
 def release_configuration(subarray: SubArray) -> None:
    # assert_subarray_configured(subarray.id)
-    with sync_release_configuration(subarray.id, LOGGER,10,log_enabled = True):
+    with sync_release_configuration(subarray.id, LOGGER,10,log_enabled = False):
         LOGGER.info('releasing subarray configuration')
         subarray.end()
 
 def configure_subarray(subarray: SubArray, scan_config_file: str) -> None:
     # pre conditions
     #assert_subarray_is_idle(subarray.id)  
-    with sync_subarray_configuring(subarray.id, LOGGER,10,log_enabled = True):
+    with sync_subarray_configuring(subarray.id, LOGGER,10,log_enabled = False):
         LOGGER.info('configuring subarray')
         subarray.configure_from_file(scan_config_file, 6, with_processing = False)
 

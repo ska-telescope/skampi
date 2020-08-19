@@ -1,11 +1,12 @@
-from resources.test_support.subscribing import EventData,MessageBoard,MessageHandler,Tuple,List,Subscription
+import logging
+from resources.test_support.subscribing import EventData,MessageBoard,MessageHandler,Tuple,List,Subscription,EventTimedOut
 from collections import namedtuple
 from logging import Logger
 from contextlib import contextmanager
 from tango import DevState, TimeVal
 from typing import Callable, ClassVar,Tuple, Set
 from functools import partial
-from time import sleep
+from time import sleep, time
 from concurrent import futures
 
 BuildSpec = namedtuple('BuildSpec',['attr','device','handler','polling'])
@@ -127,6 +128,51 @@ class WaitUntilChanged(MessageHandler):
                 self.unsubscribe(subscription)
 
 
+
+
+class WaitForOrderedChange(WaitUntilEqual):
+    '''
+    similar ro waitUnitil equal except desired value is now a list or
+    ordered states that must be followed
+    '''
+
+    def _expected_event(self) -> EventData:
+        if not self._is_complete():
+            return self.desired_value[0]
+        else:
+            return "None (all events recieved)"
+
+    def _is_partialy_correct(self) -> bool:
+        current_event = self._current_event()
+        if not current_event.err:
+            current_value = self._get_attr_value_as_str(current_event.attr_value)
+            expected_value = self._expected_event()
+            if current_value == expected_value:
+                self.desired_value.pop(0)
+                return True
+            else:
+                self.tracer.message(f'WARNING: current event has a value:{current_value} different than what is expected: {expected_value}')
+        return False
+            
+
+    def _is_complete(self) -> bool:
+        return len(self.desired_value) == 0
+            
+    def _current_event(self) -> EventData:
+        return self.events[-1]
+
+    def condition_met(self) -> bool:
+        # always ignore the first returned event
+        if self._is_first_element():
+            return False
+        if self._is_partialy_correct():
+        # e.g. the current event is what it is expected to be
+            self.tracer.message(f'current event {self._current_event()} is correct, waiting for {self._expected_event()}')
+        if self._is_complete():
+        # e.g. the entire sequence is equivalent
+            return True
+    
+
 class ObserveEvent(MessageHandler):
     '''
     Records the values of events being generated on a specific subscription for diagnostic
@@ -142,6 +188,12 @@ class ObserveEvent(MessageHandler):
 
     def supress_timeout(self) -> bool:
         return True
+
+    def print_event(self,event,ignore_first):
+        '''
+        set to print out always the first event as this aids in observation
+        '''
+        super(ObserveEvent,self).print_event(event,False)
     
 
 ### builders ###
@@ -166,7 +218,7 @@ class ForAttr():
         self.builder.add_spec(spec)
         return spec
 
-    def to_become_equal_to(self,value: str,master=False) -> None:
+    def to_become_equal_to(self,value: str,master=False) -> BuildSpec:
         '''
         adds a spec on the builder by choosing
         a handler for the condition to become equal
@@ -176,7 +228,7 @@ class ForAttr():
         spec = self._add_spec(handler)
         return spec
 
-    def to_change(self) -> None:
+    def to_change(self) -> BuildSpec:
         '''
         adds a spec on the builder by choosing
         a handler for the condition to become equal
@@ -185,6 +237,17 @@ class ForAttr():
         handler = WaitUntilChanged(board,self.attr, self.device)
         spec = self._add_spec(handler)
         return spec
+
+    def to_change_in_order(self, order: List,master=False)  -> BuildSpec:
+        '''
+        adds an ordered list of values to which a particular
+        attribute must change before being complete
+        '''
+        board = self.builder.board
+        handler = WaitForOrderedChange(board,self.attr,order,self.device,master)
+        spec = self._add_spec(handler)
+        return spec
+
     
     def and_observe(self):
         '''
@@ -269,32 +332,87 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
     
 ## assigning resources
 
-def set_waiting_for_assign_resources(id: int):
+def set_waiting_for_assign_resources(id: int) -> MessageBoard:
     b = MessageBoardBuilder()
     b.set_waiting_on(f'ska_mid/tm_subarray_node/{id}').for_attribute('obsState').to_become_equal_to('ObsState.IDLE',master=True)
     b.set_waiting_on(f'mid_csp/elt/subarray_{id:02d}').for_attribute('obsState').and_observe()
     b.set_waiting_on(f'mid_sdp/elt/subarray_{id}').for_attribute('obsState').and_observe()
+    for dishnr in range(1,3):
+        #b.set_waiting_on(f'ska_mid/tm_leaf_node/d{dishnr:04d}').for_attribute('dishPointingState').and_observe()
+        b.set_waiting_on(f'mid_d{dishnr:04d}/elt/master').for_attribute('pointingState').and_observe()
     return b
 
-def set_waiting_for_release_resources(id: int):
+def set_waiting_for_release_resources(id: int) -> MessageBoard:
     b = MessageBoardBuilder()
     b.set_waiting_on(f'ska_mid/tm_subarray_node/{id}').for_attribute('obsState').to_become_equal_to('ObsState.EMPTY',master=True)
     b.set_waiting_on(f'mid_csp/elt/subarray_{id:02d}').for_attribute('obsState').and_observe()
     b.set_waiting_on(f'mid_sdp/elt/subarray_{id}').for_attribute('obsState').and_observe()
+    for dishnr in range(1,3):
+        #b.set_waiting_on(f'ska_mid/tm_leaf_node/d{dishnr:04d}').for_attribute('dishPointingState').and_observe()
+        b.set_waiting_on(f'mid_d{dishnr:04d}/elt/master').for_attribute('pointingState').and_observe()
+    return b
+
+## configuring subarray
+
+def set_waiting_for_configure_scan(id: int) -> MessageBoard:
+    b = MessageBoardBuilder()
+    subarray_change_order = [
+        'ObsState.CONFIGURING',
+        'ObsState.READY'
+    ]
+    b.set_waiting_on(f'ska_mid/tm_subarray_node/{id}').for_attribute('obsState').to_change_in_order(
+        subarray_change_order,master=True)
+    b.set_waiting_on(f'mid_csp/elt/subarray_{id:02d}').for_attribute('obsState').and_observe()
+    b.set_waiting_on(f'mid_sdp/elt/subarray_{id}').for_attribute('obsState').and_observe()
+    for dishnr in range(1,3):
+        #b.set_waiting_on(f'ska_mid/tm_leaf_node/d{dishnr:04d}').for_attribute('dishPointingState').and_observe()
+        b.set_waiting_on(f'mid_d{dishnr:04d}/elt/master').for_attribute('pointingState').and_observe()
+    return b
+
+def set_waiting_for_releasing_a_configuration(id: int) -> MessageBoard:
+    b = MessageBoardBuilder()
+    b.set_waiting_on(f'ska_mid/tm_subarray_node/{id}').for_attribute('obsState').to_become_equal_to('ObsState.IDLE',master=True)
+    b.set_waiting_on(f'mid_csp/elt/subarray_{id:02d}').for_attribute('obsState').and_observe()
+    b.set_waiting_on(f'mid_sdp/elt/subarray_{id}').for_attribute('obsState').and_observe()
+    for dishnr in range(1,3):
+        #b.set_waiting_on(f'ska_mid/tm_leaf_node/d{dishnr:04d}').for_attribute('dishPointingState').and_observe()
+        b.set_waiting_on(f'mid_d{dishnr:04d}/elt/master').for_attribute('pointingState').and_observe()
+    return b
+
+## scanning
+def set_waiting_for_scanning_to_complete(id: int) -> MessageBoard:
+
+    b = MessageBoardBuilder()
+    b.set_waiting_on(f'ska_mid/tm_subarray_node/{id}').for_attribute('obsState').to_change_in_order(['ObsState.SCANNING','ObsState.READY'],master=True)
+    b.set_waiting_on(f'mid_csp/elt/subarray_{id:02d}').for_attribute('obsState').and_observe()
+    b.set_waiting_on(f'mid_sdp/elt/subarray_{id}').for_attribute('obsState').and_observe()
+    for dishnr in range(1,3):
+        #b.set_waiting_on(f'ska_mid/tm_leaf_node/d{dishnr:04d}').for_attribute('dishPointingState').and_observe()
+        b.set_waiting_on(f'mid_d{dishnr:04d}/elt/master').for_attribute('pointingState').and_observe()
     return b
 
 
 
 ## generic helpers for context managers and sync
-def wait(board:MessageBoard, timeout: float, logger: Logger,print_message=''):
-    print_message = 'incoming events'
+def wait(board:MessageBoard, timeout: float, logger: Logger) -> None:
     for item in board.get_items(timeout):
         handler = item.handler
         handler.handle_event(item.event,item.subscription,logger)
-        print_message = f'{print_message}{handler.print_event(item.event,ignore_first=True)}'
-    return print_message
+        handler.print_event(item.event,ignore_first=True)
+    return
 
 ### context managers and decorators for using rule based pre/post control
+def print_logbook(board: MessageBoard,logger: logging.Logger)-> None:
+    logbook = board.play_log_book()
+    logger.info(f'Log Messages during waiting:\n{logbook}')
+
+
+def print_when_exception(board: MessageBoard,logger: logging.Logger)-> None:
+    logger.info('exception occured in execution of waiting')
+    print_logbook(board,logger)
+    logger.info(board.replay_self())
+    #logger.info('subscription logs:')
+    #logger.info(board.replay_subscriptions()) 
 
 
 # telescope starting up
@@ -302,36 +420,58 @@ def wait(board:MessageBoard, timeout: float, logger: Logger,print_message=''):
 def sync_telescope_starting_up(logger,timeout=10,log_enabled=False):
     builder = set_wating_for_start_up()
     board = builder.setup_board()
-    result = ''
-    yield
     try:
-        result = wait(board,timeout,logger,result)
-        if log_enabled:
-            logger.info(result)
+        yield
     except Exception as e:
-        logger.info(result)
-        logger.info(board.replay_self())
-        logger.info('subscription logs')
-        logger.info(board.replay_subscriptions()) 
+        board.log('Canceling waiting as there was an error in executing startup')
+        board.remove_all_subcriptions()
+        print_when_exception(board,logger)
+        raise e
+    try:
+        wait(board,timeout,logger)
+    except Exception as e:
+        print_when_exception(board,logger)
         raise e 
+    if log_enabled:
+        print_logbook(board,logger)
+
 
 # telescope shutting down
 @contextmanager
 def sync_telescope_shutting_down(logger,timeout=10,log_enabled=False):
     builder = set_wating_for_shut_down()
     board = builder.setup_board()
-    result = ''
-    yield
     try:
-        result = wait(board,timeout,logger,result)
-        if log_enabled:
-            logger.info(result)
+        yield
     except Exception as e:
-        logger.info(result)
-        logger.info(board.replay_self())
-        logger.info('subscription logs')
-        logger.info(board.replay_subscriptions()) 
+        board.log('Canceling waiting as there was an error in executing shutdown')
+        board.remove_all_subcriptions()
+        print_when_exception(board,logger)
+        raise e
+    try:
+        wait(board,timeout,logger)
+    except Exception as e:
+        print_when_exception(board,logger)
         raise e 
+    if log_enabled:
+        print_logbook(board,logger)
+
+def try_getting_wait_result(board: MessageBoard, future: futures.Future,timeout: int,silent: bool = False) -> None:
+    try:
+        future.result(timeout)
+    except futures.TimeoutError as e:
+        board.log('Unable to complete waiting on events as the task took too long')
+        board.remove_all_subcriptions()
+        if silent:
+            board.log(f'Exception acknowlegded: {e}')
+        else:
+            raise e
+    except EventTimedOut as e:
+        board.log('Unable to complete waiting as some attributes still need to change:')
+        if silent:
+            board.log(f'Exception acknowlegded: {e}')
+        else:
+            raise e
 
 ## assigning resources
 # assigning
@@ -340,23 +480,23 @@ def sync_subarray_assigning(id,logger,timeout=10,log_enabled=False):
     builder = set_waiting_for_assign_resources(id)
     board = builder.setup_board()
     executor = futures.ThreadPoolExecutor(max_workers=1)
-    result = ''
-    future_wait_result = executor.submit(wait,board,timeout,logger,result)
+    future_wait_result = executor.submit(wait,board,timeout,logger)
     try:
+        board.log('Starting subarray assigning...')
         yield
-        result = future_wait_result.result(timeout)
-        if log_enabled:
-            logger.info(result)
     except Exception as e:
-        try:
-            result = future_wait_result.result(timeout)
-        finally:
-            logger.info(result)
-            logger.info(board.replay_self())
-            logger.info(f'subscription logs{board.replay_subscriptions()}')
-        raise e 
-    finally:
-        pass  
+        board.log('Subarray assignment call resulted in errors,...getting results from waiting on its state')
+        try_getting_wait_result(board,future_wait_result,timeout,silent=True)
+        print_when_exception(board,logger)
+        raise e
+    try:
+        board.log('Subarray assignment call returned successfully...getting results from waiting on its state')
+        try_getting_wait_result(board,future_wait_result,timeout)
+    except Exception as e:
+        print_when_exception(board,logger)
+        raise e
+    if log_enabled:
+        print_logbook(board,logger)
 
 
 # releasing
@@ -365,24 +505,72 @@ def sync_subarray_releasing(id: int,logger,timeout=10,log_enabled=False):
     builder = set_waiting_for_release_resources(id)
     board = builder.setup_board()
     executor = futures.ThreadPoolExecutor(max_workers=1)
-    result = ''
-    future_wait_result = executor.submit(wait,board,timeout,logger,result)
+    future_wait_result = executor.submit(wait,board,timeout,logger)
     try:
+        board.log('Starting subarray releasing...')
         yield
-        result = future_wait_result.result(timeout)
-        if log_enabled:
-            logger.info(result)
     except Exception as e:
-        try:
-            logger.info('exception raised trying to wait for subarray logging thread to finish')
-            result = future_wait_result.result(timeout)
-        finally:
-            logger.info(result)
-            logger.info(board.replay_self())
-            logger.info(board.replay_subscriptions()) 
-        raise e 
-    finally:
-        pass
+        board.log('Subarray release call resulted in errors,...getting results from waiting on its state')
+        try_getting_wait_result(board,future_wait_result,timeout,silent=True)
+        print_when_exception(board,logger)
+        raise e
+    try:
+        board.log('Subarray release call returned successfully...getting results from waiting on its state')
+        try_getting_wait_result(board,future_wait_result,timeout)
+    except Exception as e:
+        print_when_exception(board,logger)
+        raise e
+    if log_enabled:
+        print_logbook(board,logger)
+
+## configuring
+# configure a scan
+@contextmanager
+def sync_subarray_configuring(id: int,logger: logging.Logger,timeout: int =10,log_enabled: bool =False):
+    builder = set_waiting_for_configure_scan(id)
+    board = builder.setup_board()
+    executor = futures.ThreadPoolExecutor(max_workers=1)
+    future_wait_result = executor.submit(wait,board,timeout,logger)
+    try:
+        board.log('Starting subarray configuring..')
+        yield
+    except Exception as e:
+        board.log('Subarray configure call resulted in errors,...getting results from waiting on its state')
+        try_getting_wait_result(board,future_wait_result,timeout,silent=True)
+        print_when_exception(board,logger)
+        raise e
+    try:
+        board.log('Subarray configure call returned successfully...getting results from waiting on its state')
+        try_getting_wait_result(board,future_wait_result,timeout)
+    except Exception as e:
+        print_when_exception(board,logger)
+        raise e
+    if log_enabled:
+        print_logbook(board,logger)
+
+#sync tear down configuration of a scan
+@contextmanager
+def sync_release_configuration(id: int,logger: logging.Logger,timeout: int =10,log_enabled: bool =False):
+    builder = set_waiting_for_releasing_a_configuration(id)
+    board = builder.setup_board()
+    executor = futures.ThreadPoolExecutor(max_workers=1)
+    future_wait_result = executor.submit(wait,board,timeout,logger)
+    try:
+        board.log('Starting subarray tear down of configuring..')
+        yield
+    except Exception as e:
+        board.log('Subarray configure tear down resulted in an error,...getting results from waiting on its state')
+        try_getting_wait_result(board,future_wait_result,timeout,silent=True)
+        print_when_exception(board,logger)
+        raise e
+    try:
+        board.log('Subarray configure tear down returned successfully...getting results from waiting on its state')
+        try_getting_wait_result(board,future_wait_result,timeout)
+    except Exception as e:
+        print_when_exception(board,logger)
+        raise e
+    if log_enabled:
+        print_logbook(board,logger)
 
 watchSpec = namedtuple('watchSpec',['device','attr'])
 @contextmanager
@@ -391,17 +579,12 @@ def observe_states(specs:List[Tuple[str,str]],logger,timeout=10,log_enabled=True
     for spec in  specs:
         b.set_waiting_on(spec.device).for_attribute(spec.attr,polling=False).and_observe()
     board = b.setup_board()
-    yield
     try:
-        result = wait(board,timeout,logger)
-        if log_enabled:
-            logger.info(result)
-    except Exception as e:
-        logger.info(board.replay_self())
-        logger.info(board.replay_subscriptions()) 
-        raise e 
+        yield
     finally:
-        pass
+        wait(board,timeout,logger)
+        if log_enabled:
+            print_logbook(board,logger)
 
 
 

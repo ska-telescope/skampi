@@ -92,17 +92,21 @@ def update_resource_config_file(file,disable_logging=False):
 
 
 
-def update_scan_config_file(file, sdp_block):
+def update_scan_config_file(file, sdp_block,disable_logging=False):
     with open(file, 'r') as f:
         data = json.load(f)
-    LOGGER.info("________Configure string before update function _______" + str(file))
+    if not disable_logging:
+        LOGGER.info("________Configure string before update function _______" + str(file))
     sdp_sbi_id = sdp_block['id']
-    LOGGER.info("________Updated sdp_sbi_id from configure string _______" + str(sdp_sbi_id))
+    if not disable_logging:
+        LOGGER.info("________Updated sdp_sbi_id from configure string _______" + str(sdp_sbi_id))
     data['csp']['id'] = sdp_sbi_id + '-' + data['sdp']['scan_type']
-    LOGGER.info("________Updated csp-id from configure string _______" + str(data['csp']['id']))
+    if not disable_logging:
+        LOGGER.info("________Updated csp-id from configure string _______" + str(data['csp']['id']))
     with open(file, 'w') as f:
         json.dump(data, f)
-    LOGGER.info("________ Configure Updated string for next iteration_______" + str(data))
+    if not disable_logging:
+        LOGGER.info("________ Configure Updated string for next iteration_______" + str(data))
 
 
 def print_dict_to_file(filename,data):

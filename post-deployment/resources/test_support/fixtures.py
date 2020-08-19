@@ -11,8 +11,9 @@ import pytest
 from tango import DeviceProxy
 # direct dependencies
 from resources.test_support.helpers import resource
-from resources.test_support.event_waiting import sync_telescope_shutting_down,watchSpec,sync_telescope_starting_up,sync_subarray_assigning,sync_subarray_releasing
-from resources.test_support.persistance_helping import update_resource_config_file,load_config_from_file
+from resources.test_support.event_waiting import sync_telescope_shutting_down,watchSpec,sync_telescope_starting_up,\
+sync_subarray_assigning,sync_subarray_releasing,sync_subarray_configuring,sync_release_configuration
+from resources.test_support.persistance_helping import update_resource_config_file,load_config_from_file,update_scan_config_file
 # MVP code
 from oet.domain import SKAMid,SubArray,ResourceAllocation,Dish
 
@@ -112,17 +113,17 @@ def release_subarray(subArray) -> None:
         subArray.deallocate()
 
 def release_configuration(subarray: SubArray) -> None:
-    assert_subarray_configured(subarray.id)
-    with sync_subarray_configuring(subArray.id, LOGGER,10):
-        LOGGER.info('configuring subarray')
-        # TODO
+   # assert_subarray_configured(subarray.id)
+    with sync_release_configuration(subarray.id, LOGGER,10,log_enabled = True):
+        LOGGER.info('releasing subarray configuration')
+        subarray.end()
 
 def configure_subarray(subarray: SubArray, scan_config_file: str) -> None:
     # pre conditions
-    assert_subarray_is_idle(subarray.id)
-    with sync_release_configuration(subArray.id, LOGGER,10):
-        LOGGER.info('releasing subarray configuration')
-        # TODO
+    #assert_subarray_is_idle(subarray.id)  
+    with sync_subarray_configuring(subarray.id, LOGGER,10,log_enabled = True):
+        LOGGER.info('configuring subarray')
+        subarray.configure_from_file(scan_config_file, 6, with_processing = False)
 
 class RecoverableException(Exception):
     pass
@@ -137,7 +138,6 @@ RunContext = namedtuple('RunContext', ENV_VARS)
 
 @pytest.fixture(scope="session")
 def run_context():
-    logging.info('in run_context')
      # list of required environment vars
     values = list()
     
@@ -175,7 +175,7 @@ class K8_env():
         exec_command = [ 'sdpcfg', 'delete', '-R','/'] 
         component_name = 'maintenance-interface'
         namespace = self.env.KUBE_NAMESPACE
-        logging.info(f'lookging for sdp in namespace:{namespace}')
+        logging.debug(f'lookging for sdp in namespace:{namespace}')
         pods = self.v1.list_namespaced_pod(namespace).items
         assert pods is not None, f'error in cleaning config db: no pods installed in namespace {namespace} not found'
         pod = [p.metadata.name for p in pods if self._lookup_by(p,'component',component_name)]   
@@ -188,7 +188,7 @@ class K8_env():
                 command=exec_command, 
                 stderr=True, stdin=False, 
                 stdout=True, tty=False)  
-        logging.info(f'cleaning configdb:{resp}')
+        logging.debug(f'cleaning configdb:{resp}')
 
 
 @pytest.fixture(scope='session',autouse=True)
@@ -197,7 +197,6 @@ def k8(run_context) -> None:
     An fixture to help with managing the k8 context in order to 
     ensure tests are not effected by dirty environments
     '''
-    logging.info('k8 fixture called')
     yield  K8_env(run_context)
 
 @pytest.fixture
@@ -217,11 +216,11 @@ def running_telescope() -> None:
 def idle_subarray(request,running_telescope) -> None:
     id = getattr(request.module, "subbarray_id",1)
     resource_config_file = getattr(request.module, "config_file", 'resources/test_data/TMC_integration/assign_resources1.json')
-    update_resource_config_file(resource_config_file,disable_logging=True)
+    sdp_block = update_resource_config_file(resource_config_file,disable_logging=True)
     subArray = SubArray(id)
     assign_subarray(subArray,resource_config_file)
     try:
-        yield subArray
+        yield subArray,sdp_block
     except RecoverableException as e: 
         release_subarray(subArray)
         raise e
@@ -229,10 +228,10 @@ def idle_subarray(request,running_telescope) -> None:
 
 
 @pytest.fixture
-def configured_subarray(request,idle_subarray,resource_config_file) -> None:
-    scan_config_file = getattr(request.module, "config_file", 'resources/test_data/TMC_integration/assign_resources1.json')
-    update_resource_config_file(scan_config_file,disable_logging=True)
-    subArray = idle_subarray
+def configured_subarray(request,idle_subarray) -> None:
+    scan_config_file = getattr(request.module, "config_file", 'resources/test_data/OET_integration/configure1.json')
+    subArray,sdp_block = idle_subarray
+    update_scan_config_file(scan_config_file, sdp_block,disable_logging=True)
     configure_subarray(subArray,scan_config_file)
     try:
         yield subArray

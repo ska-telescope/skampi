@@ -1,10 +1,10 @@
 group: 
-  runs: 3
-  path: "tests/acceptance/mvp/"
+  runs: 1
+  path: "exploration/tests/"
   modules:
-    - path: "test_XTP-966.py"
+    - path: "test_explore_configuring.py"
       tests:
-        - name: "test_sb_resource_allocation"
+        - name: "test_configure_subarray"
 
 
       

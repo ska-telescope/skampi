@@ -84,6 +84,102 @@ deviceServers:
     args:
       - -c
       - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-004"
+  - name: vcc005
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-005"
+  - name: vcc006
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-006"
+  - name: vcc007
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-007"
+  - name: vcc008
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-008"
+  - name: vcc009
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-009"
+  - name: vcc010
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-010"
+  - name: vcc011
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-011"
+  - name: vcc012
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-012"
+  - name: vcc013
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-013"
+  - name: vcc014
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-014"
+  - name: vcc015
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-015"
+  - name: vcc016
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-016"
+  - name: vcc017
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-017"
+  - name: vcc018
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-018"
+  - name: vcc019
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-019"
+  - name: vcc020
+    function: coarse-channelisation
+    domain: sensing
+    args:
+      - -c
+      - "/venv/bin/python /app/tangods/Vcc/VccMulti/VccMulti.py vcc-020"
   - name: fsp01
     function: fsp-processing
     domain: signal-processing

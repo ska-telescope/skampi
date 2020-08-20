@@ -242,7 +242,7 @@
                                 "mid_csp/elt/subarray_03"
                             ], 
                             "MaxCapabilities": [
-                                "VCC:4", 
+                                "VCC:20", 
                                 "SearchBeams:1500", 
                                 "TimingBeams:16", 
                                 "VlbiBeams:20"

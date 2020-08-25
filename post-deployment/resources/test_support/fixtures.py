@@ -177,7 +177,7 @@ class K8_env():
         namespace = self.env.KUBE_NAMESPACE
         logging.debug(f'lookging for sdp in namespace:{namespace}')
         try:
-        pods = self.v1.list_namespaced_pod(namespace).items
+            pods = self.v1.list_namespaced_pod(namespace).items
         except Exception as e:
             logging.warning(e)
             raise e

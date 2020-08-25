@@ -140,7 +140,6 @@ spec:
       labels:
         {{- include "oet.labels" . | indent 8 }}
         component: {{ .Values.jupyter.component }}
-        component: {{ .Values.jupyter.component }}
         function: {{ .Values.jupyter.function }}
         domain: {{ .Values.jupyter.domain }}
         intent: production
@@ -156,11 +155,11 @@ spec:
               path: venv.sh
             - key: jupyter_notebook_config.json
               path: jupyter_notebook_config.json
-        {{- if .Values.jupyter.storage.enabled}}
+        {{- if .Values.jupyter.storage.enabled }}
         - name: workspace-storage
           persistentVolumeClaim:
             claimName: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-workspace-storage
-        {{- end}}
+        {{- end }}
         - name: workdir
           emptyDir: {}
       initContainers:
@@ -190,8 +189,10 @@ spec:
           - name: SKUID_URL
             value: "skuid-skuid-{{ .Release.Namespace }}-{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:9870"
         volumeMounts:
+          {{- if .Values.jupyter.storage.enabled }}
           - name: workspace-storage
             mountPath: /app/jupyter_storage
+          {{- end }}
           - name: workdir
             mountPath: /home/tango/.jupyter
           - name: configuration

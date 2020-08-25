@@ -188,7 +188,7 @@ class K8_env():
                 command=exec_command, 
                 stderr=True, stdin=False, 
                 stdout=True, tty=False)  
-        logging.debug(f'cleaning configdb:{resp}')
+        logging.info(f'cleaning configdb:{resp}')
 
 
 @pytest.fixture(scope='session',autouse=True)

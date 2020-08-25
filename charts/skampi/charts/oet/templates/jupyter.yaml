@@ -156,9 +156,11 @@ spec:
               path: venv.sh
             - key: jupyter_notebook_config.json
               path: jupyter_notebook_config.json
+        {{- if .Values.jupyter.storage.enabled}}
         - name: workspace-storage
           persistentVolumeClaim:
             claimName: {{ template "oet.name" . }}-{{ .Values.jupyter.component }}-workspace-storage
+        {{- end}}
         - name: workdir
           emptyDir: {}
       initContainers:

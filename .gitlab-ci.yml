@@ -233,12 +233,12 @@ print-debug-info:
     - public
 
 sdp_config_dump:
-  stage: post_test
+  stage: debug
   when: always
   tags:
   - docker-executor
   script:
-  - kubectl exec -n $(KUBE_NAMESPACE) sdp-proto-console-0 -- sdpcfg ls values -R / > sdp.config.json
+  - kubectl exec -n $KUBE_NAMESPACE sdp-proto-console-0 -- sdpcfg ls values -R / > sdp.config.json
   environment:
     name: $DEPLOY_ENVIRONMENT
   artifacts:

@@ -172,7 +172,7 @@ class K8_env():
             return False
 
     def clean_config_etcd(self) -> None:
-        exec_command = [ 'sh', '-c', 'ETCDCTL_API=3','etcdctl','del','--prefix','\"\"'] 
+        exec_command = [ 'sh', '-c', 'ETCDCTL_API=3 etcdctl del --prefix ""'] 
         app_name = 'etcd'
         namespace = self.env.KUBE_NAMESPACE
         logging.debug(f'lookging for sdp in namespace:{namespace}')

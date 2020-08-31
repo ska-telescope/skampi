@@ -17,7 +17,7 @@ from resources.test_support.helpers import resource, watch
 
 
 LOGGER = logging.getLogger(__name__)
-scenario = partial(scenario, "../../../features/XTP-813.feature")
+scenario = partial(scenario, "XTP-813.feature")
 
 mode_cmd_map = {
     "STANDBY-LP": "SetStandbyLPMode",

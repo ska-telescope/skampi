@@ -82,7 +82,7 @@ LOGGER = logging.getLogger(__name__)
 
 @pytest.mark.select
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
-@scenario("../../../features/XTP-826.feature", "Run more than one scan on a sub array")
+@scenario("XTP-826.feature", "Run more than one scan on a sub array")
 def test_multi_scan():
     """Multiscan Test."""
 

@@ -172,15 +172,19 @@ class K8_env():
             return False
 
     def clean_config_etcd(self) -> None:
-        exec_command = [ 'sdpcfg', 'delete', '-R','/'] 
-        component_name = 'maintenance-interface'
+        exec_command = [ 'sh', '-c', 'ETCDCTL_API=3 etcdctl del --prefix ""'] 
+        app_name = 'etcd'
         namespace = self.env.KUBE_NAMESPACE
         logging.debug(f'lookging for sdp in namespace:{namespace}')
-        pods = self.v1.list_namespaced_pod(namespace).items
+        try:
+            pods = self.v1.list_namespaced_pod(namespace).items
+        except Exception as e:
+            logging.warning(e)
+            raise e
         assert pods is not None, f'error in cleaning config db: no pods installed in namespace {namespace} not found'
-        pod = [p.metadata.name for p in pods if self._lookup_by(p,'component',component_name)]   
-        assert len(pod) > 0, f'error in cleaning config db: pod labeled as {component_name} not found'
-        assert len(pod) < 2, f'error in cleaning config db: duplicate pods labeled as {component_name} found'
+        pod = [p.metadata.name for p in pods if self._lookup_by(p,'app',app_name)]   
+        assert len(pod) > 0, f'error in cleaning config db: pod labeled as {app_name} not found'
+        assert len(pod) < 2, f'error in cleaning config db: duplicate pods labeled as {app_name} found'
         pod = pod[0]
         resp = stream(self.v1.connect_get_namespaced_pod_exec, 
                 pod, 

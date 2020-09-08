@@ -18,5 +18,5 @@ pytest-asyncio
 ska_logging
 aiohttp_cors
 flake8
-tango-simlib
+tango-simlib==0.7.0
 lmcbaseclasses

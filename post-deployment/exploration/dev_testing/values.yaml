@@ -24,6 +24,11 @@ webPyTestContainer:
     memoryRequirement:
         request: 500Mi
         limit: 600Mi
-
-
-
+logConsumer:
+    enabled: True
+    cpuRequirement:
+        request: 200m  # 600m = 0.6 CPU
+        limit: 200m 
+    memoryRequirement:
+        request: 300Mi
+        limit: 300Mi

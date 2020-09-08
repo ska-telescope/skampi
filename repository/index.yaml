@@ -140,6 +140,16 @@ entries:
   tango-base:
   - apiVersion: v1
     appVersion: "1.0"
+    created: "2020-09-08T10:03:48.60267612Z"
+    description: A Helm chart for deploying the TANGO base system on Kubernetes
+    digest: 126ac2c8227fae2ee66c8cf0247f638ef4a298f44c075dbe77bc068aecc819b2
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: tango-base
+    urls:
+    - tango-base-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v1
+    appVersion: "1.0"
     created: "2020-07-24T09:30:13.1676317+02:00"
     description: A Helm chart for deploying the TANGO base system on Kubernetes
     digest: 1c398002decf511a7fe14e904105cca0ddee024f4d69efc29c842cfe973feaf4

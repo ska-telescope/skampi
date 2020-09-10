@@ -13,6 +13,16 @@ itango:
     image: tango-itango
     tag: latest
     pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+      ephemeral-storage: 512Mi
+    limits:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+      ephemeral-storage: 512Mi
+
 
 webjive:
   enabled: true
@@ -21,6 +31,13 @@ webjive:
     image: webjive
     tag: 1.0.2-develop-116
     pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+    limits:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
 
 authserver:
   image:
@@ -28,18 +45,42 @@ authserver:
     image: webjive-auth
     tag: 1.0.0-develop-14
     pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+    limits:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
 
 redis:
   image:
     image: redis
     tag: latest
     pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+    limits:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
 
 mongodb:
   image:
     image: mongo
     tag: 3.6-stretch
     pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 200m     # 200m = 0.2 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 500m     # 500m = 0.5 CPU
+      memory: 512Mi # 512Mi = 0.5 GB mem
+      ephemeral-storage: 1Gi
+
 
 dashboards:
   image:
@@ -47,6 +88,13 @@ dashboards:
     image: dashboard-repo
     tag: 1.0.0-develop-11
     pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+    limits:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
 
 tangogql:
   image:

@@ -28,7 +28,7 @@ device_proxies = {}
 
 
 def _change_dish_mode(dev_proxy, cmd, device_name):
-    getattr(dev_proxy, cmd)()
+    dev_proxy.command_inout(cmd)
     watch_dish_mode = watch(resource(device_name)).for_a_change_on('dishMode')
     watch_dish_mode.wait_until_value_changed()
 
@@ -66,7 +66,7 @@ def test_mode_transitions():
     pass
 
 
-@given(parsers.parse("<dish_master> reports <start_mode> Dish mode"))
+@given("<dish_master> reports <start_mode> Dish mode")
 def device_proxy(dish_master, start_mode):
     # update the device_proxies collection for teardown
     if dish_master not in device_proxies:
@@ -77,19 +77,19 @@ def device_proxy(dish_master, start_mode):
     return device_proxies[dish_master]
 
 
-@when(parsers.parse("I command <dish_master> to <end_mode> Dish mode"))
+@when("I command <dish_master> to <end_mode> Dish mode")
 def set_dish_mode(device_proxy, dish_master, end_mode):
     _change_dish_mode(device_proxy, mode_cmd_map[end_mode], dish_master)
     LOGGER.info(f"{dish_master} requested dishMode: {end_mode}")
 
 
-@then(parsers.parse("<dish_master> reports <end_mode> Dish mode"))
+@then("<dish_master> reports <end_mode> Dish mode")
 def check_dish_mode(dish_master, end_mode):
     assert_that(resource(dish_master).get('dishMode')).is_equal_to(end_mode)
     LOGGER.info(f"{dish_master} desired dishMode: {resource(dish_master).get('dishMode')}")
 
 
-@then(parsers.parse("<dish_master> is in <end_state> state"))
+@then("<dish_master> is in <end_state> state")
 def check_master_device_state(dish_master, end_state):
     assert_that(resource(dish_master).get('State')).is_equal_to(end_state)
     LOGGER.info(f"{dish_master} desired state: {resource(dish_master).get('State')}")

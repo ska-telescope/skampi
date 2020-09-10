@@ -230,32 +230,44 @@ archiver: # the sub-chart directory name
 Charts and Repositories
 -----------------------
 
-A sample chart repository has been created in Skampi.  This can be accessed with:
+The SKA Helm repository is hosted on Nexus. You can add it by calling
+
 ```
-helm repo add skampi https://gitlab.com/ska-telescope/skampi/-/raw/master/repository/
-helm repo update
-helm search repo skampi
+    make add_ska_helm_repo
 ```
 
-Which will show a list of charts like:
+The make target will also display all the available charts, as though you ran
+
 ```
-NAME                    	CHART VERSION	APP VERSION	DESCRIPTION
-skampi/archiver         	0.2.0        	1.0        	A Helm chart for deploying the HDB++ archiver f...
-skampi/auth             	0.1.0        	1.0        	A Helm chart for RBAC SKA
-skampi/cbf-proto        	0.4.0        	1.0        	A Helm chart for deploying the CSP_Mid.LMC CBF ...
-skampi/csp-proto        	0.5.3        	1.0        	A Helm chart for deploying the Mid_CSP prototyp...
-skampi/dsh-lmc-prototype	0.0.1        	1.0        	A Helm chart for deploying the DSH LMC prototyp...
-skampi/logging          	0.1.0        	1.0        	A Helm chart for deploying the EFK stack
-skampi/oet              	0.1.0        	1.0        	A Helm chart for deploying the Observation Exec...
-skampi/sdp-prototype    	0.4.0        	1.0        	Helm chart to deploy the SDP Prototype
-skampi/skuid            	0.0.1        	0.1        	Service that returns unique IDs for use by SKA
-skampi/tango-base       	0.1.0        	1.0        	A Helm chart for deploying the TANGO base syste...
-skampi/tests            	0.1.0        	1.0        	A Helm chart for integration testing
-skampi/tmc-proto        	0.1.0        	1.0        	A Helm chart for deploying the TMC prototype on...
-skampi/webjive          	0.1.0        	1.0        	A Helm chart for deploying the WebJive on Kuber...
+    helm search repo skatelescope
 ```
 
-Note: the repository is regenerated using:
+Note: we give the repo a standard name skatelescope for standardisation, it's optional.
+
+Publishing your own chart / charts can also be done with make targets. Let's say your directory structure where you work, looks like this:
+
 ```
-$ make repository
+.
+├── my-project
+│   ├── charts
+│   |   └── my-first-chart
+│   |   └── my-second-chart
+│   └── README.md
+├── skampi
+│   ├── Makefile
+│   ├── charts
+│   │   └── skampi
+│   ├── ci
+│   ├── README.md
+...
+
+To publish all your charts under `my-project` at once, simply run
 ```
+    make publish-chart HELM_CHART=../../my-project/charts/* HELM_HOST=https://nexus.engageska-portugal.pt HELM_USERNAME=$uname HELM_PASSWORD=$passwd
+```
+
+For publishing a single chart, such as SKAMPI, you can run
+```    
+    make publish-chart HELM_CHART=skampi HELM_HOST=https://nexus.engageska-portugal.pt HELM_USERNAME=$uname HELM_PASSWORD=$passwd
+```
+Note: skampi is a default, so technically you don't need to specify it.

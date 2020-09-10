@@ -40,6 +40,9 @@ REMOTE_DEBUG ?= false
 # include makefile targets that wrap helm
 -include helm.mk
 
+# include makefile targets that work with SKA repository
+-include helm-repo.mk
+
 # install stable chart repo this step si
 helm_add_stable_repo := helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 
@@ -86,13 +89,6 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	then kubectl describe namespace $(KUBE_NAMESPACE_SDP) ; \
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
-
-package: ## package all existing charts into a git based repo
-	mkdir -p repository
-	@for i in charts/skampi/charts/*; do \
-	helm package $${i} --destination ./repository ; \
-	done
-	cd ./repository && helm repo index .
 
 lint_all:  ## lint ALL of the helm chart
 	@for i in charts/skampi/charts/*; do \

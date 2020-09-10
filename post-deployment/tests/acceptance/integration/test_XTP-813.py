@@ -61,7 +61,7 @@ def restore_dish_state(request):
 
 
 @pytest.mark.fast
-@scenario("XTP-813.feature", "Test dish-lmc-prototype dishMode change")
+@scenario("XTP-813.feature", "Test dish master simulator dishMode change")
 def test_mode_transitions():
     pass
 

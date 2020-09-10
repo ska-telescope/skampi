@@ -43,7 +43,7 @@ Feature: Transaction ID logging
 		
 		Examples:
 		| command_name | parameters                                     |
-		| Configure    | {'transaction_id': 'abc1234', 'config': 'foo'} |
+		| Configure    | {"transaction_id": "abc1234", "config": "foo"} |
 			
 
 	
@@ -51,10 +51,10 @@ Feature: Transaction ID logging
 	Scenario Outline: Executing a transaction that fails
 		Given an example transaction logging application
 		And a transaction ID is already present
-		When executing a transaction named <command_name>
-		And an exception occurs 
-		Then end of transaction is logged including that transaction ID and name <command_name> and the error message
-		
+		When executing a failed transaction named <command_name>
+		Then failed transaction is logged including that transaction ID and name <command_name>
+		And end of transaction is logged including that transaction ID and name <command_name>
+
 		Examples:
 		| command_name |
 		| Configure    |

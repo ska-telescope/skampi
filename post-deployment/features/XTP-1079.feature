@@ -1,25 +1,60 @@
-@VTS-228
 Feature: Transaction ID logging
-	# The start and end of every transaction should be logged with an ID.
+	#The start and end of every transaction should be logged with an ID.
 	# If starting a new transaction, then a new ID must be generated.
 	# This ID should be accessible for reuse for downstream transactions.
 
 	
 	@XTP-1080 @XTP-1079 @PI8
-	Scenario: Executing a new transaction
+	Scenario Outline: Executing a new transaction
 		Given an example transaction logging application
-		When executing a transaction
-		And no transaction ID is present
+		And a transaction ID is not present
+		When executing a transaction named <command_name>
 		Then a new transaction ID is generated
-		And start of transaction is logged including transaction ID and name
-		And end of transaction is logged including transaction ID and name	
+		And start of transaction is logged including that transaction ID and name <command_name>
+		And end of transaction is logged including that transaction ID and name <command_name>
+		
+		Examples:
+		| command_name |
+		| Configure    |	
 
 	
 	@XTP-1081 @XTP-1079 @PI8
-	Scenario: Continuing an existing transaction
+	Scenario Outline: Continuing an existing transaction
 		Given an example transaction logging application
-		When executing a transaction
-		And the transaction ID is 12345
-		Then the transaction ID used is 12345
-		And start of transaction is logged including transaction ID and name
-		And end of transaction is logged including transaction ID and name
+		And a transaction ID is already present
+		When executing a transaction named <command_name>
+		Then that transaction ID is used
+		And start of transaction is logged including that transaction ID and name <command_name>
+		And end of transaction is logged including that transaction ID and name <command_name>
+		
+		Examples:
+		| command_name |
+		| Configure    |
+			
+
+	
+	@XTP-1084 @XTP-1079 @PI8
+	Scenario Outline: Executing a transaction with parameters
+		Given an example transaction logging application
+		And a transaction ID is already present
+		And the transaction parameters are <parameters>
+		When executing a transaction named <command_name>
+		Then start of transaction is logged including that transaction ID and name <command_name> and <parameters>
+		
+		Examples:
+		| command_name | parameters                                     |
+		| Configure    | {'transaction_id': 'abc1234', 'config': 'foo'} |
+			
+
+	
+	@XTP-1085 @XTP-1079 @PI8
+	Scenario Outline: Executing a transaction that fails
+		Given an example transaction logging application
+		And a transaction ID is already present
+		When executing a transaction named <command_name>
+		And an exception occurs 
+		Then end of transaction is logged including that transaction ID and name <command_name> and the error message
+		
+		Examples:
+		| command_name |
+		| Configure    |

@@ -2,10 +2,10 @@
 Feature: Dish simulator confidence test via TM-Dish interface
 	# The Dish Simulator behaviour is tested by invoking the commands of the Dish master TANGO
 	# device and verifying that dishMode transitions are as per the documentation.
-	# Scenario: Dish from dish_mode_a to dish_mode_b
 
+	#Scenario: Dish from dish_mode_a to dish_mode_b
 	@XTP-813 @XTP-811
-	Scenario Outline: Test dish-lmc-prototype dishMode change
+	Scenario Outline: Test dish master simulator dishMode change
 		Given <dish_master> reports <start_mode> Dish mode
 		When I command <dish_master> to <end_mode> Dish mode
 		Then <dish_master> reports <end_mode> Dish mode

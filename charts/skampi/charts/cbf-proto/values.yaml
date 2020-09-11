@@ -130,3 +130,11 @@ nodeSelector: {}
 affinity: {}
 
 tolerations: []
+
+resources:
+  requests:
+    cpu: 100m     # 100m = 0.10 CPU
+    memory: 128Mi # 128Mi = 0.12 GB mem
+  limits:
+    cpu: 200m     # 200m = 0.20 CPU
+    memory: 256Mi # 256Mi = 0.25 GB mem

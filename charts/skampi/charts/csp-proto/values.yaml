@@ -70,4 +70,10 @@ affinity: {}
 
 tolerations: []
 
-resources: {}
+resources:
+  requests:
+    cpu: 150m     # 150m = 0.15 CPU
+    memory: 128Mi # 128Mi = 0.12 GB mem
+  limits:
+    cpu: 250m     # 250m = 0.25 CPU
+    memory: 256Mi # 256Mi = 0.25 GB mem

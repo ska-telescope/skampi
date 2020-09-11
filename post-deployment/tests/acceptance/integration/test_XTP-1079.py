@@ -14,6 +14,12 @@ from pytest_bdd import (
     when,
 )
 
+import ska.logging
+
+# Configure SKA logging immediately when tests start
+ska.logging.configure_logging()
+logger = logging.getLogger("ska.test.XTP-1079")
+
 
 START_OF_TRANSACTION_LOG_PHRASE = "Start Transaction (ID:"
 END_OF_TRANSACTION_LOG_PHRASE = "End Transaction (ID:"
@@ -27,30 +33,14 @@ class ExampleApplication:
     def execute(self, name, parameter_json, raise_exception=False):
         parameters = json.loads(parameter_json)
         try:
-            # FIXME:  Remove temporary implementation!
-            transaction_id = parameters.get("transaction_id", None)
-            if not transaction_id:
-                transaction_id = self.new_transaction_id()
-            try:
-                logging.info(
-                    f"Start Transaction (ID:{transaction_id}, name:{name}, parameters:{parameter_json})"
-                )
+            with ska.logging.transaction(name, parameters) as transaction_id:
+                logger.info("Dummy log inside transaction")
                 if raise_exception:
-                    raise RuntimeError(
-                        f"{FAILED_TRANSACTION_LOG_PHRASE}{transaction_id}, name:{name})"
-                    )
-                logging.info(f"Dummy message in transaction")
-            finally:
-                logging.info(f"End Transaction (ID:{transaction_id}, name:{name})")
-
-            # with ska.logging.transaction(name, parameters) as transaction_id:
-            #     if raise_exception:
-            #         raise RuntimeError("Command Failed!!!")
+                    raise RuntimeError("Command Failed!!!")
         except RuntimeError:
-            # FIXME: Remove this temporary log - expect context handler to do it
-            logging.exception("Temporary log")
+            pass
         else:
-            assert not raise_exception, "Expected RuntimeError to be raised."
+            assert not raise_exception, "Expected RuntimeError propogate out of context handler."
 
         self.transaction_id = transaction_id
 
@@ -58,13 +48,13 @@ class ExampleApplication:
         return "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
 
 
-@pytest.mark.karoo
+@pytest.mark.xfail
 @scenario("XTP-1079.feature", "Executing a transaction that fails")
 def test_executing_a_transaction_that_fails():
     pass
 
 
-@pytest.mark.karoo
+@pytest.mark.xfail
 @scenario("XTP-1079.feature", "Executing a transaction that succeeds")
 def test_executing_a_transaction_that_succeeds():
     pass

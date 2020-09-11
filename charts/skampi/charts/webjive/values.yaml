@@ -102,6 +102,13 @@ tangogql:
     image: web-maxiv-tangogql
     tag: 1.1.0-develop-19
     pullPolicy: Always
+  resources:
+    requests:
+      cpu: 400m     # 400m = 0.4 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+    limits:
+      cpu: 800m     # 800m = 0.8 CPU
+      memory: 1024Mi # 1024Mi = 1.074 GB mem
 
 # Configure Ingress resource that allow you to access the Tango REST API
 ingress:

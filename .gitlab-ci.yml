@@ -68,7 +68,7 @@ publish-chart:
   # only:
   #   - helm-publish
   tags:
-    - helm-repoman
+    - docker-executor
   script:
     # - apt-get -y update
     # - apt-get install -y curl --no-install-recommends

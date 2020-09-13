@@ -31,7 +31,7 @@ helm search repo skatelescope >> chart-repo-cache/before
 helm repo update
 helm search repo skatelescope >> chart-repo-cache/after
 
-echo "This publishing step brought about the following changes:"
+echo "This publishing step brought about the following changes"
 diff chart-repo-cache/before chart-repo-cache/after --color
 
 rm -rf chart-repo-cache

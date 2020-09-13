@@ -1,5 +1,6 @@
 #!/bin/bash
 
+ls -la
 [[ -d charts ]] || ls -la && echo "No charts directory found" && exit 1;
 
 # create clean repo cache dir

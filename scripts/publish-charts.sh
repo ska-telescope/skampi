@@ -1,16 +1,13 @@
 #!/bin/bash
 
-[[ -d charts ]] || echo "No charts directory found" && exit 1;
+[[ -d charts ]] || echo "No charts directory found";
 
 # create clean repo cache dir
-if [ -d "chart-repo-cache" ]
-  then
-  rm -rf chart-repo-cache
-fi
-mkdir chart-repo-cache
+[[ -d "chart-repo-cache" ]] || rm -rf chart-repo-cache;
+mkdir chart-repo-cache;
 
 # add SKA Helm Repository
-helm repo add skatelescope $HELM_HOST/chart-repo-cache/helm-chart --chart-repo-cache-cache chart-repo-cache
+helm repo add skatelescope $HELM_HOST/repository/helm-chart --repository-cache chart-repo-cache
 helm repo list
 helm repo update
 helm search repo skatelescope
@@ -26,9 +23,9 @@ done
 helm repo index chart-repo-cache --merge chart-repo-cache/cache/skatelescope-index.yaml
 for file in chart-repo-cache/*.tgz; do
   echo "######### uploading ${file##*/}";
-  curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file ${file} $HELM_HOST/chart-repo-cache/helm-chart/${file##*/}; \
+  curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file ${file} $HELM_HOST/repository/helm-chart/${file##*/}; \
 done
-curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file chart-repo-cache/index.yaml $HELM_HOST/chart-repo-cache/helm-chart/${file##*/}; \
+curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file chart-repo-cache/index.yaml $HELM_HOST/repository/helm-chart/${file##*/}; \
 
 helm search repo skatelescope >> chart-repo-cache/before
 helm repo update

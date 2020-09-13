@@ -67,10 +67,13 @@ publish-chart:
   when: always
   # only:
   #   - helm-publish
-  # tags:
-  #   - 
+  tags:
+    - minikube
   script:
     - apt-get -y update
     - apt-get install -y curl --no-install-recommends
+    - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+    - chmod 700 get_helm.sh
+    - ./get_helm.sh
     - curl -s https://gitlab.com/ska-telescope/stupid/raw/st-473-publish-charts/scripts/publish-charts.sh | bash
 

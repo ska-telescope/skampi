@@ -1,10 +1,15 @@
 #!/bin/bash
 
-[[ -d charts ]] || ls -la && echo "No charts directory found";
+if [[ ! -d charts ]]; then
+  ls -la
+  echo "No charts directory found"
+fi
 
 # create clean repo cache dir
-[[ -d "chart-repo-cache" ]] || rm -rf chart-repo-cache;
-mkdir chart-repo-cache;
+if [[ -d "chart-repo-cache" ]]; then
+  rm -rf chart-repo-cache
+fi
+mkdir chart-repo-cache
 
 # add SKA Helm Repository
 helm repo add skatelescope $HELM_HOST/repository/helm-chart --repository-cache chart-repo-cache

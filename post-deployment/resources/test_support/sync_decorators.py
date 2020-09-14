@@ -69,6 +69,24 @@ class WaitConfigure():
     def wait_oet(self):
         self.w.wait_until_value_changed_to('READY',timeout=200)
 
+
+class WaitConfiguring():
+
+    def __init__(self):
+        self.w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.w1  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
+        self.w2 = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
+
+    def wait(self):
+        # self.w.wait_until_value_changed_to('CONFIGURING')
+        self.w.wait_until_value_changed_to('CONFIGURING',timeout=100)
+        self.w1.wait_until_value_changed_to('CONFIGURING',timeout=100)
+        self.w2.wait_until_value_changed_to('CONFIGURING',timeout=100)
+
+    def wait_oet(self):
+        self.w.wait_until_value_changed_to('CONFIGURING',timeout=100)
+
+
 class WaitAbort():
 
     def __init__(self):
@@ -174,6 +192,21 @@ def sync_configure_oet(func):
         w.wait_oet()
         return result
     return wrapper
+
+
+def sync_configure_oet_not_ready(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        ##Can ony configure a subarray that is in IDLE/ON
+        check_going_into_configure()
+        w = WaitConfiguring()
+        ################ 
+        result = func(*args, **kwargs)
+        ################ 
+        w.wait_oet()
+        return result
+    return wrapper
+
 
 # defined as a context manager
 @contextmanager

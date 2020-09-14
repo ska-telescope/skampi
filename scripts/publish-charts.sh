@@ -4,9 +4,9 @@ ls -la
 [[ -d charts ]] || (ls -la && echo "No charts directory found" && exit 1);
 
 # # install helm
-# curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-# chmod 700 get_helm.sh
-# ./get_helm.sh
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
 
 # create clean repo cache dir
 [[ -d "chart-repo-cache" ]] && rm -rf chart-repo-cache

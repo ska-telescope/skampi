@@ -62,25 +62,18 @@ create_ci_metrics:
    paths:
      - ./build
 
-push-to-devdev:
-        when: always
-        stage: docs
-        only:
-        except:
-                - master
-        tags:
-                - helm-repoman
-        script:
-                - echo $(git branch)
-
 publish-chart:
   stage: helm-publish
-  when: manual
-  only:
-    - helm-publish
+  when: always
+  # only:
+  #   - helm-publish
   tags:
-    - helm-repoman
+    - docker-executor
   script:
-    - cd charts
-    - if [ $CHART_NAME == 'all' ]; then for d in */; do helm package "$d"; done; else helm package $CHART_NAME; fi
-    - for f in *.tgz; do curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file $f $HELM_HOST/repository/helm-chart/$f; rm $f; done
+    - apt-get -y update
+    - apt-get install -y curl ca-certificates --no-install-recommends
+    - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+    - chmod 700 get_helm.sh
+    - ./get_helm.sh
+    - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
+

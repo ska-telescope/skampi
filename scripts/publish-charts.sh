@@ -28,10 +28,10 @@ for file in chart-repo-cache/*.tgz; do
 done
 curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file chart-repo-cache/index.yaml $HELM_HOST/repository/helm-chart/${file##*/}; \
 
-helm search repo skatelescope
+helm search repo skatelescope >> chart-repo-cache/before
 sleep 2
 helm repo update
-helm search repo skatelescope
+helm search repo skatelescope >> chart-repo-cache/after
 
 echo "This publishing step brought about the following changes"
 diff chart-repo-cache/before chart-repo-cache/after --color

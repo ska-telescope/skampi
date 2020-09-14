@@ -244,7 +244,9 @@ The make target will also display all the available charts, as though you ran
 
 Note: we give the repo a standard name skatelescope for standardisation, it's optional.
 
-Publishing your own chart / charts should always be done using Gitlab CI. If your project is called my-project and it's directory tree looks like this:
+Publishing your own chart / charts to the SKA Helm repository should always be done using Gitlab CI. The other make targets in the helm-repo.mk file are self-explanatory and can be used at leasure. 
+
+If your project is called my-project and it's directory tree looks like this:
 
 ```
 .
@@ -279,6 +281,7 @@ publish-chart:
 ```
 
 If you want to publish the sub-charts like in the SKAMPI project, you need to change directory before the publishing step (add the following line at the beginning of the `script` section):
+
 ```
 script: 
   - cd charts/skampi

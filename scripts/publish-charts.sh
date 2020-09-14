@@ -32,6 +32,7 @@ helm search repo skatelescope >> chart-repo-cache/before
 sleep 2
 helm repo update
 helm search repo skatelescope >> chart-repo-cache/after
+helm search repo skatelescope
 
 echo "This publishing step brought about the following changes"
 diff chart-repo-cache/before chart-repo-cache/after --color

@@ -6,6 +6,8 @@ HELM_PASSWORD ?=# not sure if we should publish this here?
 HELM_USERNAME ?=# not sure if we should publish this here?
 REPOSITORY_CACHE ?=
 
+HELM_CHART_FULL_PATH := ./charts/$(HELM_CHART)
+
 add_ska_helm_repo:
 	helm repo add skatelescope $(HELM_HOST)/repository/helm-chart $(REPOSITORY_CACHE); \
 	helm repo list; \
@@ -16,7 +18,7 @@ publish-chart: ## Publish chart or charts specified by HELM_CHART on the SKA Hel
 	if [[ -d "./repository" ]]; then rm -rf ./repository; fi; \
 	mkdir -p repository; \
 	make add_ska_helm_repo REPOSITORY_CACHE="--repository-cache ./repository/cache"; \
-	helm package ./charts/$(HELM_CHART) --destination ./repository; \
+	helm package $(HELM_CHART_FULL_PATH) --destination ./repository; \
 	helm repo index ./repository --merge ./repository/cache/skatelescope-index.yaml; \
 	for file in ./repository/*; do \
 		echo "checking if $${file} is a file"; \
@@ -27,5 +29,7 @@ publish-chart: ## Publish chart or charts specified by HELM_CHART on the SKA Hel
 	done; \
 	helm search repo skatelescope; \
 	helm repo update; \
-	helm search repo skatelescope; \
-	rm -rf ./repository;
+	helm search repo skatelescope; 
+	# rm -rf ./repository;
+
+version-bump: ##Bump version of chart

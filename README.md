@@ -230,7 +230,7 @@ archiver: # the sub-chart directory name
 Charts and Repositories
 -----------------------
 
-The SKA Helm repository is hosted on Nexus. You can add it by calling
+The SKA Helm repository is hosted on Nexus. You can add it to your list of repos by calling
 
 ```
     make add_ska_helm_repo
@@ -244,7 +244,7 @@ The make target will also display all the available charts, as though you ran
 
 Note: we give the repo a standard name skatelescope for standardisation, it's optional.
 
-Publishing your own chart / charts can also be done with make targets. Let's say your directory structure where you work, looks like this:
+Publishing your own chart / charts should always be done using Gitlab CI. If your project is called my-project and it's directory tree looks like this:
 
 ```
 .
@@ -252,6 +252,7 @@ Publishing your own chart / charts can also be done with make targets. Let's say
 │   ├── charts
 │   |   └── my-first-chart
 │   |   └── my-second-chart
+│   ├── .gitlab-ci.yml
 │   └── README.md
 ├── skampi
 │   ├── Makefile
@@ -261,13 +262,26 @@ Publishing your own chart / charts can also be done with make targets. Let's say
 │   ├── README.md
 ...
 
-To publish all your charts under `my-project` at once, simply run
+you will only need to add the following job to your .gitlab-ci.yml file:
+
 ```
-    make publish-chart HELM_CHART=../../my-project/charts/* HELM_HOST=https://nexus.engageska-portugal.pt HELM_USERNAME=$uname HELM_PASSWORD=$passwd
+publish-chart:
+  stage: helm-publish
+  when: always
+  # only:
+  #   - helm-publish
+  tags:
+    - docker-executor
+  script:
+    - apt-get -y update
+    - apt-get install -y curl ca-certificates --no-install-recommends
+    - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
 ```
 
-For publishing a single chart, such as SKAMPI, you can run
-```    
-    make publish-chart HELM_CHART=skampi HELM_HOST=https://nexus.engageska-portugal.pt HELM_USERNAME=$uname HELM_PASSWORD=$passwd
+If you want to publish the sub-charts like in the SKAMPI project, you need to change directory before the publishing step (add the following line at the beginning of the `script` section):
 ```
-Note: skampi is a default, so technically you don't need to specify it.
+script: 
+  - cd charts/skampi
+  - apt-get...
+
+```

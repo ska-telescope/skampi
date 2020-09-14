@@ -23,14 +23,14 @@ done
 # rebuild index
 helm repo index chart-repo-cache --merge chart-repo-cache/cache/skatelescope-index.yaml
 for file in chart-repo-cache/*.tgz; do
-  echo "######### uploading ${file##*/}";
+  echo "######### UPLOADING ${file##*/}";
   curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file ${file} $HELM_HOST/repository/helm-chart/${file##*/}; \
 done
 curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file chart-repo-cache/index.yaml $HELM_HOST/repository/helm-chart/${file##*/}; \
 
-helm search repo skatelescope >> chart-repo-cache/before
+helm search repo skatelescope
 helm repo update
-helm search repo skatelescope >> chart-repo-cache/after
+helm search repo skatelescope
 
 echo "This publishing step brought about the following changes"
 diff chart-repo-cache/before chart-repo-cache/after --color

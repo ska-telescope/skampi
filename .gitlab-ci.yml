@@ -70,8 +70,8 @@ publish-chart:
   tags:
     - docker-executor
   script:
-    # - apt-get -y update
-    # - apt-get install -y curl --no-install-recommends
+    - apt-get -y update
+    - apt-get install -y curl --no-install-recommends
     # - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
     # - chmod 700 get_helm.sh
     # - ./get_helm.sh

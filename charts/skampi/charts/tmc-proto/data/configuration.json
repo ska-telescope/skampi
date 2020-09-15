@@ -143,6 +143,8 @@
               "polled_attr": [
                 "adminmode",
                 "1000",
+                "healthstate",
+                "1000",
                 "obsmode",
                 "1000",
                 "receptoridlist",
@@ -220,6 +222,8 @@
               "polled_attr": [
                 "adminmode",
                 "1000",
+                "healthstate",
+                "1000",
                 "obsmode",
                 "1000",
                 "receptoridlist",
@@ -296,6 +300,8 @@
               ],
               "polled_attr": [
                 "adminmode",
+                "1000",
+                "healthstate",
                 "1000",
                 "obsmode",
                 "1000",

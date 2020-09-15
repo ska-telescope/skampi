@@ -20,6 +20,7 @@ helm search repo skatelescope
 
 # Package charts
 while read chart; do
+  echo "######## Packaging $chart #########"
   helm package charts/"$chart" --destination chart-repo-cache
 done <charts/.publish-charts
 

@@ -77,7 +77,7 @@ publish-chart:
 
 publish-chart-test:
   variables:
-    CHARTS_TO_PUBLISH: charts/coffee charts/tea
+    CHARTS_TO_PUBLISH: coffee
   stage: helm-publish
   when: always
   only:

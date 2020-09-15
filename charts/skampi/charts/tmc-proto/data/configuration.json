@@ -141,11 +141,7 @@
                 "5"
               ],
               "polled_attr": [
-                "activitymessage",
-                "1000",
                 "adminmode",
-                "1000",
-                "healthstate",
                 "1000",
                 "obsmode",
                 "1000",
@@ -222,11 +218,7 @@
                 "5"
               ],
               "polled_attr": [
-                "activitymessage",
-                "1000",
                 "adminmode",
-                "1000",
-                "healthstate",
                 "1000",
                 "obsmode",
                 "1000",
@@ -303,11 +295,7 @@
                 "5"
               ],
               "polled_attr": [
-                "activitymessage",
-                "1000",
                 "adminmode",
-                "1000",
-                "healthstate",
                 "1000",
                 "obsmode",
                 "1000",

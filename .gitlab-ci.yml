@@ -74,7 +74,7 @@ publish-chart:
     - apt-get install -y curl ca-certificates --no-install-recommends
     - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
 
-publish-chart:
+publish-chart-test:
   stage: helm-publish
   when: always
   only:

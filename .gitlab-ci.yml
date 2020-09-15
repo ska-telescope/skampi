@@ -3,6 +3,7 @@
 #   gitlab-runner exec <executor, eg. docker> <job name>
 #
 
+
 stages:
   - helm-publish
   - docs
@@ -75,6 +76,8 @@ publish-chart:
     - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
 
 publish-chart-test:
+  variables:
+    CHARTS_TO_PUBLISH: charts/coffee charts/tea
   stage: helm-publish
   when: always
   only:

@@ -3,6 +3,7 @@
 #   gitlab-runner exec <executor, eg. docker> <job name>
 #
 
+
 stages:
   - helm-publish
   - docs
@@ -65,11 +66,25 @@ create_ci_metrics:
 publish-chart:
   stage: helm-publish
   when: always
-  # only:
-  #   - helm-publish
+  only:
+    - master
   tags:
     - docker-executor
   script:
     - apt-get -y update
     - apt-get install -y curl ca-certificates --no-install-recommends
     - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
+
+publish-chart-test:
+  variables:
+    CHARTS_TO_PUBLISH: coffee
+  stage: helm-publish
+  when: always
+  only:
+    - st-473-publish-charts
+  tags:
+    - docker-executor
+  script:
+    - apt-get -y update
+    - apt-get install -y curl ca-certificates --no-install-recommends
+    - curl -s https://gitlab.com/ska-telescope/stupid/raw/st-473-publish-charts/scripts/publish-charts.sh | bash

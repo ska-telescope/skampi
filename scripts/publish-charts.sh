@@ -19,10 +19,10 @@ helm repo update
 helm search repo skatelescope
 
 # Package charts
-for chart in charts/*/
-do
-  echo "$chart"
-  helm package "$chart" --destination chart-repo-cache
+[ -z "$CHARTS_TO_PUBLISH" ] && export CHARTS_TO_PUBLISH=$(cd charts; ls -d charts/*/)
+for chart in $CHARTS_TO_PUBLISH; do
+  echo "######## Packaging $chart #########"
+  helm package charts/"$chart" --destination chart-repo-cache
 done
 
 # rebuild index

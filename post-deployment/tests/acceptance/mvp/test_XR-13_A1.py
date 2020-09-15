@@ -54,8 +54,8 @@ non_default_states_to_check = {
 def result():
     return {}
 
-@pytest.mark.select
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+# @pytest.mark.select
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
 def test_allocate_resources():
     """Assign Resources."""

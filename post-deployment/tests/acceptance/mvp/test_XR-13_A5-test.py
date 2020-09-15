@@ -56,7 +56,7 @@ def result():
 
 @pytest.mark.select
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("                           ")
+@scenario("1_XR-13_XTP-494.feature", " A5-Test,  Sub-array Invokes RESTART commands")
 def test_subarray_restart():
     """RESTART Subarray"""
 

@@ -19,15 +19,9 @@ helm repo update
 helm search repo skatelescope
 
 # Package charts
-while read chart in charts/.publish-charts; do
+while read chart; do
   helm package charts/"$chart" --destination chart-repo-cache
-done
-
-# for chart in charts/*/
-# do
-#   echo "$chart"
-#   helm package "$chart" --destination chart-repo-cache
-# done
+done <charts/.publish-charts
 
 # rebuild index
 helm repo index chart-repo-cache --merge chart-repo-cache/cache/skatelescope-index.yaml

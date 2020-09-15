@@ -118,6 +118,48 @@ def abort_subarray():
         SubArray(1).abort()
         LOGGER.info("Abort is invoked on Subarray")
 
+@then("the subarray eventually goes into ABORTING")
+def check_state_aborting():
+    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTING')
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('ABORTING')
+    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('ABORTING')
+
+@then("the subarray eventually goes into ABORTED")
+def check_state_aborted():
+    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTED')
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('ABORTED')
+    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('ABORTED')
+
+def teardown_function(function):
+    """ teardown any state that was previously setup with a setup_function
+    call.
+    """
+    if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+            LOGGER.info("tearing down composed subarray (IDLE)")
+            take_subarray(1).and_release_all_resources()
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
+        restart_subarray(1)
+        #raise exception since we are unable to continue with tear down
+        raise Exception("Unable to tear down test setup")  
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
+        LOGGER.info("tearing down configured subarray (READY)")
+        take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
+        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
+        restart_subarray(1)
+        #raise exception since we are unable to continue with tear down
+        raise Exception("Unable to tear down test setup")
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTING"):
+        LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manualy to complete tear down")
+        restart_subarray(1)
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTED"):
+        invoke_restart_on_subarray(1)
+    LOGGER.info("Put Telescope back to standby")
+    set_telescope_to_standby()
+
+
 
                     
 

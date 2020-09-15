@@ -134,6 +134,16 @@ def restart_subarray(id):
     if exceptions_raised != "":
         raise Exception(f'Error in initialising devices:{exceptions_raised}')
     the_waiter.wait()
+
+def invoke_restart_on_subarray(id):
+    devices = device_to_subarrays.keys()
+    filtered_devices = [device for device in devices if device_to_subarrays[device] == id ]
+    the_waiter = waiter()
+    the_waiter.set_wait_for_going_into_resetting()
+    S()
+       the_waiter.wait(200)
+    if the_waiter.timed_out:
+        pytest.fail("timed out whilst setting subarrays to resetting:\n {}".format(the_waiter.logs))
     
 
 def set_telescope_to_standby():

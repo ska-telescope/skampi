@@ -23,8 +23,13 @@ hdbppdb:
     password: tango
   resources:
     requests:
+      cpu: 100m     # 100m = 0.1 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
+      ephemeral-storage: 1Gi
+    limits:
       cpu: 200m     # 200m = 0.2 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
+      ephemeral-storage: 2Gi
 
 archiver:
   enabled: true
@@ -37,6 +42,11 @@ archiver:
     requests:
       cpu: 200m     # 200m = 0.2 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
+      ephemeral-storage: 2Gi
+    limits:
+      cpu: 200m     # 200m = 0.2 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
+      ephemeral-storage: 2Gi
 
 dsconfig:
   image:

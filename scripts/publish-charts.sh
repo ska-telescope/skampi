@@ -1,7 +1,11 @@
 #!/bin/bash
 
 ls -la
-[[ -d charts ]] || (ls -la && echo "No charts directory found" && exit 1);
+if [[ -d charts ]]; do 
+  ls -la 
+  echo "No charts directory found" 
+  exit 1
+fi
 
 # # install helm
 # curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3

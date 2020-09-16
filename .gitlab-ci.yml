@@ -60,7 +60,8 @@ create_ci_metrics:
  tags: []
  script:
    # Gitlab CI badges creation: START
-   - mkdir /build/reports
+  #  - mkdir build
+   - mkdir build/reports
    - apt-get -y update
    - apt-get install -y curl --no-install-recommends
    - curl -s https://gitlab.com/ska-telescope/ci-metrics-utilities/raw/master/scripts/ci-badges-func.sh | sh

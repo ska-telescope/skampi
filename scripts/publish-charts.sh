@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ls -la
-if [[ -d charts ]]; do 
+if [[ -d charts ]]; then 
   ls -la 
   echo "No charts directory found" 
   exit 1

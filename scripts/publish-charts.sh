@@ -21,6 +21,8 @@ helm repo add skatelescope $HELM_HOST/repository/helm-chart --repository-cache c
 helm repo list
 helm repo update
 helm search repo skatelescope
+helm search repo skatelescope >> chart-repo-cache/before
+# sleep 2
 
 # Package charts
 [ -z "$CHARTS_TO_PUBLISH" ] && export CHARTS_TO_PUBLISH=$(cd charts; ls -d */)
@@ -44,8 +46,6 @@ for file in chart-repo-cache/*.tgz; do
 done
 curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file chart-repo-cache/index.yaml $HELM_HOST/repository/helm-chart/${file##*/}; \
 
-helm search repo skatelescope >> chart-repo-cache/before
-sleep 2
 helm repo update
 helm search repo skatelescope >> chart-repo-cache/after
 helm search repo skatelescope

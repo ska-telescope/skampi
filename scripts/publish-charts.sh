@@ -33,15 +33,17 @@ done
 # rebuild index
 helm repo index ./chart-repo-cache --merge ./chart-repo-cache/skatelescope-index.yaml
 
-ls -la ./chart-repo-cache
-echo "cat chart-repo-cache/skatelescope-index.yaml"
-cat ./chart-repo-cache/skatelescope-index.yaml
+# ls -la ./chart-repo-cache
+# echo "cat chart-repo-cache/skatelescope-index.yaml"
+# cat ./chart-repo-cache/skatelescope-index.yaml
 
 # check for pre-existing files
 for file in $(cd chart-repo-cache; ls *.tgz); do
   echo "Checking if $file is already in index:"
   cat ./chart-repo-cache/skatelescope-index.yaml | grep "$file" || echo "Not found in index 👍";
 done
+
+sleep 2
 
 for file in ./chart-repo-cache/*.tgz; do
   echo "######### UPLOADING ${file##*/}";

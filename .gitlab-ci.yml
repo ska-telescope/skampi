@@ -5,6 +5,10 @@
 
 image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
 
+cache:
+  paths:
+    - build
+
 stages:
   - helm-publish
   - docs
@@ -82,10 +86,10 @@ publish-chart-test:
   stage: helm-publish
   when: always
   only:
-    - st-473-publish-charts
+    - st-473-test
   tags:
     - docker-executor
   script:
     - apt-get -y update
     - apt-get install -y curl ca-certificates --no-install-recommends
-    - curl -s https://gitlab.com/ska-telescope/stupid/raw/st-473-publish-charts/scripts/publish-charts.sh | bash
+    - curl -s https://gitlab.com/ska-telescope/stupid/raw/st-473-test/scripts/publish-charts.sh | bash

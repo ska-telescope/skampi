@@ -30,7 +30,14 @@ for chart in $CHARTS_TO_PUBLISH; do
 done
 
 # rebuild index
-helm repo index chart-repo-cache --merge chart-repo-cache/cache/skatelescope-index.yaml
+helm repo index chart-repo-cache --merge chart-repo-cache/skatelescope-index.yaml
+
+# check for pre-existing files
+for file in $(ls chart-repo-cache); do
+  echo "Checking if $file is already in index:"
+  cat chart-repo-cache/skatelescope-index.yaml | grep "$file";
+done
+
 for file in chart-repo-cache/*.tgz; do
   echo "######### UPLOADING ${file##*/}";
   curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file ${file} $HELM_HOST/repository/helm-chart/${file##*/}; \

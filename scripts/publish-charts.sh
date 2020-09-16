@@ -30,7 +30,11 @@ for chart in $CHARTS_TO_PUBLISH; do
   helm package charts/"$chart" --destination chart-repo-cache
 done
 
+echo "ls -la chart-repo-cache"
+ls -la chart-repo-cache
 cat chart-repo-cache/skatelescope-index.yaml
+echo "cat chart-repo-cache/skatelescope-index.yaml"
+
 # check for pre-existing files
 for file in $(cd chart-repo-cache; ls *.tgz); do
   echo "Checking if $file is already in index:"

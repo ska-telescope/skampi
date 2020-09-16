@@ -86,7 +86,7 @@ publish-chart-test:
   stage: helm-publish
   when: always
   only:
-    - st-473-publish-charts
+    - st-473-test
   tags:
     - docker-executor
   script:

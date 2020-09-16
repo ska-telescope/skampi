@@ -109,6 +109,17 @@ class WaitRestart():
         logging.info("state transitioned to RESTARTING, waiting for it to return to EMPTY")
         self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
 
+class WaitObsReset():
+
+    def __init__(self):
+        self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+
+    def wait(self,timeout):
+        logging.info("ObsReset command dispatched, checking that the state transitioned to RESETTING")
+        # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
+        logging.info("state transitioned to RESETTING, waiting for it to return to IDLE")
+        self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
+
 
 class WaitScanning():
     def __init__(self):
@@ -358,6 +369,21 @@ def sync_restart(timeout=200):
             #check_going_into_restart()
             check_going_out_of_abort()
             w = WaitRestart()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
+
+def sync_obsreset(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            #check_going_into_resetting()
+            check_going_out_of_abort()
+            w = WaitObsReset()
             ################
             result = func(*args, **kwargs)
             ################

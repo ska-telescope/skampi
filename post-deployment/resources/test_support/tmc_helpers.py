@@ -1,4 +1,4 @@
-from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it,sync_abort,sync_restart
+from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it,sync_abort,sync_restart,sync_obsreset
 from resources.test_support.logging_decorators import log_it
 from tango import DeviceProxy   
 from resources.test_support.helpers import waiter,watch,resource
@@ -87,3 +87,13 @@ def restart():
     SubarrayNode.restart()
     LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
     LOGGER.info('Invoked restart on Subarray')
+
+
+@sync_obsreset
+def obsreset():
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+    SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+    SubarrayNode.obsreset()
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
+    LOGGER.info('Invoked obsreset on Subarray')

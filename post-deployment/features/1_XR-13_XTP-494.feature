@@ -52,12 +52,3 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 		When I call the execution of the scan instruction
 		Then Sub-array changes to a SCANNING state
 		And observation ends after 10 seconds as indicated by returning to READY state
-
-	@XTP-420 @XTP-494
-	Scenario: A5-Test,  Sub-array Invokes RESTART commands
-		Given A running telescope for executing observations on a subarray
-		And I invoke AssignResources on Subarray
-		And I call abort on subarray1
-		When I invoke RESTART on subarray
-		Then Sub-array changes to RESTARTING state
-		And Sub-array changes to EMPTY state

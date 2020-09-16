@@ -40,7 +40,7 @@ helm repo index ./chart-repo-cache --merge ./chart-repo-cache/skatelescope-index
 # check for pre-existing files
 for file in $(cd chart-repo-cache; ls *.tgz); do
   echo "Checking if $file is already in index:"
-  cat ./chart-repo-cache/skatelescope-index.yaml | grep "$file" || echo "Not found in index 👍";
+  cat ./chart-repo-cache/skatelescope-index.yaml | grep "$file" && echo "#########################################" || echo "Not found in index 👍";
 done
 
 sleep 2

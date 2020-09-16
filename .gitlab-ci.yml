@@ -5,6 +5,10 @@
 
 image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
 
+cache:
+  paths:
+    - build
+
 stages:
   - helm-publish
   - docs

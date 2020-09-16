@@ -22,7 +22,6 @@ helm repo list
 helm repo update
 helm search repo skatelescope
 helm search repo skatelescope >> chart-repo-cache/before
-# sleep 2
 
 # Package charts
 [ -z "$CHARTS_TO_PUBLISH" ] && export CHARTS_TO_PUBLISH=$(cd charts; ls -d */)
@@ -31,14 +30,15 @@ for chart in $CHARTS_TO_PUBLISH; do
   helm package charts/"$chart" --destination chart-repo-cache
 done
 
-# rebuild index
-helm repo index chart-repo-cache --merge chart-repo-cache/skatelescope-index.yaml
-
+cat chart-repo-cache/skatelescope-index.yaml
 # check for pre-existing files
 for file in $(cd chart-repo-cache; ls *.tgz); do
   echo "Checking if $file is already in index:"
   cat chart-repo-cache/skatelescope-index.yaml | grep "$file" || echo "Not found in index 👍";
 done
+
+# rebuild index
+helm repo index chart-repo-cache --merge chart-repo-cache/skatelescope-index.yaml
 
 for file in chart-repo-cache/*.tgz; do
   echo "######### UPLOADING ${file##*/}";

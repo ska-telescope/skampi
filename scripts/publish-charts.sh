@@ -1,8 +1,8 @@
 #!/bin/bash
 
-ls -la
 if [[ -d charts ]]; then 
   ls -la 
+else
   echo "No charts directory found" 
   exit 1
 fi
@@ -23,7 +23,7 @@ helm repo update
 helm search repo skatelescope
 
 # Package charts
-[ -z "$CHARTS_TO_PUBLISH" ] && export CHARTS_TO_PUBLISH=$(cd charts; ls -d charts/*/)
+[ -z "$CHARTS_TO_PUBLISH" ] && export CHARTS_TO_PUBLISH=$(cd charts; ls -d */)
 for chart in $CHARTS_TO_PUBLISH; do
   echo "######## Packaging $chart #########"
   helm package charts/"$chart" --destination chart-repo-cache
@@ -33,9 +33,9 @@ done
 helm repo index chart-repo-cache --merge chart-repo-cache/skatelescope-index.yaml
 
 # check for pre-existing files
-for file in $(ls chart-repo-cache); do
+for file in $(cd chart-repo-cache; ls *.tgz); do
   echo "Checking if $file is already in index:"
-  cat chart-repo-cache/skatelescope-index.yaml | grep "$file";
+  cat chart-repo-cache/skatelescope-index.yaml | grep "$file" || echo "Not found in index 👍";
 done
 
 for file in chart-repo-cache/*.tgz; do

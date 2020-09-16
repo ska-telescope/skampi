@@ -7,6 +7,11 @@ else
   exit 1
 fi
 
+# install helm
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+
 # create clean repo cache dir
 [[ -d "chart-repo-cache" ]] && rm -rf chart-repo-cache
 mkdir -p ./chart-repo-cache

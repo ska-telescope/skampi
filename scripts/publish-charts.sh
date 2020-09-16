@@ -33,8 +33,9 @@ done
 # rebuild index
 helm repo index chart-repo-cache --merge chart-repo-cache/skatelescope-index.yaml
 
-# echo "cat chart-repo-cache/skatelescope-index.yaml"
-# cat chart-repo-cache/skatelescope-index.yaml
+ls -la chart-repo-cache
+echo "cat chart-repo-cache/skatelescope-index.yaml"
+cat chart-repo-cache/skatelescope-index.yaml
 
 # check for pre-existing files
 for file in $(cd chart-repo-cache; ls *.tgz); do

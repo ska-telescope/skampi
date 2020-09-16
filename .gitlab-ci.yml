@@ -92,4 +92,4 @@ publish-chart-test:
   script:
     - apt-get -y update
     - apt-get install -y curl ca-certificates --no-install-recommends
-    - curl -s https://gitlab.com/ska-telescope/stupid/raw/st-473-publish-charts/scripts/publish-charts.sh | bash
+    - curl -s https://gitlab.com/ska-telescope/stupid/raw/st-473-test/scripts/publish-charts.sh | bash

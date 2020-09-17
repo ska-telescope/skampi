@@ -30,9 +30,6 @@ for chart in $CHARTS_TO_PUBLISH; do
   helm package charts/"$chart" --destination ./chart-repo-cache
 done
 
-# rebuild index
-helm repo index ./chart-repo-cache --merge ./chart-repo-cache/skatelescope-index.yaml
-
 # ls -la ./chart-repo-cache
 # echo "cat chart-repo-cache/skatelescope-index.yaml"
 # cat ./chart-repo-cache/skatelescope-index.yaml
@@ -40,8 +37,11 @@ helm repo index ./chart-repo-cache --merge ./chart-repo-cache/skatelescope-index
 # check for pre-existing files
 for file in $(cd chart-repo-cache; ls *.tgz); do
   echo "Checking if $file is already in index:"
-  cat ./chart-repo-cache/skatelescope-index.yaml | grep "$file" && echo "⚠️ #########################################" || echo "Not found in index 👍";
+  cat ./chart-repo-cache/skatelescope-index.yaml | grep "$file" && rm ./chart-repo-cache/$file || echo "Not found in index 👍";
 done
+
+# rebuild index
+helm repo index ./chart-repo-cache --merge ./chart-repo-cache/skatelescope-index.yaml
 
 sleep 2
 

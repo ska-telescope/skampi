@@ -36,7 +36,7 @@ non_default_states_to_check = {
     'mid_d0004/elt/master' : 'pointingState'}
 
 LOGGER = logging.getLogger(__name__)
-# @pytest.mark.select
+#@pytest.mark.select
 @pytest.mark.skip(reason="Fails randomly")
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():

@@ -74,7 +74,6 @@ def allocate_four_dishes(result):
 
 @given("I call abort on subarray1")
 def abort_subarray():
-    LOGGER.info("entering into abort section***********************")
     @sync_abort(200)
     def abort():
         SubArray(1).abort()
@@ -86,16 +85,9 @@ def restart():
     @log_it('AX-13_A5',devices_to_log,non_default_states_to_check)
     @sync_restart(200)
     def command_restart():
-        LOGGER.info("entering into restart section **************")
         SubArray(1).restart()
         LOGGER.info("Restart command is invoked on subarray")
     command_restart()
-
-# @then("Sub-array changes to RESTARTING state")
-# def check_restarting_state():
-#     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('RESTARTING')
-#     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('RESTARTING')
-#     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('RESTARTING')
 
 @then("Sub-array changes to EMPTY state")
 def check_empty_state():
@@ -126,6 +118,3 @@ def teardown_function(function):
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
     LOGGER.info("Telescope is in standby")
-
-
-

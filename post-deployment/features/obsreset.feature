@@ -3,5 +3,4 @@ Scenario: obsreset-test, Sub-array Invokes RESTART command
         Given Sub-array is in READY state
         Given I call abort on subarray1
         When I call ObsReset on Subarray
-        Then Sub-array changes to RESETTING state
         Then Sub-array changes to IDLE state

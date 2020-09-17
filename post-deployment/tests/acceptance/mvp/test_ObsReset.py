@@ -73,7 +73,7 @@ def set_to_ready():
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
     LOGGER.info("AssignResources is invoke on Subarray")
     take_subarray(1).and_configure_scan_by_file(sdp_block)
-    LOGGER.info("Configure is invoke on Subarray")
+    # LOGGER.info("Configure is invoke on Subarray")
 
 @given("I call abort on subarray1")
 def abort_subarray():
@@ -82,8 +82,8 @@ def abort_subarray():
     def abort():
         SubArray(1).abort()
         LOGGER.info("Abort command is invoked on subarray")
-    LOGGER.info("entering to normal abort function*********")
     abort()
+    LOGGER.info("entering to normal abort function*********")
 
 @when("I call ObsReset on Subarray")
 def reset_subarray():
@@ -93,6 +93,7 @@ def reset_subarray():
         SubArray(1).reset()
         LOGGER.info("obsreset command is invoked on subarray")
     obsreset_subarray()
+    LOGGER.info("entering to normal obs_reset complete*********")
 
 # @then("Sub-array changes to RESETTING state")
 # def check_resetting_state():
@@ -103,9 +104,11 @@ def reset_subarray():
 @then("Sub-array changes to IDLE state")
 def check_idle_state():
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
+    # LOGGER.info("TMC-subarray Obstate is" + str(resource('ska_mid/tm_subarray_node/1').get('obsState')))
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
+    # LOGGER.info("CSP-subarray Obstate is" + str(resource('mid_csp/elt/subarray_01').get('obsState')))
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('IDLE')
-
+    # LOGGER.info("SDP-subarray Obstate is" + str(resource('mid_sdp/elt/subarray_1').get('obsState')))
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
@@ -114,28 +117,51 @@ def teardown_function(function):
     if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
         if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            take_subarray(1).and_release_all_resources()  
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
-        LOGGER.info("tearing down configured subarray (READY)")
-        take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
-        restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
-        raise Exception("Unable to tear down test setup")
+            take_subarray(1).and_release_all_resources() 
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTING"):
         LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup") 
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "RESETTING"):
-        LOGGER.warn("Subarray is still in RESETTING! Please restart MVP manualy to complete tear down")
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "RESTARTING"):
+        LOGGER.warn("Subarray is still in RESTARTING! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup") 
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
     LOGGER.info("Telescope is in standby")
+
+
+# def teardown_function(function):
+#     """ teardown any state that was previously setup with a setup_function
+#     call.
+#     """
+#     if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+#         if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+#             LOGGER.info("tearing down composed subarray (IDLE)")
+#             take_subarray(1).and_release_all_resources()  
+#     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
+#         LOGGER.info("tearing down configured subarray (READY)")
+#         take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+#     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+#         LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
+#         restart_subarray(1)
+#         #raise exception since we are unable to continue with tear down
+#         raise Exception("Unable to tear down test setup")
+#     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTING"):
+#         LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manualy to complete tear down")
+#         restart_subarray(1)
+#         #raise exception since we are unable to continue with tear down
+#         raise Exception("Unable to tear down test setup") 
+#     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "RESETTING"):
+#         LOGGER.warn("Subarray is still in RESETTING! Please restart MVP manualy to complete tear down")
+#         restart_subarray(1)
+#         #raise exception since we are unable to continue with tear down
+#         raise Exception("Unable to tear down test setup") 
+#     LOGGER.info("Put Telescope back to standby")
+#     set_telescope_to_standby()
+#     LOGGER.info("Telescope is in standby")
 
         
 

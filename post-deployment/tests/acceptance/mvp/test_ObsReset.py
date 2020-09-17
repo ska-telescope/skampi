@@ -22,9 +22,10 @@ from tango import DeviceProxy, DevState
 ## local imports
 from resources.test_support.helpers import resource
 from resources.test_support.logging_decorators import log_it
-from resources.test_support.sync_decorators import sync_assign_resources, sync_obsreset
+from resources.test_support.sync_decorators import sync_assign_resources, sync_obsreset,sync_abort
 from resources.test_support.persistance_helping import update_resource_config_file
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
+
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -55,7 +56,7 @@ def result():
     return {}
 
 @pytest.mark.select
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("obsreset.feature", "obsreset-test, Sub-array Invokes RESTART command")
 def test_subarray_obsreset():
     """reset subarray"""
@@ -74,30 +75,33 @@ def set_to_ready():
     take_subarray(1).and_configure_scan_by_file(sdp_block)
     LOGGER.info("Configure is invoke on Subarray")
 
-
 @given("I call abort on subarray1")
 def abort_subarray():
     LOGGER.info("entering into abort section***********************")
+    @sync_abort(200)
     def abort():
-        SubArray(1).Abort()
+        SubArray(1).abort()
         LOGGER.info("Abort command is invoked on subarray")
+    LOGGER.info("entering to normal abort function*********")
+    abort()
 
 @when("I call ObsReset on Subarray")
 def reset_subarray():
     @log_it('AX-13_A5',devices_to_log,non_default_states_to_check)
     @sync_obsreset(200)
     def obsreset_subarray():
-        SubArray(1).obsreset()
+        SubArray(1).reset()
         LOGGER.info("obsreset command is invoked on subarray")
+    obsreset_subarray()
 
-@then("Sub-array changes to RESETTING state")
-def check_resetting_state():
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('RESETTING')
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('RESETTING')
-    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('RESETTING')
+# @then("Sub-array changes to RESETTING state")
+# def check_resetting_state():
+#     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('RESETTING')
+#     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('RESETTING')
+#     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('RESETTING')
 
 @then("Sub-array changes to IDLE state")
-def check_empty_state():
+def check_idle_state():
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('IDLE')

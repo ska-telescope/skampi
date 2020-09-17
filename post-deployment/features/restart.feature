@@ -3,5 +3,4 @@ Scenario: A5-Test,  Sub-array Invokes RESTART command
 		And I invoke AssignResources on Subarray
 		And I call abort on subarray1
 		When I invoke RESTART on subarray
-		Then Sub-array changes to RESTARTING state
-		And Sub-array changes to EMPTY state
+		Then Sub-array changes to EMPTY state

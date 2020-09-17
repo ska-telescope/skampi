@@ -116,7 +116,7 @@ class WaitObsReset():
 
     def wait(self,timeout):
         logging.info("ObsReset command dispatched, checking that the state transitioned to RESETTING")
-        # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
+        #self.the_watch.wait_until_value_changed_to('RESETTING',timeout)
         logging.info("state transitioned to RESETTING, waiting for it to return to IDLE")
         self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
 
@@ -362,7 +362,7 @@ def sync_abort(timeout=200):
         return wrapper
     return decorator
 
-def sync_restart(timeout=200):
+def sync_restart(timeout=500):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):

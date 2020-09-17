@@ -83,8 +83,8 @@ publish-chart:
     - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
 
 publish-chart-test:
-  # variables:
-  #   CHARTS_TO_PUBLISH: coffee
+  variables:
+    CHARTS_TO_PUBLISH: coffee
   stage: helm-publish
   when: always
   only:

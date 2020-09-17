@@ -25,9 +25,11 @@ helm search repo skatelescope >> ./chart-repo-cache/before
 
 # Package charts
 [ -z "$CHARTS_TO_PUBLISH" ] && export CHARTS_TO_PUBLISH=$(cd charts; ls -d */)
+NEW_CHART_COUNT=0
 for chart in $CHARTS_TO_PUBLISH; do
   echo "######## Packaging $chart #########"
   helm package charts/"$chart" --destination ./chart-repo-cache
+  NEW_CHART_COUNT=$((NEW_CHART_COUNT+1))
 done
 
 # ls -la ./chart-repo-cache
@@ -37,8 +39,12 @@ done
 # check for pre-existing files
 for file in $(cd chart-repo-cache; ls *.tgz); do
   echo "Checking if $file is already in index:"
-  cat ./chart-repo-cache/skatelescope-index.yaml | grep "$file" && rm ./chart-repo-cache/$file || echo "Not found in index 👍";
+  cat ./chart-repo-cache/skatelescope-index.yaml | grep "$file" && rm ./chart-repo-cache/$file && NEW_CHART_COUNT=$((NEW_CHART_COUNT - 1)) || echo "Not found in index 👍";
 done
+
+# exit script if no charts are to be uploaded
+echo Number of charts to upload: $NEW_CHART_COUNT
+(( $NEW_CHART_COUNT > 0 )) || exit 1
 
 # rebuild index
 helm repo index ./chart-repo-cache --merge ./chart-repo-cache/skatelescope-index.yaml

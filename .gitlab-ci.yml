@@ -3,7 +3,7 @@
 #   gitlab-runner exec <executor, eg. docker> <job name>
 #
 
-image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
+image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.2
 
 cache:
   paths:

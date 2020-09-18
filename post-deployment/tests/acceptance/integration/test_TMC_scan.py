@@ -36,7 +36,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 @pytest.mark.select
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_scan():
     
     try:
@@ -58,7 +58,7 @@ def test_scan():
         #and a subarray configured to perform a scan as per 'TMC_integration/configure1.json'
         LOGGER.info('Configuring the Subarray')
         fixture['state'] = 'Subarray CONFIGURING'
-        configure_file = 'resources/test_data/TMC_integration/configure2.json'
+        configure_file = 'resources/test_data/TMC_integration/configure1.json'
         tmc.configure_sub(sdp_block, configure_file)
         fixture['state'] = 'Subarray Configured for SCAN'
       

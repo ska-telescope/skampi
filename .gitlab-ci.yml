@@ -68,32 +68,6 @@ create_ci_metrics:
    paths:
      - ./build
 
-# publish-chart:
-#   stage: helm-publish
-#   when: always
-#   only:
-#     - master
-#   tags:
-#     - docker-executor
-#   script:
-#     - apt-get -y update
-#     - apt-get install -y curl ca-certificates --no-install-recommends
-#     - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
-
-# publish-chart-test:
-#   # variables:
-#   #   CHARTS_TO_PUBLISH: tea
-#   stage: helm-publish
-#   when: always
-#   only:
-#     - st-473-test
-#   tags:
-#     - docker-executor
-#   script:
-#     - apt-get -y update
-#     - apt-get install -y curl ca-certificates --no-install-recommends
-#     - curl -s https://gitlab.com/ska-telescope/stupid/raw/st-473-test/scripts/publish-charts.sh | bash
-
 variables:
   CHARTS_TO_PUBLISH: tea coffee 
 

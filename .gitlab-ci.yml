@@ -73,5 +73,4 @@ variables:
 
 include:
   - project: 'ska-telescope/templates-repository'
-    ref: 'st-473-include-step'
     file: 'gitlab-ci/includes/helm_publish.yml'

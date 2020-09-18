@@ -348,10 +348,20 @@ class waiter():
         # self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become('obsState',changed_to='SCANNING'))
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become('obsState',changed_to='SCANNING'))
 
+    def set_wait_for_going_into_configuring(self):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become('obsState',changed_to='CONFIGURING'))  
+        # self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become('obsState',changed_to='SCANNING'))
+        # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become('obsState',changed_to='SCANNING'))
+
     def set_wait_for_going_into_aborting(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become('obsState',changed_to='ABORTING'))  
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become('obsState',changed_to='ABORTING'))
         self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become('obsState',changed_to='ABORTING'))
+
+    def set_wait_for_going_into_aborted(self):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become('obsState',changed_to='ABORTED'))  
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become('obsState',changed_to='ABORTED'))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become('obsState',changed_to='ABORTED'))
     
     def set_wait_for_going_into_resetting(self):
         self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become('obsState',changed_to='RESETTING'))  

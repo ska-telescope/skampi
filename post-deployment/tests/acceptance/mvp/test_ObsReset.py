@@ -55,8 +55,8 @@ non_default_states_to_check = {
 def result():
     return {}
 
-@pytest.mark.select
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+#@pytest.mark.select
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("obsreset.feature", "obsreset-test, Sub-array Invokes RESTART command")
 def test_subarray_obsreset():
     """reset subarray"""

@@ -34,6 +34,10 @@ def check_going_out_of_configured():
     ##Can only return to ON/IDLE if in READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
 
+def check_going_out_of_aborted():
+    ##Can only return to ON/IDLE if in READY
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+
 def check_going_out_of_abort():
     ##Can only return to ON/IDLE if in READY
     print ("Checking aborting obsState verification")
@@ -226,7 +230,6 @@ def sync_configure_oet(func):
         return result
     return wrapper
 
-
 def sync_configure_oet_not_ready(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -236,10 +239,23 @@ def sync_configure_oet_not_ready(func):
         ################ 
         result = func(*args, **kwargs)
         ################ 
-        w.wait_oet()
+        w.wait()
+        w1.wait()
+        w2.wait()
         return result
     return wrapper
 
+# def sync_configure_oet_not_ready(func):
+#     @functools.wraps(func)
+#     def wrapper(*args, **kwargs):
+#         check_going_out_of_configured()
+#         the_waiter = waiter()
+#         the_waiter.set_wait_for_going_into_configuring()
+#         result = func(*args, **kwargs)
+#         the_waiter.wait()
+#         return result
+#     return wrapper
+    
 
 # defined as a context manager
 @contextmanager
@@ -307,6 +323,18 @@ def sync_end_sb(func):
         the_waiter.wait(100)
         return result
     return wrapper
+
+def sync_restart_sa(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        def check_going_out_of_aborted():()
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_into_aborted()
+        result = func(*args, **kwargs)
+        the_waiter.wait(100)
+        return result
+    return wrapper
+
 
 # defined as a context manager
 @contextmanager
@@ -433,6 +461,7 @@ def sync_scan_oet(func):
         the_waiter.wait()
         return result
     return wrapper
+    
 
 # defined as a context manager
 @contextmanager

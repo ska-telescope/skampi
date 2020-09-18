@@ -8,13 +8,12 @@ Feature: Dish simulator confidence test via TM-Dish interface
 	Scenario Outline: when the telescope subarrays can be aborted then abort brings them in ABORTED
 		Given operator John has a running telescope with a subarray in state <subarray_state>
 		When operator issues the ABORT command
-		Then the subarray eventually goes into ABORTING
+	    Then the subarray eventually goes into ABORTING
 		And the subarray eventually goes into ABORTED
 		
 		Examples:
 		| subarray_state  | 
 		| IDLE            | 
-		| CONFIGURING     | 
 		| READY           | 
 		| SCANNING        | 
 

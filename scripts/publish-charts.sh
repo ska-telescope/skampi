@@ -43,8 +43,8 @@ for file in $(cd chart-repo-cache; ls *.tgz); do
 done
 
 # exit script if no charts are to be uploaded
-echo Number of charts to upload: $NEW_CHART_COUNT
-(( $NEW_CHART_COUNT > 0 )) || exit 1
+echo Found $NEW_CHART_COUNT charts ready to add to the SKA repository.
+(( $NEW_CHART_COUNT > 0 )) || exit 0
 
 # rebuild index
 helm repo index ./chart-repo-cache --merge ./chart-repo-cache/skatelescope-index.yaml

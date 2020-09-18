@@ -95,7 +95,7 @@ create_ci_metrics:
 #     - curl -s https://gitlab.com/ska-telescope/stupid/raw/st-473-test/scripts/publish-charts.sh | bash
 
 variables:
-  CHARTS_TO_PUBLISH: tea  
+  CHARTS_TO_PUBLISH: tea coffee 
 
 include:
   - project: 'ska-telescope/templates-repository'

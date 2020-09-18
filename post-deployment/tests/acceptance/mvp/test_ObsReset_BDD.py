@@ -74,19 +74,7 @@ def set_to_running():
         SubArray(1).abort()
         LOGGER.info("Abort command is invoked on subarray")
     abort()
-  
     LOGGER.info("Abort is completed on Subarray")
-
-
-# @given("I call abort on subarray1")
-# def abort_subarray():
-#     @sync_abort(200)
-#     def abort():
-#         SubArray(1).abort()
-#         LOGGER.info("Abort command is invoked on subarray")
-#     abort()
-  
-    # LOGGER.info("Abort is completed on Subarray")
 
 @when("I call ObsReset on Subarray")
 def reset_subarray():

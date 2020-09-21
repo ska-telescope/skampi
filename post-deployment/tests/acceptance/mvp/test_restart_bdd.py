@@ -54,9 +54,9 @@ non_default_states_to_check = {
 def result():
     return {}
 
-# @pytest.mark.select
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("restart.feature", "A5-Test,  Sub-array Invokes RESTART command")
+@pytest.mark.select
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@scenario("restart.feature", "Sub-array Invokes RESTART command")
 def test_subarray_restart():
     """RESTART Subarray"""
 
@@ -106,12 +106,10 @@ def teardown_function(function):
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTING"):
         LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup") 
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "RESTARTING"):
         LOGGER.warn("Subarray is still in RESTARTING! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup") 
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "EMPTY"):
         LOGGER.info("Subarray is in EMPTY state.")

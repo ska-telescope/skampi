@@ -63,36 +63,14 @@ def assign():
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
     return sdp_block
 
-# def configuring(sdp_block):
-#     take_subarray(1).and_configuring_by_file(sdp_block)
-#     LOGGER.info("Configure is invoke on Subarray")
-
-# def configuring(fixture,sdp_block):
-#     #TODO add method to clear thread in case of failure
-#     fixture['configure'] = sdp_block
-#     @log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
-#     @sync_configure_oet
-#     def configure(sdp_block):
-#         def send_configure(duration):
-#             take_subarray(1).and_configuring_by_file(sdp_block)
-#         LOGGER.info("Scan is invoked on Subarray 1")
-#         executor = futures.ThreadPoolExecutor(max_workers=1)
-#         LOGGER.info("getting into executor block")
-#         return executor.submit(send_configure,fixture['configure'])
-#         LOGGER.info("getting out off executor block")
-#     fixture['future'] = configure(sdp_block)
-#     LOGGER.info("configure is complete on SubarrayNode")
-#     LOGGER.info("_________fixture['future']________" + str( fixture['future']))
-#     return fixture
-
 
 def configure_ready(sdp_block):
     take_subarray(1).and_configure_scan_by_file(sdp_block)
     LOGGER.info("Configure is invoke on Subarray")
     LOGGER.info("Subarray is moved to READY")
 
+
 def scanning(fixture):
-    #TODO add method to clear thread in case of failure
     fixture['scans'] = '{"id":1}'
     @log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
     @sync_scan_oet
@@ -105,28 +83,25 @@ def scanning(fixture):
         return executor.submit(send_scan,fixture['scans'])
         LOGGER.info("getting out off executor block")
     fixture['future'] = scan()
-    LOGGER.info("Scan is complete on SubarrayNode")
-    LOGGER.info("_________fixture['future']________" + str( fixture['future']))
+    LOGGER.info("Obstate = Scanning on TMC-Subarray")
     return fixture
 
-#@given(parsers.parse('operator John has a running telescope with a subarray in state {subarray_state:S}'))
-@given("operator John has a running telescope with a subarray in state <subarray_state>")
-def set_up_telescope(subarray_state : str):
-    if subarray_state == 'IDLE':
+
+@given("operator John has a running telescope with a subarray in state <subarray_obsstate>")
+def set_up_telescope(subarray_obsstate : str):
+    if subarray_obsstate == 'IDLE':
         assign()
-    # elif subarray_state == 'CONFIGURING':
-    #     sdp_block = assign()
-    #     configuring(fixture, sdp_block)
-    elif subarray_state == 'READY':
+    elif subarray_obsstate == 'READY':
         sdp_block = assign()
         configure_ready(sdp_block)
-    elif subarray_state == 'SCANNING':
+    elif subarray_obsstate == 'SCANNING':
         sdp_block = assign()
         configure_ready(sdp_block)
         scanning(sdp_block)
     else:
         msg = 'obsState {} is not settable with command methods'
-        raise ValueError(msg.format(subarray_state))
+        raise ValueError(msg.format(subarray_obsstate))
+
 
 @when("operator issues the ABORT command")
 def abort_subarray():
@@ -137,23 +112,16 @@ def abort_subarray():
     abort()
     LOGGER.info("Abort is completed on Subarray")
 
-# @then("the subarray eventually goes into ABORTING")
-# def check_state_aborting():
-#     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTING')
-#     LOGGER.info("____________ABORTING____________")
-#     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('ABORTING')
-#     LOGGER.info("____________ABORTING____________")
-#     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('ABORTING')
-#     LOGGER.info("____________ABORTING____________")
 
 @then("the subarray eventually goes into ABORTED")
 def check_idle_state():
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTED')
-    LOGGER.info("____________ABORTED____________")
+    LOGGER.info("TMC-Subarray Obstate changed to ABORTED")
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('ABORTED')
-    LOGGER.info("____________ABORTED____________")
+    LOGGER.info("CSP-Subarray Obstate changed to ABORTED")
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('ABORTED')
-    LOGGER.info("____________ABORTED____________")
+    LOGGER.info("SDP-Subarray Obstate changed to ABORTED")
+
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
@@ -166,7 +134,6 @@ def teardown_function(function):
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")  
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
         LOGGER.info("tearing down configured subarray (READY)")
@@ -174,7 +141,6 @@ def teardown_function(function):
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
         LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTING"):
         LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manualy to complete tear down")

@@ -1,4 +1,4 @@
-Scenario: A5-Test,  Sub-array Invokes RESTART command
+Scenario: Sub-array Invokes RESTART command
 		Given A running telescope for executing observations on a subarray
 		And I invoke AssignResources on Subarray
 		And I call abort on subarray1

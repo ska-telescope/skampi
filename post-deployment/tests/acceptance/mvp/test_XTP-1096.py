@@ -55,14 +55,14 @@ non_default_states_to_check = {
 def result():
     return {}
 
-@pytest.mark.select
+@pytest.mark.obsreset
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("ObsReset.feature", "obsreset-test, Sub-array Invokes RESTART command")
+@scenario("XTP-1096.feature", "BDD test case for ObsReset command")
 def test_subarray_obsreset():
     """reset subarray"""
 
-@given("A running telescope for executing observations on a subarray")
-def set_to_running():
+@given("Subarray has transitioned into obsState ABORTED during an observation")
+def set_to_abort():
     LOGGER.info("Given A running telescope for executing observations on a subarray")
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
@@ -76,9 +76,9 @@ def set_to_running():
     abort()
     LOGGER.info("Abort is completed on Subarray")
 
-@when("I call ObsReset on Subarray")
+@when("the operator invokes ObsReset command")
 def reset_subarray():
-    @log_it('AX-13_A5',devices_to_log,non_default_states_to_check)
+    @log_it('XTP-1096',devices_to_log,non_default_states_to_check)
     @sync_obsreset(200)
     def obsreset_subarray():
         SubArray(1).reset()
@@ -86,7 +86,7 @@ def reset_subarray():
     obsreset_subarray()
     LOGGER.info("Obsreset is completed")
 
-@then("Sub-array changes to IDLE state")
+@then("the subarray should transition to obsState IDLE")
 def check_idle_state():
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')

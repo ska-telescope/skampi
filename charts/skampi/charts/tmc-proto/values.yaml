@@ -13,7 +13,7 @@ tmcprototype:
   image:
     registry: nexus.engageska-portugal.pt/tango-example
     image: tmcprototype
-    tag: 0.2.10
+    tag: 0.2.11
     pullPolicy: IfNotPresent
 
 tmalarmhandler:
@@ -296,8 +296,8 @@ tolerations: []
 
 resources:
   requests:
-    cpu: 3m     # 100m = 0.1 CPU
+    cpu: 150m     # 100m = 0.1 CPU
     memory: 55Mi # 128Mi = 0.125 GB mem
   limits:
-    cpu: 100m     # 200m = 0.2 CPU
+    cpu: 200m     # 200m = 0.2 CPU
     memory: 65Mi # 256Mi = 0.25 GB mem

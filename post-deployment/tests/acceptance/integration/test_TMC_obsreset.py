@@ -5,7 +5,7 @@ import pytest
 import logging
 from resources.test_support.helpers import waiter, watch, resource
 from resources.test_support.controls import telescope_is_in_standby, set_telescope_to_standby
-from resources.test_support.sync_decorators import sync_abort,time_it,sync_restart
+from resources.test_support.sync_decorators import sync_abort,time_it,sync_restart, sync_obsreset
 from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file
 import resources.test_support.tmc_helpers as tmc
 from resources.test_support.logging_decorators import log_it

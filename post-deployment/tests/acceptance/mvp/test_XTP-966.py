@@ -275,8 +275,8 @@ def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block, addit
     return False
 
 
-@pytest.mark.select
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+# @pytest.mark.select
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("XTP-966.feature",
           "Scheduling Block Resource Allocation and Observation")
 def test_sb_resource_allocation():

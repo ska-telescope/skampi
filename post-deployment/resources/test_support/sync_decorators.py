@@ -34,6 +34,10 @@ def check_going_out_of_configured():
     ##Can only return to ON/IDLE if in READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
 
+def check_going_out_of_aborted():
+    ##Can only return to ABORTED if in READY, SCANNING, CONFIGURING, IDLE
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+
 def check_going_out_of_abort():
     ##Can only return to ON/IDLE if in READY
     print ("Checking aborting obsState verification")
@@ -69,6 +73,7 @@ class WaitConfigure():
     def wait_oet(self):
         self.w.wait_until_value_changed_to('READY',timeout=200)
 
+
 class WaitAbort():
 
     def __init__(self):
@@ -90,6 +95,16 @@ class WaitRestart():
         # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
         logging.info("state transitioned to RESTARTING, waiting for it to return to EMPTY")
         self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
+
+class WaitObsReset():
+
+    def __init__(self):
+        self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+
+    def wait(self,timeout):
+        logging.info("ObsReset command dispatched, checking that the state transitioned to RESETTING")
+        logging.info("state transitioned to RESETTING, waiting for it to return to IDLE")
+        self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
 
 
 class WaitObsReset():
@@ -186,6 +201,7 @@ def sync_configure_oet(func):
         return result
     return wrapper
 
+
 # defined as a context manager
 @contextmanager
 def sync_oet_configuration():
@@ -252,6 +268,18 @@ def sync_end_sb(func):
         the_waiter.wait(100)
         return result
     return wrapper
+
+def sync_restart_sa(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        check_going_out_of_aborted()
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_into_restarting()
+        result = func(*args, **kwargs)
+        the_waiter.wait(100)
+        return result
+    return wrapper
+
 
 # defined as a context manager
 @contextmanager
@@ -344,12 +372,11 @@ def sync_restart(timeout=200):
         return wrapper
     return decorator
 
-
 def sync_obsreset(timeout=200):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            #check_going_into_restart()
+            #check_going_into_resetting()
             check_going_out_of_abort()
             w = WaitObsReset()
             ################
@@ -359,7 +386,6 @@ def sync_obsreset(timeout=200):
             return result
         return wrapper
     return decorator
-
 
 # defined as a context manager
 @contextmanager
@@ -380,6 +406,7 @@ def sync_scan_oet(func):
         the_waiter.wait()
         return result
     return wrapper
+    
 
 # defined as a context manager
 @contextmanager

@@ -35,7 +35,7 @@ def check_going_out_of_configured():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
 
 def check_going_out_of_aborted():
-    ##Can only return to ON/IDLE if in READY
+    ##Can only return to ABORTED if in READY, SCANNING, CONFIGURING, IDLE
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
 def check_going_out_of_abort():
@@ -245,17 +245,6 @@ def sync_configure_oet_not_ready(func):
         return result
     return wrapper
 
-# def sync_configure_oet_not_ready(func):
-#     @functools.wraps(func)
-#     def wrapper(*args, **kwargs):
-#         check_going_out_of_configured()
-#         the_waiter = waiter()
-#         the_waiter.set_wait_for_going_into_configuring()
-#         result = func(*args, **kwargs)
-#         the_waiter.wait()
-#         return result
-#     return wrapper
-    
 
 # defined as a context manager
 @contextmanager

@@ -10,7 +10,7 @@ from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from resources.test_support.helpers import subarray_devices,resource,ResourceGroup,waiter,watch
 from resources.test_support.persistance_helping import update_scan_config_file,update_resource_config_file
 from resources.test_support.sync_decorators import sync_assign_resources,sync_configure_oet,time_it,\
-    sync_release_resources,sync_release_resources,sync_end_sb,sync_scan_oet,sync_configure_oet_not_ready,sync_restart_sa
+    sync_release_resources,sync_end_sb,sync_scan_oet,sync_configure_oet_not_ready,sync_restart_sa
 from resources.test_support.mappings import device_to_subarrays
 
 LOGGER = logging.getLogger(__name__)
@@ -71,18 +71,6 @@ class pilot():
         self.state = "Ready"
         return self
 
-    def and_configuring_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/configure2.json'):
-        ##Reference tests/acceptance/mvp/test_XR-13_A2-Test.py
-        @sync_configure_oet_not_ready
-        @time_it(120)
-        def config(file, sdp_block):
-            update_scan_config_file(file, sdp_block)
-            LOGGER.info("___________Input file in configure_oet_____________" + str(file))
-            self.state = "Configuring"
-            self.SubArray.configure_from_file(file, 6, with_processing = False)
-        LOGGER.info("___________SDP block from configure_oet_____________" + str(sdp_block))
-        config(file, sdp_block)
-        return self
 
     def and_run_a_scan(self):
         ##Reference tests/acceptance/mvp/test_XR-13_A3-Test.py
@@ -144,16 +132,6 @@ def restart_subarray(id):
         raise Exception(f'Error in initialising devices:{exceptions_raised}')
     the_waiter.wait()
 
-# def invoke_restart_on_subarray(id):
-#     devices = device_to_subarrays.keys()
-#     filtered_devices = [device for device in devices if device_to_subarrays[device] == id ]
-#     the_waiter = waiter()
-#     the_waiter.set_wait_for_going_into_resetting()
-#     Subarray.restart()
-#     the_waiter.wait(200)
-#     if the_waiter.timed_out:
-#         pytest.fail("timed out whilst setting subarrays to resetting:\n {}".format(the_waiter.logs))
-    
 
 def set_telescope_to_standby():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')

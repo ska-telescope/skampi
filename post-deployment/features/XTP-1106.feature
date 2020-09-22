@@ -1,6 +1,6 @@
 Feature: 
 
-	#This test case verifies that when an observation is going on and Abort command is invoked on the subarray, the ongoing activity is aborted.
+	#This test case verifies that when an observation is going on and Restart command is invoked on the subarray, the ongoing activity is restarted.
 	@XTP-1106
     Scenario: Sub-array Invokes RESTART command
 			Given A running telescope for executing observations on a subarray

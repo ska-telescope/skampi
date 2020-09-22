@@ -66,7 +66,7 @@ def assign():
 
 def configure_ready(sdp_block):
     take_subarray(1).and_configure_scan_by_file(sdp_block)
-    LOGGER.info("Configure is invoke on Subarray")
+    LOGGER.info("Configure command is invoked on Subarray.")
     LOGGER.info("Subarray is moved to READY")
 
 
@@ -114,7 +114,7 @@ def abort_subarray():
 
 
 @then("the subarray eventually goes into ABORTED")
-def check_idle_state():
+def check_aborted_state():
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTED')
     LOGGER.info("TMC-Subarray Obstate changed to ABORTED")
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('ABORTED')

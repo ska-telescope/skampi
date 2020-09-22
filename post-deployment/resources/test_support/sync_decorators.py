@@ -74,23 +74,6 @@ class WaitConfigure():
         self.w.wait_until_value_changed_to('READY',timeout=200)
 
 
-class WaitConfiguring():
-
-    def __init__(self):
-        self.w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
-        self.w1  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
-        self.w2 = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
-
-    def wait(self):
-        # self.w.wait_until_value_changed_to('CONFIGURING')
-        self.w.wait_until_value_changed_to('CONFIGURING',timeout=100)
-        self.w1.wait_until_value_changed_to('CONFIGURING',timeout=100)
-        self.w2.wait_until_value_changed_to('CONFIGURING',timeout=100)
-
-    def wait_oet(self):
-        self.w.wait_until_value_changed_to('CONFIGURING',timeout=100)
-
-
 class WaitAbort():
 
     def __init__(self):
@@ -120,31 +103,8 @@ class WaitObsReset():
 
     def wait(self,timeout):
         logging.info("ObsReset command dispatched, checking that the state transitioned to RESETTING")
-        # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
         logging.info("state transitioned to RESETTING, waiting for it to return to IDLE")
         self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
-
-    # def __init__(self):
-    #     self.w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
-    #     self.w1  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
-    #     self.w2  = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
-
-
-    # def wait(self,timeout):
-    #     logging.info("ObsReset command dispatched, checking that the state transitioned to RESETTING")
-    #     #self.the_watch.wait_until_value_changed_to('RESETTING',timeout)
-    #     #logging.info("state transitioned to RESETTING, waiting for it to return to IDLE")
-    #     self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
-
-    # def wait(self):
-    #     # self.w.wait_until_value_changed_to('CONFIGURING')
-    #     self.w.wait_until_value_changed_to('IDLE',timeout=200)
-    #     self.w1.wait_until_value_changed_to('IDLE',timeout=200)
-    #     self.w2.wait_until_value_changed_to('IDLE',timeout=200)
-
-    # def wait_oet(self):
-        # self.w.wait_until_value_changed_to('IDLE',timeout=200)
-
 
 
 class WaitScanning():
@@ -230,21 +190,6 @@ def sync_configure_oet(func):
         return result
     return wrapper
 
-def sync_configure_oet_not_ready(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        ##Can ony configure a subarray that is in IDLE/ON
-        check_going_into_configure()
-        w = WaitConfiguring()
-        ################ 
-        result = func(*args, **kwargs)
-        ################ 
-        w.wait()
-        w1.wait()
-        w2.wait()
-        return result
-    return wrapper
-
 
 # defined as a context manager
 @contextmanager
@@ -316,7 +261,6 @@ def sync_end_sb(func):
 def sync_restart_sa(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        def check_going_out_of_aborted():()
         the_waiter = waiter()
         the_waiter.set_wait_for_going_into_aborted()
         result = func(*args, **kwargs)
@@ -401,7 +345,7 @@ def sync_abort(timeout=200):
         return wrapper
     return decorator
 
-def sync_restart(timeout=500):
+def sync_restart(timeout=200):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):

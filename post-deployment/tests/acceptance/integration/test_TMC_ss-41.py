@@ -39,7 +39,7 @@ LOGGER = logging.getLogger(__name__)
 
 @pytest.mark.select
 #@pytest.mark.skip(reason="Fails randomly")
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 def test_multi_scan():
 
     ####
@@ -63,7 +63,7 @@ def test_multi_scan():
 
         #and for which the subarray is configured to perform a scan as per 'TMC_integration/configure1.json'
         fixture['state'] = 'Subarray CONFIGURING'
-        configure_file = 'resources/test_data/TMC_integration/configure1.json'
+        configure_file = 'resources/test_data/TMC_integration/configure2.json'
         tmc.configure_sub(sdp_block, configure_file)
         LOGGER.info('Configuring the Subarray')
         fixture['state'] = 'Subarray Configured for SCAN'
@@ -86,7 +86,7 @@ def test_multi_scan():
         #then when I load a  new configuration to perform a can as per TMC_integration/configure2.json
         LOGGER.info('Configuring the Subarray')
         fixture['state'] = 'Subarray CONFIGURING'
-        configure_file = 'resources/test_data/TMC_integration/configure2.json'
+        configure_file = 'resources/test_data/TMC_integration/configure1.json'
         tmc.configure_sub(sdp_block, configure_file)
         LOGGER.info('Configuring the Subarray')
         fixture['state'] = 'Subarray Configured for SCAN'

@@ -88,12 +88,11 @@ def restart():
     LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
     LOGGER.info('Invoked restart on Subarray')
 
-
 @sync_obsreset
 def obsreset():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
-    SubarrayNode.obsreset()
+    SubarrayNode.ObsReset()
     LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
-    LOGGER.info('Invoked obsreset on Subarray')
+    LOGGER.info('Invoked Obsreset on Subarray')

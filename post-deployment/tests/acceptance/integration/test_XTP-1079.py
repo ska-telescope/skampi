@@ -21,9 +21,9 @@ ska.logging.configure_logging()
 logger = logging.getLogger("ska.test.XTP-1079")
 
 
-START_OF_TRANSACTION_LOG_PHRASE = "Start Transaction (ID:"
-END_OF_TRANSACTION_LOG_PHRASE = "End Transaction (ID:"
-FAILED_TRANSACTION_LOG_PHRASE = "Failed Transaction (ID:"
+START_OF_TRANSACTION_LOG_PHRASE = "Enter["
+END_OF_TRANSACTION_LOG_PHRASE = "Exit["
+FAILED_TRANSACTION_LOG_PHRASE = "Exception["
 
 
 class ExampleApplication:

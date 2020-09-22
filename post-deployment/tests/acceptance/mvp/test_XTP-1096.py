@@ -55,7 +55,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
-@pytest.mark.obsreset
+@pytest.mark.select
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("XTP-1096.feature", "BDD test case for ObsReset command")
 def test_subarray_obsreset():

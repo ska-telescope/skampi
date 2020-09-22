@@ -68,8 +68,8 @@ create_ci_metrics:
    paths:
      - ./build
 
-variables:
-  CHARTS_TO_PUBLISH: tea
+# variables:
+#   CHARTS_TO_PUBLISH: tea
 
 include:
   - project: 'ska-telescope/templates-repository'

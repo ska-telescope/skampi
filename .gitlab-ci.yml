@@ -69,7 +69,7 @@ create_ci_metrics:
      - ./build
 
 variables:
-  CHARTS_TO_PUBLISH: tea coffee 
+  CHARTS_TO_PUBLISH: tea
 
 include:
   - project: 'ska-telescope/templates-repository'

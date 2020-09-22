@@ -91,6 +91,7 @@ class WaitRestart():
         logging.info("state transitioned to RESTARTING, waiting for it to return to EMPTY")
         self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
 
+
 class WaitObsReset():
 
     def __init__(self):
@@ -98,7 +99,6 @@ class WaitObsReset():
 
     def wait(self,timeout):
         logging.info("ObsReset command dispatched, checking that the state transitioned to RESETTING")
-        # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
         logging.info("state transitioned to RESETTING, waiting for it to return to IDLE")
         self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
 

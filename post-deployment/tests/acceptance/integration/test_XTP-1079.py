@@ -30,13 +30,28 @@ class ExampleApplication:
     def __init__(self):
         self.transaction_id = None
 
-    def execute(self, name, parameter_json, raise_exception=False):
+    def execute(
+        self, name, parameter_json, raise_exception=False, transaction_id="", transaction_id_key="",
+    ):
         parameters = json.loads(parameter_json)
         try:
-            with ska.logging.transaction(name, parameters) as transaction_id:
-                logger.info("Dummy log inside transaction")
-                if raise_exception:
-                    raise RuntimeError("Command Failed!!!")
+            if transaction_id_key:
+                with ska.logging.transaction(
+                    name,
+                    parameters,
+                    transaction_id=transaction_id,
+                    transaction_id_key=transaction_id_key,
+                ) as transaction_id:
+                    logger.info("Dummy log inside transaction")
+                    if raise_exception:
+                        raise RuntimeError("Command Failed!!!")
+            else:
+                with ska.logging.transaction(
+                    name, parameters, transaction_id=transaction_id
+                ) as transaction_id:
+                    logger.info("Dummy log inside transaction")
+                    if raise_exception:
+                        raise RuntimeError("Command Failed!!!")
         except RuntimeError:
             pass
         else:
@@ -65,14 +80,33 @@ def example_app():
     return ExampleApplication()
 
 
-@when("executing a successful transaction named <command_name> with <parameters>")
-def executing_a_successful_transaction(example_app, command_name, parameters):
-    example_app.execute(command_name, parameters)
+@when(
+    "executing a successful transaction named <command_name> with <parameters> and <transaction_id> and <transaction_id_key>"
+)
+def executing_a_successful_transaction(
+    example_app, command_name, parameters, transaction_id, transaction_id_key
+):
+    example_app.execute(
+        command_name,
+        parameters,
+        transaction_id=transaction_id,
+        transaction_id_key=transaction_id_key,
+    )
 
 
-@when("executing a transaction named <command_name> with <parameters> that raises an exception")
-def executing_a_failed_transaction(example_app, command_name, parameters):
-    example_app.execute(command_name, parameters, raise_exception=True)
+@when(
+    "executing a transaction named <command_name> with <parameters> and <transaction_id> and <transaction_id_key> that raises an exception"
+)
+def executing_a_failed_transaction(
+    example_app, command_name, parameters, transaction_id, transaction_id_key
+):
+    example_app.execute(
+        command_name,
+        parameters,
+        raise_exception=True,
+        transaction_id=transaction_id,
+        transaction_id_key=transaction_id_key,
+    )
 
 
 @then(
@@ -84,7 +118,8 @@ def check_start_of_the_transaction_is_logged(
     if expected_transaction_id == "< newly_generated >":
         expected_transaction_id = example_app.transaction_id
     assert check_logs(
-        [START_OF_TRANSACTION_LOG_PHRASE, expected_transaction_id, command_name, parameters], caplog
+        [START_OF_TRANSACTION_LOG_PHRASE, expected_transaction_id, command_name, parameters,],
+        caplog,
     )
 
 

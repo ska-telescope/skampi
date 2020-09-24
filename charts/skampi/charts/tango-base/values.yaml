@@ -153,7 +153,7 @@ jive:
       ephemeral-storage: 256Mi
 
 vnc:
-  enabled: false
+  enabled: true
   component: vnc-gui
   function: generic-tango-vnc-gui
   domain: interactive-testing
@@ -202,7 +202,7 @@ vscode:
       ephemeral-storage: 256Mi
 
 tangorest:
-  enabled: false
+  enabled: true
   replicas: 1
   component: tango-rest
   function: tango-http-interface

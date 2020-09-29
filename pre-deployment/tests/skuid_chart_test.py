@@ -138,9 +138,10 @@ class TestSkuidDeployment:
 
         command_str = "curl -s  -X GET http://0.0.0.0:9870/skuid/entity_types/get"
         resp = skuid_chart_deployment.pod_exec_bash(skuid_pod_name, command_str)
+        number_of_default_entity_types = 7
         resp_json = json.loads(resp)
         resp_json = json.loads(resp_json)
-        assert len(resp_json) > 5
+        assert len(resp_json) == number_of_default_entity_types
 
         command_str = "curl -s  -X GET http://0.0.0.0:9870/skuid/ska_transaction_id"
         resp = skuid_chart_deployment.pod_exec_bash(skuid_pod_name, command_str)

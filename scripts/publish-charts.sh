@@ -28,7 +28,8 @@ helm search repo skatelescope >> ./chart-repo-cache/before
 NEW_CHART_COUNT=0
 for chart in $CHARTS_TO_PUBLISH; do
   echo "######## Packaging $chart #########"
-  helm package charts/"$chart" --destination ./chart-repo-cache
+  helm package charts/"$chart" --dependency-update --destination ./chart-repo-cache
+  echo "######## Status $? ##"
   NEW_CHART_COUNT=$((NEW_CHART_COUNT+1))
 done
 

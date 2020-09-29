@@ -30,7 +30,7 @@ class TestSkuidChart:
         d = self.chart.templates["skuid.yaml"].as_objectpath()
         image_name = d.execute("$..*.image[0]")
 
-        assert image_name == "nexus.engageska-portugal.pt/ska-telescope/skuid:1.1.0"
+        assert image_name == "nexus.engageska-portugal.pt/ska-telescope/skuid:1.2.0"
 
     def test_env_vars_loaded_from_skuid_config_map(self):
         d = self.chart.templates["skuid.yaml"].as_objectpath()
@@ -41,7 +41,7 @@ class TestSkuidChart:
 
     def test_pv_mount_path_should_be_same_as_data_dir(self):
         data_dir = '/data-test'
-        chart = self.chart.render_template('skuid.yaml', chart_values={ 
+        chart = self.chart.render_template('skuid.yaml', chart_values={
             'ingress.enabled': 'true',
             'skuid.config.data_dir': data_dir
         })
@@ -84,7 +84,7 @@ class TestSkuidChart:
         )[0]
         if (skuid_pvc["spec"]["storageClassName"] == "standard"):
             skuid_pv = list(filter(lambda x: x["kind"] == "PersistentVolume", pv_chart))[0]
-            
+
             assert skuid_pv["spec"]["persistentVolumeReclaimPolicy"] == "Recycle"
             assert skuid_pv["spec"]["capacity"]["storage"] == "100Mi"
             assert skuid_pv["spec"]["accessModes"] == ["ReadWriteOnce"]

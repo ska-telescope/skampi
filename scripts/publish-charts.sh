@@ -4,7 +4,6 @@ if [[ -d charts ]]; then
   ls -la 
 else
   echo "No charts directory found" 
-  exit 1
 fi
 
 # # install helm
@@ -45,7 +44,7 @@ done
 
 # exit script if no charts are to be uploaded
 echo Found $NEW_CHART_COUNT charts ready to add to the SKA repository.
-(( $NEW_CHART_COUNT > 0 )) || exit 0
+(( $NEW_CHART_COUNT > 0 ))
 
 # rebuild index
 helm repo index ./chart-repo-cache --merge ./chart-repo-cache/skatelescope-index.yaml
@@ -54,7 +53,7 @@ for file in ./chart-repo-cache/*.tgz; do
   echo "######### UPLOADING ${file##*/}";
   curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file ${file} $HELM_HOST/repository/helm-chart/${file##*/};
 done
-curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file ./chart-repo-cache/index.yaml $HELM_HOST/repository/helm-chart/${file##*/};
+curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file ./chart-repo-cache/index.yaml $HELM_HOST/repository/helm-chart/index.yaml;
 
 sleep 2
 
@@ -65,4 +64,4 @@ helm search repo skatelescope
 echo "This publishing step brought about the following changes:"
 diff ./chart-repo-cache/before ./chart-repo-cache/after --color
 
-rm -rf ./chart-repo-cache
+# rm -rf ./chart-repo-cache

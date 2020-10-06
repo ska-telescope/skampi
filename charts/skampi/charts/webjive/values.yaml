@@ -29,7 +29,7 @@ webjive:
   image:
     registry: nexus.engageska-portugal.pt/ska-telescope
     image: webjive
-    tag: 1.0.2-develop-116
+    tag: 1.0.301-develop-149
     pullPolicy: Always
   resources:
     requests:

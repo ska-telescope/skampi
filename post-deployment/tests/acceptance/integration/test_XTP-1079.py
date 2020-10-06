@@ -7,6 +7,8 @@ import string
 import logging
 import json
 
+import ska.logging
+
 from pytest_bdd import (
     given,
     scenario,
@@ -14,7 +16,7 @@ from pytest_bdd import (
     when,
 )
 
-import ska.logging
+from ska.log_transactions import transaction
 
 # Configure SKA logging immediately when tests start
 ska.logging.configure_logging()
@@ -36,7 +38,7 @@ class ExampleApplication:
         parameters = json.loads(parameter_json)
         try:
             if transaction_id_key:
-                with ska.logging.transaction(
+                with transaction(
                     name,
                     parameters,
                     transaction_id=transaction_id,
@@ -46,7 +48,7 @@ class ExampleApplication:
                     if raise_exception:
                         raise RuntimeError("Command Failed!!!")
             else:
-                with ska.logging.transaction(
+                with transaction(
                     name, parameters, transaction_id=transaction_id
                 ) as transaction_id:
                     logger.info("Dummy log inside transaction")

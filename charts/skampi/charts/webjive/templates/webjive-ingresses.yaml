@@ -13,7 +13,7 @@ data:
 
 # Use NGINX
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: webjive-tangogql-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
@@ -53,7 +53,7 @@ spec:
            servicePort: 5004
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: webjive-authserver-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
@@ -81,7 +81,7 @@ spec:
            servicePort: 8080
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: webjive-main-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
@@ -117,7 +117,7 @@ spec:
            servicePort: 80
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: webjive-dashboard-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
@@ -147,7 +147,7 @@ spec:
 {{ else }}
 # use Traefik as default
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: webjive-tangogql-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
@@ -178,7 +178,7 @@ spec:
            servicePort: 5004
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: webjive-authserver-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
@@ -201,7 +201,7 @@ spec:
            servicePort: 8080
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: webjive-main-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}
@@ -231,7 +231,7 @@ spec:
            servicePort: 80
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: webjive-dashboard-ing-{{ template "webjive.name" . }}-{{ .Release.Name }}

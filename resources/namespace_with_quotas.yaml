@@ -6,11 +6,13 @@ metadata:
 spec:
   limits:
   - default:
-      memory: 256Mi
-      cpu: 0.5
+      memory: 128Mi
+      cpu: 100m
+      ephemeral-storage: 100Mi
     defaultRequest:
       memory: 128Mi
-      cpu: 0.25
+      cpu: 100m
+      ephemeral-storage: 100Mi
     type: Container
 
 ---
@@ -20,13 +22,13 @@ metadata:
   name: compute-resources
 spec:
   hard:
-    pods: "50"
-    requests.cpu: 4000m
-    requests.memory: 4Gi
-    requests.ephemeral-storage: 20Gi
-    limits.cpu: 8000m
+    pods: "250"
+    requests.cpu: 16000m
+    requests.memory: 16Gi
+    requests.ephemeral-storage: 15Gi
+    limits.cpu: 16000m
     limits.memory: 16Gi
-    limits.ephemeral-storage: 40Gi
+    limits.ephemeral-storage: 20Gi
 
 # tango-base pods: 11
 # tango-base request cpu total: 1300m

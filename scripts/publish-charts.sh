@@ -53,7 +53,8 @@ for file in ./chart-repo-cache/*.tgz; do
   echo "######### UPLOADING ${file##*/}";
   curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file ${file} $HELM_HOST/repository/helm-chart/${file##*/};
 done
-curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file ./chart-repo-cache/index.yaml $HELM_HOST/repository/helm-chart/index.yaml;
+# Nexus index.yaml updates the index file somehow - not all helm repos do that. TODO: figure out how.
+# curl -v -u $HELM_USERNAME:$HELM_PASSWORD --upload-file ./chart-repo-cache/index.yaml $HELM_HOST/repository/helm-chart/index.yaml;
 
 sleep 2
 
@@ -64,4 +65,4 @@ helm search repo skatelescope
 echo "This publishing step brought about the following changes:"
 diff ./chart-repo-cache/before ./chart-repo-cache/after --color
 
-# rm -rf ./chart-repo-cache
+rm -rf ./chart-repo-cache

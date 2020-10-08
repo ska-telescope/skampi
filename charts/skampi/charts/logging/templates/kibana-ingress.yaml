@@ -4,7 +4,7 @@
 ---
 # nginx
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: kibana-ing-{{ template "logging.name" . }}-{{ .Release.Name }}
@@ -27,7 +27,7 @@ spec:
 ---
 # traefik
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: kibana-ing-{{ template "logging.name" . }}-{{ .Release.Name }}

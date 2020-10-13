@@ -56,7 +56,7 @@ def result():
 
 @pytest.mark.select
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("XTP-1106.feature", "Sub-array Invokes RESTART command")
+@scenario("XTP-1106.feature", "BDD test case for Restart functionality")
 def test_subarray_restart():
     """RESTART Subarray"""
 
@@ -67,12 +67,12 @@ def set_to_running():
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
 
-@given("I invoke AssignResources on Subarray")
+@given("resources are successfully assigned")
 def allocate_four_dishes(result):
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
     LOGGER.info("AssignResources is invoke on Subarray")
 
-@given("I call abort on subarray1")
+@given("the subarray is in ABORTED obsState")
 def abort_subarray():
     @sync_abort(200)
     def abort():
@@ -80,7 +80,7 @@ def abort_subarray():
         LOGGER.info("Abort command is invoked on subarray")
     abort()
 
-@when("I invoke RESTART on subarray")
+@when("I invoke Restart command")
 def restart():
     @log_it('AX-13_A5',devices_to_log,non_default_states_to_check)
     @sync_restart(200)
@@ -89,7 +89,7 @@ def restart():
         LOGGER.info("Restart command is invoked on subarray")
     command_restart()
 
-@then("Sub-array changes to EMPTY state")
+@then("subarray changes its obsState to EMPTY")
 def check_empty_state():
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('EMPTY')
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('EMPTY')

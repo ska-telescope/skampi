@@ -1,0 +1,37 @@
+
+display: ":0"
+xauthority: "~/.Xauthority"
+minikube: true
+
+tango-base:
+  vnc:
+    enabled: true
+  tangorest:
+    enabled: true
+  tangotest:
+    enabled: true
+  ingress:
+    enabled: true
+  tangodb:
+    use_pv: false
+
+mccs:
+  tango-base:
+    enabled: false  
+  cli:
+    enabled: false
+  mccs:
+    enabled: true
+  project:
+    name: mccs
+    image:
+      registry: nexus.engageska-portugal.pt/ska-docker
+      image: ska-low-mccs
+      tag: latest
+      pullPolicy: IfNotPresent
+
+webjive:
+  ingress:
+    enabled: true
+    nginx: false
+    hostname: integration.engageska-portugal.pt

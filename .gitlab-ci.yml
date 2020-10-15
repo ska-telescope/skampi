@@ -176,9 +176,9 @@ k8s_test test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
-  only:
-    refs:
-      - master
+  # only:
+  #   refs:
+  #     - master
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -253,7 +253,7 @@ xray_report:
     - 'curl -X POST -H "Content-type: application/json" --fail
          -H "Authorization: Basic $JIRA_AUTH"
          --data @build/cucumber.json
-         https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
+         https://jira-test.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
   when: always
-  only: [master]
+  # only: [master]
   retry: 2

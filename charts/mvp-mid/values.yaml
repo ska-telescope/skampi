@@ -1,0 +1,43 @@
+
+display: ":0"
+xauthority: "~/.Xauthority"
+minikube: true
+
+tango-base:
+  vnc:
+    enabled: true
+  tangorest:
+    enabled: true
+  tangotest:
+    enabled: true
+  ingress:
+    enabled: true
+  tangodb:
+    use_pv: false
+
+logging:
+  elastic:
+    enabled: false
+  fluentd:
+    enabled: false
+  kibana:
+    enabled: false
+  tests:
+    enabled: false
+
+archiver:
+  hdbppdb:
+    enabled: true
+  archiver:
+    enabled: true
+
+webjive:
+  ingress:
+    enabled: true
+    nginx: false
+    hostname: integration.engageska-portugal.pt
+    
+etcd-operator:
+  deployments:
+    backupOperator: false
+    restoreOperator: false

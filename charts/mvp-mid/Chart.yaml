@@ -10,7 +10,7 @@ dependencies:
   version: 0.11.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: tango-base
-  version: 0.1.2
+  version: 0.2.2
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: cbf-proto
   version: 0.4.0
@@ -40,11 +40,5 @@ dependencies:
   version: 0.1.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: logging
-  version: 0.1.0
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: auth
-  version: 0.1.0
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: tests
   version: 0.1.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

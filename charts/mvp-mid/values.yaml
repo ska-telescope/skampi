@@ -41,11 +41,3 @@ etcd-operator:
   deployments:
     backupOperator: false
     restoreOperator: false
-
-auth:
-  rbac:
-    enabled: false
-
-tests:
-  testrunner:
-    enabled: false

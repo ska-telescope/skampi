@@ -3,11 +3,14 @@ KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= mvp0## always set for TANGO_DATABASE_DS
 TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG) ## Stable name for the Tango DB
 RELEASE_NAME ?= mvp0## release name of the chart
-UMBRELLA_CHART_PATH ?= mvp-mid/## Path of the umbrella chart to work with
+UMBRELLA_CHART_PATH ?= mvp-low/## Path of the umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 
 .DEFAULT_GOAL := help
+
+clean: ## clean out references to chart tgz's
+	@rm -f ./*/charts/*.tgz ./*/Chart.lock ./*/requirements.lock ../repository/*
 
 namespace: ## create the kubernetes namespace
 	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \

@@ -185,7 +185,7 @@ spec:
           - name: SHELL
             value: /bin/bash
           - name: OET_REST_URI
-            value: http://{{ template "oet.name" . }}-rst:5000/api/v1.0/procedures
+            value: http://{{ template "oet.name" . }}-rest:5000/api/v1.0/procedures
           - name: SKUID_URL
             value: "skuid-skuid-{{ .Release.Namespace }}-{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:9870"
         volumeMounts:

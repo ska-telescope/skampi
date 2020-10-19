@@ -3,7 +3,7 @@ KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= mvp0## always set for TANGO_DATABASE_DS
 TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG) ## Stable name for the Tango DB
 RELEASE_NAME ?= mvp0## release name of the chart
-UMBRELLA_CHART_PATH ?= mvp-low/## Path of the umbrella chart to work with
+DEPLOYMENT_CONFIGURATION ?= mvp-low/## Path of the umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 
@@ -32,7 +32,7 @@ help:  ## show this help.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 publish-chart: ## publish chart in path UMBRELLA_CHART_PATH 
-	helm package $(UMBRELLA_CHART_PATH) -u && \
+	helm package $(DEPLOYMENT_CONFIGURATION) -u && \
 	curl -v -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file *.tgz $(HELM_HOST)/repository/helm-chart/
 
 install-chart: namespace namespace_sdp## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
@@ -41,15 +41,15 @@ install-chart: namespace namespace_sdp## install the helm chart with name RELEAS
 	--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 	--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
-	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
+	 $(DEPLOYMENT_CONFIGURATION) --namespace $(KUBE_NAMESPACE) 
 
 uninstall-chart: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-	helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
+	helm template  $(RELEASE_NAME) $(DEPLOYMENT_CONFIGURATION) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
 	helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) 
 
 reinstall-chart: uninstall-chart install-chart ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
-	helm upgrade --set minikube=$(MINIKUBE) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
+	helm upgrade --set minikube=$(MINIKUBE) $(RELEASE_NAME) $(DEPLOYMENT_CONFIGURATION) --namespace $(KUBE_NAMESPACE) 
 
 .PHONY: help

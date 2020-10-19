@@ -2,18 +2,19 @@
 # -*- coding: utf-8 -*-
 
 """
-test_tmp
+test_XTP-1156
 ----------------------------------
-Test to check that OET create fails when passed a junk file fails
+Test that the  OET `create` command fails when given a file that does not exist with expected
+message and status code.
 """
 
 import pytest
-from pytest_bdd import given, scenario, then, when
+from pytest_bdd import given, scenario, then, when, parsers
 import subprocess
 
 
-@pytest.mark.temp
-@scenario("temp.feature", "Observation Execution Tool")
+@pytest.mark.XTP-1156
+@scenario("XTP-1156.feature", "Observation Execution Tool")
 def test_create():
     pass
 
@@ -32,4 +33,5 @@ def output_from_junk_file(file):
 
 @then("the OET returns an <error>")
 def oet_return_error_for_garbage_file(file, error):
+
     assert output_from_junk_file(file).count(error) > 0

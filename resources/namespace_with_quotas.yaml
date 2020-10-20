@@ -23,17 +23,9 @@ metadata:
 spec:
   hard:
     pods: "250"
-    requests.cpu: 16000m
-    requests.memory: 16Gi
+    requests.cpu: 32000m
+    requests.memory: 32Gi
     requests.ephemeral-storage: 15Gi
-    limits.cpu: 16000m
-    limits.memory: 16Gi
+    limits.cpu: 32000m
+    limits.memory: 32Gi
     limits.ephemeral-storage: 20Gi
-
-# tango-base pods: 11
-# tango-base request cpu total: 1300m
-# tango-base request mem total: 2396Mi
-# tango-base request ephemeral-storage total: 4768Mi
-# tango-base limits  cpu total: 2000m
-# tango-base limits  mem total: 3128Mi
-# tango-base limits ephemeral-storage total: 6256Mi

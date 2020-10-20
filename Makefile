@@ -1,10 +1,8 @@
-
-
 KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
 TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG) ## Stable name for the Tango DB
-RELEASE_NAME ?= test## release name of the chart
+HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
@@ -15,7 +13,7 @@ UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/
 
 vars: ## Display variables 
 	@echo "Namespace: $(KUBE_NAMESPACE)"
-	@echo "RELEASE_NAME: $(RELEASE_NAME)"
+	@echo "HELM_RELEASE: $(HELM_RELEASE)"
 	@echo "VALUES: $(VALUES)"
 	@echo "TANGO_DATABASE_DS: $(TANGO_DATABASE_DS)"
 
@@ -71,7 +69,7 @@ publish-chart: ## publish chart in path
 	curl -v -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file *.tgz $(HELM_HOST)/repository/helm-chart/
 
 install-chart: namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE 
-	helm install $(RELEASE_NAME) --dependency-update \
+	helm install $(HELM_RELEASE) --dependency-update \
 	--set minikube=$(MINIKUBE) \
 	--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
@@ -79,13 +77,13 @@ install-chart: namespace namespace_sdp## install the helm chart on the namespace
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
 
 uninstall-chart: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-	helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
-	helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) 
+	helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
+	helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) 
 
 reinstall-chart: uninstall-chart install-chart ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
-	helm upgrade --set minikube=$(MINIKUBE) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
+	helm upgrade --set minikube=$(MINIKUBE) $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
 	
 quotas: ## delete and create the kubernetes namespace with quotas
 	kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 && kubectl delete namespace $(KUBE_NAMESPACE)
@@ -103,7 +101,7 @@ poddescribe: ## describe Pods executed from Helm chart
 	echo ""; echo ""; echo ""; \
 	done
 podlogs: ## show Helm chart POD logs
-	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(RELEASE_NAME) -o=name`; \
+	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(HELM_RELEASE) -o=name`; \
 	do \
 	echo "---------------------------------------------------"; \
 	echo "Logs for $${i}"; \
@@ -129,7 +127,7 @@ get_pods: ##lists the pods deploued for a particular namespace. @param: KUBE_NAM
 	kubectl get pods -n $(KUBE_NAMESPACE)
 
 get_versions: ## lists the container images used for particular pods
-	kubectl get pods -l release=$(RELEASE_NAME) -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{range .spec.containers[*]}{.name}{'\t'}{.image}{'\n\n'}{end}{'\n'}{end}{'\n'}"
+	kubectl get pods -l release=$(HELM_RELEASE) -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{range .spec.containers[*]}{.name}{'\t'}{.image}{'\n\n'}{end}{'\n'}{end}{'\n'}"
 
 set_context: ## Set current kubectl context. @param: KUBE_NAMESPACE
 	kubectl config set-context $$(kubectl config current-context) --namespace $${NAMESPACE:-$(KUBE_NAMESPACE)}

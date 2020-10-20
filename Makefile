@@ -98,21 +98,33 @@ publish-chart: ## publish chart in path
 	curl -v -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file *.tgz $(HELM_HOST)/repository/helm-chart/
 
 install: namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE 
-	helm install $(HELM_RELEASE) --dependency-update \
-	--set minikube=$(MINIKUBE) \
-	--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-	--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-	--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
-	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
+	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
+	K_DESC=$$? ; \
+	if [ $$K_DESC -eq 1 ] ; \
+	then helm install $(HELM_RELEASE) --dependency-update \
+		--set minikube=$(MINIKUBE) \
+		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
+		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
+	fi
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-	helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
-	helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) 
-
+	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
+	K_DESC=$$? ; \
+	if [ $$K_DESC -eq 0 ] ; \
+	then helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ; \
+	fi
+	
 reinstall-chart: uninstall-chart install-chart ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
-	helm upgrade --set minikube=$(MINIKUBE) $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
+	helm upgrade $(HELM_RELEASE) \
+		--set minikube=$(MINIKUBE) \
+		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
+		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 	
 quotas: ## delete and create the kubernetes namespace with quotas
 	kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 && kubectl delete namespace $(KUBE_NAMESPACE)

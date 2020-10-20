@@ -40,7 +40,7 @@ helm-lint:
   script:
   - make lint_all
 
-ct-lint:
+.ct-lint:
   stage: static_analysis
   tags:
   - docker-executor
@@ -49,31 +49,6 @@ ct-lint:
     PYTHONIOENCODING: utf8
   script:
   - ct lint --config ci/ct.yaml --all
-
-.helm-template-tests:
-  stage: static_analysis
-  tags:
-  - docker-executor
-  allow_failure: false
-  script:
-  - make template_tests
-
-helm-template-pytest:
-  stage: static_analysis
-  tags:
-  - docker-executor
-  allow_failure: false
-  script:
-  - *pip_install_test_requirements
-  - pytest -m no_deploy --test-namespace=ci-$CI_JOB_ID
-  artifacts:
-    when: always
-    name: template-pytest-reports
-    paths:
-    - junit-report.xml
-    - pytest-logs.txt
-    reports:
-      junit: junit-report.xml
 
 .ct-test:
   stage: test
@@ -91,7 +66,7 @@ helm-template-pytest:
   environment:
     name: $CT_TEST_ENVIRONMENT
 
-chart-pytest:
+.chart-pytest:
   stage: test
   tags:
     - docker-executor
@@ -156,7 +131,7 @@ deploy test environment:
   tags:
   - docker-executor
   script:
-  - make deploy_ordered
+  - make install
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   retry: 2
   environment:

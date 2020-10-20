@@ -1,3 +1,28 @@
+# Set dir of Makefile to a variable to use later
+MAKEPATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
+
+# find IP addresses of this machine, setting THIS_HOST to the first address found
+THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
+DISPLAY := $(THIS_HOST):0
+XAUTHORITYx ?= ${XAUTHORITY}
+HELM_CHART ?= skampi# Helm Chart to install (see ./charts)
+DEPLOYMENT_CONFIGURATION ?= skamid#
+SUB_CHART ?= tmc-proto# SubChart to install/uninstall
+HELM_CHART_TEST ?= tests# Helm Chart to install (see ./charts)
+INGRESS_HOST ?= integration.engageska-portugal.pt# Ingress HTTP hostname
+USE_NGINX ?= false# Use NGINX as the Ingress Controller
+API_SERVER_IP ?= $(THIS_HOST)# Api server IP of k8s
+API_SERVER_PORT ?= 6443# Api server port of k8s
+EXTERNAL_IP ?= $(THIS_HOST)# For traefik installation
+CLUSTER_NAME ?= integration.cluster# For the gangway kubectl setup
+CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f# For the gangway kubectl setup, taken from Gitlab
+CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f# For the gangway kubectl setup, taken from Gitlab
+CHART_SET ?=#for additional flags you want to set when deploying (default empty)
+VALUES ?= values.yaml# root level values files. This will override the chart values files.
+DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive archiver dsh-lmc-prototype logging skuid## list of charts that will be deployed in order
+CHART_FILE ?= post-deployment/exploration/chart_sets.txt # for using an input file of subcharts to deploy one after the other
+
 KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
@@ -10,6 +35,9 @@ UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/
 
 .DEFAULT_GOAL := help
 -include test.mk
+
+# include makefile targets that wrap helm
+ -include helm.mk
 
 vars: ## Display variables 
 	@echo "Namespace: $(KUBE_NAMESPACE)"
@@ -54,10 +82,7 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
 
-lint_all:  ## lint ALL of the helm chart
-	@for i in charts/*; do \
-		cd $$i; pwd; helm lint ; \
-	done
+lint_all:  lint ## lint ALL of the helm chart
 
 lint:  ## lint the HELM_CHART of the helm chart
 	cd $(UMBRELLA_CHART_PATH); pwd; helm lint;

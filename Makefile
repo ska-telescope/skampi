@@ -114,29 +114,6 @@ reinstall-chart: uninstall-chart install-chart ## reinstall the  helm chart on t
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	helm upgrade --set minikube=$(MINIKUBE) $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
 	
-install_subchart: namespace namespace_sdp mkcerts deploy_etcd ## helm install sub-chart
-	helm install $(SUB_CHART)-$(HELM_RELEASE) charts/skampi/charts/$(SUB_CHART)/ \
-				 --namespace $(KUBE_NAMESPACE) \
-				 --set display="$(DISPLAY)" \
-				 --set xauthority="$(XAUTHORITYx)" \
-				 --set ingress.hostname=$(INGRESS_HOST) \
-				 --set ingress.nginx=$(USE_NGINX) \
-				 $(CHART_SET) \
-				 --set helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
-				 --set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-				 --set databaseds.domainTag=$(DOMAIN_TAG) \
-				 --values $(VALUES) --wait --timeout=3m0s
-	@chart_name=$$(helm list --filter $(SUB_CHART)-$(HELM_RELEASE) -o=yaml | grep chart | awk '{print $$NF}') && \
-		kubectl get all -l chart=$$chart_name
-	make smoketest SLEEPTIME=3s > /dev/null 2>&1
-
-uninstall_subchart: delete_etcd ## delete sub-chart release
-	helm delete $(SUB_CHART)-$(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true
-
-describe_install: ## describe a current helm installation given by SUB_CHART as name
-	@chart_name=$$(helm list --all --filter $(SUB_CHART)-$(HELM_RELEASE) -o=yaml | grep chart | awk '{print $$NF}') && \
-		kubectl get all -l chart=$$chart_name
-
 quotas: namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
 

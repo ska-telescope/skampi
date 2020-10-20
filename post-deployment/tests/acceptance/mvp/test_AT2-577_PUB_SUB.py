@@ -9,16 +9,11 @@ Acceptance tests for MVP.
 import sys, os
 import pytest
 import logging
-from time import sleep
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-
 # SUT
 import oet
 from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
-import oet.observingtasks as observingtasks
-# SUT infrastructure
-from tango import DeviceProxy, DevState
 ## local imports
 from resources.test_support.helpers import resource
 from resources.test_support.logging_decorators import log_it
@@ -58,7 +53,7 @@ def result():
 
 @pytest.mark.pubsub
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("AT2-577_PUB_SUB.feature", "Sub-array resource allocation using OET pubsub")
+@scenario("AT2-577_PUB_SUB.feature", "Sub-array resource allocation-deallocation using OET pubsub")
 def test_allocate_resources():
     """Assign Resources."""
 
@@ -93,10 +88,9 @@ def allocate_four_dishes(result):
     @sync_assign_resources(2, 150)
     def test_SUT():
         if not oet.FEATURES.use_pubsub_to_read_tango_attributes:
-            LOGGER.info("Enabling oet pub sub feature toggle functionality")
+            LOGGER.info("Enabling Oet pubsub toggle feature functionality")
             oet.FEATURES = set_toggle_feature_value(pub_sub=True)
-            # assert_that(oet.FEATURES.use_pubsub_to_read_tango_attributes).is_false()
-            LOGGER.info("Enabled pubsub")
+            LOGGER.info("Enabled Oet pubsub toggle feature")
         cdm_file_path = 'resources/test_data/OET_integration/example_allocate.json'
         LOGGER.info("cdm_file_path :" + str(cdm_file_path))
         update_resource_config_file(cdm_file_path)
@@ -123,10 +117,6 @@ def check_subarray_composition(result):
     assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2))
     # check that this is reflected correctly on CSP side
     assert_that(resource('mid_csp/elt/subarray_01').get('assignedReceptors')).is_equal_to((1, 2))
-    # assert_that(resource('mid_csp/elt/master').get('receptorMembership')).is_equal_to((1, 1,))
-    # TODO need to find a better way of testing sets with sets
-    # assert_that(set(resource('mid_csp/elt/master').get('availableReceptorIDs'))).is_subset_of(set((4,3)))
-    # check that this is reflected correctly on SDP side - no code at the current implementation
     LOGGER.info("Then I have a subarray composed of 2 dishes: PASSED")
 
 
@@ -142,6 +132,8 @@ def check_subarry_state():
     # #check that the SDP report subarray as being in the ON state and obsState = IDLE
     assert_that(resource('mid_sdp/elt/subarray_1').get('State')).is_equal_to('ON')
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('IDLE')
+    # check that the oet pubsub toggle set to true
+    assert_that(oet.FEATURES.use_pubsub_to_read_tango_attributes).is_true()
     LOGGER.info("Then the subarray is in the condition that allows scan configurations to take place: PASSED")
 
 
@@ -150,10 +142,9 @@ def teardown_function(function):
     call.
     """
     if oet.FEATURES.use_pubsub_to_read_tango_attributes:
-        LOGGER.info("Disabling oet pub sub feature toggle functionality to default")
+        LOGGER.info("Disabling Oet pubsub toggle feature functionality to default")
         oet.FEATURES = set_toggle_feature_value(pub_sub=False)
-        # assert_that(oet.FEATURES.use_pubsub_to_read_tango_attributes).is_false()
-        LOGGER.info("Disabled pubsub")
+        LOGGER.info("Disabled Oet pubsub toggle feature")
     if (resource('ska_mid/tm_subarray_node/1').get("obsState") == "IDLE"):
         LOGGER.info("Release all resources assigned to subarray")
         take_subarray(1).and_release_all_resources()

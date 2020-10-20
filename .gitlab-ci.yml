@@ -40,7 +40,7 @@ helm-lint:
   script:
   - make lint_all
 
-ct-lint:
+.ct-lint:
   stage: static_analysis
   tags:
   - docker-executor
@@ -49,31 +49,6 @@ ct-lint:
     PYTHONIOENCODING: utf8
   script:
   - ct lint --config ci/ct.yaml --all
-
-.helm-template-tests:
-  stage: static_analysis
-  tags:
-  - docker-executor
-  allow_failure: false
-  script:
-  - make template_tests
-
-helm-template-pytest:
-  stage: static_analysis
-  tags:
-  - docker-executor
-  allow_failure: false
-  script:
-  - *pip_install_test_requirements
-  - pytest -m no_deploy --test-namespace=ci-$CI_JOB_ID
-  artifacts:
-    when: always
-    name: template-pytest-reports
-    paths:
-    - junit-report.xml
-    - pytest-logs.txt
-    reports:
-      junit: junit-report.xml
 
 .ct-test:
   stage: test
@@ -91,7 +66,7 @@ helm-template-pytest:
   environment:
     name: $CT_TEST_ENVIRONMENT
 
-chart-pytest:
+.chart-pytest:
   stage: test
   tags:
     - docker-executor
@@ -136,32 +111,52 @@ chart-pytest:
     reports:
       junit: junit-report.xml
 
-delete test environment:
+uninstall chart:
   stage: clean
-  retry: 2
   tags:
   - docker-executor
   script:
   - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - make uninstall 
   environment:
     name: $DEPLOY_ENVIRONMENT
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  when: manual
   only:
     refs:
       - master
-    variables:
-      - $DELETE == "true"
 
-deploy test environment:
+install chart:
   stage: deploy
   tags:
   - docker-executor
   script:
-  - make deploy_ordered
+  - make install
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  retry: 2
+  when: manual
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  only:
+    refs:
+      - master
+
+upgrade chart:
+  stage: deploy
+  tags:
+  - docker-executor
+  script:
+  - make upgrade-chart
+  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  when: manual
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   only:
     refs:
       - master
@@ -176,6 +171,8 @@ k8s_test test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   only:
     refs:
       - master
@@ -196,6 +193,8 @@ smoketest test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   only:
     refs:
       - master
@@ -227,6 +226,8 @@ print-debug-info:
   - mv .public public
   environment:
     name: $DEPLOY_ENVIRONMENT
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   when: manual
   artifacts:
     paths:
@@ -241,6 +242,8 @@ sdp_config_dump:
   - kubectl exec -n $KUBE_NAMESPACE sdp-proto-console-0 -- sdpcfg ls values -R / > sdp.config.json
   environment:
     name: $DEPLOY_ENVIRONMENT
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   artifacts:
     paths:
     - sdp.config.json

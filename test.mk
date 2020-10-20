@@ -70,7 +70,7 @@ k8s_multiple_test_runs: enable_test_auth
 
 clear_sdp_config:
 	@echo "clearing the sdp config db using a temporary call on the console pod on namespace: $(KUBE_NAMESPACE)"
-	kubectl exec -n $(KUBE_NAMESPACE) test-sdp-prototype-console-79779cb76d-gktds -- sdpcfg delete -R /
+	kubectl exec -n $(KUBE_NAMESPACE) deploy/test-sdp-prototype-console -- sdpcfg delete -R /
 
 smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).
 	@echo "Smoke test START"; \
@@ -105,14 +105,6 @@ enable_test_auth:
 
 disable_test_auth:
 	@$(call disable_test_auth)
-
-template_tests:
-	rc=0; \
-	for chrt in `ls charts/`; do \
-	helm unittest -f template_tests/*_test.yaml charts/$$chrt \
-		|| rc=2 && continue; \
-	done; \
-	exit $$rc
 
 tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.readthedocs.io/en/latest/development/advanced/rest-api.html#tango-rest-api-implementations
 	@echo "---------------------------------------------------"

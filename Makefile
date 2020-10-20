@@ -82,7 +82,7 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
 
-lint_all:  lint ## lint ALL of the helm chart
+lint_all:  lint## lint ALL of the helm chart
 
 lint:  ## lint the HELM_CHART of the helm chart
 	cd $(UMBRELLA_CHART_PATH); pwd; helm lint;

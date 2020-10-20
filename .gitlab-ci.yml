@@ -50,31 +50,6 @@ ct-lint:
   script:
   - ct lint --config ci/ct.yaml --all
 
-.helm-template-tests:
-  stage: static_analysis
-  tags:
-  - docker-executor
-  allow_failure: false
-  script:
-  - make template_tests
-
-helm-template-pytest:
-  stage: static_analysis
-  tags:
-  - docker-executor
-  allow_failure: true
-  script:
-  - *pip_install_test_requirements
-  - pytest -m no_deploy --test-namespace=ci-$CI_JOB_ID
-  artifacts:
-    when: always
-    name: template-pytest-reports
-    paths:
-    - junit-report.xml
-    - pytest-logs.txt
-    reports:
-      junit: junit-report.xml
-
 .ct-test:
   stage: test
   tags:
@@ -238,7 +213,7 @@ sdp_config_dump:
   tags:
   - docker-executor
   script:
-  - kubectl exec -n $KUBE_NAMESPACE sdp-proto-console-0 -- sdpcfg ls values -R / > sdp.config.json
+  - make clear_sdp_config > sdp.config.json
   environment:
     name: $DEPLOY_ENVIRONMENT
   artifacts:

@@ -113,7 +113,6 @@ helm-lint:
 
 uninstall chart:
   stage: clean
-  retry: 2
   tags:
   - docker-executor
   script:
@@ -123,11 +122,10 @@ uninstall chart:
     name: $DEPLOY_ENVIRONMENT
     kubernetes:
       namespace: $KUBE_NAMESPACE
+  when: manual
   only:
     refs:
       - master
-    variables:
-      - $DELETE == "true"
 
 install chart:
   stage: deploy
@@ -136,7 +134,24 @@ install chart:
   script:
   - make install
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  retry: 2
+  when: manual
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  only:
+    refs:
+      - master
+
+upgrade chart:
+  stage: deploy
+  tags:
+  - docker-executor
+  script:
+  - make upgrade-chart
+  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  when: manual
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
@@ -227,6 +242,8 @@ sdp_config_dump:
   - kubectl exec -n $KUBE_NAMESPACE sdp-proto-console-0 -- sdpcfg ls values -R / > sdp.config.json
   environment:
     name: $DEPLOY_ENVIRONMENT
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   artifacts:
     paths:
     - sdp.config.json

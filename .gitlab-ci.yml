@@ -111,22 +111,25 @@ helm-lint:
     reports:
       junit: junit-report.xml
 
-delete test environment:
+uninstall chart:
   stage: clean
   retry: 2
   tags:
   - docker-executor
   script:
   - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - make uninstall 
   environment:
     name: $DEPLOY_ENVIRONMENT
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   only:
     refs:
       - master
     variables:
       - $DELETE == "true"
 
-deploy test environment:
+install chart:
   stage: deploy
   tags:
   - docker-executor
@@ -137,6 +140,8 @@ deploy test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   only:
     refs:
       - master
@@ -151,6 +156,8 @@ k8s_test test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   only:
     refs:
       - master
@@ -171,6 +178,8 @@ smoketest test environment:
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   only:
     refs:
       - master
@@ -202,6 +211,8 @@ print-debug-info:
   - mv .public public
   environment:
     name: $DEPLOY_ENVIRONMENT
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   when: manual
   artifacts:
     paths:

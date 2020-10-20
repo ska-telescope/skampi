@@ -40,7 +40,7 @@ helm-lint:
   script:
   - make lint_all
 
-ct-lint:
+.ct-lint:
   stage: static_analysis
   tags:
   - docker-executor
@@ -66,7 +66,7 @@ ct-lint:
   environment:
     name: $CT_TEST_ENVIRONMENT
 
-chart-pytest:
+.chart-pytest:
   stage: test
   tags:
     - docker-executor

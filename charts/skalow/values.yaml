@@ -1,0 +1,56 @@
+
+display: ":0"
+xauthority: "~/.Xauthority"
+minikube: true
+
+global:
+  sub-system:
+    tango-base:
+      enabled: false
+    webjive:
+      enabled: false
+    archiver:
+      enabled: false
+
+
+tango-base:
+  vnc:
+    enabled: true
+  tangorest:
+    enabled: true
+    resources:
+      requests:
+        cpu: 100m     # 100m = 0.1 CPU
+        memory: 256Mi # 256Mi = 0.25 GB mem
+        ephemeral-storage: 256Mi
+      limits:
+        cpu: 200m     # 100m = 0.1 CPU
+        memory: 768Mi # 256Mi = 0.25 GB mem
+        ephemeral-storage: 256Mi
+  tangotest:
+    enabled: true
+  ingress:
+    enabled: true
+  tangodb:
+    use_pv: false
+
+mccs:
+  tango-base:
+    enabled: false  
+  cli:
+    enabled: false
+  mccs:
+    enabled: true
+  project:
+    name: mccs
+    image:
+      registry: nexus.engageska-portugal.pt/ska-docker
+      image: ska-low-mccs
+      tag: latest
+      pullPolicy: IfNotPresent
+
+webjive:
+  ingress:
+    enabled: true
+    nginx: false
+    hostname: integration.engageska-portugal.pt

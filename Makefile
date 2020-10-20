@@ -54,6 +54,10 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
 
+lint_all:  ## lint ALL of the helm chart
+	@for i in charts/*; do \
+		cd $$i; pwd; helm lint ; \
+	done
 
 lint:  ## lint the HELM_CHART of the helm chart
 	cd $(UMBRELLA_CHART_PATH); pwd; helm lint;
@@ -68,7 +72,7 @@ publish-chart: ## publish chart in path
 	helm package $(UMBRELLA_CHART_PATH) -u && \
 	curl -v -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file *.tgz $(HELM_HOST)/repository/helm-chart/
 
-install-chart: namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE 
+install: namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE 
 	helm install $(HELM_RELEASE) --dependency-update \
 	--set minikube=$(MINIKUBE) \
 	--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
@@ -76,7 +80,7 @@ install-chart: namespace namespace_sdp## install the helm chart on the namespace
 	--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
 
-uninstall-chart: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
+uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
 	helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) 
 

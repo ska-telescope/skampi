@@ -5,6 +5,12 @@ minikube: true
 
 global:
   sub-system:
+    tango-base:
+      enabled: false
+    webjive:
+      enabled: false
+    archiver:
+      enabled: false
 
 tango-base:
   vnc:

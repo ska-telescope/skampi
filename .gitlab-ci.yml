@@ -62,7 +62,7 @@ helm-template-pytest:
   stage: static_analysis
   tags:
   - docker-executor
-  allow_failure: false
+  allow_failure: true
   script:
   - *pip_install_test_requirements
   - pytest -m no_deploy --test-namespace=ci-$CI_JOB_ID

@@ -70,7 +70,7 @@ k8s_multiple_test_runs: enable_test_auth
 
 clear_sdp_config:
 	@echo "clearing the sdp config db using a temporary call on the console pod on namespace: $(KUBE_NAMESPACE)"
-	kubectl exec -n $(KUBE_NAMESPACE) sdp-proto-console-0 -- sdpcfg delete -R /
+	kubectl exec -n $(KUBE_NAMESPACE) test-sdp-prototype-console-79779cb76d-gktds -- sdpcfg delete -R /
 
 smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).
 	@echo "Smoke test START"; \

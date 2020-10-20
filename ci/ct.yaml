@@ -11,9 +11,8 @@ process-all-charts: false
 charts: []
 chart-repos: []
 chart-dirs: 
-  - charts/skampi/charts
+  - charts/
 excluded-charts:
-  - tests
 helm-extra-args: --timeout=300
 helm-repo-extra-args: []
 debug: true

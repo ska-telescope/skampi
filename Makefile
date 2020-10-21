@@ -126,9 +126,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 	
-quotas: ## delete and create the kubernetes namespace with quotas
-	kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 && kubectl delete namespace $(KUBE_NAMESPACE)
-	kubectl create namespace $(KUBE_NAMESPACE)
+quotas: namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
 
 poddescribe: ## describe Pods executed from Helm chart

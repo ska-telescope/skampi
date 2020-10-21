@@ -39,7 +39,7 @@ UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/
 # include makefile targets that wrap helm
  -include helm.mk
 
-vars: ## Display variables 
+vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"
 	@echo "HELM_RELEASE: $(HELM_RELEASE)"
 	@echo "VALUES: $(VALUES)"
@@ -64,7 +64,7 @@ logs: ## POD logs for descriptor
 
 
 clean: ## clean out references to chart tgz's
-	@rm -f ./*/charts/*.tgz ./*/Chart.lock ./*/requirements.lock 
+	@rm -f ./*/charts/*.tgz ./*/Chart.lock ./*/requirements.lock
 
 namespace: ## create the kubernetes namespace
 	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
@@ -82,6 +82,15 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
 
+
+delete_namespace: ## delete the kubernetes namespace
+	@if [ "default" == "$(KUBE_NAMESPACE)" ] || [ "kube-system" == "$(KUBE_NAMESPACE)" ]; then \
+	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
+	exit 1; \
+	else \
+	kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
+	fi
+
 lint_all:  lint## lint ALL of the helm chart
 
 lint:  ## lint the HELM_CHART of the helm chart
@@ -93,11 +102,11 @@ help:  ## show this help.
 	@echo ""; echo "make vars (+defaults):"
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-publish-chart: ## publish chart in path 
+publish-chart: ## publish chart in path
 	helm package $(UMBRELLA_CHART_PATH) -u && \
 	curl -v -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file *.tgz $(HELM_HOST)/repository/helm-chart/
 
-install: namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE 
+install: namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
 	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 1 ] ; \
@@ -127,7 +136,7 @@ uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	if [ $$K_DESC -eq 0 ] ; \
 	then helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ; \
 	fi
-	
+
 reinstall-chart: uninstall-chart install-chart ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
@@ -137,7 +146,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
-	
+
 quotas: namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
 

@@ -10,11 +10,11 @@ TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(HELM_RELEASE
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
-# capture the output of the test in a build folder inside the container 
-# 
-TESTING_ACCOUNT = testing-pod ## this is the service acount name that is used by testing pod enabling it roles to manipulate k8 
+# capture the output of the test in a build folder inside the container
+#
+TESTING_ACCOUNT = testing-pod ## this is the service acount name that is used by testing pod enabling it roles to manipulate k8
 TANGO_HOST = databaseds-tango-base-$(HELM_RELEASE):10000
-MARK ?= fast## this will allow to add the mark parameter of pytest 
+MARK ?= fast## this will allow to add the mark parameter of pytest
 SLEEPTIME ?= 30s ##amount of sleep time for the smoketest target
 
 #
@@ -22,7 +22,7 @@ SLEEPTIME ?= 30s ##amount of sleep time for the smoketest target
 # and then runs the requested make target in the container.
 # capture the output of the test in a tar file
 # stream the tar file base64 encoded to the Pod logs
-# 
+#
 k8s_test = tar -c post-deployment/ | \
 		kubectl run $(TEST_RUNNER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \

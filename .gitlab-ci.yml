@@ -190,11 +190,13 @@ k8s_test test environment on demand:
   - docker-executor
   script:
   - make k8s_test && [ -f "build/report.xml" ]
+  after_script:
+    - make delete_namespace
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
     kubernetes:
-      namespace: $KUBE_NAMESPACE
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
   when: manual
   only:
     refs:
@@ -213,11 +215,13 @@ smoketest test environment on demand:
   - docker-executor
   script:
   - make smoketest
+  after_script:
+    - make delete_namespace
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
     kubernetes:
-      namespace: $KUBE_NAMESPACE
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
   when: manual
   only:
     refs:
@@ -232,11 +236,11 @@ sdp_config_dump on demand:
   tags:
   - docker-executor
   script:
-  - kubectl exec -n $KUBE_NAMESPACE sdp-proto-console-0 -- sdpcfg ls values -R / > sdp.config.json
+  - kubectl exec -n ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA sdp-proto-console-0 -- sdpcfg ls values -R / > sdp.config.json
   environment:
     name: $DEPLOY_ENVIRONMENT
     kubernetes:
-      namespace: $KUBE_NAMESPACE
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
   artifacts:
     paths:
     - sdp.config.json

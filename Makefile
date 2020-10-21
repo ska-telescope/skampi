@@ -30,7 +30,7 @@ TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG) ## Stable name for the 
 HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
-MINIKUBE ?= true## Minikube or not
+MINIKUBE ?= false## Minikube or not
 UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/
 
 .DEFAULT_GOAL := help
@@ -118,7 +118,6 @@ install: namespace namespace_sdp## install the helm chart on the namespace KUBE_
 		--set minikube=$(MINIKUBE) \
 		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-		--set global.tango_host=$(TANGO_DATABASE_DS) \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
         --set oet.ingress.hostname=$(INGRESS_HOST) \
         --set oet.ingress.nginx=$(USE_NGINX) \
@@ -135,7 +134,8 @@ uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
-	then helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ; \
+	then helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ;\
+    sleep 90s ;\
 	fi
 
 reinstall-chart: uninstall-chart install-chart ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
@@ -145,7 +145,6 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set minikube=$(MINIKUBE) \
 		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-		--set global.tango_host=$(TANGO_DATABASE_DS) \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 

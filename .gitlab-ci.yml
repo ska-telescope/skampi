@@ -1,6 +1,7 @@
 image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
 
 variables:
+  DEPLOY_ENVIRONMENT: "test"
   CT_TEST_ENVIRONMENT: "ct-test"
   INGRESS_HOST: "integration.engageska-portugal.pt"
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
@@ -92,7 +93,6 @@ helm-lint:
   stage: test
   variables:
     KUBE_NAMESPACE: "integration"
-    DEPLOY_ENVIRONMENT: "test"
   tags:
     - docker-executor
   allow_failure: true
@@ -117,7 +117,6 @@ uninstall chart:
   stage: clean
   variables:
     KUBE_NAMESPACE: "integration"
-    DEPLOY_ENVIRONMENT: "test"
   tags:
   - docker-executor
   script:
@@ -137,7 +136,6 @@ install or upgrade chart:
   stage: deploy
   variables:
     KUBE_NAMESPACE: "integration"
-    DEPLOY_ENVIRONMENT: "test"
   tags:
   - docker-executor
   script:
@@ -156,7 +154,6 @@ k8s_test test environment:
   stage: test
   variables:
     KUBE_NAMESPACE: "integration"
-    DEPLOY_ENVIRONMENT: "test"
   retry: 2
   tags:
   - docker-executor
@@ -181,7 +178,6 @@ k8s_test test environment:
 smoketest test environment:
   variables:
     KUBE_NAMESPACE: "integration"
-    DEPLOY_ENVIRONMENT: "test"
   stage: test
   tags:
   - docker-executor
@@ -200,7 +196,7 @@ smoketest test environment:
 install or upgrade chart on demand:
   stage: deploy
   variables:
-    DEPLOY_ENVIRONMENT: "test-$CI_COMMIT_SHORT_SHA"
+    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
   tags:
   - docker-executor
   script:
@@ -220,7 +216,7 @@ install or upgrade chart on demand:
 k8s_test test environment on demand:
   stage: test
   variables:
-    DEPLOY_ENVIRONMENT: "test-$CI_COMMIT_SHORT_SHA"
+    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
   retry: 2
   tags:
   - docker-executor
@@ -248,7 +244,7 @@ k8s_test test environment on demand:
 smoketest test environment on demand:
   stage: test
   variables:
-    DEPLOY_ENVIRONMENT: "test-$CI_COMMIT_SHORT_SHA"
+    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
   tags:
   - docker-executor
   script:
@@ -266,7 +262,7 @@ smoketest test environment on demand:
 sdp_config_dump on demand:
   stage: debug
   variables:
-    DEPLOY_ENVIRONMENT: "test-$CI_COMMIT_SHORT_SHA"
+    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
   when: manual
   only:
     refs:
@@ -299,7 +295,6 @@ print-debug-info:
   stage: debug
   variables:
     KUBE_NAMESPACE: "integration"
-    DEPLOY_ENVIRONMENT: "test"
   when: always
   tags:
   - docker-executor
@@ -325,7 +320,6 @@ sdp_config_dump:
   stage: debug
   variables:
     KUBE_NAMESPACE: "integration"
-    DEPLOY_ENVIRONMENT: "test"
   only:
     refs:
       - master

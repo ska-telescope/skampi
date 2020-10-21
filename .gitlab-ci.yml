@@ -197,6 +197,7 @@ install or upgrade chart on demand:
   stage: deploy
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
+    DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
   tags:
   - docker-executor
   script:
@@ -217,6 +218,7 @@ k8s_test test environment on demand:
   stage: test
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
+    DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
   retry: 2
   tags:
   - docker-executor
@@ -245,6 +247,7 @@ smoketest test environment on demand:
   stage: test
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
+    DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
   tags:
   - docker-executor
   script:
@@ -263,6 +266,7 @@ sdp_config_dump on demand:
   stage: debug
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
+    DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
   when: manual
   only:
     refs:

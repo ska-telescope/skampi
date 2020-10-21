@@ -118,7 +118,7 @@ uninstall chart:
   - docker-executor
   script:
   - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - make uninstall 
+  - make uninstall
   environment:
     name: $DEPLOY_ENVIRONMENT
     kubernetes:
@@ -219,7 +219,9 @@ print-debug-info:
 
 sdp_config_dump:
   stage: debug
-  when: always
+  only:
+    refs:
+      - master
   tags:
   - docker-executor
   script:

@@ -1,6 +1,6 @@
 apiVersion: v2
 name: mvp-mid
-description: A Helm chart for Kubernetes MVP Mid 
+description: A Helm chart for Kubernetes MVP Mid
 type: application
 version: 0.1.0
 appVersion: 0.1.0
@@ -10,7 +10,7 @@ dependencies:
   version: 0.11.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: tango-base
-  version: 0.2.2
+  version: 0.2.4
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: cbf-proto
   version: 0.4.0
@@ -28,14 +28,14 @@ dependencies:
   version: 0.1.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: archiver
-  version: 0.2.2
+  version: 0.2.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: skuid
   version: 0.0.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: dsh-lmc-prototype
   version: 0.0.1
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart  
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: webjive
   version: 0.1.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

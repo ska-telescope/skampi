@@ -198,7 +198,7 @@ install or upgrade chart on demand:
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
     # DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
-    # TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
   tags:
   - docker-executor
   script:
@@ -220,7 +220,7 @@ k8s_test test environment on demand:
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
     # DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
-    # TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
   retry: 2
   tags:
   - docker-executor
@@ -250,7 +250,7 @@ smoketest test environment on demand:
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
     # DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
-    # TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
   tags:
   - docker-executor
   script:
@@ -270,7 +270,7 @@ sdp_config_dump on demand:
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
     # DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
-    # TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
   when: manual
   only:
     refs:

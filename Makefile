@@ -102,10 +102,22 @@ install: namespace namespace_sdp## install the helm chart on the namespace KUBE_
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 1 ] ; \
 	then helm install $(HELM_RELEASE) --dependency-update \
+		--set tango-base.display="$(DISPLAY)" \
+		--set tango-base.xauthority="$(XAUTHORITYx)" \
+		--set archiver.display="$(DISPLAY)" \
+		--set archiver.xauthority="$(XAUTHORITYx)" \
 		--set minikube=$(MINIKUBE) \
 		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
+        --set oet.ingress.hostname=$(INGRESS_HOST) \
+        --set oet.ingress.nginx=$(USE_NGINX) \
+        --set skuid.ingress.hostname=$(INGRESS_HOST) \
+        --set skuid.ingress.nginx=$(USE_NGINX) \
+        --set tango-base.ingress.hostname=$(INGRESS_HOST) \
+        --set tango-base.ingress.nginx=$(USE_NGINX) \
+        --set webjive.ingress.hostname=$(INGRESS_HOST) \
+        --set webjive.ingress.nginx=$(USE_NGINX) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
 	fi
 

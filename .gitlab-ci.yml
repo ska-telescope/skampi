@@ -183,6 +183,65 @@ smoketest test environment:
     refs:
       - master
 
+k8s_test test environment on demand:
+  stage: test
+  retry: 2
+  tags:
+  - docker-executor
+  script:
+  - make k8s_test && [ -f "build/report.xml" ]
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  when: manual
+  only:
+    refs:
+      - branches
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+    when: always
+
+smoketest test environment on demand:
+  stage: test
+  tags:
+  - docker-executor
+  script:
+  - make smoketest
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  when: manual
+  only:
+    refs:
+      - branches
+
+sdp_config_dump on demand:
+  stage: debug
+  when: manual
+  only:
+    refs:
+      - branches
+  tags:
+  - docker-executor
+  script:
+  - kubectl exec -n $KUBE_NAMESPACE sdp-proto-console-0 -- sdpcfg ls values -R / > sdp.config.json
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  artifacts:
+    paths:
+    - sdp.config.json
+
+
 .run-debug-cmd:
   stage: debug
   variables:

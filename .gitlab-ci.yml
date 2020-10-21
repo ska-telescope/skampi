@@ -183,6 +183,25 @@ smoketest test environment:
     refs:
       - master
 
+
+install or upgrade chart on demand:
+  stage: deploy
+  tags:
+  - docker-executor
+  script:
+  - make install || make upgrade-chart
+  - kubectl get all,pv,pvc,ingress -n ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+  when: manual
+  only:
+    refs:
+      - branches
+
+
 k8s_test test environment on demand:
   stage: test
   retry: 2
@@ -215,8 +234,6 @@ smoketest test environment on demand:
   - docker-executor
   script:
   - make smoketest
-  after_script:
-    - make delete_namespace
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL

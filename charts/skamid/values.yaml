@@ -1,7 +1,7 @@
 
 display: ":0"
 xauthority: "~/.Xauthority"
-minikube: true
+minikube: false
 
 global:
   sub-system:
@@ -15,6 +15,7 @@ global:
     archiver:
       enabled: false
       minikube: false
+      tango_host: databaseds-tango-base-test:10000
 
 tango-base:
   vnc:

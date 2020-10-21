@@ -118,6 +118,7 @@ install: namespace namespace_sdp## install the helm chart on the namespace KUBE_
 		--set minikube=$(MINIKUBE) \
 		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set global.tango_host=$(TANGO_DATABASE_DS) \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
         --set oet.ingress.hostname=$(INGRESS_HOST) \
         --set oet.ingress.nginx=$(USE_NGINX) \
@@ -145,6 +146,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set minikube=$(MINIKUBE) \
 		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set global.tango_host=$(TANGO_DATABASE_DS) \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 

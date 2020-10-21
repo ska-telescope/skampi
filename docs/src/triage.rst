@@ -1,7 +1,7 @@
-Triaging and managing Skampi (SKB) bugs
-=======================================
+Triaging and managing Skampi bugs
+=================================
 
-This document defines a process for Triaging and managing Skampi (SKB) bugs so that any SKA team member knows how to handle the funnel of incoming bugs, the allocation, distribution and management of them.
+This document defines a process for Triaging and managing Skampi bugs so that any SKA team member knows how to handle the funnel of incoming bugs, the allocation, distribution and management of them.
 
 The standard process for changing software includes the following phases:
 
@@ -44,8 +44,13 @@ The following are general rules for allocating ownership to teams:
 
 * The primary responsibility for a failed pipeline is the owner of the first commit to the branch since the last successful run of the pipeline.  It is therfore the responsibility of the committer to follow up on the pipeline status after each git push.
 * For every test case failing, the creator(s) of the test must be involved in order to assign the bug to the appropriate team.
-* The System Team should be always involved in the problem identification in order to understand whether the problem is infrastructure related (related to a k8s cluster or any layer below it - docker, VM, virtualization etc).
+* The System Team should be involved in the problem identification in order to understand whether the problem is infrastructure related (related to a k8s cluster or any layer below it - docker, VM, virtualization etc).
 * For prometheus alerts, the system team must provide the analysis of the alert details in order to understand the cause, and give input into assigning it to the right team(s).
+
+Raising bugs
+------------
+
+Bugs are raised following the `SKA Bug management <https://developer.skatelescope.org/en/latest/development_practices/ska_testing_policy_and_strategy.html#bug-management>`_ guidelines.
 
 
 

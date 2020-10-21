@@ -3,7 +3,6 @@ image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
 variables:
   DEPLOY_ENVIRONMENT: "test"
   CT_TEST_ENVIRONMENT: "ct-test"
-  KUBE_NAMESPACE: "integration"
   INGRESS_HOST: "integration.engageska-portugal.pt"
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
@@ -92,6 +91,8 @@ helm-lint:
 
 .chart-pytest-quarantine:
   stage: test
+  variables:
+    KUBE_NAMESPACE: "integration"
   tags:
     - docker-executor
   allow_failure: true
@@ -114,6 +115,8 @@ helm-lint:
 
 uninstall chart:
   stage: clean
+  variables:
+    KUBE_NAMESPACE: "integration"
   tags:
   - docker-executor
   script:
@@ -131,6 +134,8 @@ uninstall chart:
 
 install or upgrade chart:
   stage: deploy
+  variables:
+    KUBE_NAMESPACE: "integration"
   tags:
   - docker-executor
   script:
@@ -147,6 +152,8 @@ install or upgrade chart:
 
 k8s_test test environment:
   stage: test
+  variables:
+    KUBE_NAMESPACE: "integration"
   retry: 2
   tags:
   - docker-executor
@@ -169,6 +176,8 @@ k8s_test test environment:
     when: always
 
 smoketest test environment:
+  variables:
+    KUBE_NAMESPACE: "integration"
   stage: test
   tags:
   - docker-executor
@@ -276,6 +285,8 @@ sdp_config_dump on demand:
 
 print-debug-info:
   stage: debug
+  variables:
+    KUBE_NAMESPACE: "integration"
   when: always
   tags:
   - docker-executor
@@ -299,6 +310,8 @@ print-debug-info:
 
 sdp_config_dump:
   stage: debug
+  variables:
+    KUBE_NAMESPACE: "integration"
   only:
     refs:
       - master

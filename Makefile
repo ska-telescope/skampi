@@ -84,7 +84,7 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 
 
 delete_namespace: ## delete the kubernetes namespace
-	@if [ "default" == "$(KUBE_NAMESPACE)" ] || [ "kube-system" == "$(KUBE_NAMESPACE)" ]; then \
+	@if [ "default" = "$(KUBE_NAMESPACE)" ] || [ "kube-system" = "$(KUBE_NAMESPACE)" ] ; then \
 	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
 	exit 1; \
 	else \

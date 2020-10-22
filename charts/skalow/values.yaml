@@ -13,6 +13,18 @@ global:
       enabled: false
   minikube: false
   tango_host: databaseds-tango-base-test:10000
+  dsconfig:
+    image:
+      registry: nexus.engageska-portugal.pt/ska-docker
+      image: tango-dsconfig
+      tag: 1.5.0
+      pullPolicy: IfNotPresent
+  itango:
+    image:
+      registry: nexus.engageska-portugal.pt/ska-docker
+      image: tango-itango
+      tag: 9.3.1
+      pullPolicy: IfNotPresent
 
 tango-base:
   vnc:
@@ -32,6 +44,7 @@ tango-base:
     enabled: true
   ingress:
     enabled: true
+    hostname: integration.engageska-portugal.pt
   tangodb:
     use_pv: false
 

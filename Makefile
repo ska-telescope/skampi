@@ -26,7 +26,7 @@ CHART_FILE ?= post-deployment/exploration/chart_sets.txt # for using an input fi
 KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
-TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG) ## Stable name for the Tango DB
+TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the Tango DB
 HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
@@ -123,6 +123,7 @@ install: namespace namespace_sdp## install the helm chart on the namespace KUBE_
 		--set archiver.display="$(DISPLAY)" \
 		--set archiver.xauthority="$(XAUTHORITYx)" \
 		--set minikube=$(MINIKUBE) \
+		--set global.minikube=$(MINIKUBE) \
 		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \

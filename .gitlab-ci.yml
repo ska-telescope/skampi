@@ -7,7 +7,6 @@ variables:
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
-  VALUES: "pipeline.yaml"
   MARK: "all"
   MINIKUBE: "false"
 

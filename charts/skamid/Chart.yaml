@@ -21,8 +21,8 @@ dependencies:
 - name: sdp-prototype
   version: 0.4.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: tmc-proto
-  version: 0.1.0
+- name: tmc-mid
+  version: 0.0.2
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: oet
   version: 0.1.0

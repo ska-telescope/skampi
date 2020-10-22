@@ -158,7 +158,6 @@ k8s_test test environment:
   variables:
     KUBE_NAMESPACE: "integration"
     KUBE_NAMESPACE_SDP: "integration-sdp"
-  retry: 2
   tags:
   - docker-executor
   script:
@@ -202,9 +201,8 @@ install or upgrade chart on demand:
   stage: deploy
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
-    # DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "test-$CI_COMMIT_SHORT_SHA-sdp"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
   tags:
   - docker-executor
   script:
@@ -225,16 +223,15 @@ k8s_test test environment on demand:
   stage: test
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
-    # DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "test-$CI_COMMIT_SHORT_SHA-sdp"
-  retry: 2
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
   tags:
   - docker-executor
   script:
   - make k8s_test && [ -f "build/report.xml" ]
   after_script:
     - make delete_namespace
+    - make delete_sdp_namespace
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL
@@ -256,9 +253,8 @@ smoketest test environment on demand:
   stage: test
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
-    # DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "test-$CI_COMMIT_SHORT_SHA-sdp"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
   tags:
   - docker-executor
   script:
@@ -273,29 +269,25 @@ smoketest test environment on demand:
     refs:
       - branches
 
-sdp_config_dump on demand:
-  stage: debug
+delete test environment on demand:
+  stage: test
   variables:
     HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
-    # DOMAIN_TAG: "test-$CI_COMMIT_SHORT_SHA"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "test-$CI_COMMIT_SHORT_SHA-sdp"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
+  tags:
+  - docker-executor
+  script:
+  - make delete_namespace
+  - make delete_sdp_namespace
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
   when: manual
   only:
     refs:
       - branches
-  tags:
-  - docker-executor
-  script:
-  - kubectl exec -n ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA sdp-proto-console-0 -- sdpcfg ls values -R / > sdp.config.json
-  environment:
-    name: $DEPLOY_ENVIRONMENT
-    kubernetes:
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
-  artifacts:
-    paths:
-    - sdp.config.json
-
 
 .run-debug-cmd:
   stage: debug

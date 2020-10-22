@@ -82,13 +82,20 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
 
-
 delete_namespace: ## delete the kubernetes namespace
 	@if [ "default" = "$(KUBE_NAMESPACE)" ] || [ "kube-system" = "$(KUBE_NAMESPACE)" ] ; then \
 	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
 	exit 1; \
 	else \
 	kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
+	fi
+
+delete_sdp_namespace: ## delete the kubernetes SDP namespace
+	@if [ "default" = "$(KUBE_NAMESPACE_SDP)" ] || [ "kube-system" = "$(KUBE_NAMESPACE_SDP)" ] ; then \
+	echo "You cannot delete Namespace: $(KUBE_NAMESPACE_SDP)"; \
+	exit 1; \
+	else \
+	kubectl describe namespace $(KUBE_NAMESPACE_SDP) && kubectl delete namespace $(KUBE_NAMESPACE_SDP); \
 	fi
 
 lint_all:  lint## lint ALL of the helm chart

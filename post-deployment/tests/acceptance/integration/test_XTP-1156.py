@@ -13,7 +13,7 @@ from pytest_bdd import given, scenario, then, when, parsers
 import subprocess
 
 
-@pytest.mark.XTP-1156
+@pytest.mark.fast
 @scenario("XTP-1156.feature", "Observation Execution Tool")
 def test_create():
     pass

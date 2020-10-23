@@ -169,9 +169,9 @@ def parse_rest_response(resp):
         elements = line.split()
         rest_response_object = {
             'id': elements[0],
-            'uri': elements[1],
-            'script': elements[2],
-            'state': elements[3]}
+            'script': elements[1],
+            'creation_time': str(elements[2] + ' ' + elements[3]),
+            'state': elements[4]}
         rest_responses.append(rest_response_object)
     return rest_responses
 
@@ -313,8 +313,8 @@ def allocate_resources(result, oet_rest_cli, script):
     """
     Use the OET Rest API to allocate resources for the Scheduling Block
     """
-    LOGGER.info("PROCESS: Allocating resources for the SB %s ",
-                result[SCHEDULING_BLOCK])
+    LOGGER.info("PROCESS: Allocating resources from SB %s using script %s",
+                result[SCHEDULING_BLOCK], script)
     result[TEST_PASSED] = run_task_using_oet_rest_client(
         oet_rest_cli,
         script=script,

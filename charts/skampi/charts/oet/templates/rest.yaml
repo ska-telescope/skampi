@@ -101,12 +101,10 @@ spec:
         image: "{{ .Values.rest.image.registry }}/{{ .Values.rest.image.image }}:{{ .Values.rest.image.tag }}"
         imagePullPolicy: {{ .Values.rest.image.pullPolicy }}
         command: ["/bin/sh"]
-        args: ["-c", "/$HOME/.local/bin/flask run -h 0.0.0.0"]
+        args: ["-c", "python3 /app/oet/procedure/application/main.py"]
         env:
           - name: TANGO_HOST
             value: {{ if .Values.tangoDatabaseDS -}} {{ .Values.tangoDatabaseDS }}:10000 {{- else -}} databaseds-tango-base-{{ .Release.Name }}:10000 {{- end }}
-          - name: FLASK_APP
-            value: /app/oet/procedure/application/restserver:create_app
           - name: SKUID_URL
             value: "skuid-skuid-{{ .Release.Namespace }}-{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:9870"
         ports:

@@ -10,10 +10,10 @@ dependencies:
   version: 0.2.6
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: webjive
-  version: 0.1.1
+  version: 1.0.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: archiver
-  version: 0.2.6
+  version: 0.2.4
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: etcd-operator
   version: 0.11.0
@@ -25,7 +25,7 @@ dependencies:
   version: 0.5.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: sdp-prototype
-  version: 0.4.0
+  version: 0.4.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: tmc-mid
   version: 0.0.2

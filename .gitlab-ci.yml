@@ -1,12 +1,14 @@
 image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
 
 variables:
+  DEPLOYMENT_CONFIGURATION: "skamid"
   DEPLOY_ENVIRONMENT: "test"
   CT_TEST_ENVIRONMENT: "ct-test"
   INGRESS_HOST: "integration.engageska-portugal.pt"
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
+  VALUES: "pipeline.yaml"
   MARK: "all"
   MINIKUBE: "false"
 

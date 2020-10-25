@@ -30,7 +30,7 @@ TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the T
 HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
-MINIKUBE ?= false## Minikube or not
+MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/
 
 .DEFAULT_GOAL := help
@@ -136,6 +136,7 @@ install: namespace namespace_sdp## install the helm chart on the namespace KUBE_
         --set tango-base.ingress.nginx=$(USE_NGINX) \
         --set webjive.ingress.hostname=$(INGRESS_HOST) \
         --set webjive.ingress.nginx=$(USE_NGINX) \
+		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
 	fi
 

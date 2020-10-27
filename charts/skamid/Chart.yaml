@@ -28,7 +28,7 @@ dependencies:
   version: 0.4.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: tmc-mid
-  version: 0.0.2
+  version: 0.1.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: oet
   version: 0.1.0

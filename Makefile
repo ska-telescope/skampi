@@ -7,7 +7,6 @@ THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
 HELM_CHART ?= skampi# Helm Chart to install (see ./charts)
-DEPLOYMENT_CONFIGURATION ?= skamid#
 SUB_CHART ?= tmc-proto# SubChart to install/uninstall
 HELM_CHART_TEST ?= tests# Helm Chart to install (see ./charts)
 INGRESS_HOST ?= integration.engageska-portugal.pt# Ingress HTTP hostname

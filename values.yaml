@@ -15,4 +15,4 @@ tangodb:
 tangotest:
   enabled: true
 
-minikube: false
+minikube: true

@@ -12,7 +12,7 @@ global:
       enabled: false
     archiver:
       enabled: false
-  minikube: true
+  minikube: false
   tango_host: databaseds-tango-base-test:10000
   dsconfig:
     image:

@@ -17,14 +17,16 @@ from datetime import date
 from random import choice
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-import oet
+# import oet
 import pytest
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+# from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
-from resources.test_support.helpers import  obsState, resource, watch, waiter, map_dish_nr_to_device_name
+# from resources.test_support.helpers import  obsState, resource, watch, waiter, map_dish_nr_to_device_name
+from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.logging_decorators import log_it
 import logging
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
+# from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
+from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 from resources.test_support.sync_decorators import  sync_scan_oet,sync_configure_oet,time_it
 
 LOGGER = logging.getLogger(__name__)
@@ -44,25 +46,16 @@ def fixture():
     return {}
 
 devices_to_log = [
-    'ska_mid/tm_subarray_node/1',
-    'mid_csp/elt/subarray_01',
-    'mid_csp_cbf/sub_elt/subarray_01',
-    'mid_sdp/elt/subarray_1',
-    'mid_d0001/elt/master',
-    'mid_d0002/elt/master',
-    'mid_d0003/elt/master',
-    'mid_d0004/elt/master']
-non_default_states_to_check = {
-    'mid_d0001/elt/master' : 'pointingState',
-    'mid_d0002/elt/master' : 'pointingState',
-    'mid_d0003/elt/master' : 'pointingState',
-    'mid_d0004/elt/master' : 'pointingState'}
+    'ska_low/tm_subarray_node/1',
+    'low-mccs/control/control',
+    'low-mccs/subarray/01']
+non_default_states_to_check = {}
 
 @pytest.mark.select
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational imaging scan")
+@scenario("1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational scan")
 def test_subarray_scan():
-    """Imaging Scan Operation."""
+    """Scan Operation."""
 
 @given("I am accessing the console interface for the OET")
 def start_up():
@@ -71,12 +64,17 @@ def start_up():
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
+    wait_before_test(timeout=20)
 
 @given("Sub-array is in READY state")
 def set_to_ready():
-    pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
+    # pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
+    tmc.compose_sub()
     LOGGER.info("AssignResources is invoke on Subarray")
-    take_subarray(1).and_configure_scan_by_file(sdp_block)
+    wait_before_test(timeout=10)
+
+
+    # take_subarray(1).and_configure_scan_by_file(sdp_block)
     LOGGER.info("Configure is invoke on Subarray")
 
 @given("duration of scan is 10 seconds")

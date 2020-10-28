@@ -284,7 +284,7 @@ def sync_scan(timeout=200):
 # defined as a context manager
 @contextmanager
 def sync_scanning(timeout=200):
-    check_going_out_of_configured()
+    check_going_out_of_configure()
     w = WaitScanning()
     yield
     w.wait(timeout)
@@ -293,7 +293,7 @@ def sync_scanning(timeout=200):
 def sync_scan_oet(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        check_going_out_of_configured()
+        check_going_out_of_configure()
         the_waiter = waiter()
         the_waiter.set_wait_for_going_into_scanning()
         result = func(*args, **kwargs)
@@ -305,7 +305,7 @@ def sync_scan_oet(func):
 # defined as a context manager
 @contextmanager
 def sync_oet_scanning():
-    check_going_out_of_configured()
+    check_going_out_of_configure()
     the_waiter = waiter()
     the_waiter.set_wait_for_going_into_scanning()
     yield

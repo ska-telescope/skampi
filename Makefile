@@ -70,7 +70,7 @@ namespace: ## create the kubernetes namespace
 
 namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	@kubectl describe namespace $(KUBE_NAMESPACE_SDP) > /dev/null 2>&1 ; \
- 	K_DESC=$$? ; \
+	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
 	then kubectl describe namespace $(KUBE_NAMESPACE_SDP) ; \
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
@@ -111,7 +111,8 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 		--set archiver.xauthority="$(XAUTHORITYx)" \
 		--set minikube=$(MINIKUBE) \
 		--set global.minikube=$(MINIKUBE) \
-		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
@@ -139,7 +140,8 @@ reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	helm upgrade $(HELM_RELEASE) \
 		--set minikube=$(MINIKUBE) \
-		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set global.tango_host=$(TANGO_DATABASE_DS) \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \

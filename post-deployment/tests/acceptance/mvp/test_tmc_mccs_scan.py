@@ -27,7 +27,7 @@ from resources.test_support.logging_decorators import log_it
 import logging
 # from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
-from resources.test_support.sync_decorators import  sync_scan_oet,sync_configure_oet,time_it
+from resources.test_support.sync_decorators_low import  sync_scan_oet,sync_configure_oet, @sync_scan, time_it
 
 LOGGER = logging.getLogger(__name__)
 
@@ -59,7 +59,7 @@ def test_subarray_scan():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
-    LOGGER.info("Given I am accessing the console interface for the OETy")
+    LOGGER.info("Given I am accessing the console interface for the OET")
     LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
@@ -73,9 +73,10 @@ def set_to_ready():
     LOGGER.info("AssignResources is invoke on Subarray")
     wait_before_test(timeout=10)
 
-
     # take_subarray(1).and_configure_scan_by_file(sdp_block)
+    tmc.configure_sub()
     LOGGER.info("Configure is invoke on Subarray")
+    wait_before_test(timeout=10)
 
 @given("duration of scan is 10 seconds")
 def scan_duration(fixture):
@@ -86,63 +87,69 @@ def scan_duration(fixture):
 def invoke_scan_command(fixture):
     #TODO add method to clear thread in case of failure
     @log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
-    @sync_scan_oet
+    # @sync_scan_oet
+    @sync_scan(200)
     def scan():
-        def send_scan(duration):
-            SubArray(1).scan()
-        LOGGER.info("Scan is invoked on Subarray 1")
-        executor = futures.ThreadPoolExecutor(max_workers=1)
-        return executor.submit(send_scan,fixture['scans'])
-    fixture['future'] = scan()
-    return fixture
+            SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
+            SubarrayNodeLow.Scan(fixture['scans'])
+    scan()
+    # def scan():
+    #     def send_scan(duration):
+    #         SubArray(1).scan()
+    #     LOGGER.info("Scan is invoked on Subarray 1")
+    #     executor = futures.ThreadPoolExecutor(max_workers=1)
+    #     return executor.submit(send_scan,fixture['scans'])
+    # fixture['future'] = scan()
+    # return fixture
 
 @then("Sub-array changes to a SCANNING state")
-def check_ready_state(fixture):
-    # check that the TMC report subarray as being in the obsState = READY
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
-    #current functionality implies TMC may be in scanning even though CSP is not yet
-    #logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    #assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('SCANNING')
-    #logging.info("CSP-subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
-    #check that the SDP report subarray as being in the obsState = READY
-    #assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('SCANNING')
-    #logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+def check_scanning_state(fixture):
+    # check that the TMC report subarray as being in the obsState = SCANNING
+    assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
+    logging.info("TMC subarray low obsState: " + resource('ska_low/tm_subarray_node/1').get("obsState"))
     return fixture
 
 @then("observation ends after 10 seconds as indicated by returning to READY state")
-def check_running_state(fixture):
+def check_ready_state(fixture):
     fixture['future'].result(timeout=10)
     # check that the TMC report subarray as being in the obsState = READY
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
-    logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    # check that the CSP report subarray as being in the obsState = READY
-    #assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
-    #logging.info("CSP-subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
-    # check that the SDP report subarray as being in the obsState = READY
-    #assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
-    #logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+    assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
+    logging.info("TMC subarray low obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-    if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
-        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+    if (resource('ska_low/tm_subarray_node/1').get('State') == "ON"):
+        if (resource('ska_low/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            take_subarray(1).and_release_all_resources()  
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
-        LOGGER.info("tearing down configured subarray (READY)")
-        take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
+            # take_subarray(1).and_release_all_resources() 
+            tmc.release_resources()
+            LOGGER.info('Invoked ReleaseResources on Subarray')
+            wait_before_test(timeout=10)
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
+            LOGGER.info("tearing down configured subarray (READY)")
+            # take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+            tmc.end()
+            resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
+            LOGGER.info('Invoked End on Subarray')
+            wait_before_test(timeout=10)
+            tmc.release_resources()
+            LOGGER.info('Invoked ReleaseResources on Subarray')
+            wait_before_test(timeout=10)
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+            LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
+            restart_subarray(1)
+            #raise exception since we are unable to continue with tear down
+            raise Exception("Unable to tear down test setup")
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
+            LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
+            restart_subarray(1)
+            #raise exception since we are unable to continue with tear down
+            raise Exception("Unable to tear down test setup")
+        LOGGER.info("Put Telescope back to standby")
+        set_telescope_to_standby()
+    else:
+        LOGGER.warn("Subarray is in inconsistent state! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
-        raise Exception("Unable to tear down test setup")
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
-        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
-        restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
-        raise Exception("Unable to tear down test setup")
-    LOGGER.info("Put Telescope back to standby")
-    set_telescope_to_standby()
 

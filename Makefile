@@ -112,11 +112,8 @@ publish-chart: ## publish chart in path
 	helm package $(UMBRELLA_CHART_PATH) -u && \
 	curl -v -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file *.tgz $(HELM_HOST)/repository/helm-chart/
 
-install: namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
-	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
-	K_DESC=$$? ; \
-	if [ $$K_DESC -eq 1 ] ; \
-	then helm install $(HELM_RELEASE) --dependency-update \
+install: clean namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
+	helm install $(HELM_RELEASE) --dependency-update \
 		--set tango-base.display="$(DISPLAY)" \
 		--set tango-base.xauthority="$(XAUTHORITYx)" \
 		--set archiver.display="$(DISPLAY)" \
@@ -136,8 +133,7 @@ install: namespace namespace_sdp## install the helm chart on the namespace KUBE_
         --set webjive.ingress.hostname=$(INGRESS_HOST) \
         --set webjive.ingress.nginx=$(USE_NGINX) \
 		--values $(VALUES) \
-		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
-	fi
+		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
@@ -157,6 +153,14 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set global.tango_host=$(TANGO_DATABASE_DS) \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
+
+install-or-upgarde: ## install or upgrade the release
+	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
+	K_DESC=$$? ; \
+	if [ $$K_DESC -eq 1 ] ; \
+	then make install; \
+	else make upgrade-chart; \
+	fi
 
 quotas: namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml

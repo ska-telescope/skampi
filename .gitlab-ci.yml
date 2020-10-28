@@ -207,7 +207,7 @@ install or upgrade chart on demand:
   tags:
   - docker-executor
   script:
-  - make install || make upgrade-chart
+  - make install-or-upgarde
   - kubectl get all,pv,pvc,ingress -n ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
   environment:
     name: $DEPLOY_ENVIRONMENT

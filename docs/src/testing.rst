@@ -1,5 +1,8 @@
 Testing SKAMPI 
 ==============
+
+**This page is outdated, refer to the System Team for support.**
+
 The SKA MPI codebase ultimately holds all the information required to deploy and configure the complete prototype.
 This information is encapsulated as a collection of `Helm <https://helm.sh/>`_ charts, Makefiles and any other
 scripts, components to support its test and deployment.

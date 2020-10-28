@@ -28,6 +28,16 @@ def compose_sub():
     the_waiter.wait()
     LOGGER.info('Invoked AssignResources on CentralNodeLow')
 
+@sync_release_resources
+def release_resources():
+    resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
+    CentralNodeLow = DeviceProxy('ska_low/tm_central/central_node')
+    CentralNodeLow.ReleaseResources('{"subarray_id":1,"release_all":true}')
+    SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
+    LOGGER.info('After Invoking Release Resource on Subarray, SubarrayNodeLow State and ObsState:' + str(SubarrayNodeLow.State()) + str(SubarrayNodeLow.ObsState))
+    the_waiter = waiter()
+    the_waiter.wait()
+    LOGGER.info('finished ReleaseResources on CentralNodeLow')
 
 @sync_end
 def end():

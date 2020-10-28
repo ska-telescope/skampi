@@ -7,16 +7,16 @@ appVersion: 0.1.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: tango-base
-  version: 0.2.8
+  version: 0.2.9
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: etcd-operator
   version: 0.11.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: cbf-proto
-  version: 0.4.0
+- name: mid-cbf
+  version: 0.1.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: csp-proto
-  version: 0.5.3
+- name: mid-csp
+  version: 0.1.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: sdp-prototype
   version: 0.4.1
@@ -31,7 +31,7 @@ dependencies:
   version: 1.0.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: archiver
-  version: 0.2.8
+  version: 0.2.9
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: skuid
   version: 0.0.1

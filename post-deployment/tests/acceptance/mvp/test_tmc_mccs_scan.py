@@ -127,26 +127,29 @@ def teardown_function(function):
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
-        LOGGER.info("tearing down configured subarray (READY)")
-        # take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
-        tmc.end()
-        resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
-        LOGGER.info('Invoked End on Subarray')
-        wait_before_test(timeout=10)
-        tmc.release_resources()
-        LOGGER.info('Invoked ReleaseResources on Subarray')
-        wait_before_test(timeout=10)
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
+            LOGGER.info("tearing down configured subarray (READY)")
+            # take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+            tmc.end()
+            resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
+            LOGGER.info('Invoked End on Subarray')
+            wait_before_test(timeout=10)
+            tmc.release_resources()
+            LOGGER.info('Invoked ReleaseResources on Subarray')
+            wait_before_test(timeout=10)
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+            LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
+            restart_subarray(1)
+            #raise exception since we are unable to continue with tear down
+            raise Exception("Unable to tear down test setup")
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
+            LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
+            restart_subarray(1)
+            #raise exception since we are unable to continue with tear down
+            raise Exception("Unable to tear down test setup")
+        LOGGER.info("Put Telescope back to standby")
+        set_telescope_to_standby()
+    else:
+        LOGGER.warn("Subarray is in inconsistent state! Please restart MVP manualy to complete tear down")
         restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
-        raise Exception("Unable to tear down test setup")
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
-        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
-        restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
-        raise Exception("Unable to tear down test setup")
-    LOGGER.info("Put Telescope back to standby")
-    set_telescope_to_standby()
 

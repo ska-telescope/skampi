@@ -34,24 +34,6 @@ def test_init():
   logging.info("Connected to the databaseds")
 
 
-
-@pytest.mark.skipif(disable_archive_tests,reason="disabaled by local env")
-@pytest.mark.fast
-@pytest.mark.tracer
-def test_tracer():
-    tracer = TraceHelper()
-    try:
-        tracer.enable_logging("sys/tg_test/1", LogLevel.LOG_DEBUG)
-        tracer.wait_until_message_received("DataGenerator::generating data", 20)
-        n_msg = len(tracer.get_messages())
-        assert n_msg > 0
-    finally:
-        tracer.disable_logging("sys/tg_test/1")
-    
-    # test that we didn't get any additional messages after disabling the logging
-    sleep(1)
-    assert n_msg == len(tracer.get_messages())
-
 @pytest.mark.skipif(disable_archive_tests,reason="disabaled by local env")
 @pytest.mark.slow
 @pytest.mark.tracer

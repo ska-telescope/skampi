@@ -335,7 +335,7 @@ sdp_config_dump:
   tags:
   - docker-executor
   script:
-  - kubectl exec -n $KUBE_NAMESPACE sdp-proto-console-0 -- sdpcfg ls values -R / > sdp.config.json
+  - kubectl exec -n $KUBE_NAMESPACE sdp-console-0 -- sdpcfg ls values -R / > sdp.config.json
   environment:
     name: $DEPLOY_ENVIRONMENT
     kubernetes:

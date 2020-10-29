@@ -104,7 +104,8 @@ help:  ## show this help.
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 install: clean namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
-	helm install $(HELM_RELEASE) --dependency-update \
+	helm dependency update $(UMBRELLA_CHART_PATH); \
+	helm install $(HELM_RELEASE) \
 		--set tango-base.display="$(DISPLAY)" \
 		--set tango-base.xauthority="$(XAUTHORITYx)" \
 		--set archiver.display="$(DISPLAY)" \
@@ -128,16 +129,17 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
-	then helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ;\
-    sleep 90s ;\
+	then helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) \
+		--namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
+		helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ;\
 	fi
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
+	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm upgrade $(HELM_RELEASE) \
 		--set minikube=$(MINIKUBE) \
 		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \

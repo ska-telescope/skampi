@@ -44,7 +44,7 @@ tango-base:
         ephemeral-storage: 256Mi
       limits:
         cpu: 200m     # 100m = 0.1 CPU
-        memory: 512Mi # 256Mi = 0.25 GB mem
+        memory: 768Mi # 256Mi = 0.25 GB mem
         ephemeral-storage: 256Mi
   tangotest:
     enabled: true
@@ -91,17 +91,10 @@ archiver:
 
 webjive:
   enabled: true
-  minikube: false
   ingress:
     enabled: true
     nginx: false
     hostname: integration.engageska-portugal.pt
-
-etcd-operator:
-  deployments:
-    backupOperator: false
-    restoreOperator: false
-
 
 #telescope control
 ## mid-cbf

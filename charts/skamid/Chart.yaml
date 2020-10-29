@@ -9,7 +9,6 @@ dependencies:
 - name: tango-base
   version: 0.2.9
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  codition: tango-base.enabled
 #- name: etcd-operator
 #  version: 0.11.0
 #  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
@@ -36,7 +35,7 @@ dependencies:
 - name: webjive
   version: 1.0.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: oet.enabled
+  condition: webjive.enabled
 - name: archiver
   version: 0.2.9
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

@@ -19,7 +19,7 @@ dependencies:
   version: 0.1.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: sdp
-  version: 0.1.0
+  version: 0.2.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: tmc-mid
   version: 0.1.3

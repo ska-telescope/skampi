@@ -8,7 +8,7 @@ from kubernetes import config, client
 
 ## shared fixtures
 from resources.test_support.fixtures import run_context
-from resources.test_support.fixtures import k8
+#from resources.test_support.fixtures import k8
 from resources.test_support.fixtures import idle_subarray
 from resources.test_support.fixtures import running_telescope
 from resources.test_support.fixtures import configured_subarray

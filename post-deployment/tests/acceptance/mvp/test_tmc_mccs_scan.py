@@ -58,20 +58,19 @@ non_default_states_to_check = {}
 def test_subarray_scan():
     """Scan Operation."""
 
-@given("I am accessing the console interface for the OET")
+@given("Sub-array is in ON state.")
 def start_up():
-    LOGGER.info("Given I am accessing the console interface for the OET")
     LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
     wait_before_test(timeout=20)
 
-@given("Sub-array is in READY state")
+@given("Sub-array is configured successfully.")
 def set_to_ready():
     # pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
     tmc.compose_sub()
-    LOGGER.info("AssignResources is invoke on Subarray")
+    LOGGER.info("AssignResources is invoked on Subarray")
     wait_before_test(timeout=10)
 
     # take_subarray(1).and_configure_scan_by_file(sdp_block)
@@ -79,12 +78,12 @@ def set_to_ready():
     LOGGER.info("Configure is invoke on Subarray")
     wait_before_test(timeout=10)
 
-@given("duration of scan is 10 seconds")
+@given("Fixture returns Scan input JSON string.")
 def scan_duration(fixture):
     fixture['scans'] = '{"id":1}'
     return fixture
 
-@when("I call the execution of the scan instruction")
+@when("I call the execution of the scan command for duration of 10 seconds.")
 def invoke_scan_command(fixture):
     #TODO add method to clear thread in case of failure
     @log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
@@ -105,17 +104,23 @@ def invoke_scan_command(fixture):
 @then("Sub-array changes to a SCANNING state")
 def check_scanning_state(fixture):
     # check that the TMC report subarray as being in the obsState = SCANNING
-    assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
     logging.info("TMC subarray low obsState: " + resource('ska_low/tm_subarray_node/1').get("obsState"))
+    assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
+    # check that the MCCS report subarray as being in the obsState = SCANNING
+    logging.info("MCCS subarray low obsState: " + resource('low-mccs/subarray/01').get("obsState"))
+    assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('SCANNING')
     return fixture
 
 @then("observation ends after 10 seconds as indicated by returning to READY state")
 def check_ready_state(fixture):
     fixture['future'].result(timeout=10)
     # check that the TMC report subarray as being in the obsState = READY
+    logging.info("TMC subarray low obsState: " + resource('ska_low/tm_subarray_node/1').get("obsState"))
     assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
-    logging.info("TMC subarray low obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-
+    # check that the MCCS report subarray as being in the obsState = READY
+    logging.info("MCCS subarray low obsState: " + resource('low-mccs/subarray/01').get("obsState"))
+    assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('READY')
+    
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
@@ -127,7 +132,7 @@ def teardown_function(function):
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
-        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
+        if (resource(''ska_low/tm_subarray_node/1').get('obsState') == "READY"):
             LOGGER.info("tearing down configured subarray (READY)")
             # take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
             tmc.end()
@@ -137,12 +142,12 @@ def teardown_function(function):
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
-        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+        if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
             LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
             restart_subarray(1)
             #raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
-        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
+        if (resource('ska_low/tm_subarray_node/1').get('obsState') == "SCANNING"):
             LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
             restart_subarray(1)
             #raise exception since we are unable to continue with tear down

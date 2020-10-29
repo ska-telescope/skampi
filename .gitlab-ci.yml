@@ -230,9 +230,6 @@ k8s_test test environment on demand:
   - docker-executor
   script:
   - make k8s_test && [ -f "build/report.xml" ]
-  after_script:
-    - make delete_namespace
-    - make delete_sdp_namespace
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL

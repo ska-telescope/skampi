@@ -28,6 +28,7 @@ import logging
 # from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 from resources.test_support.sync_decorators_low import  sync_scan_oet,sync_configure_oet, @sync_scan, time_it
+import resources.test_support.tmc_helpers_low as tmc
 
 LOGGER = logging.getLogger(__name__)
 
@@ -90,17 +91,16 @@ def invoke_scan_command(fixture):
     # @sync_scan_oet
     @sync_scan(200)
     def scan():
+        def send_scan(duration):
+            # SubArray(1).scan()
             SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
             SubarrayNodeLow.Scan(fixture['scans'])
+        LOGGER.info("Scan is invoked on Subarray 1")
+        executor = futures.ThreadPoolExecutor(max_workers=1)
+        return executor.submit(send_scan,fixture['scans'])
+    fixture['future'] = scan()
+    return fixture
     scan()
-    # def scan():
-    #     def send_scan(duration):
-    #         SubArray(1).scan()
-    #     LOGGER.info("Scan is invoked on Subarray 1")
-    #     executor = futures.ThreadPoolExecutor(max_workers=1)
-    #     return executor.submit(send_scan,fixture['scans'])
-    # fixture['future'] = scan()
-    # return fixture
 
 @then("Sub-array changes to a SCANNING state")
 def check_scanning_state(fixture):

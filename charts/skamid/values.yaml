@@ -26,7 +26,12 @@ global:
       tag: 9.3.1
       pullPolicy: IfNotPresent
 
+skuid:
+  enabled: true
+  use_pv: false
+
 tango-base:
+  enabled: true
   vnc:
     enabled: true
   tangorest:
@@ -49,6 +54,7 @@ tango-base:
     use_pv: false
 
 archiver:
+  enabled: true
   attributes2archive:
   - attributes:
     - "mid_d0001/elt/master/WindSpeed"
@@ -83,6 +89,7 @@ archiver:
     period_event: 300
 
 webjive:
+  enabled: true
   ingress:
     enabled: true
     nginx: false
@@ -92,3 +99,29 @@ etcd-operator:
   deployments:
     backupOperator: false
     restoreOperator: false
+
+
+#telescope control
+## mid-cbf
+mid-cbf:
+  enabled: true
+
+## mid-csp
+mid-csp:
+  enabled: true
+    
+## sdp
+sdp:
+  enabled: true
+
+## tm
+tmc-mid:
+  enabled: true
+
+## oet
+oet:
+  enabled: true
+
+
+
+

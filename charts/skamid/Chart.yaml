@@ -9,33 +9,42 @@ dependencies:
 - name: tango-base
   version: 0.2.9
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: etcd-operator
-  version: 0.11.0
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  codition: tango-base.enabled
+#- name: etcd-operator
+#  version: 0.11.0
+#  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: mid-cbf
   version: 0.1.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: mid-cbf.enabled
 - name: mid-csp
   version: 0.1.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: mid-csp.enabled
 - name: sdp
   version: 0.2.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: sdp.enabled
 - name: tmc-mid
   version: 0.1.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: tmc-mid.enabled
 - name: oet
   version: 0.1.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: oet.enabled
 - name: webjive
   version: 1.0.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: oet.enabled
 - name: archiver
   version: 0.2.9
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: archiver.enabled
 - name: skuid
   version: 0.0.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: skuid.enabled
 ## it was disabled in the old version of skampi
 # - name: dsh-lmc-prototype
 #   version: 0.0.1

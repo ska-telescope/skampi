@@ -28,7 +28,8 @@ global:
 
 skuid:
   enabled: true
-  use_pv: false
+  skuid:
+    use_pv: false
 
 tango-base:
   enabled: true

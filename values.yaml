@@ -16,3 +16,6 @@ tangotest:
   enabled: true
 
 minikube: true
+
+webjive:
+  minikube: true

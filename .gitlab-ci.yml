@@ -1,9 +1,9 @@
 image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
 
 variables:
+  DEPLOYMENT_CONFIGURATION: "skamid"
   DEPLOY_ENVIRONMENT: "test"
   CT_TEST_ENVIRONMENT: "ct-test"
-  KUBE_NAMESPACE: "integration"
   INGRESS_HOST: "integration.engageska-portugal.pt"
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
@@ -92,6 +92,9 @@ helm-lint:
 
 .chart-pytest-quarantine:
   stage: test
+  variables:
+    KUBE_NAMESPACE: "integration"
+    KUBE_NAMESPACE_SDP: "integration-sdp"
   tags:
     - docker-executor
   allow_failure: true
@@ -114,11 +117,14 @@ helm-lint:
 
 uninstall chart:
   stage: clean
+  variables:
+    KUBE_NAMESPACE: "integration"
+    KUBE_NAMESPACE_SDP: "integration-sdp"
   tags:
   - docker-executor
   script:
   - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - make uninstall 
+  - make uninstall
   environment:
     name: $DEPLOY_ENVIRONMENT
     kubernetes:
@@ -131,10 +137,13 @@ uninstall chart:
 
 install or upgrade chart:
   stage: deploy
+  variables:
+    KUBE_NAMESPACE: "integration"
+    KUBE_NAMESPACE_SDP: "integration-sdp"
   tags:
   - docker-executor
   script:
-  - make install || make upgrade-chart
+  - make install-or-upgarde
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   environment:
     name: $DEPLOY_ENVIRONMENT
@@ -147,7 +156,9 @@ install or upgrade chart:
 
 k8s_test test environment:
   stage: test
-  retry: 2
+  variables:
+    KUBE_NAMESPACE: "integration"
+    KUBE_NAMESPACE_SDP: "integration-sdp"
   tags:
   - docker-executor
   script:
@@ -169,6 +180,9 @@ k8s_test test environment:
     when: always
 
 smoketest test environment:
+  variables:
+    KUBE_NAMESPACE: "integration"
+    KUBE_NAMESPACE_SDP: "integration-sdp"
   stage: test
   tags:
   - docker-executor
@@ -183,6 +197,96 @@ smoketest test environment:
     refs:
       - master
 
+
+install or upgrade chart on demand:
+  stage: deploy
+  variables:
+    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
+  tags:
+  - docker-executor
+  script:
+  - make install-or-upgrade
+  - kubectl get all,pv,pvc,ingress -n ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+  when: manual
+  only:
+    refs:
+      - branches
+
+
+k8s_test test environment on demand:
+  stage: test
+  variables:
+    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
+  tags:
+  - docker-executor
+  script:
+  - make k8s_test && [ -f "build/report.xml" ]
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+  when: manual
+  only:
+    refs:
+      - branches
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+    when: always
+
+smoketest test environment on demand:
+  stage: test
+  variables:
+    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
+  tags:
+  - docker-executor
+  script:
+  - make smoketest
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+  when: manual
+  only:
+    refs:
+      - branches
+
+delete test environment on demand:
+  stage: test
+  variables:
+    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
+  tags:
+  - docker-executor
+  script:
+  - make delete_namespace
+  - make delete_sdp_namespace
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+  when: manual
+  only:
+    refs:
+      - branches
+
 .run-debug-cmd:
   stage: debug
   variables:
@@ -196,6 +300,9 @@ smoketest test environment:
 
 print-debug-info:
   stage: debug
+  variables:
+    KUBE_NAMESPACE: "integration"
+    KUBE_NAMESPACE_SDP: "integration-sdp"
   when: always
   tags:
   - docker-executor
@@ -219,7 +326,12 @@ print-debug-info:
 
 sdp_config_dump:
   stage: debug
-  when: always
+  variables:
+    KUBE_NAMESPACE: "integration"
+    KUBE_NAMESPACE_SDP: "integration-sdp"
+  only:
+    refs:
+      - master
   tags:
   - docker-executor
   script:

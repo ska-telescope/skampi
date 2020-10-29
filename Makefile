@@ -6,10 +6,6 @@ BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
 THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
-HELM_CHART ?= skampi# Helm Chart to install (see ./charts)
-DEPLOYMENT_CONFIGURATION ?= skamid#
-SUB_CHART ?= tmc-proto# SubChart to install/uninstall
-HELM_CHART_TEST ?= tests# Helm Chart to install (see ./charts)
 INGRESS_HOST ?= integration.engageska-portugal.pt# Ingress HTTP hostname
 USE_NGINX ?= false# Use NGINX as the Ingress Controller
 API_SERVER_IP ?= $(THIS_HOST)# Api server IP of k8s
@@ -20,18 +16,16 @@ CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f# F
 CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f# For the gangway kubectl setup, taken from Gitlab
 CHART_SET ?=#for additional flags you want to set when deploying (default empty)
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
-DEPLOYMENT_ORDER ?= tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive archiver dsh-lmc-prototype logging skuid## list of charts that will be deployed in order
-CHART_FILE ?= post-deployment/exploration/chart_sets.txt # for using an input file of subcharts to deploy one after the other
 
 KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
-TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG) ## Stable name for the Tango DB
+TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the Tango DB
 HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
-UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/
+UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
 .DEFAULT_GOAL := help
 -include test.mk
@@ -39,7 +33,7 @@ UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/
 # include makefile targets that wrap helm
  -include helm.mk
 
-vars: ## Display variables 
+vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"
 	@echo "HELM_RELEASE: $(HELM_RELEASE)"
 	@echo "VALUES: $(VALUES)"
@@ -64,7 +58,7 @@ logs: ## POD logs for descriptor
 
 
 clean: ## clean out references to chart tgz's
-	@rm -f ./*/charts/*.tgz ./*/Chart.lock ./*/requirements.lock 
+	@rm -f ./charts/*/charts/*.tgz ./charts/*/Chart.lock ./charts/*/requirements.lock
 
 namespace: ## create the kubernetes namespace
 	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
@@ -76,10 +70,26 @@ namespace: ## create the kubernetes namespace
 
 namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	@kubectl describe namespace $(KUBE_NAMESPACE_SDP) > /dev/null 2>&1 ; \
- 	K_DESC=$$? ; \
+	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
 	then kubectl describe namespace $(KUBE_NAMESPACE_SDP) ; \
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
+	fi
+
+delete_namespace: ## delete the kubernetes namespace
+	@if [ "default" = "$(KUBE_NAMESPACE)" ] || [ "kube-system" = "$(KUBE_NAMESPACE)" ] ; then \
+	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
+	exit 1; \
+	else \
+	kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
+	fi
+
+delete_sdp_namespace: ## delete the kubernetes SDP namespace
+	@if [ "default" = "$(KUBE_NAMESPACE_SDP)" ] || [ "kube-system" = "$(KUBE_NAMESPACE_SDP)" ] ; then \
+	echo "You cannot delete Namespace: $(KUBE_NAMESPACE_SDP)"; \
+	exit 1; \
+	else \
+	kubectl describe namespace $(KUBE_NAMESPACE_SDP) && kubectl delete namespace $(KUBE_NAMESPACE_SDP); \
 	fi
 
 lint_all:  lint## lint ALL of the helm chart
@@ -93,22 +103,18 @@ help:  ## show this help.
 	@echo ""; echo "make vars (+defaults):"
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-publish-chart: ## publish chart in path 
-	helm package $(UMBRELLA_CHART_PATH) -u && \
-	curl -v -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file *.tgz $(HELM_HOST)/repository/helm-chart/
-
-install: namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE 
-	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
-	K_DESC=$$? ; \
-	if [ $$K_DESC -eq 1 ] ; \
-	then helm install $(HELM_RELEASE) --dependency-update \
+install: clean namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
+	helm install $(HELM_RELEASE) --dependency-update \
 		--set tango-base.display="$(DISPLAY)" \
 		--set tango-base.xauthority="$(XAUTHORITYx)" \
 		--set archiver.display="$(DISPLAY)" \
 		--set archiver.xauthority="$(XAUTHORITYx)" \
 		--set minikube=$(MINIKUBE) \
-		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set global.minikube=$(MINIKUBE) \
+		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
         --set oet.ingress.hostname=$(INGRESS_HOST) \
         --set oet.ingress.nginx=$(USE_NGINX) \
@@ -118,26 +124,37 @@ install: namespace namespace_sdp## install the helm chart on the namespace KUBE_
         --set tango-base.ingress.nginx=$(USE_NGINX) \
         --set webjive.ingress.hostname=$(INGRESS_HOST) \
         --set webjive.ingress.nginx=$(USE_NGINX) \
-		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
-	fi
+		--values $(VALUES) \
+		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
-	then helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ; \
+	then helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ;\
+    sleep 90s ;\
 	fi
-	
-reinstall-chart: uninstall-chart install-chart ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
+
+reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	helm upgrade $(HELM_RELEASE) \
 		--set minikube=$(MINIKUBE) \
-		--set sdp-prototype.helm_deploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set global.tango_host=$(TANGO_DATABASE_DS) \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
-	
+
+install-or-upgrade: ## install or upgrade the release
+	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
+	K_DESC=$$? ; \
+	if [ $$K_DESC -eq 1 ] ; \
+	then make install; \
+	else make upgrade-chart; \
+	fi
+
 quotas: namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
 

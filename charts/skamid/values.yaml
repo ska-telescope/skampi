@@ -91,6 +91,7 @@ archiver:
 
 webjive:
   enabled: true
+  minikube: false
   ingress:
     enabled: true
     nginx: false

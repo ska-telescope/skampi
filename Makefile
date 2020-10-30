@@ -103,7 +103,7 @@ help:  ## show this help.
 	@echo ""; echo "make vars (+defaults):"
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-install: namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
+install: clean namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
 	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm install $(HELM_RELEASE) \
 		--set minikube=$(MINIKUBE) \

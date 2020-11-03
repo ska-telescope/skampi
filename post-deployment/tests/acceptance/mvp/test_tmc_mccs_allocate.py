@@ -21,7 +21,8 @@ from resources.test_support.helpers_low import resource, watch, waiter, wait_bef
 from resources.test_support.logging_decorators import log_it
 import logging
 from resources.test_support.persistance_helping import load_config_from_file
-from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray,sync_assign_resources
+from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
+from resources.test_support.sync_decorators_low import sync_assign_resources
 from resources.test_support.tmc_helpers_low import compose_sub
 import resources.test_support.tmc_helpers_low as tmc
 
@@ -52,7 +53,7 @@ def result():
 # @pytest.mark.select
 @pytest.mark.skalow
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
+@scenario("XTP-1188.feature", "A1-Test, Sub-array resource allocation")
 def test_allocate_resources():
     """Assign Resources."""
 

@@ -49,7 +49,8 @@ non_default_states_to_check = {}
 def result():
     return {}
 
-@pytest.mark.select
+# @pytest.mark.select
+@pytest.mark.skalow
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 # TODO: Need to change when feature file will be created.
 @scenario("1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")

@@ -52,7 +52,8 @@ devices_to_log = [
     'low-mccs/subarray/01']
 non_default_states_to_check = {}
 
-@pytest.mark.select
+# @pytest.mark.select
+@pytest.mark.skalow
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational scan")
 def test_subarray_scan():

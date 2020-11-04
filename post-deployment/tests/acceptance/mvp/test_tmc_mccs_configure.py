@@ -17,15 +17,16 @@ import logging
 import os
 import json
 #local dependencies
-from resources.test_support.helpers_low import obsState, resource, watch, waiter, wait_before_test
+from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 #from resources.test_support.log_helping import DeviceLogging
 #from resources.test_support.state_checking import StateChecker
 from resources.test_support.persistance_helping import update_scan_config_file
 from resources.test_support.logging_decorators import log_it
-from resources.test_support.sync_decorators import sync_configure_oet,time_it
-from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
+# from resources.test_support.sync_decorators import sync_configure_oet,time_it
+from resources.test_support.sync_decorators_low import sync_configure
+from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 import pytest
-from tmc_helpers_low import compose_sub, configure_sub, release_resources, end
+from resources.test_support.tmc_helpers_low import compose_sub, configure_sub, release_resources, end
 #SUT dependencies
 #from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 
@@ -50,10 +51,10 @@ def result():
     return {}
 
 # @pytest.mark.select
-@pytest.mark.skalow
+@pytest.mark.conf_skalow
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 # TODO: Need to change when feature file will be created.
-@scenario("1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
+@scenario("XTP-1188.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
 def test_configure_subarray():
     """Configure Subarray."""
 
@@ -78,8 +79,6 @@ def assign(result):
 @when("I call the configure scan execution instruction")
 def config(result):
     @log_it('AX-13_A2',devices_to_log,non_default_states_to_check)
-    @sync_configure_oet
-    @time_it(120)
     def test_SUT():
         configure_sub()
     test_SUT()

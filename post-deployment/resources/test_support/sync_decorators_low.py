@@ -92,8 +92,8 @@ class WaitScanning():
     def wait(self,timeout):
         logging.info("scan command dispatched, checking that the state transitioned to SCANNING")
         self.the_watch.wait_until_value_changed_to('SCANNING',timeout)
-        logging.info("state transitioned to SCANNING, waiting for it to return to READY")
-        self.the_watch.wait_until_value_changed_to('READY',timeout)
+        # logging.info("state transitioned to SCANNING, waiting for it to return to READY")
+        # self.the_watch.wait_until_value_changed_to('READY',timeout)
     
 
 def sync_assign_resources(timeout=60):

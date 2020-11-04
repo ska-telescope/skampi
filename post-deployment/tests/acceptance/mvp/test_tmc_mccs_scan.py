@@ -27,7 +27,7 @@ from resources.test_support.logging_decorators import log_it
 import logging
 # from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
-from resources.test_support.sync_decorators_low import  sync_scan_oet,sync_configure_oet, @sync_scan, time_it
+from resources.test_support.sync_decorators_low import  sync_scan_oet,sync_configure_oet, sync_scan, time_it
 import resources.test_support.tmc_helpers_low as tmc
 
 LOGGER = logging.getLogger(__name__)
@@ -55,11 +55,11 @@ non_default_states_to_check = {}
 # @pytest.mark.select
 @pytest.mark.skalow
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational scan")
+@scenario("XTP-1188.feature", "A3-Test, Sub-array performs an observational scan")
 def test_subarray_scan():
     """Scan Operation."""
 
-@given("Sub-array is in ON state.")
+@given("Sub-array is in ON state")
 def start_up():
     LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
@@ -67,7 +67,7 @@ def start_up():
     set_telescope_to_running()
     wait_before_test(timeout=20)
 
-@given("Sub-array is configured successfully.")
+@given("Sub-array is configured successfully")
 def set_to_ready():
     # pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
     tmc.compose_sub()
@@ -79,12 +79,12 @@ def set_to_ready():
     LOGGER.info("Configure is invoke on Subarray")
     wait_before_test(timeout=10)
 
-@given("Fixture returns Scan input JSON string.")
+@given("Fixture returns Scan input JSON string")
 def scan_duration(fixture):
     fixture['scans'] = '{"id":1}'
     return fixture
 
-@when("I call the execution of the scan command for duration of 10 seconds.")
+@when("I call the execution of the scan command for duration of 10 seconds")
 def invoke_scan_command(fixture):
     #TODO add method to clear thread in case of failure
     @log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
@@ -100,7 +100,6 @@ def invoke_scan_command(fixture):
         return executor.submit(send_scan,fixture['scans'])
     fixture['future'] = scan()
     return fixture
-    scan()
 
 @then("Sub-array changes to a SCANNING state")
 def check_scanning_state(fixture):
@@ -115,6 +114,7 @@ def check_scanning_state(fixture):
 @then("observation ends after 10 seconds as indicated by returning to READY state")
 def check_ready_state(fixture):
     fixture['future'].result(timeout=10)
+    wait_before_test(timeout=10)
     # check that the TMC report subarray as being in the obsState = READY
     logging.info("TMC subarray low obsState: " + resource('ska_low/tm_subarray_node/1').get("obsState"))
     assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
@@ -133,7 +133,7 @@ def teardown_function(function):
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
-        if (resource(''ska_low/tm_subarray_node/1').get('obsState') == "READY"):
+        if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
             LOGGER.info("tearing down configured subarray (READY)")
             # take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
             tmc.end()

@@ -33,7 +33,7 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: oet.enabled
 - name: webjive
-  version: 1.0.3
+  version: 1.0.4
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: webjive.enabled
 - name: archiver

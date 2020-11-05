@@ -227,7 +227,8 @@ smoketest test environment:
   tags:
   - docker-executor
   script:
-  - make smoketest
+    - make wait
+    - make smoketest
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL

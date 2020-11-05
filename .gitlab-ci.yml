@@ -150,13 +150,11 @@ uninstall chart low:
     name: $DEPLOY_ENVIRONMENT
     kubernetes:
       namespace: $KUBE_NAMESPACE
+only:
+  refs:
+    - mvp_low_deployment
   variables:
     - $DELETE == "true"
-# only:
-#   refs:
-#     - master
-#   variables:
-#     - $DELETE == "true"
 
 install or upgrade chart:
   stage: deploy

@@ -150,11 +150,11 @@ uninstall chart low:
     name: $DEPLOY_ENVIRONMENT
     kubernetes:
       namespace: $KUBE_NAMESPACE
-  only:
-    refs:
-      - mvp_low_deployment
-    variables:
-      - $DELETE == "true"
+  # only:
+  #   refs:
+  #     - mvp_low_deployment
+    # variables:
+    #   - $DELETE == "true"
 
 install or upgrade chart:
   stage: deploy
@@ -185,6 +185,7 @@ install or upgrade mvp low chart:
   script:
     - make install-or-upgrade DEPLOYMENT_CONFIGURATION=skalow
     - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+    - make wait
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL_LOW
@@ -227,8 +228,8 @@ smoketest test environment:
   tags:
   - docker-executor
   script:
-    - make wait
-    - make smoketest
+  - make wait
+  - make smoketest
   environment:
     name: $DEPLOY_ENVIRONMENT
     url: $DEPLOY_URL

@@ -69,22 +69,15 @@ def set_to_ready():
     LOGGER.info("Configure is invoke on Subarray")
     wait_before_test(timeout=10)
 
-# @given("Fixture returns Scan input JSON string")
-# def scan_duration(fixture):
-#     fixture['scans'] = '{"id":1}'
-#     return fixture
-
 @when("I call the execution of the scan command for duration of 10 seconds")
 def invoke_scan_command(fixture):
     @sync_scan(200)
     def scan():
-        def send_scan(duration):
+        def send_scan():
             SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
-            #SubarrayNodeLow.Scan(fixture['scans'])
             SubarrayNodeLow.Scan('{"id":1}')
         LOGGER.info("Scan is invoked on Subarray 1")
         executor = futures.ThreadPoolExecutor(max_workers=1)
-        # return executor.submit(send_scan,fixture['scans'])
         return executor.submit(send_scan,'{"id":1}')
     fixture['future'] = scan()
     return fixture

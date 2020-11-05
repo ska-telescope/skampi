@@ -73,7 +73,7 @@ def set_to_ready():
 def invoke_scan_command(fixture):
     @sync_scan(200)
     def scan():
-        def send_scan():
+        def send_scan(duration):
             SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
             SubarrayNodeLow.Scan('{"id":1}')
         LOGGER.info("Scan is invoked on Subarray 1")

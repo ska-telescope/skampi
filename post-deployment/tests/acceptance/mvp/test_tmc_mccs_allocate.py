@@ -47,8 +47,8 @@ non_default_states_to_check = {}
 def result():
     return {}
 
-#@pytest.mark.skalow
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.skalow
+# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("XTP-1188.feature", "TMC and MCCS subarray resource allocation")
 def test_allocate_resources():
     """Assign Resources."""

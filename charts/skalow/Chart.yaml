@@ -9,9 +9,9 @@ dependencies:
 - name: tango-base
   version: 0.2.6
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: archiver
-  version: 0.2.6
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+# - name: archiver
+#   version: 0.2.6
+#   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: tmc-low
   version: 0.1.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

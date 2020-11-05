@@ -48,20 +48,20 @@ tango-base:
   tangodb:
     use_pv: false
 
-mccs:
-  tango-base:
-    enabled: false
-  cli:
-    enabled: false
-  mccs:
-    enabled: true
-  project:
-    name: mccs
-    image:
-      registry: nexus.engageska-portugal.pt/ska-docker
-      image: ska-low-mccs
-      tag: latest
-      pullPolicy: IfNotPresent
+# mccs:
+#   tango-base:
+#     enabled: false
+#   cli:
+#     enabled: false
+#   mccs:
+#     enabled: true
+#   project:
+#     name: mccs
+#     image:
+#       registry: nexus.engageska-portugal.pt/ska-docker
+#       image: ska-low-mccs
+#       tag: latest
+#       pullPolicy: IfNotPresent
 
 webjive:
   ingress:

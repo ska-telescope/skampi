@@ -6,6 +6,7 @@ variables:
   CT_TEST_ENVIRONMENT: "ct-test"
   INGRESS_HOST: "integration.engageska-portugal.pt"
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
+  DEPLOY_URL_LOW: "http://integration-low.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
   VALUES: "pipeline.yaml"
@@ -135,6 +136,28 @@ uninstall chart:
     variables:
       - $DELETE == "true"
 
+uninstall chart low:
+  stage: clean
+  variables:
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-sdp-low"
+  tags:
+    - docker-executor
+  script:
+    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+    - make uninstall DEPLOYMENT_CONFIGURATION=skalow
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  variables:
+    - $DELETE == "true"
+# only:
+#   refs:
+#     - master
+#   variables:
+#     - $DELETE == "true"
+
 install or upgrade chart:
   stage: deploy
   variables:
@@ -153,6 +176,25 @@ install or upgrade chart:
   only:
     refs:
       - master
+
+install or upgrade mvp low chart:
+  stage: deploy
+  variables:
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-sdp-low"
+  tags:
+    - docker-executor
+  script:
+    - make install-or-upgrade DEPLOYMENT_CONFIGURATION=skalow
+    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL_LOW
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  # only:
+  #   refs:
+  #     - master
 
 k8s_test test environment:
   stage: test

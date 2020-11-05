@@ -12,11 +12,8 @@ import signal
 from concurrent import futures
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-# import oet
 import pytest
-# from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
-# from resources.test_support.helpers import  obsState, resource, watch, waiter, map_dish_nr_to_device_name
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.logging_decorators import log_it
 import logging
@@ -50,10 +47,9 @@ non_default_states_to_check = {}
 def result():
     return {}
 
-# @pytest.mark.select
-@pytest.mark.skalow
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("XTP-1188.feature", "A1-Test, Sub-array resource allocation")
+#@pytest.mark.skalow
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@scenario("XTP-1188.feature", "TMC and MCCS subarray resource allocation")
 def test_allocate_resources():
     """Assign Resources."""
 
@@ -64,7 +60,7 @@ def set_to_running():
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
 
-@when("I allocate 4 dishes to subarray 1")
+@when("I allocate resources to TMC and MCCS Subarray")
 def allocate_four_dishes():
     @sync_assign_resources(150)
     def compose_sub():
@@ -79,8 +75,7 @@ def allocate_four_dishes():
     compose_sub()
     LOGGER.info("AssignResource command is executed successfully")
 
-
-@then("the subarray is in the condition that allows scan configurations to take place")
+@then("The TMC and MCCS subarray is in the condition that allows scan configurations to take place")
 def check_subarry_state():
     #check that the TMC report SubarrayLow as being in the ON state and obsState = IDLE
     assert_that(resource('ska_low/tm_subarray_node/1').get("State")).is_equal_to("ON")

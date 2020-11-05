@@ -18,24 +18,18 @@ import os
 import json
 #local dependencies
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
-#from resources.test_support.log_helping import DeviceLogging
-#from resources.test_support.state_checking import StateChecker
 from resources.test_support.persistance_helping import update_scan_config_file
 from resources.test_support.logging_decorators import log_it
-# from resources.test_support.sync_decorators import sync_configure_oet,time_it
 from resources.test_support.sync_decorators_low import sync_configure
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 import pytest
 from resources.test_support.tmc_helpers_low import compose_sub, configure_sub, release_resources, end
-#SUT dependencies
-#from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
     DISABLE_TESTS_UNDER_DEVELOPMENT = False
 else:
     DISABLE_TESTS_UNDER_DEVELOPMENT = True
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -50,17 +44,15 @@ non_default_states_to_check = {}
 def result():
     return {}
 
-# @pytest.mark.select
-@pytest.mark.conf_skalow
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-# TODO: Need to change when feature file will be created.
-@scenario("XTP-1188.feature", "A2-Test, Sub-array transitions from IDLE to READY state")
+#@pytest.mark.skalow
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@scenario("XTP-1188.feature", "TMC and MCCS subarray transitions from IDLE to READY state")
 def test_configure_subarray():
     """Configure Subarray."""
 
-@given("I am accessing the console interface for the OET")
+@given("A running telescope for executing observations on a subarray")
 def start_up():
-    LOGGER.info("Given I am accessing the console interface for the OET")
+    LOGGER.info("Given A running telescope for executing observations on a subarray")
     LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
@@ -68,24 +60,20 @@ def start_up():
     wait_before_test(timeout=20)
     LOGGER.info("Telescope is in ON state")
 
-# TODO: Need to update given clause
-@given("sub-array is in IDLE state")
+@given("Subarray is in IDLE state")
 def assign(result):
     LOGGER.info("Allocating resources to Low Subarray 1")
     compose_sub()
-    LOGGER.info("Subarray 1 is ready and composed out of 2 dishes")
+    LOGGER.info("Subarray 1 is ready")
 
-# TODO: Need to update when clause
 @when("I call the configure scan execution instruction")
 def config(result):
-    @log_it('AX-13_A2',devices_to_log,non_default_states_to_check)
     def test_SUT():
         configure_sub()
     test_SUT()
     LOGGER.info("Configure command on Subarray 1 is successful")
 
-# TODO: Need to update then clause
-@then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
+@then("Subarray is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():
     LOGGER.info("Checking the results")
     # check that the TMC report subarray as being in the obsState = READY

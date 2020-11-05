@@ -97,7 +97,7 @@ def teardown_function(function):
         LOGGER.info("tearing down configured subarray (READY)")
         end()
         release_resources()
-        LOGGER.info("EndSb and ReleaseResources is involked on Subarray 1")
+        LOGGER.info("End and ReleaseResources is invoked on Subarray 1")
     if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         LOGGER.warn("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
         restart_subarray(1)

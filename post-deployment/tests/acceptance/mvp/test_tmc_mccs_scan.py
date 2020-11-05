@@ -75,7 +75,7 @@ def invoke_scan_command(fixture):
     def scan():
         def send_scan(duration):
             SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
-            SubarrayNodeLow.Scan('{"id":1}')
+            SubarrayNodeLow.Scan(duration)
         LOGGER.info("Scan is invoked on Subarray 1")
         executor = futures.ThreadPoolExecutor(max_workers=1)
         return executor.submit(send_scan,'{"id":1}')

@@ -6,7 +6,7 @@ variables:
   CT_TEST_ENVIRONMENT: "ct-test"
   INGRESS_HOST: "integration.engageska-portugal.pt"
   DEPLOY_URL: "http://integration.engageska-portugal.pt/testdb"
-  DEPLOY_URL_LOW: "http://integration-low.engageska-portugal.pt/testdb"
+  DEPLOY_URL_LOW: "http://low.integration.engageska-portugal.pt/testdb"
   HELM_TILLER_SILENT: "true"
   HELM_TILLER_LOGS: "true"
   VALUES: "pipeline.yaml"
@@ -221,8 +221,8 @@ k8s_test test environment:
 
 smoketest test environment:
   variables:
-    KUBE_NAMESPACE: "integration"
-    KUBE_NAMESPACE_SDP: "integration-sdp"
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-sdp-low"
   stage: test
   tags:
   - docker-executor
@@ -237,6 +237,23 @@ smoketest test environment:
     refs:
       - master
 
+smoketest test environment low:
+  variables:
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-sdp-low"
+  stage: test
+  tags:
+  - docker-executor
+  script:
+  - make smoketest
+  environment:
+    name: $DEPLOY_ENVIRONMENT
+    url: $DEPLOY_URL
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  # only:
+  #   refs:
+  #     - master
 
 install or upgrade chart on demand:
   stage: deploy

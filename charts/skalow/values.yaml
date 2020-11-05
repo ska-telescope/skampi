@@ -67,4 +67,4 @@ webjive:
   ingress:
     enabled: true
     nginx: false
-    hostname: integration.engageska-portugal.pt
+    hostname: low.integration.engageska-portugal.pt

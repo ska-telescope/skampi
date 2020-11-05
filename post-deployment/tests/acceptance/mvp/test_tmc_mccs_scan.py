@@ -47,8 +47,7 @@ devices_to_log = [
 non_default_states_to_check = {}
 
 @pytest.mark.skalow
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("XTP-1188.feature", "TMC and MCCS subarray performs an observational scan")
+@scenario("tmc-mccs-bdd.feature", "TMC and MCCS subarray performs an observational scan")
 def test_subarray_scan():
     """Scan Operation."""
 
@@ -110,13 +109,11 @@ def teardown_function(function):
     if (resource('ska_low/tm_subarray_node/1').get('State') == "ON"):
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            # take_subarray(1).and_release_all_resources() 
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
             LOGGER.info("tearing down configured subarray (READY)")
-            # take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
             tmc.end()
             resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
             LOGGER.info('Invoked End on Subarray')

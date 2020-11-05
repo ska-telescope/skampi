@@ -5,6 +5,9 @@ import signal
 import logging
 from contextlib import contextmanager
 
+LOGGER = logging.getLogger(__name__)
+
+
 # pre cheks
 def check_going_out_of_empty():
     ##verify once for obstate = EMPTY
@@ -19,7 +22,6 @@ def check_going_into_configure():
 def check_coming_out_of_standby():
     ##Can  only start up a disabled telescope
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('OFF')
-    # resource('low-mccs/control/control').assert_attribute('State').equals('OFF')
 
 def check_going_out_of_configure():
     ##Can only return to ON/IDLE if in READY
@@ -45,7 +47,6 @@ class WaitConfigure():
         self.w1  = watch(resource('low-mccs/subarray/01')).for_a_change_on("obsState")
 
     def wait(self):
-        # self.w.wait_until_value_changed_to('CONFIGURING')
         self.w.wait_until_value_changed_to('READY',timeout=200)
         self.w1.wait_until_value_changed_to('READY',timeout=200)
 
@@ -70,7 +71,6 @@ class WaitRestart():
 
     def wait(self,timeout):
         logging.info("Restart command dispatched, checking that the state transitioned to RESTARTING")
-        # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
         logging.info("state transitioned to RESTARTING, waiting for it to return to EMPTY")
         self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
 
@@ -92,9 +92,7 @@ class WaitScanning():
     def wait(self,timeout):
         logging.info("scan command dispatched, checking that the state transitioned to SCANNING")
         self.the_watch.wait_until_value_changed_to('SCANNING',timeout)
-        # logging.info("state transitioned to SCANNING, waiting for it to return to READY")
-        # self.the_watch.wait_until_value_changed_to('READY',timeout)
-    
+       
 
 def sync_assign_resources(timeout=60):
 # defined as a decorator
@@ -168,7 +166,7 @@ def sync_oet_configuration():
 
 
 def handle_timeout(arg1,agr2):
-    print("operation timeout")
+    LOGGER.info("operation timeout")
     raise Exception("operation timeout")
 
 def time_it(timeout):

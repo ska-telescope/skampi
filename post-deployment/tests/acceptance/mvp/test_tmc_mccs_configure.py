@@ -45,8 +45,7 @@ def result():
     return {}
 
 @pytest.mark.skalow
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
-@scenario("XTP-1188.feature", "TMC and MCCS subarray transitions from IDLE to READY state")
+@scenario("tmc-mccs-bdd.feature", "TMC and MCCS subarray transitions from IDLE to READY state")
 def test_configure_subarray():
     """Configure Subarray."""
 

@@ -205,5 +205,6 @@ wait:
 			kubectl wait --for=condition=Ready -n $(KUBE_NAMESPACE) pod/$$pod; \
 		fi; \
 	done
+	kubectl get pods -n $(KUBE_NAMESPACE)
 
 .PHONY: help

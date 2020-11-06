@@ -48,6 +48,9 @@ tango-base:
   tangodb:
     use_pv: false
 
+ska-low-mccs:
+  tango-base:
+    enabled: false
 # mccs:
 #   tango-base:
 #     enabled: false

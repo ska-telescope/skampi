@@ -180,6 +180,7 @@ install or upgrade mvp low chart:
   variables:
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-sdp-low"
+    INGRESS_HOST: "low.integration.engageska-portugal.pt"
   tags:
     - docker-executor
   script:
@@ -243,6 +244,7 @@ smoketest test environment low:
   variables:
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-sdp-low"
+    INGRESS_HOST: "low.integration.engageska-portugal.pt"
   stage: test
   tags:
   - docker-executor

@@ -134,9 +134,7 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
-	then helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) \
-		--namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
-		helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ;\
+	then helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ;\
 	fi
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE

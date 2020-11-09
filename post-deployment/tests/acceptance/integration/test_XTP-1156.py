@@ -11,6 +11,11 @@ message and status code.
 import pytest
 from pytest_bdd import given, scenario, then, when, parsers
 import subprocess
+import os
+
+OET_ENV = os.environ.copy()
+HELM_RELEASE = OET_ENV.get("HELM_RELEASE", "test")
+OET_ENV["OET_REST_URI"] = f"http://oet-rest-{HELM_RELEASE}:5000/api/v1.0/procedures"
 
 
 @pytest.mark.fast
@@ -26,7 +31,8 @@ def command():
 
 @when('OET create is given a <file> that does not exist')
 def output_from_junk_file(file):
-    result = subprocess.run(['oet', 'create', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    result = subprocess.run(['oet', 'create', file], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            env=OET_ENV)
     output = ''.join(result.stdout.decode('utf-8') + result.stderr.decode('utf-8'))
     return output
 

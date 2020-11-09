@@ -5,6 +5,6 @@
         Then the OET returns an <error>
 
         Examples:
-		| file                       | error                                  |
-		| file:///FileNotFound.py    | Exception: 500 Internal Server Error   |
-        | sdljfsdjkfhsd              | Exception: 500 Internal Server Error   |
+      | file                       | error                                                                                      |
+      | file:///FileNotFound.py    | The server encountered a problem: No such file or directory: /FileNotFound.py              |
+      | sdljfsdjkfhsd              | The server encountered a problem: ValueError: Script URI type not handled: sdljfsdjkfhsd   |

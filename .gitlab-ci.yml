@@ -30,26 +30,6 @@ uninstall mid:
     variables:
       - $DELETE == "true"
 
-uninstall mid on demand:
-  stage: clean
-  variables:
-    DEPLOYMENT_CONFIGURATION: "skamid"
-    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
-  tags:
-  - docker-executor
-  script:
-  - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - make uninstall
-  environment:
-    name: "test"
-  when: manual
-  only:
-    refs:
-      - branches
-
 uninstall low:
   stage: clean
   variables:
@@ -69,28 +49,6 @@ uninstall low:
       - master
     variables:
       - $DELETE == "true"
-
-uninstall low on demand:
-  stage: clean
-  variables:
-    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
-  tags:
-    - docker-executor
-  script:
-  - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - make uninstall
-  environment:
-    name: "test-low"
-    url: "http://low.integration.engageska-portugal.pt/testdb"
-    kubernetes:
-      namespace: $KUBE_NAMESPACE
-  when: manual
-  only:
-    refs:
-      - branches
 
 test mid:
   stage: test
@@ -140,11 +98,15 @@ test mid on demand:
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   - make k8s_test && [ -f "build/report.xml" ]
+  after_script:
+  - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - make uninstall
   environment:
     name: "test"
     url: "http://ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
     kubernetes:
-      namespace: $KUBE_NAMESPACE
+      namespace: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
   when: manual
   only:
     refs:
@@ -205,11 +167,15 @@ test low on demand:
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   - make k8s_test && [ -f "build/report.xml" ]
+  after_script:
+  - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - make uninstall
   environment:
     name: "test-low"
     url: "http://ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.low.integration.engageska-portugal.pt/testdb"
     kubernetes:
-      namespace: $KUBE_NAMESPACE
+      namespace: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
   when: manual
   only:
     refs:

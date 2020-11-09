@@ -44,5 +44,5 @@ def test_devices():
       j += 2
     i += 1
   print("Total number of active devices " + str(count) + ".")
-  assert count > 50
+  assert count > 25
 

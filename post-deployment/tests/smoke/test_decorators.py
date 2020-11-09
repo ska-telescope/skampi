@@ -7,6 +7,7 @@ import pytest
 
 @mock.patch('resources.test_support.sync_decorators.waiter')
 @mock.patch('resources.test_support.sync_decorators.check_going_out_of_empty')
+@pytest.mark.skamid
 def test_sync_assigned_resources(check_going_out_of_empty,mock_waiter):
     # given
     mock_waiter_instance = mock_waiter.return_value
@@ -22,6 +23,7 @@ def test_sync_assigned_resources(check_going_out_of_empty,mock_waiter):
 
 @mock.patch('resources.test_support.sync_decorators.WaitConfigure')
 @mock.patch('resources.test_support.sync_decorators.check_going_into_configure')
+@pytest.mark.skamid
 def test_sync_configuration(check_going_into_configure,WaitConfigure):
     # given
     WaitConfigure_instance = WaitConfigure.return_value
@@ -38,6 +40,7 @@ def test_sync_configuration(check_going_into_configure,WaitConfigure):
 
 @mock.patch('resources.test_support.sync_decorators.WaitConfigure')
 @mock.patch('resources.test_support.sync_decorators.check_going_into_configure')
+@pytest.mark.skamid
 def test_sync_oet_configuration(check_going_into_configure,WaitConfigure):
     # given
     WaitConfigure_instance = WaitConfigure.return_value
@@ -53,6 +56,7 @@ def test_sync_oet_configuration(check_going_into_configure,WaitConfigure):
 
 @mock.patch('resources.test_support.sync_decorators.waiter')
 @mock.patch('resources.test_support.sync_decorators.check_coming_out_of_standby')
+@pytest.mark.skamid
 def test_sync_telescope_starting_up(check_coming_out_of_standby,mock_waiter):
     # given
     mock_waiter_instance = mock_waiter.return_value
@@ -68,6 +72,7 @@ def test_sync_telescope_starting_up(check_coming_out_of_standby,mock_waiter):
 
 @mock.patch('resources.test_support.sync_decorators.waiter')
 @mock.patch('resources.test_support.sync_decorators.check_going_out_of_configured')
+@pytest.mark.skamid
 def test_sync_sb_ending(check_going_out_of_configured,mock_waiter):
     # given
     mock_waiter_instance = mock_waiter.return_value
@@ -83,6 +88,7 @@ def test_sync_sb_ending(check_going_out_of_configured,mock_waiter):
 
 @mock.patch('resources.test_support.sync_decorators.waiter')
 @mock.patch('resources.test_support.sync_decorators.check_going_into_empty')
+@pytest.mark.skamid
 def test_sync_resources_releasing(check_going_into_empty,mock_waiter):
     # given
     mock_waiter_instance = mock_waiter.return_value
@@ -98,6 +104,7 @@ def test_sync_resources_releasing(check_going_into_empty,mock_waiter):
 
 @mock.patch('resources.test_support.sync_decorators.waiter')
 @mock.patch('resources.test_support.sync_decorators.check_going_into_standby')
+@pytest.mark.skamid
 def test_sync_going_to_standby(check_going_into_standby,mock_waiter):
     # given
     mock_waiter_instance = mock_waiter.return_value
@@ -113,6 +120,7 @@ def test_sync_going_to_standby(check_going_into_standby,mock_waiter):
 
 @mock.patch('resources.test_support.sync_decorators.WaitScanning')
 @mock.patch('resources.test_support.sync_decorators.check_going_out_of_configured')
+@pytest.mark.skamid
 def test_sync_scanning(check_going_out_of_configured,WaitScanning):
     # given
     WaitScanning_instance = WaitScanning.return_value
@@ -128,6 +136,7 @@ def test_sync_scanning(check_going_out_of_configured,WaitScanning):
 
 @mock.patch('resources.test_support.sync_decorators.waiter')
 @mock.patch('resources.test_support.sync_decorators.check_going_out_of_configured')
+@pytest.mark.skamid
 def test_sync_oet_scanning(check_going_out_of_configured,mock_waiter):
     # given
     mock_waiter_instance = mock_waiter.return_value

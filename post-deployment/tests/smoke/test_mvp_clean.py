@@ -16,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 #         'mid_sdp/elt/subarray_1']
 
 @pytest.mark.select
+@pytest.mark.skamid
 @pytest.mark.first
 @pytest.mark.last
 def test_smell_mvp(pre_or_post="#PRE"):

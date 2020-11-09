@@ -10,6 +10,7 @@ from resources.test_support.archiver import ArchiverHelper
 from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
 
 @pytest.mark.archiver
+@pytest.mark.skamid
 @pytest.mark.xfail
 def test_init():
   print("Init test archiver")

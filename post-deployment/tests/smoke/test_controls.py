@@ -7,6 +7,7 @@ import logging
 
 fake_device_mapping = {'device_1':1,'device_2':2,'device_3':1}
 @pytest.mark.fast
+@pytest.mark.skamid
 @mock.patch('resources.test_support.controls.resource')
 @mock.patch('resources.test_support.controls.waiter')
 @mock.patch('resources.test_support.controls.device_to_subarrays',new=fake_device_mapping)

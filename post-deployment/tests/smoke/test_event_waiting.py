@@ -84,7 +84,7 @@ def fxt_1st_event_on_wait_until_changed(fxt_configured_wait_until_changed) -> Fx
     yield fxt
     
 
-
+@pytest.mark.skamid
 def test_handler_waitUntilEqual_not_called(fxt_configured_wait_until_changed):
     # given an incoming event
     # with attr_value = '1st event'
@@ -102,6 +102,7 @@ def test_handler_waitUntilEqual_not_called(fxt_configured_wait_until_changed):
     # I expect the subscription not to be removed
     fxt.mock_board.remove_subscription.assert_not_called()
 
+@pytest.mark.skamid
 def test_handler_waitUntilEqual_called_when_changed(fxt_1st_event_on_wait_until_changed):
     # given an incoming event
     # with attr_value = '1st event'
@@ -121,6 +122,7 @@ def test_handler_waitUntilEqual_called_when_changed(fxt_1st_event_on_wait_until_
     # I expect the subscription to be removed
     fxt.mock_board.remove_subscription.assert_called_with(fxt.mock_subscription)
 
+@pytest.mark.skamid
 def test_handler_waitUntilEqual_remove_when_master(fxt_1st_event_on_wait_until_changed):
     # given an incoming event
     # with attr_value = '1st event'
@@ -144,6 +146,7 @@ def test_handler_waitUntilEqual_remove_when_master(fxt_1st_event_on_wait_until_c
     # and I also expect all subscriptions to be removed on the board
     fxt.mock_board.remove_all_subcriptions.assert_called()
 
+@pytest.mark.skamid
 def test_observe_handler(fxt_configured_subscription_with_event):
     # given an incoming event
     # with attr_value = '1st event'

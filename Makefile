@@ -113,6 +113,8 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
+		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
+		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
@@ -136,6 +138,8 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
+		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
+		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 

@@ -14,9 +14,8 @@ stages:
   tags:
   - docker-executor
   script:
-  - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
   - make uninstall
+  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
   only:
     refs:
       - master
@@ -94,6 +93,8 @@ test mid on demand:
   after_script:
   - make uninstall
   - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - make delete_namespace
+  - make delete_sdp_namespace
   environment:
     name: "test"
     url: "http://ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
@@ -137,6 +138,8 @@ test low on demand:
   after_script:
   - make uninstall
   - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - make delete_namespace
+  - make delete_sdp_namespace
   environment:
     name: "test-low"
     url: "http://ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"

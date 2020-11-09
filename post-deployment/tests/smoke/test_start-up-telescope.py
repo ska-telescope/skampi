@@ -21,6 +21,7 @@ def test_init():
 
 @pytest.mark.skip
 @pytest.mark.fast
+@pytest.mark.skamid
 def test_start_up_telescope(run_context):
   assert(telescope_is_in_standby)
   jsonLogin={"username":"user1","password":"abc123"}

@@ -20,6 +20,7 @@ else:
 
 @pytest.mark.skipif(disable_archive_tests,reason="disabaled by local env")
 @pytest.mark.fast
+@pytest.mark.skamid
 def test_init():    
   logging.info("Init test traces")
   timeSleep = 30
@@ -37,6 +38,7 @@ def test_init():
 @pytest.mark.skipif(disable_archive_tests,reason="disabaled by local env")
 @pytest.mark.slow
 @pytest.mark.tracer
+@pytest.mark.skamid
 def test_tracer_update():
     logging.info("instantiating TracerHelper")
     tracer = TraceHelper()

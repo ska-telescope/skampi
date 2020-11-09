@@ -10,6 +10,7 @@ import os
 import requests
 
 @pytest.mark.skip
+@pytest.mark.common
 def test_check_connection():
     if os.getenv("IP_FOR_INGRESS_TEST") == None:
         host_ip = "192.168.93.47"  # IP of cluster master

@@ -25,6 +25,7 @@ from elasticsearch_dsl import Search,Q
 @pytest.mark.devlogging
 
 @mock.patch('resources.test_support.log_helping.TraceHelper')
+@pytest.mark.skamid
 def test_device_logging(mock_tracer_helper):
     # given
     mock_tracer_helper_instance = mock_tracer_helper.return_value
@@ -41,6 +42,7 @@ def test_device_logging(mock_tracer_helper):
 
 
 @pytest.mark.devlogging
+@pytest.mark.skamid
 @mock.patch('resources.test_support.log_helping.TraceHelper')
 def test_logging_on_test_device_as_string(mock_tracer_helper):
     mock_tracer_helper_instance = mock_tracer_helper.return_value
@@ -54,6 +56,7 @@ def test_logging_on_test_device_as_string(mock_tracer_helper):
     assert_that(printeable_messages).is_instance_of(str)
 
 @pytest.mark.devlogging
+@pytest.mark.skamid
 def test_throw_error_():
     with pytest.raises(Exception):
         DeviceLogging("wrong implementation")
@@ -94,6 +97,7 @@ def fake_device_mapping(mock_device_to_container):
 @mock.patch('resources.test_support.log_helping.Elasticsearch')
 @mock.patch('resources.test_support.log_helping.Search')
 @pytest.mark.devlogging
+@pytest.mark.skamid
 #@pytest.mark.xfail
 def test_log_single_device_from_elastic(mock_search,elastic_mock,mock_device_to_container):
     # given
@@ -113,6 +117,7 @@ def test_log_single_device_from_elastic(mock_search,elastic_mock,mock_device_to_
 @mock.patch('resources.test_support.log_helping.device_to_container')
 @mock.patch('resources.test_support.log_helping.Elasticsearch')
 @mock.patch('resources.test_support.log_helping.Search')
+@pytest.mark.skamid
 def test_log_multiple_devices_from_elastic(mock_search,elastic_mock,mock_device_to_container):
     # given
     fake_an_es_search(mock_search)
@@ -185,6 +190,7 @@ def device_logging_fixture():
         os.remove('build/{}'.format(filename_json))
 
 @pytest.mark.devlogging
+@pytest.mark.skamid
 def test_print_to_csv_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_dummy_data']
@@ -201,6 +207,7 @@ def test_print_to_csv_file(device_logging_fixture):
     assert_that(results).is_equal_to(dummy_data)
 
 @pytest.mark.devlogging
+@pytest.mark.skamid
 def test_print_to_json_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_dummy_data']
@@ -214,6 +221,7 @@ def test_print_to_json_file(device_logging_fixture):
     assert_that(results).is_equal_to(dummy_data)
 
 @pytest.mark.devlogging
+@pytest.mark.skamid
 def test_print_json_empty_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_empty_data']
@@ -226,6 +234,7 @@ def test_print_json_empty_file(device_logging_fixture):
     assert_that(results).is_equal_to("no data logged")
 
 @pytest.mark.devlogging
+@pytest.mark.skamid
 def test_print_csv_empty_file(device_logging_fixture):
     #given
     d = device_logging_fixture['mocked_device_logging_with_empty_data']

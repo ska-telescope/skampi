@@ -12,6 +12,7 @@ from resources.test_support.subscribing import DevicePool, EventItem, MessageBoa
 
 @mock.patch('resources.test_support.subscribing.EventsPusher')
 @mock.patch('resources.test_support.subscribing.DeviceProxy')
+@pytest.mark.skamid
 def test_subscription(Mock_device,Mock_events_pusher):
     # given a Subscription
     mock_device = Mock_device()
@@ -53,6 +54,7 @@ def test_subscription(Mock_device,Mock_events_pusher):
     assert_that(result_subscriptions).is_equal_to([s for _ in  range(2)])
     assert_that(result_handlers).is_equal_to([handler for _ in  range(2)])
 
+@pytest.mark.skamid
 def test_tracer():
     # given a tracer
     t = subscribing.Tracer()
@@ -65,6 +67,7 @@ def test_tracer():
     messages = t.print_messages()
     assert_that(messages).contains(message1,message2)
 
+@pytest.mark.skamid
 def test_message_handler_from_Event_Item():
     # given a message an event_Item
     # with an handler bounded to it
@@ -83,6 +86,7 @@ def test_message_handler_from_Event_Item():
     message4 = 'event handled'
     assert_that(messages).contains(message1,message2,message3,message4)
 
+@pytest.mark.skamid
 def test_events_pusher():
     # given an events puhser
     # and a dummy queue
@@ -104,6 +108,7 @@ def test_events_pusher():
     assert_that(item.handler).is_equal_to(handler)
 
 @mock.patch('resources.test_support.subscribing.DeviceProxy')
+@pytest.mark.skamid
 def test_device_pool(Mock_device):
     mock_device = Mock_device()
     # given a devicePool
@@ -127,6 +132,7 @@ def test_device_pool(Mock_device):
 
 @mock.patch('resources.test_support.subscribing.EventsPusher')
 @mock.patch('resources.test_support.subscribing.DeviceProxy')
+@pytest.mark.skamid
 def test_add_subscription_to_message_board(Mock_device,Mock_pusher):
     # given a new messageboard
     mock_device = Mock_device.return_value
@@ -150,6 +156,7 @@ def test_add_subscription_to_message_board(Mock_device,Mock_pusher):
     assert_that(m.subscriptions).is_length(1)
 
 @mock.patch('resources.test_support.subscribing.DeviceProxy')
+@pytest.mark.skamid
 def test_remove_subscription(Mock_device):
     mock_device = Mock_device.return_value
     mock_device.subscribe_event.side_effect = [0,1,2]
@@ -224,6 +231,7 @@ def bind_subscriber_to_polled_device(device: subscribing.DeviceProxy,
     device.get_events.side_effect = producer.get_events
 
 @mock.patch('resources.test_support.subscribing.DeviceProxy')
+@pytest.mark.skamid
 def test_get_pushed_items_polled(Mock_device):
     mock_device = Mock_device.return_value
     p = PolledProducer()

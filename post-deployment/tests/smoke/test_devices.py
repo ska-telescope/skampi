@@ -8,6 +8,7 @@ from time import sleep
 import pytest
 
 @pytest.mark.fast
+@pytest.mark.common
 def test_init():    
   print("Init test devices")
   timeSleep = 30
@@ -22,6 +23,7 @@ def test_init():
   print("Connected to the databaseds")
 
 @pytest.mark.fast
+@pytest.mark.common
 def test_devices():
   db = Database()
   count = 0

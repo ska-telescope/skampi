@@ -67,6 +67,7 @@ ska-low-mccs:
 #       pullPolicy: IfNotPresent
 
 webjive:
+  minikube: false
   ingress:
     enabled: true
     nginx: false

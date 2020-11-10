@@ -1,2 +1,2 @@
-observation-execution-tool==2.3.0
+observation-execution-tool==2.7.1
 --extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple

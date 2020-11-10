@@ -44,7 +44,8 @@ def test_devices():
   print("Total number of active devices " + str(count) + ".")
   assert count > 50
 
-  def test_subscribe_to_attribute():
-    sdp_subarray = DeviceProxy('mid_sdp/elt/subarray_1')
-    id =  p.subscribe_event('State',EventType.CHANGE_EVENT,lambda event:print(event))
-    p.p.unsubscribe_event(id)
+@pytest.mark.fast
+def test_subscribe_to_attribute():
+  sdp_subarray = DeviceProxy('mid_sdp/elt/subarray_1')
+  id =  p.subscribe_event('State',EventType.CHANGE_EVENT,lambda event:print(event))
+  p.p.unsubscribe_event(id)

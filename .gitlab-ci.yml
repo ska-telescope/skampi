@@ -10,54 +10,41 @@ stages:
   - post_test
   - debug
 
-uninstall mid:
-  stage: clean
-  variables:
-    KUBE_NAMESPACE: "integration"
-    KUBE_NAMESPACE_SDP: "integration-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
+.uninstall_template: &uninstall_definition
   tags:
   - docker-executor
   script:
-  - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
   - make uninstall
-  environment:
-    name: "test"
+  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
   only:
     refs:
       - master
     variables:
       - $DELETE == "true"
+
+uninstall mid:
+  stage: clean
+  variables:
+    HELM_RELEASE: "test-mid"
+    KUBE_NAMESPACE: "integration-mid"
+    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+  <<: *uninstall_definition
+  environment:
+    name: "test"
 
 uninstall low:
   stage: clean
   variables:
+    HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
-    KUBE_NAMESPACE_SDP: "integration-sdp-low"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-  tags:
-    - docker-executor
-  script:
-  - make uninstall
-  - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  <<: *uninstall_definition
   environment:
     name: "test-low"
-  only:
-    refs:
-      - master
-    variables:
-      - $DELETE == "true"
 
-test mid:
-  stage: test
-  variables:
-    KUBE_NAMESPACE: "integration"
-    KUBE_NAMESPACE_SDP: "integration-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
-    INGRESS_HOST: "integration.engageska-portugal.pt"
-    MARK: "skamid or common"
+.test_template: &test_definition
   tags:
   - docker-executor
   script:
@@ -65,14 +52,6 @@ test mid:
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   - make k8s_test && [ -f "build/report.xml" ]
-  environment:
-    name: "test"
-    url: "http://integration.engageska-portugal.pt/testdb"
-    kubernetes:
-      namespace: $KUBE_NAMESPACE
-  only:
-    refs:
-      - master
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -80,59 +59,62 @@ test mid:
     reports:
       junit: build/report.xml
     when: always
+
+test mid:
+  stage: test
+  variables:
+    HELM_RELEASE: "test-mid"
+    KUBE_NAMESPACE: "integration-mid"
+    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    INGRESS_HOST: "mid.integration.engageska-portugal.pt"
+    MARK: "skamid or common"
+  <<: *test_definition
+  environment:
+    name: "test"
+    url: "http://mid.integration.engageska-portugal.pt/testdb"
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  only:
+    refs:
+      - master
 
 test mid on demand:
   stage: test
   variables:
     DEPLOYMENT_CONFIGURATION: "skamid"
     MARK: "skamid or common"
-    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
+    HELM_RELEASE: "test-mid-$CI_COMMIT_SHORT_SHA"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
     KUBE_NAMESPACE: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
     KUBE_NAMESPACE_SDP: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
-    INGRESS_HOST: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
-  tags:
-  - docker-executor
-  script:
-  - make install-or-upgrade
-  - make smoketest
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make k8s_test && [ -f "build/report.xml" ]
+    INGRESS_HOST: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
+  <<: *test_definition
   after_script:
   - make uninstall
   - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - make delete_namespace
+  - make delete_sdp_namespace
   environment:
     name: "test"
-    url: "http://ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
+    url: "http://ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
     kubernetes:
       namespace: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
   when: manual
   only:
     refs:
       - branches
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
 
 test low:
   stage: test
   variables:
+    HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
     INGRESS_HOST: "low.integration.engageska-portugal.pt"
     MARK: "skalow or common"
-  tags:
-  - docker-executor
-  script:
-  - make install-or-upgrade
-  - make smoketest
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make k8s_test && [ -f "build/report.xml" ]
+  <<: *test_definition
   environment:
     name: "test-low"
     url: "http://low.integration.engageska-portugal.pt/testdb"
@@ -141,60 +123,34 @@ test low:
   only:
     refs:
       - master
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
 
 test low on demand:
   stage: test
   variables:
     DEPLOYMENT_CONFIGURATION: "skalow"
     MARK: "skalow or common"
-    HELM_RELEASE: "test-$CI_COMMIT_SHORT_SHA"
+    HELM_RELEASE: "test-low-$CI_COMMIT_SHORT_SHA"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
     KUBE_NAMESPACE: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
     KUBE_NAMESPACE_SDP: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
-    INGRESS_HOST: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.low.integration.engageska-portugal.pt"
-  tags:
-  - docker-executor
-  script:
-  - make install-or-upgrade
-  - make smoketest
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make k8s_test && [ -f "build/report.xml" ]
+    INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
+  <<: *test_definition
   after_script:
   - make uninstall
   - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - make delete_namespace
+  - make delete_sdp_namespace
   environment:
     name: "test-low"
-    url: "http://ci-test-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.low.integration.engageska-portugal.pt/testdb"
+    url: "http://ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
     kubernetes:
       namespace: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
   when: manual
   only:
     refs:
       - branches
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
 
-sdp_config_dump:
-  stage: debug
-  variables:
-    KUBE_NAMESPACE: "integration"
-    KUBE_NAMESPACE_SDP: "integration-sdp"
-    DEPLOY_ENVIRONMENT: "test"
-  only:
-    refs:
-      - master
+.sdp_config_dump_template: &sdp_config_dump_definition
   tags:
   - docker-executor
   script:
@@ -207,6 +163,17 @@ sdp_config_dump:
   artifacts:
     paths:
     - sdp.config.json
+
+sdp_config_dump:
+  stage: debug
+  variables:
+    KUBE_NAMESPACE: "integration"
+    KUBE_NAMESPACE_SDP: "integration-sdp"
+    DEPLOY_ENVIRONMENT: "test"
+  only:
+    refs:
+      - master
+  <<: *test_definition
 
 xray_report:
   stage: post_test

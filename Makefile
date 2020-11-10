@@ -124,6 +124,7 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set oet.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
@@ -134,9 +135,7 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
-	then helm template  $(HELM_RELEASE) $(UMBRELLA_CHART_PATH) \
-		--namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
-		helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ;\
+	then helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ;\
 	fi
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
@@ -162,6 +161,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set oet.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \

@@ -47,6 +47,7 @@ def test_devices():
   assert count > 25
 
 @pytest.mark.fast
+@pytest.mark.skamid
 def test_subscribe_to_attribute():
   sdp_subarray = DeviceProxy('mid_sdp/elt/subarray_1')
   id =  sdp_subarray.subscribe_event('State',EventType.CHANGE_EVENT,lambda event:print(event))

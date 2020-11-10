@@ -47,7 +47,7 @@ devices_to_log = [
 non_default_states_to_check = {}
 
 @pytest.mark.skalow
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
+# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("tmc-mccs-bdd.feature", "TMC and MCCS subarray performs an observational scan")
 def test_subarray_scan():
     """Scan Operation."""

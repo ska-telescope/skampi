@@ -8,6 +8,7 @@ from time import sleep
 import pytest
 
 @pytest.mark.fast
+@pytest.mark.common
 def test_init():    
   print("Init test devices")
   timeSleep = 30
@@ -22,6 +23,7 @@ def test_init():
   print("Connected to the databaseds")
 
 @pytest.mark.fast
+@pytest.mark.common
 def test_devices():
   db = Database()
   count = 0
@@ -42,7 +44,7 @@ def test_devices():
       j += 2
     i += 1
   print("Total number of active devices " + str(count) + ".")
-  assert count > 50
+  assert count > 25
 
 @pytest.mark.fast
 def test_subscribe_to_attribute():

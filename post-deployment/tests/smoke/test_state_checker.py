@@ -69,6 +69,7 @@ def validate_results(res):
 
 
 @mock.patch('resources.test_support.state_checking.resource')
+@pytest.mark.skamid
 def test_non_threaded_loop(resource_mock):
     #given
     resource_mock.return_value.get = mock_get_unique
@@ -85,7 +86,8 @@ def test_non_threaded_loop(resource_mock):
     filtered_result = s.get_records(filtered=True)
     assert_that(filtered_result).is_length(10)
 
-@mock.patch('resources.test_support.state_checking.resource')    
+@mock.patch('resources.test_support.state_checking.resource')
+@pytest.mark.skamid
 def test_specific_states(resource_mock):
     #given
     resource_mock.return_value.get = mock_get_duplicate
@@ -105,6 +107,7 @@ def test_specific_states(resource_mock):
     assert_that([record['dummy resource-3 state'] for record in records])\
         .is_equal_to(['specificState 3' for record in records])
 
+@pytest.mark.skamid
 @pytest.mark.skip("the performance cant be gaurenteed as it changes vary significantly when resources drop")
 def test_threaded_loop():
     #give
@@ -123,8 +126,9 @@ def test_threaded_loop():
     time_seperation = get_time_seperation(records)
     logging.info(time_seperation)
     assert_that(time_seperation).is_less_than(5)
-    
+
 @mock.patch('resources.test_support.state_checking.resource')
+@pytest.mark.skamid
 def test_annotate_uniqueness(resource_mock):
     #given
     resource_mock.return_value.get = mock_get_duplicate
@@ -156,6 +160,7 @@ def get_time_seperation(records,resolution=100):
     return error_count/(len(records))
 
 @mock.patch('resources.test_support.state_checking.resource')
+@pytest.mark.skamid
 def test_time_window(resource_mock):
     #given
     resource_mock.return_value.get = mock_get_unique
@@ -171,6 +176,7 @@ def test_time_window(resource_mock):
     assert_that(get_time_seperation(records)).is_less_than(5)
 
 @mock.patch('resources.test_support.state_checking.resource')
+@pytest.mark.skamid
 def test_write_to_file(resource_mock):
     #given
     resource_mock.return_value.get = mock_get_unique

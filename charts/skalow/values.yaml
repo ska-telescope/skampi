@@ -48,8 +48,27 @@ tango-base:
   tangodb:
     use_pv: false
 
+ska-low-mccs:
+  tango-base:
+    enabled: false
+# mccs:
+#   tango-base:
+#     enabled: false
+#   cli:
+#     enabled: false
+#   mccs:
+#     enabled: true
+#   project:
+#     name: mccs
+#     image:
+#       registry: nexus.engageska-portugal.pt/ska-docker
+#       image: ska-low-mccs
+#       tag: latest
+#       pullPolicy: IfNotPresent
+
 webjive:
+  minikube: false
   ingress:
     enabled: true
     nginx: false
-    hostname: integration.engageska-portugal.pt
+    hostname: low.integration.engageska-portugal.pt

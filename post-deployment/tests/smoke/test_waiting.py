@@ -71,6 +71,7 @@ def mock_strategy_multiple():
     return reworks.get_updated_mock()
 
 @mock.patch('tango.DeviceProxy.__init__') 
+@pytest.mark.skamid
 def test_listen_without_server_side_polling(mock_device_proxy):
     # given
     mock_strategy = set(interfaceStrategy()).get_updated_mock()
@@ -89,7 +90,8 @@ def test_listen_without_server_side_polling(mock_device_proxy):
     #and I do not expect the actual polling to be updated
     mock_device_proxy.poll_attribute.assert_not_called()
 
-@mock.patch('tango.DeviceProxy.__init__')   
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_raises_time_out_for_pushing(mock_device_proxy):
     strategy = ConsumeImmediately(mock_device_proxy)
     mock_device_proxy.name.return_value = 'mock_device'
@@ -98,6 +100,7 @@ def test_raises_time_out_for_pushing(mock_device_proxy):
         strategy.wait_for_next_event(timeout=0.5)
 
 @mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_raises_time_out_for_pulling(mock_device_proxy):
     strategy = ConsumePeriodically(mock_device_proxy)
     mock_device_proxy.name.return_value = 'mock_device'
@@ -107,7 +110,8 @@ def test_raises_time_out_for_pulling(mock_device_proxy):
         strategy.wait_for_next_event(timeout=0.5)
 
 
-@mock.patch('tango.DeviceProxy.__init__')   
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_listen_with_server_side_polling_based_on_strategy(mock_device_proxy):
     #given
     device_reworks = MockReworker(mock_device_proxy)
@@ -130,7 +134,8 @@ def test_listen_with_server_side_polling_based_on_strategy(mock_device_proxy):
     #and I expect the original polling to be restored
     mock_device_proxy.poll_attribute.assert_called_with('attribute',100)
 
-@mock.patch('tango.DeviceProxy.__init__')   
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_listen_with_server_side_polling(mock_device_proxy):
     #given
     strategy_reworks = set(interfaceStrategy())
@@ -153,8 +158,9 @@ def test_listen_with_server_side_polling(mock_device_proxy):
     mock_device_proxy.poll_attribute.assert_called_with('attribute',100)
     
 
-@mock.patch('resources.test_support.waiting.interfaceStrategy') 
-@mock.patch('tango.DeviceProxy.__init__') 
+@mock.patch('resources.test_support.waiting.interfaceStrategy')
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_listener_can_listen_for_multiple_events(mock_device_proxy,mock_strategy):
     # given
     listener = Listener(mock_device_proxy,mock_strategy)
@@ -164,7 +170,8 @@ def test_listener_can_listen_for_multiple_events(mock_device_proxy,mock_strategy
     assert_that(mock_strategy.subscribe.call_count).is_equal_to(2)
 
 @mock.patch('resources.test_support.waiting.datetime')
-@mock.patch('tango.DeviceProxy.__init__') 
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_cons_imm_delivers_elapsed_time(mock_device_proxy,mock_time):
     # given
     mock_time.now.return_value = 10
@@ -178,7 +185,8 @@ def test_cons_imm_delivers_elapsed_time(mock_device_proxy,mock_time):
     assert_that(elapsed_time).is_equal_to(0)
 
 @mock.patch('resources.test_support.waiting.datetime')
-@mock.patch('tango.DeviceProxy.__init__') 
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_consume_per_delivers_elapsed_time(mock_device_proxy,mock_time):
     # given
     mock_time.now.return_value = 10
@@ -193,7 +201,8 @@ def test_consume_per_delivers_elapsed_time(mock_device_proxy,mock_time):
 
 
 
-@mock.patch('tango.DeviceProxy.__init__') 
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_cons_imm_can_subscribe_multiple_times(mock_device_proxy):
     # given
     s = ConsumeImmediately(mock_device_proxy)
@@ -208,7 +217,8 @@ def test_cons_imm_can_subscribe_multiple_times(mock_device_proxy):
     #I expect all events to be unsubscribed
     assert_that(mock_device_proxy.unsubscribe_event.call_count).is_equal_to(2)
 
-@mock.patch('tango.DeviceProxy.__init__') 
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_consume_per_can_subscribe_multiple_times(mock_device_proxy):
     # given
     s = ConsumePeriodically(mock_device_proxy)
@@ -223,7 +233,8 @@ def test_consume_per_can_subscribe_multiple_times(mock_device_proxy):
     #I expect all events to be unsubscribed
     assert_that(mock_device_proxy.unsubscribe_event.call_count).is_equal_to(2)
 
-@mock.patch('tango.DeviceProxy.__init__') 
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_consume_per_can_wait_on_multiple_events(mock_device_proxy):
     # given
     s = ConsumePeriodically(mock_device_proxy)
@@ -241,8 +252,9 @@ def test_consume_per_can_wait_on_multiple_events(mock_device_proxy):
     assert_that(result).is_equal_to([1,2,3,4])
 
 
-@mock.patch('resources.test_support.waiting.Queue') 
-@mock.patch('tango.DeviceProxy.__init__') 
+@mock.patch('resources.test_support.waiting.Queue')
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_consume_imm_can_wait_on_multiple_events(mock_device_proxy,mock_queue):
     # given
     s = ConsumeImmediately(mock_device_proxy)
@@ -257,7 +269,8 @@ def test_consume_imm_can_wait_on_multiple_events(mock_device_proxy,mock_queue):
     mock_queue.return_value.get.assert_called_once()
 
 
-@mock.patch('tango.DeviceProxy.__init__')   
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_listen_with_server_side_polling_async(mock_device_proxy):
     #given
     strategy_reworks = set(interfaceStrategy())
@@ -277,7 +290,8 @@ def test_listen_with_server_side_polling_async(mock_device_proxy):
     mock_strategy.async_subscribe.assert_called_once()
 
 
-@mock.patch('tango.DeviceProxy.__init__')  
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_listener_can_wait_events(mock_device_proxy):
     strategy_reworks = set(interfaceStrategy()).to(generate_multiple_events,['event1'])
     mock_strategy = strategy_reworks.get_updated_mock()
@@ -294,7 +308,8 @@ def test_listener_can_wait_events(mock_device_proxy):
     assert_that(result).is_equal_to(['event1'])
 
 
-@mock.patch('tango.DeviceProxy.__init__')  
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_listener_can_get_events_on(mock_device_proxy):
     test_events = ['event1','event2','event3']
     test_events2 = test_events.copy()
@@ -308,7 +323,8 @@ def test_listener_can_get_events_on(mock_device_proxy):
         if len(test_events) == 0:
             listener.stop_listening()
 
-@mock.patch('tango.DeviceProxy.__init__')  
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_listener_can_get_events_on_async(mock_device_proxy):
     test_events = ['event1','event2','event3']
     test_events2 = test_events.copy()
@@ -324,7 +340,8 @@ def test_listener_can_get_events_on_async(mock_device_proxy):
                 listener.stop_listening()
     asyncio.run(async_run())
 
-@mock.patch('tango.DeviceProxy.__init__')  
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_listener_can_get_elapsed_time_async(mock_device_proxy):
     test_events = ['event1','event2','event3']
     strategy_reworks = set(interfaceStrategy()).to(generate_iterative_events_async,test_events)
@@ -338,7 +355,8 @@ def test_listener_can_get_elapsed_time_async(mock_device_proxy):
                 listener.stop_listening()
     asyncio.run(async_run())
 
-@mock.patch('tango.DeviceProxy.__init__')  
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_listener_can_get_elapsed_time(mock_device_proxy):
     test_events = ['event1','event2','event3']
     strategy_reworks = set(interfaceStrategy()).to(generate_iterative_events,test_events)
@@ -354,6 +372,7 @@ def test_listener_can_get_elapsed_time(mock_device_proxy):
 
 # integration tests with an actual device 
 @pytest.mark.skip("only run test when test device proxy is deployed")
+@pytest.mark.skamid
 def test_wait_in_for_loop():
     async def async_run():
         events_received = 0
@@ -376,6 +395,7 @@ def test_wait_in_for_loop():
 
 # integration tests with an actual device 
 @pytest.mark.skip("only run test when test device proxy is deployed")
+@pytest.mark.skamid
 def test_wait_in_for_loop_pushing():
     async def async_run():
         events_received = 0
@@ -396,7 +416,8 @@ def test_wait_in_for_loop_pushing():
                 listener.stop_listening()
     asyncio.run(async_run())
 
-@mock.patch('tango.DeviceProxy.__init__')  
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_query_events_periodic(mock_device_proxy):
     # given a listener that consumes events periodically
     strategy = ConsumePeriodically(mock_device_proxy)
@@ -431,7 +452,8 @@ class Producer():
         self.callback(event)
 
 
-@mock.patch('tango.DeviceProxy.__init__')  
+@mock.patch('tango.DeviceProxy.__init__')
+@pytest.mark.skamid
 def test_query_events_immediate(mock_device_proxy):
     # given a listener that consumes events immediately
     strategy = ConsumeImmediately(mock_device_proxy)
@@ -516,6 +538,7 @@ def get_mock_event(event_name,attr):
     event.event = event_name
     return event
 
+@pytest.mark.skamid
 def test_listen_as_a_group(fixture_for_two_listeners_immediate):
     # given 2 event listeners listening for events
     # coming from two mock devices that emulate
@@ -583,6 +606,7 @@ def test_listen_as_a_group(fixture_for_two_listeners_immediate):
         logging.debug(f'messages on {listener}:\n'
                      f'{binding["tracer"].print_messages()}')
 
+@pytest.mark.skamid
 def test_raise_timout_on_gather(fixture_for_one_listener_immediate):
         # given 2 event listeners listening for events
     # coming from two mock devices that emulate
@@ -601,7 +625,7 @@ def test_raise_timout_on_gather(fixture_for_one_listener_immediate):
             handeable_event.handle()
 
 
-
+@pytest.mark.skamid
 def test_listen_as_a_group_multiple_attr(fixture_for_two_listeners_immediate):
     # given 2 event listeners listening for events
     # coming from two mock devices that emulate
@@ -672,7 +696,8 @@ def test_listen_as_a_group_multiple_attr(fixture_for_two_listeners_immediate):
     for listener,binding in gatherer.listeners.items():
         logging.debug(f'messages on {listener}:\n'
                      f'{binding["tracer"].print_messages()}')
-  
+
+@pytest.mark.skamid
 def test_handeable_event():
     #given a handeable_event
     handler = Mock(name='handler')

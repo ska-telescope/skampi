@@ -22,6 +22,7 @@ import pytest
 
 class TestResource():
     @pytest.mark.fast
+    @pytest.mark.skamid
     def test_init(self):
         """
         Test the __init__ method.
@@ -32,6 +33,7 @@ class TestResource():
 
     @mock.patch('resources.test_support.helpers.DeviceProxy')
     @pytest.mark.fast
+    @pytest.mark.skamid
     def get_attribute_info_ex(self, name, data_type):
         """
         Return Atfrom resources.log_consumer.tracer_helper import TraceHelpertributeInfoEx object.
@@ -43,6 +45,7 @@ class TestResource():
 
     @mock.patch('resources.test_support.helpers.DeviceProxy')
     @pytest.mark.fast
+    @pytest.mark.skamid
     def test_get_attr_enum(self, mock_proxy):
         """
         Test the get method.
@@ -65,6 +68,7 @@ class TestResource():
 
     @mock.patch('resources.test_support.helpers.DeviceProxy')
     @pytest.mark.fast
+    @pytest.mark.skamid
     def test_get_attr_not_found(self, mock_proxy):
         """
         Test the get method.
@@ -101,6 +105,7 @@ class fake_comparison():
 @mock.patch('resources.test_support.controls.SubArray.allocate_from_file')
 @mock.patch('resources.test_support.sync_decorators.waiter')
 @pytest.mark.fast
+@pytest.mark.skamid
 def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate,mock_resource):
     allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
     mock_resource.return_value = Mock(unsafe=True)
@@ -115,6 +120,7 @@ def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate,mock_resourc
 @mock.patch('resources.test_support.helpers.resource')
 @mock.patch('resources.test_support.helpers.subscriber')
 @pytest.mark.fast
+@pytest.mark.skamid
 def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
     the_waiter = waiter()
     mon_mock_instance = watch_mock.return_value.for_any_change_on.return_value
@@ -129,6 +135,7 @@ def test_tearing_down_subarray(subscriber_mock, resource_mock, watch_mock):
 
 
 @pytest.mark.fast
+@pytest.mark.skamid
 def test_wait_for_change_exception():
     resource_mock = Mock(spec=resource)
     resource_mock.device_name = "test_device"
@@ -140,6 +147,7 @@ def test_wait_for_change_exception():
 
 
 @pytest.mark.fast
+@pytest.mark.skamid
 def test_wait_for_change_success():
     resource_mock = Mock(spec=resource)
     resource_mock.device_name = "test_device"
@@ -151,6 +159,7 @@ def test_wait_for_change_success():
     assert_that(result).is_equal_to(2)
 
 @pytest.mark.fast
+@pytest.mark.skamid
 def test_wait_for_desired_value_no_change():
     resource_mock = Mock(spec=resource)
     resource_mock.device_name = "test_device"

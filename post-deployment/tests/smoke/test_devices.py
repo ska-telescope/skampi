@@ -47,5 +47,5 @@ def test_devices():
 @pytest.mark.fast
 def test_subscribe_to_attribute():
   sdp_subarray = DeviceProxy('mid_sdp/elt/subarray_1')
-  id =  p.subscribe_event('State',EventType.CHANGE_EVENT,lambda event:print(event))
-  p.p.unsubscribe_event(id)
+  id =  sdp_subarray.subscribe_event('State',EventType.CHANGE_EVENT,lambda event:print(event))
+  sdp_subarray.unsubscribe_event(id)

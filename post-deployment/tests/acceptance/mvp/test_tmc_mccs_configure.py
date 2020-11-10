@@ -44,7 +44,7 @@ non_default_states_to_check = {}
 def result():
     return {}
 
-# @pytest.mark.skalow
+@pytest.mark.skalow
 @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("tmc-mccs-bdd.feature", "TMC and MCCS subarray transitions from IDLE to READY state")
 def test_configure_subarray():

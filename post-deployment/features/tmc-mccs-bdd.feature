@@ -1,4 +1,5 @@
 	#@pytest.mark.skip(reason="no way of currently testing this")
+	@skalow
 	Scenario: TMC and MCCS subarray resource allocation
 		Given A running telescope for executing observations on a subarray
 		When I allocate resources to TMC and MCCS Subarray
@@ -6,6 +7,7 @@
 
 	
    #@pytest.mark.skip(reason="no way of currently testing this")
+   @skalow
 	Scenario: TMC and MCCS subarray transitions from IDLE to READY state
 		Given A running telescope for executing observations on a subarray
 		And Subarray is in IDLE state
@@ -14,6 +16,7 @@
 			
 
 	#@pytest.mark.skip(reason="no way of currently testing this")
+	@skalow
 	Scenario: TMC and MCCS subarray performs an observational scan
 	    Given Subarray is in ON state
 		And Subarray is configured successfully

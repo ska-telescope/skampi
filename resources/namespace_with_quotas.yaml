@@ -23,9 +23,9 @@ metadata:
 spec:
   hard:
     pods: "250"
-    requests.cpu: 32000m
-    requests.memory: 32Gi
+    requests.cpu: 16000m
+    requests.memory: 16Gi
     requests.ephemeral-storage: 15Gi
-    limits.cpu: 32000m
-    limits.memory: 32Gi
+    limits.cpu: 16000m
+    limits.memory: 16Gi
     limits.ephemeral-storage: 20Gi

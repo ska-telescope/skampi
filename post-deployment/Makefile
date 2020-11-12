@@ -21,7 +21,7 @@ test: install
 	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest $(if $(findstring all,$(MARK)),, -m $(MARK)) --disable-pytest-warnings | tee pytest.stdout; \
 	status=$$?; \
 	(tango_admin --delete-server log_consumer/log &) && \
-	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
+	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) || true; \
 	exit $$status
 
 .PHONY: all test install

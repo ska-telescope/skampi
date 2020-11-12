@@ -12,7 +12,7 @@ import pytest
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 # SUT import
-from oet.domain import SubArray
+from ska.scripting.domain import SubArray
 
 # local imports
 from resources.test_support.helpers import resource

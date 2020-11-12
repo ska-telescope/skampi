@@ -4,7 +4,7 @@ import os
 import logging
 
 ##SUT imports
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
 
 ##local depencies
 from resources.test_support.helpers import subarray_devices,resource,ResourceGroup,waiter,watch

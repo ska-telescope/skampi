@@ -15,7 +15,7 @@ from resources.test_support.event_waiting import sync_telescope_shutting_down,wa
 sync_subarray_assigning,sync_subarray_releasing,sync_subarray_configuring,sync_release_configuration
 from resources.test_support.persistance_helping import update_resource_config_file,load_config_from_file,update_scan_config_file
 # MVP code
-from oet.domain import SKAMid,SubArray,ResourceAllocation,Dish
+from ska.scripting.domain import SKAMid,SubArray,ResourceAllocation,Dish
 
 LOGGER = logging.getLogger(__name__)
 

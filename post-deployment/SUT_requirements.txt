@@ -1,2 +1,2 @@
-observation-execution-tool==2.7.1
+oet-scripts==0.2.1
 --extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple

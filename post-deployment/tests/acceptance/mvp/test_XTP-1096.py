@@ -16,7 +16,6 @@ from pytest_bdd import scenario, given, when, then
 
 #SUT
 from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
-import ska.scripting.observingtasks as observingtasks
 #SUT infrastructure
 from tango import DeviceProxy, DevState
 ## local imports

@@ -93,7 +93,9 @@ def fixture_result():
 @pytest.fixture(name="oet_rest_cli")
 def fixture_rest_client():
     """OET rest client instance used for testing """
-    rest_cli = RestClientUI("http://oet-rest:5000/api/v1.0/procedures")
+    helm_release = environ.get("HELM_RELEASE", "test")
+    rest_cli_uri = f"http://oet-rest-{helm_release}:5000/api/v1.0/procedures"
+    rest_cli = RestClientUI(rest_cli_uri)
     yield rest_cli
 
 

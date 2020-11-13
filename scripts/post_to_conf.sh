@@ -1,5 +1,3 @@
-CONFLUENCE_PWD="EnglandSignal08,"
-CONFLUENCE_USER="g.leroux"
 URL="https://confluence.skatelescope.org/rest/api/content/"
 page_name="Latest+Version+-+PI6"
 humane_page_name="Latest Version - PI6"

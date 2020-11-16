@@ -1,5 +1,6 @@
 .PHONY: k8s_test smoketest template_tests tango_rest_ingress_check
 
+CI_JOB_ID?=local
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #

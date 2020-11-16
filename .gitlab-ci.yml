@@ -155,25 +155,25 @@ test low on demand:
   - docker-executor
   script:
   - kubectl exec -n $KUBE_NAMESPACE sdp-console-0 -- sdpcfg ls values -R / > sdp.config.json
-  environment:
-    name: $DEPLOY_ENVIRONMENT
-    kubernetes:
-      namespace: $KUBE_NAMESPACE
   when: manual
   artifacts:
     paths:
     - sdp.config.json
 
-sdp_config_dump:
+sdp_config_dump_mid:
   stage: debug
   variables:
-    KUBE_NAMESPACE: "integration"
-    KUBE_NAMESPACE_SDP: "integration-sdp"
-    DEPLOY_ENVIRONMENT: "test"
+    KUBE_NAMESPACE: "integration-mid"
+    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
+  environment:
+    name: "test"
+    url: "http://mid.integration.engageska-portugal.pt/testdb"
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
   only:
     refs:
       - master
-  <<: *test_definition
+  <<: *sdp_config_dump_definition
 
 xray_report:
   stage: post_test

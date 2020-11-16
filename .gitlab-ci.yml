@@ -173,7 +173,7 @@ sdp_config_dump:
   only:
     refs:
       - master
-  <<: *test_definition
+  <<: *sdp_config_dump_definition
 
 xray_report:
   stage: post_test

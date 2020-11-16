@@ -159,10 +159,11 @@ def parse_rest_response(resp):
     into columns
 
     Args:
-        resp (string): [description]
+        resp (string): Response from OET REST CLI
 
     Returns:
-        [rest_response_object]: [description]
+        [rest_response_object]: List of dicts containing
+        information on each script.
     """
     rest_responses = []
     lines = resp.splitlines()
@@ -171,9 +172,9 @@ def parse_rest_response(resp):
         elements = line.split()
         rest_response_object = {
             'id': elements[0],
-            'uri': elements[1],
-            'script': elements[2],
-            'state': elements[3]}
+            'script': elements[1],
+            'creation_time': str(elements[2] + ' ' + elements[3]),
+            'state': elements[4]}
         rest_responses.append(rest_response_object)
     return rest_responses
 

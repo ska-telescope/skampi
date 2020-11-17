@@ -135,7 +135,8 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
-	then helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) ;\
+	then helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE); \
+	kubectl wait --for=condition=delete --all pods -n $(KUBE_NAMESPACE) --timeout=300s; \
 	fi
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE

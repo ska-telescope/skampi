@@ -22,6 +22,13 @@ stages:
     variables:
       - $DELETE == "true"
 
+.uninstall_template_with_namespace: &uninstall_definition_with_namespace
+  after_script:
+  - make uninstall
+  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
+  - make delete_namespace
+  - make delete_sdp_namespace
+
 uninstall mid:
   stage: clean
   variables:
@@ -90,11 +97,7 @@ test mid on demand:
     KUBE_NAMESPACE_SDP: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
     INGRESS_HOST: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
   <<: *test_definition
-  after_script:
-  - make uninstall
-  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - make delete_namespace
-  - make delete_sdp_namespace
+  <<: *uninstall_definition_with_namespace
   environment:
     name: "test"
     url: "http://ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
@@ -135,11 +138,7 @@ test low on demand:
     KUBE_NAMESPACE_SDP: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
     INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
   <<: *test_definition
-  after_script:
-  - make uninstall
-  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,etcd,configmaps --all
-  - make delete_namespace
-  - make delete_sdp_namespace
+  <<: *uninstall_definition_with_namespace
   environment:
     name: "test-low"
     url: "http://ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"

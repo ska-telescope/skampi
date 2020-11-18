@@ -14,8 +14,8 @@ default:
   before_script:
   - curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.19.4/bin/linux/amd64/kubectl"
   - chmod +x ./kubectl
-  - kubectl version  
   - mv ./kubectl /usr/local/bin/kubectl
+  - kubectl version
 
 .uninstall_template: &uninstall_definition
   tags:

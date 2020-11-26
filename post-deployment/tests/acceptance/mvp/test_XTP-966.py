@@ -93,7 +93,9 @@ def fixture_result():
 @pytest.fixture(name="oet_rest_cli")
 def fixture_rest_client():
     """OET rest client instance used for testing """
-    rest_cli = RestClientUI("http://oet-rest:5000/api/v1.0/procedures")
+    helm_release = environ.get("HELM_RELEASE", "test")
+    rest_cli_uri = f"http://oet-rest-{helm_release}:5000/api/v1.0/procedures"
+    rest_cli = RestClientUI(rest_cli_uri)
     yield rest_cli
 
 
@@ -157,10 +159,11 @@ def parse_rest_response(resp):
     into columns
 
     Args:
-        resp (string): [description]
+        resp (string): Response from OET REST CLI
 
     Returns:
-        [rest_response_object]: [description]
+        [rest_response_object]: List of dicts containing
+        information on each script.
     """
     rest_responses = []
     lines = resp.splitlines()
@@ -169,9 +172,9 @@ def parse_rest_response(resp):
         elements = line.split()
         rest_response_object = {
             'id': elements[0],
-            'uri': elements[1],
-            'script': elements[2],
-            'state': elements[3]}
+            'script': elements[1],
+            'creation_time': str(elements[2] + ' ' + elements[3]),
+            'state': elements[4]}
         rest_responses.append(rest_response_object)
     return rest_responses
 

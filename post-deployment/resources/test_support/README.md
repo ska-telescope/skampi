@@ -65,7 +65,7 @@ Upon entering the container execution enviornment, you should install the python
 . /venv/bin/activate
 ```
 
-Thereafter, the neccessarry dependencies will be loaded allowing you access to the correct oet.domain libraries. During development you can navigate to the test-harness folder:
+Thereafter, the neccessarry dependencies will be loaded allowing you access to the correct ska.scripting.domain libraries. During development you can navigate to the test-harness folder:
 
 ```shell
 cd test-harness/

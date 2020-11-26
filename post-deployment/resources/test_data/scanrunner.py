@@ -8,7 +8,7 @@ resources are unallocated.
 import csv
 import sys
 
-import oet.domain as domain
+import ska.scripting.domain as domain
 
 if len(sys.argv) != 2:
     print('Usage: scanrunner <name of CSV file>')

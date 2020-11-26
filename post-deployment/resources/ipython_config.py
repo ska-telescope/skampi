@@ -187,7 +187,7 @@ c.InteractiveShell.banner1 = "Python 3.7.3 (default, Dec 20 2019, 18:57:59)\nThe
 "elastic_queries as el\n"+\
 "helpers as hel\n"+\
 "log_helping as log\n"+\
-'oet.domain as domain\n'+\
+'ska.scripting.domain as domain\n'+\
 'persistance_helping as per\n'+\
 'state_checking as stat\n'+\
 'and from tango DeviceProxy\n'+\

@@ -16,7 +16,7 @@ from time import sleep
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 ##SUT
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
 #SUT infra
 from tango import DeviceProxy, DevState
 #local dependencies

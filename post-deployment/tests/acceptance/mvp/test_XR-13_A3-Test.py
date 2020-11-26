@@ -17,9 +17,8 @@ from datetime import date
 from random import choice
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-import oet
 import pytest
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers import  obsState, resource, watch, waiter, map_dish_nr_to_device_name
 from resources.test_support.logging_decorators import log_it
@@ -67,7 +66,7 @@ def test_subarray_scan():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
-    LOGGER.info("Given I am accessing the console interface for the OETy")
+    LOGGER.info("Given I am accessing the console interface for the OET")
     LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")

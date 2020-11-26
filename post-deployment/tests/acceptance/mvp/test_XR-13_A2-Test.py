@@ -27,7 +27,7 @@ from resources.test_support.sync_decorators import sync_configure_oet,time_it
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
 import pytest
 #SUT dependencies
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -66,7 +66,7 @@ def test_configure_subarray():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
-    LOGGER.info("Given I am accessing the console interface for the OETy")
+    LOGGER.info("Given I am accessing the console interface for the OET")
     LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")

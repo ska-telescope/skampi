@@ -14,9 +14,8 @@ from assertpy import assert_that
 #SUT
 from resources.test_support.helpers import resource, waiter, subscriber, watch,monitor,wait_for,AttributeWatcher
 from resources.test_support.controls import take_subarray
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
 #SUT framework (not part of test)
-from oet.domain import SKAMid, SubArray, ResourceAllocation, Dish
+from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
 
 import pytest
 

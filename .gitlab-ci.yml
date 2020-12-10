@@ -16,8 +16,7 @@ test-run-from-tag:
   stage:
     test
   only:
-    - refs:
-      - master
+    - master
     - tags
   script:
     echo "Hello Ugur"

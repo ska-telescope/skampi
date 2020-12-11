@@ -9,7 +9,8 @@ stages:
   - test
   - post_test
   - debug
-  - publish 
+  - publish
+  - release
   - clean_staging
   - deploy_staging
 

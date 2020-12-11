@@ -9,10 +9,13 @@ stages:
   - test
   - post_test
   - debug
+  - publish 
+  - clean_staging
+  - deploy_staging
 
 .uninstall_template: &uninstall_definition
   tags:
-  - docker-executor
+  - k8srunner
   script:
   - &uninstall_scripts |
     make uninstall
@@ -54,7 +57,7 @@ uninstall low:
 
 .test_template: &test_definition
   tags:
-  - docker-executor
+  - k8srunner
   script:
   - make install-or-upgrade
   - make smoketest
@@ -175,6 +178,90 @@ sdp_config_dump_mid:
       - master
   <<: *sdp_config_dump_definition
 
+clean_staging_low:
+  stage: clean_staging
+  variables:
+    HELM_RELEASE: "staging-low"
+    KUBE_NAMESPACE: "staging-low"
+    KUBE_NAMESPACE_SDP: "staging-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+  tags:
+    - k8srunner
+  only:
+    refs:
+      - tags
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "staging-low"
+  needs:
+    - job: publish-chart
+
+clean_staging_mid:
+  stage: clean_staging
+  variables:
+    HELM_RELEASE: "staging-mid"
+    KUBE_NAMESPACE: "staging-mid"
+    KUBE_NAMESPACE_SDP: "staging-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+  tags:
+    - k8srunner
+  only:
+    refs:
+      - tags
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "staging-mid"
+  needs:
+    - job: publish-chart
+
+deploy_staging_low:
+  stage: deploy_staging
+  variables:
+    HELM_RELEASE: "staging-low"
+    KUBE_NAMESPACE: "staging-low"
+    KUBE_NAMESPACE_SDP: "staging-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    INGRESS_HOST: "low.staging.engageska-portugal.pt"
+  environment:
+    name: "staging-low"
+    url: "http://low.staging.engageska-portugal.pt/testdb"
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  tags:
+    - k8srunner
+  script:
+    - make install-or-upgrade
+    - make smoketest
+    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  only:
+    refs:
+      - tags
+  
+deploy_staging_mid:
+  stage: deploy_staging
+  variables:
+    HELM_RELEASE: "staging-mid"
+    KUBE_NAMESPACE: "staging-mid"
+    KUBE_NAMESPACE_SDP: "staging-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    INGRESS_HOST: "mid.staging.engageska-portugal.pt"
+  environment:
+    name: "staging-mid"
+    url: "http://mid.staging.engageska-portugal.pt/testdb"
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+  tags:
+    - k8srunner
+  script:
+    - make install-or-upgrade
+    - make smoketest
+    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  only:
+    refs:
+      - tags
+
 xray_report:
   stage: post_test
   tags:
@@ -187,3 +274,13 @@ xray_report:
   when: always
   only: [master]
   retry: 2
+
+
+variables:
+  CHARTS_TO_PUBLISH: ska-low ska-mid
+include:
+# Helm Chart Publish
+# https://developer.skatelescope.org/en/latest/development/software_package_release_procedure.html#package-and-publish-helm-charts-to-the-ska-helm-chart-repository
+- project: 'ska-telescope/templates-repository'
+  file: 'gitlab-ci/includes/helm_publish.yml'
+

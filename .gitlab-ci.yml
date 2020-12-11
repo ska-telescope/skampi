@@ -178,6 +178,21 @@ sdp_config_dump_mid:
       - master
   <<: *sdp_config_dump_definition
 
+tag_commit:
+  stage: release
+  tags:
+    - k8srunner
+  when:
+    manual
+  needs:
+    - job: publish-chart
+  only:
+    refs:
+      - master
+  script:
+    - make create-publish-tag USERNAME=$GITLAB_USER_NAME EMAILID=$GITLAB_USER_EMAIL # Publish tag on gitlab
+
+
 clean_staging_low:
   stage: clean_staging
   variables:

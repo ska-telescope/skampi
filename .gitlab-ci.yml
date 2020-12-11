@@ -9,17 +9,28 @@ cache:
 
 stages:
   - publish
-  - test
+  - test1
+  - test2
   - docs
 
 test-run-from-tag:
   stage:
-    test
+    test1
   only:
     - tags
   script:
     echo "Hello Ugur"
+  when: manual
+
+test-run-after-manual:
+  stage:
+    test2
+  only:
+    - tags
+  script:
+    echo "Hello Bruno"
   when: always
+  needs: [test-run-from-tag]
 
 ## ============================================================================
 ## Common settings for building docker images

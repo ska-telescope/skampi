@@ -30,7 +30,8 @@ test-run-after-manual:
   script:
     echo "Hello Bruno"
   when: always
-  needs: [test-run-from-tag]
+  needs: 
+    - stage: test1
 
 ## ============================================================================
 ## Common settings for building docker images

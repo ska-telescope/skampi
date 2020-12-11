@@ -19,7 +19,7 @@ test-run-from-tag:
     - tags
   script:
     echo "Hello Ugur"
-  when: manual
+  when: always
 
 ## ============================================================================
 ## Common settings for building docker images

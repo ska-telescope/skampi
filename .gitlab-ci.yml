@@ -9,68 +9,24 @@ cache:
 
 stages:
   - publish
-  - test1
-  - test2
+  - release
   - docs
 
-test-run-from-tag:
-  stage:
-    test1
+tag_commit:
+  stage: release
+  tags:
+    - k8srunner
+  when:
+    manual
+  needs:
+    - job: publish-chart
   only:
-    - tags
+    refs:
+      - master
   script:
-    echo "Hello Ugur"
-  when: manual
+    # - echo $GITLAB_USER_EMAIL
+    - make create-publish-tag USERNAME=$GITLAB_USER_NAME EMAILID=$GITLAB_USER_EMAIL # Publish tag on gitlab
 
-test-run-after-manual:
-  stage:
-    test2
-  only:
-    - tags
-  script:
-    echo "Hello Bruno"
-  when: always
-  needs: [test-run-from-tag]
-
-## ============================================================================
-## Common settings for building docker images
-## ============================================================================
-
-#.push_docker:
-#  dependencies: []
-#  variables:
-#    DOCKER_REGISTRY_HOST: $DOCKER_REGISTRY_HOST
-#    DOCKER_REGISTRY_USER: $CI_PROJECT_NAME
-#    GIT_VERSION: ${CI_COMMIT_SHA:0:8}
-#  tags:
-#    - docker
-#    - engageska
-#  image: docker:stable
-#  services:
-#    - docker:dind
-#  before_script:
-#    - apk add make git
-#    - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
-#  script:
-#    - cd $BUILD_PATH
-#    - make DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST DOCKER_REGISTRY_USER=$CI_PROJECT_NAME pull_default
-#    - make DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST DOCKER_REGISTRY_USER=$CI_PROJECT_NAME push_version
-#  retry: 2
-
-
-# ============================================================================
-# Build documentation
-# ============================================================================
-#build_docs:
-#  stage: test
-#  image: nexus.engageska-portugal.pt/sdp-prototype/pytango_ska_dev:latest
-#  before_script:
-#    - pip install -r docs/requirements.txt
-#  script:
-#    - make -C docs html
-#  artifacts:
-#    paths: [docs/build/html/]
-#    expire_in: 1 day
 #
 # variables:
 #   CHARTS_TO_PUBLISH: tea

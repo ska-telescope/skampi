@@ -41,8 +41,8 @@ uninstall mid:
   <<: *uninstall_definition
   environment:
     name: "test"
-  post_script:
-  - echo "Just uninstalled MID"
+  after_script:
+    - echo "Just uninstalled MID"
 
 uninstall low:
   stage: clean
@@ -54,8 +54,8 @@ uninstall low:
   <<: *uninstall_definition
   environment:
     name: "test-low"
-  post_script:
-  - echo "Just uninstalled LOW"
+  after_script:
+    - echo "Just uninstalled LOW"
 
 .test_template: &test_definition
   tags:
@@ -88,8 +88,8 @@ test mid:
   only:
     refs:
       - master
-  post_script:
-  - echo "Just tested MID"
+  after_script:
+    - echo "Just tested MID"
 
 test mid on demand:
   stage: test
@@ -101,8 +101,8 @@ test mid on demand:
     KUBE_NAMESPACE: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
     KUBE_NAMESPACE_SDP: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
     INGRESS_HOST: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
-  pre_script:
-  - echo "About to test MID on demand"
+  before_script:
+    - echo "About to test MID on demand"
   <<: *test_definition
   <<: *uninstall_definition_after_script
   environment:

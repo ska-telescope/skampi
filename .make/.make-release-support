@@ -120,12 +120,12 @@ function createGitTag(){
 # Publish tag. (If there is error while publishing tag, docker image with same tag will be deleted.)
 function gitPush() {
   tag=$(awk -F= '/^tag=/{print $2}' .release)
-#   git_username=$(awk -F= '/^gitlab_username=/{print $2}' .release)
-#   private_token=$(awk -F= '/^private_token=/{print $2}' .release)
-  echo "Tag: $tag"
-  echo "variable: $1"
-  echo "REPO_URL: $REPO_URL"
-  $(git push $1 "$tag")
+  echo "USERNAME: $USERNAME"
+  git_username=$1
+  echo "\$1: $1"
+  private_token=$(awk -F= '/^private_token=/{print $2}' .release)
+  echo "tag: $tag"
+  $(git push https://"$git_username":"$private_token"@gitlab.com/ska-telescope/skampi.git "$tag")
   result=$(echo $?)
   if [ $result -ne 0 ];
   then

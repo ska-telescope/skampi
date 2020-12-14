@@ -293,7 +293,7 @@ xray_report:
 
 
 variables:
-  CHARTS_TO_PUBLISH: ska-low ska-mid
+  CHARTS_TO_PUBLISH: skalow skamid
 include:
 # Helm Chart Publish
 # https://developer.skatelescope.org/en/latest/development/software_package_release_procedure.html#package-and-publish-helm-charts-to-the-ska-helm-chart-repository

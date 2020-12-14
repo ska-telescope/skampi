@@ -24,6 +24,7 @@ RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.mak
 VERSION=$(shell . $(RELEASE_SUPPORT) ; getVersion)
 TAG=$(shell . $(RELEASE_SUPPORT); getTag)
 SHELL=/bin/bash
+CI_JOB_TOKEN ?=
 
 .PHONY: patch-release minor-release major-release tag check-status check-release showver \
 	create-tag create-publish-tag push-tag config-git \
@@ -84,6 +85,10 @@ push-tag: .release
 create-publish-tag: create-tag push-tag
 
 config-git:
+	if [ -n "$${MY_JOB_TOKEN}" ]; then export CI_JOB_TOKEN="$${MY_JOB_TOKEN}"; else export CI_JOB_TOKEN="$(CI_JOB_TOKEN)"; fi; \
+	if [ -n "$${CI_JOB_TOKEN}" ]; then GIT_BASE="https://gitlab-ci-token:$${CI_JOB_TOKEN}@gitlab.com/ska-telescope"; else GIT_BASE="$(GIT_BASE)"; fi; \
+	echo after GIT_BASE=$${GIT_BASE}; \
+	export REPO_URL=$${GIT_BASE}/skampi.git; fi
 	echo "USERNAME = $$USERNAME"
 	echo "EMAILID = $$EMAILID"
 	git config --global user.email $(EMAILID)

@@ -123,8 +123,8 @@ function gitPush() {
 #   git_username=$(awk -F= '/^gitlab_username=/{print $2}' .release)
 #   private_token=$(awk -F= '/^private_token=/{print $2}' .release)
   echo $tag
-  echo "REPO_URL: $REPO_URL"
-  $(git push $REPO_URL "$tag")
+  echo "REPO_URL: $1"
+  $(git push $1 "$tag")
   result=$(echo $?)
   if [ $result -ne 0 ];
   then

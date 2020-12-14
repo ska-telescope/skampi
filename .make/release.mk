@@ -84,6 +84,8 @@ push-tag: .release
 create-publish-tag: create-tag push-tag
 
 config-git:
+	echo "USERNAME = $$USERNAME"
+	echo "EMAILID = $$EMAILID"
 	git config --global user.email $(EMAILID)
 	git config --global user.name $(USERNAME)
 

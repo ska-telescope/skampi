@@ -128,8 +128,9 @@ tag_commit:
     refs:
       - master
   script:
-    # - echo $GITLAB_USER_EMAIL
-    - make create-publish-tag USERNAME=$GITLAB_USER_NAME EMAILID=$GITLAB_USER_EMAIL # Publish tag on gitlab
+    - echo $GITLAB_USER_EMAIL
+    - echo $GITLAB_USER_NAME
+    - make release-skampi USERNAME=$GITLAB_USER_NAME EMAILID=$GITLAB_USER_EMAIL # Publish tag on gitlab
 
 #
 # variables:

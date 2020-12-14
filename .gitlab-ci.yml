@@ -3,9 +3,9 @@
 #   gitlab-runner exec <executor, eg. docker> <job name>
 #
 
-cache:
-  paths:
-    - build
+# cache:
+#   paths:
+#     - build
 
 stages:
   - publish

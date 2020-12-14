@@ -84,7 +84,7 @@ push-tag: .release
 	if [ -n "$${CI_JOB_TOKEN}" ]; then GIT_BASE="https://gitlab-ci-token:$${CI_JOB_TOKEN}@gitlab.com/ska-telescope"; else GIT_BASE="$(GIT_BASE)"; fi; \
 	echo after GIT_BASE=$${GIT_BASE}; \
 	REPO_URL=$${GIT_BASE}/skampi.git;
-	@. $(RELEASE_SUPPORT) ; gitPush $$REPO_URL
+	@. $(RELEASE_SUPPORT) ; gitPush $(REPO_URL)
 
 create-publish-tag: create-tag push-tag
 

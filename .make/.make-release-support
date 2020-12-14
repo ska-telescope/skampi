@@ -122,8 +122,9 @@ function gitPush() {
   tag=$(awk -F= '/^tag=/{print $2}' .release)
 #   git_username=$(awk -F= '/^gitlab_username=/{print $2}' .release)
 #   private_token=$(awk -F= '/^private_token=/{print $2}' .release)
-  echo $tag
-  echo "REPO_URL: $1"
+  echo "Tag: $tag"
+  echo "variable: $1"
+  echo "REPO_URL: $REPO_URL"
   $(git push $1 "$tag")
   result=$(echo $?)
   if [ $result -ne 0 ];

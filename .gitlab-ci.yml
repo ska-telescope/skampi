@@ -68,7 +68,7 @@ uninstall low:
   #     - "build/"
   #   reports:
   #     junit: build/report.xml
-    when: always
+    # when: always
 
 test mid:
   stage: test

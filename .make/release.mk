@@ -80,15 +80,15 @@ create-tag: .release
 	@. $(RELEASE_SUPPORT) ; createGitTag || (echo "ERROR: Some error in creating tag" >&2 && exit 1) ;
 
 push-tag: .release
+	if [ -n "$${MY_JOB_TOKEN}" ]; then export CI_JOB_TOKEN="$${MY_JOB_TOKEN}"; else export CI_JOB_TOKEN="$(CI_JOB_TOKEN)"; fi; \
+	if [ -n "$${CI_JOB_TOKEN}" ]; then GIT_BASE="https://gitlab-ci-token:$${CI_JOB_TOKEN}@gitlab.com/ska-telescope"; else GIT_BASE="$(GIT_BASE)"; fi; \
+	echo after GIT_BASE=$${GIT_BASE}; \
+	export REPO_URL=$${GIT_BASE}/skampi.git;
 	@. $(RELEASE_SUPPORT) ; gitPush
 
 create-publish-tag: create-tag push-tag
 
 config-git:
-	if [ -n "$${MY_JOB_TOKEN}" ]; then export CI_JOB_TOKEN="$${MY_JOB_TOKEN}"; else export CI_JOB_TOKEN="$(CI_JOB_TOKEN)"; fi; \
-	if [ -n "$${CI_JOB_TOKEN}" ]; then GIT_BASE="https://gitlab-ci-token:$${CI_JOB_TOKEN}@gitlab.com/ska-telescope"; else GIT_BASE="$(GIT_BASE)"; fi; \
-	echo after GIT_BASE=$${GIT_BASE}; \
-	export REPO_URL=$${GIT_BASE}/skampi.git;
 	echo "USERNAME = $$USERNAME"
 	echo "EMAILID = $$EMAILID"
 	git config --global user.email $(EMAILID)

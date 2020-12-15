@@ -168,6 +168,7 @@ test-st-579:
   - st-579
   script:
   - echo "Testing ST-579"
+  - ls
   only:
     refs:
       - branches

@@ -28,6 +28,11 @@ MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
 .DEFAULT_GOAL := help
+
+# include makefile targets for release management
+-include .make/release.mk
+
+# include makefile targets for testing
 -include test.mk
 
 # include makefile targets that wrap helm

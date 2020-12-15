@@ -171,6 +171,8 @@ test-st-579:
   - echo "$TEST_VAR"
   - ls
   - ls /
+  - pwd
+  - ls /home/gitlab-runner
   only:
     refs:
       - branches

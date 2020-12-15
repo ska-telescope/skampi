@@ -56,7 +56,7 @@ def result():
 
 @pytest.mark.select
 @pytest.mark.skamid
-@pytest.mark.skip(reason="feature not working consistently")
+#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("XTP-1096.feature", "BDD test case for ObsReset command")
 def test_subarray_obsreset():
     """reset subarray"""

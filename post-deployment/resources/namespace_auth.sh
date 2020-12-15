@@ -18,6 +18,7 @@ SERVICE_ACCOUNT_NAME=$1
 NAMESPACE="$2"
 KUBECFG_FILE_NAME="/tmp/kube/k8s-${SERVICE_ACCOUNT_NAME}-${NAMESPACE}-conf"
 TARGET_FOLDER="/tmp/kube"
+KUBECFG_URL=""
 
 kubectl -n ${NAMESPACE} delete rolebinding/${SERVICE_ACCOUNT_NAME}-ns-admin || true
 kubectl -n ${NAMESPACE} delete role/${SERVICE_ACCOUNT_NAME}-ns-admin || true
@@ -171,10 +172,21 @@ set_kube_config_values() {
     --kubeconfig="${KUBECFG_FILE_NAME}"
 }
 
-#Digvijay added new
-delete_namespace(){
-    echo -e -n "\\nDeleting the namespace for expiring user token from secret..."
+#Deletes pre-existing namespaces
+delete_older_namespaces(){
+    echo -e -n "\\nDeleting the pre-existing namespaces..."
+    kubectl get namespaces
     kubectl delete namespaces ${NAMESPACE}
+}
+
+# Push kubeconfig file to the Nexus Repo
+push_kubeconfig_to_nexus() {
+  echo "######### UPLOADING ${KUBECFG_FILE_NAME}";
+  # TODO: Make file path with KUBE_NAMESPACE
+  curl -v -u $RAW_USER:$RAW_PASS --upload-file ${KUBECFG_FILE_NAME} ${RAW_HOST}/repository/k8s-ci-creds/${KUBECFG_FILE_NAME};
+  echo "######### UPLOADED ${KUBECFG_FILE_NAME}";
+  # TODO: Get File URL into a variable.
+  KUBECFG_URL="${RAW_HOST}/repository/k8s-ci-creds/..."
 }
 
 create_target_folder
@@ -183,16 +195,25 @@ get_secret_name_from_service_account
 extract_ca_crt_from_secret
 get_user_token_from_secret
 set_kube_config_values
-#Digvijay added new
-delete_namespace
+push_kubeconfig_to_nexus
+delete_older_namespaces
 
-echo -e "\\nAll done! Test with:"
-echo "KUBECONFIG=${KUBECFG_FILE_NAME} kubectl get pods"
-echo "you should not have any permissions by default - you have just created the authentication part"
-echo "You will need to create RBAC permissions"
-echo "get Pods:"
-KUBECONFIG=${KUBECFG_FILE_NAME} kubectl get pods
-echo ""
-echo "Show KUBECONFIG:"
-KUBECONFIG=${KUBECFG_FILE_NAME} kubectl config view --flatten --raw
-echo "In KUBECONFIG=${KUBECFG_FILE_NAME}"
+# echo -e "\\nAll done! Test with:"
+# echo "KUBECONFIG=${KUBECFG_FILE_NAME} kubectl get pods"
+# echo "you should not have any permissions by default - you have just created the authentication part"
+# echo "You will need to create RBAC permissions"
+# echo "get Pods:"
+# KUBECONFIG=${KUBECFG_FILE_NAME} kubectl get pods
+# echo ""
+# echo "Show KUBECONFIG:"
+# KUBECONFIG=${KUBECFG_FILE_NAME} kubectl config view --flatten --raw
+# echo "In KUBECONFIG=${KUBECFG_FILE_NAME}"
+
+echo -e "\\n All done!"
+echo "You can get the kubeconfig file from the url: ${KUBECFG_URL} with:"
+echo "curl ${KUBECFG_URL}"
+echo "You have the following permissions:"
+# TODO: List permissions
+echo "Example usage:"
+echo "kubectl --kubeconfig=KUBECFG_FILE get pods"
+# TODO: This documentation will be expanded on ST-559 with more examples for developer use cases/workflows

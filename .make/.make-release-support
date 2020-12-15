@@ -120,7 +120,7 @@ function createGitTag(){
 # Publish tag. (If there is error while publishing tag, docker image with same tag will be deleted.)
 function gitPush() {
   tag=$(awk -F= '/^tag=/{print $2}' .release)
-  git_username=$(awk -F= '/^gitlab_username=/{print $2}' .release)
+  git_username=$1
   private_token=$(awk -F= '/^private_token=/{print $2}' .release)
   echo $tag
   $(git push https://"$git_username":"$private_token"@gitlab.com/ska-telescope/skampi.git "$tag")
@@ -148,7 +148,7 @@ function releaseSKAMPI() {
                 --header  "PRIVATE-TOKEN: "$private_token \
                 --data "$data1" \
                 --request POST https://gitlab.com/api/v4/projects/"$CI_PROJECT_ID"/releases)
-  echo $result
+  echo "result = $result"
 }
 
 # Delete released SKAMPI-prototype with version given in .release file
@@ -162,7 +162,7 @@ function deleteSKAMPIRelease() {
 
 function deleteTag() {
   tag=$(awk -F= '/^tag=/{print $2}' .release)
-  git_username=$(awk -F= '/^gitlab_username=/{print $2}' .release)
+  git_username=$1
   private_token=$(awk -F= '/^private_token=/{print $2}' .release)
   git push --delete https://"$git_username":"$private_token"@gitlab.com/ska-telescope/skampi.git "$tag"
 }
@@ -185,7 +185,8 @@ function releaseSKAMPIIfNoError() {
     python3 -c "import sys, json; print(json.load(sys.stdin)['tag_name'])")
     if [ "$checkReleaseExists" != "$tag_name" ]; then
         echo "ERROR WHILE RELEASING SKAMPI. TAG WILL BE DELETED."
-        deleteTag
+        git_username=$1
+        deleteTag $git_username
         # deleteImageFromNexus
     fi
   fi

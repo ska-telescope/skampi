@@ -79,7 +79,7 @@ create-tag: .release
 	@. $(RELEASE_SUPPORT) ; createGitTag || (echo "ERROR: Some error in creating tag" >&2 && exit 1) ;
 
 push-tag: .release
-	@. $(RELEASE_SUPPORT) ; gitPush
+	@. $(RELEASE_SUPPORT) ; gitPush $$USERNAME
 
 create-publish-tag: create-tag push-tag
 
@@ -93,4 +93,4 @@ delete-tag: .release
 	@. $(RELEASE_SUPPORT) ; deleteTag
 
 release-skampi-if-no-error: .release
-	@. $(RELEASE_SUPPORT) ; releaseSKAMPIIfNoError
+	@. $(RELEASE_SUPPORT) ; releaseSKAMPIIfNoError $$USERNAME

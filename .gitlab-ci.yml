@@ -210,8 +210,7 @@ clean_staging_low:
   - *uninstall_scripts
   environment:
     name: "staging-low"
-  needs:
-    - job: publish-chart
+  
 
 clean_staging_mid:
   stage: clean_staging
@@ -229,8 +228,7 @@ clean_staging_mid:
   - *uninstall_scripts
   environment:
     name: "staging-mid"
-  needs:
-    - job: publish-chart
+  
 
 deploy_staging_low:
   stage: deploy_staging
@@ -254,6 +252,8 @@ deploy_staging_low:
   only:
     refs:
       - tags
+  needs:
+    - job: clean_staging_low
   
 deploy_staging_mid:
   stage: deploy_staging
@@ -277,6 +277,8 @@ deploy_staging_mid:
   only:
     refs:
       - tags
+  needs:
+    - job: clean_staging_low
 
 xray_report:
   stage: post_test

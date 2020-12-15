@@ -14,129 +14,81 @@ the **targets** and **arguments** (and their defaults) available.
 
     [user@pc skampi]$ make
     make targets:
-    Makefile:delete_all            delete ALL of the helm chart release
-    Makefile:delete                delete the helm chart release. @param: same as deploy_all, plus HELM_CHART
-    Makefile:delete_etcd           Remove etcd-operator from namespace
-    Makefile:delete_gangway        delete install gangway authentication for gitlab. @param: CLIENT_ID, CLIENT_SECRET, INGRESS_HOST, CLUSTER_NAME, API_SERVER_IP, API_SERVER_PORT
-    Makefile:delete_traefik        delete the helm chart for traefik. @param: EXTERNAL_IP
+    Makefile:clean                 clean out references to chart tgz's
+    Makefile:delete_namespace      delete the kubernetes namespace
+    Makefile:delete_sdp_namespace  delete the kubernetes SDP namespace
+    Makefile:get_versions          lists the container images used for particular pods
+    Makefile:help                  show this help.
+    Makefile:install-or-upgrade    install or upgrade the release
+    Makefile:install               install the helm chart on the namespace KUBE_NAMESPACE
+    Makefile:k8s                   Which kubernetes are we connected to
+    Makefile:lint                  lint the HELM_CHART of the helm chart
+    Makefile:lint_all              lint ALL of the helm chart
+    Makefile:logs                  POD logs for descriptor
     ...
     make vars (+defaults):
-    dev-testing.mk:hostPort        2020
-    dev-testing.mk:k8_path         $(shell echo ~/.minikube)
-    dev-testing.mk:kube_path       $(shell echo ~/.kube)
-    Makefile:API_SERVER_IP         $(THIS_HOST)## Api server IP of k8s
-    
-    Makefile:API_SERVER_PORT       6443		# Api server port of k8s
+    Makefile:API_SERVER_IP         $(THIS_HOST)# Api server IP of k8s
+    Makefile:API_SERVER_PORT       6443# Api server port of k8s
+    Makefile:CHART_SET ?=#for additional flags you want to set when deploying (default empty) 
+    Makefile:CLIENT_ID             417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f# For the gangway kubectl setup, taken from Gitlab
+    Makefile:CLIENT_SECRET         27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f# For the gangway kubectl setup, taken from Gitlab
+    Makefile:CLUSTER_NAME          integration.cluster# For the gangway kubectl setup
+    Makefile:DEPLOYMENT_CONFIGURATION skamid## umbrella chart to work with
+    Makefile:DOMAIN_TAG            test## always set for TANGO_DATABASE_DS
 
 
-All the next deployments are deployed using using the same makefile.
+All the following deployments are deployed using using the same makefile.
 
 Deploy
 ------
 
-Deploy only one Helm Chart available at charts directory.
+Skampi enables the deployment of two separate products as charts
 
-Basic arguments:
+- **mvp-low:** (DEPLOYMENT_CONFIGURATION = skalow)
+- **mvp-mid:** (DEPLOYMENT_CONFIGURATION = skamid)
 
-- **KUBE_NAMESPACE** - integration **default**
-- **HELM_CHART** - tango-base **default**
-
-.. code-block:: bash
-
-    make deploy KUBE_NAMESPACE=integration HELM_CHART=tmc-proto
-
-
-Deploy All
-----------
-
-Deploy every helm chart inside charts directory.
-
-Basic parameters:
-
-- **KUBE_NAMESPACE** - integration **default**
+After setting the variable, run the following:
 
 .. code-block:: bash
 
-    make deploy_all KUBE_NAMESPACE=integration
-    
-    
-Deploy All with Order
----------------------
+    make install
 
-Deploy every helm chart inside charts directory order by its dependencies.
-
-Basic parameters:
-
-- **KUBE_NAMESPACE** - integration **default**
-- **DEPLOYMENT_ORDER** - tango-base cbf-proto csp-proto sdp-prototype tmc-proto oet webjive archiver dsh-lmc-prototype logging skuid **default**
+It isn't necessary to always delete and install from scratch once you have a running deployment
 
 .. code-block:: bash
 
-    make deploy_ordered KUBE_NAMESPACE=integration
+    make upgrade_chart
+
+The default release name (instance name of the chart) is *test*, change using env variable:
+
+**HELM_RELEASE=** *<your release name>*
+
+To uninstall :
+
+.. code-block:: bash
+
+    make uninstall
+
+To uninstall and the install from scratch:
+
+.. code-block:: bash
+
+    reinstall-chart
 
 
-Parameters
+VALUES
 ==========
  
-In SKAMPI, we separated the parameters into two levels. 
-The first one can change the behaviour of the makefile,
-and the second level can only change the arguments in each chart.
+The deployments of the low and mid charts are parametrized, enabling the user to have a wide degree of configuration choices. 
+These parameters (values in helm nomenclature) can be set by a user using different layers, each capable of overriding the lower one:
 
-Level 1
-------
+1.  Makefile: values are set based on variables within the makefile (e.g. `webjive.ingress.hostname` ) the default values of which can be set by the user upon calling the make targets.
 
-The first one is inside the Makefile of the repository and is the top priority 
-meaning that it overrides all the parameters in any level below. We have three ways
-to customize these parameters and they are prioritize in this order (from most to last
-important):
+2.  Values file: A user can define a values file that refer to values for the mid or low chart the location of which is set by the makefile variable  **VALUES**. (note the values file can also refer to values from specific subcharts but this should only be used during diagnostic work)
 
-1.  Command-line arguments - make deploy_ord **KUBE_NAMESPACE=integration**;
-2.  PrivateRules.mak - Create this file and add arguments. Ex: **HELM_CHART = logging**;
-3.  *Makefile* defaults - All the defaults are available by running **make** in the command-line.
 
-Please note that one of the parameter at this level is the *DEPLOYMENT_ORDER* which allow ability to select the charts needed 
-for a particular configuration of the deployment (the charts will be deployed in the order or this parameter). 
+The default values file can be found at `./values.yaml` while the values used for testing the pipeline is found under `pipeline.yaml`
 
-Level 2
--------
 
-The second level is specified with the 
-`Values Files <https://helm.sh/docs/chart_template_guide/values_files/>`_. 
-
-The priority file is the root directory and goes along the deploy commands with 
-*values.yaml* by default but that could change using the *VALUES* argument in the *makefile*.
-
-.. code-block:: bash
-
-    elastic:
-        enabled: false
-    fluentd:
-        enabled: false
-    kibana:
-        enabled: false
-    tests:
-        enabled: false
-    hdbppdb:
-        enabled: false
-    archiver:
-        enabled: false
-
-    minikube: true
-
-This root values file overrides the *values.yaml* file inside each chart. 
-All chart values files can also be changed to customize your deployment needs.
-
-In the skampi repository, there are 2 examples of values files, one that has everything 
-enabled (pipeline.yaml) and another one with has come charts disabled (values.yaml). 
-The latter disable the logging chart and the archiver chart and it has been thought for a 
-minikube environment. 
-
-Please note that the two values file represent the minimum charts needed (values.yaml) for running all the fast tests (mark=fast) while the other (pipeline.yaml) is the complete deployment of SKAMPI. 
-
-Forward Oriented Deployment
-===========================
-
-With the help of the above parameter levels it is possible to customize the deployment of SKAMPI.
-It is very important to note that it is possible to deploy the charts incrementally (forward oriented). 
 
 

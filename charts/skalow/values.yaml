@@ -72,3 +72,6 @@ webjive:
     enabled: true
     nginx: false
     hostname: low.integration.engageska-portugal.pt
+
+oet:
+  enabled: true

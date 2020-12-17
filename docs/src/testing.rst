@@ -3,12 +3,190 @@ Testing SKAMPI
 
 **This page is outdated, refer to the System Team for support.**
 
-The SKA MPI codebase ultimately holds all the information required to deploy and configure the complete prototype.
-This information is encapsulated as a collection of `Helm <https://helm.sh/>`_ charts, Makefiles and any other
-scripts, components to support its test and deployment.
+.. TODO::
+    fix this or remove everything that is outdated
 
-This page outlines the various categories of testing and approaches one can employ to test various aspects of SKA MPI prototype that can
-be implemented in this repository.
+This page outlines the various  testing approaches one can employ to test various aspects
+of SKA MPI prototype that can be implemented in this repository.
+
+.. TODO::
+    what are these approaches? we should list them here as an overview
+
+    we should also say who the intended stakeholders are; check that the following is correct
+
+The intended stakeholders of these pages are:
+
+*   **AIV engineers**, who may want to see what tests are there, may want to write new tests, may want to be able to
+    run them, may want to see existing test results.
+
+*   **Developers**, who may want to write new tests, to debug them and to run them.
+
+*   **Program managers**, who may want to see what tests are there, some of the test results.
+
+
+Test approaches
+----------------
+
+.. todo::
+    describe here the ways in which SKAMPI is being tested; this would include
+
+    - BDD tests
+    - pytest system tests
+    - (perhaps) integration testing of some subset of SKAMPI components
+    - manual testing
+
+SKAMPI as the System-under-Test (SUT)
+-------------------------------------
+
+.. todo::
+    describe here how to put together a version of SKAMPI that can be used as a SUT
+
+    - how to configure things so that they can be assembled/bundled together to form a system
+    - where to find the different components, their names and versions
+    - where to find the people who made them available
+    - what interfaces (human or programmable) are available and can be used for testing
+    - where does SKAMPI run? is it an isolated environment? is it a dedicated environment?
+
+How to assemble an instance of SKAMPI
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. todo::
+    Describe:
+
+    - what is the general procedure
+    - are there different objectives?
+
+        - for example to create an instance of skampi that I can use for a small amount of time
+        - or one that can last for days
+        - or one that can be shared with my peers
+
+    - what tools would I need?
+    - steps to follow
+    - how to check that it was done properly/do we have ``sanity checks``?
+
+    - are there variations?
+    - what can go wrong? and how to cope with it?
+    - to whom should I ask for help?
+
+
+.. todo::
+    Explain how to start and shutdown such a SKAMPI instance
+
+.. todo::
+    Explain how to set/reset such a SKAMPI, so that I can restart from fresh
+
+
+
+Existing BDD tests
+-----------------------
+
+`Behaviour-Driven Development <https://en.wikipedia.org/wiki/Behavior-driven_development>`_ is an approach to the
+development of software that is based on tests that
+specify the expected behaviour of the SUT. These tests are based on concrete examples and are often expressed
+in the `Gherkin language <https://en.wikipedia.org/wiki/Cucumber_(software)#Gherkin_language>`_.
+The steps in these test scenarios need to be automated by using appropriate libraries or frameworks (for example in pytest).
+
+
+.. todo::
+    Describe:
+
+    - give an outline of the different kinds of BDD tests that there are
+    - provide 1-2 examples
+    - where the BDD tests are stored; put a link to the gitlab repo folder
+    - put a link also to the code that automates them
+
+Existing pytest tests
+------------------------
+
+.. todo::
+    Describe here what other tests exists now
+
+    - provide links to where they are stored
+
+Existing test results
+-------------------------
+
+.. todo::
+    Describe where to look for test execution reports
+
+    - maybe gitlab pipelines
+
+    - maybe xray test executions in jira
+
+How to run existing tests
+-------------------------
+
+.. todo::
+    Provide details on how to run CI pipelines, and how to specify appropriate details so that
+    different tests can be choosen or different data can be choosen or different SUTs can be choosen
+
+    - which gitlab params can be used?
+    - which other interfaces/tools can I use to run existing tests?
+
+        - iPython
+        - pycharm
+        - vscode
+
+    - explain how to configure them and how to run them
+    - explain how to connect them to the SUT
+    - explain how to run tests using them
+    - can I select single tests?
+    - can I select test sets?
+
+    - are there constraints on tests?
+
+        - some tests cannot be run together?
+        - some tests cannot be run on certain SUTs?
+        - some tests require some priviledge?
+
+Data used by tests
+----------------------
+
+.. todo::
+    describe here our approach to handling *eference data* or other *test data* that are used by tests
+
+    - where are the data being stored?
+    - how can they be used/referenced in test scripts?
+
+
+.. glossary::
+
+Reference data
+    These are data stored inside the SUT that are needed for the tests to run
+    but that the tests themselves do not modify. For example, predefined user credentials could be
+    examples of reference data, or predefined Subarray IDs.
+
+Test data
+    These are data that are used in test scripts and that are used to drive the SUT or to check its outputs. Test data
+    can be changed by test scripts.
+
+
+How to write new tests
+-------------------------
+
+.. todo::
+
+    - what tools to use?
+    - how to configure them?
+    - where do I store/commit my tests?
+
+
+How to write BDD tests
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. todo::
+
+
+
+
+
+
+OLD STUFF
+============
+
+.. note::
+    this is the original content of this page. We should reuse anything of this if it useful.
+
 
 Minikube Testing Environment - EngageSKA Openstack
 --------------------------------------------------

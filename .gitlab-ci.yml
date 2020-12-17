@@ -31,9 +31,34 @@ stages:
     variables:
       - $DELETE == "true"
 
+.create_credentials_template: &create_credentials_definition
+  tags:
+  - k8srunner
+  variables:
+  - # KUBE_NAMESPACE: ci-dev-$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME-$CI_COMMIT_SHORT_SHA
+  - SERVICE_ACCOUNT: ci-svc-$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME-$CI_COMMIT_SHORT_SHA
+  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+  script:
+  - &create_k8s_creds |
+    curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/st-559-publish-credentials/scripts/namespace_auth.sh | $SERVICE_ACCOUNT $KUBE_NAMESPACE
+  before_script:
+  - apt-get -y update
+  - apt-get install -y curl ca-certificates --no-install-recommends
+  only:
+    refs:
+    - merge_requests
+    # - branches
+    environment:
+      kubernetes:
+        namespace: $KUBE_NAMESPACE
+
 .uninstall_template_after_script: &uninstall_definition_after_script
   after_script:
   - *uninstall_scripts
+
+.create_credentials_after_script: &create_k8s_creds_after_script
+  after_script:
+  - *create_k8s_creds
 
 uninstall mid:
   stage: clean
@@ -104,6 +129,7 @@ test mid on demand:
     INGRESS_HOST: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
   <<: *test_definition
   <<: *uninstall_definition_after_script
+  <<: *create_k8s_creds_after_script
   environment:
     name: "test"
     url: "http://ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
@@ -145,6 +171,7 @@ test low on demand:
     INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
   <<: *test_definition
   <<: *uninstall_definition_after_script
+  <<: *create_k8s_creds_after_script
   environment:
     name: "test-low"
     url: "http://ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"

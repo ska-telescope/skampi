@@ -19,3 +19,6 @@ minikube: true
 
 webjive:
   minikube: true
+
+oet-scripts:
+  enabled: true

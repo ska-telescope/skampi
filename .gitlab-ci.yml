@@ -165,7 +165,7 @@ test-st-579:
     KUBE_NAMESPACE_SDP: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
     INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
   tags:
-  - st-579
+  - st-565
   script:
   - echo "Testing ST-579"
   - echo "$TEST_VAR"

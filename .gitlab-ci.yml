@@ -169,11 +169,7 @@ test-st-579:
   tags:
   - st-565
   script:
-  - echo "Testing ST-579"
-  - echo "$TEST_VAR"
-  - ls
-  - ls /
-  - pwd
+  - env
   only:
     refs:
       - branches

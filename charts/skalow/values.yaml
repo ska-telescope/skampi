@@ -75,3 +75,5 @@ webjive:
 
 oet-scripts:
   enabled: true
+  ingress:
+    hostname: low.integration.engageska-portugal.pt

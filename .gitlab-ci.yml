@@ -169,7 +169,7 @@ test-st-579:
   tags:
   - st-565
   script:
-  - env
+  - echo "My Test Script"
   only:
     refs:
       - branches

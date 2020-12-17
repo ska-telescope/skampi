@@ -168,8 +168,6 @@ test-st-579:
     name: "test-low"
   tags:
   - st-565
-  script:
-  - env
   only:
     refs:
       - branches

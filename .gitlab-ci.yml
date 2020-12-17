@@ -164,6 +164,8 @@ test-st-579:
     KUBE_NAMESPACE: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
     KUBE_NAMESPACE_SDP: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
     INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
+  environment:
+    name: "test-low"
   tags:
   - st-565
   script:

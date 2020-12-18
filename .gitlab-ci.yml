@@ -77,6 +77,37 @@ st-565:
     refs:
       - branches
 
+ugur-test:
+  tags:
+  - st-565
+  stage: test
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "ugur"
+    KUBE_NAMESPACE_SDP: "ugur"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+  script:
+  - echo "HELOOO"
+  environment:
+    name: "test-low"
+  only:
+    refs:
+      - branches
+
+diogo-test:
+  tags:
+  - st-565
+  stage: test
+  variables:
+    HELM_RELEASE: "test-low"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+  script:
+  - echo "HELOOO"
+  environment:
+    name: "test-low"
+  only:
+    refs:
+      - branches
   
 .test_template: &test_definition
   tags:

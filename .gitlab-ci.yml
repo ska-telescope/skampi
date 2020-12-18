@@ -16,7 +16,7 @@ stages:
 
 .uninstall_template: &uninstall_definition
   tags:
-  - k8srunner
+  - st-565
   script:
   - &uninstall_scripts |
     make uninstall
@@ -35,6 +35,8 @@ stages:
   - *uninstall_scripts
 
 uninstall mid:
+  tags:
+  - st-565
   stage: clean
   variables:
     HELM_RELEASE: "test-mid"
@@ -46,6 +48,8 @@ uninstall mid:
     name: "test"
 
 uninstall low:
+  tags:
+  - st-565
   stage: clean
   variables:
     HELM_RELEASE: "test-low"
@@ -58,7 +62,7 @@ uninstall low:
 
 .test_template: &test_definition
   tags:
-  - k8srunner
+  - st-565
   script:
   - make install-or-upgrade
   - make smoketest
@@ -73,6 +77,8 @@ uninstall low:
     when: always
 
 test mid:
+  tags:
+  - st-565
   stage: test
   variables:
     HELM_RELEASE: "test-mid"
@@ -92,6 +98,8 @@ test mid:
       - master
 
 test mid on demand:
+  tags:
+  - st-565
   stage: test
   variables:
     DEPLOYMENT_CONFIGURATION: "skamid"
@@ -114,6 +122,8 @@ test mid on demand:
       - branches
 
 test low:
+  tags:
+  - st-565
   stage: test
   variables:
     HELM_RELEASE: "test-low"
@@ -133,6 +143,8 @@ test low:
       - master
 
 test low on demand:
+  tags:
+  - st-565
   stage: test
   variables:
     DEPLOYMENT_CONFIGURATION: "skalow"
@@ -154,29 +166,10 @@ test low on demand:
     refs:
       - branches
 
-test-st-579:
-  stage: test
-  variables:
-    DEPLOYMENT_CONFIGURATION: "skalow"
-    MARK: "skalow or common"
-    HELM_RELEASE: "test-low-$CI_COMMIT_SHORT_SHA"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
-    INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
-  environment:
-    name: "test-low"
-  tags:
-  - st-565
-  script:
-  - echo "My Test Script"
-  only:
-    refs:
-      - branches
 
 .sdp_config_dump_template: &sdp_config_dump_definition
   tags:
-  - docker-executor
+  - st-565
   script:
   - kubectl exec -n $KUBE_NAMESPACE sdp-console-0 -- sdpcfg ls values -R / > sdp.config.json
   when: manual
@@ -185,6 +178,8 @@ test-st-579:
     - sdp.config.json
 
 sdp_config_dump_mid:
+  tags:
+  - st-565
   stage: debug
   variables:
     KUBE_NAMESPACE: "integration-mid"
@@ -202,7 +197,7 @@ sdp_config_dump_mid:
 tag_commit:
   stage: release
   tags:
-    - k8srunner
+    - st-565
   when:
     manual
   needs:
@@ -222,7 +217,7 @@ clean_staging_low:
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
   tags:
-    - k8srunner
+    - st-565
   only:
     refs:
       - tags
@@ -240,7 +235,7 @@ clean_staging_mid:
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
   tags:
-    - k8srunner
+    - st-565
   only:
     refs:
       - tags
@@ -264,7 +259,7 @@ deploy_staging_low:
     kubernetes:
       namespace: $KUBE_NAMESPACE
   tags:
-    - k8srunner
+    - st-565
   script:
     - make install-or-upgrade
     - make smoketest
@@ -289,7 +284,7 @@ deploy_staging_mid:
     kubernetes:
       namespace: $KUBE_NAMESPACE
   tags:
-    - k8srunner
+    - st-565
   script:
     - make install-or-upgrade
     - make smoketest
@@ -301,6 +296,8 @@ deploy_staging_mid:
     - job: clean_staging_low
 
 xray_report:
+  tags:
+  - st-565
   stage: post_test
   tags:
   - docker-executor

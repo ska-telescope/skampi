@@ -6,13 +6,13 @@ metadata:
 spec:
   limits:
   - default:
-      memory: 128Mi
-      cpu: 100m
-      ephemeral-storage: 100Mi
+      memory: 256Mi
+      cpu: 200m
+      ephemeral-storage: 256Mi
     defaultRequest:
-      memory: 128Mi
-      cpu: 100m
-      ephemeral-storage: 100Mi
+      memory: 64Mi
+      cpu: 65m
+      ephemeral-storage: 256Mi
     type: Container
 
 ---
@@ -23,9 +23,9 @@ metadata:
 spec:
   hard:
     pods: "250"
-    requests.cpu: 16000m
+    requests.cpu: 12000m
     requests.memory: 16Gi
-    requests.ephemeral-storage: 15Gi
-    limits.cpu: 16000m
-    limits.memory: 16Gi
-    limits.ephemeral-storage: 20Gi
+    requests.ephemeral-storage: 25Gi
+    limits.cpu: 24000m
+    limits.memory: 32Gi
+    limits.ephemeral-storage: 50Gi

@@ -35,6 +35,8 @@ Test approaches
     - (perhaps) integration testing of some subset of SKAMPI components
     - manual testing
 
+
+
 SKAMPI as the System-under-Test (SUT)
 -------------------------------------
 
@@ -75,6 +77,17 @@ How to assemble an instance of SKAMPI
 .. todo::
     Explain how to set/reset such a SKAMPI, so that I can restart from fresh
 
+The life-cycle of tests
+------------------------
+
+.. todo::
+    describe what is the life-cycle of tests, and specifically:
+
+    - who and when creates a test
+    - is there a qualification period for a test?
+    - do we have WIP tests that are expected to fail?
+    - do we put tests in "quarantine"?
+    - when do we discard/retire a test?
 
 
 Existing BDD tests

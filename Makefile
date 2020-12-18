@@ -153,7 +153,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
         --set archiver.xauthority="$(XAUTHORITYx)" \
     	--set logging.ingress.hostname=$(INGRESS_HOST) \
         --set logging.ingress.nginx=$(USE_NGINX) \
-        --set oet.ingress.hostname=$(INGRESS_HOST) \
+        --set oet-scripts.ingress.hostname=$(INGRESS_HOST) \
         --set oet.ingress.nginx=$(USE_NGINX) \
         --set skuid.ingress.hostname=$(INGRESS_HOST) \
         --set skuid.ingress.nginx=$(USE_NGINX) \

@@ -164,6 +164,8 @@ test low:
 
 test_creds:
   stage: test
+  tags:
+    - k8srunner
   variables:
     KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
     SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"

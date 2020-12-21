@@ -3,6 +3,7 @@ image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
 variables:
   MINIKUBE: "false"
   VALUES: "pipeline.yaml"
+  CHARTS_TO_PUBLISH: skalow skamid
 
 stages:
   - clean
@@ -30,9 +31,34 @@ stages:
     variables:
       - $DELETE == "true"
 
+.create_credentials_template: &create_credentials_definition
+  tags:
+  - k8srunner
+  variables:
+  # - KUBE_NAMESPACE: ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
+  - SERVICE_ACCOUNT: ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
+  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+  before_script:
+  - &create_k8s_cred_dependencies |
+    apt-get -y update
+    apt-get install -y curl ca-certificates jq --no-install-recommends
+  script:
+  - &create_k8s_creds |
+    curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE
+  only:
+    refs:
+    - branches
+    environment:
+      kubernetes:
+        namespace: $KUBE_NAMESPACE
+
 .uninstall_template_after_script: &uninstall_definition_after_script
   after_script:
   - *uninstall_scripts
+
+.create_credentials_after_script: &create_k8s_creds_after_script
+  after_script:
+  - *create_k8s_creds
 
 uninstall mid:
   stage: clean
@@ -98,16 +124,20 @@ test mid on demand:
     MARK: "skamid or common"
     HELM_RELEASE: "test-mid-$CI_COMMIT_SHORT_SHA"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
+    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
     INGRESS_HOST: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
+    SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
+  before_script:
+    - *create_k8s_cred_dependencies
   <<: *test_definition
-  <<: *uninstall_definition_after_script
+  <<: *create_k8s_creds_after_script
   environment:
     name: "test"
     url: "http://ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
     kubernetes:
-      namespace: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
   when: manual
   only:
     refs:
@@ -139,16 +169,20 @@ test low on demand:
     MARK: "skalow or common"
     HELM_RELEASE: "test-low-$CI_COMMIT_SHORT_SHA"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
+    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low-sdp"
     INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
+    SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
+  before_script:
+    - *create_k8s_cred_dependencies
   <<: *test_definition
-  <<: *uninstall_definition_after_script
+  <<: *create_k8s_creds_after_script
   environment:
     name: "test-low"
     url: "http://ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
     kubernetes:
-      namespace: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
   when: manual
   only:
     refs:
@@ -293,12 +327,15 @@ xray_report:
   only: [master]
   retry: 2
 
-
-variables:
-  CHARTS_TO_PUBLISH: skalow skamid
 include:
 # Helm Chart Publish
 # https://developer.skatelescope.org/en/latest/development/software_package_release_procedure.html#package-and-publish-helm-charts-to-the-ska-helm-chart-repository
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/helm_publish.yml'
+
+# - project: 'ska-telescope/templates-repository'
+# #   this, ref, needs to be deleted after the branch in the templates-repository is deleted
+#   ref: st-559-publish-credentials
+#   file: 'gitlab-ci/includes/create_k8s_creds.yml'
+
 

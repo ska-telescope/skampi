@@ -162,6 +162,29 @@ test low:
     refs:
       - master
 
+test_creds:
+  stage: test
+  variables:
+    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
+    SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
+  before_script:
+    - *create_k8s_cred_dependencies
+  script:
+    - echo "Testing credentials"
+    - kubectl create ns $KUBE_NAMESPACE
+  <<: *create_k8s_creds_after_script
+  environment:
+    name: "test-low"
+    url: "http://ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
+  when: manual
+  only:
+    refs:
+      - branches
+
+
 test low on demand:
   stage: test
   variables:

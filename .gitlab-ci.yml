@@ -125,18 +125,18 @@ test mid on demand:
     MARK: "skamid or common"
     HELM_RELEASE: "test-mid-$CI_COMMIT_SHORT_SHA"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
-    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low-sdp"
+    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
     INGRESS_HOST: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
     SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
   <<: *test_definition
-  <<: *uninstall_definition_after_script
   <<: *create_k8s_creds_after_script
   environment:
     name: "test"
     url: "http://ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
     kubernetes:
-      namespace: $KUBE_NAMESPACE
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
   when: manual
   only:
     refs:
@@ -173,13 +173,13 @@ test low on demand:
     INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
     SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
   <<: *test_definition
-  <<: *uninstall_definition_after_script
   <<: *create_k8s_creds_after_script
   environment:
     name: "test-low"
     url: "http://ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
     kubernetes:
-      namespace: $KUBE_NAMESPACE
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
   when: manual
   only:
     refs:

@@ -124,9 +124,10 @@ test mid on demand:
     MARK: "skamid or common"
     HELM_RELEASE: "test-mid-$CI_COMMIT_SHORT_SHA"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
+    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low-sdp"
     INGRESS_HOST: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
+    SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
   <<: *test_definition
   <<: *uninstall_definition_after_script
   <<: *create_k8s_creds_after_script
@@ -134,7 +135,7 @@ test mid on demand:
     name: "test"
     url: "http://ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
     kubernetes:
-      namespace: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
+      namespace: $KUBE_NAMESPACE
   when: manual
   only:
     refs:
@@ -166,9 +167,10 @@ test low on demand:
     MARK: "skalow or common"
     HELM_RELEASE: "test-low-$CI_COMMIT_SHORT_SHA"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE_SDP: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA-sdp"
+    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
+    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low-sdp"
     INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
+    SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
   <<: *test_definition
   <<: *uninstall_definition_after_script
   <<: *create_k8s_creds_after_script
@@ -176,7 +178,7 @@ test low on demand:
     name: "test-low"
     url: "http://ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
     kubernetes:
-      namespace: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
+      namespace: $KUBE_NAMESPACE
   when: manual
   only:
     refs:

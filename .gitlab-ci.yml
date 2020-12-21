@@ -171,15 +171,13 @@ test_creds:
     - *create_k8s_cred_dependencies
   script:
     - echo "Testing credentials"
-    - kubectl create ns $KUBE_NAMESPACE
   <<: *create_k8s_creds_after_script
   environment:
-    name: "test-low"
-    url: "http://ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
+    name: "test-creds"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
-  when: manual
+  when: always
   only:
     refs:
       - branches

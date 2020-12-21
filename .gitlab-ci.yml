@@ -35,20 +35,19 @@ stages:
   tags:
   - k8srunner
   variables:
-  - # KUBE_NAMESPACE: ci-dev-$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME-$CI_COMMIT_SHORT_SHA
-  - SERVICE_ACCOUNT: ci-svc-$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME-$CI_COMMIT_SHORT_SHA
+  # - KUBE_NAMESPACE: ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
+  - SERVICE_ACCOUNT: ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
   before_script:
-  - apt-get -y update
-  - apt-get install -y curl ca-certificates --no-install-recommends
+  - &create_k8s_cred_dependencies |
+    apt-get -y update
+    apt-get install -y curl ca-certificates jq --no-install-recommends
   script:
   - &create_k8s_creds |
-    apt install -y jq
     curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/st-559-publish-credentials/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE
   only:
     refs:
-    - merge_requests
-    # - branches
+    - branches
     environment:
       kubernetes:
         namespace: $KUBE_NAMESPACE
@@ -129,6 +128,8 @@ test mid on demand:
     KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
     INGRESS_HOST: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
     SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
+  before_script:
+    - *create_k8s_cred_dependencies
   <<: *test_definition
   <<: *create_k8s_creds_after_script
   environment:
@@ -172,6 +173,8 @@ test low on demand:
     KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low-sdp"
     INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
     SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
+  before_script:
+    - *create_k8s_cred_dependencies
   <<: *test_definition
   <<: *create_k8s_creds_after_script
   environment:

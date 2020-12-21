@@ -189,10 +189,14 @@ You can access the namespaces that are created in the pipeline to investigate an
 
 You'll see a `curl` output in the pipeline output towards the end:
 
-'''
-You can get the kubeconfig file from the url: "https://nexus.engageska-portugal.pt/repository/k8s-ci-creds/k8s-ci-ci-test-svc-skampi-st-559-publish-credentials-12e1c424-ci-test-skampi-st-559-publish-credentials-12e1c424-low-conf" with the following command into your current directory in a file called KUBECONFIG:
+```
+Example:
+
+You can get the kubeconfig file from the url: 
+"https://nexus.engageska-portugal.pt/repository/k8s-ci-creds/k8s-ci-ci-test-svc-skampi-st-559-publish-credentials-12e1c424-ci-test-skampi-st-559-publish-credentials-12e1c424-low-conf" 
+with the following command into your current directory in a file called KUBECONFIG:
 	curl https://nexus.engageska-portugal.pt/repository/k8s-ci-creds/k8s-ci-ci-test-svc-skampi-st-559-publish-credentials-12e1c424-ci-test-skampi-st-559-publish-credentials-12e1c424-low-conf --output KUBECONFIG
-'''
+```
 
 This kubeconfig file is auto-generated to easily access the namespace created for the pipeline.
 
@@ -206,5 +210,6 @@ This is enabled with adding `create_k8s_creds_after_script` to the `after_script
 - `CI_PROJECT_NAME` and `CI_COMMIT_BRANCH` variables must be accessible. Note: These are already available in gitlab pipelines.
 - The namespaces are deleted after 24 hours they are created
 - The namespaces are deleted if there is recent commit on the branch (The previous namespaces for the same branch/MR are deleted) so that there is only one namespace which is pointing to the recent commit in the branch
-- Kubernetes namespaces **must** start with `ci-test-<project_name>-<branch_name>-` since same namespaces for the previous commits are deleted! Note: It doesn't check whether your namespace name is following the above naming!
+- Kubernetes namespaces **must** start with `ci-test-<project_name>-<branch_name>-*` since same namespaces for the previous commits are deleted! Note: It doesn't check whether your namespace name is following the above naming!
 - The URL to access the kubeconfig is only valid for 24 hours
+- The script uses `jq` to parse json from kubernetes so you may include `create_k8s_creds_dependencies` in the `before_script` part. (See `test low/mid on demand` job definitions for a full example)

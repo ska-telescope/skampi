@@ -44,7 +44,7 @@ stages:
     apt-get install -y curl ca-certificates jq --no-install-recommends
   script:
   - &create_k8s_creds |
-    curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/st-559-publish-credentials/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE
+    curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE
   only:
     refs:
     - branches
@@ -161,29 +161,6 @@ test low:
   only:
     refs:
       - master
-
-test_creds:
-  stage: test
-  tags:
-    - k8srunner
-  variables:
-    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
-    SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
-  before_script:
-    - *create_k8s_cred_dependencies
-  script:
-    - echo "Testing credentials..."
-  <<: *create_k8s_creds_after_script
-  environment:
-    name: "test-creds"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
-  when: always
-  only:
-    refs:
-      - branches
-
 
 test low on demand:
   stage: test

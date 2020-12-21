@@ -172,7 +172,7 @@ test_creds:
   before_script:
     - *create_k8s_cred_dependencies
   script:
-    - echo "Testing credentials"
+    - echo "Testing credentials..."
   <<: *create_k8s_creds_after_script
   environment:
     name: "test-creds"

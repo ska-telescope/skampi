@@ -1,5 +1,13 @@
 release=0.1.0
 tag=0.1.0
-tag_description=
-release_notes=This release Contains: <br/><ul><li>First release of Skampi Umbrella charts to Nexus</li></ul><br/>
+tag_description=skampi release for PI9 sprint 1
+release_notes=This release Contains: <br/><ul>
+<li>Updates to pipelines allowing automatic deployment to staging and publishing of helm charts (ST-553) </li>
+<li>Updates to resource ranges and limits for K8 deployment (ST-565) </li>
+<li>Updates to resource ranges and limits for K8 deployment (ST-565) </li>
+<li>Allow pubishing of credentials of the newly created namespace as an output in the pipeline </li>
+<li>Update ska-low-mccs 0.3.0 to 0.4.0 (ska-low) </li>
+<li>Add oet scripts sub chart (rev 0.3.0) in ska-low with providing jupyter tool </li>
+<li>Disabled faulty tests giving intermittent failures as per reported bugs: SKB-16-SKB22</li>
+</ul><br/>
 private_token=RXi1zFTyHZxEunz8Zy6x

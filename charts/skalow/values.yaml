@@ -34,7 +34,7 @@ tango-base:
     resources:
       requests:
         cpu: 100m     # 100m = 0.1 CPU
-        memory: 256Mi # 256Mi = 0.25 GB mem
+        memory: 128Mi # 256Mi = 0.25 GB mem
         ephemeral-storage: 256Mi
       limits:
         cpu: 200m     # 100m = 0.1 CPU
@@ -71,4 +71,9 @@ webjive:
   ingress:
     enabled: true
     nginx: false
+    hostname: low.integration.engageska-portugal.pt
+
+oet-scripts:
+  enabled: true
+  ingress:
     hostname: low.integration.engageska-portugal.pt

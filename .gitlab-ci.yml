@@ -217,8 +217,7 @@ tag_commit:
   stage: release
   tags:
     - k8srunner
-  when:
-    manual
+  when: manual
   needs:
     - job: publish-chart
   only:

@@ -242,13 +242,18 @@ artifacts are deployed (2) those provide by test artifacts needed to run tests i
 (3) those that are part of the SUT itself.
 
 (1) consists of the client software (helm and kubectl) that the user can use to perform
-life cycle actions on the applications. 
+life cycle actions on the applications. In addition the user can also make use of logging
+systems connected externally to the environment to assist in investigating faults:
+
+    -   **Kibana:** Gathers logs from all components running on remote cluster
+    -   **EDA:** Gathers state of artifacts running on cluster (coming soon)
 
 .. note:
 
     Staging and Pipeline Testing environments do not have public interfaces to the
     execution environments. Thus users will not have the ability to deploy or redeploy
-    SUTs manually.
+    SUTs manually but will be able to investigate a failure using the provided logging 
+    facilities.
 
 
 (2) consists of the means for controlling the execution of tests on the deployed testing
@@ -342,47 +347,100 @@ will be verified again to be passing on the master pipeline. At the end of sprin
 merged feature will form part of the released SKAMPI into staging which the developer
 can use to demonstrate to outside stakeholders.
 
-2 I want investigate a potential bug on the skampi
+2 I want investigate a potential bug on the SKAMPI
 .......................................................................................
 
-3 I want to understand the current functionality of skampi artifacts
+If a potential issue was raised indicating a possible bug,in general the user would want to be
+able to do two types of things on SKAMPI: (1) replicate the fault condition to the extend that
+the input steps can be exactly specified to consistently reproduce the condition. 2) change
+the input steps and artifact composition until the failure is not present. The required changes
+in steps and or composition will then be used to allocate failure responsibility.
+
+In more specific terms the investigator may need to create a new test (if the failure was detected
+by means of demonstration only) this requires deployment in either a development or integration test
+environment. Depending on the nature of the test, an investigator may need to be able to observe 
+specific states of the SUT and look for error/inconsistent values. This requires log gathering tools that
+allows filtering information according to specific patterns. The log gathering can either be those
+provided by the cluster itself or those used by tests using the skallop library.
+
+Using the knowledge gained from observing the state, the investigator can now experiment with changing the 
+test and or composition of SUT and look for changes in state. At some point the analysis my get to
+the point where the fault is known to the extend that the required changes can either be made
+immediately or specified exactly.
+
+3 I want to understand the current functionality of SKAMPI artifacts
 .......................................................................................
 
-4 I want to perform a particular integration tests between two particular subsystems on skampi
+The best way to understand the system is to attempt to perform operational tasks on it. The user will
+attempt to achieve certain jobs (e.g. assign resources to a sub array) by following roughly the 
+documentation provided by that application. The best environment to perform this is the staging 
+environment using teh provided webjive GUIs.
+
+4 I want to perform a particular integration test between two particular subsystems on SKAMPI
 ..............................................................................................
 
-4 I want to develop new or refactor old tests that verifies existing functionality of skampi
+The user would want to be able to have exact control over the configuration (VALUES) file and the
+life cycle commands of the SUT (install, upgrade, uninstall, re-install). In essence the integration
+test consists of updating the versions of the two sub charts needing to interact in the integration
+test. A special test may need to be written taking into account dependencies on systems that fall 
+outside the system under test. The integration test environment is ideally suited for these types
+of tests.
+
+
+4 I want to develop new or refactor old tests that verifies existing functionality of SKAMPI
 ..............................................................................................
+Here the user is not too much concerned with updating the the SUT and thus need not even have to
+use SKAMPI makefile targets to send life cycle commands for the SUT. However, errors in tests 
+may often lead to failing the SUT in such a way that re deployment is the only way forward. The
+user would also prefer to have an IDE attached to a kubernetes resource running in the cluster so
+that he can have access to debug services whilst executing commands on the SUT. The integration and
+development environments are ideally suited for these kind of tasks.
 
-
-
-.. todo::
-    Describe:
-
-    - what is the general procedure
-    - are there different objectives?
-
-        - for example to create an instance of skampi that I can use for a small amount of time
-        - or one that can last for days
-        - or one that can be shared with my peers
-
-    - what tools would I need?
-    - steps to follow
-    - how to check that it was done properly/do we have ``sanity checks``?
-
-    - are there variations?
-    - what can go wrong? and how to cope with it?
-    - to whom should I ask for help?
-
-
-.. todo::
-    Explain how to start and shutdown such a SKAMPI instance
-
-.. todo::
-    Explain how to set/reset such a SKAMPI, so that I can restart from fresh
 
 The life-cycle of tests
 ------------------------
+
+The nature and purpose of tests changes according to how the maturity of the system evolves for a given
+set of functionalities. In addition the maturity of the test itself and the platform and artifacts used
+by the tests also changes over the course of time.
+
+The first item that needs to mature is the dependant testing packages (3d party as well as local) used by
+testing code. Even though changes to these items evolves continuously, their usages in tests are limited
+in number until they have reached a certain amount of stability. For example the skallop library is being
+introduced at a relatively slow pace into existing tests to ensure the maturity is higher than the test itself
+using it.
+
+The next item that matures is the test it self. Their growth in maturity should always precede that of the the SUT, 
+even though both follow each other in a close manner. This is because tests are often tightly coupled with functionality
+in order to pick up regression failures, requiring constant changes in order to be in sync with updated 
+functionality. Thus in the beginning there is a relatively high likelihood of failures being False positives, 
+especially since the needed SUT functionality upon which tests can be validated may not even exist in 
+the beginning. For this reason it is desired for tests to be as simple as possible, relying on underlying 
+stable testing infrastructure for performing the complex parts of the routines.
+
+After tests become more stable in outcomes, the focus shifts towards functionality of the SUT. In the early growth stages of a
+certain set of functionalities, tests are often required to focus on the technical details of how they are realized;
+verifying the basic usage of technologies is correct. As these tests passes more consistently, the focus shifts towards end user
+behavior, becoming more high level in their description over time. The usefulness of technology focused tests diminishes, often being
+removed in order to prevent false positives caused by changes in functionalities.
+
+However, during this stage certain latent defects in the SUT may start to emerge due to (1) tests becoming more accurate, revealing 
+previously hidden defects, and (2) probability of certain permutations occurring more likely over time. This may require specialized
+type of tests and environments to ensure test failures can be replicated and the underlying conditions observed more closely.
+
+During the mature stage of the SUT for a particular set of functionalities, the value of having low level technical
+tests becomes less and less and may be retired; alternatively they may become less tightly coupled to the SUT so as 
+to prevent false positives.
+
+During the final stages of a given set of SUT functionalities, the reverse starts to happen as features become deprecated
+and technologies become obsolete, causing an increase in reported failures. Certain tests will then need to be purposefully 
+retired in accordance with the deprecation of features and changes in technologies. These changes may not always happen 
+seamlessly and require some work in figuring out relationships between tests and retired functionality. It is for this reason
+that some form of traceability be maintained between tests and specific features and abilities of the system. Another useful 
+metric in assisting change management of obsolescence is to track the amount of references made to certain low level services
+in use by higher level systems intending to deliver end user value. Services and parts that are never used by systems delivering
+end to end failures are often prime candidates for being deprecated.
+
 
 .. todo::
     describe what is the life-cycle of tests, and specifically:
@@ -540,7 +598,7 @@ a development environment and the SHAMPI environment:
     git clone https://gitlab.com/ska-telescope/ansible-playbooks.git
     cd ansible-playbooks
     ansible-playbook -i hosts deploy_tangoenv.yml
-    ansible-playbook -i hosts deploy_skampi.yml
+    ansible-playbook -i hosts deploy_SKAMPI.yml
 
 Verify if everything is running using ``kubectl get services -n integration``:
 
@@ -571,14 +629,14 @@ Finally, download the SKAMPI repository and run the test in minikube:
 
 .. code-block:: bash
 
-    #Remove the existing skampi directory
-    sudo rm -rd skampi/
+    #Remove the existing SKAMPI directory
+    sudo rm -rd SKAMPI/
     # Download and run test
-    git clone https://gitlab.com/ska-telescope/skampi.git
+    git clone https://gitlab.com/ska-telescope/SKAMPI.git
     cd ansible-playbooks
     ansible-playbook deploy_minikube.yml 
     cd .. 
-    cd skampi/
+    cd SKAMPI/
     make deploy_all KUBE_NAMESPACE=integration
 
 
@@ -590,11 +648,11 @@ At the moment 3 k8s multi-node clusters are available for testing purpose:
 | Cluster name             | Information                                                                                               |
 +==========================+===========================================================================================================+
 | *engageska-k8s-master*   | - 1 master, 4 worker nodes                                                                                |
-|                          | - working in the skampi pipeline                                                                          |
+|                          | - working in the SKAMPI pipeline                                                                          |
 |                          | - A&A not available                                                                                       |
 +--------------------------+-----------------------------------------------------------------------------------------------------------+
 | *engageska-k8s-v2*       | - 1 master, 2 worker nodes                                                                                |
-|                          | - working in the skampi pipeline                                                                          |
+|                          | - working in the SKAMPI pipeline                                                                          |
 |                          | - A&A available. To work with it the file /etc/hosts has to be modified with the following lines:         |
 |                          | .. code-block:: bash                                                                                      |
 |                          |                                                                                                           |
@@ -602,7 +660,7 @@ At the moment 3 k8s multi-node clusters are available for testing purpose:
 |                          |                                                                                                           |
 +--------------------------+-----------------------------------------------------------------------------------------------------------+
 | *kubernetes-cipro*       | - 1 master, 2 worker nodes                                                                                |
-|                          | - not working in the skampi pipeline                                                                      |
+|                          | - not working in the SKAMPI pipeline                                                                      |
 |                          | - A&A available. To work with it the file /etc/hosts has to be modified with the following lines:         |
 |                          | .. code-block:: bash                                                                                      |
 |                          |                                                                                                           |
@@ -667,7 +725,7 @@ and select ``Remote-SSH: Connect to Host...`` and select the ``connection-name``
 Connect to Kubernetes - Option 2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The tango-base chart available in the skampi repository defines an ssh service which can be used within the vscode extension. The service is deployed in the same IP as the host machine and the port can be discovered with the command ``kubectl get services -n integration`` which will give you the following output:
+The tango-base chart available in the SKAMPI repository defines an ssh service which can be used within the vscode extension. The service is deployed in the same IP as the host machine and the port can be discovered with the command ``kubectl get services -n integration`` which will give you the following output:
 
 .. code-block:: bash
 

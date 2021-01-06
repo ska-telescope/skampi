@@ -1,55 +1,192 @@
 Testing SKAMPI 
 ==============
 
-**This page is outdated, refer to the System Team for support.**
+This page outlines the various  testing approaches to perform on the artifacts (e.g. SKA
+Mid and SKA Low) produced from SKAMPI.
 
-.. TODO::
-    fix this or remove everything that is outdated
+.. attention::
+    **Any purported capability, feature or characteristic claimed to exist on the
+    deliverable artifacts must be "backed up" by objective tests passing when executed
+    on the artifacts**
 
-This page outlines the various testing approaches one can employ to test various aspects
-of SKA MPI prototype that can be implemented in this repository.
+Therefore the primary aim of tests on SKAMPI is to **describe** the current characteristics
+for artifacts delivered from a particular version of SKAMPI].
 
-.. TODO::
-    what are these approaches? we should list them here as an overview
+SKAMPI should be seen as the final stage of developed software before delivery and
+connection with real telescope hardware. At this stage the deliverables should be seen as
+fully fledged systems (software running on integrated platformed servers) capable of
+delivering end-to-end value to users. All the tests that are included with SKAMPI are
+therefore executed with the objective of verifying and validating end to end capability.
 
-    we should also say who the intended stakeholders are; check that the following is correct
 
-The intended stakeholders of these pages are:
+The intended stakeholders of these tests are:
 
-*   **AIV engineers**, who may want to see what tests are there, may want to write new tests, may want to be able to
-    run them, may want to see existing test results.
+*   **AIV engineers**, who may want to see what tests are there, may want to write new
+    tests, may want to be able to run them, may want to see existing test results.
 
 *   **Developers**, who may want to write new tests, to debug them and to run them.
 
-*   **Program managers**, who may want to see what tests are there, some of the test results.
-
+*   **Program managers**, who may want to see what tests are there, some of the test
+    results.
 
 Test approaches
 ----------------
 
-.. todo::
-    describe here the ways in which SKAMPI is being tested; this would include
 
-    - BDD tests
-    - pytest system tests
-    - (perhaps) integration testing of some subset of products components
-    - manual testing
-    - smoke testing
-    - DO NOT INCLUDE 'TESTING OF CHART MANIFESTS/K8s config files'
+Testing of SKAMPI allows for *probing* it from various different viewpoints
+in order to ensure an accurate understanding of its current state for different
+stakeholders:
 
-
-
-Determining the System-under-Test (SUT)
----------------------------------------
-
-There are two products `SKA-LOW` and `SKA-MID` and SKAMPI is a facility that encompasses/handles/ ???? both.
-Therefore the SUTs are `SKA-LOW` or `SKA-MID`.
-
+    -   **BDD tests**: Behavioral tests performed in specific users/stakeholder domain
+        language to explicitly demonstrate user value.
+    -   **System tests:** Technical tests (i.e. with specific technologies in mind) that
+        ensures correct installation and configuration of software in their deployed.
+        environment (includes smoke tests, performance tests and other miscellaneous tests
+        related to systemic issues/effects on the total system).
+    -   **Integration tests:** Tests (BDD or system tests) that verify behavior on a
+        subset of components making up the system in order to assist diagnosing and or
+        facilitate a systematic approach to integrating subsystems.
+    -   **Bugs:** Tests that verify the existence of bugs/issues with software and
+        eventually proof their resolution.
 
 
+SKAMPI and the Systems-under-Test (SUTs)
+----------------------------------------
+
+.. note::
+    SKAMPI, as a configurable item, implies a **single self standing entity**, yet it
+    produces **one or more** distinct artifacts for delivery to external stakeholders for
+    a particular version of SKAMPI.
+
+The software included in every version of SKAMPI consists of a software base with common
+parts resulting in the following deliverable artifacts:
+
+    - SKA Mid
+    - SKA Low
+    - SKA Common/HQ (coming soon)
+
+There shall therefore be different distinct system under tests for each test written to
+be performed on SKAMPI.
+
+Assemble and deploying a SKAMPI SUT:
+************************************
+
+The procedure to build and install a particular SUT from SKAMPI depends on the target
+environment type in which the SUT will run.
+Each target environment type in turn is determined by the particular intended use of the
+SUT.
+
+Viewed as stages in a delivery pipeline, the intended target environment types are defined as follows (ordered from downstream to upstream stages):
+
+    -   **On site Integration:** A version deployed on a particular site that includes
+        actual telescope hardware (or hardware prototypes) to perform site integration
+        tests
+    -   **Staging:** A fixed version released at particular points in time (mostly every
+        PI sprint), made accessible via a set of web URLs for users wanting to demonstrate
+        or explore current delivered value.
+    -   **Pipeline Testing:** A version automatically deployed as a result of a new
+        commit on a branch of SKAMPI in order to run the predefined continuous integration
+        tests.
+    -   **Integration Testing:** A platform exactly the same as for staging in which
+        the user has manual control over the version of SKAMPI and the instantiating of it's
+        deliverables so as to test during development of new features
+    -   **Development:** A miscellaneous set of platforms (e.g. K8 minikube, K3) with separate
+        self standing clusters that allows a developer to simulate the target environment
+        in order to have close control over the composition and life cycle of SKAMPI parts
+        during development
+
+Refer to :ref:`Environments` for a more detailed description and listing of the current
+instances of environment types.
+
+Users of SKAMPI can therefore choose based on their particular use case which intended
+environment fits their needs best. The intended environments involve deploying SKAMPI
+either automatically or manually.
+
+Automatic Deployment and Testing
+................................
+
+This is for pipeline testing in which the gitlab CI configuration takes care of deploying
+and running the SKAMPI artifacts for you; after which it will start testing jobs.
+Pipelines can be initiated manually by any user with appropriate permissions and can
+configure the kind of jobs to be executed during each of the pipeline stages. Currently
+pipelines only run on Pipeline Testing environment types but in future this may also
+include the running of tests on staging.
+
+.. note::
+    In future, pipelines may also be configured to run only a specific set of tests
+    selected by the user. Pipelines may also be set to run on staging environment.
+
+Manual Deployment and Testing
+.............................
+
+Manual deployment and testing is for cases where the user needs to explicitly control the
+life cycle of SUT. One reason for needing to control the life cycle of the SUT is when
+the developer is actively working on the SUT itself and need to re instantiate it after
+changes. Another reason is for when tests themselves have put the SUT in such a state that
+the only way to fix it is to redeploy it.
+
+The technologies used for deploying the SUT allows the user to upgrade an installation,
+in which only those artifacts that have changed are redeployed with the option to rollback an upgrade if need be.
+
+Refer to :ref:`Deployment` for detail installation instructions.
+
+Common questions for fist time users about deployment and testing SKAMPI
+........................................................................
+
+*How do I configure and assemble/bundle things together in order to form my system under
+test?*
+
+SKAMPI artifacts are installed into a Kubernetes platform using Helm as the configuration
+manager. Helm does the same that a package manager will do for software packages
+(e.g. npm, pip, apt etc) except that the packages are now running applications.
+Helm calls the configuration data for these applications **charts** and the developer
+define these charts as a set of manifest files plus dependent charts that make up the
+entire application. It also provides a configuration file (called VALUES) that can be
+edited by the user installing the chart. The VALUES file provides the user with a set
+of options, each with a predefined default value as to how he wants the particular chart
+to behave and even be composed off. The user therefore are exposed a set of options
+allowing him to specify the behavior as well as composition of the SUT, should he whish
+to deviate from the default settings provided. SKAMPI however makes use of a makefile
+encapsulating and wrapping particular uses cases as makefile targets so as to provide
+a user friendly facade for calling helm commands. Refer to :ref:`Deployment` for a
+detailed explanation of how to use the makefile.
+
+*Where do I find the different components and their version nrs specifying how an SUT
+are made up?*
+
+The definition of each chart delivering the application can be found under `charts/`
+folder with each artifact having a separately named sub folder. The subfolder contains
+the definition of the actual intended application, specified by two files:
+
+    -   **Chart.yaml:** Contains the version of the artifact (chart version) and the sub
+        component charts (with version nrs) that it is composed of.
+    -   **Values.yaml:** Contains the available options with default values determining
+        how the chart and sub charts will be realized.
+
+.. note::
+    The actual deployment of a chart is determined by the set of options supplied to HELM
+    during the installation call, which may be different from the default ones provided by
+    the chart. The options that differ from the default are provided in a separate values
+    file referenced by the particular makefile target as a given env value. SKAMPI provides
+    two value files that can be used for this: `values.yaml` and `pipeline.yaml`; each one
+    intended for deploying in development environment and pipeline testing respectively;
+    but a user is free to make up his own values file and point the env value to that file.
+    Staging environment shall always use the default options.
+
+
+*Where do I find those responsible for delivering the subcharts making up the SUT's?*
+
+Each chart comes with a description providing information about it's providence and links
+to ownership. To describe a particular chart run the following:
+
+.. code-block::bash
+
+    helm show chart ska/<chart_name>
 .. todo::
     describe here how to put together a version of a SUT that can be used for testing
 
+*Where does the SUT run, how is it contained, and how does it differ from where the
+deployment commands are run?*
     - how to configure things so that they can be assembled/bundled together to form a system
     - where to find the different components, their names and versions
     - where to find the people who made them available
@@ -59,23 +196,35 @@ Therefore the SUTs are `SKA-LOW` or `SKA-MID`.
     Say also if there is 'staging' version of the products (installed
     and managed by others, namely the System team).
 
-How to assemble an instance of SKAMPI
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Where the SUT is deployed is determined by which intended environment type are being used. For each instance of an environment a set of credentials are provided allowing a client (running on a separate or same environment) to operate the running software.
+For example if you are using a development environment on your local laptop using minikube,
+you will use your client software (helm and kubectl) to control the orchestration of the
+running software on your own machine. If the environment is integration testing, then your
+client software will have credentials to access a specific environment withing a remote
+cluster in which the artifacts will get deployed.
 
-.. todo::
-    Describe:
+The underlying platform upon which you install your artifacts (Kubernetes) provides the
+user with distinct namespaces in which you can install the artifacts. A namespace ensures
+isolation of software systems whilst running on the same server cluster by means of
+isolating address spaces.
 
-    - what is the general procedure
-    - are there different objectives?
+.. note::
+    A particular namespace can run only *one* instance of an SUT. An SUT may however
+    distribute parts of it across more than one namespace (for example SDP chart has its
+    own dedicated namespace for deploying workflow jobs)
 
-        - for example to create an instance of skampi that I can use for a small amount of time
-        - or one that can last for days
-        - or one that can be shared with my peers
+The actual name of the namespace in which you are intending to deploy the SUT is
+specified as a helm chart value.
 
-    - what tools would I need?
-    - steps to follow
-    - how to check that it was done properly/do we have ``sanity checks``?
+*Where do the tests actually run?*
 
+In order for tests to communicate with the SUT they have only two options for
+interfacing:
+
+    -   **Public API**: An http interface with a predefined hostname available for external
+        components over a LAN interface.
+    -   **Internal API**: Internal TCP based interfaces that make use of addresses within
+        a particular kubernetes namespace.
     - are there variations?
     - what can go wrong? and how to cope with it?
     - to whom should I ask for help?
@@ -84,15 +233,190 @@ How to assemble an instance of SKAMPI
 2) run a command to assemble the SUT (`make upgrade_chart`,
     see the deployment.rst page)
 
-.. todo::
-    Explain how to start and shutdown such a SKAMPI instance
+Currently tests are only making use of the internal API mechanism. This can only be
+achieved if the tests themselves are part of the Kubernetes environment and therefore
+needs a separate deployment as a Kubernetes resource. For automatic tests during
+continuous integration this is achieved by firstly deploying a separate Kubernetes Pod
+(self contained process in Kubernetes); copying the test files onto that pod; and running
+them on the pod. This can be manually done by calling the following:
 
     - see make install
     - see make uninstall
     in deployment page
 
-.. todo::
-    Explain how to set/reset such a SKAMPI, so that I can restart from fresh
+.. code-block:: bash
+
+    make k8s_test
+
+A user,who during development may want to run a specific test from his own IDE with the
+ability to perform debugging, will need to ensure the execution environment of its IDE is
+attached to a Kubernetes pod running in the same namespace as the SUT.
+
+.. todo:
+    Provide a link explaining the various options for performing development testing.
+
+
+*What interfaces (human or programmable) are available and can be used for testing?*
+
+Interfaces can be grouped into (1) those belonging to the environment in which SKAMPI
+artifacts are deployed (2) those provide by test artifacts needed to run tests in and
+(3) those that are part of the SUT itself.
+
+(1) consists of the client software (helm and kubectl) that the user can use to perform
+life cycle actions on the applications. In addition the user can also make use of logging
+systems connected externally to the environment to assist in investigating faults:
+
+    -   **Kibana:** Gathers logs from all components running on remote cluster
+    -   **EDA:** Gathers state of artifacts running on cluster (coming soon)
+
+.. note:
+
+    Staging and Pipeline Testing environments do not have public interfaces to the
+    execution environments. Thus users will not have the ability to deploy or redeploy
+    SUTs manually but will be able to investigate a failure using the provided logging
+    facilities.
+
+
+(2) consists of the means for controlling the execution of tests on the deployed testing
+artifacts. When tests are run using make k8s_test this happens atomically and a user does
+not have the means to intervene. During development testing, provided a user has means to
+attach to the testing artifact (e.g. testing pod), a user have full control over the
+initiating of tests and their life cycle.
+
+(3) consists of the interfaces that are part of the actual SUT and consists of programmable
+as well as user graphical interfaces.
+
+For a detail description of the functionality of the SUT interfaces refer to documentation
+of the actual chart artifact being used. The current main ones are listed here:
+
+    -   **Webjive:** provides a engineering UI interface with the ability to create your
+        own customized GUIs)
+    -   **TANGO VNC:** provides a set of desktop GUIs over web browser in order to
+        interfaces with tango based components)
+    -   **OET scripts:** provides a command line console for running observation scripts
+
+
+.. note::
+    `OET scripts` includes a jupyter console that provides an interactive python over web
+    browser in which commands can be called that access internal APIs. This gives the user
+    the ability to perform commands on internal components for exploration purposes.
+
+
+Common Tools and dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Accessing the SUTs in staging environment and or pipeline testing can all be done over a
+web browser. However the domain names to access the SUT may not have static public IPs.
+A user can still access these URLs if he/she has access to the SKA OpenVPN. Then he/she
+needs to update their hosts file as follows:
+
+.. code-block::
+
+    192.168.93.102 <hostname>
+
+For development and integration test environments the user needs to have a client machine
+running linux os either directly or as a VM. The client machine can either be a local
+laptop or a remote machine running an ssh server. If the client intends to deploy on
+the remote cluster the machine also needs to be logged into the SKA OpenVPN LAN.
+
+.. note::
+    credentials for access to SKA VPN and or remote Kubernetes clusters can be requested
+    from the systems team.
+
+The client needs to have at least Kubectl and Helm rev 3 installed with credentials supplied
+into a kubeconfig file that ensures access to the intended cluster namespace.
+
+Developers are free to choose their own IDE or text editor but VScode is recommended due
+to their particular set of free tools for working in kubernetes and remote ssh environments.\
+PyCharm can also be used as long as developers manage the extensions for connecting to
+kubernetes environments themselves.
+
+The telepresence tool is useful in cases where a developer wants to inject his/her local
+environment into a kubernetes cluster (provided he has credentials set up).
+
+All tests are done using pytest framework, with BDD Gherkin tests implemented using the
+pytest-bdd library.
+
+Lastly, SKAMPI tests can make use of various helper files, fixtures and test charts as
+part of the SKA testing runway repository. In particular, developers may use the skallop testing
+library that helps users writes test working with asynchronous events and managing the state of SUT.
+
+Typical scenarios
+------------------
+
+1 I want to verify that a new feature designed works on the integrated SKAMPI artifacts
+.......................................................................................
+
+Developer makes the changes to charts in question needed to realise the functionality.
+This may involve separating the work and testing sub functionalities first which may
+require a development environment for deploying the chart as a stand alone system. The
+developer may also opt to deploy the entire SKAMPI artifacts in an integration
+environment but limiting the composition of the chart to only those under investigation.
+This can be done by setting options to non default values in a separate values file and
+letting the make file target this file. In tandem with changing and updating the SUT, the
+developer also create, change and update test for verifying behavior. The developer will
+need to choose a mechanism for running tests in the chosen environment. These tests will
+ultimately be structured as a BDD test to verify the intended feature. If and when the
+developer is satisfied with a particular change and has verified that the changes does
+not cause failures on that branch, he can push the changes to the remote branch and
+check that the subsequent pipeline does not result in test failures. Note, that this
+process may occur recursively in a similar fashion on work inside lower level charts.
+In order to ensure changes are pulled continuously, developers should work in changes
+from lower level charts into SKAMPI as often as possible. Once a particular feature
+test passes, the merge request can be approved and merge into master upon which the tests
+will be verified again to be passing on the master pipeline. At the end of sprint the
+merged feature will form part of the released SKAMPI into staging which the developer
+can use to demonstrate to outside stakeholders.
+
+2 I want investigate a potential bug on the SKAMPI
+.......................................................................................
+
+If a potential issue was raised indicating a possible bug,in general the user would want to be
+able to do two types of things on SKAMPI: (1) replicate the fault condition to the extend that
+the input steps can be exactly specified to consistently reproduce the condition. 2) change
+the input steps and artifact composition until the failure is not present. The required changes
+in steps and or composition will then be used to allocate failure responsibility.
+
+In more specific terms the investigator may need to create a new test (if the failure was detected
+by means of demonstration only) this requires deployment in either a development or integration test
+environment. Depending on the nature of the test, an investigator may need to be able to observe
+specific states of the SUT and look for error/inconsistent values. This requires log gathering tools that
+allows filtering information according to specific patterns. The log gathering can either be those
+provided by the cluster itself or those used by tests using the skallop library.
+
+Using the knowledge gained from observing the state, the investigator can now experiment with changing the
+test and or composition of SUT and look for changes in state. At some point the analysis my get to
+the point where the fault is known to the extend that the required changes can either be made
+immediately or specified exactly.
+
+3 I want to understand the current functionality of SKAMPI artifacts
+.......................................................................................
+
+The best way to understand the system is to attempt to perform operational tasks on it. The user will
+attempt to achieve certain jobs (e.g. assign resources to a sub array) by following roughly the
+documentation provided by that application. The best environment to perform this is the staging
+environment using teh provided webjive GUIs.
+
+4 I want to perform a particular integration test between two particular subsystems on SKAMPI
+..............................................................................................
+
+The user would want to be able to have exact control over the configuration (VALUES) file and the
+life cycle commands of the SUT (install, upgrade, uninstall, re-install). In essence the integration
+test consists of updating the versions of the two sub charts needing to interact in the integration
+test. A special test may need to be written taking into account dependencies on systems that fall
+outside the system under test. The integration test environment is ideally suited for these types
+of tests.
+
+
+4 I want to develop new or refactor old tests that verifies existing functionality of SKAMPI
+..............................................................................................
+Here the user is not too much concerned with updating the the SUT and thus need not even have to
+use SKAMPI makefile targets to send life cycle commands for the SUT. However, errors in tests
+may often lead to failing the SUT in such a way that re deployment is the only way forward. The
+user would also prefer to have an IDE attached to a kubernetes resource running in the cluster so
+that he can have access to debug services whilst executing commands on the SUT. The integration and
+development environments are ideally suited for these kind of tasks.
+
 
 
 The staging environment
@@ -107,6 +431,48 @@ The staging environment
 
 The life-cycle of tests
 ------------------------
+
+The nature and purpose of tests changes according to how the maturity of the system evolves for a given
+set of functionalities. In addition the maturity of the test itself and the platform and artifacts used
+by the tests also changes over the course of time.
+
+The first item that needs to mature is the dependant testing packages (3d party as well as local) used by
+testing code. Even though changes to these items evolves continuously, their usages in tests are limited
+in number until they have reached a certain amount of stability. For example the skallop library is being
+introduced at a relatively slow pace into existing tests to ensure the maturity is higher than the test itself
+using it.
+
+The next item that matures is the test it self. Their growth in maturity should always precede that of the the SUT,
+even though both follow each other in a close manner. This is because tests are often tightly coupled with functionality
+in order to pick up regression failures, requiring constant changes in order to be in sync with updated
+functionality. Thus in the beginning there is a relatively high likelihood of failures being False positives,
+especially since the needed SUT functionality upon which tests can be validated may not even exist in
+the beginning. For this reason it is desired for tests to be as simple as possible, relying on underlying
+stable testing infrastructure for performing the complex parts of the routines.
+
+After tests become more stable in outcomes, the focus shifts towards functionality of the SUT. In the early growth stages of a
+certain set of functionalities, tests are often required to focus on the technical details of how they are realized;
+verifying the basic usage of technologies is correct. As these tests passes more consistently, the focus shifts towards end user
+behavior, becoming more high level in their description over time. The usefulness of technology focused tests diminishes, often being
+removed in order to prevent false positives caused by changes in functionalities.
+
+However, during this stage certain latent defects in the SUT may start to emerge due to (1) tests becoming more accurate, revealing
+previously hidden defects, and (2) probability of certain permutations occurring more likely over time. This may require specialized
+type of tests and environments to ensure test failures can be replicated and the underlying conditions observed more closely.
+
+During the mature stage of the SUT for a particular set of functionalities, the value of having low level technical
+tests becomes less and less and may be retired; alternatively they may become less tightly coupled to the SUT so as
+to prevent false positives.
+
+During the final stages of a given set of SUT functionalities, the reverse starts to happen as features become deprecated
+and technologies become obsolete, causing an increase in reported failures. Certain tests will then need to be purposefully
+retired in accordance with the deprecation of features and changes in technologies. These changes may not always happen
+seamlessly and require some work in figuring out relationships between tests and retired functionality. It is for this reason
+that some form of traceability be maintained between tests and specific features and abilities of the system. Another useful
+metric in assisting change management of obsolescence is to track the amount of references made to certain low level services
+in use by higher level systems intending to deliver end user value. Services and parts that are never used by systems delivering
+end to end failures are often prime candidates for being deprecated.
+
 
 .. todo::
     describe what is the life-cycle of tests, and specifically:
@@ -276,7 +642,7 @@ a development environment and the SHAMPI environment:
     git clone https://gitlab.com/ska-telescope/ansible-playbooks.git
     cd ansible-playbooks
     ansible-playbook -i hosts deploy_tangoenv.yml
-    ansible-playbook -i hosts deploy_skampi.yml
+    ansible-playbook -i hosts deploy_SKAMPI.yml
 
 Verify if everything is running using ``kubectl get services -n integration``:
 
@@ -307,14 +673,14 @@ Finally, download the SKAMPI repository and run the test in minikube:
 
 .. code-block:: bash
 
-    #Remove the existing skampi directory
-    sudo rm -rd skampi/
+    #Remove the existing SKAMPI directory
+    sudo rm -rd SKAMPI/
     # Download and run test
-    git clone https://gitlab.com/ska-telescope/skampi.git
+    git clone https://gitlab.com/ska-telescope/SKAMPI.git
     cd ansible-playbooks
     ansible-playbook deploy_minikube.yml 
     cd .. 
-    cd skampi/
+    cd SKAMPI/
     make deploy_all KUBE_NAMESPACE=integration
 
 
@@ -326,11 +692,11 @@ At the moment 3 k8s multi-node clusters are available for testing purpose:
 | Cluster name             | Information                                                                                               |
 +==========================+===========================================================================================================+
 | *engageska-k8s-master*   | - 1 master, 4 worker nodes                                                                                |
-|                          | - working in the skampi pipeline                                                                          |
+|                          | - working in the SKAMPI pipeline                                                                          |
 |                          | - A&A not available                                                                                       |
 +--------------------------+-----------------------------------------------------------------------------------------------------------+
 | *engageska-k8s-v2*       | - 1 master, 2 worker nodes                                                                                |
-|                          | - working in the skampi pipeline                                                                          |
+|                          | - working in the SKAMPI pipeline                                                                          |
 |                          | - A&A available. To work with it the file /etc/hosts has to be modified with the following lines:         |
 |                          | .. code-block:: bash                                                                                      |
 |                          |                                                                                                           |
@@ -338,7 +704,7 @@ At the moment 3 k8s multi-node clusters are available for testing purpose:
 |                          |                                                                                                           |
 +--------------------------+-----------------------------------------------------------------------------------------------------------+
 | *kubernetes-cipro*       | - 1 master, 2 worker nodes                                                                                |
-|                          | - not working in the skampi pipeline                                                                      |
+|                          | - not working in the SKAMPI pipeline                                                                      |
 |                          | - A&A available. To work with it the file /etc/hosts has to be modified with the following lines:         |
 |                          | .. code-block:: bash                                                                                      |
 |                          |                                                                                                           |
@@ -403,7 +769,7 @@ and select ``Remote-SSH: Connect to Host...`` and select the ``connection-name``
 Connect to Kubernetes - Option 2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The tango-base chart available in the skampi repository defines an ssh service which can be used within the vscode extension. The service is deployed in the same IP as the host machine and the port can be discovered with the command ``kubectl get services -n integration`` which will give you the following output:
+The tango-base chart available in the SKAMPI repository defines an ssh service which can be used within the vscode extension. The service is deployed in the same IP as the host machine and the port can be discovered with the command ``kubectl get services -n integration`` which will give you the following output:
 
 .. code-block:: bash
 

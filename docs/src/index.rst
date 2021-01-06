@@ -7,11 +7,12 @@ This project defines the integration between various component repository on Kub
    :maxdepth: 2
    :caption: Contents:
 
+   skampi
+   testing
    helm
    templates
    environments
    deployment
-   testing
    triage
    gui
    AnA

@@ -16,4 +16,4 @@ The primary ingress of this environment is the following link: http://integratio
 
 Staging environment
 -------------------
-Staging environment is deployed only with scheduled job every 15 days. 
+Staging environment is deployed only with scheduled job every 15 days.

@@ -6,7 +6,7 @@ Testing SKAMPI
 .. TODO::
     fix this or remove everything that is outdated
 
-This page outlines the various  testing approaches one can employ to test various aspects
+This page outlines the various testing approaches one can employ to test various aspects
 of SKA MPI prototype that can be implemented in this repository.
 
 .. TODO::
@@ -32,22 +32,32 @@ Test approaches
 
     - BDD tests
     - pytest system tests
-    - (perhaps) integration testing of some subset of SKAMPI components
+    - (perhaps) integration testing of some subset of products components
     - manual testing
+    - smoke testing
+    - DO NOT INCLUDE 'TESTING OF CHART MANIFESTS/K8s config files'
 
 
 
-SKAMPI as the System-under-Test (SUT)
--------------------------------------
+Determining the System-under-Test (SUT)
+---------------------------------------
+
+There are two products `SKA-LOW` and `SKA-MID` and SKAMPI is a facility that encompasses/handles/ ???? both.
+Therefore the SUTs are `SKA-LOW` or `SKA-MID`.
+
+
 
 .. todo::
-    describe here how to put together a version of SKAMPI that can be used as a SUT
+    describe here how to put together a version of a SUT that can be used for testing
 
     - how to configure things so that they can be assembled/bundled together to form a system
     - where to find the different components, their names and versions
     - where to find the people who made them available
     - what interfaces (human or programmable) are available and can be used for testing
-    - where does SKAMPI run? is it an isolated environment? is it a dedicated environment?
+    - where do the products run? is it an isolated environment? is it a dedicated environment?
+
+    Say also if there is 'staging' version of the products (installed
+    and managed by others, namely the System team).
 
 How to assemble an instance of SKAMPI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -70,12 +80,30 @@ How to assemble an instance of SKAMPI
     - what can go wrong? and how to cope with it?
     - to whom should I ask for help?
 
+1) create your own version of the values.yml file
+2) run a command to assemble the SUT (`make upgrade_chart`,
+    see the deployment.rst page)
 
 .. todo::
     Explain how to start and shutdown such a SKAMPI instance
 
+    - see make install
+    - see make uninstall
+    in deployment page
+
 .. todo::
     Explain how to set/reset such a SKAMPI, so that I can restart from fresh
+
+
+The staging environment
+------------------------
+
+.. todo::
+
+    - where is it? how can I used?
+    - what is the update policy: who updates it? when? under what  conditions?
+    - is access mutually exclusive? if not, how do I know who else is using it?
+    - how can I reset it? reset to what?
 
 The life-cycle of tests
 ------------------------
@@ -84,11 +112,17 @@ The life-cycle of tests
     describe what is the life-cycle of tests, and specifically:
 
     - who and when creates a test
+        - developers
+        - AIV engineers
+        - FOs
     - is there a qualification period for a test?
     - do we have WIP tests that are expected to fail?
     - do we put tests in "quarantine"?
     - when do we discard/retire a test?
 
+.. note::
+    The tests are **important** because they are the ones that provide
+    objective evidence of what the SUT can do.
 
 Existing BDD tests
 -----------------------
@@ -107,14 +141,16 @@ The steps in these test scenarios need to be automated by using appropriate libr
     - provide 1-2 examples
     - where the BDD tests are stored; put a link to the gitlab repo folder
     - put a link also to the code that automates them
+    - Xray issues in XTP
 
-Existing pytest tests
+Existing smoke tests
 ------------------------
 
 .. todo::
     Describe here what other tests exists now
 
-    - provide links to where they are stored
+    - provide links to where they are stored, at least some of them
+        see post-deployment/tests/smoke
 
 Existing test results
 -------------------------
@@ -122,9 +158,9 @@ Existing test results
 .. todo::
     Describe where to look for test execution reports
 
-    - maybe gitlab pipelines
+    - maybe gitlab pipelines/job
 
-    - maybe xray test executions in jira
+    - maybe xray test executions in jira (it should already be working - maybe with a bug in uploading failed tests)
 
 How to run existing tests
 -------------------------
@@ -132,6 +168,8 @@ How to run existing tests
 .. todo::
     Provide details on how to run CI pipelines, and how to specify appropriate details so that
     different tests can be choosen or different data can be choosen or different SUTs can be choosen
+    Describe how to run them with pytest-bdd directly, or maybe with Make.
+    Or maybe with jupyter.
 
     - which gitlab params can be used?
     - which other interfaces/tools can I use to run existing tests?
@@ -156,11 +194,12 @@ Data used by tests
 ----------------------
 
 .. todo::
-    describe here our approach to handling *eference data* or other *test data* that are used by tests
+    describe here our approach to handling *reference data* or other *test data* that are used by tests
 
     - where are the data being stored?
     - how can they be used/referenced in test scripts?
 
+See resources/test_data
 
 .. glossary::
 
@@ -189,6 +228,7 @@ How to write BDD tests
 
 .. todo::
 
+    to be completed
 
 
 

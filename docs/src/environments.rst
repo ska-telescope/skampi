@@ -1,6 +1,9 @@
 Environments
 ============
 
+.. todo::
+    FIX this because it seems to be outdated
+
 Two environments has been defined for the SKAMPI repository, namely "test" and "staging", both deployed into a k8s cluster linked in the `Gitlab <https://gitlab.com/ska-telescope/skampi/-/clusters>`_.
 
 Those are visible in gitlab at this `link <https://gitlab.com/ska-telescope/skampi/-/environments>`_ and managed with schedule in the gitlab schedule `tab <https://gitlab.com/ska-telescope/skampi/pipeline_schedules>`_. 

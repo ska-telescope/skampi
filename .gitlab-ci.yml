@@ -133,10 +133,10 @@ test mid on demand:
   <<: *create_k8s_creds_after_script
   environment:
     name: "test"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
   when: manual
   only:
     refs:
@@ -177,10 +177,10 @@ test low on demand:
   <<: *create_k8s_creds_after_script
   environment:
     name: "test-low"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
   when: manual
   only:
     refs:

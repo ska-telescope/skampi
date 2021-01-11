@@ -85,7 +85,7 @@ webjive:
   minikube: false
   ingress:
     enabled: true
-    nginx: false
+    nginx: true
     hostname: integration.engageska-portugal.pt
 
 #telescope control

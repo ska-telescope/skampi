@@ -4,6 +4,7 @@ variables:
   MINIKUBE: "false"
   VALUES: "pipeline.yaml"
   CHARTS_TO_PUBLISH: skalow skamid
+  INGRESS_HOST: "kubernetes.engageska-portugal.pt"
 
 stages:
   - clean
@@ -35,8 +36,8 @@ stages:
   tags:
   - k8srunner
   variables:
-  # - KUBE_NAMESPACE: ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
-  - SERVICE_ACCOUNT: ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
+  # - KUBE_NAMESPACE: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH
+  - SERVICE_ACCOUNT: ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
   before_script:
   - &create_k8s_cred_dependencies |
@@ -105,12 +106,11 @@ test mid:
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
-    INGRESS_HOST: "mid.integration.engageska-portugal.pt"
     MARK: "skamid or common"
   <<: *test_definition
   environment:
     name: "test"
-    url: "http://mid.integration.engageska-portugal.pt/testdb"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       namespace: $KUBE_NAMESPACE
   only:
@@ -122,22 +122,21 @@ test mid on demand:
   variables:
     DEPLOYMENT_CONFIGURATION: "skamid"
     MARK: "skamid or common"
-    HELM_RELEASE: "test-mid-$CI_COMMIT_SHORT_SHA"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
-    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
-    INGRESS_HOST: "ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
-    SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
   before_script:
     - *create_k8s_cred_dependencies
   <<: *test_definition
   <<: *create_k8s_creds_after_script
   environment:
     name: "test"
-    url: "http://ci-test-mid-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
   when: manual
   only:
     refs:
@@ -150,13 +149,13 @@ test low:
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-    INGRESS_HOST: "low.integration.engageska-portugal.pt"
     MARK: "skalow or common"
   <<: *test_definition
   environment:
     name: "test-low"
-    url: "http://low.integration.engageska-portugal.pt/testdb"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
   only:
     refs:
@@ -167,22 +166,21 @@ test low on demand:
   variables:
     DEPLOYMENT_CONFIGURATION: "skalow"
     MARK: "skalow or common"
-    HELM_RELEASE: "test-low-$CI_COMMIT_SHORT_SHA"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_SHORT_SHA"
-    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
-    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low-sdp"
-    INGRESS_HOST: "ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt"
-    SERVICE_ACCOUNT: "ci-test-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
+    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
   before_script:
     - *create_k8s_cred_dependencies
   <<: *test_definition
   <<: *create_k8s_creds_after_script
   environment:
     name: "test-low"
-    url: "http://ci-test-low-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA.integration.engageska-portugal.pt/testdb"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-low"
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
   when: manual
   only:
     refs:
@@ -205,8 +203,9 @@ sdp_config_dump_mid:
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
   environment:
     name: "test"
-    url: "http://mid.integration.engageska-portugal.pt/testdb"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
   only:
     refs:
@@ -270,11 +269,11 @@ deploy_staging_low:
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-    INGRESS_HOST: "low.staging.engageska-portugal.pt"
   environment:
     name: "staging-low"
-    url: "http://low.staging.engageska-portugal.pt/testdb"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
   tags:
     - k8srunner
@@ -295,11 +294,11 @@ deploy_staging_mid:
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
-    INGRESS_HOST: "mid.staging.engageska-portugal.pt"
   environment:
     name: "staging-mid"
-    url: "http://mid.staging.engageska-portugal.pt/testdb"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
   tags:
     - k8srunner

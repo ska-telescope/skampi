@@ -36,7 +36,7 @@ stages:
   tags:
   - k8srunner
   variables:
-  # - KUBE_NAMESPACE: ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
+  # - KUBE_NAMESPACE: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH
   - SERVICE_ACCOUNT: ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
   before_script:
@@ -124,8 +124,8 @@ test mid on demand:
     MARK: "skamid or common"
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
   before_script:
     - *create_k8s_cred_dependencies
@@ -133,10 +133,10 @@ test mid on demand:
   <<: *create_k8s_creds_after_script
   environment:
     name: "test"
-    url: "http://$INGRESS_HOST/ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
   when: manual
   only:
     refs:
@@ -168,8 +168,8 @@ test low on demand:
     MARK: "skalow or common"
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    KUBE_NAMESPACE_SDP: "ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
   before_script:
     - *create_k8s_cred_dependencies
@@ -177,10 +177,10 @@ test low on demand:
   <<: *create_k8s_creds_after_script
   environment:
     name: "test-low"
-    url: "http://$INGRESS_HOST/ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-test-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
   when: manual
   only:
     refs:

@@ -310,7 +310,7 @@ deploy_staging_mid:
     refs:
       - tags
   needs:
-    - job: clean_staging_low
+    - job: clean_staging_mid
 
 xray_report:
   stage: post_test

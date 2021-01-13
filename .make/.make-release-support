@@ -187,7 +187,6 @@ function releaseSKAMPIIfNoError() {
         echo "ERROR WHILE RELEASING SKAMPI. TAG WILL BE DELETED."
         git_username=$1
         deleteTag $git_username
-        # deleteImageFromNexus
     fi
   fi
 }

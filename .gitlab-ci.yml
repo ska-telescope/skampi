@@ -60,7 +60,7 @@ uninstall low:
   environment:
     name: "test-low"
 
-st-565:
+test-ns-staging:
   tags:
   - st-565
   stage: test
@@ -70,14 +70,14 @@ st-565:
     KUBE_NAMESPACE_SDP: "staging"
     DEPLOYMENT_CONFIGURATION: "skalow"
   script:
-  - echo "HELOOO"
+  - echo "Nothing should happen"
   environment:
     name: "test-low"
   only:
     refs:
       - branches
 
-ugur-test:
+test-ns-nonstandard:
   tags:
   - st-565
   stage: test
@@ -87,14 +87,14 @@ ugur-test:
     KUBE_NAMESPACE_SDP: "ugur"
     DEPLOYMENT_CONFIGURATION: "skalow"
   script:
-  - echo "HELOOO"
+  - echo "Nothing should happen, namespace error should be printed"
   environment:
     name: "test-low"
   only:
     refs:
       - branches
 
-diogo-test:
+test-ns-none:
   tags:
   - st-565
   stage: test
@@ -102,7 +102,41 @@ diogo-test:
     HELM_RELEASE: "test-low"
     DEPLOYMENT_CONFIGURATION: "skalow"
   script:
-  - echo "HELOOO"
+  - echo "Nothing should happen, namespace error should be printed"
+  environment:
+    name: "test-low"
+  only:
+    refs:
+      - branches
+
+test-ns-recreate:
+  tags:
+  - st-565
+  stage: test
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE_SDP: "ugur"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+  script:
+  - echo "Nothing should happen, namespace error should be printed"
+  environment:
+    name: "test-low"
+  only:
+    refs:
+      - branches
+
+test-ns-keep:
+  tags:
+  - st-565
+  stage: test
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE_SDP: "ugur"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+  script:
+  - echo "Nothing should happen, namespace error should be printed"
   environment:
     name: "test-low"
   only:

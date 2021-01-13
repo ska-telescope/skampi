@@ -7,6 +7,7 @@ variables:
 stages:
   - clean
   - test
+  - test_2
   - post_test
   - debug
   - publish
@@ -109,7 +110,7 @@ test-ns-none:
     refs:
       - branches
 
-test-ns-recreate:
+test-ns-create:
   tags:
   - st-565
   stage: test
@@ -119,7 +120,24 @@ test-ns-recreate:
     KUBE_NAMESPACE_SDP: "ugur"
     DEPLOYMENT_CONFIGURATION: "skalow"
   script:
-  - echo "Nothing should happen, namespace error should be printed"
+  - echo "New namespace should be created"
+  environment:
+    name: "test-low"
+  only:
+    refs:
+      - branches
+
+test-ns-recreate:
+  tags:
+  - post_test
+  stage: test
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE_SDP: "ugur"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+  script:
+  - echo "Namespace should be deleted and recreated"
   environment:
     name: "test-low"
   only:
@@ -129,16 +147,19 @@ test-ns-recreate:
 test-ns-keep:
   tags:
   - st-565
-  stage: test
+  stage: test_2
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE_SDP: "ugur"
     DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
   script:
-  - echo "Nothing should happen, namespace error should be printed"
+  - echo "Namespace should be kept"
   environment:
     name: "test-low"
+  needs:
+    - test-ns-recreate
   only:
     refs:
       - branches

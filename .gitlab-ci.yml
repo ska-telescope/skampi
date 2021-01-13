@@ -129,8 +129,8 @@ test-ns-create:
 
 test-ns-recreate:
   tags:
-  - post_test
-  stage: test
+  - st-565
+  stage: post_test
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"

@@ -223,7 +223,7 @@ tag_commit:
     refs:
       - master
   script:
-    - make release-skampi USERNAME=$GITLAB_USER_NAME EMAILID=$GITLAB_USER_EMAIL # Publish tag on gitlab
+    - make release-skampi USERNAME="$GITLAB_USER_NAME" EMAILID=$GITLAB_USER_EMAIL PRIVATE_TOKEN=$SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
 
 
 clean_staging_low:

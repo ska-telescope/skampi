@@ -68,6 +68,7 @@ uninstall mid:
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
     name: "test"
@@ -79,6 +80,7 @@ uninstall low:
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
     name: "test-low"
@@ -107,6 +109,7 @@ test mid:
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
     MARK: "skamid or common"
+    KEEP_NAMESPACE: "true"
   <<: *test_definition
   environment:
     name: "test"
@@ -150,6 +153,7 @@ test low:
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
     MARK: "skalow or common"
+    KEEP_NAMESPACE: "true"
   <<: *test_definition
   environment:
     name: "test-low"

@@ -1,0 +1,151 @@
+{{ if .Values.hdbppdb.enabled }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysqld-conf-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+data: 
+  conf.d: |- 
+    [mysqld]
+    sql-mode=""
+    innodb=OFF
+    default_storage_engine=MyISAM
+    general_log=0
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "ska-archiver.name" . }}-hdbppdb-{{ .Values.hdbppdb.component }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+    component: {{ .Values.hdbppdb.component }}
+    function: {{ .Values.hdbppdb.function }}
+    domain: {{ .Values.hdbppdb.domain }}
+    intent: {{ .Values.hdbppdb.intent }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+  ports:
+  - name: archiverdb-port
+    port: 3306
+  type: NodePort
+  selector:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+    component: {{ .Values.hdbppdb.component }}
+    function: {{ .Values.hdbppdb.function }}
+    domain: {{ .Values.hdbppdb.domain }}
+    intent: {{ .Values.hdbppdb.intent }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: archiverdb-{{ template "ska-archiver.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+    component: {{ .Values.hdbppdb.component }}
+    function: {{ .Values.hdbppdb.function }}
+    domain: {{ .Values.hdbppdb.domain }}
+    intent: {{ .Values.hdbppdb.intent }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 6 }}
+      component: {{ .Values.hdbppdb.component }}
+      function: {{ .Values.hdbppdb.function }}
+      domain: {{ .Values.hdbppdb.domain }}
+      intent: {{ .Values.hdbppdb.intent }}
+  serviceName: archiverdb-{{ template "ska-archiver.name" . }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
+        component: {{ .Values.hdbppdb.component }}
+        function: {{ .Values.hdbppdb.function }}
+        domain: {{ .Values.hdbppdb.domain }}
+        intent: {{ .Values.hdbppdb.intent }}
+      annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 8 }}
+    spec:
+      containers:
+      - name: archiverdb
+        image: "{{ .Values.hdbppdb.image.registry }}/{{ .Values.hdbppdb.image.image }}:{{ .Values.hdbppdb.image.tag }}"
+        imagePullPolicy: {{ .Values.hdbppdb.image.pullPolicy }}
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "{{ .Values.hdbppdb.db.rootpw }}"
+          - name: MYSQL_DATABASE
+            value: "{{ .Values.hdbppdb.db.db }}"
+          - name: MYSQL_USER
+            value: "{{ .Values.hdbppdb.db.user }}"
+          - name: MYSQL_PASSWORD
+            value: "{{ .Values.hdbppdb.db.password }}"
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "1"
+        ports:
+        - name: archiverdb-port
+          containerPort: 3306
+        {{- if .Values.hdbppdb.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command: ["sh", "-c", "exec mysqladmin status -uroot -p{{ .Values.hdbppdb.db.rootpw }}"]
+          initialDelaySeconds: {{ .Values.hdbppdb.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.hdbppdb.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.hdbppdb.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.hdbppdb.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.hdbppdb.livenessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.hdbppdb.readinessProbe.enabled }}
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "exec mysqladmin status -uroot -p{{ .Values.hdbppdb.db.rootpw }}"]
+          initialDelaySeconds: {{ .Values.hdbppdb.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.hdbppdb.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.hdbppdb.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.hdbppdb.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.hdbppdb.readinessProbe.failureThreshold }}
+        {{- end }}
+        volumeMounts:
+         - name: mysqld-conf
+           mountPath: /etc/mysql
+{{ if .Values.hdbppdb.use_pv }}
+         - name: data
+           mountPath: /var/lib/mysql
+{{end}}
+        resources:
+{{ toYaml .Values.hdbppdb.resources | indent 10 }}
+      volumes:
+      - name: mysqld-conf
+        configMap:
+          name: mysqld-conf-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+{{ if .Values.hdbppdb.use_pv }}
+      - name: data
+        persistentVolumeClaim:
+          claimName: archiverdb-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+{{end}}
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{ end }}

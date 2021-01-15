@@ -29,7 +29,7 @@ helm_install_cmd = helm install $(if $(helm_is_v2),,$(HELM_RELEASE)) \
 # usage: $(call helm_test_cmd)
 helm_test_cmd = helm test $(HELM_RELEASE) $(if helm_is_v2,--logs --cleanup)
 
-# helm command to delete a release
+# helm command to delete a releashelm_delete_cmde
 # usage: $(call helm_test_cmd)
 helm_delete_cmd = helm delete $(HELM_RELEASE) $(if helm_is_v2,--purge)
 

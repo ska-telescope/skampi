@@ -1,0 +1,58 @@
+{{ if .Values.hdbppdb.use_pv }}
+
+{{ if (coalesce .Values.global.minikube .Values.minikube false)  }}
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: archiverdb-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: archiverdb-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "ska-archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: Recycle
+  capacity:
+    storage: {{ .Values.hdbppdb.storage_size }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/archiverdb-{{ template "ska-archiver.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
+
+{{ end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: archiverdb-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: archiverdb-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "ska-archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+{{ if (coalesce .Values.global.minikube .Values.minikube false) }}
+  storageClassName: standard
+  accessModes:
+  - ReadWriteOnce
+{{ else }}
+  storageClassName: nfss1
+  accessModes:
+  - ReadWriteMany
+{{ end }}
+  resources:
+    requests:
+      storage: {{ .Values.hdbppdb.storage_size }}
+
+
+{{ end }}

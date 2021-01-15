@@ -26,6 +26,8 @@ DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/##
+ARCHIVER_CHART_PATH = ./charts/ska-archiver/
+
 
 .DEFAULT_GOAL := help
 
@@ -37,6 +39,9 @@ UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
 # include makefile targets that wrap helm
  -include helm.mk
+
+# include makefile targets that EDA deployment
+ -include archiver.mk
 
 vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"
@@ -63,7 +68,7 @@ logs: ## POD logs for descriptor
 
 
 clean: ## clean out references to chart tgz's
-	@rm -f ./charts/*/charts/*.tgz ./charts/*/Chart.lock ./charts/*/requirements.lock
+	@rm -f ./charts/skamid/charts/*.tgz ./charts/skamid/Chart.lock ./charts/skamid/requirements.lock ./charts/skalow/charts/*.tgz ./charts/skalow/Chart.lock ./charts/skalow/requirements.lock
 
 namespace: ## create the kubernetes namespace
 	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
@@ -112,8 +117,6 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm install $(HELM_RELEASE) \
         --set tango-base.xauthority="$(XAUTHORITYx)" \
-        --set archiver.display="$(DISPLAY)" \
-        --set archiver.xauthority="$(XAUTHORITYx)" \
     	--set logging.ingress.hostname=$(INGRESS_HOST) \
         --set logging.ingress.nginx=$(USE_NGINX) \
         --set oet.ingress.hostname=$(INGRESS_HOST) \
@@ -124,13 +127,10 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
         --set tango-base.ingress.nginx=$(USE_NGINX) \
         --set webjive.ingress.hostname=$(INGRESS_HOST) \
         --set webjive.ingress.nginx=$(USE_NGINX) \
-		--set minikube=$(MINIKUBE) \
-		--set global.minikube=$(MINIKUBE) \
 		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set oet.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
@@ -149,8 +149,6 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm upgrade $(HELM_RELEASE) \
         --set tango-base.xauthority="$(XAUTHORITYx)" \
-        --set archiver.display="$(DISPLAY)" \
-        --set archiver.xauthority="$(XAUTHORITYx)" \
     	--set logging.ingress.hostname=$(INGRESS_HOST) \
         --set logging.ingress.nginx=$(USE_NGINX) \
         --set oet.ingress.hostname=$(INGRESS_HOST) \

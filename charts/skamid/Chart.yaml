@@ -36,10 +36,10 @@ dependencies:
   version: 1.0.6
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: webjive.enabled
-- name: archiver
-  version: 0.2.10
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: archiver.enabled
+# - name: archiver
+#   version: 0.2.10
+#   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+#   condition: archiver.enabled
 - name: skuid
   version: 0.1.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

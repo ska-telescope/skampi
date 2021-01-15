@@ -1,0 +1,195 @@
+# Default values for HDB++ Archiver.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+display: ":0"
+xauthority: "~/.Xauthority"
+enabled: true
+
+system: SW-infrastructure
+subsystem: ska-archiver
+telescope: SKA-mid
+
+global:
+  minikube: true
+  tango_host: databaseds-tango-base-{{.Release.Name}}:10000
+  hostname: ska-archiver-hdbppdb-db
+  dbname: hdbpp
+
+labels:
+  app: ska-archiver
+annotations:
+  app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+  app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+
+dsconfig:
+  configuration_file: data/configuration.json
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: 1.5.0
+    pullPolicy: IfNotPresent
+
+itango:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-itango
+    tag: 9.3.1
+    pullPolicy: IfNotPresent
+
+attributes2archive:
+- attributes:
+  # - "mid_d0001/elt/master/WindSpeed"
+  # - "mid_d0001/elt/master/achievedPointing"
+  # - "mid_d0001/elt/master/desiredPointing"
+  # - "mid_d0002/elt/master/WindSpeed"
+  # - "mid_d0002/elt/master/achievedPointing"
+  # - "mid_d0002/elt/master/desiredPointing"
+  # - "mid_d0003/elt/master/WindSpeed"
+  # - "mid_d0003/elt/master/achievedPointing"
+  # - "mid_d0003/elt/master/desiredPointing"
+  # - "mid_d0004/elt/master/WindSpeed"
+  # - "mid_d0004/elt/master/achievedPointing"
+  # - "mid_d0004/elt/master/desiredPointing"
+  - "sys/tg_test/1/ulong_scalar"
+  - "sys/tg_test/1/long64_scalar"
+  - "sys/tg_test/1/long_scalar"
+  polling_period: 1000
+  period_event: 3000
+# - attributes:
+#   - "mid_csp/elt/subarray_01/State"
+#   - "mid_csp/elt/subarray_01/obsState"
+#   - "mid_d0001/elt/master/State"
+#   - "mid_d0001/elt/master/pointingState"
+#   - "mid_d0002/elt/master/State"
+#   - "mid_d0002/elt/master/pointingState"
+#   - "mid_sdp/elt/subarray_1/obsState"
+#   - "mid_sdp/elt/subarray_1/State"
+#   - "ska_mid/tm_subarray_node/1/State"
+#   - "ska_mid/tm_subarray_node/1/obsState"
+#   polling_period: 100
+#   period_event: 300
+
+# attributes2archive: 
+# - attributes:
+#     - "sys/tg_test/1/ulong_scalar"
+#     - "sys/tg_test/1/long64_scalar"
+#     - "sys/tg_test/1/long_scalar"
+#   polling_period: 1000
+#   period_event: 3000
+
+archiver_image:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-archiver
+    tag: 1.0.0
+    pullPolicy: IfNotPresent
+
+hdbppdb:
+  enabled: true
+  use_pv: true
+  storage_size: 100Gi
+  cleaning_schedule: "* 6,18 * * *"
+  component: db
+  function: tango-archiver
+  domain: tango-archiver
+  intent: production
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: mariadb_hdbpp
+    tag: 1.1.0
+    pullPolicy: IfNotPresent
+  db:
+    rootpw: secret
+    db: hdbpp
+    user: tango
+    password: tango
+  resources:
+    requests:
+      cpu: 100m     # 100m = 0.1 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 200m     # 200m = 0.2 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
+      ephemeral-storage: 2Gi
+  livenessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+deviceServers:
+- name: archiver-cm-archiver-test
+  function: tango-archiver-service
+  domain: ska-archiver
+  command: "./usr/local/bin/hdbppcm-srv"
+  instances: ["01"]
+  depends_on: 
+  - host: ska-archiver-hdbppdb-db:3306
+  - device: sys/database/2
+  environment_variables: 
+  - name: HdbManager
+    value: "archiving/hdbpp/confmanager01"
+  image:
+    registry: "{{.Values.archiver_image.image.registry}}"
+    image: "{{.Values.archiver_image.image.image}}"
+    tag: "{{.Values.archiver_image.image.tag}}"
+    pullPolicy: "{{.Values.archiver_image.image.pullPolicy}}"
+  resources:
+    requests:
+      cpu: 100m     # 100m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+      ephemeral-storage: 512Mi
+    limits:
+      cpu: 200m     # 200m = 0.2 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
+      ephemeral-storage: 1Gi
+- name: archiver-es-archiver-test
+  function: tango-archiver-service
+  domain: ska-archiver
+  command: "./usr/local/bin/hdbppes-srv"
+  instances: ["01"]
+  depends_on: 
+  - host: ska-archiver-hdbppdb-db:3306
+  - device: sys/database/2
+  environment_variables: 
+  - name: HdbManager
+    value: "archiving/hdbpp/confmanager01"
+  image:
+    registry: "{{.Values.archiver_image.image.registry}}"
+    image: "{{.Values.archiver_image.image.image}}"
+    tag: "{{.Values.archiver_image.image.tag}}"
+    pullPolicy: "{{.Values.archiver_image.image.pullPolicy}}"
+  resources:
+    requests:
+      cpu: 100m     # 100m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+      ephemeral-storage: 512Mi
+    limits:
+      cpu: 200m     # 200m = 0.2 CPU
+      memory: 256Mi # 256Mi = 0.25 GB mem
+      ephemeral-storage: 1Gi
+
+hdbppviewer:
+  enabled: false
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: hdbpp_viewer
+    tag: 1.10
+    pullPolicy: IfNotPresent
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

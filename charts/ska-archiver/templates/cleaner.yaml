@@ -1,0 +1,106 @@
+{{ if eq (coalesce .Values.global.minikube false | toString) "false"}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: archiverdb-delete-query-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+data:
+  # property-like keys; each key maps to a simple value
+  query.sql: |-
+    delete from att_scalar_devuchar_ro;
+    delete from att_array_devfloat_rw;
+    delete from att_array_devdouble_rw;
+    delete from att_scalar_devulong64_rw;
+    delete from att_scalar_devlong_ro;
+    delete from att_scalar_devboolean_ro;
+    delete from att_scalar_devshort_ro;
+    delete from att_scalar_devushort_ro;
+    delete from att_array_devlong64_ro;
+    delete from att_array_devshort_ro;
+    delete from att_scalar_devenum_rw;
+    delete from att_array_devstring_rw;
+    delete from att_array_devulong64_rw;
+    delete from att_array_devfloat_ro;
+    delete from att_array_devstate_ro;
+    delete from att_scalar_devfloat_ro;
+    delete from att_array_devlong64_rw;
+    delete from att_scalar_devstring_rw;
+    delete from att_scalar_devuchar_rw;
+    delete from att_scalar_devencoded_rw;
+    delete from att_array_devushort_rw;
+    delete from att_array_devencoded_ro;
+    delete from att_array_devencoded_rw;
+    delete from att_array_devuchar_ro;
+    delete from att_scalar_devenum_ro;
+    delete from att_scalar_devdouble_ro;
+    delete from att_scalar_devshort_rw;
+    delete from att_array_devenum_rw;
+    delete from att_scalar_devdouble_rw;
+    delete from att_array_devuchar_rw;
+    delete from att_array_devulong_rw;
+    delete from att_scalar_devlong_rw;
+    delete from att_array_devstate_rw;
+    delete from att_scalar_devulong_ro;
+    delete from att_scalar_devlong64_rw;
+    delete from att_scalar_devstring_ro;
+    delete from att_array_devulong64_ro;
+    delete from att_array_devlong_rw;
+    delete from att_scalar_devboolean_rw;
+    delete from att_array_devushort_ro;
+    delete from att_scalar_devstate_rw;
+    delete from att_array_devboolean_rw;
+    delete from att_scalar_devstate_ro;
+    delete from att_scalar_devencoded_ro;
+    delete from att_scalar_devfloat_rw;
+    delete from att_array_devdouble_ro;
+    delete from att_array_devboolean_ro;
+    delete from att_scalar_devulong_rw;
+    delete from att_array_devenum_ro;
+    delete from att_array_devstring_ro;
+    delete from att_array_devulong_ro;
+    delete from att_scalar_devlong64_ro;
+    delete from att_scalar_devushort_rw;
+    delete from att_array_devshort_rw;
+    delete from att_scalar_devulong64_ro;
+    delete from att_array_devlong_ro;
+
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: archiverdb-cleaner-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: archiverdb-cleaner-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "ska-archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+  schedule: {{ .Values.hdbppdb.cleaning_schedule }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cleaner
+            image: mysql
+            command: ['sh', '-c', 'mysql -h archiverdb-{{ template "ska-archiver.name" . }}-{{ .Release.Name }} -u {{ .Values.hdbppdb.db.user }} -p{{ .Values.hdbppdb.db.password }} {{ .Values.hdbppdb.db.db }} < /config/query.sql']
+            volumeMounts:
+              - name: config
+                mountPath: /config
+          restartPolicy: OnFailure
+          volumes:
+            - name: config
+              configMap:
+                name: archiverdb-delete-query-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+
+{{ end }}
+

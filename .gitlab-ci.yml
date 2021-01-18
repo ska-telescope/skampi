@@ -45,8 +45,8 @@ stages:
     apt-get install -y curl ca-certificates jq --no-install-recommends
   script:
   - &create_k8s_creds |
-    echo $KUBE_NAMESPACE
-    echo $SERVICE_ACCOUNT
+    # echo $KUBE_NAMESPACE
+    # echo $SERVICE_ACCOUNT
     curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE
   only:
     refs:

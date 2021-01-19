@@ -337,6 +337,6 @@ include:
   only: master
 
 # - project: 'ska-telescope/templates-repository'
-# #   this, ref, needs to be deleted after the branch in the templates-repository is deleted
+# # #   this, ref, needs to be deleted after the branch in the templates-repository is deleted
 #   ref: st-559-publish-credentials
 #   file: 'gitlab-ci/includes/create_k8s_creds.yml'

@@ -19,6 +19,7 @@ OET_ENV["OET_REST_URI"] = f"http://oet-rest-{HELM_RELEASE}:5000/api/v1.0/procedu
 
 
 @pytest.mark.fast
+@pytest.mark.skamid
 @scenario("XTP-1156.feature", "Observation Execution Tool")
 def test_create():
     pass

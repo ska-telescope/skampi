@@ -4,16 +4,15 @@ HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 MARK ?= all
 IMAGE_TO_TEST ?= $(DOCKER_REGISTRY_HOST)/$(DOCKER_REGISTRY_USER)/$(PROJECT):latest## docker image that will be run for testing purpose
-# TANGO_DATABASE_DS ?= databaseds-tango-base-$(ARCHIVER_RELEASE) ## Stable name for the Tango DB , as per SKAMPI variable name
-# TANGO_DATABASE_DS ?= tango-host-databaseds-$(ARCHIVER_RELEASE) ## Stable name for the Tango DB
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(ARCHIVER_RELEASE):10000## TANGO_HOST is an input!
-HOSTNAME ?= ska-archiver-hdbppdb-db
-DBNAME ?= hdbpp
-ARCHIVER_RELEASE ?= archivertest
+HOSTNAME ?= 192.168.93.137
+# DBNAME ?= hdbpp
+ARCHIVER_RELEASE ?= test
+ARCHIVER_NAMESPACE ?= ska-archiver
+CHARTS ?= ska-archiver
 
 # no need of CHARTS
 # CHARTS ?=  ## list of charts to be published on gitlab -- umbrella charts for testing purpose
-
 
 CI_PROJECT_PATH_SLUG ?= ska-archiver
 CI_ENVIRONMENT_SLUG ?= ska-archiver	
@@ -27,79 +26,66 @@ CI_ENVIRONMENT_SLUG ?= ska-archiver
 # watch:
 # 	watch kubectl get all,pv,pvc,ingress -n $(KUBE_NAMESPACE)
 
-
-# clean job has to be updated to only clean archiver charts and not other SKAMPI charts
-# clean: ## clean out references to chart tgz's
-# 	@rm -f ./charts/*/charts/*.tgz ./charts/*/Chart.lock ./charts/*/requirements.lock ./repository/*
-
 # watch:
 # 	watch kubectl get all,pv,pvc,ingress -n $(KUBE_NAMESPACE)
 
-# namespace: ## create the kubernetes namespace
-# 	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
-# 		K_DESC=$$? ; \
-# 		if [ $$K_DESC -eq 0 ] ; \
-# 		then kubectl describe namespace $(KUBE_NAMESPACE); \
-# 		else kubectl create namespace $(KUBE_NAMESPACE); \
-# 		fi
+namespace-archiver: ## create the kubernetes namespace
+	@kubectl describe namespace $(ARCHIVER_NAMESPACE) > /dev/null 2>&1 ; \
+		K_DESC=$$? ; \
+		if [ $$K_DESC -eq 0 ] ; \
+		then kubectl describe namespace $(ARCHIVER_NAMESPACE); \
+		else kubectl create namespace $(ARCHIVER_NAMESPACE); \
+		fi
 
-# namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
-# 	@kubectl describe namespace $(SDP_KUBE_NAMESPACE) > /dev/null 2>&1 ; \
-#  	K_DESC=$$? ; \
-# 	if [ $$K_DESC -eq 0 ] ; \
-# 	then kubectl describe namespace $(SDP_KUBE_NAMESPACE) ; \
-# 	else kubectl create namespace $(SDP_KUBE_NAMESPACE); \
-# 	fi
+delete_archiver: ## delete the kubernetes namespace
+	@if [ "default" == "$(ARCHIVER_NAMESPACE)" ] || [ "kube-system" == "$(ARCHIVER_NAMESPACE)" ]; then \
+	echo "You cannot delete Namespace: $(ARCHIVER_NAMESPACE)"; \
+	exit 1; \ARCHIVER_NAMESPACE
+	else \
+	kubectl describe namespace $(ARCHIVER_NAMESPACE) && kubectl delete namespace $(ARCHIVER_NAMESPACE); \
+	fi
 
-# delete_namespace: ## delete the kubernetes namespace
-# 	@if [ "default" == "$(KUBE_NAMESPACE)" ] || [ "kube-system" == "$(KUBE_NAMESPACE)" ]; then \
-# 	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
-# 	exit 1; \
-# 	else \
-# 	kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
-# 	fi
+dep-up: ## update dependencies for every charts in the env var CHARTS
+	@for i in $(CHARTS); do \
+	helm dependency update $${i}; \
+	done;
 
-# delete_namespace-sdp: ## delete the kubernetes namespace
-# 	@if [ "default" == "$(SDP_KUBE_NAMESPACE)" ] || [ "kube-system" == "$(SDP_KUBE_NAMESPACE)" ]; then \
-# 	echo "You cannot delete Namespace: $(SDP_KUBE_NAMESPACE)"; \
-# 	exit 1; \
-# 	else \
-# 	kubectl describe namespace $(SDP_KUBE_NAMESPACE) && kubectl delete namespace $(SDP_KUBE_NAMESPACE); \
-# 	fi
+check-dbname: ## Check if database name is empty
+	@if [$(DBNAME) == ""]; then \
+	echo "Database Name is not provided in make-install."; \
+	exit 1; \
+	fi
 
-# check if required
-# dep-up: ## update dependencies for every charts in the env var CHARTS
-# 	@cd charts; \
-# 	for i in $(CHARTS); do \
-# 	echo "+++ Updating $${i} chart +++"; \
-# 	helm dependency update $${i}; \
-# 	done; 
-	
+#Enable this target when latest ska-archiver chart is published on nexus
+# deploy-archiver: namespace-archiver check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
+# 	helm repo add nexusPath https://nexus.engageska-portugal.pt/repository/helm-chart/; \
+# 	helm repo update; \
+# 	helm install $(ARCHIVER_RELEASE) \
+# 		--set global.minikube=$(MINIKUBE) \
+# 		--set global.hostname=$(HOSTNAME) \ -- no need to give as it is not changing
+# 		--set global.dbname=$(DBNAME) \ -- this needs to be updated as per branch name when running from skampi
+# 		https://nexus.engageska-portugal.pt/repository/helm-chart/archiver-0.2.11.tgz --namespace $(ARCHIVER_NAMESPACE); 
 
-# download:
+# delete-archiver: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
+# 	@helm template  $(ARCHIVER_RELEASE) https://nexus.engageska-portugal.pt/repository/helm-chart/archiver-0.2.11.tgz --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
+# 	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE)
 
-#     echo "downloading charts"; \
-# 	helm pull [https://nexus.engageska-portugal.pt/repository/helm-chart/archiver-0.2.11.tgz] [--untar = true] \
-#     echo "Succeeded";
-
-clean-archiver: ## clean out references to chart tgz's
-	@rm -f ./charts/ska-archiver/charts/*.tgz ./charts/ska-archiver/Chart.lock ./charts/ska-archiver/requirements.lock
-
-deploy-archiver: clean-archiver namespace namespace_sdp ## install the helm chart on the namespace KUBE_NAMESPACE
-	helm dependency update $(ARCHIVER_CHART_PATH); \
-	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
-	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
+#Enable this target when local ska-archiver chart is used for deployment
+deploy-archiver: clean-archiver namespace-archiver check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
+	helm dependency update $(ARCHIVER_CHART_PATH);\
 	helm install $(ARCHIVER_RELEASE) \
 		--set global.minikube=$(MINIKUBE) \
 		--set global.tango_host=$(TANGO_HOST) \
 		--set global.hostname=$(HOSTNAME) \
 		--set global.dbname=$(DBNAME) \
-		--values values.yaml \
-		$(ARCHIVER_CHART_PATH) --namespace $(KUBE_NAMESPACE); 
+		$(ARCHIVER_CHART_PATH) --namespace $(ARCHIVER_NAMESPACE);
 
 delete-archiver: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-	@helm template  $(ARCHIVER_RELEASE) $(ARCHIVER_CHART_PATH) --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(KUBE_NAMESPACE) | kubectl delete -f - ; \
-	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(KUBE_NAMESPACE)
+	@helm template  $(ARCHIVER_RELEASE) $(ARCHIVER_CHART_PATH) --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
+	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE)
+	
+clean-archiver: ## clean out references to chart tgz's
+	@rm -f ./charts/ska-archiver/charts/*.tgz ./charts/ska-archiver/Chart.lock ./charts/ska-archiver/requirements.lock
 
 # reinstall-archiver: delete-archiver deploy-archiver ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
@@ -120,13 +106,13 @@ delete-archiver: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 # Error in --set
 show: ## show the helm chart
 	@helm template $(ARCHIVER_RELEASE) charts/$(HELM_CHART)/ \
-		--namespace $(KUBE_NAMESPACE) \
+		--namespace $(ARCHIVER_NAMESPACE) \
 		--set xauthority="$(XAUTHORITYx)" \
 		--set display="$(DISPLAY)" 
 
 # Linting chart tmc-mid
 archiver_chart_lint: ## lint check the helm chart
 	@helm lint $(ARCHIVER_CHART_PATH) \
-		--namespace $(KUBE_NAMESPACE) 
+		--namespace $(ARCHIVER_NAMESPACE) 
 
 

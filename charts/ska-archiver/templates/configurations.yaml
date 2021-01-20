@@ -6,6 +6,7 @@
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
+{{ $tangodb := coalesce .Values.global.tangodb .Values.tangodb}}
 
 ---
 apiVersion: v1
@@ -23,8 +24,47 @@ data:
 {{ (tpl (.Files.Glob "data/configure_hdbpp.py").AsConfig . ) | indent 2 }}
   configure_dbname_hostname.py:
 {{ (tpl (.Files.Glob "data/configure_dbname_hostname.py").AsConfig . ) | indent 2 }}
+  create_hdbpp_schema.sh:
+{{ (tpl (.Files.Glob "data/create_hdbpp_schema.sh").AsConfig . ) | indent 2 }}
+  createHdbppMysql.sql:
+{{ (tpl (.Files.Glob "data/createHdbppMysql.sql").AsConfig . ) | indent 2 }}
 
-
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-hdbpp-schema-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      volumes:
+      - name: create-hdbpp-schema
+        configMap:
+          name: "attrconfig-configuration-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}"
+      containers:
+      - name: create-hdbpp-schema
+        image: "{{ $tangodb.image.registry }}/{{ $tangodb.image.image }}:{{ $tangodb.image.tag }}"
+        imagePullPolicy: {{ $tangodb.image.pullPolicy }}
+        command:
+          - sh
+        args:
+          - -c
+          - "/bin/bash app/data/create_hdbpp_schema.sh {{ .Values.global.dbname }}"
+           
+        env:
+        - name: TANGO_HOST
+          value: {{ $tango_host }}
+        volumeMounts:
+          - name: create-hdbpp-schema
+            mountPath: /app/data
+            readOnly: true
+      restartPolicy: OnFailure
 ---
 apiVersion: batch/v1
 kind: Job
@@ -64,10 +104,12 @@ spec:
           - sh
         args:
           - -c
-          - "/venv/bin/python data/configure_hdbpp.py \
+          - "/venv/bin/python data/configure_dbname_hostname.py --hostname={{ .Values.global.hostname }} --dbname={{ .Values.global.dbname }}  && \
+            /venv/bin/python data/configure_hdbpp.py \
               --cm=archiving/hdbpp/confmanager01 \
               --es=archiving/hdbpp/eventsubscriber01 \
-              --attrfile=data/attribute2archive.json"
+              --attrfile=data/attribute2archive.json \
+              --th={{ .Values.global.tango_host}}"
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
@@ -76,56 +118,5 @@ spec:
             mountPath: /app/data
             readOnly: true
       restartPolicy: OnFailure
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: configure-hostname-dbname-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
-  annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
-spec:
-  ttlSecondsAfterFinished: 100
-  template:
-    spec:
-      volumes:
-      - name: configure-hostname-dbname
-        configMap:
-          name: "attrconfig-configuration-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}"
-      initContainers:
-        - name: wait-for-devices
-          image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
-          imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
-          command:
-            - sh
-          args:
-            - -c
-            - "retry --max=20 -- tango_admin --ping-device archiving/hdbpp/eventsubscriber01 && \
-              retry --max=20 -- tango_admin --ping-device archiving/hdbpp/confmanager01"
-          env:
-          - name: TANGO_HOST
-            value: {{ $tango_host }}
-      containers:
-      - name: configure-hostname-dbname
-        image: "{{ $itango.image.registry }}/{{ $itango.image.image }}:{{ $itango.image.tag }}"
-        imagePullPolicy: {{ $itango.image.pullPolicy }}
-        command:
-          - sh
-        args:
-          - -c
-          - "/venv/bin/python data/configure_dbname_hostname.py \
-             --hostname={{ .Values.global.hostname }} \
-             --dbname={{ .Values.global.dbname }}"
-        env:
-        - name: TANGO_HOST
-          value: {{ $tango_host }}
-        volumeMounts:
-          - name: configure-hostname-dbname
-            mountPath: /app/data
-            readOnly: true
-      restartPolicy: OnFailure
-
 {{ end }}
 

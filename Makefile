@@ -68,6 +68,7 @@ logs: ## POD logs for descriptor
 
 
 clean: ## clean out references to chart tgz's
+	# @rm -f ./charts/*/charts/*.tgz ./charts/*/Chart.lock ./charts/*/requirements.lock
 	@rm -f ./charts/skamid/charts/*.tgz ./charts/skamid/Chart.lock ./charts/skamid/requirements.lock ./charts/skalow/charts/*.tgz ./charts/skalow/Chart.lock ./charts/skalow/requirements.lock
 
 namespace: ## create the kubernetes namespace
@@ -127,6 +128,8 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
         --set tango-base.ingress.nginx=$(USE_NGINX) \
         --set webjive.ingress.hostname=$(INGRESS_HOST) \
         --set webjive.ingress.nginx=$(USE_NGINX) \
+		--set minikube=$(MINIKUBE) \
+		--set global.minikube=$(MINIKUBE) \
 		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \

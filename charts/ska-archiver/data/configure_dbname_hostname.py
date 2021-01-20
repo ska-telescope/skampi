@@ -30,8 +30,8 @@ try:
     libname = "libhdb++mysql.so.6"
     dbname = DBNAME
     port = 3306
-    user = "tango"
-    password = "tango"
+    user = "eda_admin"
+    password = "@v3ng3rs@ss3mbl3"
 
     host_name = "host={}".format(hostname)
     lib_name = "libname={}".format(libname)

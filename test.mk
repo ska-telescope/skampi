@@ -55,6 +55,8 @@ k8s_test: enable_test_auth smoketest## test the application on K8s
 		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
 		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
 		base64 -d | tar -xzf -; \
+		python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
+			--pp k8s_pretty.log --dump k8s_dump.log --tests k8s_tests.log; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		exit $$status
 
@@ -66,6 +68,8 @@ k8s_multiple_test_runs: enable_test_auth
 		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
 		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
 		base64 -d | tar -xzf -; \
+		python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
+			--pp k8s_pretty.log --dump k8s_dump.log --tests k8s_tests.log; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		exit $$status
 

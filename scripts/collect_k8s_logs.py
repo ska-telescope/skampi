@@ -132,7 +132,7 @@ def collect_pod_logs(namespace):
                 attrs = { 'pod': podName, 'container': containerName,
                           'previous': previous, 'namespace': namespace }
                 line_dict = {}
-                for line in logs.split('\n'):
+                for line in logs.splitlines():
                     if len(line) > 0:
 
                         # Add line to list

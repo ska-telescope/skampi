@@ -132,8 +132,9 @@ test mid on demand:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
   before_script:
     - *create_k8s_cred_dependencies
-  <<: *test_definition
-  <<: *create_k8s_creds_after_script
+    - *create_k8s_creds
+  <<: *test_definition # This is the script section
+  # <<: *create_k8s_creds_after_script # This is the after_script section
   environment:
     name: "test"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
@@ -177,8 +178,9 @@ test low on demand:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
   before_script:
     - *create_k8s_cred_dependencies
-  <<: *test_definition
-  <<: *create_k8s_creds_after_script
+    - *create_k8s_creds
+  <<: *test_definition # This is the script section
+  # <<: *create_k8s_creds_after_script # This is the after_script section
   environment:
     name: "test-low"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"

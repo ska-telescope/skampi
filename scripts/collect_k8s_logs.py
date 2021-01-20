@@ -119,7 +119,7 @@ def collect_pod_logs(namespace):
                                                       previous=previous,
                                                       container=containerName,
                                                       timestamps=True)
-                except client.exceptions.ApiException as e:
+                except client.rest.ApiException as e:
 
                     # Try to parse as JSON to figure out whether
                     # something strange happened. As we are

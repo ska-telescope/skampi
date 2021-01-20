@@ -4,14 +4,15 @@ Kubernetes log collection script
 
 Usage:
   collect_k8s_logs.py <ns>... [--timefmt=<format>]
-      [--pp=<out>] [--dump=<out>] [--tests=<out>]
+      [--pp=<out>] [--dump=<out>] [--tests=<out>] [--test=<test>]
 
 Options:
-  <ns>          Namespaces or JSON dump files (files must have '/' or '.')
-  --timefmt=<fmt>  Format timestamps (default %H:%M:%S)
-  --pp=<out>    Pretty-print to file ('-' for stdout - default)
-  --dump=<out>  Write JSON strings to file ('-' for stdout)
-  --tests=<out> Put test case summary into file ('-' for stdout)
+  <ns>           Namespaces or JSON dump files (files must have '/' or '.')
+  --timefmt=<fmt>  Format timestamps (default %H:%M:%S.%f)
+  --pp=<out>     Pretty-print to file ('-' for stdout - default)
+  --dump=<out>   Write JSON strings to file ('-' for stdout)
+  --tests=<out>  Put test case summary into file ('-' for stdout)
+  --test=<test>  Filter out only test of given name
 """
 
 from kubernetes import client, config
@@ -227,7 +228,9 @@ def make_target(target_name, message=''):
                 yield f
 
 # Pretty-print
-pp_date_format = arguments.get('--timefmt', '%H:%M:%S')
+pp_date_format = arguments['--timefmt']
+if pp_date_format is None:
+    pp_date_format = '%H:%M:%S.%f'
 def pp_line(line):
     return f"{line['time'].strftime(pp_date_format)} {line.get('level', '---')}\t{line.get('pod', '---')}:{line.get('container', '---')}\t{line['msg']}"
 for pp_file in make_target(pp_target, f'Pretty-printing to {pp_target}...'):
@@ -421,6 +424,9 @@ for tests_file in make_target(tests_target, f'Writing test report to {tests_targ
 
     # Done, print results
     for test in collect_tests(lines):
+        if arguments['--test'] is not None:
+            if test['name'] != arguments['--test']:
+                continue
         print('\n===', test['status'], test['file'], test['name'], test.get('param', ''), '===',
               file=tests_file)
 

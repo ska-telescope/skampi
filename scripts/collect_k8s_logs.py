@@ -232,7 +232,7 @@ pp_date_format = arguments['--timefmt']
 if pp_date_format is None:
     pp_date_format = '%H:%M:%S.%f'
 def pp_line(line):
-    return f"{line['time'].strftime(pp_date_format)} {line.get('level', '---')}\t{line.get('pod', '---')}:{line.get('container', '---')}\t{line['msg']}"
+    return f"{line['time'].strftime(pp_date_format)} {line.get('level', '---')}\t{line.get('pod', '---')}:{line.get('container', '---')}\t{line['msg']}".encode('utf-8')
 for pp_file in make_target(pp_target, f'Pretty-printing to {pp_target}...'):
     for line in lines:
         print(pp_line(line), file=pp_file)

@@ -97,6 +97,9 @@ uninstall low:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
       - "build/"
+      - "k8s_pretty.log"
+      - "k8s_dump.log"
+      - "k8s_tests.log"
     reports:
       junit: build/report.xml
     when: always

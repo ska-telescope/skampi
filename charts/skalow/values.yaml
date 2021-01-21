@@ -70,7 +70,7 @@ webjive:
   minikube: false
   ingress:
     enabled: true
-    nginx: false
+    nginx: true
     hostname: low.integration.engageska-portugal.pt
 
 oet-scripts:

@@ -49,7 +49,15 @@ def parse_log_line(line :str, attrs :dict, previous :dict) -> dict:
     # Parse Kubernetes timestamp
     m = kube_time_re.match(line)
     if not m:
-        print('could not parse K8s timestamp: ', line)
+        # This can happen with lines that are split with \r:
+        # Kubernetes does not interpret this as a new-line (and
+        # therefore adds only a single timestampe), yet Python's
+        # splitlines does. Therefore we can just take over the
+        # attributes from the last line.
+        if previous:
+            out.update(previous)
+        else:
+            print('could not parse K8s timestamp: ', line)
     else:
         out['time'] = parse_date(m['kube_time'])
         line = m['rest']

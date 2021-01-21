@@ -303,8 +303,7 @@ A user, who during development may want to run a specific test from his own IDE 
 ability to perform debugging, will need to ensure the execution environment of its IDE is
 attached to a Kubernetes pod running in the same namespace as the SUT.
 
-.. todo:
-can we provide an example of how to do it (say with VSCode?)
+Refer to :doc:`Working with VSCode <../vscode>` for an example of doing this with VSCode.
 
 
 *What interfaces (human or programmable) are available and can be used for testing?*
@@ -351,7 +350,7 @@ initiating of tests and their life cycle.
 
 .. todo::
 
-    how about using environment variables as a mechanim to send values to the tests?
+    how about using environment variables as a mechanism to send values to the tests?
 
     Not clear to me (GB) how a user will have 'full control'. would a user be able to
     run `pytest` commands with its own set of options and arguments?
@@ -546,13 +545,13 @@ The nature and purpose of tests changes according to how the maturity of the sys
 set of functionalities. In addition the maturity of the test itself and the platform and artifacts used
 by the tests also change over the course of time.
 
-The first item that needs to mature are the **testing packages** (3d party as well as local) used by
+The first items that needs to mature are the **testing packages** (3d party as well as local) used by
 testing code. Even though changes to these items evolves continuously, their usages in tests are limited
 in number until they have reached a certain amount of stability. For example the `skallop library` is being
 introduced at a relatively slow pace into existing tests to ensure the maturity is higher than the test itself
 using it.
 
-The next item that matures is the **tests** themselves. Their growth in maturity should always precede that of the the SUT,
+The next items that matures are the **tests** themselves. Their growth in maturity should always precede that of the the SUT,
 even though both follow each other in a close manner. This is because tests are often tightly coupled with functionality
 in order to pick up regression failures, requiring constant changes in order to be in sync with updated
 functionality. Thus in the beginning there is a relatively high likelihood of failures being false positives,

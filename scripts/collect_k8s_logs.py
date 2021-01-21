@@ -232,6 +232,9 @@ def make_target(target_name, message=''):
             yield sys.stdout
         else:
             print(message)
+            # Small hack for GitLab CI - show expected URI
+            if os.getenv('CI_PROJECT_URL') is not None and os.getenv('CI_JOB_ID') is not None:
+                print(f"  {os.getenv('CI_PROJECT_URL')}/-/jobs/{os.getenv('CI_JOB_ID')}/artifacts/file/{target_name}")
             with open(target_name, 'w', encoding='utf-8') as f:
                 yield f
 

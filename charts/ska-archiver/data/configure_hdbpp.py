@@ -31,7 +31,7 @@ def cm_configure_attributes():
 
             for attribute in attribute_list:
                 total_attrib_count += 1
-                attribute_fqdn = attribute
+                attribute_fqdn = attribute 
 
                 # if not (attribute.find("tango")):
                 #     attribute_fqdn = "tango://" + str(tango_host) + "/" + attribute
@@ -62,6 +62,8 @@ def cm_configure_attributes():
                     not_online = False
                     for loop_cnt in range(0, max_retries):
                         try:
+                            # deviceProxy = DeviceProxy(attribute_fqdn)
+                            # print("Deviceproxy state is : ", deviceProxy.State())
                             att = AttributeProxy(attribute_fqdn)
                             print("Attribute proxy is : " , att)
                             att.read()

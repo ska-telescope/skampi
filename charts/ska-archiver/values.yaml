@@ -48,7 +48,12 @@ attributes2archive:
     - "sys/tg_test/1/ulong_scalar"
     - "sys/tg_test/1/long64_scalar"
     - "sys/tg_test/1/long_scalar"
-    - "tango://subarraynode1-sa1-0.integration.svc.cluster.local:10000/ska_mid/tm_subarray_node/1/State"
+    - "tango://databaseds-tango-base-test.integration.svc.cluster.local:10000/ska_mid/tm_subarray_node/1/State"
+    - "tango://databaseds-tango-base-test.integration.svc.cluster.local:10000/ska_mid/tm_central/central_node/State"
+    - "tango://databaseds-tango-base-test.integration.svc.cluster.local:10000/ska_mid/tm_leaf_node/csp_master/State"
+    - "tango://databaseds-tango-base-test.integration.svc.cluster.local:10000/ska_mid/tm_leaf_node/sdp_master/State"
+
+
   polling_period: 1000
   period_event: 3000
 

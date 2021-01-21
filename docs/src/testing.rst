@@ -5,12 +5,12 @@ This page outlines the various  testing approaches to perform on the artifacts (
 Mid and SKA Low) produced from SKAMPI.
 
 .. attention::
-    **Any purported capability, feature or characteristic claimed to exist on the
+    **Any purported capability, feature or characteristic, claimed to exist on the
     deliverable artifacts must be "backed up" by objective tests passing when executed
     on the artifacts**
 
 Therefore the primary aim of tests on SKAMPI is to **describe** the current characteristics
-for artifacts delivered from a particular version of SKAMPI.
+of the artifacts delivered from a particular version of SKAMPI.
 
 SKAMPI should be seen as a testing facility where
 the final stage of developed software is run before delivery and
@@ -238,12 +238,57 @@ interfacing:
 
 .. todo::
     not clear to me (GB) how one would go in defining the hostname (and port?) to access
-    a public API? do we have an example?
+    a public API? do we have an example? GLR - see updates below
 
+**Internal API example**
 
-Currently tests are only making use of the internal API mechanism. This can only be
-achieved if the tests themselves are part of the Kubernetes environment; therefore tests
-need a separate deployment as a Kubernetes resource.
+**Tango framework:** The tango library makes use of an env variable that contains the TCP host address and port nr
+denoting the tango "facility" in which the client should operate in. This address points in essence to a database that maintains
+addresses for all tango related components (device) taking part in the particular environment. Each device is allocated a unique domain name that a 
+client can use to connect with. The example below illustrates the concept:
+
+.. code-block:: python
+
+    # export TANGO_HOST='databaseds-tango-base-test:10000'
+    from tango import DeviceProxy
+
+    device_under_test = DeviceProxy("sys/tg_test/1")
+    device_under_test.ping()
+
+Note since the communications are internally, the client must be running as kubernetes resources that have access the kube namespace.
+
+**Internal API example**
+
+**kubernetes framework:** The kubernetes server API can also be accessed withing python code using a thinly wrapped library. If your environment variables are set correctly
+and the pod have been given the correct permissions then the same REST commands one could do using the command line tool 'kubectl' can be done using the API. Below is an example:
+ .. code-block:: python
+
+    from kubernetes import config, client 
+
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
+    pods = v1.list_namespaced_pod('test-mvp').items
+
+The kubernetes server can be used both internally or externally dependent on the particular credentials set up in the env for that process.
+
+**public tango API:**
+
+There also exists an external REST API for tango. This interface is enabled by ensuring the REST components are deployed as part of SKAMPI install (they are by defualt):
+
+.. code-block:: bash
+
+    tango-base:
+        tangorest:
+            enabled: true
+
+If the test services are enabled, a host identified by the name `tango.rest.mvptest.engageska-portugal.pt:80` can be accessed from an external REST client.
+
+.. code-block:: bash
+
+    curl tango.rest.mvptest.engageska-portugal.pt
+
+There does not currently exists an client library in tango for accessing the REST API.
+
 
 For automatic tests during
 continuous integration this is achieved by firstly deploying a separate Kubernetes Pod

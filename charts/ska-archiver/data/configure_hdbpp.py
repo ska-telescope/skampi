@@ -31,19 +31,13 @@ def cm_configure_attributes():
 
             for attribute in attribute_list:
                 total_attrib_count += 1
-                attribute_fqdn = attribute 
 
-                # if not (attribute.find("tango")):
-                #     attribute_fqdn = "tango://" + str(tango_host) + "/" + attribute
-                #     print("Attribute FQDN is : ", attribute_fqdn)
-                # else:
-                #     attribute_fqdn = attribute
-                #     print("MVP Attribute FQDN is : ", attribute_fqdn)
+                # attribute_fqdn = "tango://" + str(tango_host) + "/" + attribute
+                attribute_fqdn = attribute
 
                 is_already_archived = False
                 attr_list = evt_subscriber_proxy.read_attribute("AttributeList").value
                 sleep(10)
-                print("Already Configured list: ", attr_list)
                 if attr_list is not None:
                     for already_archived in attr_list:
                         if attribute.lower() in str(already_archived).lower():
@@ -62,10 +56,7 @@ def cm_configure_attributes():
                     not_online = False
                     for loop_cnt in range(0, max_retries):
                         try:
-                            # deviceProxy = DeviceProxy(attribute_fqdn)
-                            # print("Deviceproxy state is : ", deviceProxy.State())
                             att = AttributeProxy(attribute_fqdn)
-                            print("Attribute proxy is : " , att)
                             att.read()
                             break
                         except DevFailed as dev_failed:
@@ -73,7 +64,6 @@ def cm_configure_attributes():
                                 print("Attribute " + attribute + " not online. Skipping it.")
                                 not_online = True
                                 break
-                            print(str(dev_failed))
                             print("DevFailed exception: " + str(dev_failed.args[0].reason) +
                                   ". Sleeping for " + str(sleep_time) + "ss")
                             sleep(sleep_time)
@@ -185,15 +175,3 @@ if configure_fail_attr_count > 0:
     sys.exit(-1)
 
 evt_subscriber_proxy.Start()
-
-
-# try:
-#     print("Removing all the configured attribute...")
-#     attr_list_es = evt_subscriber_proxy.AttributeList
-#     for attr in attr_list_es:
-#         conf_manager_proxy.AttributeRemove(str(attr))
-#         sleep(2)
-#         print("Attribute " + str(attr) + " removed successfully.")
-
-# except Exception as exp:
-#     print("Exception occured while removing an attribute: ", exp)

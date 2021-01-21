@@ -11,23 +11,18 @@ ARCHIVER_RELEASE ?= test
 ARCHIVER_NAMESPACE ?= ska-archiver
 CHARTS ?= ska-archiver
 
-# no need of CHARTS
-# CHARTS ?=  ## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
 CI_PROJECT_PATH_SLUG ?= ska-archiver
 CI_ENVIRONMENT_SLUG ?= ska-archiver	
 
 .DEFAULT_GOAL := help
 
-# help:  ## show this help.
-# 	@echo "Deploy EDA archiver service:"
+help:  ## show this help.
+	@echo "Deploy EDA archiver service:"
 
-# # as per discussion same namespace ($(KUBE_NAMESPACE)) is used for EDA pod deployments
-# watch:
-# 	watch kubectl get all,pv,pvc,ingress -n $(KUBE_NAMESPACE)
 
-# watch:
-# 	watch kubectl get all,pv,pvc,ingress -n $(KUBE_NAMESPACE)
+watch-archiver:
+	watch kubectl get all,pv,pvc,ingress -n $(ARCHIVER_NAMESPACE)
 
 namespace-archiver: ## create the kubernetes namespace
 	@kubectl describe namespace $(ARCHIVER_NAMESPACE) > /dev/null 2>&1 ; \
@@ -45,10 +40,6 @@ delete_archiver: ## delete the kubernetes namespace
 	kubectl describe namespace $(ARCHIVER_NAMESPACE) && kubectl delete namespace $(ARCHIVER_NAMESPACE); \
 	fi
 
-dep-up: ## update dependencies for every charts in the env var CHARTS
-	@for i in $(CHARTS); do \
-	helm dependency update $${i}; \
-	done;
 
 check-dbname: ## Check if database name is empty
 	@if [$(DBNAME) == ""]; then \
@@ -87,30 +78,14 @@ delete-archiver: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 clean-archiver: ## clean out references to chart tgz's
 	@rm -f ./charts/ska-archiver/charts/*.tgz ./charts/ska-archiver/Chart.lock ./charts/ska-archiver/requirements.lock
 
-# reinstall-archiver: delete-archiver deploy-archiver ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
-# upgrade-archiver-chart: ## upgrade the tmc-mid helm chart on the namespace tmcprototype
-# 	helm upgrade --set minikube=$(MINIKUBE) $(ARCHIVER_RELEASE) $(ARCHIVER_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
-
-# test-archiver:
-
-# wait:## wait for pods to be ready
-# 	@echo "Waiting for pods to be ready"
-# 	@date
-# 	@kubectl -n $(KUBE_NAMESPACE) get pods
-# 	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=240s $$jobs -n $(KUBE_NAMESPACE)
-# 	@kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready -l app=tmc-prototype --timeout=240s pods
-# 	@kubectl get pods -n $(KUBE_NAMESPACE)
-# 	@date
-
-# Error in --set
-show: ## show the helm chart
+show-archiver: ## show the helm chart
 	@helm template $(ARCHIVER_RELEASE) charts/$(HELM_CHART)/ \
 		--namespace $(ARCHIVER_NAMESPACE) \
 		--set xauthority="$(XAUTHORITYx)" \
 		--set display="$(DISPLAY)" 
 
-# Linting chart tmc-mid
+# Linting chart archiver
 archiver_chart_lint: ## lint check the helm chart
 	@helm lint $(ARCHIVER_CHART_PATH) \
 		--namespace $(ARCHIVER_NAMESPACE) 

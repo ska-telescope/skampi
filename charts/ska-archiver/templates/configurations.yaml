@@ -69,6 +69,54 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
+  name: configure-hostname-dbname-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      volumes:
+      - name: configure-hostname-dbname
+        configMap:
+          name: "attrconfig-configuration-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}"
+      initContainers:
+        - name: wait-for-devices
+          image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
+          imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
+          command:
+            - sh
+          args:
+            - -c
+            - "retry --max=20 -- tango_admin --ping-device archiving/hdbpp/eventsubscriber01 && \
+              retry --max=20 -- tango_admin --ping-device archiving/hdbpp/confmanager01"
+          env:
+          - name: TANGO_HOST
+            value: {{ $tango_host }}
+      containers:
+      - name: configure-hostname-dbname
+        image: "{{ $itango.image.registry }}/{{ $itango.image.image }}:{{ $itango.image.tag }}"
+        imagePullPolicy: {{ $itango.image.pullPolicy }}
+        command:
+          - sh
+        args:
+          - -c
+          - "/venv/bin/python data/configure_dbname_hostname.py --cm=archiving/hdbpp/confmanager01 --es=archiving/hdbpp/eventsubscriber01 --hostname={{ .Values.global.hostname }} --dbname={{ .Values.global.dbname }}"
+        env:
+        - name: TANGO_HOST
+          value: {{ $tango_host }}
+        volumeMounts:
+          - name: configure-hostname-dbname
+            mountPath: /app/data
+            readOnly: true
+      restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
   name: attrconfig-{{ template "ska-archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
@@ -93,7 +141,6 @@ spec:
             - -c
             - "retry --max=20 -- tango_admin --ping-device archiving/hdbpp/eventsubscriber01 && \
               retry --max=20 -- tango_admin --ping-device archiving/hdbpp/confmanager01"
-              
           env:
           - name: TANGO_HOST
             value: {{ $tango_host }}
@@ -105,8 +152,7 @@ spec:
           - sh
         args:
           - -c
-          - "/venv/bin/python data/configure_dbname_hostname.py --hostname={{ .Values.global.hostname }} --dbname={{ .Values.global.dbname }}  && \
-            /venv/bin/python data/configure_hdbpp.py \
+          - "/venv/bin/python data/configure_hdbpp.py \
               --cm=archiving/hdbpp/confmanager01 \
               --es=archiving/hdbpp/eventsubscriber01 \
               --attrfile=data/attribute2archive.json \

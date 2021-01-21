@@ -13,14 +13,14 @@ Viewed as stages in a delivery pipeline, the intended target environment types a
 -   **On site Integration:** A version deployed on a particular site that includes 
     actual telescope hardware (or hardware prototypes) to perform site integration 
     tests
--   **Staging:** A fixed version released at particular points in time (mostly every 
+-   **Staging:** A fixed version released at particular points in time (mostly at the end of every 
     PI sprint), made accessible via a set of web URLs for users wanting to demonstrate
     or explore current delivered value.
 -   **Pipeline Testing:** A version automatically deployed as a result of a new 
     commit on a branch of SKAMPI in order to run the predefined continuous integration
     tests.
 -   **Integration Testing:** A platform exactly the same as for staging in which 
-    the user has manual control over the version of SKAMPI and the instantiating of it's
+    the user has manual control over the version of SKAMPI and the instantiation of it's
     deliverables so as to test during development of new features
 -   **Development:** A miscellaneous set of platforms (e.g. K8 minikube, K3) with separate
     self standing clusters that allows a developer to simulate the target environment

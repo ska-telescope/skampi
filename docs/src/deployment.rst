@@ -42,6 +42,16 @@ All the following deployments are deployed using using the same makefile.
 Deploy
 ------
 
+.. todo::
+    Add here a description of the prerequisites that a developer/tester needs
+    in order to configure and install the SKA-LOW or SKA-MID products.
+
+    Things like:
+    - access to the VPN
+    - ubuntu
+    - ssh
+    - VSCode/PyCharm professional
+
 Skampi enables the deployment of two separate products as charts
 
 - **mvp-low:** (DEPLOYMENT_CONFIGURATION = skalow)

@@ -23,7 +23,7 @@ import sys
 import re
 import json
 from docopt import docopt
-
+import os
 
 # Configs can be set in Configuration class directly or using helper utility
 config.load_kube_config()

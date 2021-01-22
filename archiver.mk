@@ -52,10 +52,10 @@ deploy-archiver: namespace-archiver check-dbname## install the helm chart on the
 		--set global.minikube=$(MINIKUBE) \
 		--set global.hostname=$(HOSTNAME) \
 		--set global.dbname=$(DBNAME) \
-		https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.0.tgz --namespace $(ARCHIVER_NAMESPACE); 
+		https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --namespace $(ARCHIVER_NAMESPACE); 
 
 delete-archiver: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-	@helm template  $(ARCHIVER_RELEASE) https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.0.tgz --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
+	@helm template  $(ARCHIVER_RELEASE) https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
 	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE)
 
 show-archiver: ## show the helm chart

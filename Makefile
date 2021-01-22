@@ -26,7 +26,6 @@ DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/##
-# ARCHIVER_CHART_PATH = ./charts/ska-archiver/
 
 
 .DEFAULT_GOAL := help
@@ -69,7 +68,6 @@ logs: ## POD logs for descriptor
 
 clean: ## clean out references to chart tgz's
 	@rm -f ./charts/*/charts/*.tgz ./charts/*/Chart.lock ./charts/*/requirements.lock
-	# @rm -f ./charts/skamid/charts/*.tgz ./charts/skamid/Chart.lock ./charts/skamid/requirements.lock ./charts/skalow/charts/*.tgz ./charts/skalow/Chart.lock ./charts/skalow/requirements.lock
 
 namespace: ## create the kubernetes namespace
 	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \

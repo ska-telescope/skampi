@@ -18,7 +18,6 @@ CI_ENVIRONMENT_SLUG ?= ska-archiver
 help-archiver:  ## show this help.
 	@echo "Deploy EDA archiver service:"
 
-
 watch-archiver:
 	watch kubectl get all,pv,pvc,ingress -n $(ARCHIVER_NAMESPACE)
 

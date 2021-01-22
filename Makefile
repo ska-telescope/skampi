@@ -68,8 +68,8 @@ logs: ## POD logs for descriptor
 
 
 clean: ## clean out references to chart tgz's
-	# @rm -f ./charts/*/charts/*.tgz ./charts/*/Chart.lock ./charts/*/requirements.lock
-	@rm -f ./charts/skamid/charts/*.tgz ./charts/skamid/Chart.lock ./charts/skamid/requirements.lock ./charts/skalow/charts/*.tgz ./charts/skalow/Chart.lock ./charts/skalow/requirements.lock
+	@rm -f ./charts/*/charts/*.tgz ./charts/*/Chart.lock ./charts/*/requirements.lock
+	# @rm -f ./charts/skamid/charts/*.tgz ./charts/skamid/Chart.lock ./charts/skamid/requirements.lock ./charts/skalow/charts/*.tgz ./charts/skalow/Chart.lock ./charts/skalow/requirements.lock
 
 namespace: ## create the kubernetes namespace
 	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
@@ -134,6 +134,7 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set oet.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \

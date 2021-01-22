@@ -15,9 +15,9 @@ CHARTS ?= ska-archiver
 CI_PROJECT_PATH_SLUG ?= ska-archiver
 CI_ENVIRONMENT_SLUG ?= ska-archiver	
 
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := help-archiver
 
-help:  ## show this help.
+help-archiver:  ## show this help.
 	@echo "Deploy EDA archiver service:"
 
 
@@ -48,35 +48,35 @@ check-dbname: ## Check if database name is empty
 	fi
 
 #Enable this target when latest ska-archiver chart is published on nexus
-# deploy-archiver: namespace-archiver check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
-# 	helm repo add nexusPath https://nexus.engageska-portugal.pt/repository/helm-chart/; \
-# 	helm repo update; \
-# 	helm install $(ARCHIVER_RELEASE) \
-# 		--set global.minikube=$(MINIKUBE) \
-# 		--set global.hostname=$(HOSTNAME) \ -- no need to give as it is not changing
-# 		--set global.dbname=$(DBNAME) \ -- this needs to be updated as per branch name when running from skampi
-# 		https://nexus.engageska-portugal.pt/repository/helm-chart/archiver-0.2.11.tgz --namespace $(ARCHIVER_NAMESPACE); 
-
-# delete-archiver: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-# 	@helm template  $(ARCHIVER_RELEASE) https://nexus.engageska-portugal.pt/repository/helm-chart/archiver-0.2.11.tgz --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
-# 	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE)
-
-#Enable this target when local ska-archiver chart is used for deployment
-deploy-archiver: clean-archiver namespace-archiver check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
-	helm dependency update $(ARCHIVER_CHART_PATH);\
+deploy-archiver: namespace-archiver check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
+	helm repo add nexusPath https://nexus.engageska-portugal.pt/repository/helm-chart/; \
+	helm repo update; \
 	helm install $(ARCHIVER_RELEASE) \
 		--set global.minikube=$(MINIKUBE) \
-		--set global.tango_host=$(TANGO_HOST) \
 		--set global.hostname=$(HOSTNAME) \
 		--set global.dbname=$(DBNAME) \
-		$(ARCHIVER_CHART_PATH) --namespace $(ARCHIVER_NAMESPACE);
+		https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.0.tgz --namespace $(ARCHIVER_NAMESPACE); 
 
 delete-archiver: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-	@helm template  $(ARCHIVER_RELEASE) $(ARCHIVER_CHART_PATH) --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
+	@helm template  $(ARCHIVER_RELEASE) https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.0.tgz --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
 	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE)
+
+#Enable this target when local ska-archiver chart is used for deployment
+# deploy-archiver: clean-archiver namespace-archiver check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
+# 	helm dependency update $(ARCHIVER_CHART_PATH);\
+# 	helm install $(ARCHIVER_RELEASE) \
+# 		--set global.minikube=$(MINIKUBE) \
+# 		--set global.tango_host=$(TANGO_HOST) \
+# 		--set global.hostname=$(HOSTNAME) \
+# 		--set global.dbname=$(DBNAME) \
+# 		$(ARCHIVER_CHART_PATH) --namespace $(ARCHIVER_NAMESPACE);
+
+# delete-archiver: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
+# 	@helm template  $(ARCHIVER_RELEASE) $(ARCHIVER_CHART_PATH) --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
+# 	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE)
 	
-clean-archiver: ## clean out references to chart tgz's
-	@rm -f ./charts/ska-archiver/charts/*.tgz ./charts/ska-archiver/Chart.lock ./charts/ska-archiver/requirements.lock
+# clean-archiver: ## clean out references to chart tgz's
+# 	@rm -f ./charts/ska-archiver/charts/*.tgz ./charts/ska-archiver/Chart.lock ./charts/ska-archiver/requirements.lock
 
 
 show-archiver: ## show the helm chart

@@ -31,15 +31,15 @@ tango-base:
     enabled: true
   tangorest:
     enabled: true
-    resources:
-      requests:
-        cpu: 100m     # 100m = 0.1 CPU
-        memory: 256Mi # 256Mi = 0.25 GB mem
-        ephemeral-storage: 256Mi
-      limits:
-        cpu: 200m     # 100m = 0.1 CPU
-        memory: 768Mi # 256Mi = 0.25 GB mem
-        ephemeral-storage: 256Mi
+    # resources:
+    #   requests:
+    #     cpu: 100m     # 100m = 0.1 CPU
+    #     memory: 256Mi # 256Mi = 0.25 GB mem
+    #     ephemeral-storage: 256Mi
+    #   limits:
+    #     cpu: 200m     # 100m = 0.1 CPU
+    #     memory: 768Mi # 256Mi = 0.25 GB mem
+    #     ephemeral-storage: 256Mi
   tangotest:
     enabled: true
   ingress:

@@ -1,0 +1,14 @@
+{
+  "attributes2archive": [
+    {
+      "attributes": [
+        "tango://databaseds-tango-base-test.integration.svc.cluster.local:10000/ska_mid/tm_subarray_node/1/State",
+        "tango://databaseds-tango-base-test.integration.svc.cluster.local:10000/ska_mid/tm_central/central_node/State",
+        "tango://databaseds-tango-base-test.integration.svc.cluster.local:10000/ska_mid/tm_leaf_node/csp_master/State",
+        "tango://databaseds-tango-base-test.integration.svc.cluster.local:10000/ska_mid/tm_leaf_node/sdp_master/State"
+      ],
+      "polling_period": 1000,
+      "period_event": 3000
+    }
+  ]
+}

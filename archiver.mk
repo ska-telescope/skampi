@@ -9,6 +9,9 @@ HOSTNAME = 192.168.93.137
 ARCHIVER_RELEASE ?= test
 ARCHIVER_NAMESPACE ?= ska-archiver
 CHARTS ?= ska-archiver
+CONFIGURE_ARCHIVER = test-configure-archiver-$(CI_JOB_ID)
+ARCHIVING_ACCOUNT = archiver-pod
+TESTING_ACCOUNT = testing-pod 
 
 CI_PROJECT_PATH_SLUG ?= ska-archiver
 CI_ENVIRONMENT_SLUG ?= ska-archiver	
@@ -63,6 +66,47 @@ show-archiver: ## show the helm chart
 		--namespace $(ARCHIVER_NAMESPACE) \
 		--set xauthority="$(XAUTHORITYx)" \
 		--set display="$(DISPLAY)" 
+
+clone-script:
+	$(git clone https://gitlab.com/ska-telescope/ska-archiver/charts/ska-archiver/data/configure_hdbpp.py /resources/archiver)
+	echo "cloned repo"
+
+
+configure-archiver:  ##configure attributes to archive
+	tar -c resources/archiver/ | \
+	kubectl run $(CONFIGURE_ARCHIVER) \
+		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
+		--image-pull-policy=IfNotPresent \
+		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:latest" \
+		--limits='cpu=1000m,memory=500Mi' \
+		--requests='cpu=900m,memory=400Mi' -- \
+		/bin/bash -c "echo 'inside archivr container' && \
+		sudo tar xv && \
+		sudo curl 'https://gitlab.com/ska-telescope/ska-archiver/-/blob/master/charts/ska-archiver/data/configure_hdbpp.py' /resources/archiver/configure_hdbpp.py && \
+		sudo chmod 744 /resources/archiver/configure_hdbpp.py && \
+		cd /resources/archiver && \
+		cat 'configure_hdbpp.py' && \
+		sudo python3 configure_hdbpp.py \
+            --cm=tango://databaseds-tango-base-test.ska-archvier.svc.cluster.local:10000/archiving/hdbpp/confmanager01 \
+            --es=tango://databaseds-tango-base-test.ska-archvier.svc.cluster.local:10000/archiving/hdbpp/eventsubscriber01 \
+            --attrfile=ConfiguationJson.json \
+            --th=tango://databaseds-tango-base-test.ska-archvier.svc.cluster.local:10000 && \
+		ls -l /resources/archiver "\
+		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(CONFIGURE_ARCHIVER); \
+		
+		# /bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
+		# make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK='$(MARK)' TEST_RUN_SPEC=$(TEST_RUN_SPEC) $1 && \
+		# tar -czvf /tmp/build.tgz build && \
+		# echo '~~~~BOUNDARY~~~~' && \
+		# cat /tmp/build.tgz | base64 && \
+		# echo '~~~~BOUNDARY~~~~'" \
+		# 2>&1
+
+enable_test_auth:
+	@helm upgrade --install testing-auth post-deployment/resources/testing_auth \
+		--namespace $(KUBE_NAMESPACE) \
+		--set accountName=$(TESTING_ACCOUNT)
+
 
 
 

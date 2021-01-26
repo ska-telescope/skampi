@@ -5,3 +5,4 @@ release_notes=This release Contains: <br/><ul>
 <li>Changed ingress from traefik to nginx</li>
 <li>Namespaces are added to ingresses to support multitenancy</li>
 </ul><br/>
+private_token=RXi1zFTyHZxEunz8Zy6x

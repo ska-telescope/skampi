@@ -7,7 +7,7 @@ THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
 INGRESS_HOST ?= integration.engageska-portugal.pt# Ingress HTTP hostname
-USE_NGINX ?= false# Use NGINX as the Ingress Controller
+USE_NGINX ?= true# Use NGINX as the Ingress Controller
 API_SERVER_IP ?= $(THIS_HOST)# Api server IP of k8s
 API_SERVER_PORT ?= 6443# Api server port of k8s
 EXTERNAL_IP ?= $(THIS_HOST)# For traefik installation
@@ -27,6 +27,7 @@ HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
+
 .DEFAULT_GOAL := help
 
 # include makefile targets for release management
@@ -37,6 +38,9 @@ UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
 # include makefile targets that wrap helm
  -include helm.mk
+
+# include makefile targets that EDA deployment
+ -include archiver.mk
 
 vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"
@@ -112,8 +116,6 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm install $(HELM_RELEASE) \
         --set tango-base.xauthority="$(XAUTHORITYx)" \
-        --set archiver.display="$(DISPLAY)" \
-        --set archiver.xauthority="$(XAUTHORITYx)" \
     	--set logging.ingress.hostname=$(INGRESS_HOST) \
         --set logging.ingress.nginx=$(USE_NGINX) \
         --set oet-scripts.ingress.hostname=$(INGRESS_HOST) \
@@ -149,8 +151,6 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm upgrade $(HELM_RELEASE) \
         --set tango-base.xauthority="$(XAUTHORITYx)" \
-        --set archiver.display="$(DISPLAY)" \
-        --set archiver.xauthority="$(XAUTHORITYx)" \
     	--set logging.ingress.hostname=$(INGRESS_HOST) \
         --set logging.ingress.nginx=$(USE_NGINX) \
         --set oet-scripts.ingress.hostname=$(INGRESS_HOST) \

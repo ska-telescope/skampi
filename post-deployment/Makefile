@@ -42,7 +42,7 @@ test_multiple_runs: install
 
 
 install:
-	pip3 install -r test_requirements.txt
+	pip3 install -r test_requirements.txt -qq
 
 start_log_consumer:
 	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01

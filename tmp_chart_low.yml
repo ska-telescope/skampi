@@ -1,0 +1,4143 @@
+---
+# Source: mvp-low/charts/oet-scripts/templates/itango.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: itango-configmap-oet-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+data:
+  environment: |
+    TANGO_HOST=databaseds-tango-base-test:10000
+    PATH=/venv/bin:$PATH
+  profile: |
+    cd /app
+    /venv/bin/itango3 --profile=ska
+---
+# Source: mvp-low/charts/oet-scripts/templates/jupyter.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oet-jupyter-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+    component: jupyter
+    domain: self-configuration
+    function: jupyter-configuration
+    intent: production
+data:
+  environment: |
+    TANGO_HOST=databaseds-tango-base-test:10000
+  venv.sh: |
+    export PATH="/venv/bin:${PATH}"
+    export OET_REST_URI=http://oet-rest-test:5000/api/v1.0/procedures
+  jupyter_notebook_config.json: |-
+    {
+        "NotebookApp": {
+          "password": "sha1:a83c43c88b88:980ac02521dcf9f62f610e26b051f157c05a36fe",
+          "base_url": "/integration/jupyter/"
+        }
+    }
+---
+# Source: mvp-low/charts/oet-scripts/templates/rest.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oet-rest-test-scripts
+  namespace: integration
+binaryData:
+  hello_world.py: |-
+    aW1wb3J0IGxvZ2dpbmcKaW1wb3J0IG9zCmltcG9ydCB0aW1lCgpMT0cgPSBsb2dnaW5nLmdldExvZ2dlcihfX25hbWVfXykKRk9STUFUID0gJyUoYXNjdGltZSktMTVzICUobWVzc2FnZSlzJwoKbG9nZ2luZy5iYXNpY0NvbmZpZyhsZXZlbD1sb2dnaW5nLklORk8sIGZvcm1hdD1GT1JNQVQpCgpMT0cuaW5mbyhmJ0ltcG9ydGluZyBtb2R1bGU6IHtfX25hbWVfX30nKQoKCmRlZiBtYWluKCphcmdzLCBzbGVlcD1Ob25lLCAqKmt3YXJncyk6CiAgICBMT0cuaW5mbyhmJ1J1bm5pbmcgc2NyaXB0IGluIE9TIHByb2Nlc3Mge29zLmdldHBpZCgpfScpCiAgICBMT0cuaW5mbyhmJ1JlY2VpdmVkIHVzZXIgYXJnczoge2FyZ3N9JykKICAgIExPRy5pbmZvKGYnUmVjZWl2ZWQgdXNlciBrd2FyZ3M6IHtrd2FyZ3N9JykKCiAgICBpZiBzbGVlcCBpcyBub3QgTm9uZToKICAgICAgICBMT0cuaW5mbyhmJ05vdyBzbGVlcGluZyBmb3Ige3NsZWVwfSBzZWNvbmRzJykKICAgICAgICB0aW1lLnNsZWVwKHNsZWVwKQogICAgICAgIExPRy5pbmZvKCdTbGVlcCBjb21wbGV0ZVxuJykK
+---
+# Source: mvp-low/charts/oet-scripts/templates/ssh.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oet-ssh-console-test-env-settings
+  namespace: integration
+data:
+  environment: |
+    TANGO_HOST=databaseds-tango-base-test:10000
+    OET_REST_URI=http://oet-rest-test:5000/api/v1.0/procedures
+  profile: |
+    export PATH=/venv/bin:${PATH}
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+# Device Server configurations
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mccs-configuration-test
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+data:
+  configuration.json: |-
+    {
+        "servers": {
+            "MccsController": {
+                "controller": {
+                    "MccsController": {
+                        "low-mccs/control/control": {
+                            "properties": {
+                                "MccsSubarrays": [
+                                    "low-mccs/subarray/01",
+                                    "low-mccs/subarray/02"
+                                ],
+                                "MccsStations": [
+                                    "low-mccs/station/001",
+                                    "low-mccs/station/002"
+                                ],
+                                "MccsTiles": [
+                                    "low-mccs/tile/0001",
+                                    "low-mccs/tile/0002",
+                                    "low-mccs/tile/0003",
+                                    "low-mccs/tile/0004"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "MccsSubarray": {
+                "subarray_01": {
+                    "MccsSubarray": {
+                        "low-mccs/subarray/01": {
+                            "properties": {
+                                "CapabilityTypes": [
+                                    "BAND1",
+                                    "BAND2"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "subarray_02": {
+                    "MccsSubarray": {
+                        "low-mccs/subarray/02": {
+                            "properties": {
+                                "CapabilityTypes": [
+                                    "BAND1",
+                                    "BAND2"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "MccsStation": {
+                "station_001": {
+                    "MccsStation": {
+                        "low-mccs/station/001": {
+                            "properties": {
+                                "StationId": [
+                                    "1"
+                                ],
+                                "TileFQDNs": [
+                                    "low-mccs/tile/0001",
+                                    "low-mccs/tile/0002"
+                                ],
+                                "MCCS-244_AntennaFQDNs": [
+                                    "low-mccs/antenna/000001",
+                                    "low-mccs/antenna/000002"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "station_002": {
+                    "MccsStation": {
+                        "low-mccs/station/002": {
+                            "properties": {
+                                "StationId": [
+                                    "2"
+                                ],
+                                "TileFQDNs": [
+                                    "low-mccs/tile/0003",
+                                    "low-mccs/tile/0004"
+                                ],
+                                "MCCS-244_AntennaFQDNs": [
+                                    "low-mccs/antenna/000003",
+                                    "low-mccs/antenna/000004"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "MccsStationBeam": {
+                "beam_01": {
+                    "MccsStationBeam": {
+                        "low-mccs/beam/01": {
+                            "properties": {
+                                "BeamId": [
+                                    "1"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "beam_02": {
+                    "MccsStationBeam": {
+                        "low-mccs/beam/02": {
+                            "properties": {
+                                "BeamId": [
+                                    "2"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "beam_03": {
+                    "MccsStationBeam": {
+                        "low-mccs/beam/03": {
+                            "properties": {
+                                "BeamId": [
+                                    "3"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "beam_04": {
+                    "MccsStationBeam": {
+                        "low-mccs/beam/04": {
+                            "properties": {
+                                "BeamId": [
+                                    "4"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "MccsTile": {
+                "tile_0001": {
+                    "MccsTile": {
+                        "low-mccs/tile/0001": {
+                            "properties": {
+                                "TileId": [
+                                    "1"
+                                ],
+                                "AntennasPerTile": [
+                                    "16"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "tile_0002": {
+                    "MccsTile": {
+                        "low-mccs/tile/0002": {
+                            "properties": {
+                                "TileId": [
+                                    "2"
+                                ],
+                                "AntennasPerTile": [
+                                    "16"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "tile_0003": {
+                    "MccsTile": {
+                        "low-mccs/tile/0003": {
+                            "properties": {
+                                "TileId": [
+                                    "3"
+                                ],
+                                "AntennasPerTile": [
+                                    "16"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "tile_0004": {
+                    "MccsTile": {
+                        "low-mccs/tile/0004": {
+                            "properties": {
+                                "TileId": [
+                                    "4"
+                                ],
+                                "AntennasPerTile": [
+                                    "16"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "MccsAPIU": {
+                "apiu_001": {
+                    "MccsAPIU": {
+                        "low-mccs/apiu/001": {
+                            "properties": {}
+                        }
+                    }
+                }
+            },
+            "MccsAntenna": {
+                "antenna_000001": {
+                    "MccsAntenna": {
+                        "low-mccs/antenna/000001": {
+                            "properties": {
+                                "ApiuId": [
+                                    "1"
+                                ],
+                                "LogicalApiuAntennaId": [
+                                    "1"
+                                ],
+                                "TileId": [
+                                    "1"
+                                ],
+                                "LogicalTileAntennaId": [
+                                    "1"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "antenna_000002": {
+                    "MccsAntenna": {
+                        "low-mccs/antenna/000002": {
+                            "properties": {
+                                "ApiuId": [
+                                    "1"
+                                ],
+                                "LogicalApiuAntennaId": [
+                                    "2"
+                                ],
+                                "TileId": [
+                                    "1"
+                                ],
+                                "LogicalTileAntennaId": [
+                                    "2"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "antenna_000003": {
+                    "MccsAntenna": {
+                        "low-mccs/antenna/000003": {
+                            "properties": {
+                                "ApiuId": [
+                                    "1"
+                                ],
+                                "LogicalApiuAntennaId": [
+                                    "3"
+                                ],
+                                "TileId": [
+                                    "2"
+                                ],
+                                "LogicalTileAntennaId": [
+                                    "1"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "antenna_000004": {
+                    "MccsAntenna": {
+                        "low-mccs/antenna/000004": {
+                            "properties": {
+                                "ApiuId": [
+                                    "1"
+                                ],
+                                "LogicalApiuAntennaId": [
+                                    "4"
+                                ],
+                                "TileId": [
+                                    "2"
+                                ],
+                                "LogicalTileAntennaId": [
+                                    "2"
+                                ],
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "MccsTpmDeviceSimulator": {
+                "tpmsimulator": {
+                    "MccsTpmDeviceSimulator": {
+                        "low-mccs/tpmsimulator/tpmsimulator": {
+                            "properties": {
+                                "LoggingLevelDefault": [
+                                    "3"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+  bootstrap.sh: |
+    #/bin/sh
+    json2tango -w -a -u data/configuration.json
+    rc=$?
+    if [ $rc -eq 0 ]; then
+      echo "finished normally."
+      exit 0
+    else
+      if [ $rc -eq 2 ]; then
+        echo "finished with an update."
+        exit 0
+      else
+        echo "finished with an ERROR."
+        exit $rc
+      fi
+    fi
+---
+# Source: mvp-low/charts/tmc-low/templates/deviceservers.yaml
+# Device Server configurations
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tmc-low-configuration-test
+  namespace: integration
+  labels:
+    app: tmc-prototype
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+data:
+  tmc-low-config.json: |-
+    {
+      "servers": {
+        "CentralNodeLowDS": {
+          "01": {
+              "CentralNode": {
+                  "ska_low/tm_central/central_node": {
+                      "attribute_properties": {
+                          "subarray1HealthState": {
+                              "abs_change": [
+                                  "-1",
+                                  "1"
+                              ]
+                          },
+                          "telescopeHealthState": {
+                              "abs_change": [
+                                  "-1",
+                                  "1"
+                              ]
+                          }
+                      },
+                      "properties": {
+                          "MCCSMasterLeafNodeFQDN": [
+                              "ska_low/tm_leaf_node/mccs_master"
+                          ],
+                          "TMLowSubarrayNodes": [
+                              "ska_low/tm_subarray_node/1"
+                          ],
+                          "SkaLevel": [
+                              "1"
+                          ],
+                          "LoggingTargetsDefault": [
+                              "tango::logger"
+                          ],
+                          "LoggingLevelDefault": [
+                              "5"
+                          ],
+                          "polled_attr": [
+                              "subarray1healthstate",
+                              "1000",
+                              "activitymessage",
+                              "1000",
+                              "telescopehealthstate",
+                              "1000"
+                          ]
+                      }
+                  }
+              }
+          }
+        },
+        "SubarrayNodeLowDS": {
+          "sa1": {
+            "SubarrayNode": {
+              "ska_low/tm_subarray_node/1": {
+                  "attribute_properties": {
+                      "adminMode": {
+                          "abs_change": [
+                              "-1",
+                              "1"
+                          ]
+                      },
+                      "healthState": {
+                          "abs_change": [
+                              "-1",
+                              "1"
+                          ]
+                      },
+                      "obsMode": {
+                          "abs_change": [
+                              "-1",
+                              "1"
+                          ]
+                      },
+                      "obsState": {
+                          "abs_change": [
+                              "-1",
+                              "1"
+                          ]
+                      },
+                      "simulationMode": {
+                          "__value": [
+                              "false"
+                          ]
+                      }
+                  },
+                  "properties": {
+                      "MccsSubarrayLNFQDN": [
+                          "ska_low/tm_leaf_node/mccs_subarray01"
+                      ],
+                      "MCCSSubarrayFQDN": [
+                          "low-mccs/subarray/01"
+                      ],
+                      "SkaLevel": [
+                          "2"
+                      ],
+                      "LoggingTargetsDefault": [
+                          "tango::logger"
+                      ],
+                      "LoggingLevelDefault": [
+                          "5"
+                      ],
+                      "polled_attr": [
+                          "activitymessage",
+                          "1000",
+                          "adminmode",
+                          "1000",
+                          "healthstate",
+                          "1000",
+                          "obsmode",
+                          "1000",
+                          "obsstate",
+                          "1000"
+                      ]
+                  }
+              }
+            }
+          }
+        },
+        "MccsMasterLeafNodeDS": {
+          "01": {
+            "MccsMasterLeafNode": {
+              "ska_low/tm_leaf_node/mccs_master": {
+                "attribute_properties": {
+                  "mccsHealthState": {
+                    "__root_att": [
+                      "low-mccs/control/control/healthState"
+                    ]
+                  },
+                  "healthState": {
+                    "abs_change": [
+                      "-1",
+                      "1"
+                    ]
+                  }
+                },
+                "properties": {
+                  "MccsMasterFQDN": [
+                    "low-mccs/control/control"
+                  ],
+                  "LoggingTargetsDefault": [
+                    "tango::logger"
+                  ],
+                  "LoggingLevelDefault": [
+                    "5"
+                  ],
+                  "polled_attr": [
+                    "activitymessage",
+                    "1000",
+                    "healthState",
+                    "1000"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "MccsSubarrayLeafNodeDS": {
+          "01": {
+            "MccsSubarrayLeafNode": {
+              "ska_low/tm_leaf_node/mccs_subarray01": {
+                "attribute_properties": {
+                  "adminMode": {
+                    "abs_change": [
+                      "-1",
+                      "1"
+                    ]
+                  },
+                  "mccssubarrayHealthState": {
+                    "__root_att": [
+                      "low-mccs/subarray/01/healthState"
+                    ]
+                  },
+                  "MccsSubarrayObsState": {
+                    "__root_att": [
+                      "low-mccs/subarray/01/obsState"
+                    ]
+                  },
+                  "healthState": {
+                    "abs_change": [
+                      "-1",
+                      "1"
+                    ]
+                  }
+                },
+                "properties": {
+                  "MccsSubarrayFQDN": [
+                    "low-mccs/subarray/01"
+                  ],
+                  "SkaLevel": [
+                    "3"
+                  ],
+                  "LoggingTargetsDefault": [
+                    "tango::logger"
+                  ],
+                  "LoggingLevelDefault": [
+                    "5"
+                  ],
+                  "polled_attr": [
+                    "adminmode",
+                    "1000",
+                    "healthstate",
+                    "1000"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  bootstrap.sh: |
+    #/bin/sh
+    json2tango -w -a -u data/tmc-low-config.json
+    rc=$?
+    if [ $rc -eq 0 ]; then
+      echo "finished normally."
+      exit 0
+    else
+      if [ $rc -eq 2 ]; then
+        echo "finished with an update."
+        exit 0
+      else
+        echo "finished with an ERROR."
+        exit $rc
+      fi
+    fi
+---
+# Source: mvp-low/charts/webjive/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webjive-package-build-webjive-test
+  namespace: integration
+data:
+  build.sh: |
+    #!/bin/sh
+    set +e
+    cd /home/node/app
+    sed -i 's/"basename" : ""/"basename": "\/integration"/' /home/node/app/src/config.json
+    sed -i 's/"name":/"homepage": "\/integration", "name":/' /home/node/app/package.json
+    npm install && npm run build
+---
+# Source: mvp-low/charts/webjive/templates/tangogql-pv.yaml
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: tangogql-webjive-test
+  namespace: integration
+  labels:
+    app: tangogql-webjive-test
+    chart: webjive-1.0.10
+    release: test
+    heritage: Helm
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: Recycle
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/tangogql-webjive-integration-test/
+---
+# Source: mvp-low/charts/webjive/templates/tangogql-pv.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tangogql-webjive-test
+  namespace: integration
+  labels:
+    app: tangogql-webjive-test
+    chart: webjive-1.0.10
+    release: test
+    heritage: Helm
+spec:
+  resources:
+    requests:
+      storage: 1Gi
+
+  storageClassName: standard
+  accessModes:
+  - ReadWriteOnce
+---
+# Source: mvp-low/charts/oet-scripts/templates/itango.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: oet-itango-console-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+    component: itango-console
+    function: interactive-script-execution
+    domain: operations
+    intent: production
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 22
+      nodePort: 
+  selector:
+    app: oet
+    component: itango-console
+---
+# Source: mvp-low/charts/oet-scripts/templates/jupyter.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: oet-jupyter-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+    component: jupyter
+    function: interactive-script-execution
+    domain: operations
+    intent: production
+spec:
+  selector:
+    app: oet
+    component: jupyter
+  ports:
+    - protocol: TCP
+      port: 8888
+---
+# Source: mvp-low/charts/oet-scripts/templates/rest.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: oet-rest-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+    component: rest
+    function: script-execution
+    domain: operations
+    intent: production
+spec:
+  selector:
+    app: oet
+    component: rest
+  ports:
+  - protocol: TCP
+    port: 5000
+---
+# Source: mvp-low/charts/oet-scripts/templates/ssh.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: oet-ssh-console-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+    component: ssh-console
+    function: maintenance-interface
+    domain: operations
+    intent: production
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 22
+      nodePort: 
+  selector:
+    app: oet
+    component: ssh-console
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-antenna-antenna-000001
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-antenna-antenna-000001
+    function: antenna
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-antenna-antenna-000001
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-antenna-antenna-000002
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-antenna-antenna-000002
+    function: antenna
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-antenna-antenna-000002
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-antenna-antenna-000003
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-antenna-antenna-000003
+    function: antenna
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-antenna-antenna-000003
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-antenna-antenna-000004
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-antenna-antenna-000004
+    function: antenna
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-antenna-antenna-000004
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-apiu-apiu-001
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-apiu-apiu-001
+    function: apiu
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-apiu-apiu-001
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-controller-controller
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-controller-controller
+    function: controller
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-controller-controller
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-station-station-001
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-station-station-001
+    function: station
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-station-station-001
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-station-station-002
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-station-station-002
+    function: station
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-station-station-002
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-subarray-subarray-01
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-subarray-subarray-01
+    function: subarray
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-subarray-subarray-01
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-subarray-subarray-02
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-subarray-subarray-02
+    function: subarray
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-subarray-subarray-02
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-tile-tile-0001
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-tile-tile-0001
+    function: tile
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-tile-tile-0001
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-tile-tile-0002
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-tile-tile-0002
+    function: tile
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-tile-tile-0002
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-tile-tile-0003
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-tile-tile-0003
+    function: tile
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-tile-tile-0003
+  clusterIP: None
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccs-tile-tile-0004
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-tile-tile-0004
+    function: tile
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: mccs
+    component: mccs-tile-tile-0004
+  clusterIP: None
+---
+# Source: mvp-low/charts/tango-base/templates/databaseds.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: databaseds-tango-base-test
+  namespace: integration
+  labels:
+    component: databaseds
+    function: tangodb-interface
+    domain: tango-configuration
+    intent: production
+    app: ska-docker
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  ports:
+  - name: ds
+    port: 10000
+  type: NodePort
+  selector:
+    component: databaseds
+    function: tangodb-interface
+    domain: tango-configuration
+    intent: production
+    app: ska-docker
+---
+# Source: mvp-low/charts/tango-base/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: tangotest-tango-base-test-test
+  namespace: integration
+  labels:
+    app: ska-docker
+    component: tangotest-tango-base-test-test
+    function: tango-test
+    domain: tango-base
+    subsystem: tango-base
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: tango-base
+    component: tangotest-tango-base-test-test
+  clusterIP: None
+---
+# Source: mvp-low/charts/tango-base/templates/tango-rest.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tango-base-tango-rest
+  namespace: integration
+  labels:
+    app: ska-docker
+    component: tango-rest
+    function: tango-http-interface
+    domain: tango-configuration
+    intent: enabling
+spec:
+  type: NodePort
+  ports:
+  - name: rest
+    port: 8080
+  selector:
+    app: ska-docker
+    component: tango-rest
+    function: tango-http-interface
+    domain: tango-configuration
+    intent: enabling
+---
+# Source: mvp-low/charts/tango-base/templates/tangodb.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tango-base-tangodb
+  namespace: integration
+  labels:
+    component: tangodb
+    function: tango-device-configuration
+    domain: tango-configuration
+    intent: production
+    app: ska-docker
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  type: NodePort
+  selector:
+    component: tangodb
+    function: tango-device-configuration
+    domain: tango-configuration
+    intent: production
+    app: ska-docker
+---
+# Source: mvp-low/charts/tango-base/templates/vnc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tango-base-vnc-gui
+  namespace: integration
+  labels:
+    component: vnc-gui
+    function: generic-tango-vnc-gui
+    domain: interactive-testing
+    intent: enabling
+    app: ska-docker
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  type: NodePort
+  ports:
+  - name: vncport
+    port: 5920
+    protocol: TCP
+
+  - name: novncport
+    port: 6081
+    protocol: TCP
+
+  selector:
+    component: vnc-gui
+    function: generic-tango-vnc-gui
+    domain: interactive-testing
+    intent: enabling
+    app: ska-docker
+---
+# Source: mvp-low/charts/tmc-low/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: subarraynode1-sa1
+  namespace: integration
+  labels:
+    app: tmc-prototype
+    component: subarraynode1-sa1
+    function: observation-execution
+    domain: subarray
+    subsystem: tmc-low
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: tmc-low
+    component: subarraynode1-sa1
+  clusterIP: None
+---
+# Source: mvp-low/charts/tmc-low/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: centralnode-01
+  namespace: integration
+  labels:
+    app: tmc-prototype
+    component: centralnode-01
+    function: telescope-monitoring
+    domain: general-monitoring
+    subsystem: tmc-low
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: tmc-low
+    component: centralnode-01
+  clusterIP: None
+---
+# Source: mvp-low/charts/tmc-low/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccssmasterleafnode-01
+  namespace: integration
+  labels:
+    app: tmc-prototype
+    component: mccssmasterleafnode-01
+    function: observation-execution
+    domain: general-monitoring
+    subsystem: tmc-low
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: tmc-low
+    component: mccssmasterleafnode-01
+  clusterIP: None
+---
+# Source: mvp-low/charts/tmc-low/templates/deviceservers.yaml
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: mccssubarrayleafnode1-01
+  namespace: integration
+  labels:
+    app: tmc-prototype
+    component: mccssubarrayleafnode1-01
+    function: observation-execution
+    domain: subarray
+    subsystem: tmc-low
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: tmc-low
+    component: mccssubarrayleafnode1-01
+  clusterIP: None
+---
+# Source: mvp-low/charts/webjive/templates/tangogql.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tangogql-webjive-test
+  namespace: integration
+  labels:
+    app: tangogql-webjive-test
+    chart: webjive-1.0.10
+    release: test
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+  - name: tangogql-tcp
+    port: 5004
+    targetPort: tangogql-tcp
+    protocol: TCP
+  selector:
+    app: tangogql-webjive-test
+---
+# Source: mvp-low/charts/webjive/templates/webjive.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: webjive-webjive-test
+  namespace: integration
+  labels:
+    app: webjive-webjive-test
+    chart: webjive-1.0.10
+    release: test
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+  - name: webjive-http
+    port: 80
+    protocol: TCP
+  selector:
+    app: webjive-webjive-test
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/mccs-cli.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mccs-mccs-cli
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-cli
+    function: mccs-cli-tango-client
+    domain: interactive-testing
+    intent: enabling
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  initContainers:
+  - name: check-dependencies-0
+    image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+    imagePullPolicy: IfNotPresent
+    command:
+      - retry
+      - --max=10
+      - --
+      - tango_admin
+      - --check-device
+      - sys/database/2
+    env:
+    - name: TANGO_HOST
+      value: databaseds-tango-base-test:10000
+  containers:
+  - name: cli
+    image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+    imagePullPolicy: IfNotPresent
+    command:
+      - /usr/local/bin/wait-for-it.sh
+      - databaseds-tango-base-test:10000
+      - --timeout=30
+      - --strict
+      - --
+      - sleep
+      - infinity
+    env:
+    - name: TANGO_HOST
+      value: "databaseds-tango-base-test:10000"
+    resources:
+      limits:
+        cpu: 100m
+        ephemeral-storage: 512Mi
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        ephemeral-storage: 512Mi
+        memory: 128Mi
+  restartPolicy: Always
+---
+# Source: mvp-low/charts/oet-scripts/templates/jupyter.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oet-jupyter-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+    component: jupyter
+    function: interactive-script-execution
+    domain: operations
+    intent: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oet
+      component: jupyter
+  template:
+    metadata:
+      labels:        
+        app: oet
+        chart: oet-scripts-0.3.1
+        release: test
+        heritage: Helm
+        system: TM-mid
+        subsystem: oet
+        telescope: SKA-mid
+        component: jupyter
+        function: interactive-script-execution
+        domain: operations
+        intent: production
+    spec:
+      volumes:
+        - name: configuration
+          configMap:
+            name: oet-jupyter-test
+            items:
+            - key: environment
+              path: environment
+            - key: venv.sh
+              path: venv.sh
+            - key: jupyter_notebook_config.json
+              path: jupyter_notebook_config.json
+        - name: workdir
+          emptyDir: {}
+      initContainers:
+      - name: check-databaseds-ready
+        image: "nexus.engageska-portugal.pt/ska-telescope/oet-scripts-jupyter:0.3.0"
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - "databaseds-tango-base-test:10000"
+          - --timeout=30
+          - --strict
+          - --
+          - echo databaseds ready
+      containers:
+      - name: oet-jupyter
+        image: "nexus.engageska-portugal.pt/ska-telescope/oet-scripts-jupyter:0.3.0"
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: oet-jupyter
+            containerPort: 8888
+        env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          - name: SHELL
+            value: /bin/bash
+          - name: OET_REST_URI
+            value: http://oet-rest-test:5000/api/v1.0/procedures
+          - name: SKUID_URL
+            value: "skuid-skuid-integration-test.integration.svc.cluster.local:9870"
+        volumeMounts:
+          - name: workdir
+            mountPath: /home/tango/.jupyter
+          - name: configuration
+            mountPath: /etc/environment
+            subPath: environment
+          - name: configuration
+            mountPath: /etc/profile.d/venv.sh
+            subPath: venv.sh
+          - name: configuration
+            mountPath: /home/tango/.jupyter/jupyter_notebook_config.json
+            subPath: jupyter_notebook_config.json
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        readinessProbe:
+          tcpSocket:
+            port: 8888
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 8888
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+      restartPolicy: Always
+---
+# Source: mvp-low/charts/tango-base/templates/tango-rest.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tango-base-tango-rest
+  namespace: integration
+  labels:
+    app: ska-docker
+    component: tango-rest
+    function: tango-http-interface
+    domain: tango-configuration
+    intent: enabling
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      app: ska-docker
+      component: tango-rest
+      function: tango-http-interface
+      domain: tango-configuration
+      intent: enabling
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: ska-docker
+        component: tango-rest
+        function: tango-http-interface
+        domain: tango-configuration
+        intent: enabling
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-rest:1.14.1"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --check-device
+          - sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+      - name: init-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-rest:1.14.1"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/bash
+        args:
+          - "-c"
+          - /usr/local/bin/tango_register_device.sh TangoRestServer/$(hostname) TangoRestServer $(hostname)/rest/0
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+      - name: init-1
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-rest:1.14.1"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/bash
+        args:
+          - "-c"
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TANGO_DB tango://databaseds-tango-base-test:10000/sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+      - name: init-2
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-rest:1.14.1"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/bash
+        args:
+          - "-c"
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_PORT 8080
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+      - name: init-3
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-rest:1.14.1"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/bash
+        args:
+          - "-c"
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_AUTH_METHOD plain
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+      containers:
+      - name: tango-rest
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-rest:1.14.1"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/bash
+        args:
+          - "-c"
+          - /usr/bin/java -jar $JAVA_OPTS /usr/local/lib/tango/mtangorest.jar $(hostname)
+        env:
+        - name: TANGO_HOST
+          value: "databaseds-tango-base-test:10000"
+        - name: JAVA_OPTS
+          value: "-Xmx4G -Xshare:off -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5009"
+        ports:
+        - name: rest
+          containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 200m
+            ephemeral-storage: 256Mi
+            memory: 768Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 256Mi
+            memory: 128Mi
+      restartPolicy: Always
+---
+# Source: mvp-low/charts/oet-scripts/templates/itango.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oet-itango-console-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+    component: itango-console
+    function: interactive-script-execution
+    domain: operations
+    intent: production
+spec:
+  selector:
+    matchLabels:
+      app: oet
+      component: itango-console
+  serviceName: oet-itango-console-test
+  replicas: 1
+  template:
+    metadata:
+      labels:        
+        app: oet
+        chart: oet-scripts-0.3.1
+        release: test
+        heritage: Helm
+        system: TM-mid
+        subsystem: oet
+        telescope: SKA-mid
+        component: itango-console
+        function: interactive-script-execution
+        domain: operations
+        intent: production
+    spec:
+      restartPolicy: Always
+      initContainers:
+      - name: check-databaseds-ready
+        image: "nexus.engageska-portugal.pt/ska-telescope/oet-scripts:0.3.1"
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-test:10000
+          - --timeout=30
+          - --strict
+          - --
+          - echo databaseds ready
+      containers:
+      - name: oet-itango
+        image: "nexus.engageska-portugal.pt/ska-telescope/oet-scripts-ssh:0.3.0"
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: oet-itango
+            containerPort: 22
+        volumeMounts:
+          - name: itango-configmap-volume
+            mountPath: /home/tango/.profile
+            subPath: .profile
+          - name: itango-configmap-volume
+            mountPath: /etc/environment
+            subPath: environment
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        readinessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+      volumes:
+        - name: itango-configmap-volume
+          configMap:
+            name: itango-configmap-oet-test
+            items:
+            - key: profile
+              path: .profile
+            - key: environment
+              path: environment
+---
+# Source: mvp-low/charts/oet-scripts/templates/rest.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oet-rest-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+    component: rest
+    function: script-execution
+    domain: operations
+    intent: production
+spec:
+  selector:
+    matchLabels:
+      app: oet
+      component: rest
+  serviceName: rest-oet-test
+  replicas: 1
+  template:
+    metadata:
+      labels:        
+        app: oet
+        chart: oet-scripts-0.3.1
+        release: test
+        heritage: Helm
+        system: TM-mid
+        subsystem: oet
+        telescope: SKA-mid
+        component: rest
+        function: script-execution
+        domain: operations
+        intent: production
+    spec:
+      initContainers:
+      - name: check-databaseds-ready
+        image: "nexus.engageska-portugal.pt/ska-telescope/oet-scripts:0.3.1"
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-test:10000
+          - --timeout=30
+          - --strict
+          - --
+          - echo databaseds ready
+      containers:
+      - name: oet-rest
+        image: "nexus.engageska-portugal.pt/ska-telescope/oet-scripts:0.3.1"
+        imagePullPolicy: IfNotPresent
+        command: ["python"]
+        args: ["-m", "oet.procedure.application.main"]
+        env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          - name: SKUID_URL
+            value: "skuid-skuid-integration-test.integration.svc.cluster.local:9870"
+        ports:
+          - name: oet-rest
+            containerPort: 5000
+        volumeMounts:
+          - name: oet-scripts-volume
+            mountPath: /scripts
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+      volumes:
+        - name: oet-scripts-volume
+          configMap:
+            name: oet-rest-test-scripts
+            items:
+              - key: hello_world.py
+                path: hello_world.py
+---
+# Source: mvp-low/charts/oet-scripts/templates/ssh.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oet-ssh-console-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+    component: ssh-console
+    function: maintenance-interface
+    domain: operations
+    intent: production
+spec:
+  selector:
+    matchLabels:
+      app: oet
+      component: ssh-console
+  serviceName: ssh-oet-test
+  replicas: 1
+  template:
+    metadata:
+      labels:        
+        app: oet
+        chart: oet-scripts-0.3.1
+        release: test
+        heritage: Helm
+        system: TM-mid
+        subsystem: oet
+        telescope: SKA-mid
+        component: ssh-console
+        function: maintenance-interface
+        domain: operations
+        intent: production
+    spec:
+      restartPolicy: Always
+      initContainers:
+      - name: check-databaseds-ready
+        image: "nexus.engageska-portugal.pt/ska-telescope/oet-scripts-ssh:0.3.0"
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-test:10000
+          - --timeout=30
+          - --strict
+          - --
+          - echo databaseds ready
+      containers:
+      - name: oet-ssh
+        image: "nexus.engageska-portugal.pt/ska-telescope/oet-scripts-ssh:0.3.0"
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: oet-ssh
+            containerPort: 22
+        env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+        volumeMounts:
+          - name: env-settings
+            mountPath: /home/tango/.profile
+            subPath: .profile
+          - name: env-settings
+            mountPath: /etc/environment
+            subPath: environment
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        readinessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+      volumes:
+        - name: env-settings
+          configMap:
+            name: oet-ssh-console-test-env-settings
+            items:
+            - key: environment
+              path: environment
+            - key: profile
+              path: .profile
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-antenna-antenna-000001
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-antenna-antenna-000001
+    function: antenna
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-antenna-antenna-000001
+      subsystem: mccs
+  serviceName: mccs-antenna-antenna-000001
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-antenna-antenna-000001
+        function: antenna
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsAntenna antenna_000001
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-antenna-antenna-000002
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-antenna-antenna-000002
+    function: antenna
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-antenna-antenna-000002
+      subsystem: mccs
+  serviceName: mccs-antenna-antenna-000002
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-antenna-antenna-000002
+        function: antenna
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsAntenna antenna_000002
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-antenna-antenna-000003
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-antenna-antenna-000003
+    function: antenna
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-antenna-antenna-000003
+      subsystem: mccs
+  serviceName: mccs-antenna-antenna-000003
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-antenna-antenna-000003
+        function: antenna
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsAntenna antenna_000003
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-antenna-antenna-000004
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-antenna-antenna-000004
+    function: antenna
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-antenna-antenna-000004
+      subsystem: mccs
+  serviceName: mccs-antenna-antenna-000004
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-antenna-antenna-000004
+        function: antenna
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsAntenna antenna_000004
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+
+
+
+ ## instances
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-apiu-apiu-001
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-apiu-apiu-001
+    function: apiu
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-apiu-apiu-001
+      subsystem: mccs
+  serviceName: mccs-apiu-apiu-001
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-apiu-apiu-001
+        function: apiu
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsAPIU apiu_001
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+
+
+
+ ## instances
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-controller-controller
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-controller-controller
+    function: controller
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-controller-controller
+      subsystem: mccs
+  serviceName: mccs-controller-controller
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-controller-controller
+        function: controller
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsController controller
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+
+
+
+ ## instances
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-station-station-001
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-station-station-001
+    function: station
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-station-station-001
+      subsystem: mccs
+  serviceName: mccs-station-station-001
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-station-station-001
+        function: station
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsStation station_001
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-station-station-002
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-station-station-002
+    function: station
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-station-station-002
+      subsystem: mccs
+  serviceName: mccs-station-station-002
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-station-station-002
+        function: station
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsStation station_002
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+
+
+
+ ## instances
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-subarray-subarray-01
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-subarray-subarray-01
+    function: subarray
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-subarray-subarray-01
+      subsystem: mccs
+  serviceName: mccs-subarray-subarray-01
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-subarray-subarray-01
+        function: subarray
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsSubarray subarray_01
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-subarray-subarray-02
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-subarray-subarray-02
+    function: subarray
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-subarray-subarray-02
+      subsystem: mccs
+  serviceName: mccs-subarray-subarray-02
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-subarray-subarray-02
+        function: subarray
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsSubarray subarray_02
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+
+
+
+ ## instances
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-tile-tile-0001
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-tile-tile-0001
+    function: tile
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-tile-tile-0001
+      subsystem: mccs
+  serviceName: mccs-tile-tile-0001
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-tile-tile-0001
+        function: tile
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsTile tile_0001
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-tile-tile-0002
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-tile-tile-0002
+    function: tile
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-tile-tile-0002
+      subsystem: mccs
+  serviceName: mccs-tile-tile-0002
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-tile-tile-0002
+        function: tile
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsTile tile_0002
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-tile-tile-0003
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-tile-tile-0003
+    function: tile
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-tile-tile-0003
+      subsystem: mccs
+  serviceName: mccs-tile-tile-0003
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-tile-tile-0003
+        function: tile
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsTile tile_0003
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccs-tile-tile-0004
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: mccs-tile-tile-0004
+    function: tile
+    domain: ska-low-mccs
+    subsystem: mccs
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccs-tile-tile-0004
+      subsystem: mccs
+  serviceName: mccs-tile-tile-0004
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccs-tile-tile-0004
+        function: tile
+        domain: ska-low-mccs
+        subsystem: mccs
+        app: ska-low-mccs
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/ska-low-mccs:0.4.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- MccsTile tile_0004
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+
+
+
+ ## instances
+
+ # deviceservers
+---
+# Source: mvp-low/charts/tango-base/templates/databaseds.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: databaseds-tango-base-test
+  namespace: integration
+  labels:
+    component: databaseds
+    function: tangodb-interface
+    domain: tango-configuration
+    intent: production
+    app: ska-docker
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: databaseds
+      function: tangodb-interface
+      domain: tango-configuration
+      intent: production
+      app: ska-docker
+  serviceName: databaseds-tango-base-test
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: databaseds
+        function: tangodb-interface
+        domain: tango-configuration
+        intent: production
+        app: ska-docker
+    spec:
+      containers:
+      - name: databaseds
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-cpp:9.3.4"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - tango-base-tangodb:3306
+          - --timeout=30
+          - --strict
+          - --
+          - /usr/local/bin/DataBaseds
+          - "2"
+          - -ORBendPoint
+          - giop:tcp::10000
+        env:
+          - name: MYSQL_HOST
+            value: "tango-base-tangodb:3306"
+          - name: MYSQL_DATABASE
+            value: "tango"
+          - name: MYSQL_USER
+            value: "tango"
+          - name: MYSQL_PASSWORD
+            value: "tango"
+        ports:
+        - name: ds
+          containerPort: 10000
+        resources:
+          limits:
+            cpu: 200m
+            ephemeral-storage: 1Gi
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 512Mi
+            memory: 128Mi
+---
+# Source: mvp-low/charts/tango-base/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tangotest-tango-base-test-test
+  namespace: integration
+  labels:
+    app: ska-docker
+    component: tangotest-tango-base-test-test
+    function: tango-test
+    domain: tango-base
+    subsystem: tango-base
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: tangotest-tango-base-test-test
+      subsystem: tango-base
+  serviceName: tangotest-tango-base-test-test
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: tangotest-tango-base-test-test
+        function: tango-test
+        domain: tango-base
+        subsystem: tango-base
+        app: ska-docker
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-java:9.3.3"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- /usr/local/bin/TangoTest test
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 512Mi
+          requests:
+            cpu: 200m
+            ephemeral-storage: 1Gi
+            memory: 256Mi
+
+
+
+
+
+
+ # deviceservers
+---
+# Source: mvp-low/charts/tango-base/templates/tangodb.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tango-base-tangodb
+  namespace: integration
+  labels:
+    component: tangodb
+    function: tango-device-configuration
+    domain: tango-configuration
+    intent: production
+    app: ska-docker
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: tangodb
+      function: tango-device-configuration
+      domain: tango-configuration
+      intent: production
+      app: ska-docker
+  serviceName: tango-base-tangodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: tangodb
+        function: tango-device-configuration
+        domain: tango-configuration
+        intent: production
+        app: ska-docker
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      containers:
+      - name: tangodb
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-db:10.4.10"
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "secret"
+          - name: MYSQL_DATABASE
+            value: "tango"
+          - name: MYSQL_USER
+            value: "tango"
+          - name: MYSQL_PASSWORD
+            value: "tango"
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "1"
+        ports:
+        - name: mysql
+          containerPort: 3306
+
+        resources:
+          limits:
+            cpu: 200m
+            ephemeral-storage: 2Gi
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 1Gi
+            memory: 256Mi
+      volumes:
+---
+# Source: mvp-low/charts/tango-base/templates/vnc.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tango-base-vnc-gui
+  namespace: integration
+  labels:
+    component: vnc-gui
+    function: generic-tango-vnc-gui
+    domain: interactive-testing
+    intent: enabling
+    app: ska-docker
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: vnc-gui
+      function: generic-tango-vnc-gui
+      domain: interactive-testing
+      intent: enabling
+      app: ska-docker
+  serviceName: tango-base-vnc-gui
+  replicas:  3
+  template:
+    metadata:
+      labels:
+        component: vnc-gui
+        function: generic-tango-vnc-gui
+        domain: interactive-testing
+        intent: enabling
+        app: ska-docker
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      containers:
+      - name: vnc
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-vnc:latest"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: vncport
+          containerPort: 5920
+        - name: novncport
+          containerPort: 6081
+        env:
+        - name: KUBE_NAMESPACE
+          value: integration
+        - name: HELM_RELEASE
+          value: test
+        - name: TANGO_HOST
+          value: "databaseds-tango-base-test:10000"
+        resources:
+          limits:
+            cpu: 100m
+            ephemeral-storage: 256Mi
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 256Mi
+            memory: 256Mi
+---
+# Source: mvp-low/charts/tmc-low/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: subarraynode1-sa1
+  namespace: integration
+  labels:
+    app: tmc-prototype
+    component: subarraynode1-sa1
+    function: observation-execution
+    domain: subarray
+    subsystem: tmc-low
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: subarraynode1-sa1
+      subsystem: tmc-low
+  serviceName: subarraynode1-sa1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: subarraynode1-sa1
+        function: observation-execution
+        domain: subarray
+        subsystem: tmc-low
+        app: tmc-prototype
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - ska_low/tm_leaf_node/mccs_subarray01
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/tango-example/tmcprototype:0.2.13"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- /usr/local/bin/SubarrayNodeLowDS sa1
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+
+
+
+ ## instances
+---
+# Source: mvp-low/charts/tmc-low/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: centralnode-01
+  namespace: integration
+  labels:
+    app: tmc-prototype
+    component: centralnode-01
+    function: telescope-monitoring
+    domain: general-monitoring
+    subsystem: tmc-low
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: centralnode-01
+      subsystem: tmc-low
+  serviceName: centralnode-01
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: centralnode-01
+        function: telescope-monitoring
+        domain: general-monitoring
+        subsystem: tmc-low
+        app: tmc-prototype
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - ska_low/tm_subarray_node/1
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+
+      - name: check-dependencies-1
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - ska_low/tm_leaf_node/mccs_master
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/tango-example/tmcprototype:0.2.13"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- /usr/local/bin/CentralNodeLowDS 01
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+
+
+
+ ## instances
+---
+# Source: mvp-low/charts/tmc-low/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccssmasterleafnode-01
+  namespace: integration
+  labels:
+    app: tmc-prototype
+    component: mccssmasterleafnode-01
+    function: observation-execution
+    domain: general-monitoring
+    subsystem: tmc-low
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccssmasterleafnode-01
+      subsystem: tmc-low
+  serviceName: mccssmasterleafnode-01
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccssmasterleafnode-01
+        function: observation-execution
+        domain: general-monitoring
+        subsystem: tmc-low
+        app: tmc-prototype
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/control/control
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/tango-example/tmcprototype:0.2.13"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- /usr/local/bin/MccsMasterLeafNodeDS 01
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+
+
+
+ ## instances
+---
+# Source: mvp-low/charts/tmc-low/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mccssubarrayleafnode1-01
+  namespace: integration
+  labels:
+    app: tmc-prototype
+    component: mccssubarrayleafnode1-01
+    function: observation-execution
+    domain: subarray
+    subsystem: tmc-low
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: mccssubarrayleafnode1-01
+      subsystem: tmc-low
+  serviceName: mccssubarrayleafnode1-01
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: mccssubarrayleafnode1-01
+        function: observation-execution
+        domain: subarray
+        subsystem: tmc-low
+        app: tmc-prototype
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --ping-device
+          - low-mccs/subarray/01
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/tango-example/tmcprototype:0.2.13"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+        args:
+          - retry --max=10 -- /usr/local/bin/MccsSubarrayLeafNodeDS 01
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+
+
+
+ ## instances
+
+ # deviceservers
+---
+# Source: mvp-low/charts/webjive/templates/tangogql.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tangogql-webjive-test
+  namespace: integration
+  labels:
+    app: tangogql-webjive-test
+    chart: webjive-1.0.10
+    release: test
+    heritage: Helm
+spec:
+  selector:
+    matchLabels:
+      app: tangogql-webjive-test
+  serviceName: tangogql-webjive-test
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tangogql-webjive-test
+        chart: webjive-1.0.10
+        release: test
+        heritage: Helm
+    spec:
+      initContainers:
+      - name: waitdatabaseds
+        image: nexus.engageska-portugal.pt/ska-docker/tango-itango:latest
+        imagePullPolicy: IfNotPresent
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-test:10000
+          - --timeout=30
+          - --strict
+          - --
+          - echo "Databaseds ready for use."
+      containers:
+      - name: tangogql
+        image: "nexus.engageska-portugal.pt/ska-telescope/web-maxiv-tangogql:1.1.0-develop-19"
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /var/log/tangogql
+          name: tangogql-logs
+        env:
+          - name: LOG_PATH
+            value: "/var/log/tangogql"
+          - name: PYTHONUNBUFFERED
+            value: "1"
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+        ports:
+        - name: tangogql-tcp
+          containerPort: 5004
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 800m
+            memory: 256Mi
+          requests:
+            cpu: 400m
+            memory: 128Mi
+
+      volumes:
+      - name: tangogql-logs
+        persistentVolumeClaim:
+          claimName: tangogql-webjive-test
+---
+# Source: mvp-low/charts/webjive/templates/webjive.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: webjive-webjive-test
+  namespace: integration
+  labels:
+    app: webjive-webjive-test
+    chart: webjive-1.0.10
+    release: test
+    heritage: Helm
+spec:
+  selector:
+    matchLabels:
+      app: webjive-webjive-test
+  serviceName: webjive-webjive-test
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: webjive-webjive-test
+        chart: webjive-1.0.10
+        release: test
+        heritage: Helm
+    spec:
+      initContainers:
+      - name: rebuild-npm
+        image: "nexus.engageska-portugal.pt/ska-telescope/webjive-node:1.0.6-develop-313"
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh"]
+        args: ["-c", "sh /home/node/app/build.sh"]
+        volumeMounts:
+        - name: package-build
+          mountPath: /home/node/app/build.sh
+          subPath: build.sh
+        - mountPath: /home/node/app/build
+          name: cache-volume
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2048Mi
+          requests:
+            cpu: 400m
+            memory: 256Mi
+      containers:
+      - name: webjive
+        image: "nexus.engageska-portugal.pt/ska-telescope/webjive:1.0.6-develop-313"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: webjive-http
+          containerPort: 80
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: cache-volume
+        - mountPath: /usr/share/nginx/html/integration
+          name: cache-volume
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2048Mi
+          requests:
+            cpu: 400m
+            memory: 256Mi
+      volumes:
+      - name: package-build
+        configMap:
+          name: webjive-package-build-webjive-test
+      - name: cache-volume
+        emptyDir: {}
+---
+# Source: mvp-low/charts/ska-low-mccs/templates/deviceservers.yaml
+# run once Job for loading Device Server config
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mccs-configuration-test
+  namespace: integration
+  labels:
+    app: ska-low-mccs
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      initContainers:
+      - name: check-databaseds-ready
+        image: nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-test:10000
+          - --timeout=60
+          - --strict
+          - --
+          - echo databaseds-tango-base-test:10000 ready
+      containers:
+      - name: dsconfig
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command: # exit code 2 is CONFIG_APPLIED - https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig/blob/master/dsconfig/utils.py#L11 !!!! this should not be an error !!!!
+          - sh
+          - data/bootstrap.sh
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+        volumeMounts:
+          - name: configuration
+            mountPath: data
+            readOnly: true
+      volumes:
+        - name: configuration
+          configMap:
+            name: mccs-configuration-test
+      restartPolicy: Never
+---
+# Source: mvp-low/charts/tmc-low/templates/deviceservers.yaml
+# run once Job for loading Device Server config
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tmc-low-configuration-test
+  namespace: integration
+  labels:
+    app: tmc-prototype
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      initContainers:
+      - name: check-databaseds-ready
+        image: nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - /usr/local/bin/wait-for-it.sh
+          - databaseds-tango-base-test:10000
+          - --timeout=60
+          - --strict
+          - --
+          - echo databaseds-tango-base-test:10000 ready
+      containers:
+      - name: dsconfig
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command: # exit code 2 is CONFIG_APPLIED - https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig/blob/master/dsconfig/utils.py#L11 !!!! this should not be an error !!!!
+          - sh
+          - data/bootstrap.sh
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+        volumeMounts:
+          - name: configuration
+            mountPath: data
+            readOnly: true
+      volumes:
+        - name: configuration
+          configMap:
+            name: tmc-low-configuration-test
+      restartPolicy: Never
+---
+# Source: mvp-low/charts/oet-scripts/templates/jupyter.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oet-jupyter-test
+  namespace: integration
+  labels:    
+    app: oet
+    chart: oet-scripts-0.3.1
+    release: test
+    heritage: Helm
+    system: TM-mid
+    subsystem: oet
+    telescope: SKA-mid
+    component: jupyter
+    domain: self-configuration
+    function: ingress-configuration
+    intent: production
+  annotations:
+      kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /integration/jupyter
+          pathType: Prefix
+          backend:
+           service:
+            name: oet-jupyter-test
+            port: 
+              number: 8888
+---
+# Source: mvp-low/charts/tango-base/templates/ingress.yaml
+# use Nginx
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rest-api-tango-base-test
+  namespace: integration
+  labels:
+    app: ska-docker
+    component: tango-rest
+    function: tango-http-interface
+    domain: tango-configuration
+    intent: enabling
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /integration/(tango/rest/.*)
+          pathType: Prefix
+          backend:
+           service:
+            name: tango-base-tango-rest
+            port: 
+              number: 8080
+---
+# Source: mvp-low/charts/webjive/templates/tangogql-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tangogql-ing-webjive-test
+  namespace: integration
+  annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /integration/taranta/(db.*)
+          pathType: Prefix
+          backend:
+           service:
+            name: tangogql-webjive-test
+            port: 
+              number: 5004
+        - path: /integration/taranta/(graphiql.*)
+          pathType: Prefix
+          backend:
+           service:
+            name: tangogql-webjive-test
+            port: 
+              number: 5004
+        - path: /integration/taranta/(socket.*)
+          pathType: Prefix
+          backend:
+           service:
+            name: tangogql-webjive-test
+            port: 
+              number: 5004
+---
+# Source: mvp-low/charts/webjive/templates/webjive-ingresses.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webjive-ing-webjive-test
+  namespace: integration
+  annotations:
+      kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /integration/static
+          pathType: Prefix
+          backend:
+            service:
+              name: webjive-webjive-test
+              port:
+                number: 80
+        - path: /integration/taranta
+          pathType: Prefix
+          backend:
+            service:
+              name: webjive-webjive-test
+              port:
+                number: 80
+        - path: /integration/taranta/dashboard
+          pathType: Prefix
+          backend:
+            service:
+              name: webjive-webjive-test
+              port:
+                number: 80
+---
+# Source: mvp-low/charts/oet-scripts/templates/jupyter.yaml
+# use Nginx
+---
+# Source: mvp-low/charts/webjive/templates/tangogql-ingress.yaml
+# Use NGINX
+---
+# Source: mvp-low/charts/webjive/templates/webjive-ingresses.yaml
+# Use NGINX

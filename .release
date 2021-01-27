@@ -5,7 +5,6 @@ release_notes=This release Contains: <br/><ul>
 <li>Transaction ids implemented in CSP</li>
 <li>ADR18/22 json schema support for ConfigureCommand in CSP</li>
 <li>Log messages from pods are collected and collated after test runs</li>
-<li>Transaction ids implemented in CSP</li>
 <li>Independently deploy ska archiver using makefile targets</li>
 <li>Enable branch based development using gitlab manual deployment and kubeconfig generation</li>
 </ul><br/>

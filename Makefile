@@ -164,7 +164,10 @@ convert_install: ## convert ingresses and install chart, note this does not use 
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--values $(VALUES) \
-		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) | sed -i 's/networking.k8s.io\/v1beta1/networking.k8s.io\/v1/g' | kubectl create -f -
+		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) > tmp_chart.yml
+	sed -i 's/networking.k8s.io\/v1beta1/networking.k8s.io\/v1/g' tmp_chart.yml
+	kubectl create -f tmp_chart.yml
+	rm tmp_chart.yml
 	
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \

@@ -139,6 +139,33 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
+convert_install: ## convert ingresses and install chart, note this does not use helm!
+	helm dependency update $(UMBRELLA_CHART_PATH); \
+	helm template $(HELM_RELEASE) \
+        --set tango-base.xauthority="$(XAUTHORITYx)" \
+    	--set logging.ingress.hostname=$(INGRESS_HOST) \
+        --set logging.ingress.nginx=$(USE_NGINX) \
+        --set oet-scripts.ingress.hostname=$(INGRESS_HOST) \
+        --set oet.ingress.nginx=$(USE_NGINX) \
+        --set skuid.ingress.hostname=$(INGRESS_HOST) \
+        --set skuid.ingress.nginx=$(USE_NGINX) \
+        --set tango-base.ingress.hostname=$(INGRESS_HOST) \
+        --set tango-base.ingress.nginx=$(USE_NGINX) \
+        --set webjive.ingress.hostname=$(INGRESS_HOST) \
+        --set webjive.ingress.nginx=$(USE_NGINX) \
+		--set minikube=$(MINIKUBE) \
+		--set global.minikube=$(MINIKUBE) \
+		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set sdp.tango-base.enabled=false \
+		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set oet.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
+		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
+		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
+		--set webjive.ingress.hostname=$(INGRESS_HOST) \
+		--values $(VALUES) \
+		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) | sed -i 's/networking.k8s.io\/v1beta1/networking.k8s.io\/v1/g' | kubectl create -f -
+	
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \

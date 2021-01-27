@@ -8572,6 +8572,7 @@ spec:
     - http:
         paths:
         - path: /integration/jupyter
+          pathType: Prefix
           backend:
            service:
             name: oet-jupyter-test
@@ -8601,6 +8602,7 @@ spec:
     - http:
         paths:
         - path: /integration/(tango/rest/.*)
+          pathType: Prefix
           backend:
            service:
             name: tango-base-tango-rest
@@ -8621,18 +8623,21 @@ spec:
     - http:
         paths:
         - path: /integration/taranta/(db.*)
+          pathType: Prefix
           backend:
            service:
             name: tangogql-webjive-test
             port:
               number: 5004
         - path: /integration/taranta/(graphiql.*)
+          pathType: Prefix
           backend:
            service:
             name: tangogql-webjive-test
             port:
               number: 5004
         - path: /integration/taranta/(socket.*)
+          pathType: Prefix
           backend:
            service:
             name: tangogql-webjive-test
@@ -8652,18 +8657,21 @@ spec:
     - http:
         paths:
         - path: /integration/static
+          pathType: Prefix
           backend:
            service: 
             name: webjive-webjive-test
             port:
               number: 80
         - path: /integration/taranta
+          pathType: Prefix
           backend:
            service: 
             name: webjive-webjive-test
             port:
               number: 80
         - path: /integration/taranta/dashboard
+          pathType: Prefix
           backend:
            service: 
             name: webjive-webjive-test

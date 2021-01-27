@@ -139,7 +139,7 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
-convert_install: clean namespace namespace_sdp## convert ingresses and install chart, note this does not use helm!
+convert_ingress: ## convert ingresses and install chart, note this does not use helm!
 	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm template $(HELM_RELEASE) \
         --set tango-base.xauthority="$(XAUTHORITYx)" \
@@ -166,8 +166,6 @@ convert_install: clean namespace namespace_sdp## convert ingresses and install c
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) > tmp_chart.yml
 	sed -i 's/networking.k8s.io\/v1beta1/networking.k8s.io\/v1/g' tmp_chart.yml
-	kubectl create -f tmp_chart.yml
-	rm tmp_chart.yml
 	
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \

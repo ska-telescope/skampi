@@ -67,42 +67,29 @@ show-archiver: ## show the helm chart
 		--set xauthority="$(XAUTHORITYx)" \
 		--set display="$(DISPLAY)" 
 
-clone-script:
-	$(git clone https://gitlab.com/ska-telescope/ska-archiver/charts/ska-archiver/data/configure_hdbpp.py /resources/archiver)
-	echo "cloned repo"
-
-
 configure-archiver:  ##configure attributes to archive
-	tar -c resources/archiver/ | \
-	kubectl run $(CONFIGURE_ARCHIVER) \
-		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
+		tar -c resources/archiver/ | \
+		kubectl run $(CONFIGURE_ARCHIVER) \
+		--namespace $(KUBE_NAMESPACE)  -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
-		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:latest" \
-		--limits='cpu=1000m,memory=500Mi' \
-		--requests='cpu=900m,memory=400Mi' -- \
+		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:latest" -- \
 		/bin/bash -c "echo 'inside archivr container' && \
 		sudo tar xv && \
-		sudo curl 'https://gitlab.com/ska-telescope/ska-archiver/-/blob/master/charts/ska-archiver/data/configure_hdbpp.py' /resources/archiver/configure_hdbpp.py && \
-		sudo chmod 744 /resources/archiver/configure_hdbpp.py && \
-		cd /resources/archiver && \
-		cat 'configure_hdbpp.py' && \
-		sudo python3 configure_hdbpp.py \
-            --cm=tango://databaseds-tango-base-test.ska-archvier.svc.cluster.local:10000/archiving/hdbpp/confmanager01 \
-            --es=tango://databaseds-tango-base-test.ska-archvier.svc.cluster.local:10000/archiving/hdbpp/eventsubscriber01 \
-            --attrfile=ConfiguationJson.json \
-            --th=tango://databaseds-tango-base-test.ska-archvier.svc.cluster.local:10000 && \
-		ls -l /resources/archiver "\
-		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(CONFIGURE_ARCHIVER); \
-		
-		# /bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
-		# make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK='$(MARK)' TEST_RUN_SPEC=$(TEST_RUN_SPEC) $1 && \
-		# tar -czvf /tmp/build.tgz build && \
-		# echo '~~~~BOUNDARY~~~~' && \
-		# cat /tmp/build.tgz | base64 && \
-		# echo '~~~~BOUNDARY~~~~'" \
-		# 2>&1
+		sudo apt-get update && \
+ 		sudo apt-get install git -y && \
+		sudo git clone https://gitlab.com/ska-telescope/ska-archiver && \
+		cd ska-archiver/charts/ska-archiver/data && \
+		sudo python configure_hdbpp.py \
+            --cm=tango://databaseds-tango-base-test.$(ARCHIVER_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/confmanager01 \
+            --es=tango://databaseds-tango-base-test.$(ARCHIVER_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/eventsubscriber01 \
+            --attrfile=/resources/archiver/ConfiguationJson.json \
+            --th=tango://databaseds-tango-base-test.$(ARCHIVER_NAMESPACE).svc.cluster.local:10000 && \
+		ls -l /resources/archiver && \
+		echo 'last line'" && \
+		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(CONFIGURE_ARCHIVER); 
 
-enable_test_auth:
+
+enable_test_auth_archiver:
 	@helm upgrade --install testing-auth post-deployment/resources/testing_auth \
 		--namespace $(KUBE_NAMESPACE) \
 		--set accountName=$(TESTING_ACCOUNT)

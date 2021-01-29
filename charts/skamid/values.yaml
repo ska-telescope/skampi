@@ -77,10 +77,5 @@ sdp:
 tmc-mid:
   enabled: true
 
-## oet
-#oet:
-#  enabled: true
-
-
 
 

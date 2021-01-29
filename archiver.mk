@@ -40,7 +40,7 @@ delete_archiver: ## delete the kubernetes namespace
 
 check-dbname: ## Check if database name is empty
 	@if [ "$(DBNAME)" = "default_mvp_archiver_db" ]; then \
-	echo "Archiver database name is not provided. Setting archiver database name to default value: default_archiver_db"; \
+	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
 	fi
 
 #Ensure latest archiver chart from nexus is used for installtion 

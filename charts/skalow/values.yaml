@@ -1,3 +1,4 @@
+
 display: ":0"
 xauthority: "~/.Xauthority"
 minikube: true

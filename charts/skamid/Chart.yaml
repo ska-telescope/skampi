@@ -2,8 +2,8 @@ apiVersion: v2
 name: mvp-mid
 description: A Helm chart for Kubernetes MVP Mid
 type: application
-version: 0.2.0
-appVersion: 0.2.0
+version: 0.3.0
+appVersion: 0.3.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: tango-base
@@ -20,11 +20,11 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: mid-cbf.enabled
 - name: mid-csp
-  version: 0.1.0
+  version: 0.1.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: mid-csp.enabled
 - name: sdp
-  version: 0.2.0
+  version: 0.3.5
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
 - name: tmc-mid
@@ -39,10 +39,6 @@ dependencies:
   version: 1.0.10
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: webjive.enabled
-- name: archiver
-  version: 0.2.10
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: archiver.enabled
 - name: skuid
   version: 0.1.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

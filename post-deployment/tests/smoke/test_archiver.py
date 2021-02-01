@@ -12,6 +12,8 @@ from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, De
 
 archiver_namespace = os.getenv('ARCHIVER_NAMESPACE')
 mvp_tangodbserver = os.getenv('TANGO_DATABASE_DS')
+print(f'archiver_namespace: {archiver_namespace}')
+print(f'mvp_tangodbserver: {mvp_tangodbserver}')
 conf_manager = \
   f'tango://databaseds-tango-base-test.{archiver_namespace}.svc.cluster.local:10000/archiving/hdbpp/confmanager01'
 event_subscriber = \

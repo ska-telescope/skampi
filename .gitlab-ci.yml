@@ -136,9 +136,6 @@ test mid on demand:
     - *create_k8s_cred_dependencies
   <<: *test_definition
   <<: *create_k8s_creds_after_script
-    - make deploy-archiver
-  after_script:
-    - make delete_archiver
   environment:
     name: "test"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"

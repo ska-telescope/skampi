@@ -110,6 +110,7 @@ test mid:
     DEPLOYMENT_CONFIGURATION: "skamid"
     MARK: "skamid or common"
     KEEP_NAMESPACE: "true"
+    ARCHIVER_NAMESPACE: "skamid-archiver"
   <<: *test_definition
   environment:
     name: "test"
@@ -130,6 +131,7 @@ test mid on demand:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
   before_script:
     - *create_k8s_cred_dependencies
   <<: *test_definition
@@ -154,6 +156,7 @@ test low:
     DEPLOYMENT_CONFIGURATION: "skalow"
     MARK: "skalow or common"
     KEEP_NAMESPACE: "true"
+    ARCHIVER_NAMESPACE: "skamid-archiver"
   <<: *test_definition
   environment:
     name: "test-low"
@@ -175,6 +178,7 @@ test low on demand:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
   before_script:
     - *create_k8s_cred_dependencies
   <<: *test_definition

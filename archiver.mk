@@ -63,6 +63,3 @@ show-archiver: ## show the helm chart
 		--namespace $(ARCHIVER_NAMESPACE) \
 		--set xauthority="$(XAUTHORITYx)" \
 		--set display="$(DISPLAY)" 
-
-
-

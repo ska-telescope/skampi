@@ -9,12 +9,22 @@ from time import sleep
 from resources.test_support.archiver import ArchiverHelper
 from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
 
+archiver_namespace = os.getenv('ARCHIVER_NAMESPACE')
+mvp_tangodbserver = os.getenv('TANGO_DATABASE_DS')
+conf_manager = \
+  f'tango://databaseds-tango-base-test.{archiver_namespace}.svc.cluster.local:10000/archiving/hdbpp/confmanager01'
+event_subscriber = \
+  f'tango://databaseds-tango-base-test.{archiver_namespace}.svc.cluster.local:10000/archiving/hdbpp/eventsubscriber01'
+attribute = f"tango://{mvp_tangodbserver}.svc.cluster.local:10000/ska_mid/tm_subarray_node/1/State"
+
 @pytest.mark.archiver
 @pytest.mark.skamid
-@pytest.mark.xfail
+# @pytest.mark.xfail
 def test_init():
   print("Init test archiver")
-  archiver_helper = ArchiverHelper()
+  global conf_manager
+  global event_subscriber
+  archiver_helper = ArchiverHelper(conf_manager=conf_manager, eventsubscriber=event_subscriber)
   archiver_helper.start_archiving()
 
 def configure_attribute(attribute):
@@ -30,7 +40,7 @@ def configure_attribute(attribute):
 @pytest.mark.archiver
 @pytest.mark.xfail
 def test_configure_attribute():
-  attribute = "sys/tg_test/1/double_scalar"
+  global attribute
   sleep_time = 20
   max_retries = 3
   total_slept = 0
@@ -59,4 +69,4 @@ def test_configure_attribute():
 @pytest.mark.xfail
 def test_archiving_started():
   archiver_helper = ArchiverHelper()
-  assert archiver_helper.is_started("mid_d0001/elt/master/WindSpeed")
+  assert archiver_helper.is_started(f"tango://{mvp_tangodbserver}.svc.cluster.local:10000/ska_mid/tm_subarray_node/1/State")

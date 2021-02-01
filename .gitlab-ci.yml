@@ -132,7 +132,7 @@ test mid on demand:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
   before_script:
     - *create_k8s_cred_dependencies
-  <<: *create_k8s_creds
+    - *create_k8s_creds
   <<: *test_definition
   environment:
     name: "test"
@@ -177,7 +177,7 @@ test low on demand:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
   before_script:
     - *create_k8s_cred_dependencies
-  <<: *create_k8s_creds
+    - *create_k8s_creds
   <<: *test_definition
   environment:
     name: "test-low"

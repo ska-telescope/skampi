@@ -3,6 +3,7 @@
 Test archiver
 """
 import sys
+import os
 import pytest
 import logging
 from time import sleep

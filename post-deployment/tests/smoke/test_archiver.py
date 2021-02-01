@@ -25,6 +25,8 @@ def test_init():
   print("Init test archiver")
   global conf_manager
   global event_subscriber
+  print(f'conf_manager: {conf_manager}')
+  print(f'event_subscriber: {event_subscriber}')
   archiver_helper = ArchiverHelper(conf_manager=conf_manager, eventsubscriber=event_subscriber)
   archiver_helper.start_archiving()
 

@@ -89,7 +89,7 @@ uninstall low:
   tags:
   - k8srunner
   script:
-  - make deploy-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver" DBNAME="adityadbpipeline"
+  - make deploy-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver" DBNAME=adityadbpipeline
   - make install-or-upgrade
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE

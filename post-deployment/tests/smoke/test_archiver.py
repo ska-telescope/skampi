@@ -11,7 +11,7 @@ from resources.test_support.archiver import ArchiverHelper
 from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
 
 archiver_namespace = os.getenv('ARCHIVER_NAMESPACE')
-mvp_tangodbserver = os.getenv('TANGO_DATABASE_DS')
+mvp_tangodbserver = os.getenv('TANGO_HOST')
 print(f'archiver_namespace: {archiver_namespace}')
 print(f'mvp_tangodbserver: {mvp_tangodbserver}')
 conf_manager = \

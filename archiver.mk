@@ -1,7 +1,6 @@
 .PHONY: deploy-archiver delete-archiver test-archiver download
 
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
-TANGO_HOST ?= tango-host-databaseds-from-makefile-$(ARCHIVER_RELEASE):10000## TANGO_HOST is an input!
 HOSTNAME ?= 192.168.93.137 # This is IP address for the syscore cluster where archiver database is created
 ARCHIVER_RELEASE ?= test
 ARCHIVER_NAMESPACE ?= ska-archiver
@@ -24,7 +23,7 @@ namespace-archiver: ## create the kubernetes namespace
 		else kubectl create namespace $(ARCHIVER_NAMESPACE); \
 		fi
 
-delete_archiver: ## delete the kubernetes namespace
+delete_archiver_namespace: ## delete the kubernetes namespace
 	@if [ "default" == "$(ARCHIVER_NAMESPACE)" ] || [ "kube-system" == "$(ARCHIVER_NAMESPACE)" ]; then \
 	echo "You cannot delete Namespace: $(ARCHIVER_NAMESPACE)"; \
 	exit 1; \ARCHIVER_NAMESPACE
@@ -49,7 +48,7 @@ deploy-archiver: namespace-archiver check-dbname## install the helm chart on the
 		https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --namespace $(ARCHIVER_NAMESPACE); 
 
 delete-archiver: ## uninstall the helm chart on the namespace ARCHIVER_NAMESPACE
-	@helm template  $(ARCHIVER_RELEASE) https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
+	@helm template  $(ARCHIVER_RELEASE) https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
 	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE)
 
 show-archiver: ## show the helm chart

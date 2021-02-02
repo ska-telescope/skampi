@@ -1,0 +1,8 @@
+group: 
+  runs: 100
+  path: "tests/acceptance/mvp/"
+  modules:
+    - path: "test_XTP-826.py"
+      tests:
+        - name: "test_multi_scan"
+

@@ -34,7 +34,7 @@ non_default_states_to_check = {
 
 LOGGER = logging.getLogger(__name__)
 
-@pytest.mark.select
+#@pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.skip(reason="disabled as tests fails intermittently with csp master release resources as per SKB-21")
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")

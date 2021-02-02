@@ -55,7 +55,7 @@ def result():
 
 @pytest.mark.select
 @pytest.mark.skamid
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @pytest.mark.skip(reason="bug as repoted by SKB-20")
 @scenario("XTP-1106.feature", "BDD test case for Restart functionality")
 def test_subarray_restart():

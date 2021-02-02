@@ -1,17 +1,12 @@
 .PHONY: deploy-archiver delete-archiver test-archiver download
 
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
-MINIKUBE ?= true## Minikube or not
-MARK ?= all
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(ARCHIVER_RELEASE):10000## TANGO_HOST is an input!
-HOSTNAME = 192.168.93.137
+HOSTNAME ?= 192.168.93.137 # This is IP address for the syscore cluster where archiver database is created
 ARCHIVER_RELEASE ?= test
 ARCHIVER_NAMESPACE ?= ska-archiver
 CONFIGURE_ARCHIVER = test-configure-archiver-$(CI_JOB_ID)
 DBNAME ?= default_mvp_archiver_db
-
-CI_PROJECT_PATH_SLUG ?= ska-archiver
-CI_ENVIRONMENT_SLUG ?= ska-archiver	
 
 .DEFAULT_GOAL := help-archiver
 
@@ -53,7 +48,7 @@ deploy-archiver: namespace-archiver check-dbname## install the helm chart on the
 		--set global.dbname=$(DBNAME) \
 		https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --namespace $(ARCHIVER_NAMESPACE); 
 
-delete-archiver: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
+delete-archiver: ## uninstall the helm chart on the namespace ARCHIVER_NAMESPACE
 	@helm template  $(ARCHIVER_RELEASE) https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
 	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE)
 
@@ -69,8 +64,7 @@ configure-archiver:  ##configure attributes to archive
 		--namespace $(KUBE_NAMESPACE)  -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
 		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
-		/bin/bash -c "echo 'inside archivr container' && \
-		sudo tar xv && \
+		/bin/bash -c "sudo tar xv && \
 		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/master/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
 		cd /resources/archiver && \
 		sudo python configure_hdbpp.py \

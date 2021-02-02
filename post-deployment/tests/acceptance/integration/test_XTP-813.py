@@ -60,10 +60,10 @@ def restore_dish_state(request):
     request.addfinalizer(put_dish_in_standby_fp_mode)
 
 
+@pytest.mark.xfail(reason="New DishMaster doesn't update the Tango state")
 @pytest.mark.fast
 @pytest.mark.skamid
 @scenario("XTP-813.feature", "Test dish master simulator dishMode change")
-@pytest.mark.xfail(reason="New DishMaster doesn't update the Tango state")
 def test_mode_transitions():
     pass
 

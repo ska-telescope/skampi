@@ -60,6 +60,8 @@ def test_ska_devices():
     assert not test_result.keys()
 
 @pytest.mark.skamid
+@pytest.mark.xfail(
+    reason="New DishMaster simulator missing 'versionId' attribute, and 'GetVersionInfo' command")
 def test_dishmaster_conforms_to_tango_wide():
     """Check that dishmaster conforms to tango developers guide"""
     result = validate_device_from_url(

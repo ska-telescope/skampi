@@ -2,8 +2,8 @@ apiVersion: v2
 name: mvp-low
 description: A Helm chart for Kubernetes MVP Low
 type: application
-version: 0.2.0
-appVersion: 0.2.0
+version: 0.2.1
+appVersion: 0.2.1
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: tango-base

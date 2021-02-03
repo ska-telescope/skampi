@@ -340,9 +340,11 @@ xray_report:
   only: [master]
   retry: 2
 
+publish-chart:
+  when: on_success
+
 include:
 # Helm Chart Publish
 # https://developer.skatelescope.org/en/latest/development/software_package_release_procedure.html#package-and-publish-helm-charts-to-the-ska-helm-chart-repository
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/helm_publish.yml'
-  only: master

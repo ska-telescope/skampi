@@ -1,0 +1,88 @@
+{{ $fullname := .Chart.Name }}
+{{ $port := 80 }}
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: {{ $fullname }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    app: {{ $fullname }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ $fullname }}
+  replicas: {{ default 1 .Values.landingPage.replicas | int }}
+  template:
+    metadata:
+      labels:
+        app: {{ $fullname }}
+    spec:
+      containers:
+      - name: {{ $fullname }}
+        image: "{{ .Values.landingPage.image }}"
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html
+        configMap:
+          name: {{ $fullname}}-html
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-html
+  labels:
+    app: {{ $fullname }}
+data: 
+  index.html: |-
+{{ ($.Files.Get "data/index.html") | indent 4  }}
+  ska_logo.svg: |-
+{{ ($.Files.Get "data/ska_logo.svg") | indent 4  }}
+  styles.css: |-
+{{ ($.Files.Get "data/styles.css") | indent 4  }}
+  url_from_env.js: |-
+{{ ($.Files.Get "data/url_from_env.js") | indent 4  }}
+  env.js: |-
+    let TEMP = 'TEMP';
+    let TEMP2 = 'TEMP2';
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullname }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    app: {{ $fullname }}
+spec:
+  ports:
+  - name: http
+    port: {{ $port }}
+    targetPort: {{ $port }}
+  selector:
+    app: {{ $fullname }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullname }}
+  labels:
+    app: {{ $fullname }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /{{ .Release.Namespace }}/start/(.*)
+        backend:
+          service:
+            name: {{ $fullname }}
+            port:
+              number: {{ $port }}
+        pathType: ImplementationSpecific

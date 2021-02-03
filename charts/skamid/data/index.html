@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MVP Landing Page</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">-->
+</head>
+<body data-new-gr-c-s-check-loaded="14.993.0" data-gr-ext-installed="">
+  <section class="hero is-primary is-fullheight-with-navbar">
+    <!-- Hero head: will stick at the top -->
+    <div class="hero-head">
+      <nav class="navbar">
+        <div class="container">
+          <div class="navbar-brand">
+            <div class="navbar-item">
+              <img src="ska_logo.svg" alt="Logo" class="has-background-white">
+            </div>
+            <span class="navbar-burger" data-target="navbarMenuHeroA">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </div>
+          <div id="navbarMenuHeroA" class="navbar-menu">
+            <div class="navbar-end">
+              <a class="navbar-item is-active">
+                Taranta
+              </a>
+              <a class="navbar-item">
+                Jupyter
+              </a>
+              <a class="navbar-item">
+                Documentation
+              </a>
+              <span class="navbar-item">
+                <a class="button is-primary is-inverted">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Login</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+  
+    <!-- Hero content: will be in the middle -->
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <p class="title">
+          MVP Landing Page
+        </p>
+        <p class="subtitle">
+          SKA Mid
+        </p>
+      </div>
+    </div>
+  
+    <!-- Hero footer: will stick at the bottom -->
+    <div class="hero-foot">
+      <nav class="tabs">
+        <div class="container">
+          <ul>
+            <li class="is-active"><a>Overview</a></li>
+            <li><a>Modifiers</a></li>
+            <li><a>Grid</a></li>
+            <li><a>Elements</a></li>
+            <li><a>Components</a></li>
+            <li><div class="react_url_from_env"><a>Layout</a></div></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </section>
+<!-- Load React. -->
+<!-- Note: when deploying, replace "development.js" with "production.min.js".--> 
+<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin=""></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin=""></script>
+
+<!--Load our React component. -->
+<script src="env.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" 
+integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" 
+crossorigin="anonymous"></script>
+
+
+</body></html>

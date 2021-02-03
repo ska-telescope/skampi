@@ -60,7 +60,7 @@ class pilot():
     def and_configure_scan_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/configure2.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A2-Test.py
         @sync_configure_oet
-        @time_it(120)
+        @time_it(200)
         def config(file, sdp_block):
             update_scan_config_file(file, sdp_block)
             LOGGER.info("___________Input file in configure_oet_____________" + str(file))
@@ -155,11 +155,11 @@ def set_telescope_to_running(disable_waiting = False):
             pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 
 def telescope_is_in_standby():
-    LOGGER.info('resource("ska_mid/tm_subarray_node/1").get("State")'+ str(resource('ska_mid/tm_subarray_node/1').get("State")))
-    LOGGER.info('resource("mid_csp/elt/subarray_01").get("State")' +
-                str(resource('mid_csp/elt/subarray_01').get("State")))
-    LOGGER.info('resource("mid_csp_cbf/sub_elt/subarray_01").get("State")' +
-                str(resource('mid_csp_cbf/sub_elt/subarray_01').get("State")))
+    # LOGGER.info('resource("ska_mid/tm_subarray_node/1").get("State")'+ str(resource('ska_mid/tm_subarray_node/1').get("State")))
+    # LOGGER.info('resource("mid_csp/elt/subarray_01").get("State")' +
+    #             str(resource('mid_csp/elt/subarray_01').get("State")))
+    # LOGGER.info('resource("mid_csp_cbf/sub_elt/subarray_01").get("State")' +
+    #             str(resource('mid_csp_cbf/sub_elt/subarray_01').get("State")))
 
     return  [resource('ska_mid/tm_subarray_node/1').get("State"),
             resource('mid_csp/elt/subarray_01').get("State"),

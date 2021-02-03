@@ -50,7 +50,7 @@ non_default_states_to_check = {
 def fixture():
     return {}
 
-#@pytest.mark.select
+@pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.xfail
 @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")

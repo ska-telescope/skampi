@@ -7,6 +7,7 @@ test_XTP-826
 Acceptance tests for MVP.
 """
 import os
+import time
 import logging
 import pytest
 from assertpy import assert_that
@@ -81,7 +82,7 @@ def check_resource_ready(resource_name):
 LOGGER = logging.getLogger(__name__)
 
 @pytest.mark.select
-#@pytest.mark.skamid
+@pytest.mark.skamid
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
 @scenario("XTP-826.feature", "Run more than one scan on a sub array")
 def test_multi_scan():
@@ -107,6 +108,8 @@ def setup_telescope_and_scan(result):
 
     LOGGER.info("executing first scan")
     result[SUBARRAY_USED].and_run_a_scan()
+    LOGGER.info("first scan completes...")
+    time.sleep(5)
     return result
 
 
@@ -118,8 +121,10 @@ def configure_again(result):
     what was done for the previous scan
     """
     LOGGER.info("Configuring  second scan")
+    time.sleep(5)
     result[SUBARRAY_USED].and_configure_scan_by_file(
         result['sdp_block'],file='resources/test_data/OET_integration/configure2.json')
+    LOGGER.info("second configure completes...")
     LOGGER.info("________SDP_block for second configure command______" + str(result['sdp_block']))
 
 
@@ -134,6 +139,7 @@ def execute_second_scan(result):
     def scan():
         SubArray(1).scan()
     scan()
+    LOGGER.info("second scan completes...")
     #############################################
     result[SUT_EXECUTED] = True
 

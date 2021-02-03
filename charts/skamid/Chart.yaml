@@ -28,11 +28,11 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
 - name: tmc-mid
-  version: 0.1.3
+  version: 0.2.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: tmc-mid.enabled
 - name: oet-scripts
-  version: 0.3.1
+  version: 0.3.2
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: oet.enabled
 - name: webjive

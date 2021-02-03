@@ -1,7 +1,7 @@
 .PHONY: deploy-archiver delete-archiver test-archiver download
 
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
-HOSTNAME ?= 192.168.93.137 # This is IP address for the syscore cluster where archiver database is created
+DBHOST ?= 192.168.93.137 # This is IP address for the syscore cluster where archiver database is created
 ARCHIVER_RELEASE ?= test
 ARCHIVER_NAMESPACE ?= ska-archiver
 CONFIGURE_ARCHIVER = test-configure-archiver-$(CI_JOB_ID)
@@ -43,7 +43,7 @@ deploy-archiver: namespace-archiver check-dbname## install the helm chart on the
 	helm repo update; \
 	helm install $(ARCHIVER_RELEASE) \
 		--set global.minikube=$(MINIKUBE) \
-		--set global.hostname=$(HOSTNAME) \
+		--set global.hostname=$(DBHOST) \
 		--set global.dbname=$(DBNAME) \
 		https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --namespace $(ARCHIVER_NAMESPACE); 
 

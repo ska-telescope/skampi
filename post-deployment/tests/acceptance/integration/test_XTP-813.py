@@ -21,7 +21,7 @@ LOGGER = logging.getLogger(__name__)
 mode_cmd_map = {
     "STANDBY-LP": "SetStandbyLPMode",
     "STANDBY-FP": "SetStandbyFPMode",
-    "OPERATE": "SetOperateMode"
+    "OPERATE": "SetOperateMode",
 }
 # to be used in teardown
 device_proxies = {}
@@ -29,20 +29,20 @@ device_proxies = {}
 
 def _change_dish_mode(dev_proxy, cmd, device_name):
     dev_proxy.command_inout(cmd)
-    watch_dish_mode = watch(resource(device_name)).for_a_change_on('dishMode')
+    watch_dish_mode = watch(resource(device_name)).for_a_change_on("dishMode")
     watch_dish_mode.wait_until_value_changed()
 
 
 def pre_condition(dev_proxy, device_name, expected):
     """verify the device dish mode before executing mode transition requests"""
-    actual = resource(device_name).get('dishMode')
+    actual = resource(device_name).get("dishMode")
     if actual != expected:
         # standbyfp is used as initial condition because it can be reached from other
         # dish modes but dont request standbyfp if this is the current dish mode
         if actual != "STANDBY-FP":
-            _change_dish_mode(dev_proxy, 'SetStandbyFPMode', device_name)
+            _change_dish_mode(dev_proxy, "SetStandbyFPMode", device_name)
         _change_dish_mode(dev_proxy, mode_cmd_map[expected], device_name)
-    assert_that(resource(device_name).get('dishMode')).is_equal_to(expected)
+    assert_that(resource(device_name).get("dishMode")).is_equal_to(expected)
     LOGGER.info(f"{device_name} initial dishMode: {resource(device_name).get('dishMode')}")
 
 
@@ -62,6 +62,10 @@ def restore_dish_state(request):
 
 @pytest.mark.fast
 @pytest.mark.skamid
+@pytest.mark.xfail(
+    reason="New DishMaster doesn't update the Tango state. It should be removed when a "
+    "version of tmc-mid chart (> 0.2.0) with the required updates is published."
+)
 @scenario("XTP-813.feature", "Test dish master simulator dishMode change")
 def test_mode_transitions():
     pass
@@ -86,11 +90,11 @@ def set_dish_mode(device_proxy, dish_master, end_mode):
 
 @then("<dish_master> reports <end_mode> Dish mode")
 def check_dish_mode(dish_master, end_mode):
-    assert_that(resource(dish_master).get('dishMode')).is_equal_to(end_mode)
+    assert_that(resource(dish_master).get("dishMode")).is_equal_to(end_mode)
     LOGGER.info(f"{dish_master} desired dishMode: {resource(dish_master).get('dishMode')}")
 
 
 @then("<dish_master> is in <end_state> state")
 def check_master_device_state(dish_master, end_state):
-    assert_that(resource(dish_master).get('State')).is_equal_to(end_state)
+    assert_that(resource(dish_master).get("State")).is_equal_to(end_state)
     LOGGER.info(f"{dish_master} desired state: {resource(dish_master).get('State')}")

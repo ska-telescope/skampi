@@ -15,6 +15,7 @@ stages:
   - release
   - clean_staging
   - deploy_staging
+  - update_versions
 
 .uninstall_template: &uninstall_definition
   tags:
@@ -315,6 +316,16 @@ deploy_staging_mid:
       - tags
   needs:
     - job: clean_staging_mid
+
+version_bump_charts:
+  stage: update_versions
+  tags:
+    - k8srunner
+  only:
+    refs:
+      - tags
+  script:
+    - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
 
 xray_report:
   stage: post_test

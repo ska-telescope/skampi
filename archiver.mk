@@ -1,10 +1,13 @@
 .PHONY: deploy-archiver delete-archiver test-archiver download
 
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
-DBHOST ?= 192.168.93.137 # This is IP address for the syscore cluster where archiver database is created
+# DBHOST is the IP address for the cluster machine where archiver database is created
+DBHOST ?= 192.168.93.137 
 ARCHIVER_RELEASE ?= test
 ARCHIVER_NAMESPACE ?= ska-archiver
+# Test runner - run to completion the configuration job in K8s
 CONFIGURE_ARCHIVER = test-configure-archiver-$(CI_JOB_ID)
+# Deafult database name used if not provided by user while deploying the archiver
 DBNAME ?= default_mvp_archiver_db
 
 .DEFAULT_GOAL := help-archiver
@@ -32,13 +35,15 @@ delete_archiver_namespace: ## delete the kubernetes namespace
 	fi
 
 
+# Checks if the Database name is provided by user while deploying the archiver otherwise gives the default name to the database
 check-dbname: ## Check if database name is empty
 	@if [ "$(DBNAME)" = "default_mvp_archiver_db" ]; then \
 	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
 	fi
 
-#Ensure latest archiver chart from nexus is used for installtion 
-deploy-archiver: namespace-archiver check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
+# Deploy the ska-archiver from SKAMPI by accessing the chart published on nexus from ska-archiver repository
+# Ensure latest archiver chart from nexus is used for installtion 
+deploy-archiver: namespace-archiver check-dbname ## install the helm chart on the namespace ARCHIVER_NAMESPACE
 	helm repo add nexusPath https://nexus.engageska-portugal.pt/repository/helm-chart/; \
 	helm repo update; \
 	helm install $(ARCHIVER_RELEASE) \
@@ -47,6 +52,7 @@ deploy-archiver: namespace-archiver check-dbname## install the helm chart on the
 		--set global.dbname=$(DBNAME) \
 		https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --namespace $(ARCHIVER_NAMESPACE); 
 
+# Deletes the ska-archiver deployment
 delete-archiver: ## uninstall the helm chart on the namespace ARCHIVER_NAMESPACE
 	@helm template  $(ARCHIVER_RELEASE) https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
 	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE)
@@ -57,6 +63,8 @@ show-archiver: ## show the helm chart
 		--set xauthority="$(XAUTHORITYx)" \
 		--set display="$(DISPLAY)" 
 
+# Runs a pod to execute a script. 
+# This script configures the archiver for attribute archival defined in json file. Once script is executed, pod is deleted.
 configure-archiver:  ##configure attributes to archive
 		tar -c resources/archiver/ | \
 		kubectl run $(CONFIGURE_ARCHIVER) \

@@ -3,8 +3,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MVP Landing Page</title>
+  <!-- Stylesheet compiled from Bulma into ska colour scheme (see https://bulma.io/documentation/customize/concepts/) and https://gitlab.com/gerhardlr/skacss/ -->
   <link rel="stylesheet" href="styles.css">
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">-->
+  <!-- Jquery in case we want to dynamically change text based on env variables-->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" 
+      integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" 
+      crossorigin="anonymous"></script>
+  <!-- environmental variables for adapting html according to deployment-->   
+  <script src="env.js"></script>
 </head>
 <body data-new-gr-c-s-check-loaded="14.993.0" data-gr-ext-installed="">
   <section class="hero is-primary is-fullheight-with-navbar">
@@ -14,7 +20,7 @@
         <div class="container">
           <div class="navbar-brand">
             <div class="navbar-item">
-              <img src="ska_logo.svg" alt="Logo" class="has-background-white">
+              <img src="ska_logo1.svg" alt="Logo">
             </div>
             <span class="navbar-burger" data-target="navbarMenuHeroA">
               <span></span>
@@ -24,15 +30,38 @@
           </div>
           <div id="navbarMenuHeroA" class="navbar-menu">
             <div class="navbar-end">
-              <a class="navbar-item is-active">
-                Taranta
-              </a>
-              <a class="navbar-item">
-                Jupyter
-              </a>
-              <a class="navbar-item">
-                Documentation
-              </a>
+              <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                  Taranta
+                </a>
+                <div class="navbar-dropdown">
+                  <a class="navbar-item">
+                    Observation Execution
+                  </a>
+                  <a class="navbar-item">
+                    General Monitoring (CSP)
+                  </a>
+                  <a class="navbar-item">
+                    Science Data Monitoring (SDP)
+                  </a>         
+                </div>
+              </div>
+              <div class="navbar-item has-dropdown is-hoverable ">
+                <a class="navbar-link">
+                  Jupyter
+                </a>
+                <div class="navbar-dropdown">
+                  <a class="navbar-item">
+                    Notebook1
+                  </a>
+                  <a class="navbar-item">
+                    Notebook1
+                  </a>
+                  <a class="navbar-item">
+                    Notebook1
+                  </a>         
+                </div>
+              </div>
               <span class="navbar-item">
                 <a class="button is-primary is-inverted">
                   <span class="icon">
@@ -64,27 +93,17 @@
       <nav class="tabs">
         <div class="container">
           <ul>
-            <li class="is-active"><a>Overview</a></li>
-            <li><a>Modifiers</a></li>
-            <li><a>Grid</a></li>
-            <li><a>Elements</a></li>
-            <li><a>Components</a></li>
-            <li><div class="react_url_from_env"><a>Layout</a></div></li>
+            <li class="is-active"><a>TODO0</a></li>
+            <li><a>TODO1</a></li>
+            <li><a>TDOD2</a></li>
+            <li><a>TODO3</a></li>
+            <li><a>TODO3</a></li>
+            <li><div class="react_url_from_env"><a>TODO4</a></div></li>
           </ul>
         </div>
       </nav>
     </div>
   </section>
-<!-- Load React. -->
-<!-- Note: when deploying, replace "development.js" with "production.min.js".--> 
-<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin=""></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin=""></script>
-
-<!--Load our React component. -->
-<script src="env.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" 
-integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" 
-crossorigin="anonymous"></script>
-
-
+  <!-- Jquery scripts for manipulating dom based in env variables -->
+  <script src="scripts.js"></script>
 </body></html>

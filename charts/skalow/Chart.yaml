@@ -22,6 +22,6 @@ dependencies:
   version: 1.0.11
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: oet-scripts
-  version: 0.3.2
+  version: 0.3.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: oet-scripts.enabled

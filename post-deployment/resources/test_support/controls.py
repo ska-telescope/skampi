@@ -76,9 +76,10 @@ class pilot():
         ##Reference tests/acceptance/mvp/test_XR-13_A3-Test.py
         ##note this is a different sync decorator as test since test performs the command as non blocking
         #@sync_scan_oet
-        def scan():
+        with sync_oet_scanning(200):
+        #def scan():
             self.SubArray.scan()
-        scan()
+        #scan()
         self.state = "Ready"
         return self
     

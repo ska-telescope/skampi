@@ -7,6 +7,7 @@ test_XTP-826
 Acceptance tests for MVP.
 """
 import os
+import time
 import logging
 import pytest
 from assertpy import assert_that
@@ -107,6 +108,8 @@ def setup_telescope_and_scan(result):
 
     LOGGER.info("executing first scan")
     result[SUBARRAY_USED].and_run_a_scan()
+    LOGGER.info("first scan completes...")
+    time.sleep(5)
     return result
 
 
@@ -118,8 +121,10 @@ def configure_again(result):
     what was done for the previous scan
     """
     LOGGER.info("Configuring  second scan")
+    time.sleep(5)
     result[SUBARRAY_USED].and_configure_scan_by_file(
         result['sdp_block'],file='resources/test_data/OET_integration/configure2.json')
+    LOGGER.info("second configure completes...")
     LOGGER.info("________SDP_block for second configure command______" + str(result['sdp_block']))
 
 
@@ -134,6 +139,7 @@ def execute_second_scan(result):
     def scan():
         SubArray(1).scan()
     scan()
+    LOGGER.info("second scan completes...")
     #############################################
     result[SUT_EXECUTED] = True
 

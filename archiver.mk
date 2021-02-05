@@ -9,7 +9,7 @@ ARCHIVER_NAMESPACE ?= ska-archiver
 CONFIGURE_ARCHIVER = test-configure-archiver-$(CI_JOB_ID)
 # Deafult database name used if not provided by user while deploying the archiver
 DBNAME ?= default_mvp_archiver_db
-DBSERVICE ?= databaseds-tango-base-test
+
 
 .DEFAULT_GOAL := help-archiver
 
@@ -64,31 +64,31 @@ show-archiver: ## show the helm chart
 		--set xauthority="$(XAUTHORITYx)" \
 		--set display="$(DISPLAY)" 
 
-# Get the database service name from deployment
+# Get the database service name from archiver deployment and MVP deployment
 get-service:
-	$(DBSERVICE) = kubectl get svc -n ska-archiver | grep 10000 | cut -f 1 -d " " \
-    $(eval PODNAME=$(shell sh -c "kubectl get svc -n ska-archiver | grep 10000 | cut -f 1 -d " "" | awk '{print $$1}')) \
-    echo $(PODNAME); \
-	echo $(DBSERVICE);
+	$(eval DBMVPSERVICE := $(shell kubectl get svc -n $(KUBE_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
+	echo $(DBMVPSERVICE); \
+	$(eval DBEDASERVICE := $(shell kubectl get svc -n $(ARCHIVER_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
+	echo $(DBEDASERVICE); \
 
 # Runs a pod to execute a script. 
 # This script configures the archiver for attribute archival defined in json file. Once script is executed, pod is deleted.
-configure-archiver: get-service ##configure attributes to archive
+configure-archiver:  get-service ##configure attributes to archive
 		tar -c resources/archiver/ | \
 		kubectl run $(CONFIGURE_ARCHIVER) \
 		--namespace $(KUBE_NAMESPACE)  -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
 		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
 		/bin/bash -c "sudo tar xv && \
-		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/master/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
+		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/conf-script-update/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
 		cd /resources/archiver && \
 		sudo python configure_hdbpp.py \
-            --cm=tango://databaseds-tango-base-test.$(ARCHIVER_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/confmanager01 \
-            --es=tango://databaseds-tango-base-test.$(ARCHIVER_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/eventsubscriber01 \
+            --cm=tango://$(DBEDASERVICE).$(ARCHIVER_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/confmanager01 \
+            --es=tango://$(DBEDASERVICE).$(ARCHIVER_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/eventsubscriber01 \
             --attrfile=configuation_file.json \
-            --th=tango://databaseds-tango-base-test.$(ARCHIVER_NAMESPACE).svc.cluster.local:10000 \
-			--ds=$(DBSERVICE) \ 
-			--ns=$(KUBE_NAMESPACE) " && \
+            --th=tango://$(DBEDASERVICE).$(ARCHIVER_NAMESPACE).svc.cluster.local:10000 \
+			--ds=$(DBMVPSERVICE) \
+			--ns=$(KUBE_NAMESPACE)" && \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(CONFIGURE_ARCHIVER); 
 
 

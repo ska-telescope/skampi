@@ -60,7 +60,7 @@ class pilot():
     def and_configure_scan_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/configure2.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A2-Test.py
         @sync_configure_oet
-        @time_it(200)
+        @time_it(120)
         def config(file, sdp_block):
             update_scan_config_file(file, sdp_block)
             LOGGER.info("___________Input file in configure_oet_____________" + str(file))

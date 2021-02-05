@@ -16,6 +16,7 @@ stages:
   - clean_staging
   - deploy_staging
   - update_versions
+  - clean_or_redeploy
 
 .uninstall_template: &uninstall_definition
   tags:
@@ -82,6 +83,30 @@ uninstall low:
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
     KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "test-low"
+
+uninstall branch mid:
+  stage: clean_or_redeploy
+  variables:
+    HELM_RELEASE: test-mid-$CI_COMMIT_BRANCH
+    KUBE_NAMESPACE: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+    KUBE_NAMESPACE_SDP: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "false"
+  <<: *uninstall_definition
+  environment:
+    name: "test-mid"
+
+uninstall branch low:
+  stage: clean_or_redeploy
+  variables:
+    HELM_RELEASE: test-low-$CI_COMMIT_BRANCH
+    KUBE_NAMESPACE: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
+    KUBE_NAMESPACE_SDP: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "false"
   <<: *uninstall_definition
   environment:
     name: "test-low"

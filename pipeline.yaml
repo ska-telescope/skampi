@@ -9,12 +9,10 @@ tests:
 hdbppdb:
   enabled: true
 archiver:
-  enabled: false
+  enabled: true
 tangodb:
   use_pv: false
 tangotest:
   enabled: true
-webjive:
-  enabled: false
 
-minikube: true
+minikube: false

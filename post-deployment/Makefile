@@ -18,9 +18,7 @@ test: install
 	(python3 resources/log_consumer/log_consumer.py log &); \
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \
-	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest \
-		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
-		--disable-pytest-warnings --timeout=300 | tee pytest.stdout; \
+	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest $(if $(findstring all,$(MARK)),, -m '$(MARK)') --disable-pytest-warnings | tee pytest.stdout; \
 	status=$$?; \
 	(tango_admin --delete-server log_consumer/log &) && \
 	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \

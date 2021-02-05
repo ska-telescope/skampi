@@ -28,8 +28,8 @@ device_proxies = {}
 
 
 def _change_dish_mode(dev_proxy, cmd, device_name):
-    watch_dish_mode = watch(resource(device_name)).for_a_change_on('dishMode')
     dev_proxy.command_inout(cmd)
+    watch_dish_mode = watch(resource(device_name)).for_a_change_on("dishMode")
     watch_dish_mode.wait_until_value_changed()
 
 

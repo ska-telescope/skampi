@@ -98,7 +98,7 @@ uninstall branch mid:
   tags:
     - k8srunner
   script:
-  - *uninstall_script
+  - *uninstall_scripts
   environment:
     name: "test"
     kubernetes:
@@ -120,7 +120,7 @@ uninstall branch low:
   tags:
     - k8srunner
   script:
-  - *uninstall_script
+  - *uninstall_scripts
   environment:
     name: "test"
     kubernetes:

@@ -24,6 +24,10 @@ global:
       tag: 9.3.1
       pullPolicy: IfNotPresent
 
+landingpage:
+  enabled: true
+  MVPInstance: mvp-mid
+
 skuid:
   enabled: true
   skuid:

@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MVP Landing Page</title>
   <!-- Stylesheet compiled from Bulma into ska colour scheme (see https://bulma.io/documentation/customize/concepts/) and https://gitlab.com/gerhardlr/skacss/ -->
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://res.cloudinary.com/dmwc3xvv8/raw/upload/v1612504718/styles_ydv43w.css">
   <!-- Jquery in case we want to dynamically change text based on env variables-->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" 
       integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" 
@@ -20,7 +20,7 @@
         <div class="container">
           <div class="navbar-brand">
             <div class="navbar-item">
-              <img src="ska_logo1.svg" alt="Logo">
+              <img src="https://res.cloudinary.com/dmwc3xvv8/image/upload/v1612505175/ska_logo_vsyakq.svg" alt="Logo">
             </div>
             <span class="navbar-burger" data-target="navbarMenuHeroA">
               <span></span>
@@ -85,13 +85,13 @@
           <p class="title">
             MVP Landing Page
           </p>    
-          <p class="subtitle">
-            SKA Mid
+          <p class="subtitle templateText is-hidden">
+            {MVPInstance.name}
           </p>
         </div>
         <div class="section">
-          <figure class="image is-3by1">
-            <img src="ska_mid.svg">
+          <figure class="image is-3by1 is-hidden">
+            <img src="MVPInstance.image" class='templateImage '>
           </figure>
         </div>
       </div>

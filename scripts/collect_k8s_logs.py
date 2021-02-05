@@ -5,6 +5,7 @@ Kubernetes log collection script
 Usage:
   collect_k8s_logs.py <ns>... [--timefmt=<format>]
       [--pp=<out>] [--dump=<out>] [--tests=<out>] [--test=<test>]
+      [--pp-thread]
 
 Options:
   <ns>           Namespaces or JSON dump files (files must have '/' or '.')
@@ -13,6 +14,7 @@ Options:
   --dump=<out>   Write JSON strings to file ('-' for stdout)
   --tests=<out>  Put test case summary into file ('-' for stdout)
   --test=<test>  Filter out only test of given name
+  --pp-thread    Include thread field in pretty-printed output
 """
 
 from kubernetes import client, config
@@ -242,8 +244,17 @@ def make_target(target_name, message=''):
 pp_date_format = arguments['--timefmt']
 if pp_date_format is None:
     pp_date_format = '%H:%M:%S.%f'
-def pp_line(line):
-    return f"{line['time'].strftime(pp_date_format)} {line.get('level', '---')}\t{line.get('pod', '---')}:{line.get('container', '---')}\t{line['msg']}"
+# https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
+ansi_escape = re.compile(r'(?:\x1B[@-_]|[\x80-\x9F])[0-?]*[ -/]*[@-~]')
+def escape_ansi(line):
+    return ansi_escape.sub('', line)
+if arguments['--pp-thread']:
+    def pp_line(line):
+        return f"{line['time'].strftime(pp_date_format)} {line.get('level', '---')}\t{line.get('pod', '---')}:{line.get('container', '---')}\t{line.get('thread', '---')}\t{escape_ansi(line['msg'])}"
+else:
+    def pp_line(line):
+        return f"{line['time'].strftime(pp_date_format)} {line.get('level', '---')}\t{line.get('pod', '---')}:{line.get('container', '---')}\t{escape_ansi(line['msg'])}"
+
 for pp_file in make_target(pp_target, f'Pretty-printing to {pp_target}...'):
     for line in lines:
         print(pp_line(line), file=pp_file)
@@ -268,7 +279,7 @@ def collect_tests(lines):
         return 'pod' in line and 'makefile-runner' in line['pod']
 
     # Go forward to session start (ignore initialisation)
-    session_start_re = re.compile('=+ test session starts =+')
+    session_start_re = re.compile('(=+ test session starts =+|collected.*selected.*)')
     i = 0
     while i < len(lines):
         if is_test_runner(lines[i]) and session_start_re.match(lines[i]['msg']):

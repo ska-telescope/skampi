@@ -15,6 +15,7 @@ stages:
   - release
   - clean_staging
   - deploy_staging
+  - update_versions
 
 .uninstall_template: &uninstall_definition
   tags:
@@ -229,7 +230,6 @@ tag_commit:
   script:
     - make release-skampi USERNAME="$GITLAB_USER_NAME" EMAILID=$GITLAB_USER_EMAIL PRIVATE_TOKEN=$SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
 
-
 clean_staging_low:
   stage: clean_staging
   variables:
@@ -247,7 +247,6 @@ clean_staging_low:
   environment:
     name: "staging-low"
   
-
 clean_staging_mid:
   stage: clean_staging
   variables:
@@ -265,7 +264,6 @@ clean_staging_mid:
   environment:
     name: "staging-mid"
   
-
 deploy_staging_low:
   stage: deploy_staging
   variables:
@@ -316,6 +314,17 @@ deploy_staging_mid:
   needs:
     - job: clean_staging_mid
 
+version_bump_charts:
+  stage: update_versions
+  tags:
+    - k8srunner
+  only:
+    refs:
+      - tags
+  script:
+    - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
+    - make commit-and-push-to-master USERNAME="project_14654456_bot" EMAILID=$MARVIN_EMAIL PRIVATE_TOKEN=$MARVIN_PRIVATE_TOKEN
+
 xray_report:
   stage: post_test
   tags:
@@ -329,9 +338,11 @@ xray_report:
   only: [master]
   retry: 2
 
+publish-chart:
+  when: on_success
+
 include:
 # Helm Chart Publish
 # https://developer.skatelescope.org/en/latest/development/software_package_release_procedure.html#package-and-publish-helm-charts-to-the-ska-helm-chart-repository
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/helm_publish.yml'
-  only: master

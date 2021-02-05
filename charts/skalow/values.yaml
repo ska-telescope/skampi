@@ -75,3 +75,7 @@ oet-scripts:
   enabled: true
   ingress:
     hostname: low.integration.engageska-portugal.pt
+  system: TM-low
+  telescope: SKA-low
+  central_node: ska_low/tm_central/central_node
+  subarray: ska_low/tm_subarray_node

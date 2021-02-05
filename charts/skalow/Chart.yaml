@@ -2,15 +2,15 @@ apiVersion: v2
 name: mvp-low
 description: A Helm chart for Kubernetes MVP Low
 type: application
-version: 0.2.0
-appVersion: 0.2.0
+version: 0.2.1
+appVersion: 0.2.1
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: tango-base
-  version: 0.2.12
+  version: 0.2.13
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: tango-util
-  version: 0.2.8
+  version: 0.2.9
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: tmc-low
   version: 0.1.5
@@ -19,9 +19,9 @@ dependencies:
   version: 0.4.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: webjive
-  version: 1.0.10
+  version: 1.0.12
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: oet-scripts
-  version: 0.3.1
+  version: 0.3.3
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: oet-scripts.enabled

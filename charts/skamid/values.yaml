@@ -51,6 +51,15 @@ webjive:
     nginx: true
     hostname: integration.engageska-portugal.pt
 
+oet-scripts:
+  enabled: true
+  ingress:
+    hostname: integration.engageska-portugal.pt
+  system: TM-mid
+  telescope: SKA-mid
+  central_node: ska_mid/tm_central/central_node
+  subarray: ska_mid/tm_subarray_node
+
 #telescope control
 ## mid-cbf
 mid-cbf:
@@ -67,11 +76,6 @@ sdp:
 ## tm
 tmc-mid:
   enabled: true
-
-## oet
-oet:
-  enabled: true
-
 
 
 

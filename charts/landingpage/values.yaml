@@ -1,2 +1,5 @@
 MVPInstance: mvp-low
 image: nginx
+basename: false
+ingress:
+    hostname : integration.engageska-portugal.pt

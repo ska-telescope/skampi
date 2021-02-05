@@ -73,6 +73,9 @@ metadata:
 spec:
   rules:
   - http:
+      {{- if eq .Values.basename false }}
+      host: {{ .Values.ingress.hostname }}
+      {{- end }}
       paths:
       - path: /{{ .Release.Namespace }}/start/(.*)
         backend:

@@ -340,6 +340,8 @@ xray_report:
 
 publish-chart:
   when: on_success
+  except: 
+    - master
 
 include:
 # Helm Chart Publish

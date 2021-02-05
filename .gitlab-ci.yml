@@ -16,7 +16,7 @@ stages:
   - clean_staging
   - deploy_staging
   - update_versions
-  - clean_or_redeploy
+  - clean_up
 
 .uninstall_template: &uninstall_definition
   tags:
@@ -87,8 +87,8 @@ uninstall low:
   environment:
     name: "test-low"
 
-uninstall branch mid:
-  stage: clean_or_redeploy
+uninstall mid on demand:
+  stage: cleanup
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
@@ -109,8 +109,8 @@ uninstall branch mid:
     refs:
       - branches
 
-uninstall branch low:
-  stage: clean_or_redeploy
+uninstall low on demand:
+  stage: cleanup
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"

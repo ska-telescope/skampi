@@ -26,7 +26,7 @@ global:
 
 landingpage:
   enabled: true
-  MVPInstance: mvp-mid
+  MVPInstance: mvp-low
 
 tango-base:
   vnc:

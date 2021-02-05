@@ -96,3 +96,6 @@ delete-tag: .release
 
 release-skampi-if-no-error: .release
 	@. $(RELEASE_SUPPORT) ; releaseSKAMPIIfNoError $$USERNAME
+
+commit-and-push-to-master: config-git
+	@. $(RELEASE_SUPPORT) ; gitCommitPush $$USERNAME

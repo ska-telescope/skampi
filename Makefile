@@ -112,6 +112,13 @@ help:  ## show this help.
 	@echo ""; echo "make vars (+defaults):"
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+clean-and-deploy: ## clean namespace namespace_sdp
+	@if [ "True" = "$(INSTALL_FROM_REPO)" ]; then \
+	helm repo update; \
+	helm search repo | grep $(UMBRELLA_CHART_PATH); \
+	fi
+
+
 install: clean namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
 	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm install $(HELM_RELEASE) \

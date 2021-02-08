@@ -325,12 +325,12 @@ deploy_staging_low:
   tags:
     - k8srunner
   script:
-    - make install-or-upgrade
-    - make smoketest
-    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+    - make clean-and-deploy
+    # - make smoketest
+    # - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   only:
     refs:
-      - tags
+      - branches
   needs:
     - job: clean_staging_low
   

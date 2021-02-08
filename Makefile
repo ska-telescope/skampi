@@ -26,8 +26,6 @@ DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
-VERSION_STRING ?= "--version $(UMBRELLA_CHART_VERSION)"
-
 
 .DEFAULT_GOAL := help
 

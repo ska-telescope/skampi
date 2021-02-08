@@ -147,33 +147,6 @@ uninstall low on demand:
       junit: build/report.xml
     when: always
   
-deploy_from_helm:
-  stage: deploy_staging
-  variables:
-    DEPLOYMENT_CONFIGURATION: "skamid"
-    MARK: "skamid or common"
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    HELM_REPO_NAME: "skatelescope"
-    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-mid"
-  before_script:
-    - *create_k8s_cred_dependencies
-    - *create_k8s_creds
-  <<: *deploy_definition
-  environment:
-    name: "test"
-    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-  # when: manual
-  only:
-    refs:
-      - branches
-
 .test_template: &test_definition
   tags:
   - k8srunner
@@ -355,47 +328,43 @@ clean_staging_mid:
 deploy_staging_low:
   stage: deploy_staging
   variables:
+    HELM_REPO_NAME: "skatelescope"
+    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-low"
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
+  script:
+  - *deploy_definition
   environment:
     name: "staging-low"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-  tags:
-    - k8srunner
-  script:
-    - make install-or-upgrade
-    - make smoketest
-    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   only:
     refs:
       - tags
   needs:
     - job: clean_staging_low
-  
+
 deploy_staging_mid:
   stage: deploy_staging
   variables:
+    HELM_REPO_NAME: "skatelescope"
+    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-mid"
     HELM_RELEASE: "staging-mid"
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
+  script:
+  - *deploy_definition
   environment:
     name: "staging-mid"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-  tags:
-    - k8srunner
-  script:
-    - make install-or-upgrade
-    - make smoketest
-    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   only:
     refs:
       - tags

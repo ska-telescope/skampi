@@ -25,10 +25,15 @@ spec:
         volumeMounts:
             - name: html
               mountPath: /usr/share/nginx/html
+            - name: chartinfo
+              mountPath: /usr/share/nginx/html/external/
       volumes:
       - name: html
         configMap:
           name: {{ $fullname}}-html
+      - name: chartinfo
+        configMap:
+          name: {{ .Values.chartInfoSource }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -42,8 +47,9 @@ data:
   scripts.js: |-
 {{ ($.Files.Get "data/scripts.js") | indent 4  }}
   env.js: |-
-    let MVP = '{{ .Values.MVPInstance }}';
-    let NAMESPACE = '{{ .Release.Namespace }}';
+    const MVP = '{{ .Values.MVPInstance }}';
+    const NAMESPACE = '{{ .Release.Namespace }}';
+    const temp = '{{ .Values.temp }}'
 ---
 apiVersion: v1
 kind: Service

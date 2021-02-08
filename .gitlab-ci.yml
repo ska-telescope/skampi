@@ -133,6 +133,8 @@ uninstall low on demand:
       - branches
 
 .deploy_template: &deploy_definition
+  variables:
+    HELM_REPO_NAME: "skatelescope"
   tags:
   - k8srunner
   script:
@@ -158,8 +160,7 @@ deploy_from_helm:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    INSTALL_FROM_REPO: "True" # Install from Helm repository
-    # UMBRELLA_CHART_PATH: "mvp-mid"
+    UMBRELLA_CHART_PATH: "HELM_REPO_NAME/mvp-mid"
   before_script:
     - *create_k8s_cred_dependencies
     - *create_k8s_creds

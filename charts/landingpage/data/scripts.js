@@ -13,8 +13,20 @@ const MVPInstance = (MVP === 'mvp-mid') ? skaMid : (MVP === 'mvp-low' ? skaLow :
 
 const model = {
   'MVPInstance' : MVPInstance,
-  'Namespace' : NAMESPACE
+  'Namespace' : NAMESPACE,
+  'ChartInfo' : CHARTINFO
 }
+
+let subcharts = ''
+CHARTINFO.dependencies.forEach((item)=>{
+  subcharts += `<p>...............${item.name}-${item.version}</p>`
+})
+
+const chartInfo = `
+<p><strong>Chart:</strong> ${CHARTINFO.name}-${CHARTINFO.version}</p>
+<p><strong>Sub Charts:</strong></p>${subcharts}
+`
+     
 
 function parse(str) {
   var results = [], re = /{([^}]+)}/g, text;
@@ -57,6 +69,11 @@ function handleTemplateText(element){
   $(element).removeClass('is-hidden')
 }
 
+function templateVersioning(element){
+  console.log("in templateVersioning")
+  $(element).html(chartInfo)
+}
+
 function handleTemplateImage(element){
   console.log("in templateImage")
   let source = $(element).attr('src')
@@ -65,9 +82,20 @@ function handleTemplateImage(element){
   $(element).parent().removeClass('is-hidden')
 }
 
+function handleOpenedByMenu(element){
+  const id = $(element).attr('id')
+  const id_nr = id.substr(id.indexOf('_')+1)
+  const menu_item = $(`#openerfor_${id_nr }`)
+  menu_item.click(()=>$(element).removeClass('is-hidden'))
+  $(element).find('.delete').click(()=>$(element).addClass('is-hidden'))
+
+}
+
 const template = {
   'templateText': handleTemplateText,
   'templateImage': handleTemplateImage,
+  'templateVersioning' : templateVersioning,
+  'openedByMenu' : handleOpenedByMenu
 }
 
 $.when( $.ready ).then(()=> {

@@ -3,6 +3,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MVP Landing Page</title>
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
   <!-- Stylesheet compiled from Bulma into ska colour scheme (see https://bulma.io/documentation/customize/concepts/) and https://gitlab.com/gerhardlr/skacss/ -->
   <link rel="stylesheet" href="https://res.cloudinary.com/dmwc3xvv8/raw/upload/v1612504718/styles_ydv43w.css">
   <!-- Jquery in case we want to dynamically change text based on env variables-->
@@ -11,6 +12,7 @@
       crossorigin="anonymous"></script>
   <!-- environmental variables for adapting html according to deployment-->   
   <script src="env.js"></script>
+  <script src="external/chartinfo.js"></script>
 </head>
 <body data-new-gr-c-s-check-loaded="14.993.0" data-gr-ext-installed="">
   <section class="hero is-primary is-fullheight-with-navbar">
@@ -20,7 +22,9 @@
         <div class="container">
           <div class="navbar-brand">
             <div class="navbar-item">
-              <img src="https://res.cloudinary.com/dmwc3xvv8/image/upload/v1612505175/ska_logo_vsyakq.svg" alt="Logo">
+              <div>
+                <img src="https://res.cloudinary.com/dmwc3xvv8/image/upload/v1612505175/ska_logo_vsyakq.svg" alt="Logo">
+              </div>
             </div>
             <span class="navbar-burger" data-target="navbarMenuHeroA">
               <span></span>
@@ -29,12 +33,12 @@
             </span>
           </div>
           <div id="navbarMenuHeroA" class="navbar-menu">
-            <div class="navbar-start">
+            <div class="navbar-start is-size-5">
               <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link has-background-primary" href="../taranta/">
                   Taranta
                 </a>
-                <div class="navbar-dropdown has-background-primary">
+                <div class="navbar-dropdown has-background-primary is-size-6">
                   <a class="navbar-item">
                     Observation Execution
                   </a>
@@ -50,7 +54,7 @@
                 <a class="navbar-link has-background-primary" href="../jupyter/">
                   Jupyter
                 </a>
-                <div class="navbar-dropdown has-background-primary">
+                <div class="navbar-dropdown has-background-primary is-size-6">
                   <a class="navbar-item">
                     Notebook1
                   </a>
@@ -66,7 +70,7 @@
                 <a class="navbar-link has-background-primary" href="../jupyter/">
                   Logging & Monitoring
                 </a>
-                <div class="navbar-dropdown has-background-primary">
+                <div class="navbar-dropdown has-background-primary is-size-6">
                   <a class="navbar-item">
                     Grafana Logging
                   </a>
@@ -78,13 +82,20 @@
                   </a>         
                 </div>
               </div>
+              <div class="navbar-item has-dropdown is-hoverable ">
+                <a class="navbar-link has-background-primary" href="../jupyter/">
+                  About
+                </a>
+                <div class="navbar-dropdown has-background-primary is-size-6">
+                  <a class="navbar-item" id="openerfor_1">
+                    Version
+                  </a>       
+                </div>
+              </div>
             </div>
             <div class="navbar-end">
               <span class="navbar-item">
                 <a class="button is-primary is-inverted">
-                  <span class="icon">
-                    <i class="fab fa-github"></i>
-                  </span>
                   <span>Login</span>
                 </a>
               </span>
@@ -92,24 +103,25 @@
           </div>
         </div>
       </nav>
-      <nav class="navbar">
-        <div class="container">
-          <span class="tag is-primary is-italic templateText">
-            {Namespace}
-          </span>
-        </div>
-      </nav>
     </div>
-  
     <!-- Hero content: will be in the middle -->
     <div class="hero-body">
       <div class="container has-text-centered">
+        <article class="message is-hidden has-text-left openedByMenu" id="open_1">
+          <div class="message-header">
+            <p>Versioning</p>
+            <button class="delete" aria-label="delete"></button>
+          </div>
+          <div class="message-body templateVersioning">
+           
+          </div>
+        </article>
         <div class="section">
           <p class="title">
             MVP Landing Page
           </p>    
           <p class="subtitle templateText is-hidden">
-            {MVPInstance.name}
+            {MVPInstance.name} ({Namespace})
           </p>
         </div>
         <div class="section">

@@ -16,6 +16,7 @@ stages:
   - clean_staging
   - deploy_staging
   - update_versions
+  - cleanup
 
 .uninstall_template: &uninstall_definition
   tags:
@@ -85,6 +86,50 @@ uninstall low:
   <<: *uninstall_definition
   environment:
     name: "test-low"
+
+uninstall mid on demand:
+  stage: cleanup
+  variables:
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "false"
+  tags:
+    - k8srunner
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "test"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+  when: manual
+  only:
+    refs:
+      - branches
+
+uninstall low on demand:
+  stage: cleanup
+  variables:
+    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "false"
+  tags:
+    - k8srunner
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "test"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
+  when: manual
+  only:
+    refs:
+      - branches
 
 .test_template: &test_definition
   tags:

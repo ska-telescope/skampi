@@ -43,6 +43,7 @@ data:
 {{ ($.Files.Get "data/scripts.js") | indent 4  }}
   env.js: |-
     let MVP = '{{ .Values.MVPInstance }}';
+    let NAMESPACE = '{{ .Release.Namespace }}';
 ---
 apiVersion: v1
 kind: Service

@@ -12,7 +12,8 @@ const skaLow = {
 const MVPInstance = (MVP === 'mvp-mid') ? skaMid : (MVP === 'mvp-low' ? skaLow : null)
 
 const model = {
-  'MVPInstance' : MVPInstance
+  'MVPInstance' : MVPInstance,
+  'Namespace' : NAMESPACE
 }
 
 function parse(str) {

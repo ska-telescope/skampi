@@ -114,8 +114,8 @@ help:  ## show this help.
 
 clean-and-deploy: ## clean namespace namespace_sdp
 	@if [ "True" = "$(INSTALL_FROM_REPO)" ]; then \
-	helm repo update; \
-	helm search repo | grep $(UMBRELLA_CHART_PATH); \
+	helm repo add skatelescope $HELM_HOST/repository/helm-chart; \
+	helm search repo skatelescope | grep $(UMBRELLA_CHART_PATH); \
 	fi
 
 

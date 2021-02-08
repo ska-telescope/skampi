@@ -8,6 +8,7 @@ variables:
 
 stages:
   - clean
+  - deploy
   - test
   - post_test
   - debug

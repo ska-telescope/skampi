@@ -136,10 +136,9 @@ uninstall low on demand:
   tags:
   - k8srunner
   script:
-  - make clean-and-deploy
-  # - make install-or-upgrade
-  # - make smoketest
-  # - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  - make install-or-upgrade
+  - make smoketest
+  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -149,7 +148,7 @@ uninstall low on demand:
     when: always
   
 deploy_from_helm:
-  stage: deploy
+  stage: deploy_staging
   variables:
     DEPLOYMENT_CONFIGURATION: "skamid"
     MARK: "skamid or common"

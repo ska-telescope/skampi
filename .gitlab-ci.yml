@@ -334,8 +334,7 @@ deploy_staging_low:
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-  script:
-  - *deploy_definition
+  <<: *deploy_definition
   environment:
     name: "staging-low"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -357,8 +356,7 @@ deploy_staging_mid:
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
-  script:
-  - *deploy_definition
+  <<: *deploy_definition
   environment:
     name: "staging-mid"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"

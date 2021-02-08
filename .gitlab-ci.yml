@@ -131,6 +131,49 @@ uninstall low on demand:
     refs:
       - branches
 
+.deploy_template: &deploy_definition
+  tags:
+  - k8srunner
+  script:
+  - make clean-and-deploy
+  # - make install-or-upgrade
+  # - make smoketest
+  # - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+    when: always
+  
+deploy_from_helm:
+  stage: deploy
+  variables:
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    MARK: "skamid or common"
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    INSTALL_FROM_REPO: "True" # Install from Helm repository
+    # UMBRELLA_CHART_PATH: "mvp-mid"
+  before_script:
+    - *create_k8s_cred_dependencies
+    - *create_k8s_creds
+  <<: *deploy_definition
+  environment:
+    name: "test"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+  when: manual
+  only:
+    refs:
+      - branches
+
 .test_template: &test_definition
   tags:
   - k8srunner
@@ -308,7 +351,7 @@ clean_staging_mid:
   - *uninstall_scripts
   environment:
     name: "staging-mid"
-  
+
 deploy_staging_low:
   stage: deploy_staging
   variables:
@@ -325,19 +368,14 @@ deploy_staging_low:
   tags:
     - k8srunner
   script:
-    - make clean-and-deploy
-    ############## TEMPORARY WIP COMMIT ##################
-    # - make smoketest
-    # - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  # only:
-  #   refs:
-  #     - tags
-  # needs:
-  #   - job: clean_staging_low
+    - make install-or-upgrade
+    - make smoketest
+    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   only:
     refs:
-      - branches
-  ############## TEMPORARY WIP COMMIT ##################
+      - tags
+  needs:
+    - job: clean_staging_low
   
 deploy_staging_mid:
   stage: deploy_staging

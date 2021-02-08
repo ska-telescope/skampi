@@ -133,8 +133,6 @@ uninstall low on demand:
       - branches
 
 .deploy_template: &deploy_definition
-  variables:
-    HELM_REPO_NAME: "skatelescope"
   tags:
   - k8srunner
   script:
@@ -160,6 +158,7 @@ deploy_from_helm:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    HELM_REPO_NAME: "skatelescope"
     UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-mid"
   before_script:
     - *create_k8s_cred_dependencies
@@ -171,7 +170,7 @@ deploy_from_helm:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-  when: manual
+  # when: manual
   only:
     refs:
       - branches

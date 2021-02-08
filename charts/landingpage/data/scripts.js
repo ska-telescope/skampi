@@ -11,11 +11,19 @@ const skaLow = {
 
 const MVPInstance = (MVP === 'mvp-mid') ? skaMid : (MVP === 'mvp-low' ? skaLow : null)
 
-const model = {
-  'MVPInstance' : MVPInstance,
-  'Namespace' : NAMESPACE,
-  'ChartInfo' : CHARTINFO
-}
+
+
+const kibanaURL = 'https://kibana.engageska-portugal.pt/app/logs/stream?'+
+  'flyoutOptions=(flyoutId:!n,flyoutVisibility:hidden,surroundingLogsId:!n)&'+
+  'logPosition=(end:now,position:(tiebreaker:277595,time:1612798881864),start:now-1d,streamLive:!f)&'+
+  `logFilter=(expression:%27kubernetes.namespace:%20${NAMESPACE}%27,kind:kuery)`
+
+  const model = {
+    'MVPInstance' : MVPInstance,
+    'Namespace' : NAMESPACE,
+    'ChartInfo' : CHARTINFO,
+    'KibanaURL' : kibanaURL
+  }
 
 let subcharts = ''
 CHARTINFO.dependencies.forEach((item)=>{
@@ -91,10 +99,18 @@ function handleOpenedByMenu(element){
 
 }
 
+function handleTemplateURL(element){
+  console.log("in handleTemplateURL")
+  let url = $(element).attr('href')
+  const replace_source = drillDown(model,url)
+  $(element).attr('href',replace_source)
+}
+
 const template = {
   'templateText': handleTemplateText,
   'templateImage': handleTemplateImage,
   'templateVersioning' : templateVersioning,
+  'templateURL': handleTemplateURL,
   'openedByMenu' : handleOpenedByMenu
 }
 

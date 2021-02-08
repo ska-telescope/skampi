@@ -284,9 +284,12 @@ clean_staging_low:
     DEPLOYMENT_CONFIGURATION: "skalow"
   tags:
     - k8srunner
+  # only:
+  #   refs:
+  #     - tags
   only:
     refs:
-      - tags
+      - branches
   script:
   - *uninstall_scripts
   environment:

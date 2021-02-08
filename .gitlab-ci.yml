@@ -284,12 +284,9 @@ clean_staging_low:
     DEPLOYMENT_CONFIGURATION: "skalow"
   tags:
     - k8srunner
-  # only:
-  #   refs:
-  #     - tags
   only:
     refs:
-      - branches
+      - tags
   script:
   - *uninstall_scripts
   environment:
@@ -329,13 +326,18 @@ deploy_staging_low:
     - k8srunner
   script:
     - make clean-and-deploy
+    ############## TEMPORARY WIP COMMIT ##################
     # - make smoketest
     # - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  # only:
+  #   refs:
+  #     - tags
+  # needs:
+  #   - job: clean_staging_low
   only:
     refs:
       - branches
-  needs:
-    - job: clean_staging_low
+  ############## TEMPORARY WIP COMMIT ##################
   
 deploy_staging_mid:
   stage: deploy_staging

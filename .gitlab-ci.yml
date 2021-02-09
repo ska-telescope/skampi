@@ -8,6 +8,7 @@ variables:
 
 stages:
   - clean
+  - deploy
   - test
   - post_test
   - debug
@@ -131,6 +132,21 @@ uninstall low on demand:
     refs:
       - branches
 
+.deploy_template: &deploy_definition
+  tags:
+  - k8srunner
+  script:
+  - make install-or-upgrade
+  - make smoketest
+  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+    when: always
+  
 .test_template: &test_definition
   tags:
   - k8srunner
@@ -308,51 +324,45 @@ clean_staging_mid:
   - *uninstall_scripts
   environment:
     name: "staging-mid"
-  
+
 deploy_staging_low:
   stage: deploy_staging
   variables:
+    HELM_REPO_NAME: "skatelescope"
+    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-low"
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
+  <<: *deploy_definition
   environment:
     name: "staging-low"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-  tags:
-    - k8srunner
-  script:
-    - make install-or-upgrade
-    - make smoketest
-    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   only:
     refs:
       - tags
   needs:
     - job: clean_staging_low
-  
+
 deploy_staging_mid:
   stage: deploy_staging
   variables:
+    HELM_REPO_NAME: "skatelescope"
+    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-mid"
     HELM_RELEASE: "staging-mid"
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
+  <<: *deploy_definition
   environment:
     name: "staging-mid"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-  tags:
-    - k8srunner
-  script:
-    - make install-or-upgrade
-    - make smoketest
-    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   only:
     refs:
       - tags

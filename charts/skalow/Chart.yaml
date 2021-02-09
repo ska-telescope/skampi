@@ -19,7 +19,7 @@ dependencies:
   version: 0.4.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: webjive
-  version: 1.0.12
+  version: 1.0.13
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: oet-scripts
   version: 0.3.3

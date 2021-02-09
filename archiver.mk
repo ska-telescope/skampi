@@ -6,7 +6,7 @@ ARCHIVER_RELEASE ?= test
 ARCHIVER_NAMESPACE ?= ska-archiver
 CONFIGURE_ARCHIVER = test-configure-archiver-$(CI_JOB_ID) # Test runner - run to completion the configuration job in K8s
 DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
-ARCHIVER_CHART = https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.3.tgz
+ARCHIVER_CHART = https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.2.tgz
 
 .DEFAULT_GOAL := help-archiver
 
@@ -76,7 +76,7 @@ configure-archiver: get-service ##configure attributes to archive
 		--image-pull-policy=IfNotPresent \
 		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
 		/bin/bash -c "sudo tar xv && \
-		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/conf-script-update/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
+		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/master/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
 		cd /resources/archiver && \
 		sudo python configure_hdbpp.py \
             --cm=tango://$(DBEDASERVICE).$(ARCHIVER_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/confmanager01 \

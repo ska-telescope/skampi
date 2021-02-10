@@ -53,3 +53,11 @@ def test_subscribe_to_attribute():
   sdp_subarray = DeviceProxy('mid_sdp/elt/subarray_1')
   id =  sdp_subarray.subscribe_event('State',EventType.CHANGE_EVENT,lambda event:print(event))
   sdp_subarray.unsubscribe_event(id)
+
+@pytest.mark.fast
+@pytest.mark.skamid
+@pytest.mark.xfail
+def test_dish_subscribe():
+    dish_001 = DeviceProxy('mid_d0001/elt/master')
+    sub_id = dish_001.subscribe_event('State', EventType.CHANGE_EVENT, lambda event:print(event))
+    dish_001.unsubscribe_event(sub_id)

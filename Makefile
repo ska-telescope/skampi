@@ -25,8 +25,7 @@ HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
-UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/##
-
+UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
 .DEFAULT_GOAL := help
 
@@ -113,7 +112,14 @@ help:  ## show this help.
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 install: clean namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
+	@if [ "" = "$(HELM_REPO_NAME)" ]; then \
+	echo "Installing from git repository"; \
 	helm dependency update $(UMBRELLA_CHART_PATH); \
+	else \
+	helm repo add $(HELM_REPO_NAME) $(HELM_HOST)/repository/helm-chart; \
+	helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
+	helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
+	fi; \
 	helm install $(HELM_RELEASE) \
         --set tango-base.xauthority="$(XAUTHORITYx)" \
     	--set logging.ingress.hostname=$(INGRESS_HOST) \

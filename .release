@@ -1,17 +1,4 @@
-release=0.4.0
-tag=0.4.0
-tag_description=skampi release for PI9 sprint 4
-release_notes=This release Contains:
-1. General improvements the tango base images and charts and utilities
-2. Mid CSP implementation of the Assign/ReleaseResources command
-3. SDP improvements:
-    a. Updates URLs for new repository locations (SIM-668)
-    b. LMC: configures attributes to enable push events (resolves SKB-24)
-    c. LMC: adds transaction ID to commands
-    d. LMC: enables log output to Tango logging system (SIM-682)
-    e. Processing controller: resolves transaction limit problem (SIM-712)
-    f. Helm deployer: enables prefix to be used in chart releases (SIM-683)
-4. Improvements to tmc-Mid
-5. increased Jupyter memory limits on oet-scripts
-6. Improvements to Taranta (webjive)
-7. New Landing Page to coordinate access to MVP (ska Mid and Low) resources
+release=0.4.1
+tag=0.4.1
+tag_description=patch release to rev 0.4 in order to work in webjive 0.1.13
+

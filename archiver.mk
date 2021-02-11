@@ -1,17 +1,12 @@
 .PHONY: deploy-archiver delete-archiver test-archiver download
 
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
-MINIKUBE ?= true## Minikube or not
-MARK ?= all
-IMAGE_TO_TEST ?= $(DOCKER_REGISTRY_HOST)/$(DOCKER_REGISTRY_USER)/$(PROJECT):latest## docker image that will be run for testing purpose
-TANGO_HOST ?= tango-host-databaseds-from-makefile-$(ARCHIVER_RELEASE):10000## TANGO_HOST is an input!
-HOSTNAME = 192.168.93.137
+DBHOST ?= 192.168.93.137 # DBHOST is the IP address for the cluster machine where archiver database is created
 ARCHIVER_RELEASE ?= test
 ARCHIVER_NAMESPACE ?= ska-archiver
-CHARTS ?= ska-archiver
-
-CI_PROJECT_PATH_SLUG ?= ska-archiver
-CI_ENVIRONMENT_SLUG ?= ska-archiver	
+CONFIGURE_ARCHIVER = test-configure-archiver-$(CI_JOB_ID) # Test runner - run to completion the configuration job in K8s
+DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
+ARCHIVER_CHART = https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.2.tgz
 
 .DEFAULT_GOAL := help-archiver
 
@@ -29,7 +24,7 @@ namespace-archiver: ## create the kubernetes namespace
 		else kubectl create namespace $(ARCHIVER_NAMESPACE); \
 		fi
 
-delete_archiver: ## delete the kubernetes namespace
+delete_archiver_namespace: ## delete the kubernetes namespace
 	@if [ "default" == "$(ARCHIVER_NAMESPACE)" ] || [ "kube-system" == "$(ARCHIVER_NAMESPACE)" ]; then \
 	echo "You cannot delete Namespace: $(ARCHIVER_NAMESPACE)"; \
 	exit 1; \ARCHIVER_NAMESPACE
@@ -37,25 +32,26 @@ delete_archiver: ## delete the kubernetes namespace
 	kubectl describe namespace $(ARCHIVER_NAMESPACE) && kubectl delete namespace $(ARCHIVER_NAMESPACE); \
 	fi
 
-
+# Checks if the Database name is provided by user while deploying the archiver otherwise gives the default name to the database
 check-dbname: ## Check if database name is empty
-	@if [$(DBNAME) == ""]; then \
-	echo "Database Name is not provided in make-install."; \
-	exit 1; \
+	@if [ "$(DBNAME)" = "default_mvp_archiver_db" ]; then \
+	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
 	fi
 
-#Ensure latest archiver chart from nexus is used for installtion 
-deploy-archiver: namespace-archiver check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
+# Deploy the ska-archiver from SKAMPI by accessing the chart published on nexus from ska-archiver repository
+# Ensure latest archiver chart from nexus is used for installtion 
+deploy-archiver: namespace-archiver check-dbname ## install the helm chart on the namespace ARCHIVER_NAMESPACE
 	helm repo add nexusPath https://nexus.engageska-portugal.pt/repository/helm-chart/; \
 	helm repo update; \
 	helm install $(ARCHIVER_RELEASE) \
 		--set global.minikube=$(MINIKUBE) \
-		--set global.hostname=$(HOSTNAME) \
+		--set global.hostname=$(DBHOST) \
 		--set global.dbname=$(DBNAME) \
-		https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --namespace $(ARCHIVER_NAMESPACE); 
+		$(ARCHIVER_CHART) --namespace $(ARCHIVER_NAMESPACE); 
 
-delete-archiver: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-	@helm template  $(ARCHIVER_RELEASE) https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.1.tgz --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
+# Deletes the ska-archiver deployment
+delete-archiver: ## uninstall the helm chart on the namespace ARCHIVER_NAMESPACE
+	@helm template  $(ARCHIVER_RELEASE) $(ARCHIVER_CHART) --namespace $(ARCHIVER_NAMESPACE) | kubectl delete -f - ; \
 	helm uninstall  $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE)
 
 show-archiver: ## show the helm chart
@@ -63,6 +59,34 @@ show-archiver: ## show the helm chart
 		--namespace $(ARCHIVER_NAMESPACE) \
 		--set xauthority="$(XAUTHORITYx)" \
 		--set display="$(DISPLAY)" 
+
+# Get the database service name from archiver deployment and MVP deployment
+get-service:
+	$(eval DBMVPSERVICE := $(shell kubectl get svc -n $(KUBE_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
+	echo $(DBMVPSERVICE); \
+	$(eval DBEDASERVICE := $(shell kubectl get svc -n $(ARCHIVER_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
+	echo $(DBEDASERVICE); \
+
+# Runs a pod to execute a script. 
+# This script configures the archiver for attribute archival defined in json file. Once script is executed, pod is deleted.
+configure-archiver: get-service ##configure attributes to archive
+		tar -c resources/archiver/ | \
+		kubectl run $(CONFIGURE_ARCHIVER) \
+		--namespace $(KUBE_NAMESPACE)  -i --wait --restart=Never \
+		--image-pull-policy=IfNotPresent \
+		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
+		/bin/bash -c "sudo tar xv && \
+		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/master/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
+		cd /resources/archiver && \
+		sudo python configure_hdbpp.py \
+            --cm=tango://$(DBEDASERVICE).$(ARCHIVER_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/confmanager01 \
+            --es=tango://$(DBEDASERVICE).$(ARCHIVER_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/eventsubscriber01 \
+            --attrfile=configuation_file.json \
+            --th=tango://$(DBEDASERVICE).$(ARCHIVER_NAMESPACE).svc.cluster.local:10000 \
+			--ds=$(DBMVPSERVICE) \
+			--ns=$(KUBE_NAMESPACE)" && \
+		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(CONFIGURE_ARCHIVER); 
+
 
 
 

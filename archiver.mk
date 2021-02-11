@@ -4,7 +4,7 @@ HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 DBHOST ?= 192.168.93.137 # DBHOST is the IP address for the cluster machine where archiver database is created
 ARCHIVER_RELEASE ?= test
 ARCHIVER_NAMESPACE ?= ska-archiver
-CONFIGURE_ARCHIVER = test-configure-archiver-$(CI_JOB_ID) # Test runner - run to completion the configuration job in K8s
+CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
 ARCHIVER_CHART = https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.2.tgz
 
@@ -27,7 +27,7 @@ namespace-archiver: ## create the kubernetes namespace
 delete_archiver_namespace: ## delete the kubernetes namespace
 	@if [ "default" == "$(ARCHIVER_NAMESPACE)" ] || [ "kube-system" == "$(ARCHIVER_NAMESPACE)" ]; then \
 	echo "You cannot delete Namespace: $(ARCHIVER_NAMESPACE)"; \
-	exit 1; \ARCHIVER_NAMESPACE
+	exit 1; \
 	else \
 	kubectl describe namespace $(ARCHIVER_NAMESPACE) && kubectl delete namespace $(ARCHIVER_NAMESPACE); \
 	fi
@@ -38,9 +38,24 @@ check-dbname: ## Check if database name is empty
 	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
 	fi
 
-# Deploy the ska-archiver from SKAMPI by accessing the chart published on nexus from ska-archiver repository
-# Ensure latest archiver chart from nexus is used for installtion 
-deploy-archiver: namespace-archiver check-dbname ## install the helm chart on the namespace ARCHIVER_NAMESPACE
+install-or-upgrade-archiver:
+	helm history $(ARCHIVER_RELEASE) --namespace $(ARCHIVER_NAMESPACE) > /dev/null 2>&1; \
+	K_DESC=$$? ; \
+	if [ $$K_DESC -eq 1 ] ; \
+	then make deploy-archiver ARCHIVER_NAMESPACE=$(ARCHIVER_NAMESPACE) DBNAME=$(DBNAME); \
+	else make upgrade-archiver-chart; \
+	fi
+
+upgrade-archiver-chart:
+	helm upgrade $(ARCHIVER_RELEASE) \
+	--set global.minikube=$(MINIKUBE) \
+	--set global.hostname=$(HOSTNAME) \
+	--set global.dbname=$(DBNAME) \
+	$(ARCHIVER_CHART) --namespace $(ARCHIVER_NAMESPACE);
+
+#Ensure latest archiver chart from nexus is used for installtion 
+# deploy-archiver: namespace-archiver check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
+deploy-archiver: namespace-archiver check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
 	helm repo add nexusPath https://nexus.engageska-portugal.pt/repository/helm-chart/; \
 	helm repo update; \
 	helm install $(ARCHIVER_RELEASE) \
@@ -72,7 +87,7 @@ get-service:
 configure-archiver: get-service ##configure attributes to archive
 		tar -c resources/archiver/ | \
 		kubectl run $(CONFIGURE_ARCHIVER) \
-		--namespace $(KUBE_NAMESPACE)  -i --wait --restart=Never \
+		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
 		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
 		/bin/bash -c "sudo tar xv && \
@@ -86,7 +101,3 @@ configure-archiver: get-service ##configure attributes to archive
 			--ds=$(DBMVPSERVICE) \
 			--ns=$(KUBE_NAMESPACE)" && \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(CONFIGURE_ARCHIVER); 
-
-
-
-

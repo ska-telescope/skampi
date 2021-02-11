@@ -280,6 +280,10 @@ sdp_config_dump_mid:
 
 tag_commit:
   stage: release
+  variables:
+    USERNAME: "$GITLAB_USER_NAME"
+    EMAILID: $GITLAB_USER_EMAIL
+    PRIVATE_TOKEN: $SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
   tags:
     - k8srunner
   when: manual
@@ -289,7 +293,7 @@ tag_commit:
     refs:
       - master
   script:
-    - make release-skampi USERNAME="$GITLAB_USER_NAME" EMAILID=$GITLAB_USER_EMAIL PRIVATE_TOKEN=$SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
+    - make release-skampi
 
 clean_staging_low:
   stage: clean_staging
@@ -371,6 +375,10 @@ deploy_staging_mid:
 
 version_bump_charts:
   stage: update_versions
+  variables:
+    USERNAME: "project_11448712_bot"
+    EMAILID: $MARVIN_EMAIL
+    PRIVATE_TOKEN: $MARVIN_PRIVATE_TOKEN
   tags:
     - k8srunner
   only:
@@ -378,7 +386,7 @@ version_bump_charts:
       - tags
   script:
     - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
-    - make commit-and-push-to-master USERNAME="project_11448712_bot" EMAILID=$MARVIN_EMAIL PRIVATE_TOKEN=$MARVIN_PRIVATE_TOKEN
+    - make commit-and-push-to-master
 
 xray_report:
   stage: post_test

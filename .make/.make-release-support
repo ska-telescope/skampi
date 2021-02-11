@@ -216,7 +216,7 @@ function gitCommitPush() {
 	git_username=$1
 	# echo "\$git_username: $git_username - this should be the same as previous line"
 	private_token=$PRIVATE_TOKEN
-	$(git push https://"$git_username":"$private_token"@gitlab.com/ska-telescope/stupid.git HEAD:master)
+	$(git push https://"$git_username":"$private_token"@gitlab.com/ska-telescope/skampi.git HEAD:master)
 	result=$(echo $?)
 	if [ $result -ne 0 ];
 	then

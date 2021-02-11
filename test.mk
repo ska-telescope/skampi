@@ -1,4 +1,4 @@
-.PHONY: k8s_test smoketest template_tests tango_rest_ingress_check
+.PHONY: k8s_test smoketest template_tests tango_rest_ingress_check get_archiver_tango_host
 
 CI_JOB_ID?=local
 #
@@ -31,6 +31,8 @@ k8s_test = tar -c post-deployment/ | \
 		--image=$(IMAGE_TO_TEST) \
 		--limits='cpu=1000m,memory=500Mi' \
 		--requests='cpu=900m,memory=400Mi' \
+		--env=ARCHIVER_TANGO_HOST=$2 \
+		--env=ARCHIVER_NAMESPACE=$3 \
 		--serviceaccount=$(TESTING_ACCOUNT) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
 		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK='$(MARK)' TEST_RUN_SPEC=$(TEST_RUN_SPEC) $1 && \
@@ -48,8 +50,10 @@ k8s_test = tar -c post-deployment/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-k8s_test: enable_test_auth smoketest## test the application on K8s
-	$(call k8s_test,test); \
+k8s_test: enable_test_auth get_archiver_tango_host smoketest## test the application on K8s
+	echo $(DBNAME); \
+	echo $(ARCHIVER_NAMESPACE); \
+	$(call k8s_test,test,$(ARCHIVER_TANGO_HOST),$(ARCHIVER_NAMESPACE)); \
 		status=$$?; \
 		rm -fr build; \
 		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
@@ -59,6 +63,11 @@ k8s_test: enable_test_auth smoketest## test the application on K8s
 			--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		exit $$status
+
+# get the tango host of archiver deployment
+get_archiver_tango_host:
+	$(eval ARCHIVER_TANGO_HOST := $(shell kubectl get svc -n $(ARCHIVER_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
+	echo $(ARCHIVER_TANGO_HOST);
 
 TEST_RUN_SPEC=spec2.yaml
 k8s_multiple_test_runs: enable_test_auth

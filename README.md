@@ -213,3 +213,34 @@ This is enabled with adding `create_k8s_creds_after_script` to the `after_script
 - Kubernetes namespaces **must** start with `ci-test-<project_name>-<branch_name>-*` since same namespaces for the previous commits are deleted! Note: It doesn't check whether your namespace name is following the above naming!
 - The URL to access the kubeconfig is only valid for 24 hours
 - The script uses `jq` to parse json from kubernetes so you may include `create_k8s_creds_dependencies` in the `before_script` part. (See `test low/mid on demand` job definitions for a full example)
+
+SKA Archiver
+===========================================
+
+Note: The archiver is available to deploy as per the architecture proposed at the start of PI #9. However, it has additional resource requirements which currently is a constraint. To save the resources, archiver deployment is disabled in SKAMPI till the new deployment architecture is implemented.
+
+## Deployment
+
+The Archiver deployment is kept independent of MVP. This enables the archiver lifecycle operations independent of MVP lifecycle. To deploy the archiver use command:
+
+```
+make deploy-archiver ARCHIVER_NAMESPACE=<archiver_namespace> DBNAME=<archiver_database_name>
+```
+
+To delete the deployment, use command:
+
+```
+make delete-archiver ARCHIVER_NAMESPACE=<archiver_namespace> DBNAME=<archiver_database_name>
+```
+
+## Configuration
+
+The archiver can be configured to archive the required attributes. These attributes are required to be saved in the file `configuation_file.json` located in the `resources/archiver` directory. To configure the archiver, use command:
+
+```
+make configure-archiver
+```
+
+## Testing
+
+Archiver test cases are developed and they are executed as part of the SKMAPI pipeline. Currently, the test cases are skipped as archiver deployment is disabled.

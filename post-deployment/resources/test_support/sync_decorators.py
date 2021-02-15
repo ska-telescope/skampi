@@ -36,7 +36,9 @@ def check_going_out_of_configured():
 
 def check_going_out_of_aborted():
     ##Can only return to ABORTED if in READY, SCANNING, CONFIGURING, IDLE
+    print("check aborted:::::::::::::::::::::::::::::::::::::::::::::::")
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+    print("ABORT successful::::::::::::::::::::::::::::::::::::::::::::")
 
 def check_going_out_of_abort():
     ##Can only return to ON/IDLE if in READY
@@ -272,11 +274,18 @@ def sync_end_sb(func):
 def sync_restart_sa(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        print("Inside restart sync1:::::::::::::::::::::::::::::::")
         check_going_out_of_aborted()
+        print("Inside restart sync2:::::::::::::::::::::::::::::::")
         the_waiter = waiter()
+        print("Inside restart sync3:::::::::::::::::::::::::::::::")
         the_waiter.set_wait_for_going_into_restarting()
+        print("Inside restart sync4:::::::::::::::::::::::::::::::")
         result = func(*args, **kwargs)
+        print("Inside restart sync5:::::::::::::::::::::::::::::::")
         the_waiter.wait(100)
+        print("Inside restart sync6:::::::::::::::::::::::::::::::")
+        print("Result is ::::::::::::::::::::::::::::::::::::::::::", result)
         return result
     return wrapper
 

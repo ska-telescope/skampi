@@ -86,6 +86,7 @@ def restart():
     @log_it('AX-13_A5',devices_to_log,non_default_states_to_check)
     @sync_restart(200)
     def command_restart():
+        LOGGER.info("In the command_restart function::::::::::::::::::::::::::::::")
         SubArray(1).restart()
         LOGGER.info("Restart command is invoked on subarray")
     command_restart()

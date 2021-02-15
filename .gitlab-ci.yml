@@ -48,7 +48,7 @@ stages:
     apt-get install -y curl ca-certificates jq --no-install-recommends
   script:
   - &create_k8s_creds |
-    curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP
+    curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
   only:
     refs:
     - branches
@@ -146,7 +146,7 @@ uninstall low on demand:
     reports:
       junit: build/report.xml
     when: always
-  
+
 .test_template: &test_definition
   tags:
   - k8srunner
@@ -339,7 +339,7 @@ clean_staging_low:
   - *uninstall_scripts
   environment:
     name: "staging-low"
-  
+
 clean_staging_mid:
   stage: clean_staging
   variables:
@@ -431,7 +431,7 @@ xray_report:
 
 publish-chart:
   when: on_success
-  except: 
+  except:
     - master
 
 include:

@@ -18,6 +18,10 @@ def check_going_into_configure():
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
+def check_going_into_abort():
+    ##Can ony invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_coming_out_of_standby():
     ##Can  only start up a disabled telescope
@@ -329,5 +333,16 @@ def sync_oet_scanning():
     yield
     the_waiter.wait()
 
-
-
+def sync_abort(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_into_abort()
+            w = WaitAbort()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator

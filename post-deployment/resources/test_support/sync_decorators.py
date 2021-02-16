@@ -44,6 +44,7 @@ def check_going_out_of_abort():
     # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('ABORTED')
     # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('ABORTED')
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+    logging.info("Abort completed on Subarray")    
 
 def check_going_into_empty():
     ##Can only release resources if subarray is in ON/IDLE

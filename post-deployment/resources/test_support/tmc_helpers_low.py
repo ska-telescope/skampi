@@ -89,6 +89,7 @@ def abort_sub():
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
     SubarrayNodeLow.Abort()
     LOGGER.info('Abort command invoked on SubarrayNodeLow.')
+    
 @sync_obsreset
 def obsreset_sub():
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')

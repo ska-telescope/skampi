@@ -208,7 +208,6 @@ test mid on demand:
     - *create_k8s_cred_dependencies
     - *create_k8s_creds
   <<: *test_definition
-  <<: *create_k8s_creds_after_script
   # Following block is commented because archiver is not deployed.
   # after_script:
   #   - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
@@ -263,7 +262,6 @@ test low on demand:
     - *create_k8s_cred_dependencies
     - *create_k8s_creds
   <<: *test_definition
-  <<: *create_k8s_creds_after_script
   # Following block is commented because archiver is not deployed.
   # after_script:
   #   - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"

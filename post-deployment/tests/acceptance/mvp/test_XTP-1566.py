@@ -64,7 +64,7 @@ def start_up():
 def set_to_ready():
     tmc.compose_sub()
     LOGGER.info("AssignResources is invoked on Subarray")
-    wait_before_test(timeout=10)//yet to create method
+    wait_before_test(timeout=10)
 
     tmc.configure_sub()
     LOGGER.info("Configure is invoke on Subarray")

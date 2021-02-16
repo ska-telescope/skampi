@@ -6,6 +6,7 @@ the same host as the tests by using a DeviceTestContext.
 from tango import Database, DeviceProxy,EventType
 from time import sleep
 import pytest
+from assertpy import assert_that
 
 @pytest.mark.fast
 @pytest.mark.common
@@ -60,3 +61,9 @@ def test_dish_subscribe():
     dish_001 = DeviceProxy('mid_d0001/elt/master')
     sub_id = dish_001.subscribe_event('State', EventType.CHANGE_EVENT, lambda event:print(event))
     dish_001.unsubscribe_event(sub_id)
+
+@pytest.mark.fast
+@pytest.mark.skamid
+@pytest.mark.xfail
+def test_dish_not_on_at_start():
+    assert_that(DeviceProxy('mid_d0001/elt/master').State().name).is_in('STANDBY','OFF')

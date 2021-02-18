@@ -21,6 +21,7 @@ import pytest
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.logging_decorators import log_it
+from resources.test_support.persistance_helping import load_config_from_file
 import logging
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 from resources.test_support.sync_decorators_low import  sync_scan_oet,sync_configure_oet, sync_scan, time_it
@@ -74,11 +75,13 @@ def invoke_scan_command(fixture):
     @sync_scan(200)
     def scan():
         def send_scan(duration):
+            scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
+            scan_string = load_config_from_file(scan_file)
             SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
             SubarrayNodeLow.Scan(duration)
         LOGGER.info("Scan is invoked on Subarray 1")
         executor = futures.ThreadPoolExecutor(max_workers=1)
-        return executor.submit(send_scan,'{"id":1}')
+        return executor.submit(send_scan, scan_string)
     fixture['future'] = scan()
     return fixture
 

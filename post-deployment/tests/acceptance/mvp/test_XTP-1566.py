@@ -23,7 +23,7 @@ from resources.test_support.helpers_low import resource, watch, waiter, wait_bef
 from resources.test_support.logging_decorators import log_it
 import logging
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
-from resources.test_support.sync_decorators_low import  sync_scan_oet,sync_configure_oet, sync_scan, sync_abort, time_it
+from resources.test_support.sync_decorators_low import sync_scan_oet,sync_configure_oet, sync_scan, sync_abort, time_it
 import resources.test_support.tmc_helpers_low as tmc
 
 LOGGER = logging.getLogger(__name__)
@@ -48,11 +48,11 @@ non_default_states_to_check = {}
 
 @pytest.mark.skalow
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
-@scenario()
+@scenario("XTP-1209.feature", "BDD test case for Abort functionality in MVP Low")
 def test_subarray_abort():
     """Abort Operation"""
 
-@given()
+@given("Subarray is in ON state")
 def start_up():
     LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
@@ -60,19 +60,21 @@ def start_up():
     set_telescope_to_running()
     wait_before_test(timeout=20)
 
-@given()
+@given("Operator has a running low telescope with a subarray in obsState SCANNING")
 def set_to_ready():
     tmc.compose_sub()
     LOGGER.info("AssignResources is invoked on Subarray")
     wait_before_test(timeout=10)
+
     tmc.configure_sub()
     LOGGER.info("Configure is invoke on Subarray")
     wait_before_test(timeout=10)
+    
     tmc.scan_sub()
     LOGGER.info("Scan is invoked on Subarray")
     wait_before_test(timeout=10)
 
-@given()
+@when("Operator issues the ABORT command")
 def abort_subarray():
     @sync_abort(200)
     def abort():
@@ -80,9 +82,8 @@ def abort_subarray():
         SubarrayNodeLow.Abort()
         LOGGER.info("Abort command is invoked on subarray")
     abort()
-    LOGGER.info("Abort is completed on Subarray")
 
-@then()
+@then("The subarray eventually transitions into obsState ABORTED")
 def check_state():
     LOGGER.info("Checking the results")
     # check that the TMC and MCCS report subarray as being in the obsState = ABORTING
@@ -127,9 +128,8 @@ def teardown_function(function):
             restart_subarray(1)
         if(resource('ska_low/tm_subarray_node/1').get('obsState') == "ABORTED"):
             LOGGER.info("tearing down configured subarray (ABORTED)")
-            tmc.obsreset() //yet to create method
+            tmc.obsreset_sub()
             LOGGER.info('Invoked ObsReset on Subarray')
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
-

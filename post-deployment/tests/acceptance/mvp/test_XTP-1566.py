@@ -21,10 +21,9 @@ import pytest
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.logging_decorators import log_it
-from resources.test_support.persistance_helping import load_config_from_file
 import logging
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
-from resources.test_support.sync_decorators_low import  sync_scan_oet,sync_configure_oet, sync_scan, time_it
+from resources.test_support.sync_decorators_low import sync_scan_oet,sync_configure_oet, sync_scan, sync_abort, time_it
 import resources.test_support.tmc_helpers_low as tmc
 
 LOGGER = logging.getLogger(__name__)
@@ -49,9 +48,9 @@ non_default_states_to_check = {}
 
 @pytest.mark.skalow
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
-@scenario("XTP-1209.feature", "TMC and MCCS subarray performs an observational scan")
-def test_subarray_scan():
-    """Scan Operation."""
+@scenario("XTP-1209.feature", "BDD test case for Abort functionality in MVP Low")
+def test_subarray_abort():
+    """Abort Operation"""
 
 @given("Subarray is in ON state")
 def start_up():
@@ -61,51 +60,40 @@ def start_up():
     set_telescope_to_running()
     wait_before_test(timeout=20)
 
-@given("Subarray is configured successfully")
+@given("Operator has a running low telescope with a subarray in obsState SCANNING")
 def set_to_ready():
     tmc.compose_sub()
     LOGGER.info("AssignResources is invoked on Subarray")
     wait_before_test(timeout=10)
+
     tmc.configure_sub()
     LOGGER.info("Configure is invoke on Subarray")
     wait_before_test(timeout=10)
-
-@when("I call the execution of the scan command for duration of 10 seconds")
-def invoke_scan_command(fixture):
-    @sync_scan(200)
-    def scan():
-        def send_scan(duration):
-            scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
-            scan_string = load_config_from_file(scan_file)
-            SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
-            SubarrayNodeLow.Scan(duration)
-        LOGGER.info("Scan is invoked on Subarray 1")
-        executor = futures.ThreadPoolExecutor(max_workers=1)
-        return executor.submit(send_scan, scan_string)
-    fixture['future'] = scan()
-    return fixture
-
-@then("Subarray changes to a SCANNING state")
-def check_scanning_state(fixture):
-    # check that the TMC report subarray as being in the obsState = SCANNING
-    logging.info("TMC subarray low obsState: " + resource('ska_low/tm_subarray_node/1').get("obsState"))
-    assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('SCANNING')
-    # check that the MCCS report subarray as being in the obsState = SCANNING
-    logging.info("MCCS subarray low obsState: " + resource('low-mccs/subarray/01').get("obsState"))
-    assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('SCANNING')
-    return fixture
-
-@then("Observation ends after 10 seconds as indicated by returning to READY state")
-def check_ready_state(fixture):
-    fixture['future'].result(timeout=10)
-    wait_before_test(timeout=10)
-    # check that the TMC report subarray as being in the obsState = READY
-    logging.info("TMC subarray low obsState: " + resource('ska_low/tm_subarray_node/1').get("obsState"))
-    assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
-    # check that the MCCS report subarray as being in the obsState = READY
-    logging.info("MCCS subarray low obsState: " + resource('low-mccs/subarray/01').get("obsState"))
-    assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('READY')
     
+    tmc.scan_sub()
+    LOGGER.info("Scan is invoked on Subarray")
+    wait_before_test(timeout=10)
+
+@when("Operator issues the ABORT command")
+def abort_subarray():
+    @sync_abort(200)
+    def abort():
+        SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
+        SubarrayNodeLow.Abort()
+        LOGGER.info("Abort command is invoked on subarray")
+    abort()
+
+@then("The subarray eventually transitions into obsState ABORTED")
+def check_state():
+    LOGGER.info("Checking the results")
+    # check that the TMC and MCCS report subarray as being in the obsState = ABORTING
+    assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTING')
+    assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('ABORTING')
+     # check that the TMC and MCCS report subarray as being in the obsState = ABORTING
+    assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTED')
+    assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('ABORTED')
+    LOGGER.info("Results OK")
+
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
@@ -135,8 +123,13 @@ def teardown_function(function):
             restart_subarray(1)
             #raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
-        LOGGER.info("Put Telescope back to standby")
-        set_telescope_to_standby()
-    else:
-        LOGGER.warn("Subarray is in inconsistent state! Please restart MVP manualy to complete tear down")
-        restart_subarray(1)
+        if(resource('ska_low/tm_subarray_node/1').get('obsState') == "ABORTING"):
+            LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manualy to complete tear down")
+            restart_subarray(1)
+        if(resource('ska_low/tm_subarray_node/1').get('obsState') == "ABORTED"):
+            LOGGER.info("tearing down configured subarray (ABORTED)")
+            tmc.obsreset_sub()
+            LOGGER.info('Invoked ObsReset on Subarray')
+            tmc.release_resources()
+            LOGGER.info('Invoked ReleaseResources on Subarray')
+            wait_before_test(timeout=10)

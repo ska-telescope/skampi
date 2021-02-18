@@ -1,4 +1,4 @@
-from resources.test_support.sync_decorators_low import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end,sync_release_resources,sync_set_to_standby,time_it
+from resources.test_support.sync_decorators_low import sync_start_up_telescope,sync_assign_resources,sync_configure, sync_scan, sync_end, sync_abort, sync_obsreset, sync_release_resources,sync_set_to_standby,time_it
 from resources.test_support.logging_decorators import log_it
 from tango import DeviceProxy   
 from resources.test_support.helpers_low import waiter,watch,resource
@@ -77,3 +77,25 @@ def configure_sub():
     SubarrayNodeLow.Configure(config)
     LOGGER.info("Subarray obsState is: " + str(SubarrayNodeLow.obsState))
     LOGGER.info('Invoked Configure on Subarray')
+
+@sync_scan
+def scan_sub():
+    scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
+    scan_string = load_config_from_file(scan_file)
+    SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
+    SubarrayNodeLow.Scan(scan_string)
+    LOGGER.info('Scan Started')
+
+@sync_abort
+def abort_sub():
+    SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
+    SubarrayNodeLow.Abort()
+    LOGGER.info('Abort command invoked on SubarrayNodeLow.')
+    
+@sync_obsreset
+def obsreset_sub():
+    resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+    SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
+    SubarrayNodeLow.ObsReset()
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNodeLow.obsState))
+    LOGGER.info('Invoked ObsReset command on Subarray')

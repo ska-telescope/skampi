@@ -21,7 +21,7 @@ from resources.test_support.helpers import resource
 from resources.test_support.logging_decorators import log_it
 from resources.test_support.sync_decorators import sync_assign_resources, sync_obsreset,sync_abort,sync_scan_oet
 from resources.test_support.persistance_helping import update_resource_config_file
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray, restart_subarray
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":

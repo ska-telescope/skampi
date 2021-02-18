@@ -18,6 +18,10 @@ def check_going_into_configure():
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
+def check_going_into_abort():
+    ##Can ony invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_coming_out_of_standby():
     ##Can  only start up a disabled telescope
@@ -37,6 +41,13 @@ def check_going_into_empty():
 def check_going_into_standby():
     print ("In check_going_into_standby")
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
+
+def check_going_out_of_abort():
+    ##Can only return to ON/IDLE if in READY
+    print ("Checking aborting obsState verification")
+    # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('ABORTED')
+    # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('ABORTED')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
 # pre waitings
 
@@ -93,7 +104,6 @@ class WaitScanning():
         logging.info("scan command dispatched, checking that the state transitioned to SCANNING")
         self.the_watch.wait_until_value_changed_to('SCANNING',timeout)
        
-
 def sync_assign_resources(timeout=60):
 # defined as a decorator
     def decorator_sync_assign_resources(func):
@@ -109,6 +119,20 @@ def sync_assign_resources(timeout=60):
             return result
         return wrapper
     return decorator_sync_assign_resources
+
+def sync_obsreset(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_out_of_abort()
+            w = WaitObsReset()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
 
 # defined as a context manager
 @contextmanager
@@ -309,5 +333,16 @@ def sync_oet_scanning():
     yield
     the_waiter.wait()
 
-
-
+def sync_abort(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_into_abort()
+            w = WaitAbort()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator

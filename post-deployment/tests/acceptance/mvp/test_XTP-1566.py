@@ -46,9 +46,10 @@ devices_to_log = [
     'low-mccs/subarray/01']
 non_default_states_to_check = {}
 
-@pytest.mark.skalow
+@pytest.mark.skip(reason="no way of currently testing this")
+# @pytest.mark.skalow
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
-@scenario("XTP-1209.feature", "BDD test case for Abort functionality in MVP Low")
+@scenario("XTP-1566.feature", "BDD test case for Abort functionality in MVP Low")
 def test_subarray_abort():
     """Abort Operation"""
 
@@ -60,8 +61,10 @@ def start_up():
     set_telescope_to_running()
     wait_before_test(timeout=20)
 
-@given("Operator has a running low telescope with a subarray in obsState SCANNING")
-def set_to_ready():
+@given("operator has a running low telescope with a subarray in obsState <subarray_obsstate>")
+def set_up_telescope(subarray_obsstate : str):
+    start_up()
+
     tmc.compose_sub()
     LOGGER.info("AssignResources is invoked on Subarray")
     wait_before_test(timeout=10)
@@ -70,9 +73,14 @@ def set_to_ready():
     LOGGER.info("Configure is invoke on Subarray")
     wait_before_test(timeout=10)
     
-    tmc.scan_sub()
-    LOGGER.info("Scan is invoked on Subarray")
-    wait_before_test(timeout=10)
+    if subarray_obsstate == 'SCANNING':
+        tmc.scan_sub()
+        LOGGER.info("Scan is invoked on Subarray")
+        wait_before_test(timeout=10)
+
+    else:
+        msg = 'obsState {} is not settable with command methods'
+        raise ValueError(msg.format(subarray_obsstate))
 
 @when("Operator issues the ABORT command")
 def abort_subarray():
@@ -87,9 +95,9 @@ def abort_subarray():
 def check_state():
     LOGGER.info("Checking the results")
     # check that the TMC and MCCS report subarray as being in the obsState = ABORTING
-    assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTING')
-    assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('ABORTING')
-     # check that the TMC and MCCS report subarray as being in the obsState = ABORTING
+    # assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTING')
+    # assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('ABORTING')
+     # check that the TMC and MCCS report subarray as being in the obsState = ABORTED
     assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTED')
     assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('ABORTED')
     LOGGER.info("Results OK")

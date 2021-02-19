@@ -59,6 +59,7 @@ def set_to_running():
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
+    wait_before_test(timeout=10)
 
 @when("I allocate resources to TMC and MCCS Subarray")
 def allocate_four_dishes():
@@ -92,6 +93,7 @@ def teardown_function(function):
     if (resource('ska_low/tm_subarray_node/1').get("obsState") == "IDLE"):
         LOGGER.info("Release all resources assigned to subarray")
         tmc.release_resources()
+        # wait_before_test(timeout=20)
         LOGGER.info("ResourceIdList is empty for Subarray 1 ")
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()

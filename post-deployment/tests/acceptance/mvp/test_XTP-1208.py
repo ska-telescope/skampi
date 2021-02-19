@@ -57,7 +57,7 @@ def start_up():
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    wait_before_test(timeout=20)
+    wait_before_test(timeout=10)
     LOGGER.info("Telescope is in ON state")
 
 @given("Subarray is in IDLE state")

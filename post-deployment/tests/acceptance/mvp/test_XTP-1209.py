@@ -59,7 +59,7 @@ def start_up():
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    wait_before_test(timeout=20)
+    wait_before_test(timeout=10)
 
 @given("Subarray is configured successfully")
 def set_to_ready():
@@ -75,11 +75,11 @@ def invoke_scan_command(fixture):
     @sync_scan(200)
     def scan():
         def send_scan(duration):
-            scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
-            scan_string = load_config_from_file(scan_file)
             SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
             SubarrayNodeLow.Scan(duration)
         LOGGER.info("Scan is invoked on Subarray 1")
+        scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
+        scan_string = load_config_from_file(scan_file)
         executor = futures.ThreadPoolExecutor(max_workers=1)
         return executor.submit(send_scan, scan_string)
     fixture['future'] = scan()

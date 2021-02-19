@@ -13,14 +13,13 @@ import logging
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 #SUT infrastructure
-from tango import DeviceProxy, DevState
+from tango import DeviceProxy
 ## local imports
-from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
-from resources.test_support.logging_decorators import log_it
+from resources.test_support.helpers_low import resource, wait_before_test
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
-from resources.test_support.sync_decorators_low import sync_scan, sync_abort, time_it
+from resources.test_support.sync_decorators_low import sync_abort
 import resources.test_support.tmc_helpers_low as tmc
-from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file
+from resources.test_support.persistance_helping import load_config_from_file
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -40,7 +39,6 @@ devices_to_log = [
     'low-mccs/subarray/01']
 non_default_states_to_check = {}
 
-# @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.skalow
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1566.feature", "BDD test case for Abort functionality in MVP Low")
@@ -69,7 +67,6 @@ def set_up_telescope(subarray_obsstate : str):
         
         scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
         scan_string = load_config_from_file(scan_file)
-        LOGGER.info('SCAN String ---------------' + str(scan_string))
         SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
         SubarrayNodeLow.Scan(scan_string)
         LOGGER.info("Scan is invoked on Subarray")
@@ -90,10 +87,7 @@ def abort_subarray():
 @then("the subarray eventually transitions into obsState ABORTED")
 def check_state():
     LOGGER.info("Checking the results")
-    # check that the TMC and MCCS report subarray as being in the obsState = ABORTING
-    # assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTING')
-    # assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('ABORTING')
-     # check that the TMC and MCCS report subarray as being in the obsState = ABORTED
+    # check that the TMC and MCCS report subarray as being in the obsState = ABORTED
     assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTED')
     assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('ABORTED')
     LOGGER.info("Results OK")
@@ -120,19 +114,19 @@ def teardown_function(function):
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
             LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
             restart_subarray(1)
-            #raise exception since we are unable to continue with tear down
+            # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "SCANNING"):
             LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
             restart_subarray(1)
-            #raise exception since we are unable to continue with tear down
+            # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         if(resource('ska_low/tm_subarray_node/1').get('obsState') == "ABORTING"):
             LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manualy to complete tear down")
             restart_subarray(1)
         if(resource('ska_low/tm_subarray_node/1').get('obsState') == "ABORTED"):
             LOGGER.info("tearing down configured subarray (ABORTED)")
-            tmc.obsreset_sub()
+            tmc.obsreset()
             LOGGER.info('Invoked ObsReset on Subarray')
             wait_before_test(timeout=10)
             tmc.release_resources()

@@ -47,8 +47,7 @@ non_default_states_to_check = {}
 def result():
     return {}
 
-@pytest.mark.skip(reason="no way of currently testing this")
-# @pytest.mark.skalow
+@pytest.mark.skalow
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1207.feature", "TMC and MCCS subarray resource allocation")
 def test_allocate_resources():
@@ -94,7 +93,6 @@ def teardown_function(function):
     if (resource('ska_low/tm_subarray_node/1').get("obsState") == "IDLE"):
         LOGGER.info("Release all resources assigned to subarray")
         tmc.release_resources()
-        # wait_before_test(timeout=20)
         LOGGER.info("ResourceIdList is empty for Subarray 1 ")
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()

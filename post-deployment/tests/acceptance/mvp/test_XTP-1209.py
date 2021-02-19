@@ -47,8 +47,7 @@ devices_to_log = [
     'low-mccs/subarray/01']
 non_default_states_to_check = {}
 
-@pytest.mark.skip(reason="no way of currently testing this")
-# @pytest.mark.skalow
+@pytest.mark.skalow
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1209.feature", "TMC and MCCS subarray performs an observational scan")
 def test_subarray_scan():
@@ -129,12 +128,12 @@ def teardown_function(function):
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
             LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
             restart_subarray(1)
-            #raise exception since we are unable to continue with tear down
+            # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "SCANNING"):
             LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
             restart_subarray(1)
-            #raise exception since we are unable to continue with tear down
+            # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         LOGGER.info("Put Telescope back to standby")
         set_telescope_to_standby()

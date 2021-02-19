@@ -28,17 +28,6 @@ def compose_sub():
     the_waiter.wait()
     LOGGER.info('Invoked AssignResources on CentralNodeLow')
 
-# @sync_release_resources
-# def release_resources():
-#     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
-#     CentralNodeLow = DeviceProxy('ska_low/tm_central/central_node')
-#     CentralNodeLow.ReleaseResources('{"subarray_id":1,"release_all":true}')
-#     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
-#     LOGGER.info('After Invoking Release Resource on Subarray, SubarrayNodeLow State and ObsState:' + str(SubarrayNodeLow.State()) + str(SubarrayNodeLow.ObsState))
-#     the_waiter = waiter()
-#     the_waiter.wait()
-#     LOGGER.info('finished ReleaseResources on CentralNodeLow')
-
 @sync_end
 def end():
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
@@ -59,7 +48,6 @@ def release_resources():
     the_waiter.wait()
     LOGGER.info('finished ReleaseResources on CentralNodeLow')
 
-
 @sync_set_to_standby
 def set_to_standby():
     CentralNodeLow = DeviceProxy('ska_low/tm_central/central_node')
@@ -77,24 +65,9 @@ def configure_sub():
     SubarrayNodeLow.Configure(config)
     LOGGER.info("Subarray obsState is: " + str(SubarrayNodeLow.obsState))
     LOGGER.info('Invoked Configure on Subarray')
-
-@sync_scan()
-def scan_sub():
-    scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
-    scan_string = load_config_from_file(scan_file)
-    LOGGER.info('SCAN String ---------------' + str(scan_string))
-    SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
-    SubarrayNodeLow.Scan(scan_string)
-    LOGGER.info('Scan Started')
-
-@sync_abort
-def abort_sub():
-    SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
-    SubarrayNodeLow.Abort()
-    LOGGER.info('Abort command invoked on SubarrayNodeLow.')
     
 @sync_obsreset()
-def obsreset_sub():
+def obsreset():
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
     SubarrayNodeLow.ObsReset()

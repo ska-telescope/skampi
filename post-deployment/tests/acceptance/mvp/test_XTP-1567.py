@@ -6,27 +6,20 @@ test_calc
 ----------------------------------
 Acceptance tests for MVP.
 """
-import sys, os
+import os
 import pytest
 import logging
-from time import sleep
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 
-
-#SUT
-# from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
 #SUT infrastructure
 from tango import DeviceProxy, DevState
 ## local imports
 from resources.test_support.helpers_low import resource, wait_before_test
 from resources.test_support.logging_decorators import log_it
-# from resources.test_support.sync_decorators import sync_assign_resources, sync_obsreset,sync_abort
-from resources.test_support.sync_decorators_low import sync_assign_resources, sync_obsreset,sync_abort
-from resources.test_support.persistance_helping import update_resource_config_file, load_config_from_file
-# from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
-from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
-# from resources.test_support.tmc_helpers_low import compose_sub, configure_sub, scan_sub, abort_sub, release_resources, end
+from resources.test_support.sync_decorators_low import sync_obsreset
+from resources.test_support.persistance_helping import load_config_from_file
+from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray
 import resources.test_support.tmc_helpers_low as tmc
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
@@ -48,7 +41,6 @@ non_default_states_to_check = {}
 def result():
     return {}
 
-# @pytest.mark.skip()
 @pytest.mark.skalow
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1567.feature", "BDD test case for ObsReset command in MVP Low")
@@ -61,25 +53,21 @@ def set_to_abort():
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    # pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
     tmc.compose_sub()
     LOGGER.info("AssignResources is invoked on Subarray")
     wait_before_test(timeout=10)
 
     tmc.configure_sub()
-    LOGGER.info("Configure is invoke on Subarray")
+    LOGGER.info("Configure is invoked on Subarray")
     wait_before_test(timeout=10)
 
     scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
     scan_string = load_config_from_file(scan_file)
-    LOGGER.info('SCAN String ---------------' + str(scan_string))
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
     SubarrayNodeLow.Scan(scan_string)
     LOGGER.info("Scan is invoked on Subarray")
 
-    LOGGER.info("SUBARAYNODELOW =========" + str(SubarrayNodeLow.obsState))
     SubarrayNodeLow.Abort()
-    LOGGER.info('Abort command invoked on SubarrayNodeLow.')
     LOGGER.info("Abort is invoked on Subarray")
     wait_before_test(timeout=10)
 
@@ -88,7 +76,7 @@ def reset_subarray():
     @log_it('XTP-1567',devices_to_log,non_default_states_to_check)
     @sync_obsreset(200)
     def obsreset_subarray():
-        tmc.obsreset_sub()
+        tmc.obsreset()
         LOGGER.info("obsreset command is invoked on subarray")
     obsreset_subarray()
 

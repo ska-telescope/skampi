@@ -20,8 +20,8 @@ def check_going_into_configure():
 
 def check_going_into_abort():
     ##Can ony invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
+    resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_coming_out_of_standby():
     ##Can  only start up a disabled telescope
@@ -45,9 +45,7 @@ def check_going_into_standby():
 def check_going_out_of_abort():
     ##Can only return to ON/IDLE if in READY
     print ("Checking aborting obsState verification")
-    # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('ABORTED')
-    # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('ABORTED')
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+    resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
 # pre waitings
 

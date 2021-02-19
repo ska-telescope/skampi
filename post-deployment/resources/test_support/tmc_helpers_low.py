@@ -78,10 +78,11 @@ def configure_sub():
     LOGGER.info("Subarray obsState is: " + str(SubarrayNodeLow.obsState))
     LOGGER.info('Invoked Configure on Subarray')
 
-@sync_scan
+@sync_scan()
 def scan_sub():
     scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
     scan_string = load_config_from_file(scan_file)
+    LOGGER.info('SCAN String ---------------' + str(scan_string))
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
     SubarrayNodeLow.Scan(scan_string)
     LOGGER.info('Scan Started')
@@ -92,7 +93,7 @@ def abort_sub():
     SubarrayNodeLow.Abort()
     LOGGER.info('Abort command invoked on SubarrayNodeLow.')
     
-@sync_obsreset
+@sync_obsreset()
 def obsreset_sub():
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')

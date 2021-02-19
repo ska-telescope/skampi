@@ -293,6 +293,7 @@ sdp_config_dump_mid:
   variables:
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
+    KEEP_NAMESPACE: "true"
   environment:
     name: "test"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"

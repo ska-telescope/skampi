@@ -42,7 +42,6 @@ def result():
     return {}
 
 @pytest.mark.skalow
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1567.feature", "BDD test case for ObsReset command in MVP Low")
 def test_subarray_obsreset():
     """reset subarray"""
@@ -125,6 +124,5 @@ def teardown_function(function):
             restart_subarray(1)
             #raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup") 
-        LOGGER.info("Put Telescope back to standby")
         set_telescope_to_standby()
         LOGGER.info("Telescope is in standby")

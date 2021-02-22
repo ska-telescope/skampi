@@ -7,53 +7,51 @@ from contextlib import contextmanager
 
 # pre cheks
 def check_going_out_of_empty():
-    ##verify once for obstate = EMPTY
+    ## Verify the Subarray obstate = EMPTY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
 
 def check_going_into_configure():
-    ##Can ony configure a subarray that is in IDLE/ON
+    ## Can ony configure a subarray that is in State ON and obsState IDLE/READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_going_into_abort():
-    ##Can ony invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
+    ## Can ony invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_going_into_restart():
-    ##Can ony invoke restart on a subarray when in ABORTED, FAULT
+    ## Can ony invoke restart on a subarray when in ABORTED, FAULT
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['ABORTED','FAULT'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
-
 def check_coming_out_of_standby():
-    ##Can  only start up a disabled telescope
+    ## Verify the Subarray State = OFF
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
 
 def check_going_out_of_configured():
-    ##Can only return to ON/IDLE if in READY
+    ## Verify the Subarray obstate = READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
 
 def check_going_out_of_aborted():
-    ##Can only return to ABORTED if in READY, SCANNING, CONFIGURING, IDLE
+    ## Verify the Subarray obstate = ABORTED
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
 def check_going_out_of_abort():
-    ##Can only return to ON/IDLE if in READY
-    print ("Checking aborting obsState verification")
+    ## Verify the Subarray obstate = ABORTED
     # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('ABORTED')
     # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('ABORTED')
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
     logging.info("Abort completed on Subarray")    
 
 def check_going_into_empty():
-    ##Can only release resources if subarray is in ON/IDLE
+    ## Can only release resources if subarray is in State ON and obsState IDLE
+    logging.info("Check if the SubarrayNode State is ON and obsState is IDLE")
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
-    print ("In check_going_into_empty")
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
 
 def check_going_into_standby():
-    print ("In check_going_into_standby")
+    logging.info("Check if the SubarrayNode State is ON")
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 # pre waitings
@@ -273,7 +271,7 @@ def sync_end_sb(func):
 def sync_restart_sa(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        check_going_out_of_aborted()
+        check_going_out_of_abort()
         the_waiter = waiter()
         the_waiter.set_wait_for_going_into_restarting()
         result = func(*args, **kwargs)

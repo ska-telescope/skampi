@@ -40,7 +40,6 @@ devices_to_log = [
 non_default_states_to_check = {}
 
 @pytest.mark.skalow
-# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1566.feature", "BDD test case for Abort functionality in MVP Low")
 def test_subarray_abort():
     """Abort Operation"""
@@ -56,6 +55,8 @@ def set_up_telescope(subarray_obsstate : str):
     start_up()
     wait_before_test(timeout=10)
     
+    # Currently MCCS supports ABORT command only in SCANNING obsState. Therefore test case covers only this scenario.
+    # The test case will be extended in the future to cover all ABORT scenarios
     if subarray_obsstate == 'SCANNING':
         tmc.compose_sub()
         LOGGER.info("AssignResources is invoked on Subarray")
@@ -132,7 +133,6 @@ def teardown_function(function):
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
-        LOGGER.info("Put Telescope back to standby")
         set_telescope_to_standby()
         LOGGER.info("Telescope is in standby")
     else:

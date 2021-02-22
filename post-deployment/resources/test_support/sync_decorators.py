@@ -79,9 +79,8 @@ class WaitAbort():
         self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("Abort command dispatched, checking that the state transitioned to ABORTING")
         # self.the_watch.wait_until_value_changed_to('ABORTING',timeout)
-        logging.info("state transitioned to ABORTING, waiting for it to return to ABORTED")
+        logging.info("ABORT command invoked. Waiting for obsState to change to ABORTED")
         self.the_watch.wait_until_value_changed_to('ABORTED',timeout=200)
 
 class WaitRestart():
@@ -90,9 +89,8 @@ class WaitRestart():
         self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("Restart command dispatched, checking that the state transitioned to RESTARTING")
         # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
-        logging.info("state transitioned to RESTARTING, waiting for it to return to EMPTY")
+        logging.info("Restart command invoked. Waiting for obsState to change to EMPTY")
         self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
 
 class WaitObsReset():
@@ -101,8 +99,7 @@ class WaitObsReset():
         self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("ObsReset command dispatched, checking that the state transitioned to RESETTING")
-        logging.info("state transitioned to RESETTING, waiting for it to return to IDLE")
+        logging.info("ObsReset command invoked. Waiting for obsState to change to IDLE")
         self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
 
 
@@ -112,8 +109,7 @@ class WaitObsReset():
         self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("ObsReset command dispatched, checking that the state transitioned to RESETTING")
-        logging.info("state transitioned to RESETTING, waiting for it to return to IDLE")
+        logging.info("ObsReset command invoked. Waiting for obsState to change to IDLE")
         self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
 
 
@@ -122,9 +118,9 @@ class WaitScanning():
         self.the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('obsState')
 
     def wait(self,timeout):
-        logging.info("scan command dispatched, checking that the state transitioned to SCANNING")
+        logging.info("Scan command invoked. Waiting for obsState to change to SCANNING")
         self.the_watch.wait_until_value_changed_to('SCANNING',timeout)
-        logging.info("state transitioned to SCANNING, waiting for it to return to READY")
+        logging.info("Waiting for obsState to change to READY")
         self.the_watch.wait_until_value_changed_to('READY',timeout)
 
 

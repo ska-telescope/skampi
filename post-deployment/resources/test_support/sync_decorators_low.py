@@ -55,7 +55,7 @@ class WaitConfigure():
         self.w1  = watch(resource('low-mccs/subarray/01')).for_a_change_on("obsState")
 
     def wait(self):
-        logging.info("obsState transitioned to CONFIGURED, waiting for it to return to READY")
+        logging.info("Configure command invoked. Waiting for obsState to change to READY")
         self.w.wait_until_value_changed_to('READY',timeout=200)
         self.w1.wait_until_value_changed_to('READY',timeout=200)
 
@@ -70,7 +70,7 @@ class WaitAbort():
         self.w1  = watch(resource('low-mccs/subarray/01')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("obsState transitioned to ABORTING, waiting for it to return to ABORTED")
+        logging.info("ABORT command invoked. Waiting for obsState to change to ABORTED")
         self.w.wait_until_value_changed_to('ABORTED',timeout=200)
         self.w1.wait_until_value_changed_to('ABORTED',timeout=200)
 
@@ -80,7 +80,7 @@ class WaitRestart():
         self.the_watch  = watch(resource('ska_low/tm_subarray_node/1')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("obsState transitioned to RESTARTING, waiting for it to return to EMPTY")
+        logging.info("Restart command invoked. Waiting for obsState to change to EMPTY")
         self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
 
 class WaitObsReset():
@@ -90,7 +90,7 @@ class WaitObsReset():
         self.w1  = watch(resource('low-mccs/subarray/01')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("obsState transitioned to RESETTING, waiting for it to return to IDLE")
+        logging.info("ObsReset command invoked. Waiting for obsState to change to IDLE")
         self.w.wait_until_value_changed_to('IDLE',timeout=200)
         self.w1.wait_until_value_changed_to('IDLE',timeout=200)
 
@@ -100,7 +100,7 @@ class WaitScanning():
         self.w1  = watch(resource('low-mccs/subarray/01')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("scan command invoked, checking that the obsState transitioned to SCANNING")
+        logging.info("scan command invoked. Waiting for obsState to change to SCANNING")
         self.w.wait_until_value_changed_to('SCANNING',timeout)
         self.w1.wait_until_value_changed_to('SCANNING',timeout)
 

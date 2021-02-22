@@ -34,17 +34,17 @@ def check_going_out_of_configure():
 
 def check_going_into_empty():
     ##Can only release resources if subarray is in ON/IDLE
+    logging.info("Check if the SubarrayNode State is ON and obsState is IDLE")
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
-    print ("In check_going_into_empty")
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
 
 def check_going_into_standby():
-    print ("In check_going_into_standby")
+    logging.info("Check if the SubarrayNode State is ON")
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_going_out_of_abort():
     ##Can only return to ON/IDLE if in READY
-    print ("Checking aborting obsState verification")
+    logging.info("Check if the SubarrayNode obsState is ABORTED")
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
 # pre waitings
@@ -239,7 +239,7 @@ def sync_telescope_starting_up(timeout=50):
 def sync_release_resources(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        print("In sync_release_resources")
+        logging.info("In sync_release_resources")
         check_going_into_empty()
         the_waiter = waiter()
         the_waiter.set_wait_for_tearing_down_subarray()

@@ -41,7 +41,9 @@ def end():
 def release_resources():
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
     CentralNodeLow = DeviceProxy('ska_low/tm_central/central_node')
-    CentralNodeLow.ReleaseResources('{"mccs":{"subarray_id":1,"release_all":true}}')
+    release_resources_file = 'resources/test_data/TMC_integration/mccs_release_resources.json'
+    release_json = load_config_from_file(release_resources_file)
+    CentralNodeLow.ReleaseResources(release_json)
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
     LOGGER.info('After Invoking Release Resource on Subarray, SubarrayNodeLow State and ObsState:' + str(SubarrayNodeLow.State()) + str(SubarrayNodeLow.ObsState))
     the_waiter = waiter()

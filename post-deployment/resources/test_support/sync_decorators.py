@@ -11,17 +11,17 @@ def check_going_out_of_empty():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
 
 def check_going_into_configure():
-    ## Can ony configure a subarray that is in State ON and obsState IDLE/READY
+    ## Can only configure a subarray that is in State ON and obsState IDLE/READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_going_into_abort():
-    ## Can ony invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
+    ## Can only invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_going_into_restart():
-    ## Can ony invoke restart on a subarray when in ABORTED, FAULT
+    ## Can only invoke restart on a subarray when in ABORTED, FAULT
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['ABORTED','FAULT'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
@@ -159,7 +159,7 @@ def sync_assigned_resources(nr_of_receptors=4):
 def sync_configure(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        ##Can ony configure a subarray that is in IDLE/ON
+        ##Can only configure a subarray that is in IDLE/ON
         # Branch changes
         # resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
         # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
@@ -190,7 +190,7 @@ def sync_configuration():
 def sync_configure_oet(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        ##Can ony configure a subarray that is in IDLE/ON
+        ##Can only configure a subarray that is in IDLE/ON
         check_going_into_configure()
         w = WaitConfigure()
         ################ 

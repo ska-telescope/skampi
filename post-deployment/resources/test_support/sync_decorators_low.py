@@ -19,7 +19,7 @@ def check_going_into_configure():
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_going_into_abort():
-    ## Can ony invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
+    ## Can only invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
@@ -169,7 +169,7 @@ def sync_configuration():
 def sync_configure_oet(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        ##Can ony configure a subarray that is in IDLE/ON
+        ##Can only configure a subarray that is in IDLE/ON
         check_going_into_configure()
         w = WaitConfigure()
         ################ 

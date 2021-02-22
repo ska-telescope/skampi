@@ -6,6 +6,7 @@ pytest-json-report
 pycodestyle<2.7.0,>=2.6.0a1
 pytest-bdd==3.4.0
 pytest-ordering
+pytest-timeout
 elasticsearch
 kubernetes
 assertpy

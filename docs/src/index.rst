@@ -9,6 +9,7 @@ This project defines the integration between various component repository on Kub
 
    skampi
    testing
+   multitenancy
    helm
    templates
    environments

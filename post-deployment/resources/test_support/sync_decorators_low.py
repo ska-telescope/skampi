@@ -10,33 +10,41 @@ LOGGER = logging.getLogger(__name__)
 
 # pre cheks
 def check_going_out_of_empty():
-    ##verify once for obstate = EMPTY
+    ## verify the Subarray obstate = EMPTY
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
 
 def check_going_into_configure():
-    ##Can only configure a subarray that is in state ON and obsState IDLE/READY
+    ## Can only configure a subarray that is in state ON and obsState IDLE/READY
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
+def check_going_into_abort():
+    ## Can only invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
+    resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
+    resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_coming_out_of_standby():
-    ##Can  only start up a disabled telescope
+    #### verify the Subarray State = OFF
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('OFF')
 
 def check_going_out_of_configure():
-    ##Can only return to ON/IDLE if in READY
+    ## verify the Subarray obstate = READY
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
 
-
 def check_going_into_empty():
-    ##Can only release resources if subarray is in ON/IDLE
+    ## Can only release resources if subarray is in State ON and obsState IDLE
+    logging.info("Check if the SubarrayNode State is ON and obsState is IDLE")
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
-    print ("In check_going_into_empty")
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
 
 def check_going_into_standby():
-    print ("In check_going_into_standby")
+    logging.info("Check if the SubarrayNode State is ON")
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
+
+def check_going_out_of_abort():
+    ## verify the Subarray obstate = ABORTED
+    logging.info("Check if the SubarrayNode obsState is ABORTED")
+    resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
 # pre waitings
 
@@ -47,6 +55,7 @@ class WaitConfigure():
         self.w1  = watch(resource('low-mccs/subarray/01')).for_a_change_on("obsState")
 
     def wait(self):
+        logging.info("Configure command invoked. Waiting for obsState to change to READY")
         self.w.wait_until_value_changed_to('READY',timeout=200)
         self.w1.wait_until_value_changed_to('READY',timeout=200)
 
@@ -57,12 +66,13 @@ class WaitConfigure():
 class WaitAbort():
 
     def __init__(self):
-        self.the_watch  = watch(resource('ska_low/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.w  = watch(resource('ska_low/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.w1  = watch(resource('low-mccs/subarray/01')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("Abort command dispatched, checking that the state transitioned to ABORTING")
-        logging.info("state transitioned to ABORTING, waiting for it to return to ABORTED")
-        self.the_watch.wait_until_value_changed_to('ABORTED',timeout=200)
+        logging.info("ABORT command invoked. Waiting for obsState to change to ABORTED")
+        self.w.wait_until_value_changed_to('ABORTED',timeout=200)
+        self.w1.wait_until_value_changed_to('ABORTED',timeout=200)
 
 class WaitRestart():
 
@@ -70,29 +80,29 @@ class WaitRestart():
         self.the_watch  = watch(resource('ska_low/tm_subarray_node/1')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("Restart command dispatched, checking that the state transitioned to RESTARTING")
-        logging.info("state transitioned to RESTARTING, waiting for it to return to EMPTY")
+        logging.info("Restart command invoked. Waiting for obsState to change to EMPTY")
         self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
 
 class WaitObsReset():
 
     def __init__(self):
-        self.the_watch  = watch(resource('ska_low/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.w  = watch(resource('ska_low/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.w1  = watch(resource('low-mccs/subarray/01')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("ObsReset command dispatched, checking that the state transitioned to RESETTING")
-        logging.info("state transitioned to RESETTING, waiting for it to return to IDLE")
-        self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
-
+        logging.info("ObsReset command invoked. Waiting for obsState to change to IDLE")
+        self.w.wait_until_value_changed_to('IDLE',timeout=200)
+        self.w1.wait_until_value_changed_to('IDLE',timeout=200)
 
 class WaitScanning():
     def __init__(self):
-        self.the_watch = watch(resource('ska_low/tm_subarray_node/1')).for_a_change_on('obsState')
+        self.w  = watch(resource('ska_low/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.w1  = watch(resource('low-mccs/subarray/01')).for_a_change_on("obsState")
 
     def wait(self,timeout):
-        logging.info("scan command dispatched, checking that the state transitioned to SCANNING")
-        self.the_watch.wait_until_value_changed_to('SCANNING',timeout)
-       
+        logging.info("scan command invoked. Waiting for obsState to change to SCANNING")
+        self.w.wait_until_value_changed_to('SCANNING',timeout)
+        self.w1.wait_until_value_changed_to('SCANNING',timeout)
 
 def sync_assign_resources(timeout=60):
 # defined as a decorator
@@ -109,6 +119,20 @@ def sync_assign_resources(timeout=60):
             return result
         return wrapper
     return decorator_sync_assign_resources
+
+def sync_obsreset(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_out_of_abort()
+            w = WaitObsReset()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
 
 # defined as a context manager
 @contextmanager
@@ -145,7 +169,7 @@ def sync_configuration():
 def sync_configure_oet(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        ##Can ony configure a subarray that is in IDLE/ON
+        ##Can only configure a subarray that is in IDLE/ON
         check_going_into_configure()
         w = WaitConfigure()
         ################ 
@@ -217,7 +241,7 @@ def sync_telescope_starting_up(timeout=50):
 def sync_release_resources(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        print("In sync_release_resources")
+        logging.info("In sync_release_resources")
         check_going_into_empty()
         the_waiter = waiter()
         the_waiter.set_wait_for_tearing_down_subarray()
@@ -309,5 +333,16 @@ def sync_oet_scanning():
     yield
     the_waiter.wait()
 
-
-
+def sync_abort(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_into_abort()
+            w = WaitAbort()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator

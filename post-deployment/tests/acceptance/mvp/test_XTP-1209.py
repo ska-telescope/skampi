@@ -21,6 +21,7 @@ import pytest
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.logging_decorators import log_it
+from resources.test_support.persistance_helping import load_config_from_file
 import logging
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 from resources.test_support.sync_decorators_low import  sync_scan_oet,sync_configure_oet, sync_scan, time_it
@@ -58,7 +59,7 @@ def start_up():
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    wait_before_test(timeout=20)
+    wait_before_test(timeout=10)
 
 @given("Subarray is configured successfully")
 def set_to_ready():
@@ -77,8 +78,10 @@ def invoke_scan_command(fixture):
             SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
             SubarrayNodeLow.Scan(duration)
         LOGGER.info("Scan is invoked on Subarray 1")
+        scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
+        scan_string = load_config_from_file(scan_file)
         executor = futures.ThreadPoolExecutor(max_workers=1)
-        return executor.submit(send_scan,'{"id":1}')
+        return executor.submit(send_scan, scan_string)
     fixture['future'] = scan()
     return fixture
 
@@ -125,12 +128,12 @@ def teardown_function(function):
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
             LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
             restart_subarray(1)
-            #raise exception since we are unable to continue with tear down
+            # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "SCANNING"):
             LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
             restart_subarray(1)
-            #raise exception since we are unable to continue with tear down
+            # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         LOGGER.info("Put Telescope back to standby")
         set_telescope_to_standby()

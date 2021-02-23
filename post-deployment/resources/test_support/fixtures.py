@@ -15,7 +15,7 @@ from resources.test_support.event_waiting import sync_telescope_shutting_down,wa
 sync_subarray_assigning,sync_subarray_releasing,sync_subarray_configuring,sync_release_configuration
 from resources.test_support.persistance_helping import update_resource_config_file,load_config_from_file,update_scan_config_file
 # MVP code
-from ska.scripting.domain import Telescope,SubArray
+from ska.scripting.domain import SKAMid,SubArray,ResourceAllocation,Dish
 
 LOGGER = logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ def set_telescope_to_running() -> None:
     #assert_telescope_is_standby()
     # command
     with sync_telescope_starting_up(LOGGER,timeout=5):
-        Telescope().start_up()
+        SKAMid().start_up()
 
 def set_telescope_to_standby() -> None:
     # pre conditions
@@ -91,16 +91,17 @@ def set_telescope_to_standby() -> None:
     #assert_telescope_is_running()
     # command
     with sync_telescope_shutting_down(LOGGER,timeout=5):
-        Telescope().standby()
+        SKAMid().standby()
 
 def assign_subarray(subArray,resource_config_file: str) -> None:
     # pre conditions
-    # TODO assertions removed as they give unreliable answers
+    # TODO assertions removed as they guve unreliable answers 
     #assert_telescope_is_running()
     #assert_subarray_is_empty(subArray.id)
     # command
     with sync_subarray_assigning(subArray.id,LOGGER,10,log_enabled = False):
-        subArray.allocate_from_file(resource_config_file)
+        multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, 2 + 1)])
+        subArray.allocate_from_file(resource_config_file, multi_dish_allocation)
     return
         
 def release_subarray(subArray) -> None:

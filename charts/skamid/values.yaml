@@ -1,3 +1,4 @@
+
 display: ":0"
 xauthority: "~/.Xauthority"
 
@@ -62,13 +63,6 @@ oet-scripts:
   telescope: SKA-mid
   central_node: ska_mid/tm_central/central_node
   subarray: ska_mid/tm_subarray_node
-  jupyter:
-    featureFlags:
-      readViaPubSub: false
-  rest:
-    featureFlags:
-      readViaPubSub: false
-
 
 #telescope control
 ## mid-cbf

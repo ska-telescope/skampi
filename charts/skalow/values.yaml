@@ -1,4 +1,3 @@
-
 display: ":0"
 xauthority: "~/.Xauthority"
 minikube: true
@@ -83,3 +82,9 @@ oet-scripts:
   telescope: SKA-low
   central_node: ska_low/tm_central/central_node
   subarray: ska_low/tm_subarray_node
+  jupyter:
+    featureFlags:
+      readViaPubSub: true
+  rest:
+    featureFlags:
+      readViaPubSub: true

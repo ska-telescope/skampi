@@ -18,7 +18,7 @@ SKAMPI is reaching a status where the resources needed in terms of CPU and memor
 
 .. warning::
 
-   Branch-based deployments are complete deployments of MID or LOW, and therefore require the same resources as any other deployment of SKAMPI - developers should be mindful of the impact of deployments. As such branch-based namespaces are short lived: they are deleted 6 hours after their deployment, and only manually deployed for persistence - automatic deployments will be deleted immediately.
+   Branch-based deployments are complete deployments of MID or LOW, and therefore require the same resources as any other deployment of SKAMPI - developers should be mindful of the impact of deployments. As such branch-based namespaces are short lived: they are deleted 2 hours after their deployment, and only manually deployed for persistence - automatic deployments will be deleted immediately.
 
 
 Pipeline Namespaces
@@ -71,7 +71,7 @@ Once this file is copied to your local machine, and the adequate enviroment vari
 
   The namespaces are deleted if there is a more recent commit on the branch. To recreate the namespace you then need to launch a test on the pipeline associated with that commit. 
 
-  The namespaces are also deleted 6 hours after they are created hence the kubeconfig is only valid for 6 hours.
+  The namespaces are also deleted 2 hours after they are created hence the kubeconfig is only valid for 2 hours.
 
 
 Branch names and access patterns

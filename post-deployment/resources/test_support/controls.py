@@ -4,7 +4,9 @@ import os
 import logging
 
 ##SUT imports
-from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
+from ska.scripting.domain import Telescope, SubArray
+from ska.cdm.schemas import CODEC as cdm_CODEC
+from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
 
 ##local depencies
 from resources.test_support.helpers import subarray_devices,resource,ResourceGroup,waiter,watch
@@ -48,8 +50,9 @@ class pilot():
         @sync_assign_resources(dishes,200)
         def assign():
             sdp_block = update_resource_config_file(file)
-            multi_dish_allocation = ResourceAllocation(dishes=[Dish(x) for x in range(1, dishes + 1)])
-            self.SubArray.allocate_from_file(file, multi_dish_allocation)
+            resource_request: AssignResourcesRequest = cdm_CODEC.load_from_file(AssignResourcesRequest, file)
+            resource_request.dish.receptor_ids = [str(x).zfill(4) for x in range(1, dishes + 1)]
+            self.SubArray.allocate_from_cdm(resource_request)
             return sdp_block
         sdp_block = assign()
         self.state = "Composed"
@@ -137,7 +140,7 @@ def set_telescope_to_standby():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
-    SKAMid().standby()
+    Telescope().standby()
     #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
     #therefore timeout is given as 12 sec
     the_waiter.wait(120)
@@ -148,7 +151,7 @@ def set_telescope_to_running(disable_waiting = False):
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
-    SKAMid().start_up()
+    Telescope().start_up()
     if not disable_waiting:
         the_waiter.wait(100)
         if the_waiter.timed_out:

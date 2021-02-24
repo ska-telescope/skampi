@@ -61,11 +61,6 @@ def test_ska_devices():
 
 
 @pytest.mark.skamid
-@pytest.mark.xfail(
-    reason="New DishMaster simulator missing 'versionId' attribute, and 'GetVersionInfo' command."
-    " It should be removed when a version of tmc-mid chart (> 0.2.0) with the required updates is"
-    " published."
-)
 def test_dishmaster_conforms_to_tango_wide():
     """Check that dishmaster conforms to tango developers guide"""
     result = validate_device_from_url(
@@ -75,7 +70,6 @@ def test_dishmaster_conforms_to_tango_wide():
 
 
 @pytest.mark.skamid
-@pytest.mark.xfail(reason="dishmaster does not comply with the spec currently")
 def test_dishmaster_conforms_to_dishmaster_spec():
     """Check that dishmaster device conforms to dishmaster specification"""
     result = validate_device_from_url("mid_d0001/elt/master", SPEC_URLS["dish_master"], False)

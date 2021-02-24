@@ -58,6 +58,8 @@ def fxt_prepare_switch_on(running_telescope_args,
         context.board = board
         with tel_fxt.tear_down_when_finished(running_telescope_args):
             yield
+
+@pytest.mark.xfail
 @pytest.mark.skamid
 def test_start_up(prepare_switch_on,running_telescope_args:tel_fxt.RunningTelescopeArgs,context:Context):
     board: builders.MessageBoard = context.board
@@ -73,6 +75,5 @@ def test_start_up(prepare_switch_on,running_telescope_args:tel_fxt.RunningTelesc
     logger.info(f"Log messages during waiting:\n{logs}")
     checking_logs = checker.print_outcome_for(checker.subject_device)
     logger.info(f"Results of checking:\n{checking_logs}")
-    #checker.assert_that(checker.subject_device).is_behind_all_on_transit(
-    #    "RESOURCING")
+    checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")
     #checker.assert_that(checker.subject_device).is_behind_all_on_transit("IDLE")

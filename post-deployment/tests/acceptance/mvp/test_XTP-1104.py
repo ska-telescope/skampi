@@ -53,7 +53,7 @@ def fixture():
 @pytest.mark.select
 @pytest.mark.skamid
 # @pytest.mark.xfail
-@pytest.mark.skipif("failure"")
+@pytest.mark.skipif("failure")
 @scenario("XTP-1104.feature", "when the telescope subarrays can be aborted then abort brings them in ABORTED")
 def test_subarray_abort():
     """Abort subarray"""

@@ -71,8 +71,8 @@ def test_start_up(prepare_switch_on,running_telescope_args:tel_fxt.RunningTelesc
     board: builders.MessageBoard = context.board
     checker: builders.Occurrences = context.checker
     wait.wait(context.board, args.time_out)
-    logs = board.play_log_book()
-    logger.info(f"Log messages during waiting:\n{logs}")
+    #logs = board.play_log_book()
+    #logger.info(f"Log messages during waiting:\n{logs}")
     checking_logs = checker.print_outcome_for(checker.subject_device)
     logger.info(f"Results of checking:\n{checking_logs}")
     checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")

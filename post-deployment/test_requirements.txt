@@ -23,3 +23,4 @@ tango-simlib==0.7.0
 lmcbaseclasses
 ska-log-transactions
 tabulate
+skallop==0.1.1

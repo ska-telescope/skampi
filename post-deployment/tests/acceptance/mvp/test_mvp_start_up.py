@@ -58,7 +58,7 @@ def fxt_prepare_switch_on(running_telescope_args,
         context.board = board
         with tel_fxt.tear_down_when_finished(running_telescope_args):
             yield
-
+@pytest.mark.skamid
 def test_start_up(prepare_switch_on,running_telescope_args:tel_fxt.RunningTelescopeArgs,context:Context):
     board: builders.MessageBoard = context.board
     checker: builders.Occurrences = context.checker

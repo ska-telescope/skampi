@@ -14,8 +14,6 @@ from assertpy import assert_that
 #SUT
 from resources.test_support.helpers import resource, waiter, subscriber, watch,monitor,wait_for,AttributeWatcher
 from resources.test_support.controls import take_subarray
-#SUT framework (not part of test)
-from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
 
 import pytest
 
@@ -101,19 +99,21 @@ class fake_comparison():
 
 #mock_resource = Mock(unsafe=True)
 @mock.patch('resources.test_support.sync_decorators.resource')
-@mock.patch('resources.test_support.controls.SubArray.allocate_from_file')
+@mock.patch('resources.test_support.controls.SubArray.allocate_from_cdm')
 @mock.patch('resources.test_support.sync_decorators.waiter')
 @pytest.mark.fast
 @pytest.mark.skamid
 def test_pilot_compose_subarray(waiter_mock, subarray_mock_allocate,mock_resource):
-    allocation = ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)])
+    expected_allocation = ['0001', '0002', '0003', '0004']
     mock_resource.return_value = Mock(unsafe=True)
     waiter_mock_instance = waiter_mock.return_value
     waiter_mock_instance.timed_out = False
     take_subarray(1).to_be_composed_out_of(4)
     waiter_mock_instance.set_wait_for_assign_resources.assert_called_once()
     waiter_mock_instance.wait.assert_called_once()
-    subarray_mock_allocate.assert_called_once_with('resources/test_data/OET_integration/example_allocate.json',allocation)
+    request_object = subarray_mock_allocate.call_args[0][0]
+    assert_that(request_object.dish.receptor_ids).is_equal_to(expected_allocation)
+
 
 @mock.patch('resources.test_support.helpers.watch')
 @mock.patch('resources.test_support.helpers.resource')

@@ -21,8 +21,12 @@ dependencies:
 - name: webjive
   version: 1.0.15
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+- name: skuid
+  version: 0.1.0
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: skuid.enabled
 - name: oet-scripts
-  version: 0.3.3
+  version: 0.3.6
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: oet-scripts.enabled
 - name: landingpage

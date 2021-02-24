@@ -13,7 +13,7 @@ from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 from concurrent import futures
 #SUT
-from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
+from ska.scripting.domain import Telescope, SubArray
 #SUT infrastructure
 from tango import DeviceProxy, DevState
 ## local imports

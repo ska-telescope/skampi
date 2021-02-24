@@ -27,7 +27,7 @@ from resources.test_support.sync_decorators import sync_configure_oet,time_it
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
 import pytest
 #SUT dependencies
-from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
+from ska.scripting.domain import Telescope, SubArray
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":

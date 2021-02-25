@@ -31,6 +31,7 @@ UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
 # include makefile targets for release management
 -include .make/release.mk
+# -include .make/k8s.mk
 
 # include makefile targets for testing
 -include test.mk

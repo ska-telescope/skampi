@@ -86,10 +86,11 @@ sdp:
 ## tm
 tmc-mid:
   enabled: true
-  resources:
-    limits:
-      cpu: 900m
-      memory: 500Mi
-    requests:
-      cpu: 300m
-      memory: 128Mi
+  centralnode:
+    resources:
+      limits:
+        cpu: 900m
+        memory: 500Mi
+      requests:
+        cpu: 300m
+        memory: 128Mi

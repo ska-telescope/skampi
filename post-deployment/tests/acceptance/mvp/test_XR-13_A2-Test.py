@@ -59,6 +59,7 @@ def result():
 
 @pytest.mark.select
 @pytest.mark.skamid
+@pytest.mark.sleep_before
 # @pytest.mark.skip(reason="sdp subarray still in IDLE after tmc returned to READY, see SKB-22")
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("1_XR-13_XTP-494.feature", "A2-Test, Sub-array transitions from IDLE to READY state")

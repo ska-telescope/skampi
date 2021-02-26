@@ -59,6 +59,7 @@ non_default_states_to_check = {
 
 @pytest.mark.select
 @pytest.mark.skamid
+@pytest.mark.sleep_before
 @pytest.mark.skip(reason="disabled  due to bug SKB-38")
 @scenario("1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational imaging scan")
 def test_subarray_scan():

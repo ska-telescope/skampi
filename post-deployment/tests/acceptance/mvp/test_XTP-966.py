@@ -25,8 +25,6 @@ from resources.test_support.controls import (restart_subarray,
                                              telescope_is_in_standby)
 from resources.test_support.helpers import resource
 
-# local imports
-
 
 DEV_TEST_TOGGLE = environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -135,7 +133,6 @@ class Poller:
         self.proc = Process(target=self.track_obsstates,
                             args=(self.device, self.results,))
         self.proc.start()
-        print("Starting")
 
     def stop_polling(self):
         if self.proc is not None:
@@ -252,7 +249,7 @@ def task_has_status(task, expected_status, resp):
     return get_task_status(task, resp) == expected_status
 
 
-def confirm_script_status_and_return_id(resp, expected_status='READY'):
+def confirm_script_status_and_return_id(resp, expected_status='CREATED'):
     """
     Confirm that the script is in a given state and return the ID
     """
@@ -292,24 +289,25 @@ def attempt_to_clean_subarray_to_idle(subarray: Subarray):
     LOGGER.info("PROCESS: Telescope is in %s ", subarray.get_obsstate())
 
 
-def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block, additional_json=None):
-
-    oet_task_id = None
+def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block):
     resp = oet_rest_cli.create(script, subarray_id=1)
     # confirm that creating the task worked and we have a valid ID
-    oet_task_id = confirm_script_status_and_return_id(resp, 'READY')
+    oet_create_task_id = confirm_script_status_and_return_id(resp, 'CREATED')
     # we  can now start the observing task passing in the scheduling block as a parameter
-    if additional_json is not None:
-        resp = oet_rest_cli.start(scheduling_block, additional_json, listen=False)
-    else:
-        resp = oet_rest_cli.start(scheduling_block, listen=False)
+    resp = oet_rest_cli.start(scheduling_block, listen=False)
     # confirm that it didn't fail on starting
-    oet_task_id = confirm_script_status_and_return_id(resp, 'RUNNING')
+    oet_start_task_id = confirm_script_status_and_return_id(resp, 'RUNNING')
+
+    # If task IDs do not match, wrong script was started
+    if oet_create_task_id is not oet_start_task_id:
+        LOGGER.info("Script IDs did not match, created script with ID %d but started script with ID %d",
+                    oet_create_task_id, oet_start_task_id)
+        return False
 
     timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT  # arbitrary number
     while timeout != 0:
         resp = oet_rest_cli.list()
-        if not task_has_status(oet_task_id, 'RUNNING', resp):
+        if not task_has_status(oet_start_task_id, 'RUNNING', resp):
             LOGGER.info(
                 "PROCESS: Task has run to completion - no longer present on task list")
             return True
@@ -379,12 +377,10 @@ def run_scheduling_block(result, oet_rest_cli, script):
     LOGGER.info("PROCESS: Starting to observe the SB %s using script %s",
                 result[SCHEDULING_BLOCK], script)
 
-    # TODO additional_json seems to be manadatory for configure at the moment but should be optional
     result[TEST_PASSED] = run_task_using_oet_rest_client(
         oet_rest_cli,
         script=script,
-        scheduling_block=result[SCHEDULING_BLOCK],
-        additional_json='scripts/data/example_configure.json'
+        scheduling_block=result[SCHEDULING_BLOCK]
     )
     assert result[TEST_PASSED],  "PROCESS: Observation failed"
 

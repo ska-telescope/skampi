@@ -252,6 +252,13 @@ def task_has_status(task, expected_status, resp):
 def confirm_script_status_and_return_id(resp, expected_status='CREATED'):
     """
     Confirm that the script is in a given state and return the ID
+
+    Args:
+        resp (str): Response from OET REST CLI list
+        expected_status (str): Expected script state
+
+    Returns:
+        int: Task ID
     """
     if expected_status is 'RUNNING':
         details = parse_rest_start_response(resp)
@@ -286,7 +293,7 @@ def attempt_to_clean_subarray_to_idle(subarray: Subarray):
     if subarray.obsstate_is('READY'):
         take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
 
-    LOGGER.info("PROCESS: Telescope is in %s ", subarray.get_obsstate())
+    LOGGER.info("PROCESS: Sub-array state is %s ", subarray.get_obsstate())
 
 
 def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block):
@@ -327,7 +334,7 @@ def test_sb_resource_allocation():
 
 
 @given(parsers.parse('the subarray {subarray_name} and the SB {scheduling_block}'))
-def setup_telescope(result, subarray_name, scheduling_block):
+def setup_telescope(result, subarray_name, scheduling_block, oet_rest_cli):
     """Setup and check the subarray is in the right
     state to begin the test - this will be the first
     state in the list passed in.
@@ -346,9 +353,18 @@ def setup_telescope(result, subarray_name, scheduling_block):
     poller = Poller(subarray)
     poller.start_polling()
 
+    result[STATE_CHECK] = poller
     result[SCHEDULING_BLOCK] = scheduling_block
     result[SUBARRAY] = subarray
-    result[STATE_CHECK] = poller
+
+    # create Scheduling Block Instance so that the same SB ID is maintained through
+    # resource allocation and observation execution
+    result[TEST_PASSED] = run_task_using_oet_rest_client(
+        oet_rest_cli,
+        script='file://scripts/create_sbi.py',
+        scheduling_block=result[SCHEDULING_BLOCK]
+    )
+    assert result[TEST_PASSED],  "PROCESS: SBI creation failed"
 
 
 @when(parsers.parse('the OET allocates resources for the SB with the script {script}'))
@@ -397,7 +413,9 @@ def check_transitions(expected_states, result):
     to complete any operation still in progress.
 
     Args:
-        result ([type]): [description]
+        expected_states (str): String containing states sub-array is expected to have
+        passed through, separated by a comma
+        result (dict): fixture used to track progress
     """
 
     time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)

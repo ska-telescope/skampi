@@ -219,11 +219,12 @@ def get_task_status(task, resp):
     if we need to
 
     Args:
-        task (str): Task ID being hunted for
+        task (int): Task ID being hunted for
         resp (str): The response message to be parsed
 
     Returns:
-        [str]: The current OET status of the task
+        str: The current OET status of the task or
+        None if task is not present in resp
     """
     rest_responses = parse_rest_response(resp)
     result_for_task = [x['state'] for x in rest_responses if x['id'] == task]
@@ -235,16 +236,16 @@ def get_task_status(task, resp):
 
 
 def task_has_status(task, expected_status, resp):
-    """Confirm the task is in the expected status by
+    """Confirm the task has the expected status by
     querying the OET client
 
     Args:
-        task (str): OET ID for the task
-        expected_status (str): Expected status
-        resp ([type]): [description]
+        task (int): OET ID for the task (script)
+        expected_status (str): Expected script state
+        resp (str): Response from OET REST CLI list
 
     Returns:
-        [type]: [description]
+        bool: True if task is in expected_status
     """
     return get_task_status(task, resp) == expected_status
 
@@ -340,15 +341,15 @@ def setup_telescope(result, subarray_name, scheduling_block, oet_rest_cli):
     state in the list passed in.
 
     Args:
-        result ([type]): fixture used to track progress
-        expected_states ([type]): list of expected states
-        subarray ([type]): the subarray to be used for the test
+        result (dict): fixture used to track progress
+        subarray_name (str): Sub-array ID
+        scheduling_block (str): file path to SB JSON file
     """
 
     subarray = Subarray(subarray_name)
     attempt_to_clean_subarray_to_idle(subarray)
 
-    # start the track_obsstate function in a separate thread
+    # start the track_obsstate function in a separate thread
 
     poller = Poller(subarray)
     poller.start_polling()
@@ -371,6 +372,11 @@ def setup_telescope(result, subarray_name, scheduling_block, oet_rest_cli):
 def allocate_resources(result, oet_rest_cli, script):
     """
     Use the OET Rest API to allocate resources for the Scheduling Block
+
+    Args:
+        result (dict): fixture used to track progress
+        oet_rest_cli (RestClientUI):
+        script (str): file path to an observing script
     """
     LOGGER.info("PROCESS: Allocating resources for the SB %s ",
                 result[SCHEDULING_BLOCK])
@@ -387,7 +393,7 @@ def run_scheduling_block(result, oet_rest_cli, script):
     """[summary]
 
     Args:
-        result ([type]): [description]
+        result (dict): fixture used to track progress
         oet_rest_cli ([type]): [description]
     """
     LOGGER.info("PROCESS: Starting to observe the SB %s using script %s",

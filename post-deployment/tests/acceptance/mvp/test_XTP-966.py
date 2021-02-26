@@ -154,6 +154,26 @@ class Poller:
                 recorded_states.append(current_state)
 
 
+def parse_rest_response_line(line):
+    """Split a line from the REST API lines
+    into columns
+
+    Args:
+        line (string): A line from OET REST CLI response
+
+    Returns:
+        rest_response_object: A dicts containing
+        information on a script.
+    """
+    elements = line.split()
+    rest_response_object = {
+        'id': elements[0],
+        'script': elements[1],
+        'creation_time': str(elements[2] + ' ' + elements[3]),
+        'state': elements[4]}
+    return rest_response_object
+
+
 def parse_rest_response(resp):
     """Split the response from the REST API lines
     into columns
@@ -169,14 +189,31 @@ def parse_rest_response(resp):
     lines = resp.splitlines()
     del lines[0:2]
     for line in lines:
-        elements = line.split()
-        rest_response_object = {
-            'id': elements[0],
-            'script': elements[1],
-            'creation_time': str(elements[2] + ' ' + elements[3]),
-            'state': elements[4]}
+        rest_response_object = parse_rest_response_line(line)
         rest_responses.append(rest_response_object)
     return rest_responses
+
+
+def parse_rest_start_response(resp):
+    """ Split the response from the REST API start
+    command into columns.
+
+    This needs to be done separately from other OET REST
+    Client responses because starting a script returns a
+    Python Generator object instead of a static string.
+
+    Args:
+        resp (Generator): Response from OET REST CLI start
+
+    Returns:
+        [rest_response_object]: List of dicts containing
+        information on each script.
+    """
+    for line in resp:
+        # Only get line with script details (ignore header lines)
+        if 'RUNNING' in line:
+            return [parse_rest_response_line(line)]
+    return []
 
 
 def get_task_status(task, resp):
@@ -219,9 +256,13 @@ def confirm_script_status_and_return_id(resp, expected_status='READY'):
     """
     Confirm that the script is in a given state and return the ID
     """
-    details = parse_rest_response(resp)
+    if expected_status is 'RUNNING':
+        details = parse_rest_start_response(resp)
+    else:
+        details = parse_rest_response(resp)
     assert_that(
-        len(details), "Expected a valid reply when creating the script").is_equal_to(1)
+        len(details), "Expected details for 1 script, instead got "
+                      "details for {} scripts".format(len(details))).is_equal_to(1)
     resp_state = details[0].get('state')
     assert_that(
         resp_state,
@@ -259,9 +300,9 @@ def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block, addit
     oet_task_id = confirm_script_status_and_return_id(resp, 'READY')
     # we  can now start the observing task passing in the scheduling block as a parameter
     if additional_json is not None:
-        resp = oet_rest_cli.start(scheduling_block, additional_json)
+        resp = oet_rest_cli.start(scheduling_block, additional_json, listen=False)
     else:
-        resp = oet_rest_cli.start(scheduling_block)
+        resp = oet_rest_cli.start(scheduling_block, listen=False)
     # confirm that it didn't fail on starting
     oet_task_id = confirm_script_status_and_return_id(resp, 'RUNNING')
 
@@ -376,7 +417,7 @@ def check_transitions(expected_states, result):
     LOGGER.info("Comparing the list of states observed with the expected states")
     for expected_state, recorded_state in zip(expected_states, recorded_states):
         LOGGER.info("Expected %s was %s ", expected_state, recorded_state)
-        assert expected_state == recorded_state, "State observeed was not as expected"
+        assert expected_state == recorded_state, "State observed was not as expected"
     LOGGER.info("All states match")
     result[TEST_PASSED] = True
 

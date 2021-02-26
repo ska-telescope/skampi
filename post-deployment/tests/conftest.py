@@ -1,6 +1,9 @@
 import os
 import pytest
 import logging
+from time import sleep
+
+logger = logging.getLogger(__name__)
 
 from tango import DeviceProxy
 from collections import namedtuple
@@ -40,6 +43,14 @@ def test_something(run_context):
     HOSTNAME = 'some-pod-{}'.format(run_context.HELM_RELEASE)
 
 """
+
+@pytest.fixture(scope='function',autouse=True)
+def sleep_before(request):
+    markers = [m.name for m in request.node.own_markers]
+    if 'sleep_before' in markers:
+        seconds = 2
+        logger.warning(f'sleeping for {seconds} seconds as a work around for startup bug')
+        sleep(seconds)
 
 
 @pytest.fixture(scope="class")

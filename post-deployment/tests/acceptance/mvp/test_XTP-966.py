@@ -10,7 +10,7 @@ import enum
 import logging
 from os import environ
 import time
-from multiprocessing import Process, Manager
+from multiprocessing import Process, Manager, Queue
 
 import pytest
 from assertpy import assert_that
@@ -124,6 +124,7 @@ class Subarray:
 class Poller:
     proc = None
     device = None
+    exit_q = None
     results = []
 
     def __init__(self, device):
@@ -131,21 +132,23 @@ class Poller:
 
     def start_polling(self):
         manager = Manager()
+        self.exit_q = Queue()
         self.results = manager.list()
         self.proc = Process(target=self.track_obsstates,
-                            args=(self.device, self.results,))
+                            args=(self.device, self.results, self.exit_q))
         self.proc.start()
 
     def stop_polling(self):
         if self.proc is not None:
-            self.proc.terminate()
+            self.exit_q.put(True)
+            self.proc.join()
 
     def get_results(self):
         return self.results
 
-    def track_obsstates(self, device, recorded_states):
+    def track_obsstates(self, device, recorded_states, exit_q):
         LOGGER.info("STATE MONITORING: Started Tracking")
-        while True:
+        while exit_q.empty():
             current_state = device.get_obsstate()
             if len(recorded_states) == 0 or current_state != recorded_states[-1]:
                 LOGGER.info(
@@ -157,7 +160,6 @@ def end(subarray: Subarray):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-    time.sleep(2)
     if subarray is not None:
         if (subarray.state_is("ON")) and (subarray.obsstate_is("IDLE")):
             LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
@@ -465,6 +467,7 @@ def check_transitions(result, expected_states):
     # on it being present in the list to be matched
     recorded_states = [i for i in recorded_states if i != 'READY']
 
+    result[TEST_PASSED] = False
     LOGGER.info("Comparing the list of states observed with the expected states")
     for expected_state, recorded_state in zip(expected_states, recorded_states):
         LOGGER.info("Expected %s was %s ", expected_state, recorded_state)

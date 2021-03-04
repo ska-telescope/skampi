@@ -49,6 +49,8 @@ PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS = 5
 # last transitions to take place
 PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS = 10
 
+LOGGER = logging.getLogger(__name__)
+
 
 class ObsState(enum.Enum):
     """
@@ -81,8 +83,8 @@ def fixture_result():
     we also use this to track the task id and the scheduling block - not convinced this
     is the best way to do this, it may make more sense as part of the OET REST CLI fixture.
     """
-    fixture = {SUT_EXECUTED: False, TEST_PASSED: True, SCHEDULING_BLOCK: None,
-               STATE_CHECK: None, OET_TASK_ID: None}
+    fixture = {SUT_EXECUTED: False, TEST_PASSED: False, SCHEDULING_BLOCK: None,
+               STATE_CHECK: None, OET_TASK_ID: None, SUBARRAY: None}
     yield fixture
     # teardown
     end(fixture[SUBARRAY])
@@ -149,6 +151,36 @@ class Poller:
                 LOGGER.info(
                     "STATE MONITORING: State has changed to %s", current_state)
                 recorded_states.append(current_state)
+
+
+def end(subarray: Subarray):
+    """ teardown any state that was previously setup with a setup_function
+    call.
+    """
+    time.sleep(2)
+    if subarray is not None:
+        if (subarray.state_is("ON")) and (subarray.obsstate_is("IDLE")):
+            LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
+            take_subarray(1).and_release_all_resources()
+        if subarray.obsstate_is("READY"):
+            LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
+            take_subarray(1).and_end_sb_when_ready(
+            ).and_release_all_resources()
+        if subarray.obsstate_is("CONFIGURING"):
+            LOGGER.warning(
+                "Subarray is still in CONFIGURING! Please restart MVP manually to complete tear down")
+            restart_subarray(1)
+            # raise exception since we are unable to continue with tear down
+            raise Exception("Unable to tear down test setup")
+        if subarray.obsstate_is("SCANNING"):
+            LOGGER.warning(
+                "Subarray is still in SCANNING! Please restart MVP manually to complete tear down")
+            restart_subarray(1)
+            # raise exception since we are unable to continue with tear down
+            raise Exception("Unable to tear down test setup")
+        set_telescope_to_standby()
+        LOGGER.info("CLEANUP: Telescope is in %s ",
+                    subarray.get_obsstate())
 
 
 def parse_rest_response_line(line):
@@ -219,7 +251,7 @@ def get_task_status(task, resp):
     if we need to
 
     Args:
-        task (int): Task ID being hunted for
+        task (str): Task ID being hunted for
         resp (str): The response message to be parsed
 
     Returns:
@@ -240,7 +272,7 @@ def task_has_status(task, expected_status, resp):
     querying the OET client
 
     Args:
-        task (int): OET ID for the task (script)
+        task (str): OET ID for the task (script)
         expected_status (str): Expected script state
         resp (str): Response from OET REST CLI list
 
@@ -259,7 +291,7 @@ def confirm_script_status_and_return_id(resp, expected_status='CREATED'):
         expected_status (str): Expected script state
 
     Returns:
-        int: Task ID
+        str: Task ID
     """
     if expected_status is 'RUNNING':
         details = parse_rest_start_response(resp)
@@ -275,9 +307,6 @@ def confirm_script_status_and_return_id(resp, expected_status='CREATED'):
     ).is_equal_to(expected_status)
     script_id = details[0].get('id')
     return script_id
-
-
-LOGGER = logging.getLogger(__name__)
 
 
 def attempt_to_clean_subarray_to_idle(subarray: Subarray):
@@ -309,7 +338,7 @@ def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block):
     # If task IDs do not match, wrong script was started
     if oet_create_task_id is not oet_start_task_id:
         LOGGER.info("Script IDs did not match, created script with ID %d but started script with ID %d",
-                    oet_create_task_id, oet_start_task_id)
+                    int(oet_create_task_id), int(oet_start_task_id))
         return False
 
     timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT  # arbitrary number
@@ -335,7 +364,7 @@ def test_sb_resource_allocation():
 
 
 @given(parsers.parse('the subarray {subarray_name} and the SB {scheduling_block}'))
-def setup_telescope(result, subarray_name, scheduling_block, oet_rest_cli):
+def setup_telescope(result, subarray_name, scheduling_block):
     """Setup and check the subarray is in the right
     state to begin the test - this will be the first
     state in the list passed in.
@@ -358,15 +387,6 @@ def setup_telescope(result, subarray_name, scheduling_block, oet_rest_cli):
     result[SCHEDULING_BLOCK] = scheduling_block
     result[SUBARRAY] = subarray
 
-    # create Scheduling Block Instance so that the same SB ID is maintained through
-    # resource allocation and observation execution
-    result[TEST_PASSED] = run_task_using_oet_rest_client(
-        oet_rest_cli,
-        script='file://scripts/create_sbi.py',
-        scheduling_block=result[SCHEDULING_BLOCK]
-    )
-    assert result[TEST_PASSED],  "PROCESS: SBI creation failed"
-
 
 @when(parsers.parse('the OET allocates resources for the SB with the script {script}'))
 def allocate_resources(result, oet_rest_cli, script):
@@ -378,6 +398,18 @@ def allocate_resources(result, oet_rest_cli, script):
         oet_rest_cli (RestClientUI):
         script (str): file path to an observing script
     """
+    LOGGER.info("PROCESS: Creating SBI from SB %s ",
+                result[SCHEDULING_BLOCK])
+
+    # create Scheduling Block Instance so that the same SB ID is maintained through
+    # resource allocation and observation execution
+    result[TEST_PASSED] = run_task_using_oet_rest_client(
+        oet_rest_cli,
+        script='file://scripts/create_sbi.py',
+        scheduling_block=result[SCHEDULING_BLOCK]
+    )
+    assert result[TEST_PASSED],  "PROCESS: SBI creation failed"
+
     LOGGER.info("PROCESS: Allocating resources for the SB %s ",
                 result[SCHEDULING_BLOCK])
     result[TEST_PASSED] = run_task_using_oet_rest_client(
@@ -410,7 +442,7 @@ def run_scheduling_block(result, oet_rest_cli, script):
 @then(parsers.parse(
     'the SubArrayNode obsState passes in order through the following states {expected_states}'
 ))
-def check_transitions(expected_states, result):
+def check_transitions(result, expected_states):
     """Check that the device passed through the expected
     obsState transitions. This has been being monitored
     on a separate thread in the background.
@@ -423,49 +455,19 @@ def check_transitions(expected_states, result):
         passed through, separated by a comma
         result (dict): fixture used to track progress
     """
-
     time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
-    expected_states = [x.strip() for x in expected_states.split(',')]
 
     result[STATE_CHECK].stop_polling()
-    recorded_states = result[STATE_CHECK].get_results()
+    expected_states = [x.strip() for x in expected_states.split(',')]
+    recorded_states = list(result[STATE_CHECK].get_results())
 
     # ignore 'READY' as it can be a transitory state so we don't rely
     # on it being present in the list to be matched
-    recorded_states = list(filter(('READY').__ne__, recorded_states))
-    result[TEST_PASSED] = False
+    recorded_states = [i for i in recorded_states if i != 'READY']
+
     LOGGER.info("Comparing the list of states observed with the expected states")
     for expected_state, recorded_state in zip(expected_states, recorded_states):
         LOGGER.info("Expected %s was %s ", expected_state, recorded_state)
         assert expected_state == recorded_state, "State observed was not as expected"
     LOGGER.info("All states match")
     result[TEST_PASSED] = True
-
-
-def end(subarray: Subarray):
-    """ teardown any state that was previously setup with a setup_function
-    call.
-    """
-    if subarray is not None:
-        if (subarray.state_is("ON")) and (subarray.obsstate_is("IDLE")):
-            LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
-            take_subarray(1).and_release_all_resources()
-        if subarray.obsstate_is("READY"):
-            LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
-            take_subarray(1).and_end_sb_when_ready(
-            ).and_release_all_resources()
-        if subarray.obsstate_is("CONFIGURING"):
-            LOGGER.warning(
-                "Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
-            restart_subarray(1)
-            # raise exception since we are unable to continue with tear down
-            raise Exception("Unable to tear down test setup")
-        if subarray.obsstate_is("SCANNING"):
-            LOGGER.warning(
-                "Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
-            restart_subarray(1)
-            # raise exception since we are unable to continue with tear down
-            raise Exception("Unable to tear down test setup")
-        set_telescope_to_standby()
-        LOGGER.info("CLEANUP: Telescope is in %s ",
-                    subarray.get_obsstate())

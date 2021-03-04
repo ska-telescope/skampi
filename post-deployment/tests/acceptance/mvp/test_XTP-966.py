@@ -156,35 +156,6 @@ class Poller:
                 recorded_states.append(current_state)
 
 
-def end(subarray: Subarray):
-    """ teardown any state that was previously setup with a setup_function
-    call.
-    """
-    if subarray is not None:
-        if (subarray.state_is("ON")) and (subarray.obsstate_is("IDLE")):
-            LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
-            take_subarray(1).and_release_all_resources()
-        if subarray.obsstate_is("READY"):
-            LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
-            take_subarray(1).and_end_sb_when_ready(
-            ).and_release_all_resources()
-        if subarray.obsstate_is("CONFIGURING"):
-            LOGGER.warning(
-                "Subarray is still in CONFIGURING! Please restart MVP manually to complete tear down")
-            restart_subarray(1)
-            # raise exception since we are unable to continue with tear down
-            raise Exception("Unable to tear down test setup")
-        if subarray.obsstate_is("SCANNING"):
-            LOGGER.warning(
-                "Subarray is still in SCANNING! Please restart MVP manually to complete tear down")
-            restart_subarray(1)
-            # raise exception since we are unable to continue with tear down
-            raise Exception("Unable to tear down test setup")
-        set_telescope_to_standby()
-        LOGGER.info("CLEANUP: Telescope is in %s ",
-                    subarray.get_obsstate())
-
-
 def parse_rest_response_line(line):
     """Split a line from the REST API lines
     into columns
@@ -311,14 +282,18 @@ def confirm_script_status_and_return_id(resp, expected_status='CREATED'):
     return script_id
 
 
-def attempt_to_clean_subarray_to_idle(subarray: Subarray):
+def attempt_to_clean_subarray_to_empty(subarray: Subarray):
     """
     Ideally the telescope would always be in the same state
     when running the test - this method will cleanup the
-    subarray provided to the expected IDLE state where
+    subarray provided to the expected EMPTY state where
     this test starts
     """
-
+    # TODO: this does not cover the case where sub-array is in IDLE and resources need
+    #  released. Should there be a general helper function for BDD tests which, if
+    #  telescope is not in standby, attempts to set it to standby before every test?
+    #  This would make more sense than implementing a new function for each test which
+    #  attempts to set the telescope to standby
     if telescope_is_in_standby():
         LOGGER.info("PROCESS: Starting up telescope")
         set_telescope_to_running()
@@ -338,9 +313,9 @@ def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block):
     oet_start_task_id = confirm_script_status_and_return_id(resp, 'RUNNING')
 
     # If task IDs do not match, wrong script was started
-    if oet_create_task_id is not oet_start_task_id:
-        LOGGER.info("Script IDs did not match, created script with ID %d but started script with ID %d",
-                    int(oet_create_task_id), int(oet_start_task_id))
+    if oet_create_task_id != oet_start_task_id:
+        LOGGER.info("Script IDs did not match, created script with ID %s but started script with ID %s",
+                    oet_create_task_id, oet_start_task_id)
         return False
 
     timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT  # arbitrary number
@@ -356,8 +331,6 @@ def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block):
     return False
 
 
-# @pytest.mark.select
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @pytest.mark.skamid
 @scenario("XTP-966.feature",
           "Scheduling Block Resource Allocation and Observation")
@@ -378,10 +351,9 @@ def setup_telescope(result, subarray_name, scheduling_block):
     """
 
     subarray = Subarray(subarray_name)
-    attempt_to_clean_subarray_to_idle(subarray)
+    attempt_to_clean_subarray_to_empty(subarray)
 
     # start the track_obsstate function in a separate thread
-
     poller = Poller(subarray)
     poller.start_polling()
 
@@ -453,9 +425,9 @@ def check_transitions(result, expected_states):
     to complete any operation still in progress.
 
     Args:
+        result (dict): fixture used to track progress
         expected_states (str): String containing states sub-array is expected to have
         passed through, separated by a comma
-        result (dict): fixture used to track progress
     """
     time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
 
@@ -474,3 +446,32 @@ def check_transitions(result, expected_states):
         assert expected_state == recorded_state, "State observed was not as expected"
     LOGGER.info("All states match")
     result[TEST_PASSED] = True
+
+
+def end(subarray: Subarray):
+    """ teardown any state that was previously setup with a setup_function
+    call.
+
+    Args:
+        subarray (Subarray): Subarray object referencing
+        sub-array to reset
+    """
+    if subarray is not None:
+        obsstate = subarray.get_obsstate()
+        if subarray.state_is("ON") and obsstate == "IDLE":
+            LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
+            take_subarray(1).and_release_all_resources()
+        if obsstate == "READY":
+            LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
+            take_subarray(1).and_end_sb_when_ready(
+            ).and_release_all_resources()
+        if obsstate in ["CONFIGURING", "SCANNING"]:
+            LOGGER.warning(
+                "Subarray is still in %s Please restart MVP manually to complete tear down",
+                obsstate)
+            restart_subarray(1)
+            # raise exception since we are unable to continue with tear down
+            raise Exception("Unable to tear down test setup")
+        set_telescope_to_standby()
+        LOGGER.info("CLEANUP: Telescope is in %s ",
+                    subarray.get_obsstate())

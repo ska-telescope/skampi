@@ -162,7 +162,7 @@ uninstall low on demand:
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   # - kubectl get all,ingress -n $ARCHIVER_NAMESPACE
-  - make k8s_test ARCHIVER_NAMESPACE=$ARCHIVER_NAMESPACE && [ -f "build/report.xml" ]
+  - make k8s_multiple_test_runs ARCHIVER_NAMESPACE=$ARCHIVER_NAMESPACE && [ -f "build/report.xml" ]
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

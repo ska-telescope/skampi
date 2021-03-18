@@ -6,6 +6,7 @@
 # First, import essential Python libraries used by this notebook.
 from tango import DeviceProxy
 import time  # used to sleep between measurements
+from pytest_bdd import scenario, given, when, then
 
 
 # Create DeviceProxies to the remote TMC and MCCS Tango devices we want to
@@ -45,7 +46,12 @@ def print_device_states():
 # As we haven't run any commands, the initial status of the telescope should be
 # OFF.
 
+@scenario("XTP-1310.feature", "PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)")
+def test_tpm_initialization():
+    pass
+
 # Given subsystems <subsystem-list> are ONLINE (with Tango Device in OFF state,except MccsTile in the DISABLE or OFF state)
+@given("subsystems <subsystem-list> are ONLINE (with Tango Device in OFF state,except MccsTile in the DISABLE or OFF state)")
 def given_online():
 
     for device in ALL_DEVICES:
@@ -55,6 +61,7 @@ def given_online():
 
 
 # And the TPM_HW is powered ON and in the IDLE state (pass)
+@given("the TPM_HW is powered ON and in the IDLE state")
 def tpm_on():
     pass
 
@@ -69,6 +76,7 @@ def tpm_on():
 # 'ON' before issuing the command.
 
 # When I send the command <command> to the TMC
+@when("I send the command <command> to the TMC")
 def tmc_command_on():
     
     if tmc_central_node.State() is not ON:
@@ -81,17 +89,20 @@ def tmc_command_on():
 # The status of the telescope, station, and tile should now have changed from
 # OFF to ON.
 
+
 # Then the TPM_HW will be programmed and initialized
-
-# And the TPM_HW is in the WORKING state
-
+@then("the TPM_HW will be programmed and initialized")
 def tpm_hardware_prog_init():
 
     for device in [tmc_central_node, mccs_controller, mccs_tile_0001]:
         assert device.State() is ON, f'{device} is not in ON state'
     print_device_states()
 
-
+# And the TPM_HW is in the WORKING state
+@then("the TPM_HW is in the WORKING state")
+def tpm_hardware_working_state():
+    # TODO determine how to verify TPM is in WORKING state)
+    pass
 # # (SKIP this section) Taking the MCCS Tile out of simulation mode 
 
 # As of PI9 the MCCS tiles are in simulation mode by default. Switching to
@@ -108,6 +119,7 @@ def tpm_hardware_prog_init():
 # # (Continue here...) Keeping the MCCS Tile in simulation mode
 
 # And the state and the temperature of the TPM_HW can be monitored
+@then("the state and the temperature of the TPM_HW can be monitored")
 def tpm_monitor_temp_time():
 
     if mccs_tile_0001.simulationmode == 1:
@@ -115,7 +127,7 @@ def tpm_monitor_temp_time():
     print_device_states()
 
 
-# First attempt at writing a test to poll the temperature and time of a tile. The cell
+        # First attempt at writing a test to poll the temperature and time of a tile. The cell
 # below collates the temperature and time readings of the mccs tile every second
 # for twenty seconds. If there is no variation in the temperatures it retrieves, it
 # returns an error. This code is a quick and dirty prototype and is not the final

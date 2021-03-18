@@ -5,6 +5,7 @@
 
 # First, import essential Python libraries used by this notebook.
 from tango import DeviceProxy
+import tango
 import time  # used to sleep between measurements
 from pytest_bdd import scenario, given, when, then
 import pytest

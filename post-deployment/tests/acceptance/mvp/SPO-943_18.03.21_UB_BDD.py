@@ -7,7 +7,9 @@
 from tango import DeviceProxy
 import time  # used to sleep between measurements
 from pytest_bdd import scenario, given, when, then
-
+import pytest
+import logging
+logger = logging.getLogger(__name__)
 
 # Create DeviceProxies to the remote TMC and MCCS Tango devices we want to
 # control and monitor in this session.
@@ -41,11 +43,12 @@ def print_device_states():
     for device in ALL_DEVICES:
         device_name = str(device).split('(')[0]
         device_state = device.State()
-        print(f'{device_name}: {device_state}')
+        logger.info(f'{device_name}: {device_state}')
 
 # As we haven't run any commands, the initial status of the telescope should be
 # OFF.
 
+@pytest.mark.skalow
 @scenario("XTP-1310.feature", "PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)")
 def test_tpm_initialization():
     pass
@@ -80,11 +83,11 @@ def tpm_on():
 def tmc_command_on():
     
     if tmc_central_node.State() is not ON:
-        print('Control system is off. Starting up telescope...')
+        logger.info('Control system is off. Starting up telescope...')
         tmc_central_node.startuptelescope()
         time.sleep(20)
     else:
-        print('Control system is already on. No start up command issued.')
+        logger.info('Control system is already on. No start up command issued.')
 
 # The status of the telescope, station, and tile should now have changed from
 # OFF to ON.
@@ -109,12 +112,12 @@ def tpm_hardware_working_state():
 # hardware mode if necessary. Simulation mode = 1 and hardware mode = 0
 
 #if mccs_tile_0001.simulationmode == 1:
-#    print('MCCS tile 0001 is in simulation mode. Switching to hardware mode...')
+#    logger.info('MCCS tile 0001 is in simulation mode. Switching to hardware mode...')
 #    mccs_tile_0001.simulationmode = 0
 #    mccs_tile_0001.command_inout_asynch("Initialise")
 #    time.sleep(20)
 #else:
-#    print('MCCS tile 0001 is already in hardware mode. No command issued.')
+#    logger.info('MCCS tile 0001 is already in hardware mode. No command issued.')
 
 # # (Continue here...) Keeping the MCCS Tile in simulation mode
 
@@ -123,39 +126,35 @@ def tpm_hardware_working_state():
 def tpm_monitor_temp_time():
 
     if mccs_tile_0001.simulationmode == 1:
-        print ('MCCS tile 0001 is in simulation mode')
+        logger.info('MCCS tile 0001 is in simulation mode')
     print_device_states()
 
-
-        # First attempt at writing a test to poll the temperature and time of a tile. The cell
-# below collates the temperature and time readings of the mccs tile every second
-# for twenty seconds. If there is no variation in the temperatures it retrieves, it
-# returns an error. This code is a quick and dirty prototype and is not the final
-# test.
+    # First attempt at writing a test to poll the temperature and time of a tile. The cell
+    # below collates the temperature and time readings of the mccs tile every second
+    # for twenty seconds. If there is no variation in the temperatures it retrieves, it
+    # returns an error. This code is a quick and dirty prototype and is not the final
+    # test.
 
     device = mccs_tile_0001
 
     measurement_cadence = 1.0  # seconds to wait between measurements
     num_measurements_required = 20  # Code will loop until this many measurements are taken
-
     temperature = []
     mccs_time = []
     while len(temperature) < num_measurements_required:
         temperature.append(device.fpga1_temperature)
         mccs_time.append(device.fpga1_time)
         time.sleep(measurement_cadence)
-
     num_secs = measurement_cadence * num_measurements_required
     assert (len(set(temperature))!=1), f"No variation seen in the temperature values of {device} over {num_secs} seconds"
     assert (len(set(mccs_time))!=1), f"No variation seen in the time values of {device} over {num_secs} seconds"
 
-    print(temperature)
-    print(mccs_time)
+    logger.info(temperature)
+    logger.info(mccs_time)
 
 # Run this cell to put the telescope to standby
 # ## Teardown
-
-def tmc_command_off():
+def teardown_function(function):
     tmc_central_node.standbytelescope()
     print_device_states()
 

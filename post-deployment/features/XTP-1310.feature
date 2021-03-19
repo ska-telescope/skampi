@@ -4,7 +4,6 @@ Feature: Default
 	@XTP-1310
 	Scenario Outline: PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)
 		Given subsystems <subsystem-list> are ONLINE (with Tango Device in OFF state,except MccsTile in the DISABLE or OFF state)
-		And the Tile Tango Device is ONLINE and in the DISABLE state
 		And the TPM_HW is powered ON and in the IDLE state
 		
 		When I send the command <command> to the TMC

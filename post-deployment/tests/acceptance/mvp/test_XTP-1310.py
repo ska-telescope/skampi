@@ -50,7 +50,7 @@ def print_device_states():
 # OFF.
 
 @pytest.mark.skalow
-@pytest.mark.skip(reason='test is WIP')
+#@pytest.mark.skip(reason='test is WIP')
 @scenario("XTP-1310.feature", "PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)")
 def test_tpm_initialization():
     pass

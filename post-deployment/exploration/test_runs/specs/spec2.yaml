@@ -1,7 +1,7 @@
 group: 
-  runs: 100
+  runs: 10
   path: "tests/acceptance/mvp/"
   modules:
-    - path: "test_XR-13_A2-Test.py"
+    - path: "test_XTP-826.py"
       tests:
-        - name: "test_configure_subarray"
+        - name: "test_multi_scan"

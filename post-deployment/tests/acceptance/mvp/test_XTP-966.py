@@ -333,7 +333,7 @@ def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block):
 @pytest.mark.fast
 @pytest.mark.skamid
 @scenario("XTP-966.feature",
-          "Scheduling Block - Resource allocation and observation")
+          "SKA Mid Scheduling Block - Resource allocation and observation")
 def test_sb_resource_allocation():
     """Scheduling Block Resource allocation test."""
 

@@ -330,10 +330,10 @@ def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block):
     # if we get here we timed out so need to fail the test
     return False
 
-
+@pytest.mark.fast
 @pytest.mark.skamid
 @scenario("XTP-966.feature",
-          "Scheduling Block Resource Allocation and Observation")
+          "Scheduling Block - Resource allocation and observation")
 def test_sb_resource_allocation():
     """Scheduling Block Resource allocation test."""
 
@@ -394,7 +394,7 @@ def allocate_resources(result, oet_rest_cli, script):
     assert result[TEST_PASSED],  "PROCESS: Resource Allocation failed"
 
 
-@then(parsers.parse('the OET observes the SB with the script {script}'))
+@then(parsers.parse('the OET observes the SB with the script {script}'))
 def run_scheduling_block(result, oet_rest_cli, script):
     """[summary]
 

@@ -50,7 +50,6 @@ def print_device_states():
 # OFF.
 
 @pytest.mark.skalow
-#@pytest.mark.skip(reason='test is WIP')
 @scenario("XTP-1310.feature", "PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)")
 def test_tpm_initialization():
     pass
@@ -58,11 +57,11 @@ def test_tpm_initialization():
 # Given subsystems <subsystem-list> are ONLINE (with Tango Device in OFF state,except MccsTile in the DISABLE or OFF state)
 @given("subsystems <subsystem-list> are ONLINE (with Tango Device in OFF state,except MccsTile in the DISABLE or OFF state)")
 def given_online():
-
     for device in ALL_DEVICES:
         assert device.State() is OFF, f'{device} is not in OFF state'
 
     print_device_states()
+
 
 
 # And the TPM_HW is powered ON and in the IDLE state (pass)
@@ -83,13 +82,14 @@ def tpm_on():
 # When I send the command <command> to the TMC
 @when("I send the command <command> to the TMC")
 def tmc_command_on():
-    
     if tmc_central_node.State() is not ON:
         logger.info('Control system is off. Starting up telescope...')
         tmc_central_node.startuptelescope()
         time.sleep(20)
     else:
         logger.info('Control system is already on. No start up command issued.')
+
+
 
 # The status of the telescope, station, and tile should now have changed from
 # OFF to ON.
@@ -98,11 +98,9 @@ def tmc_command_on():
 # Then the TPM_HW will be programmed and initialized
 @then("the TPM_HW will be programmed and initialized")
 def tpm_hardware_prog_init():
-
     for device in [tmc_central_node, mccs_controller, mccs_tile_0001]:
         assert device.State() is ON, f'{device} is not in ON state'
     print_device_states()
-
 # And the TPM_HW is in the WORKING state
 @then("the TPM_HW is in the WORKING state")
 def tpm_hardware_working_state():
@@ -124,9 +122,8 @@ def tpm_hardware_working_state():
 # # (Continue here...) Keeping the MCCS Tile in simulation mode
 
 # And the state and the temperature of the TPM_HW can be monitored
-@then("the state and the temperature of the TPM_HW can be monitored")
+@then("the state and the temperature of the TPM_HW can be monitored.")
 def tpm_monitor_temp_time():
-
     if mccs_tile_0001.simulationmode == 1:
         logger.info('MCCS tile 0001 is in simulation mode')
     print_device_states()
@@ -159,5 +156,4 @@ def tpm_monitor_temp_time():
 def teardown_function(function):
     tmc_central_node.standbytelescope()
     print_device_states()
-
 

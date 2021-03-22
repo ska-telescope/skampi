@@ -70,6 +70,7 @@ def start_up():
     LOGGER.info("Given I am accessing the console interface for the OET")
     LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
+    LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
     LOGGER.info("Telescope is in ON state")
@@ -110,7 +111,7 @@ def check_state():
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
     # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
-    LOGGER.info("Results OK for COnfigure command")
+    LOGGER.info("Results OK for Configure command")
 
 
 def teardown_function(function):

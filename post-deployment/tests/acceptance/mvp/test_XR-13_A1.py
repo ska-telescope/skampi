@@ -64,8 +64,9 @@ def test_allocate_resources():
 
 @given("A running telescope for executing observations on a subarray")
 def set_to_running():
-    LOGGER.info("Given A running telescope for executing observations on a subarray")
+    LOGGER.info("Before statring the telescope check whether a telescope is in StabdBy.")
     assert(telescope_is_in_standby())
+    LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
 
@@ -82,14 +83,14 @@ def allocate_four_dishes(result):
         cdm_request_object = cdm_CODEC.load_from_file(AssignResourcesRequest, cdm_file_path)
         cdm_request_object.dish.receptor_ids = [str(x).zfill(4) for x in range(1, 5)]
         subarray = SubArray(1)
-        LOGGER.info("Allocate Subarray is :" + str(subarray))
+        LOGGER.info("Allocated Subarray is :" + str(subarray))
         return subarray.allocate_from_cdm(cdm_request_object)
 
     result['response'] = test_SUT()
     LOGGER.info("Result of test_SUT : " + str(result))
     LOGGER.info("Result response of test_SUT : " + str(result['response']))
     ##############################
-    LOGGER.info("AssignResource command is executed successfully")
+    LOGGER.info("AssignResource command is executed successfully.")
     return result
 
 @then("I have a subarray composed of 4 dishes")
@@ -111,16 +112,20 @@ def check_subarray_composition(result):
 @then("the subarray is in the condition that allows scan configurations to take place")
 def check_subarry_state():
     #check that the TMC report subarray as being in the ON state and obsState = IDLE
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("State")).is_equal_to("ON")
+    # TODO: As per new implementation is there any need to check tango state of device
+    # assert_that(resource('ska_mid/tm_subarray_node/1').get("State")).is_equal_to("ON")
     #assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('RESOURCING')
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
+    # assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
     #check that the CSP report subarray as being in the ON state and obsState = IDLE
-    assert_that(resource('mid_csp/elt/subarray_01').get('State')).is_equal_to('ON')
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
+    # assert_that(resource('mid_csp/elt/subarray_01').get('State')).is_equal_to('ON')
+    # assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
     # #check that the SDP report subarray as being in the ON state and obsState = IDLE
-    assert_that(resource('mid_sdp/elt/subarray_1').get('State')).is_equal_to('ON')
+    # assert_that(resource('mid_sdp/elt/subarray_1').get('State')).is_equal_to('ON')
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('IDLE')
-    LOGGER.info("Then the subarray is in the condition that allows scan configurations to take place: PASSED")
+    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
+    # LOGGER.info("Then the subarray is in the condition that allows scan configurations to take place: PASSED")
+    LOGGER.info("All the Subarrays are in IDLE obsState. User can go for the scan configurations.")
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function

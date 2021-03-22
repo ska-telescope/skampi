@@ -64,11 +64,15 @@ def test_deallocate_resources():
 @given('A running telescope with "4" dishes are allocated to "subarray 1"')
 def set_to_running(result):
     LOGGER.info("A running telescope with '2' dishes are allocated to 'subarray 1'")
+    LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
+    LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
+    LOGGER.info("Telescope started")
     LOGGER.info("Assigning 2 dishes")
     take_subarray(1).to_be_composed_out_of(2)
+    LOGGER.info("Resources are successfully assigned to respective subarray.")
 
 @when("I deallocate the resources")
 def deallocate_resources():
@@ -82,6 +86,7 @@ def deallocate_resources():
 
 @then('"subarray 1" should go into OFF state')
 def subarray_state_OFF():
+    # TODO: Can we assert obsState assertion for CSP and SDP SA?
     LOGGER.info("Now deallocating resources ... ")
     LOGGER.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
     # Confirm
@@ -100,7 +105,7 @@ def receptorID_list_empty():
     # confirm
     resource('ska_mid/tm_subarray_node/1').assert_attribute('receptorIDList').equals(None)
    # assert_that(receptorIDList_val == [])
-    logging.info("ReceptorIDList is empty")
+    logging.info("Allocated resources are successfully deallocated, ReceptorIDList is empty")
 
 def teardown_function(function):
     LOGGER.info("Put Telescope back to standby")

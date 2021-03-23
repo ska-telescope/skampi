@@ -63,38 +63,44 @@ def test_subarray_restart():
 
 @given("A running telescope for executing observations on a subarray")
 def set_to_running():
-    LOGGER.info("Given A running telescope for executing observations on a subarray")
+    LOGGER.info("Before statring the telescope check whether a telescope is in StabdBy.")
     assert(telescope_is_in_standby())
-    LOGGER.info("Starting up telescope")
+    LOGGER.info("User can start the telescope.")
     set_telescope_to_running()
+    LOGGER.info("Telescope is started successfully.")
 
 @given("resources are successfully assigned")
 def allocate_four_dishes(result):
+    LOGGER.info("User can Assign the Resources on Subarray.")
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
-    LOGGER.info("AssignResources is invoke on Subarray")
+    LOGGER.info("Resources are assigned successfully on Subarray.")
 
 @given("the subarray is in ABORTED obsState")
 def abort_subarray():
     @sync_abort(200)
     def abort():
+        LOGGER.info("User can execute ABORT command on Subarray.")
         SubArray(1).abort()
         LOGGER.info("Abort command is invoked on subarray")
     abort()
+    LOGGER.info("ABORT is successful on Subarray.")
 
 @when("I invoke Restart command")
 def restart():
     @log_it('AX-13_A5',devices_to_log,non_default_states_to_check)
     @sync_restart(200)
     def command_restart():
+        LOGGER.info("User can restart the Subarray.")
         SubArray(1).restart()
         LOGGER.info("Restart command is invoked on subarray")
     command_restart()
+    LOGGER.info("Subarray is restarted successfully.")
 
 @then("subarray changes its obsState to EMPTY")
 def check_empty_state():
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('EMPTY')
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('EMPTY')
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('EMPTY')
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('EMPTY')
+    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('EMPTY')
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function

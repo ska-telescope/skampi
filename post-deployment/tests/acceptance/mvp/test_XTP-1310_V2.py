@@ -8,6 +8,8 @@ from pytest_bdd import (
     then,
     when,
 )
+import tango
+import time  # used to sleep between measurements
 from tango import DeviceProxy
 def prepare_devices():
     # create device proxy to TMC CentralNode
@@ -40,12 +42,6 @@ def print_device_states():
         device_state = device.State()
         print(f'{device_name}: {device_state}')
 
-
-
-
-
-
-
 @pytest.mark.singlerun
 @scenario('XTP-1310.feature', 'PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)')
 def test_psi01_test_initialise_the_tpm_using_the_oet_jupyter_notebook():
@@ -58,17 +54,23 @@ def subsystems_are_online_and_in_the_tango_device_off_state():
         assert device.State() is OFF, f'{device} is not in OFF state'
     print_device_states()
 
-
-
 @given('the TPM_HW is powered ON and in the IDLE state')
 def the_tpm_hw_is_powered_on_and_in_the_idle_state():
     """the TPM_HW is powered ON and in the IDLE state."""
-    raise NotImplementedError
+
+   
 
 @when('I send the command ON to the TMC')
 def i_send_the_command_to_the_tmc():
     """I send the command to the TMC."""
-    raise NotImplementedError
+    tmc_central_node = prepare_devices()[0]
+    if tmc_central_node.State() is not ON:
+        print('Control system is off. Starting up telescope...')
+        tmc_central_node.startuptelescope()
+        time.sleep(20)
+    else:
+        print('Control system is already on. No start up command issued.')
+
 @then('the TPM_HW is in the WORKING state')
 def the_tpm_hw_is_in_the_working_state():
     """the TPM_HW is in the WORKING state."""

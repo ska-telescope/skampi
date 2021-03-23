@@ -72,7 +72,7 @@ def set_to_running():
 
 @when("I allocate 4 dishes to subarray 1")
 def allocate_four_dishes(result):
-    LOGGER.info("When I allocate 4 dishes to subarray 1")
+    LOGGER.info("Allocating 4 dishes to subarray 1")
     ##############################
     @log_it('AX-13_A1',devices_to_log,non_default_states_to_check)
     @sync_assign_resources(4, 150)
@@ -124,8 +124,8 @@ def check_subarry_state():
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('IDLE')
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
     assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
-    # LOGGER.info("Then the subarray is in the condition that allows scan configurations to take place: PASSED")
-    LOGGER.info("All the Subarrays are in IDLE obsState. User can go for the scan configurations.")
+    LOGGER.info("Then the subarray is in the condition that allows scan configurations to take place: PASSED")
+    # LOGGER.info("All the Subarrays are in IDLE obsState. User can go for the scan configurations.")
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function

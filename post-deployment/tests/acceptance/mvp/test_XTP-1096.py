@@ -63,14 +63,18 @@ def test_subarray_obsreset():
 
 @given("Subarray has transitioned into obsState ABORTED during an observation")
 def set_to_abort():
-    LOGGER.info("Given A running telescope for executing observations on a subarray")
+    LOGGER.info("Before statring the telescope check whether a telescope is in StabdBy.")
     assert(telescope_is_in_standby())
-    LOGGER.info("Starting up telescope")
+    LOGGER.info("Telescope is in StandBy.")
+    LOGGER.info("User can start the telescope.")
     set_telescope_to_running()
+    LOGGER.info("Telescope is started successfully.")
+
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
-    LOGGER.info("AssignResources is invoke on Subarray")
+    LOGGER.info("AssignResources is successfully invoked on Subarray.")
     @sync_abort(200)
     def abort():
+        LOGGER.info("User can invoke Abort command on Subarray.")
         SubArray(1).abort()
         LOGGER.info("Abort command is invoked on subarray")
     abort()
@@ -81,16 +85,17 @@ def reset_subarray():
     @log_it('XTP-1096',devices_to_log,non_default_states_to_check)
     @sync_obsreset(200)
     def obsreset_subarray():
+        LOGGER.info("User can invoke ObsReset command on Subarray node.")
         SubArray(1).reset()
         LOGGER.info("obsreset command is invoked on subarray")
     obsreset_subarray()
-    LOGGER.info("Obsreset is completed")
+    LOGGER.info("Obsreset is completed on Subarray.")
 
 @then("the subarray should transition to obsState IDLE")
 def check_idle_state():
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('IDLE')
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
+    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function

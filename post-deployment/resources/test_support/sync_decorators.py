@@ -82,6 +82,7 @@ class WaitAbort():
         # self.the_watch.wait_until_value_changed_to('ABORTING',timeout)
         logging.info("ABORT command invoked. Waiting for obsState to change to ABORTED")
         self.the_watch.wait_until_value_changed_to('ABORTED',timeout=200)
+        logging.info("obsState is changed to ABORTED and hence ABORT command is completed on Subarray.")
 
 class WaitRestart():
 
@@ -92,6 +93,7 @@ class WaitRestart():
         # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
         logging.info("Restart command invoked. Waiting for obsState to change to EMPTY")
         self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
+        logging.info("obsState is changed to EMPTY and hence ObsReset is completed on Subarray.")
 
 class WaitObsReset():
 

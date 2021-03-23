@@ -67,8 +67,9 @@ def set_to_running():
     LOGGER.info("Before statring the telescope check whether a telescope is in StabdBy.")
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
-    LOGGER.info("Starting up telescope")
+    LOGGER.info("User can start the telescope.")
     set_telescope_to_running()
+    LOGGER.info("Telescope is started successfully.")
 
 @when("I allocate 4 dishes to subarray 1")
 def allocate_four_dishes(result):

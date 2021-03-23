@@ -11,33 +11,39 @@ from pytest_bdd import (
 import tango
 import time  # used to sleep between measurements
 from tango import DeviceProxy
+class DeviceStates:
+    pass
+
+
 def prepare_devices():
+    device_states = DeviceStates()
     # create device proxy to TMC CentralNode
-    tmc_central_node = DeviceProxy('ska_low/tm_central/central_node')
+    device_states.tmc_central_node = DeviceProxy('ska_low/tm_central/central_node')
 
     # create device proxy to MCCS controller, station, and tile
-    mccs_controller = DeviceProxy('low-mccs/control/control')
-    mccs_station_001 = DeviceProxy('low-mccs/station/001')
-    mccs_tile_0001 = DeviceProxy('low-mccs/tile/0001')
+    device_states.mccs_controller = DeviceProxy('low-mccs/control/control')
+    device_states.mccs_station_001 = DeviceProxy('low-mccs/station/001')
+    device_states.mccs_tile_0001 = DeviceProxy('low-mccs/tile/0001')
     # Create a list holding the target devices in the control chain
-    ALL_DEVICES = [
-        tmc_central_node,
-        mccs_controller,
-        mccs_station_001,
-        mccs_tile_0001
+    device_states.ALL_DEVICES = [
+        device_states.tmc_central_node,
+        device_states.mccs_controller,
+        device_states.mccs_station_001,
+        device_states.mccs_tile_0001
     ]
-    return ALL_DEVICES
+    return device_states
 
 
 # Create a shortcut for ON and OFF states
 ON = tango._tango.DevState.ON
 OFF = tango._tango.DevState.OFF
+DISABLE = tango._tango.DevState.DISABLE
 
 
 
 # Define a function to print the state of all devices
 def print_device_states():
-    for device in prepare_devices():
+    for device in prepare_devices().ALL_DEVICES:
         device_name = str(device).split('(')[0]
         device_state = device.State()
         print(f'{device_name}: {device_state}')
@@ -50,8 +56,11 @@ def test_psi01_test_initialise_the_tpm_using_the_oet_jupyter_notebook():
 def subsystems_are_online_and_in_the_tango_device_off_state():
     """subsystems <subsystem-list> are ONLINE and in the Tango Device OFF state."""
    
-    for device in prepare_devices():
-        assert device.State() is OFF, f'{device} is not in OFF state'
+    device_states = prepare_devices
+    assert device_states.tmc_central_node.State() is OFF, f'tmc_central_node is not in OFF state'
+    assert device_states.mccs_controller.State() is OFF, f'mccs_controller is not in OFF state'
+    assert device_states.mccs_station_001.State() is OFF, f'mccs_station_001 is not in OFF state'
+    assert device_states.mccs_tile_0001.State() in [OFF,DISABLE], f'mccs_tile_0001 is not in OFF state'
     print_device_states()
 
 @given('the TPM_HW is powered ON and in the IDLE state')
@@ -71,14 +80,15 @@ def i_send_the_command_to_the_tmc():
     else:
         print('Control system is already on. No start up command issued.')
 
-@then('the TPM_HW is in the WORKING state')
-def the_tpm_hw_is_in_the_working_state():
-    """the TPM_HW is in the WORKING state."""
-    raise NotImplementedError
 @then('the TPM_HW will be programmed and initialized')
 def the_tpm_hw_will_be_programmed_and_initialized():
     """the TPM_HW will be programmed and initialized."""
-    raise NotImplementedError
+    tmc_central_node = prepare_devices()[0]
+    mccs_controller = prepare_devices()[1]
+    mccs_tile_0001 = prepare_devices()[3]
+    for device in [tmc_central_node, mccs_controller, mccs_tile_0001]:
+        assert device.State() is ON, f'{device} is not in ON state'
+
 @then('the state and the temperature of the TPM_HW can be monitored')
 def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored():
     """the state and the temperature of the TPM_HW can be monitored.."""

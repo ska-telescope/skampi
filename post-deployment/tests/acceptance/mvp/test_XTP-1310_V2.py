@@ -8,21 +8,34 @@ from pytest_bdd import (
     then,
     when,
 )
+from tango import DeviceProxy
+def prepare_devices():
+    # create device proxy to TMC CentralNode
+    tmc_central_node = DeviceProxy('ska_low/tm_central/central_node')
+
+    # create device proxy to MCCS controller, station, and tile
+    mccs_controller = DeviceProxy('low-mccs/control/control')
+    mccs_station_001 = DeviceProxy('low-mccs/station/001')
+    mccs_tile_0001 = DeviceProxy('low-mccs/tile/0001')
+    # Create a list holding the target devices in the control chain
+    ALL_DEVICES = [
+        tmc_central_node,
+        mccs_controller,
+        mccs_station_001,
+        mccs_tile_0001
+    ]
+    return ALL_DEVICES
+
+
 # Create a shortcut for ON and OFF states
 ON = tango._tango.DevState.ON
 OFF = tango._tango.DevState.OFF
 
-# Create a list holding the target devices in the control chain
-ALL_DEVICES = [
-    tmc_central_node,
-    mccs_controller,
-    mccs_station_001,
-    mccs_tile_0001
-]
+
 
 # Define a function to print the state of all devices
 def print_device_states():
-    for device in ALL_DEVICES:
+    for device in prepare_devices():
         device_name = str(device).split('(')[0]
         device_state = device.State()
         print(f'{device_name}: {device_state}')
@@ -41,7 +54,7 @@ def test_psi01_test_initialise_the_tpm_using_the_oet_jupyter_notebook():
 def subsystems_are_online_and_in_the_tango_device_off_state():
     """subsystems <subsystem-list> are ONLINE and in the Tango Device OFF state."""
    
-    for device in ALL_DEVICES:
+    for device in prepare_devices():
         assert device.State() is OFF, f'{device} is not in OFF state'
     print_device_states()
 

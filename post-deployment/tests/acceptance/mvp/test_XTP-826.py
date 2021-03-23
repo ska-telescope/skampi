@@ -98,17 +98,17 @@ def setup_telescope_and_scan(result):
     assert telescope_is_in_standby(
     ), f"Test failed as telescope state is {get_subarray_state().value}"
     set_telescope_to_running()
-
+    LOGGER.info("Telescope is in running state.")
     LOGGER.info("Ensuring resources are assigned")
     result[SUBARRAY_USED],result['sdp_block'] = take_subarray(1).to_be_composed_out_of(2)
     LOGGER.info("Result of Subarray command is :" + str(result[SUBARRAY_USED]) + str(result['sdp_block']))
-
-    LOGGER.info("configuring for first scan")
+    LOGGER.info("Resources are assigned successfully on Subarray Node.")
+    LOGGER.info("User can invoke configure command for first scan")
     result[SUBARRAY_USED].and_configure_scan_by_file(result['sdp_block'], file='resources/test_data/OET_integration/configure1.json',)
-
-    LOGGER.info("executing first scan")
+    LOGGER.info("Configure is successful on Subarray.")
+    LOGGER.info("User can execute first scan on Subarray.")
     result[SUBARRAY_USED].and_run_a_scan()
-    LOGGER.info("first scan completes...")
+    LOGGER.info("first scan completed on Subarray.")
     time.sleep(5)
     return result
 
@@ -120,11 +120,11 @@ def configure_again(result):
     assuming this scenario includes a reconfiguration of the source from
     what was done for the previous scan
     """
-    LOGGER.info("Configuring  second scan")
+    LOGGER.info("User can re-configure Subarray for second scan.")
     time.sleep(5)
     result[SUBARRAY_USED].and_configure_scan_by_file(
         result['sdp_block'],file='resources/test_data/OET_integration/configure2.json')
-    LOGGER.info("second configure completes...")
+    LOGGER.info("Re-configuration of Subarray is completed.")
     LOGGER.info("________SDP_block for second configure command______" + str(result['sdp_block']))
 
 
@@ -133,13 +133,13 @@ def execute_second_scan(result):
     """
     execute the configured scan - this is the key part of this test
     """
-    LOGGER.info("Executing second scan")
+    LOGGER.info("Use can execute second scan.")
     #####################SUT is execucted#################
     # @log_it('XTP-826', DEVICES_TO_LOG, NON_DEFAULT_DEVICES_TO_CHECK)
     def scan():
         SubArray(1).scan()
     scan()
-    LOGGER.info("second scan completes...")
+    LOGGER.info("Second scan completed on Subarray.")
     #############################################
     result[SUT_EXECUTED] = True
 
@@ -150,11 +150,10 @@ def check_completion_state(result):
     interpreted as the TMC subarry, csp and sdp report subarray as being in the obsState = READY
     if we got to this point it means we didnt have any exceptions
     """
-    LOGGER.info("checking completion status")
-
-    check_resource_ready('ska_mid/tm_subarray_node/1')
-    check_resource_ready('mid_csp/elt/subarray_01')
+    LOGGER.info("Checking completion status")
     check_resource_ready('mid_sdp/elt/subarray_1')
+    check_resource_ready('mid_csp/elt/subarray_01')
+    check_resource_ready('ska_mid/tm_subarray_node/1')
 
     result[TEST_PASSED] = True
 
@@ -175,3 +174,4 @@ def end(result):
     else:
         LOGGER.info("Resetting telescope to STANDBY")
         set_telescope_to_standby()
+        LOGGER.info("Telescope is in StandBy.")

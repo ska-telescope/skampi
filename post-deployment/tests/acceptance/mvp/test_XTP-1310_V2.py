@@ -109,3 +109,11 @@ def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored():
 
     print(temperature)
     print(mccs_time)
+
+    # Run this cell to put the telescope to standby
+# ## Teardown
+def teardown_function(function):
+    tmc_central_node.standbytelescope()
+    print_device_states()
+
+

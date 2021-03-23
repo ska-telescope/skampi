@@ -88,8 +88,6 @@ def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored():
     """the state and the temperature of the TPM_HW can be monitored.."""
     if mccs_tile_0001.simulationmode == 1:
         print ('MCCS tile 0001 is in simulation mode')
-    else 
-        print ('MCCS tile 0001 is NOT in simulation mode')
     print_device_states()
 
     device = mccs_tile_0001

@@ -49,7 +49,6 @@ def print_device_states():
 # As we haven't run any commands, the initial status of the telescope should be
 # OFF.
 
-@pytest.mark.singlerun
 @scenario("XTP-1310.feature", "PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)")
 def test_tpm_initialization():
     pass

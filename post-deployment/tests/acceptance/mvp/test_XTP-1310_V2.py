@@ -8,7 +8,7 @@ from pytest_bdd import (
     then,
     when,
 )
-pytest.mark.singlerun
+@pytest.mark.singlerun
 @scenario('XTP-1310.feature', 'PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)')
 def test_psi01_test_initialise_the_tpm_using_the_oet_jupyter_notebook():
     """PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)."""

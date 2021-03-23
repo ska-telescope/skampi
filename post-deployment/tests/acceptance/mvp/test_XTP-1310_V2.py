@@ -14,7 +14,6 @@ from tango import DeviceProxy
 class DeviceStates:
     pass
 
-
 def prepare_devices():
     device_states = DeviceStates()
     # create device proxy to TMC CentralNode
@@ -33,13 +32,10 @@ def prepare_devices():
     ]
     return device_states
 
-
 # Create a shortcut for ON and OFF states
 ON = tango._tango.DevState.ON
 OFF = tango._tango.DevState.OFF
 DISABLE = tango._tango.DevState.DISABLE
-
-
 
 # Define a function to print the state of all devices
 def print_device_states():
@@ -60,14 +56,12 @@ def subsystems_are_online_and_in_the_tango_device_off_state():
     assert device_states.tmc_central_node.State() is OFF, f'tmc_central_node is not in OFF state'
     assert device_states.mccs_controller.State() is OFF, f'mccs_controller is not in OFF state'
     assert device_states.mccs_station_001.State() is OFF, f'mccs_station_001 is not in OFF state'
-    assert device_states.mccs_tile_0001.State() in [OFF,DISABLE], f'mccs_tile_0001 is not in OFF state'
+    assert device_states.mccs_tile_0001.State() in [OFF,DISABLE], f'mccs_tile_0001 is not in OFF or DISABLE state'
     print_device_states()
 
 @given('the TPM_HW is powered ON and in the IDLE state')
 def the_tpm_hw_is_powered_on_and_in_the_idle_state():
     """the TPM_HW is powered ON and in the IDLE state."""
-
-   
 
 @when('I send the command ON to the TMC')
 def i_send_the_command_to_the_tmc():
@@ -92,5 +86,26 @@ def the_tpm_hw_will_be_programmed_and_initialized():
 @then('the state and the temperature of the TPM_HW can be monitored')
 def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored():
     """the state and the temperature of the TPM_HW can be monitored.."""
-    raise NotImplementedError
- 
+    if mccs_tile_0001.simulationmode == 1:
+        print ('MCCS tile 0001 is in simulation mode')
+    else 
+        print ('MCCS tile 0001 is NOT in simulation mode')
+    print_device_states()
+
+    device = mccs_tile_0001
+
+    measurement_cadence = 1.0  # seconds to wait between measurements
+    num_measurements_required = 20  # Code will loop until this many measurements are taken
+    temperature = []
+    mccs_time = []
+    while len(temperature) < num_measurements_required:
+        temperature.append(device.fpga1_temperature)
+        mccs_time.append(device.fpga1_time)
+        time.sleep(measurement_cadence)
+
+    num_secs = measurement_cadence * num_measurements_required
+    assert (len(set(temperature))!=1), f"No variation seen in the temperature values of {device} over {num_secs} seconds"
+    assert (len(set(mccs_time))!=1), f"No variation seen in the time values of {device} over {num_secs} seconds"
+
+    print(temperature)
+    print(mccs_time)

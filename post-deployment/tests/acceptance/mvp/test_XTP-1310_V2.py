@@ -31,7 +31,7 @@ class DeviceStates:
         ]
 
     def print_device_states():
-        for device self.ALL_DEVICES:
+        for device in self.ALL_DEVICES:
             device_name = str(device).split('(')[0]
             device_state = device.State()
             print(f'{device_name}: {device_state}')

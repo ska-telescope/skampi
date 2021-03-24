@@ -78,10 +78,15 @@ mid-cbf:
 ## mid-csp
 mid-csp:
   enabled: true
-    
+
 ## sdp
 sdp:
   enabled: true
+  lmc:
+    prefix: mid
+    nsubarray: 3
+  tango-base:
+    enabled: false
 
 ## tm
 tmc-mid:

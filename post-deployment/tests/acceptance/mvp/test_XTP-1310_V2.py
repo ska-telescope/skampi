@@ -1,4 +1,3 @@
-
 # coding=utf-8
 import pytest
 """Default feature tests."""
@@ -30,7 +29,7 @@ class DeviceStates:
             self.mccs_tile_0001
         ]
 
-    def print_device_states():
+    def print_device_states(self):
         for device in self.ALL_DEVICES:
             device_name = str(device).split('(')[0]
             device_state = device.State()

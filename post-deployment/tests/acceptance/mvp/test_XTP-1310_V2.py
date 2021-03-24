@@ -85,6 +85,11 @@ def the_tpm_hw_will_be_programmed_and_initialized(devices):
     for device in [devices.tmc_central_node, devices.mccs_controller, devices.mccs_tile_0001]:
         assert device.State() is ON, f'{device} is not in ON state'
 
+@then("the TPM_HW is in the WORKING state")
+def tpm_hardware_working_state():
+    # TODO determine how to verify TPM is in WORKING state)
+    pass
+
 @then('the state and the temperature of the TPM_HW can be monitored')
 def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
     """the state and the temperature of the TPM_HW can be monitored.."""

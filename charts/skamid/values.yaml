@@ -2,6 +2,8 @@ display: ":0"
 xauthority: "~/.Xauthority"
 
 global:
+  tries: 10
+  sleep: 10
   sub-system:
     tango-util:
       enabled: false
@@ -38,11 +40,6 @@ tango-base:
     enabled: true
   tangorest:
     enabled: true
-  tangotest:
-    enabled: true
-  ingress:
-    enabled: true
-    hostname: integration.engageska-portugal.pt
   tangodb:
     use_pv: false
 

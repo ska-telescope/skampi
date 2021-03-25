@@ -238,7 +238,7 @@ class ScriptExecutor:
         script_id = details[0].get('id')
         return script_id
 
-    def run_task_using_oet_rest_client(self, oet_rest_cli, script, scheduling_block):
+    def run_task_using_oet_rest_client(self, oet_rest_cli, script, scheduling_block=None):
         resp = oet_rest_cli.create(script, subarray_id=1)
         # confirm that creating the task worked and we have a valid ID
         oet_create_task_id = self.confirm_script_status_and_return_id(resp, 'CREATED')

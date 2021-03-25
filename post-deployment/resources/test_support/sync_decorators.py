@@ -31,11 +31,9 @@ def check_coming_out_of_standby():
 
 def check_going_out_of_configured():
     ## Verify the Subarray obstate = READY
+    resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('READY')
+    resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('READY')
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-
-def check_going_out_of_aborted():
-    ## Verify the Subarray obstate = ABORTED
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
 def check_going_out_of_abort():
     ## Verify the Subarray obstate = ABORTED
@@ -65,9 +63,10 @@ class WaitConfigure():
 
     def wait(self):
         # self.w.wait_until_value_changed_to('CONFIGURING')
-        self.w.wait_until_value_changed_to('READY',timeout=200)
         self.w1.wait_until_value_changed_to('READY',timeout=200)
         self.w2.wait_until_value_changed_to('READY',timeout=200)
+        self.w.wait_until_value_changed_to('READY',timeout=200)
+
 
     def wait_oet(self):
         self.w.wait_until_value_changed_to('READY',timeout=200)
@@ -82,7 +81,6 @@ class WaitAbort():
         # self.the_watch.wait_until_value_changed_to('ABORTING',timeout)
         logging.info("ABORT command invoked. Waiting for obsState to change to ABORTED")
         self.the_watch.wait_until_value_changed_to('ABORTED',timeout=200)
-        logging.info("obsState is changed to ABORTED and hence ABORT command is completed on Subarray.")
 
 class WaitRestart():
 
@@ -93,17 +91,6 @@ class WaitRestart():
         # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
         logging.info("Restart command invoked. Waiting for obsState to change to EMPTY")
         self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
-        logging.info("obsState is changed to EMPTY and hence ObsReset is completed on Subarray.")
-
-class WaitObsReset():
-
-    def __init__(self):
-        self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
-
-    def wait(self,timeout):
-        logging.info("ObsReset command invoked. Waiting for obsState to change to IDLE")
-        self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
-
 
 class WaitObsReset():
 

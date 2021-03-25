@@ -48,7 +48,7 @@ k8s_test = tar -c post-deployment/ | \
 		--requests='cpu=900m,memory=400Mi' \
 		--env=ARCHIVER_TANGO_HOST=$2 \
 		--env=ARCHIVER_NAMESPACE=$3 \
-		--env=INGRESS_HOST=$(INGRESS_HOST)
+		--env=INGRESS_HOST=$(INGRESS_HOST) \
 		$(CUSTOM_VALUES) \
 		--serviceaccount=$(TESTING_ACCOUNT) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \

@@ -3,7 +3,7 @@ xauthority: "~/.Xauthority"
 minikube: true
 
 global:
-  retry: "--sleep=2 --tries=100"
+  retry: "--sleep=2"
   sub-system:
     tango-base:
       enabled: false

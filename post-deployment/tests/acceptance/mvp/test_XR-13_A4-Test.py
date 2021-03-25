@@ -105,7 +105,7 @@ def receptorID_list_empty():
     # confirm
     resource('ska_mid/tm_subarray_node/1').assert_attribute('receptorIDList').equals(None)
    # assert_that(receptorIDList_val == [])
-    logging.info("Allocated resources are successfully deallocated, ReceptorIDList is empty")
+    logging.info("ReceptorIDList is empty. Resources are successfully deallocated.")
 
 def teardown_function(function):
     LOGGER.info("Put Telescope back to standby")

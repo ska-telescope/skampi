@@ -103,10 +103,10 @@ def setup_telescope_and_scan(result):
     result[SUBARRAY_USED],result['sdp_block'] = take_subarray(1).to_be_composed_out_of(2)
     LOGGER.info("Result of Subarray command is :" + str(result[SUBARRAY_USED]) + str(result['sdp_block']))
     LOGGER.info("Resources are assigned successfully on Subarray Node.")
-    LOGGER.info("User can invoke configure command for first scan")
+    LOGGER.info("Invoking configure command on the Subarray for first Scan.")
     result[SUBARRAY_USED].and_configure_scan_by_file(result['sdp_block'], file='resources/test_data/OET_integration/configure1.json',)
     LOGGER.info("Configure is successful on Subarray.")
-    LOGGER.info("User can execute first scan on Subarray.")
+    LOGGER.info("Invoking first scan on Subarray.")
     result[SUBARRAY_USED].and_run_a_scan()
     LOGGER.info("first scan completed on Subarray.")
     time.sleep(5)
@@ -120,11 +120,11 @@ def configure_again(result):
     assuming this scenario includes a reconfiguration of the source from
     what was done for the previous scan
     """
-    LOGGER.info("User can re-configure Subarray for second scan.")
+    LOGGER.info("Invoking second configure command on the Subarray.")
     time.sleep(5)
     result[SUBARRAY_USED].and_configure_scan_by_file(
         result['sdp_block'],file='resources/test_data/OET_integration/configure2.json')
-    LOGGER.info("Re-configuration of Subarray is completed.")
+    LOGGER.info("Second configuration is completed on Subarray.")
     LOGGER.info("________SDP_block for second configure command______" + str(result['sdp_block']))
 
 
@@ -133,7 +133,7 @@ def execute_second_scan(result):
     """
     execute the configured scan - this is the key part of this test
     """
-    LOGGER.info("Use can execute second scan.")
+    LOGGER.info("Invoking second scan.")
     #####################SUT is execucted#################
     # @log_it('XTP-826', DEVICES_TO_LOG, NON_DEFAULT_DEVICES_TO_CHECK)
     def scan():

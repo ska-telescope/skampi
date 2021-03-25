@@ -63,23 +63,23 @@ def test_subarray_restart():
 
 @given("A running telescope for executing observations on a subarray")
 def set_to_running():
-    LOGGER.info("Before starting the telescope check whether a telescope is in StandBy.")
+    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     assert(telescope_is_in_standby())
-    LOGGER.info("User can start the telescope.")
+    LOGGER.info("Invoking Startup Telescope command on the telescope.")
     set_telescope_to_running()
     LOGGER.info("Telescope is started successfully.")
 
 @given("resources are successfully assigned")
 def allocate_four_dishes(result):
-    LOGGER.info("User can Assign the Resources on Subarray.")
+    LOGGER.info("Invoking AssignResources command on the Subarray.")
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
-    LOGGER.info("Resources are assigned successfully on Subarray.")
+    LOGGER.info("Resources are assigned successfully to a Subarray.")
 
 @given("the subarray is in ABORTED obsState")
 def abort_subarray():
     @sync_abort(200)
     def abort():
-        LOGGER.info("User can execute ABORT command on Subarray.")
+        LOGGER.info("Invoking ABORT command on the Subarray.")
         SubArray(1).abort()
         LOGGER.info("Abort command is invoked on subarray")
     abort()
@@ -90,7 +90,7 @@ def restart():
     @log_it('AX-13_A5',devices_to_log,non_default_states_to_check)
     @sync_restart(200)
     def command_restart():
-        LOGGER.info("User can restart the Subarray.")
+        LOGGER.info("Invoking Restart command on the Subarray.")
         SubArray(1).restart()
         LOGGER.info("Restart command is invoked on subarray")
     command_restart()

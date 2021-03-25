@@ -78,6 +78,7 @@ def start_up():
 def set_to_ready():
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
     LOGGER.info("AssignResources is successful on Subarray")
+    LOGGER.info("Invoking configure command on the Subarray.")
     take_subarray(1).and_configure_scan_by_file(sdp_block)
     LOGGER.info("Configure is successful on Subarray")
 

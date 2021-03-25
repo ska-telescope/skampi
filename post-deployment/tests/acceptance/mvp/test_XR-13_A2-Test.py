@@ -80,7 +80,6 @@ def start_up():
 def assign(result):
     LOGGER.info("Allocate 2 dishes to Subarray 1")
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
-    LOGGER.info("Sdp block from subarray command :" +str(sdp_block) + str(pilot))
     result['sdp_block'] = sdp_block
     LOGGER.info("Subarray 1 is ready and composed out of 2 dishes")
     LOGGER.info("SDP block in AssignResources json input is :" + str(result))

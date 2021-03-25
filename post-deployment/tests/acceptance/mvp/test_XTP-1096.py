@@ -63,10 +63,10 @@ def test_subarray_obsreset():
 
 @given("Subarray has transitioned into obsState ABORTED during an observation")
 def set_to_abort():
-    LOGGER.info("Before starting the telescope check whether a telescope is in StandBy.")
+    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
-    LOGGER.info("User can start the telescope.")
+    LOGGER.info("Invoking Startup Telescope command on the telescope.")
     set_telescope_to_running()
     LOGGER.info("Telescope is started successfully.")
 
@@ -74,7 +74,7 @@ def set_to_abort():
     LOGGER.info("AssignResources is successfully invoked on Subarray.")
     @sync_abort(200)
     def abort():
-        LOGGER.info("User can invoke Abort command on Subarray.")
+        LOGGER.info("Invoking ABORT command on the Subarray.")
         SubArray(1).abort()
         LOGGER.info("Abort command is invoked on subarray")
     abort()
@@ -85,11 +85,11 @@ def reset_subarray():
     @log_it('XTP-1096',devices_to_log,non_default_states_to_check)
     @sync_obsreset(200)
     def obsreset_subarray():
-        LOGGER.info("User can invoke ObsReset command on Subarray node.")
+        LOGGER.info("Invoking ObsReset command on the Subarray.")
         SubArray(1).reset()
-        LOGGER.info("obsreset command is invoked on subarray")
+        LOGGER.info("ObsReset command is invoked on subarray")
     obsreset_subarray()
-    LOGGER.info("Obsreset is completed on Subarray.")
+    LOGGER.info("ObsReset is completed on Subarray.")
 
 @then("the subarray should transition to obsState IDLE")
 def check_idle_state():

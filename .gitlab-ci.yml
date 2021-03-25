@@ -140,7 +140,7 @@ syscore_mid_on_demand_uninstall:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
     action: stop
-    auto_stop_in: 2 hours
+    # auto_stop_in: 2 hours
   needs:
     - syscore_mid_on_demand_test
   when: manual
@@ -165,7 +165,7 @@ syscore_low_on_demand_uninstall:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     action: stop
-    auto_stop_in: 2 hours
+    # auto_stop_in: 2 hours
   needs:
     - syscore_low_on_demand_test
   when: manual
@@ -187,7 +187,7 @@ psi_low_on_demand_uninstall:
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     action: stop
-    auto_stop_in: 2 hours
+    # auto_stop_in: 2 hours
   needs:
     - psi_low_on_demand_test
   when: manual

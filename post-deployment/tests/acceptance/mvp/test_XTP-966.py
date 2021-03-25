@@ -28,10 +28,6 @@ OET_TASK_ID = 'OET Task ID'
 SCHEDULING_BLOCK = 'Scheduling Block'
 SUBARRAY = 'Subarray Used'
 
-# OET task completion can occur before TMC has completed its activity - so allow time for the
-# last transitions to take place
-PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS = 10
-
 EXECUTOR = ScriptExecutor()
 
 LOGGER = logging.getLogger(__name__)
@@ -132,10 +128,12 @@ def allocate_resources(oet_result, script):
 
 @then(parsers.parse('the OET observes the SB with the script {script}'))
 def run_scheduling_block(oet_result, script):
-    """[summary]
+    """
+    Use the OET Rest API to observe the SBI
 
     Args:
         oet_result (dict): fixture used to track progress
+        script (str): path to the script file to be run
     """
     LOGGER.info("PROCESS: Starting to observe the SB %s using script %s",
                 oet_result[SCHEDULING_BLOCK], script)
@@ -152,33 +150,15 @@ def run_scheduling_block(oet_result, script):
 ))
 def check_transitions(oet_result, expected_states):
     """Check that the device passed through the expected
-    obsState transitions. This has been being monitored
-    on a separate thread in the background.
-
-    The method deliberately pauses at the start to allow TMC time
-    to complete any operation still in progress.
+    obsState transitions.
 
     Args:
         oet_result (dict): fixture used to track progress
         expected_states (str): String containing states sub-array is expected to have
         passed through, separated by a comma
     """
-    time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
-
-    oet_result[STATE_CHECK].stop_polling()
     expected_states = [x.strip() for x in expected_states.split(',')]
-    recorded_states = list(oet_result[STATE_CHECK].get_results())
-
-    # ignore 'READY' as it can be a transitory state so we don't rely
-    # on it being present in the list to be matched
-    recorded_states = [i for i in recorded_states if i != 'READY']
-
-    oet_result[TEST_PASSED] = False
-    LOGGER.info("Comparing the list of states observed with the expected states")
-    for expected_state, recorded_state in zip(expected_states, recorded_states):
-        LOGGER.info("Expected %s was %s ", expected_state, recorded_state)
-        assert expected_state == recorded_state, "State observed was not as expected"
-    LOGGER.info("All states match")
+    assert oet_result[STATE_CHECK].state_transitions_match(expected_states)
     oet_result[TEST_PASSED] = True
 
 
@@ -207,5 +187,5 @@ def end(subarray: Subarray):
             # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         set_telescope_to_standby()
-        LOGGER.info("CLEANUP: Telescope is in %s ",
+        LOGGER.info("CLEANUP: Sub-array is in %s ",
                     subarray.get_obsstate())

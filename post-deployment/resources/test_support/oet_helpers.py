@@ -10,6 +10,9 @@ from oet.procedure.application.restclient import RestClientUI
 
 from resources.test_support.helpers import resource
 
+# OET task completion can occur before TMC has completed its activity - so allow time for the
+# last transitions to take place
+PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS = 10
 # arbitrary number, this only needs to be this big to cover a science scan of several seconds
 DEFAUT_LOOPS_DEFORE_TIMEOUT = 10000
 # avoids swamping the rest server but short enough to avoid delaying the test
@@ -101,6 +104,39 @@ class Poller:
                 LOGGER.info(
                     "STATE MONITORING: State has changed to %s", current_state)
                 recorded_states.append(current_state)
+
+    def state_transitions_match(self, expected_states):
+        """Check that the device passed through the expected
+            obsState transitions. This has been being monitored
+            on a separate thread in the background.
+
+            The method deliberately pauses at the start to allow TMC time
+            to complete any operation still in progress.
+        """
+        time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
+
+        self.stop_polling()
+        LOGGER.info("STATE MONITORING: Stopped Tracking")
+        recorded_states = list(self.get_results())
+
+        # ignore 'READY' as it can be a transitory state so we don't rely
+        # on it being present in the list to be matched
+        recorded_states = [i for i in recorded_states if i != 'READY']
+
+        LOGGER.info("STATE MONITORING: Comparing the list of states observed with the expected states")
+        LOGGER.debug("STATE MONITORING: Expected states: %s", ','.join(expected_states))
+        LOGGER.debug("STATE MONITORING: Recorded states: %s", ','.join(recorded_states))
+        if len(expected_states) != len(recorded_states):
+            LOGGER.warning("STATE MONITORING: Expected %d states but recorded %d states",
+                           len(expected_states), len(recorded_states))
+            return False
+
+        if expected_states != recorded_states:
+            LOGGER.warning("STATE MONITORING: Expected states do not match recorded states")
+            return False
+
+        LOGGER.info("STATE MONITORING: All states match")
+        return True
 
 
 class Task:

@@ -67,8 +67,7 @@ def test_configure_subarray():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
-    LOGGER.info("Given I am accessing the console interface for the OET")
-    LOGGER.info("Check whether telescope is in StandBy")
+    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Starting up telescope")
@@ -89,7 +88,8 @@ def assign(result):
 def config(result):
     @log_it('AX-13_A2',devices_to_log,non_default_states_to_check)
     @sync_configure_oet
-    @time_it(120)
+    #TODO: Confirm if @time_it is required. Currently commenting as seem to be not required
+    # @time_it(120)
     def test_SUT(sdp_block):
         file = 'resources/test_data/OET_integration/configure1.json'
         update_scan_config_file(file, sdp_block)

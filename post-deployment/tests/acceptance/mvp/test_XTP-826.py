@@ -95,6 +95,7 @@ def setup_telescope_and_scan(result):
     confirm the telescope is ready, and then to be sure we are testing a multiscan scenario
     perform one scan
     """
+    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy")
     assert telescope_is_in_standby(
     ), f"Test failed as telescope state is {get_subarray_state().value}"
     set_telescope_to_running()
@@ -124,8 +125,8 @@ def configure_again(result):
     time.sleep(5)
     result[SUBARRAY_USED].and_configure_scan_by_file(
         result['sdp_block'],file='resources/test_data/OET_integration/configure2.json')
-    LOGGER.info("Second configuration is completed on Subarray.")
-    LOGGER.info("________SDP_block for second configure command______" + str(result['sdp_block']))
+    LOGGER.info("Configuration for second time is completed on Subarray.")
+    LOGGER.info("SDP_block for second configure command is " + str(result['sdp_block']))
 
 
 @when('I run the scan again')

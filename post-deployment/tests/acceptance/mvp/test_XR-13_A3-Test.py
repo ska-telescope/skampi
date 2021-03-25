@@ -66,18 +66,18 @@ def test_subarray_scan():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
-    LOGGER.info("Given I am accessing the console interface for the OET")
-    LOGGER.info("Check whether telescope is in StandBy")
+    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
-    LOGGER.info("Starting up telescope")
+    LOGGER.info("Starting up the telescope")
     set_telescope_to_running()
     LOGGER.info("Telescope started.")
 
 @given("Sub-array is in READY state")
 def set_to_ready():
+    LOGGER.info("Allocate 2 dishes to Subarray 1")
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
-    LOGGER.info("AssignResources is successful on Subarray")
+    LOGGER.info("AssignResources is successful on Subarray 1 with 2 dishes allocated")
     LOGGER.info("Invoking configure command on the Subarray.")
     take_subarray(1).and_configure_scan_by_file(sdp_block)
     LOGGER.info("Configure is successful on Subarray")
@@ -138,12 +138,12 @@ def teardown_function(function):
         LOGGER.info("tearing down configured subarray (READY)")
         take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
+        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
-        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
+        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")

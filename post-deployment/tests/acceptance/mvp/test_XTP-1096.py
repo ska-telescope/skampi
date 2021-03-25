@@ -106,12 +106,12 @@ def teardown_function(function):
             LOGGER.info("tearing down composed subarray (IDLE)")
             take_subarray(1).and_release_all_resources() 
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTING"):
-        LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manualy to complete tear down")
+        LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup") 
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "RESTARTING"):
-        LOGGER.warn("Subarray is still in RESTARTING! Please restart MVP manualy to complete tear down")
+        LOGGER.warn("Subarray is still in RESTARTING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup") 

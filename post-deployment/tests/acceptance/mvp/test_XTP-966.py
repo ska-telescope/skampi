@@ -10,7 +10,6 @@ import logging
 import time
 import pytest
 
-from oet.procedure.application.restclient import RestClientUI
 from pytest_bdd import given, parsers, scenario, then, when
 from resources.test_support.controls import (restart_subarray,
                                              set_telescope_to_running,
@@ -72,7 +71,6 @@ def attempt_to_clean_subarray_to_empty(subarray: Subarray):
     LOGGER.info("PROCESS: Sub-array state is %s ", subarray.get_obsstate())
 
 
-@pytest.mark.fast
 @pytest.mark.skamid
 @scenario("XTP-966.feature",
           "SKA Mid Scheduling Block - Resource allocation and observation")
@@ -91,7 +89,6 @@ def setup_telescope(oet_result, subarray_name, scheduling_block):
         subarray_name (str): Sub-array ID
         scheduling_block (str): file path to SB JSON file
     """
-
     subarray = Subarray(subarray_name)
     attempt_to_clean_subarray_to_empty(subarray)
 
@@ -105,13 +102,12 @@ def setup_telescope(oet_result, subarray_name, scheduling_block):
 
 
 @when(parsers.parse('the OET allocates resources for the SB with the script {script}'))
-def allocate_resources(oet_result, rest_client, script):
+def allocate_resources(oet_result, script):
     """
     Use the OET Rest API to allocate resources for the Scheduling Block
 
     Args:
         oet_result (dict): fixture used to track progress
-        rest_client (RestClientUI):
         script (str): file path to an observing script
     """
     LOGGER.info("PROCESS: Creating SBI from SB %s ",
@@ -119,8 +115,7 @@ def allocate_resources(oet_result, rest_client, script):
 
     # create Scheduling Block Instance so that the same SB ID is maintained through
     # resource allocation and observation execution
-    oet_result[TEST_PASSED] = EXECUTOR.run_task_using_oet_rest_client(
-        rest_client,
+    oet_result[TEST_PASSED] = EXECUTOR.execute_script(
         script='file://scripts/create_sbi.py',
         scheduling_block=oet_result[SCHEDULING_BLOCK]
     )
@@ -128,8 +123,7 @@ def allocate_resources(oet_result, rest_client, script):
 
     LOGGER.info("PROCESS: Allocating resources for the SB %s ",
                 oet_result[SCHEDULING_BLOCK])
-    oet_result[TEST_PASSED] = EXECUTOR.run_task_using_oet_rest_client(
-        rest_client,
+    oet_result[TEST_PASSED] = EXECUTOR.execute_script(
         script=script,
         scheduling_block=oet_result[SCHEDULING_BLOCK]
     )
@@ -137,18 +131,16 @@ def allocate_resources(oet_result, rest_client, script):
 
 
 @then(parsers.parse('the OET observes the SB with the script {script}'))
-def run_scheduling_block(oet_result, rest_client, script):
+def run_scheduling_block(oet_result, script):
     """[summary]
 
     Args:
         oet_result (dict): fixture used to track progress
-        rest_client ([type]): [description]
     """
     LOGGER.info("PROCESS: Starting to observe the SB %s using script %s",
                 oet_result[SCHEDULING_BLOCK], script)
 
-    oet_result[TEST_PASSED] = EXECUTOR.run_task_using_oet_rest_client(
-        rest_client,
+    oet_result[TEST_PASSED] = EXECUTOR.execute_script(
         script=script,
         scheduling_block=oet_result[SCHEDULING_BLOCK]
     )

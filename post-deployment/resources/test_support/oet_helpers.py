@@ -4,7 +4,6 @@ from os import environ
 import time
 from multiprocessing import Process, Manager, Queue
 
-import pytest
 from assertpy import assert_that
 # SUT import
 from oet.procedure.application.restclient import RestClientUI
@@ -18,14 +17,9 @@ PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS = 5
 
 LOGGER = logging.getLogger(__name__)
 
-
-@pytest.fixture()
-def rest_client():
-    """OET rest client instance used for testing """
-    helm_release = environ.get("HELM_RELEASE", "test")
-    rest_cli_uri = f"http://oet-rest-{helm_release}:5000/api/v1.0/procedures"
-    rest_cli = RestClientUI(rest_cli_uri)
-    yield rest_cli
+helm_release = environ.get("HELM_RELEASE", "test")
+rest_cli_uri = f"http://oet-rest-{helm_release}:5000/api/v1.0/procedures"
+REST_CLIENT = RestClientUI(rest_cli_uri)
 
 
 class Subarray:
@@ -53,7 +47,6 @@ class Subarray:
 class ObsState(enum.Enum):
     """
     Represent the ObsState Tango enumeration
-    TODO: Refactor this as a useful shared class
     """
     EMPTY = 0
     RESOURCING = 1
@@ -238,12 +231,12 @@ class ScriptExecutor:
         script_id = details[0].get('id')
         return script_id
 
-    def run_task_using_oet_rest_client(self, oet_rest_cli, script, scheduling_block):
-        resp = oet_rest_cli.create(script, subarray_id=1)
+    def execute_script(self, script, scheduling_block):
+        resp = REST_CLIENT.create(script, subarray_id=1)
         # confirm that creating the task worked and we have a valid ID
         oet_create_task_id = self.confirm_script_status_and_return_id(resp, 'CREATED')
         # we  can now start the observing task passing in the scheduling block as a parameter
-        resp = oet_rest_cli.start(scheduling_block, listen=False)
+        resp = REST_CLIENT.start(scheduling_block, listen=False)
         # confirm that it didn't fail on starting
         oet_start_task_id = self.confirm_script_status_and_return_id(resp, 'RUNNING')
 
@@ -255,7 +248,7 @@ class ScriptExecutor:
 
         timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT  # arbitrary number
         while timeout != 0:
-            resp = oet_rest_cli.list()
+            resp = REST_CLIENT.list()
             if not Task.task_has_status(oet_start_task_id, 'RUNNING', resp):
                 LOGGER.info(
                     "PROCESS: Task has run to completion - no longer present on task list")

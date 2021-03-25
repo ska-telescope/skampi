@@ -93,7 +93,7 @@ syscore_mid_uninstall:
   <<: *uninstall_definition
   environment:
     name: "test"
-    action: stop
+    # action: stop
 
 syscore_low_uninstall:
   stage: clean
@@ -107,7 +107,7 @@ syscore_low_uninstall:
   <<: *uninstall_definition
   environment:
     name: "test-low"
-    action: stop
+    # action: stop
 
 psi_low_uninstall:
   stage: clean
@@ -121,7 +121,7 @@ psi_low_uninstall:
   <<: *uninstall_definition
   environment:
     name: "psi-low-integration"
-    action: stop
+    # action: stop
 
 syscore_mid_on_demand_uninstall:
   stage: cleanup
@@ -139,7 +139,7 @@ syscore_mid_on_demand_uninstall:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-    action: stop
+    # action: stop
     # auto_stop_in: 2 hours
   needs:
     - syscore_mid_on_demand_test
@@ -164,7 +164,7 @@ syscore_low_on_demand_uninstall:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
-    action: stop
+    # action: stop
     # auto_stop_in: 2 hours
   needs:
     - syscore_low_on_demand_test
@@ -186,7 +186,7 @@ psi_low_on_demand_uninstall:
   - *uninstall_scripts
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
-    action: stop
+    # action: stop
     # auto_stop_in: 2 hours
   needs:
     - psi_low_on_demand_test
@@ -213,7 +213,7 @@ syscore_mid_test:
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       namespace: $KUBE_NAMESPACE
-    on_stop: syscore_mid_uninstall
+    # on_stop: syscore_mid_uninstall
   only:
     refs:
       - master
@@ -245,7 +245,7 @@ syscore_mid_on_demand_test:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-    on_stop: syscore_mid_on_demand_uninstall
+    # on_stop: syscore_mid_on_demand_uninstall
   when: manual
   only:
     refs:
@@ -270,7 +270,7 @@ syscore_low_test:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-    on_stop: syscore_low_uninstall
+    # on_stop: syscore_low_uninstall
   only:
     refs:
       - master
@@ -292,7 +292,7 @@ psi_low_test:
   environment:
     name: "psi-low-integration"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    on_stop: psi_low_uninstall
+    # on_stop: psi_low_uninstall
   only:
     refs:
       - master
@@ -324,7 +324,7 @@ syscore_low_on_demand_test:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
-    on_stop: syscore_low_on_demand_uninstall
+    # on_stop: syscore_low_on_demand_uninstall
   when: manual
   only:
     refs:
@@ -355,7 +355,7 @@ psi_low_on_demand_test:
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
-    on_stop: psi_low_on_demand_uninstall
+    # on_stop: psi_low_on_demand_uninstall
   when: manual
   only:
     refs:
@@ -416,7 +416,7 @@ syscore_low_clean_staging:
   - *uninstall_scripts
   environment:
     name: "staging-low"
-    action: stop
+    # action: stop
 
 psi_low_clean_staging:
   stage: clean_staging
@@ -433,7 +433,7 @@ psi_low_clean_staging:
   - *uninstall_scripts
   environment:
     name: "psi-low-staging"
-    action: stop
+    # action: stop
 
 syscore_mid_clean_staging:
   stage: clean_staging
@@ -450,7 +450,7 @@ syscore_mid_clean_staging:
   - *uninstall_scripts
   environment:
     name: "staging-mid"
-    action: stop
+    # action: stop
 
 syscore_low_deploy_staging:
   stage: deploy_staging
@@ -469,7 +469,7 @@ syscore_low_deploy_staging:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-    on_stop: syscore_low_clean_staging
+    # on_stop: syscore_low_clean_staging
   only:
     refs:
       - tags
@@ -491,7 +491,7 @@ psi_low_deploy_staging:
   environment:
     name: "psi-low-staging"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    on_stop: psi_low_clean_staging
+    # on_stop: psi_low_clean_staging
   only:
     refs:
       - tags
@@ -515,7 +515,7 @@ syscore_mid_deploy_staging:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-    on_stop: syscore_mid_clean_staging
+    # on_stop: syscore_mid_clean_staging
   only:
     refs:
       - tags

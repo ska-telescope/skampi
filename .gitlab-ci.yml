@@ -64,7 +64,14 @@ stages:
   after_script:
   - *create_k8s_creds
 
-uninstall mid:
+.psi-low-env: &psi_low_tag_env
+  tags:
+    - k8srunner-psi-low
+  environment:
+    # the environment should be "psi-low" so that KUBECONFIG is set up correctly
+    name: psi-low
+
+uninstall mid: &uninstall_mid_job
   stage: clean
   variables:
     HELM_RELEASE: "test-mid"
@@ -76,7 +83,11 @@ uninstall mid:
   environment:
     name: "test"
 
-uninstall low:
+uninstall mid psi-low:
+  <<: *uninstall_mid_job
+  <<: *psi_low_tag_env
+
+uninstall low: &uninstall_low_job
   stage: clean
   variables:
     HELM_RELEASE: "test-low"
@@ -88,7 +99,11 @@ uninstall low:
   environment:
     name: "test-low"
 
-uninstall mid on demand:
+uninstall low psi-low:
+  <<: *uninstall_low_job
+  <<: *psi_low_tag_env
+
+uninstall mid on demand: &uninstall_mid_on_demand_job
   stage: cleanup
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
@@ -110,7 +125,11 @@ uninstall mid on demand:
     refs:
       - branches
 
-uninstall low on demand:
+uninstall mid on demand psi-low:
+  <<: *uninstall_mid_on_demand_job
+  <<: *psi_low_tag_env
+
+uninstall low on demand: &uninstall_low_on_demand_job
   stage: cleanup
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
@@ -131,6 +150,10 @@ uninstall low on demand:
   only:
     refs:
       - branches
+
+uninstall low on demand psi-low:
+  <<: *uninstall_mid_on_demand_job
+  <<: *psi_low_tag_env
 
 .deploy_template: &deploy_definition
   tags:
@@ -171,7 +194,7 @@ uninstall low on demand:
       junit: build/report.xml
     when: always
 
-test mid:
+test mid: &test_mid_job
   stage: test
   variables:
     HELM_RELEASE: "test-mid"
@@ -191,8 +214,12 @@ test mid:
   only:
     refs:
       - master
+      
+test mid psi-low:
+  <<: *test_mid_job
+  <<: *psi_low_tag_env
 
-test mid on demand:
+test mid on demand: &test_mid_on_demand_job
   stage: test
   variables:
     DEPLOYMENT_CONFIGURATION: "skamid"
@@ -223,8 +250,12 @@ test mid on demand:
   only:
     refs:
       - branches
+      
+test mid on demand psi-low:
+  <<: *test_mid_on_demand_job
+  <<: *psi_low_tag_env
 
-test low:
+test low: &test_low_job
   stage: test
   variables:
     HELM_RELEASE: "test-low"
@@ -245,8 +276,12 @@ test low:
   only:
     refs:
       - master
+      
+test low psi-low:
+  <<: *test_low_job
+  <<: *psi_low_tag_env
 
-test low on demand:
+test low on demand: &test_low_on_demand_job
   stage: test
   variables:
     DEPLOYMENT_CONFIGURATION: "skalow"
@@ -277,6 +312,10 @@ test low on demand:
   only:
     refs:
       - branches
+      
+test low on demand psi-low:
+  <<: *test_low_on_demand_job
+  <<: *psi_low_tag_env
 
 .sdp_config_dump_template: &sdp_config_dump_definition
   tags:
@@ -322,7 +361,7 @@ tag_commit:
   script:
     - make release-skampi
 
-clean_staging_low:
+clean_staging_low: &clean_staging_low_job
   stage: clean_staging
   variables:
     HELM_RELEASE: "staging-low"
@@ -338,8 +377,12 @@ clean_staging_low:
   - *uninstall_scripts
   environment:
     name: "staging-low"
+      
+clean_staging_low_psi-low:
+  <<: *clean_staging_low_job
+  <<: *psi_low_tag_env
 
-clean_staging_mid:
+clean_staging_mid: &clean_staging_mid_job
   stage: clean_staging
   variables:
     HELM_RELEASE: "staging-mid"
@@ -355,8 +398,12 @@ clean_staging_mid:
   - *uninstall_scripts
   environment:
     name: "staging-mid"
+      
+clean_staging_mid_psi-low:
+  <<: *clean_staging_mid_job
+  <<: *psi_low_tag_env
 
-deploy_staging_low:
+deploy_staging_low: &deploy_staging_low_job
   stage: deploy_staging
   variables:
     HELM_REPO_NAME: "skatelescope"
@@ -377,8 +424,12 @@ deploy_staging_low:
       - tags
   needs:
     - job: clean_staging_low
+      
+deploy_staging_low_psi-low:
+  <<: *deploy_staging_low_job
+  <<: *psi_low_tag_env
 
-deploy_staging_mid:
+deploy_staging_mid: &deploy_staging_mid_job
   stage: deploy_staging
   variables:
     HELM_REPO_NAME: "skatelescope"
@@ -399,6 +450,10 @@ deploy_staging_mid:
       - tags
   needs:
     - job: clean_staging_mid
+      
+deploy_staging_low_psi-low:
+  <<: *deploy_staging_mid_job
+  <<: *psi_low_tag_env
 
 version_bump_charts:
   stage: update_versions

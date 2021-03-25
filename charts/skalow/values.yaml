@@ -3,6 +3,8 @@ xauthority: "~/.Xauthority"
 minikube: true
 
 global:
+  tries: 10
+  sleep: 10
   sub-system:
     tango-base:
       enabled: false

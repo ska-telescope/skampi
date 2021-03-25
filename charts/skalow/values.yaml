@@ -88,3 +88,11 @@ oet-scripts:
   rest:
     featureFlags:
       readViaPubSub: true
+
+sdp:
+  enabled: true
+  lmc:
+    prefix: low
+    nsubarray: 3
+  tango-base:
+    enabled: false

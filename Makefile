@@ -135,7 +135,6 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 		--set minikube=$(MINIKUBE) \
 		--set global.minikube=$(MINIKUBE) \
 		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
-		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set oet-scripts.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
@@ -170,7 +169,6 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set minikube=$(MINIKUBE) \
 		--set global.minikube=$(MINIKUBE) \
 		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
-		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set oet-scripts.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \

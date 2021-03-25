@@ -59,10 +59,10 @@ def test_subarray_abort():
     """Abort subarray"""
 
 def assign():
-    LOGGER.info("Before starting the telescope check whether a telescope is in StandBy.")
+    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
-    LOGGER.info("User can start the telescope.")
+    LOGGER.info("Invoking Startup Telescope command on the telescope.")
     set_telescope_to_running()
     LOGGER.info("Telescope is started successfully.")
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
@@ -71,7 +71,7 @@ def assign():
 
 
 def configure_ready(sdp_block):
-    LOGGER.info("User can configure the Subarray.")
+    LOGGER.info("Invoking configure command on the Subarray.")
     take_subarray(1).and_configure_scan_by_file(sdp_block)
     LOGGER.info("Configure command is invoked on Subarray.")
     LOGGER.info("Subarray is moved to READY, Configure command is successful on Subarray.")
@@ -82,14 +82,13 @@ def scanning(fixture):
     @log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
     @sync_scan_oet
     def scan():
-        LOGGER.info("User can execute scan on Subarray.")
+        LOGGER.info("Invoking scan command on Subarray.")
         def send_scan(duration):
             SubArray(1).scan()
         LOGGER.info("Scan is invoked on Subarray 1")
         executor = futures.ThreadPoolExecutor(max_workers=1)
-        LOGGER.info("getting into executor block")
+        LOGGER.info("Getting into executor block")
         return executor.submit(send_scan,fixture['scans'])
-        # LOGGER.info("getting out off executor block")     Is it executed?
     fixture['future'] = scan()
     LOGGER.info("obsState = Scanning of TMC-Subarray")
     return fixture
@@ -98,23 +97,20 @@ def scanning(fixture):
 @given("operator has a running telescope with a subarray in state <subarray_obsstate>")
 def set_up_telescope(subarray_obsstate : str):
     if subarray_obsstate == 'IDLE':
-        LOGGER.info("As operator want obsState value IDLE, execute respective commands on Telescope.")
         assign()
-        LOGGER.info("Assign Resources command is successful from @given block with IDLE obsState condition.")
+        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'IDLE'")
     elif subarray_obsstate == 'READY':
-        LOGGER.info("As operator want obsState value READY, execute respective commands on Telescope.")
         sdp_block = assign()
-        LOGGER.info("Assign Resources command is successful from @given block with READY obsState condition.")
+        LOGGER.info("Resources are assigned successfully and configuring the subarray now")
         configure_ready(sdp_block)
-        LOGGER.info("Subarray is configured successfully from @given block with READY condition.")
+        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'READY'")
     elif subarray_obsstate == 'SCANNING':
-        LOGGER.info("As operator want obsState value SCANNING, execute respective commands on Telescope.")
         sdp_block = assign()
-        LOGGER.info("Assign Resources command is successful from @given block with SCANNING obsState condition.")
+        LOGGER.info("Resources are assigned successfully and configuring the subarray now")
         configure_ready(sdp_block)
-        LOGGER.info("Configure command is successful from @given block with SCANNING obsState condition.")
+        LOGGER.info("Subarray is configured and executing a scan on subarray")
         scanning(sdp_block)
-        LOGGER.info("Scan is invoked successfully on Subarray from @given block with SCANNING condition.")
+        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'SCANNING'")
     else:
         msg = 'obsState {} is not settable with command methods'
         raise ValueError(msg.format(subarray_obsstate))
@@ -124,7 +120,7 @@ def set_up_telescope(subarray_obsstate : str):
 def abort_subarray():
     @sync_abort(200)
     def abort():
-        LOGGER.info("User can invoke ABORT command.")
+        LOGGER.info("Invoking ABORT command.")
         SubArray(1).abort()
         LOGGER.info("Abort command is invoked on subarray")
     abort()
@@ -151,18 +147,18 @@ def teardown_function(function):
             take_subarray(1).and_release_all_resources()
             LOGGER.info("Resources are deallocated successfully from Subarray.")
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
+        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
         raise Exception("Unable to tear down test setup")  
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
         LOGGER.info("tearing down configured subarray (READY)")
         take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
-        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
+        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
         raise Exception("Unable to tear down test setup")
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTING"):
-        LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manualy to complete tear down")
+        LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTED"):
         take_subarray(1).restart_when_aborted()

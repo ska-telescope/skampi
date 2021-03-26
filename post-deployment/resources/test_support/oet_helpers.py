@@ -211,28 +211,36 @@ class ScriptExecutor:
         return None
 
     @staticmethod
-    def wait_for_script_to_complete(task_id):
+    def wait_for_script_to_complete(task_id, timeout):
         """
         Wait until the script with the given ID is no longer
         running.
 
         Args:
             task_id (str): ID of the script on the task list
+            timeout (int): timeout (~seconds) how long to wait
+            for script to complete
 
         Returns:
             task.state: State of the script after completion.
             None if timeout occurs before state changes from RUNNING.
         """
-        timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT  # arbitrary number
-        while timeout != 0:
+        t = timeout
+        while t != 0:
             task = ScriptExecutor().get_script_by_id(task_id)
             if not task.state_is('RUNNING'):
                 LOGGER.info(
                     "PROCESS: Task state changed from RUNNING to %s", task.state)
                 return task.state
-            time.sleep(PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS)
-            timeout -= 1
-        return None
+            time.sleep(1)
+            t -= 1
+
+        LOGGER.info("PROCESS: Timeout occurred (> %d seconds) when waiting for task "
+                    "to complete. Stopping script.", timeout)
+        ScriptExecutor().stop_script()
+        task = ScriptExecutor().get_script_by_id(task_id)
+        LOGGER.info("PROCESS: Script state: %s", task.state)
+        return task.state
 
     def create_script(self, script) -> Task:
         resp = REST_CLIENT.create(script, subarray_id=1)
@@ -243,6 +251,9 @@ class ScriptExecutor:
         resp = REST_CLIENT.start(*script_args, listen=False)
         task = ScriptExecutor.parse_rest_start_response(resp)
         return task
+
+    def stop_script(self):
+        REST_CLIENT.stop(run_abort=False)
 
     def list_scripts(self):
         resp = REST_CLIENT.list()
@@ -256,7 +267,7 @@ class ScriptExecutor:
                 return task
         return None
 
-    def execute_script(self, script, *script_run_args):
+    def execute_script(self, script, *script_run_args, timeout=200):
         """
         Execute the given script using OET REST client.
 
@@ -264,6 +275,8 @@ class ScriptExecutor:
             script (str): Script file to execute
             script_run_args: Arguments to pass to the script when
             the script execution is started
+            timeout: Timeout (~seconds) for how long to wait for script
+            to complete
 
         Returns:
             script_final_state: State of the script after completion.
@@ -292,5 +305,5 @@ class ScriptExecutor:
                         created_task.task_id, started_task.task_id)
             return None
 
-        script_final_state = self.wait_for_script_to_complete(started_task.task_id)
+        script_final_state = ScriptExecutor.wait_for_script_to_complete(started_task.task_id, timeout)
         return script_final_state

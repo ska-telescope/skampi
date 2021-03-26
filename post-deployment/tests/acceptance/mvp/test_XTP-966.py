@@ -106,24 +106,26 @@ def allocate_resources(oet_result, script):
         oet_result (dict): fixture used to track progress
         script (str): file path to an observing script
     """
+    oet_result[TEST_PASSED] = False
     LOGGER.info("PROCESS: Creating SBI from SB %s ",
                 oet_result[SCHEDULING_BLOCK])
 
     # create Scheduling Block Instance so that the same SB ID is maintained through
     # resource allocation and observation execution
-    oet_result[TEST_PASSED] = EXECUTOR.execute_script(
+    script_completion_state = EXECUTOR.execute_script(
         script='file://scripts/create_sbi.py',
         scheduling_block=oet_result[SCHEDULING_BLOCK]
     )
-    assert oet_result[TEST_PASSED],  "PROCESS: SBI creation failed"
+    assert script_completion_state == 'COMPLETED',  "PROCESS: SBI creation failed"
 
     LOGGER.info("PROCESS: Allocating resources for the SB %s ",
                 oet_result[SCHEDULING_BLOCK])
-    oet_result[TEST_PASSED] = EXECUTOR.execute_script(
+    script_completion_state = EXECUTOR.execute_script(
         script=script,
         scheduling_block=oet_result[SCHEDULING_BLOCK]
     )
-    assert oet_result[TEST_PASSED],  "PROCESS: Resource Allocation failed"
+    assert script_completion_state == 'COMPLETED',  "PROCESS: Resource Allocation failed"
+    oet_result[TEST_PASSED] = True
 
 
 @then(parsers.parse('the OET observes the SB with the script {script}'))
@@ -138,11 +140,11 @@ def run_scheduling_block(oet_result, script):
     LOGGER.info("PROCESS: Starting to observe the SB %s using script %s",
                 oet_result[SCHEDULING_BLOCK], script)
 
-    oet_result[TEST_PASSED] = EXECUTOR.execute_script(
+    script_completion_state = EXECUTOR.execute_script(
         script=script,
         scheduling_block=oet_result[SCHEDULING_BLOCK]
     )
-    assert oet_result[TEST_PASSED],  "PROCESS: Observation failed"
+    assert script_completion_state == 'COMPLETED',   "PROCESS: Observation failed"
 
 
 @then(parsers.parse(

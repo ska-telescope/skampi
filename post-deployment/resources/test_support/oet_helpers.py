@@ -8,6 +8,7 @@ from assertpy import assert_that
 # SUT import
 from oet.procedure.application.restclient import RestClientUI
 
+
 from resources.test_support.helpers import resource
 
 # OET task completion can occur before TMC has completed its activity - so allow time for the
@@ -140,42 +141,15 @@ class Poller:
 
 
 class Task:
-    @staticmethod
-    def get_task_status(task, resp):
-        """Extract a status for a task from the list
-        If it isn't on the list return None so we can trap
-        if we need to
 
-        Args:
-            task (str): Task ID being hunted for
-            resp (str): The response message to be parsed
+    def __init__(self, task_id, script, creation_time, state):
+        self.task_id = task_id
+        self.script = script
+        self.creation_time = creation_time
+        self.state = state
 
-        Returns:
-            str: The current OET status of the task or
-            None if task is not present in resp
-        """
-        rest_responses = ScriptExecutor.parse_rest_response(resp)
-        result_for_task = [x['state'] for x in rest_responses if x['id'] == task]
-        if len(result_for_task) == 0:
-            return None
-        task_status = result_for_task[0]
-        LOGGER.debug("Task Status is : %s", task_status)
-        return task_status
-
-    @staticmethod
-    def task_has_status(task, expected_status, resp):
-        """Confirm the task has the expected status by
-        querying the OET client
-
-        Args:
-            task (str): OET ID for the task (script)
-            expected_status (str): Expected script state
-            resp (str): Response from OET REST CLI list
-
-        Returns:
-            bool: True if task is in expected_status
-        """
-        return Task.get_task_status(task, resp) == expected_status
+    def state_is(self, expected):
+        return self.state == expected
 
 
 class ScriptExecutor:
@@ -192,12 +166,12 @@ class ScriptExecutor:
             information on a script.
         """
         elements = line.split()
-        rest_response_object = {
-            'id': elements[0],
-            'script': elements[1],
-            'creation_time': str(elements[2] + ' ' + elements[3]),
-            'state': elements[4]}
-        return rest_response_object
+        task = Task(
+            task_id=elements[0],
+            script=elements[1],
+            creation_time=str(elements[2] + ' ' + elements[3]),
+            state=elements[4])
+        return task
 
     @staticmethod
     def parse_rest_response(resp):
@@ -211,13 +185,13 @@ class ScriptExecutor:
             [rest_response_object]: List of dicts containing
             information on each script.
         """
-        rest_responses = []
+        task_list = []
         lines = resp.splitlines()
         del lines[0:2]
         for line in lines:
-            rest_response_object = ScriptExecutor.parse_rest_response_line(line)
-            rest_responses.append(rest_response_object)
-        return rest_responses
+            task = ScriptExecutor.parse_rest_response_line(line)
+            task_list.append(task)
+        return task_list
 
     @staticmethod
     def parse_rest_start_response(resp):
@@ -238,58 +212,67 @@ class ScriptExecutor:
         for line in resp:
             # Only get line with script details (ignore header lines)
             if 'RUNNING' in line:
-                return [ScriptExecutor.parse_rest_response_line(line)]
-        return []
+                return ScriptExecutor.parse_rest_response_line(line)
+        return None
 
-    def confirm_script_status_and_return_id(self, resp, expected_status='CREATED'):
-        """
-        Confirm that the script is in a given state and return the ID
-
-        Args:
-            resp (str): Response from OET REST CLI list
-            expected_status (str): Expected script state
-
-        Returns:
-            str: Task ID
-        """
-        if expected_status is 'RUNNING':
-            details = ScriptExecutor.parse_rest_start_response(resp)
-        else:
-            details = ScriptExecutor.parse_rest_response(resp)
-        assert_that(
-            len(details), "Expected details for 1 script, instead got "
-                          "details for {} scripts".format(len(details))).is_equal_to(1)
-        resp_state = details[0].get('state')
-        assert_that(
-            resp_state,
-            "The script status did not match the expected state"
-        ).is_equal_to(expected_status)
-        script_id = details[0].get('id')
-        return script_id
-
-    def execute_script(self, script, scheduling_block):
-        resp = REST_CLIENT.create(script, subarray_id=1)
-        # confirm that creating the task worked and we have a valid ID
-        oet_create_task_id = self.confirm_script_status_and_return_id(resp, 'CREATED')
-        # we  can now start the observing task passing in the scheduling block as a parameter
-        resp = REST_CLIENT.start(scheduling_block, listen=False)
-        # confirm that it didn't fail on starting
-        oet_start_task_id = self.confirm_script_status_and_return_id(resp, 'RUNNING')
-
-        # If task IDs do not match, wrong script was started
-        if oet_create_task_id != oet_start_task_id:
-            LOGGER.info("Script IDs did not match, created script with ID %s but started script with ID %s",
-                        oet_create_task_id, oet_start_task_id)
-            return False
-
+    @staticmethod
+    def wait_for_script_to_complete(task_id):
         timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT  # arbitrary number
         while timeout != 0:
-            resp = REST_CLIENT.list()
-            if not Task.task_has_status(oet_start_task_id, 'RUNNING', resp):
+            task = ScriptExecutor().get_script_by_id(task_id)
+            if not task.state_is('RUNNING'):
                 LOGGER.info(
                     "PROCESS: Task has run to completion - no longer present on task list")
-                return True
+                return task.state
             time.sleep(PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS)
             timeout -= 1
-        # if we get here we timed out so need to fail the test
-        return False
+        return None
+
+    def create_script(self, script) -> Task:
+        resp = REST_CLIENT.create(script, subarray_id=1)
+        tasks = ScriptExecutor.parse_rest_response(resp)
+        return tasks[0]
+
+    def start_script(self, script_args) -> Task:
+        resp = REST_CLIENT.start(script_args, listen=False)
+        task = ScriptExecutor.parse_rest_start_response(resp)
+        return task
+
+    def list_scripts(self):
+        resp = REST_CLIENT.list()
+        tasks = ScriptExecutor.parse_rest_response(resp)
+        return tasks
+
+    def get_script_by_id(self, task_id):
+        tasks = self.list_scripts()
+        for task in tasks:
+            if task.task_id == task_id:
+                return task
+        return None
+
+    def execute_script(self, script, scheduling_block):
+        # create script
+        created_task = self.create_script(script)
+
+        # confirm that creating the task worked and we have a valid ID
+        if not created_task.state_is('CREATED'):
+            LOGGER.info("Expected script to be CREATED but instead was %s",
+                        created_task.state)
+            return None
+
+        # start execution of created script
+        started_task = self.start_script(scheduling_block)
+        # confirm that it didn't fail on starting
+        if not started_task.state_is('RUNNING'):
+            LOGGER.info("Expected script to be RUNNING but instead was %s",
+                        started_task.state)
+            return None
+
+        # If task IDs do not match, wrong script was started
+        if created_task.task_id != started_task.task_id:
+            LOGGER.info("Script IDs did not match, created script with ID %s but started script with ID %s",
+                        created_task.task_id, started_task.task_id)
+            return None
+
+        task_final_state = self.wait_for_script_to_complete(started_task.task_id)
+        return task_final_state

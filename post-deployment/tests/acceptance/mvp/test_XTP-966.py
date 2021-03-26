@@ -10,7 +10,6 @@ import logging
 import time
 import pytest
 
-from oet.procedure.application.restclient import RestClientUI
 from pytest_bdd import given, parsers, scenario, then, when
 from resources.test_support.controls import (restart_subarray,
                                              set_telescope_to_running,
@@ -28,10 +27,6 @@ STATE_CHECK = "State Transitions"
 OET_TASK_ID = 'OET Task ID'
 SCHEDULING_BLOCK = 'Scheduling Block'
 SUBARRAY = 'Subarray Used'
-
-# OET task completion can occur before TMC has completed its activity - so allow time for the
-# last transitions to take place
-PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS = 10
 
 EXECUTOR = ScriptExecutor()
 
@@ -72,7 +67,6 @@ def attempt_to_clean_subarray_to_empty(subarray: Subarray):
     LOGGER.info("PROCESS: Sub-array state is %s ", subarray.get_obsstate())
 
 
-@pytest.mark.fast
 @pytest.mark.skamid
 @scenario("XTP-966.feature",
           "SKA Mid Scheduling Block - Resource allocation and observation")
@@ -91,7 +85,6 @@ def setup_telescope(oet_result, subarray_name, scheduling_block):
         subarray_name (str): Sub-array ID
         scheduling_block (str): file path to SB JSON file
     """
-
     subarray = Subarray(subarray_name)
     attempt_to_clean_subarray_to_empty(subarray)
 
@@ -105,54 +98,53 @@ def setup_telescope(oet_result, subarray_name, scheduling_block):
 
 
 @when(parsers.parse('the OET allocates resources for the SB with the script {script}'))
-def allocate_resources(oet_result, rest_client, script):
+def allocate_resources(oet_result, script):
     """
     Use the OET Rest API to allocate resources for the Scheduling Block
 
     Args:
         oet_result (dict): fixture used to track progress
-        rest_client (RestClientUI):
         script (str): file path to an observing script
     """
+    oet_result[TEST_PASSED] = False
     LOGGER.info("PROCESS: Creating SBI from SB %s ",
                 oet_result[SCHEDULING_BLOCK])
 
     # create Scheduling Block Instance so that the same SB ID is maintained through
     # resource allocation and observation execution
-    oet_result[TEST_PASSED] = EXECUTOR.run_task_using_oet_rest_client(
-        rest_client,
-        script='file://scripts/create_sbi.py',
-        scheduling_block=oet_result[SCHEDULING_BLOCK]
+    script_completion_state = EXECUTOR.execute_script(
+        'file://scripts/create_sbi.py',
+        oet_result[SCHEDULING_BLOCK]
     )
-    assert oet_result[TEST_PASSED],  "PROCESS: SBI creation failed"
+    assert script_completion_state == 'COMPLETED',  "PROCESS: SBI creation failed"
 
     LOGGER.info("PROCESS: Allocating resources for the SB %s ",
                 oet_result[SCHEDULING_BLOCK])
-    oet_result[TEST_PASSED] = EXECUTOR.run_task_using_oet_rest_client(
-        rest_client,
-        script=script,
-        scheduling_block=oet_result[SCHEDULING_BLOCK]
+    script_completion_state = EXECUTOR.execute_script(
+        script,
+        oet_result[SCHEDULING_BLOCK]
     )
-    assert oet_result[TEST_PASSED],  "PROCESS: Resource Allocation failed"
+    assert script_completion_state == 'COMPLETED',  "PROCESS: Resource Allocation failed"
+    oet_result[TEST_PASSED] = True
 
 
 @then(parsers.parse('the OET observes the SB with the script {script}'))
-def run_scheduling_block(oet_result, rest_client, script):
-    """[summary]
+def run_scheduling_block(oet_result, script):
+    """
+    Use the OET Rest API to observe the SBI
 
     Args:
         oet_result (dict): fixture used to track progress
-        rest_client ([type]): [description]
+        script (str): path to the script file to be run
     """
     LOGGER.info("PROCESS: Starting to observe the SB %s using script %s",
                 oet_result[SCHEDULING_BLOCK], script)
 
-    oet_result[TEST_PASSED] = EXECUTOR.run_task_using_oet_rest_client(
-        rest_client,
-        script=script,
-        scheduling_block=oet_result[SCHEDULING_BLOCK]
+    script_completion_state = EXECUTOR.execute_script(
+        script,
+        oet_result[SCHEDULING_BLOCK]
     )
-    assert oet_result[TEST_PASSED],  "PROCESS: Observation failed"
+    assert script_completion_state == 'COMPLETED',   "PROCESS: Observation failed"
 
 
 @then(parsers.parse(
@@ -160,33 +152,15 @@ def run_scheduling_block(oet_result, rest_client, script):
 ))
 def check_transitions(oet_result, expected_states):
     """Check that the device passed through the expected
-    obsState transitions. This has been being monitored
-    on a separate thread in the background.
-
-    The method deliberately pauses at the start to allow TMC time
-    to complete any operation still in progress.
+    obsState transitions.
 
     Args:
         oet_result (dict): fixture used to track progress
         expected_states (str): String containing states sub-array is expected to have
         passed through, separated by a comma
     """
-    time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
-
-    oet_result[STATE_CHECK].stop_polling()
     expected_states = [x.strip() for x in expected_states.split(',')]
-    recorded_states = list(oet_result[STATE_CHECK].get_results())
-
-    # ignore 'READY' as it can be a transitory state so we don't rely
-    # on it being present in the list to be matched
-    recorded_states = [i for i in recorded_states if i != 'READY']
-
-    oet_result[TEST_PASSED] = False
-    LOGGER.info("Comparing the list of states observed with the expected states")
-    for expected_state, recorded_state in zip(expected_states, recorded_states):
-        LOGGER.info("Expected %s was %s ", expected_state, recorded_state)
-        assert expected_state == recorded_state, "State observed was not as expected"
-    LOGGER.info("All states match")
+    assert oet_result[STATE_CHECK].state_transitions_match(expected_states)
     oet_result[TEST_PASSED] = True
 
 
@@ -215,5 +189,5 @@ def end(subarray: Subarray):
             # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         set_telescope_to_standby()
-        LOGGER.info("CLEANUP: Telescope is in %s ",
+        LOGGER.info("CLEANUP: Sub-array is in %s ",
                     subarray.get_obsstate())

@@ -31,10 +31,10 @@ def check_coming_out_of_standby():
 
 def check_going_out_of_configured():
     ## Verify the Subarray obstate = READY
-    resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('READY')
-    resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('READY')
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-
+    # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('READY')
+    # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('READY')
+    
 def check_going_out_of_abort():
     ## Verify the Subarray obstate = ABORTED
     # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('ABORTED')

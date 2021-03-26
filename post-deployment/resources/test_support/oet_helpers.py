@@ -160,8 +160,7 @@ class ScriptExecutor:
             line (string): A line from OET REST CLI response
 
         Returns:
-            rest_response_object: A dicts containing
-            information on a script.
+            task: Task object with task information.
         """
         elements = line.split()
         task = Task(
@@ -180,8 +179,7 @@ class ScriptExecutor:
             resp (string): Response from OET REST CLI
 
         Returns:
-            [rest_response_object]: List of dicts containing
-            information on each script.
+            [task]: List Task objects.
         """
         task_list = []
         lines = resp.splitlines()
@@ -204,8 +202,7 @@ class ScriptExecutor:
             resp (Generator): Response from OET REST CLI start
 
         Returns:
-            [rest_response_object]: List of dicts containing
-            information on each script.
+            task: Task object with information on the started task.
         """
         for line in resp:
             # Only get line with script details (ignore header lines)
@@ -215,12 +212,23 @@ class ScriptExecutor:
 
     @staticmethod
     def wait_for_script_to_complete(task_id):
+        """
+        Wait until the script with the given ID is no longer
+        running.
+
+        Args:
+            task_id (str): ID of the script on the task list
+
+        Returns:
+            task.state: State of the script after completion.
+            None if timeout occurs before state changes from RUNNING.
+        """
         timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT  # arbitrary number
         while timeout != 0:
             task = ScriptExecutor().get_script_by_id(task_id)
             if not task.state_is('RUNNING'):
                 LOGGER.info(
-                    "PROCESS: Task has run to completion - no longer present on task list")
+                    "PROCESS: Task state changed from RUNNING to %s", task.state)
                 return task.state
             time.sleep(PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS)
             timeout -= 1
@@ -249,6 +257,18 @@ class ScriptExecutor:
         return None
 
     def execute_script(self, script, *script_run_args):
+        """
+        Execute the given script using OET REST client.
+
+        Args:
+            script (str): Script file to execute
+            script_run_args: Arguments to pass to the script when
+            the script execution is started
+
+        Returns:
+            script_final_state: State of the script after completion.
+            None if something goes wrong.
+        """
         # create script
         created_task = self.create_script(script)
 
@@ -272,5 +292,5 @@ class ScriptExecutor:
                         created_task.task_id, started_task.task_id)
             return None
 
-        task_final_state = self.wait_for_script_to_complete(started_task.task_id)
-        return task_final_state
+        script_final_state = self.wait_for_script_to_complete(started_task.task_id)
+        return script_final_state

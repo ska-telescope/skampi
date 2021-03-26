@@ -66,18 +66,21 @@ def test_subarray_scan():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
-    LOGGER.info("Given I am accessing the console interface for the OET")
-    LOGGER.info("Check whether telescope is in StandBy")
+    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy")
     assert(telescope_is_in_standby())
-    LOGGER.info("Starting up telescope")
+    LOGGER.info("Telescope is in StandBy.")
+    LOGGER.info("Starting up the telescope")
     set_telescope_to_running()
+    LOGGER.info("Telescope started.")
 
 @given("Sub-array is in READY state")
 def set_to_ready():
+    LOGGER.info("Allocate 2 dishes to Subarray 1")
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
-    LOGGER.info("AssignResources is invoke on Subarray")
+    LOGGER.info("AssignResources is successful on Subarray 1 with 2 dishes allocated")
+    LOGGER.info("Invoking configure command on the Subarray.")
     take_subarray(1).and_configure_scan_by_file(sdp_block)
-    LOGGER.info("Configure is invoke on Subarray")
+    LOGGER.info("Configure is successful on Subarray")
 
 @given("duration of scan is 10 seconds")
 def scan_duration(fixture):
@@ -92,7 +95,7 @@ def invoke_scan_command(fixture):
     def scan():
         def send_scan(duration):
             SubArray(1).scan()
-        LOGGER.info("Scan is invoked on Subarray 1")
+        LOGGER.info("Scan command is invoked on Subarray 1")
         executor = futures.ThreadPoolExecutor(max_workers=1)
         return executor.submit(send_scan,fixture['scans'])
     fixture['future'] = scan()
@@ -114,15 +117,14 @@ def check_ready_state(fixture):
 @then("observation ends after 10 seconds as indicated by returning to READY state")
 def check_running_state(fixture):
     fixture['future'].result(timeout=10)
+    # check that the SDP report subarray as being in the obsState = READY
+    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
+    # check that the CSP report subarray as being in the obsState = READY
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
     # check that the TMC report subarray as being in the obsState = READY
     assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
     logging.info("TMC-subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    # check that the CSP report subarray as being in the obsState = READY
-    #assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
-    #logging.info("CSP-subarray obsState: " + resource('mid_csp/elt/subarray_01').get("obsState"))
-    # check that the SDP report subarray as being in the obsState = READY
-    #assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
-    #logging.info("SDP-subarray obsState: " + resource('mid_sdp/elt/subarray_1').get("obsState"))
+    logging.info("EndScan Command is successful on Subarray.")
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
@@ -136,12 +138,12 @@ def teardown_function(function):
         LOGGER.info("tearing down configured subarray (READY)")
         take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
-        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
+        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
-        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
+        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")

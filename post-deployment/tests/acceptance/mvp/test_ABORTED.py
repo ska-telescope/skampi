@@ -31,25 +31,32 @@ LOGGER = logging.getLogger(__name__)
 
 EXECUTOR = ScriptExecutor()
 
+# used as labels within the result fixture
+# this should be refactored at some point to something more elegant
+SUBARRAY_USED = 'Sub-array'
 
-def end():
+
+@pytest.fixture(name="result")
+def fixture_result():
+    """structure used to hold details of the intermediate result at each stage of the test"""
+    fixture = {SUBARRAY_USED: 'ska_mid/tm_subarray_node/1'}
+    yield fixture
+    # teardown
+    end(fixture)
+
+
+def end(result):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-    obsstate = resource('ska_mid/tm_subarray_node/1').get('obsState')
+    obsstate = resource(result[SUBARRAY_USED]).get('obsState')
     if obsstate == "IDLE":
         LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
         take_subarray(1).and_release_all_resources()
-    if obsstate == "READY":
-        LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
-        take_subarray(1).and_end_sb_when_ready(
-        ).and_release_all_resources()
-    if obsstate in ["CONFIGURING", "SCANNING"]:
+    if obsstate in ["RESTARTING", "RESETTING", "ABORTING", "ABORTED"]:
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)
-        restart_subarray(1)
-        # raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     set_telescope_to_standby()
 
@@ -67,7 +74,7 @@ def test_recovery_from_fault():
 
 
 @given('the sub-array is in ObsState ABORTED')
-def set_subarray_to_aborted():
+def set_subarray_to_aborted(result):
     """
     Set sub-array to ABORTED state by sending Abort command after resources
     are allocated.
@@ -78,11 +85,11 @@ def set_subarray_to_aborted():
 
     subarray = SubArray(1)
     subarray.abort()
-    assert resource('ska_mid/tm_subarray_node/1').get('obsState') == 'ABORTED'
+    assert resource(result[SUBARRAY_USED]).get('obsState') == 'ABORTED'
 
 
 @given('the sub-array is in ObsState FAULT')
-def set_subarray_to_fault():
+def set_subarray_to_fault(result):
     """
     Set sub-array to FAULT state by sending incomplete JSON in the Configure
     command.
@@ -103,7 +110,7 @@ def set_subarray_to_fault():
     except DevFailed:
         pass
 
-    assert resource('ska_mid/tm_subarray_node/1').get('obsState') == 'FAULT'
+    assert resource(result[SUBARRAY_USED]).get('obsState') == 'FAULT'
 
     # Need to sleep here because sub-array goes to FAULT before FAULT callbacks are
     # complete and so the Restart command gets stuck (bug).
@@ -118,21 +125,20 @@ def run_script(script):
         script (str): file path to an observing script
     """
     LOGGER.info("PROCESS: Running script %s ", script)
-    execution_result = EXECUTOR.execute_script(
+    script_completion_state = EXECUTOR.execute_script(
         script=script,
         timeout=10
     )
-    assert execution_result,  "PROCESS: Script execution failed"
+    assert script_completion_state == 'COMPLETED',  "PROCESS: Script execution failed"
 
 
 @then(parsers.parse('the sub-array goes to ObsState <obsstate>'))
-def check_final_subarray_state(obsstate):
+def check_final_subarray_state(obsstate, result):
     """
 
     Args:
         obsstate (str): Sub-array Tango device ObsState
     """
-    subarray_state = resource('ska_mid/tm_subarray_node/1').get('obsState')
+    subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
     assert subarray_state == obsstate
-    end()
 

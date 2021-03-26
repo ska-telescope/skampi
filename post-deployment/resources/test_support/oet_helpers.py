@@ -4,18 +4,12 @@ from os import environ
 import time
 from multiprocessing import Process, Manager, Queue
 
-from assertpy import assert_that
-# SUT import
 from oet.procedure.application.restclient import RestClientUI
 from resources.test_support.helpers import resource
 
 # OET task completion can occur before TMC has completed its activity - so allow time for the
 # last transitions to take place
 PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS = 10
-# arbitrary number, this only needs to be this big to cover a science scan of several seconds
-DEFAUT_LOOPS_DEFORE_TIMEOUT = 10000
-# avoids swamping the rest server but short enough to avoid delaying the test
-PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS = 5
 
 LOGGER = logging.getLogger(__name__)
 

@@ -2,7 +2,9 @@ display: ":0"
 xauthority: "~/.Xauthority"
 
 global:
-  retry: "--sleep=2"
+  retry: 
+  - "--sleep=1"
+  - "--tries=100"
   sub-system:
     tango-util:
       enabled: false

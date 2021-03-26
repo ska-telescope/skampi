@@ -182,7 +182,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 
 template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
 	helm dependency update $(UMBRELLA_CHART_PATH); \
-	helm upgrade $(HELM_RELEASE) \
+	helm template $(HELM_RELEASE) \
         --set tango-base.xauthority="$(XAUTHORITYx)" \
     	--set logging.ingress.hostname=$(INGRESS_HOST) \
         --set logging.ingress.nginx=$(USE_NGINX) \

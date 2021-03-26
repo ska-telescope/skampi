@@ -13,7 +13,9 @@ all: test
 # execute the python tests
 # copy TEST_ARTIFACTS into build directory
 # exit with same exit code as test run
+# unset proxy settings (this is needed if it's behind a proxy like psi-low)
 test: install
+	unset http_proxy && unset https_proxy && unset HTTP_PROXY && unset HTTPS_PROXY && \
 	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \
 	(python3 resources/log_consumer/log_consumer.py log &); \
 	mkdir -p build && \
@@ -31,6 +33,7 @@ test: install
 TEST_RUN_SPEC = example.yaml
 
 test_multiple_runs: install
+	unset http_proxy && unset https_proxy && unset HTTP_PROXY && unset HTTPS_PROXY && \
 	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \
 	(python3 resources/log_consumer/log_consumer.py log &); \
 	mkdir -p build && \

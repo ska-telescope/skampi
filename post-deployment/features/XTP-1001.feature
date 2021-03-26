@@ -8,7 +8,7 @@ Feature: Telescope startup and standby
 
 
     @XTP-1002
-    Scenario: Starting up telescope
+    Scenario: Setting telescope to stand-by
         Given telescope is in ON State
         When I tell the OET to run <script>
         Then the central node goes to state <state>

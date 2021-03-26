@@ -51,9 +51,14 @@ def oet_result():
 
 @pytest.mark.fast
 @pytest.mark.skamid
-@scenario("XTP-1001.feature", "Telescope startup and standby")
-def test_telescope_startup_and_standby():
-    """Telescope startup and standby test."""
+@scenario("XTP-1001.feature", "Starting up telescope")
+def test_telescope_startup():
+    """Telescope startup test."""
+
+
+@scenario("XTP-1001.feature", "Setting telescope to stand-by")
+def test_telescope_in_standby():
+    """Telescope is in standby test."""
 
 
 @given('telescope is in OFF State')
@@ -93,8 +98,7 @@ def setup_telescope(oet_result, rest_client, script):
                 script)
 
     # Telescope startup and standby
-    oet_result[TEST_PASSED] = EXECUTOR.run_task_using_oet_rest_client(
-        rest_client,
+    oet_result[TEST_PASSED] = EXECUTOR.execute_script(
         script=script
     )
     assert oet_result[TEST_PASSED], "PROCESS: Telescope setting up operation failed"

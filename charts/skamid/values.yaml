@@ -2,6 +2,9 @@ display: ":0"
 xauthority: "~/.Xauthority"
 
 global:
+  retry: 
+  - "--sleep=1"
+  - "--tries=100"
   sub-system:
     tango-util:
       enabled: false
@@ -11,6 +14,7 @@ global:
       enabled: false
   tango_host: databaseds-tango-base-test:10000
   dsconfig:
+    timeout: 300s
     image:
       registry: nexus.engageska-portugal.pt/ska-docker
       image: tango-dsconfig
@@ -38,11 +42,6 @@ tango-base:
     enabled: true
   tangorest:
     enabled: true
-  tangotest:
-    enabled: true
-  ingress:
-    enabled: true
-    hostname: integration.engageska-portugal.pt
   tangodb:
     use_pv: false
 

@@ -152,9 +152,9 @@ def check_completion_state(result):
     if we got to this point it means we didnt have any exceptions
     """
     LOGGER.info("Checking completion status")
-    check_resource_ready('mid_sdp/elt/subarray_1')
-    check_resource_ready('mid_csp/elt/subarray_01')
     check_resource_ready('ska_mid/tm_subarray_node/1')
+    check_resource_ready('mid_csp/elt/subarray_01')
+    check_resource_ready('mid_sdp/elt/subarray_1')
 
     result[TEST_PASSED] = True
 

@@ -84,27 +84,17 @@ def deallocate_resources():
 
 
 # Here, @then clause should be changed as per new implementation. also update the method's assert statements
-@then('"subarray 1" should go into OFF state')
-def subarray_state_OFF():
+@then('"subarray 1" should go into EMPTY obsState')
+def subarray_state_EMPTY():
     # TODO: Can we assert obsState assertion for CSP and SDP SA?
-    # LOGGER.info("Now deallocating resources ... ")
-    LOGGER.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
-    # Confirm
-    #assert_that(resource('ska_mid/tm_subarray_node/1').get("State") == "OFF")
     assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("EMPTY")
     LOGGER.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    # Confirm
-    LOGGER.info("Subarray is now deallocated")
+    LOGGER.info("Subarray is now in EMPTY obsState")
 
 
 @then('ReceptorList for "subarray 1" should be empty')
 def receptorID_list_empty():
-   # watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
-    # gather info
-   # receptorIDList_val = watch_receptorIDList.get_value_when_changed()
-    # confirm
     resource('ska_mid/tm_subarray_node/1').assert_attribute('receptorIDList').equals(None)
-   # assert_that(receptorIDList_val == [])
     logging.info("ReceptorIDList is empty. Resources are successfully deallocated.")
 
 def teardown_function(function):

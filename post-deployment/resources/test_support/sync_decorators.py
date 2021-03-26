@@ -63,9 +63,9 @@ class WaitConfigure():
 
     def wait(self):
         # self.w.wait_until_value_changed_to('CONFIGURING')
+        self.w.wait_until_value_changed_to('READY',timeout=200)
         self.w1.wait_until_value_changed_to('READY',timeout=200)
         self.w2.wait_until_value_changed_to('READY',timeout=200)
-        self.w.wait_until_value_changed_to('READY',timeout=200)
 
 
     def wait_oet(self):

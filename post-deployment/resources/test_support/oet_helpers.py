@@ -7,8 +7,6 @@ from multiprocessing import Process, Manager, Queue
 from assertpy import assert_that
 # SUT import
 from oet.procedure.application.restclient import RestClientUI
-
-
 from resources.test_support.helpers import resource
 
 # OET task completion can occur before TMC has completed its activity - so allow time for the
@@ -233,8 +231,8 @@ class ScriptExecutor:
         tasks = ScriptExecutor.parse_rest_response(resp)
         return tasks[0]
 
-    def start_script(self, script_args) -> Task:
-        resp = REST_CLIENT.start(script_args, listen=False)
+    def start_script(self, *script_args) -> Task:
+        resp = REST_CLIENT.start(*script_args, listen=False)
         task = ScriptExecutor.parse_rest_start_response(resp)
         return task
 
@@ -250,7 +248,7 @@ class ScriptExecutor:
                 return task
         return None
 
-    def execute_script(self, script, scheduling_block):
+    def execute_script(self, script, *script_run_args):
         # create script
         created_task = self.create_script(script)
 
@@ -261,7 +259,7 @@ class ScriptExecutor:
             return None
 
         # start execution of created script
-        started_task = self.start_script(scheduling_block)
+        started_task = self.start_script(*script_run_args)
         # confirm that it didn't fail on starting
         if not started_task.state_is('RUNNING'):
             LOGGER.info("Expected script to be RUNNING but instead was %s",

@@ -113,16 +113,16 @@ def allocate_resources(oet_result, script):
     # create Scheduling Block Instance so that the same SB ID is maintained through
     # resource allocation and observation execution
     script_completion_state = EXECUTOR.execute_script(
-        script='file://scripts/create_sbi.py',
-        scheduling_block=oet_result[SCHEDULING_BLOCK]
+        'file://scripts/create_sbi.py',
+        oet_result[SCHEDULING_BLOCK]
     )
     assert script_completion_state == 'COMPLETED',  "PROCESS: SBI creation failed"
 
     LOGGER.info("PROCESS: Allocating resources for the SB %s ",
                 oet_result[SCHEDULING_BLOCK])
     script_completion_state = EXECUTOR.execute_script(
-        script=script,
-        scheduling_block=oet_result[SCHEDULING_BLOCK]
+        script,
+        oet_result[SCHEDULING_BLOCK]
     )
     assert script_completion_state == 'COMPLETED',  "PROCESS: Resource Allocation failed"
     oet_result[TEST_PASSED] = True
@@ -141,8 +141,8 @@ def run_scheduling_block(oet_result, script):
                 oet_result[SCHEDULING_BLOCK], script)
 
     script_completion_state = EXECUTOR.execute_script(
-        script=script,
-        scheduling_block=oet_result[SCHEDULING_BLOCK]
+        script,
+        oet_result[SCHEDULING_BLOCK]
     )
     assert script_completion_state == 'COMPLETED',   "PROCESS: Observation failed"
 

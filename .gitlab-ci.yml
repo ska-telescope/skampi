@@ -131,7 +131,7 @@ syscore_mid_on_demand_uninstall:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
-    KEEP_NAMESPACE: "false"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
   script:
   - *uninstall_scripts
   environment:
@@ -154,7 +154,7 @@ syscore_low_on_demand_uninstall:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-    KEEP_NAMESPACE: "false"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
   script:
   - *uninstall_scripts
   environment:
@@ -177,7 +177,7 @@ psi_low_on_demand_uninstall:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-    KEEP_NAMESPACE: "false"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
   script:
   - *uninstall_scripts
   environment:

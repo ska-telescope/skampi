@@ -1,0 +1,100 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+test_XTP-782
+----------------------------------
+
+"""
+import logging
+
+import pytest
+from pytest_bdd import given, parsers, scenario, then, when
+from resources.test_support.controls import (set_telescope_to_running,
+                                             set_telescope_to_standby,
+                                             take_subarray,
+                                             telescope_is_in_standby)
+from resources.test_support.helpers import resource
+from resources.test_support.oet_helpers import ScriptExecutor
+
+LOGGER = logging.getLogger(__name__)
+
+EXECUTOR = ScriptExecutor()
+
+# used as labels within the result fixture
+# this should be refactored at some point to something more elegant
+SUBARRAY_USED = 'Sub-array'
+
+
+@pytest.fixture(name="result")
+def fixture_result():
+    """structure used to hold details of the intermediate result at each stage of the test"""
+    fixture = {SUBARRAY_USED: 'ska_mid/tm_subarray_node/1'}
+    yield fixture
+    # teardown
+    end(fixture)
+
+
+def end(result):
+    """ teardown any state that was previously setup with a setup_function
+    call.
+    """
+    obsstate = resource(result[SUBARRAY_USED]).get('obsState')
+    if obsstate == "IDLE":
+        LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
+        take_subarray(1).and_release_all_resources()
+    if obsstate in ["RESTARTING", "RESETTING", "ABORTING", "ABORTED"]:
+        LOGGER.warning(
+            "Subarray is still in %s Please restart MVP manually to complete tear down",
+            obsstate)
+        raise Exception("Unable to tear down test setup")
+    set_telescope_to_standby()
+
+
+@pytest.mark.fast
+@pytest.mark.skamid
+@scenario("XTP-782.feature", "Releasing resources of sub-array")
+def test_release_resources():
+    """Deallocate Resources."""
+    pass
+
+
+@given('the sub-array is in ObsState IDLE')
+def set_subarray_to_idle(result):
+    """
+    Set sub-array to idle state after resources are allocated.
+    """
+    if telescope_is_in_standby():
+        LOGGER.info("Starting up telescope")
+        set_telescope_to_running()
+    LOGGER.info("Assigning 2 dishes")
+    take_subarray(1).to_be_composed_out_of(2)
+    assert resource(result[SUBARRAY_USED]).get('obsState') == 'IDLE'
+    LOGGER.info("sub-array is in ObsState IDLE")
+
+
+@when(parsers.parse('I tell the OET to run {script}'))
+def run_script(script):
+    """
+
+    Args:
+        script (str): file path to an deallocate script
+    """
+    LOGGER.info("PROCESS: Running script %s ", script)
+    script_completion_state = EXECUTOR.execute_script(
+        script=script,
+        timeout=30
+    )
+    assert script_completion_state == 'COMPLETED', "PROCESS: Script execution failed"
+
+
+@then(parsers.parse('the sub-array goes to ObsState {obsstate}'))
+def check_final_subarray_state(obsstate, result):
+    """
+
+    Args:
+        obsstate (str): Sub-array Tango device ObsState
+    """
+    subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
+    assert subarray_state == obsstate
+    LOGGER.info("sub-array is in ObsState %s", obsstate)

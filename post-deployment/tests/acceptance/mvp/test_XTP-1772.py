@@ -66,7 +66,7 @@ def end(result):
 
 
 @pytest.mark.skamid
-@scenario("test_ABORTED.feature", "Recovering sub-array from ABORTED")
+@scenario("XTP-1772.feature", "Recovering sub-array from ABORTED")
 def test_recovery_from_aborted():
     """"""
 
@@ -88,7 +88,7 @@ def set_subarray_to_aborted(result):
 
 @pytest.mark.skamid
 @pytest.mark.skip(reason="Disabled due to error when resetting/restarting from FAULT")
-@scenario("test_ABORTED.feature", "Recovering sub-array from FAULT")
+@scenario("XTP-1772.feature", "Recovering sub-array from FAULT")
 def test_recovery_from_fault():
     """"""
 
@@ -151,13 +151,13 @@ def check_final_subarray_state(obsstate, result):
 
 
 @pytest.mark.skamid
-@scenario("test_ABORTED.feature", "Stopping script execution and sending Abort command to sub-array")
+@scenario("XTP-1772.feature", "Stopping script execution and sending Abort command to sub-array")
 def test_stop_script_and_abort_subarray():
     """"""
 
 
 @pytest.mark.skamid
-@scenario("test_ABORTED.feature", "Stopping script execution without aborting sub-array")
+@scenario("XTP-1772.feature", "Stopping script execution without aborting sub-array")
 def test_stop_script():
     """"""
 

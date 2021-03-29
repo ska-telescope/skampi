@@ -20,8 +20,6 @@ stages:
   - cleanup
 
 .uninstall_template: &uninstall_definition
-  tags:
-  - k8srunner
   script:
   - &uninstall_scripts |
     make uninstall
@@ -35,106 +33,13 @@ stages:
     variables:
       - $DELETE == "true"
 
-.create_credentials_template: &create_credentials_definition
-  tags:
-  - k8srunner
-  variables:
-  # - KUBE_NAMESPACE: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH
-  - SERVICE_ACCOUNT: ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
-  before_script:
-  - &create_k8s_cred_dependencies |
-    apt-get -y update
-    apt-get install -y curl ca-certificates jq --no-install-recommends
-  script:
-  - &create_k8s_creds |
-    curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
-  only:
-    refs:
-    - branches
-    environment:
-      kubernetes:
-        namespace: $KUBE_NAMESPACE
+.create_k8s_creds: &create_k8s_creds
+- apt-get -y update
+- apt-get install -y curl ca-certificates jq --no-install-recommends
+- curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
 
-.uninstall_template_after_script: &uninstall_definition_after_script
-  after_script:
-  - *uninstall_scripts
-
-.create_credentials_after_script: &create_k8s_creds_after_script
-  after_script:
-  - *create_k8s_creds
-
-uninstall mid:
-  stage: clean
-  variables:
-    HELM_RELEASE: "test-mid"
-    KUBE_NAMESPACE: "integration-mid"
-    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
-    KEEP_NAMESPACE: "true"
-  <<: *uninstall_definition
-  environment:
-    name: "test"
-
-uninstall low:
-  stage: clean
-  variables:
-    HELM_RELEASE: "test-low"
-    KUBE_NAMESPACE: "integration-low"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
-    KEEP_NAMESPACE: "true"
-  <<: *uninstall_definition
-  environment:
-    name: "test-low"
-
-uninstall mid on demand:
-  stage: cleanup
-  variables:
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
-    KEEP_NAMESPACE: "false"
-  tags:
-    - k8srunner
-  script:
-  - *uninstall_scripts
-  environment:
-    name: "test"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-  when: manual
-  only:
-    refs:
-      - branches
-
-uninstall low on demand:
-  stage: cleanup
-  variables:
-    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
-    KEEP_NAMESPACE: "false"
-  tags:
-    - k8srunner
-  script:
-  - *uninstall_scripts
-  environment:
-    name: "test"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
-  when: manual
-  only:
-    refs:
-      - branches
 
 .deploy_template: &deploy_definition
-  tags:
-  - k8srunner
   script:
   - make install-or-upgrade
   - make smoketest
@@ -148,8 +53,6 @@ uninstall low on demand:
     when: always
 
 .test_template: &test_definition
-  tags:
-  - k8srunner
   script:
   # EDA architecture is going to change as it needs additional resources.
   # Archiver will be deployed as a subchart.
@@ -171,8 +74,124 @@ uninstall low on demand:
       junit: build/report.xml
     when: always
 
-test mid:
+.tags_syscore: &tags_syscore
+- k8srunner
+
+.tags_psi_low: &tags_psi_low
+- k8srunner-psi-low
+ 
+
+syscore_mid_uninstall:
+  stage: clean
+  tags: *tags_syscore
+  variables:
+    HELM_RELEASE: "test-mid"
+    KUBE_NAMESPACE: "integration-mid"
+    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "test"
+    action: stop
+
+syscore_low_uninstall:
+  stage: clean
+  tags: *tags_syscore
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "test-low"
+    action: stop
+
+psi_low_uninstall:
+  stage: clean
+  tags: *tags_psi_low
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "psi-low-integration"
+    action: stop
+
+syscore_mid_on_demand_uninstall:
+  stage: cleanup
+  tags: *tags_syscore
+  variables:
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "test/$CI_COMMIT_REF_NAME"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+    action: stop
+    auto_stop_in: 2 hours
+  when: manual
+  only:
+    refs:
+      - branches
+
+syscore_low_on_demand_uninstall:
+  stage: cleanup
+  tags: *tags_syscore
+  variables:
+    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "test-low/$CI_COMMIT_REF_NAME"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
+    action: stop
+    auto_stop_in: 2 hours
+  when: manual
+  only:
+    refs:
+      - branches
+
+psi_low_on_demand_uninstall:
+  stage: cleanup
+  tags: *tags_psi_low
+  variables:
+    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "psi-low-test/$CI_COMMIT_REF_NAME"
+    action: stop
+    auto_stop_in: 2 hours
+  when: manual
+  only:
+    refs:
+      - branches
+
+syscore_mid_test:
   stage: test
+  tags: *tags_syscore
   variables:
     HELM_RELEASE: "test-mid"
     KUBE_NAMESPACE: "integration-mid"
@@ -188,12 +207,14 @@ test mid:
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       namespace: $KUBE_NAMESPACE
+    on_stop: syscore_mid_uninstall
   only:
     refs:
       - master
 
-test mid on demand:
+syscore_mid_on_demand_test:
   stage: test
+  tags: *tags_syscore
   variables:
     DEPLOYMENT_CONFIGURATION: "skamid"
     MARK: "skamid or common"
@@ -205,7 +226,6 @@ test mid on demand:
     ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
     DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
   before_script:
-    - *create_k8s_cred_dependencies
     - *create_k8s_creds
   <<: *test_definition
   # Following block is commented because archiver is not deployed.
@@ -214,18 +234,20 @@ test mid on demand:
   #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
   #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
   environment:
-    name: "test"
+    name: "test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+    on_stop: syscore_mid_on_demand_uninstall
   when: manual
   only:
     refs:
       - branches
 
-test low:
+syscore_low_test:
   stage: test
+  tags: *tags_syscore
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
@@ -242,12 +264,36 @@ test low:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
+    on_stop: syscore_low_uninstall
+  only:
+    refs:
+      - master
+      
+psi_low_test:
+  stage: test
+  tags: *tags_psi_low
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    MARK: "skalow or common"
+    KEEP_NAMESPACE: "true"
+    ARCHIVER_NAMESPACE: "integration-low-archiver"
+    DBNAME: "integration_low_archiver_db"
+    INGRESS_HOST: "202.9.15.131" # psi-head ip
+  <<: *test_definition
+  environment:
+    name: "psi-low-integration"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    on_stop: psi_low_uninstall
   only:
     refs:
       - master
 
-test low on demand:
+syscore_low_on_demand_test:
   stage: test
+  tags: *tags_syscore
   variables:
     DEPLOYMENT_CONFIGURATION: "skalow"
     MARK: "skalow or common"
@@ -259,7 +305,6 @@ test low on demand:
     ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
     DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
   before_script:
-    - *create_k8s_cred_dependencies
     - *create_k8s_creds
   <<: *test_definition
   # Following block is commented because archiver is not deployed.
@@ -268,42 +313,70 @@ test low on demand:
   #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
   #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
   environment:
-    name: "test-low"
+    name: "test-low/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
+    on_stop: syscore_low_on_demand_uninstall
+  when: manual
+  only:
+    refs:
+      - branches
+      
+psi_low_on_demand_test:
+  stage: test
+  tags: *tags_psi_low
+  variables:
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    MARK: "skalow or common"
+    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
+    DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
+    INGRESS_HOST: "202.9.15.131" # psi-head ip
+  before_script:
+    - *create_k8s_creds
+  <<: *test_definition
+  # Following block is commented because archiver is not deployed.
+  # after_script:
+  #   - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
+  #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
+  #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
+  environment:
+    name: "psi-low-test/$CI_COMMIT_REF_NAME"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
+    on_stop: psi_low_on_demand_uninstall
   when: manual
   only:
     refs:
       - branches
 
-.sdp_config_dump_template: &sdp_config_dump_definition
-  tags:
-  - docker-executor
-  script:
-  - kubectl exec -n $KUBE_NAMESPACE sdp-console-0 -- sdpcfg ls values -R / > sdp.config.json
-  when: manual
-  artifacts:
-    paths:
-    - sdp.config.json
-
-sdp_config_dump_mid:
+syscore_mid_sdp_config_dump:
   stage: debug
+  tags: *tags_syscore
   variables:
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
     KEEP_NAMESPACE: "true"
+  script:
+  - kubectl exec -n $KUBE_NAMESPACE sdp-console-0 -- sdpcfg ls values -R / > sdp.config.json
+  artifacts:
+    paths:
+    - sdp.config.json
   environment:
     name: "test"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
+  when: manual
   only:
     refs:
       - master
-  <<: *sdp_config_dump_definition
 
 tag_commit:
   stage: release
@@ -322,15 +395,14 @@ tag_commit:
   script:
     - make release-skampi
 
-clean_staging_low:
+syscore_low_clean_staging:
   stage: clean_staging
+  tags: *tags_syscore
   variables:
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-  tags:
-    - k8srunner
   only:
     refs:
       - tags
@@ -338,16 +410,33 @@ clean_staging_low:
   - *uninstall_scripts
   environment:
     name: "staging-low"
+    action: stop
 
-clean_staging_mid:
+psi_low_clean_staging:
   stage: clean_staging
+  tags: *tags_psi_low
+  variables:
+    HELM_RELEASE: "staging-low"
+    KUBE_NAMESPACE: "staging-low"
+    KUBE_NAMESPACE_SDP: "staging-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+  only:
+    refs:
+      - tags
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "psi-low-staging"
+    action: stop
+
+syscore_mid_clean_staging:
+  stage: clean_staging
+  tags: *tags_syscore
   variables:
     HELM_RELEASE: "staging-mid"
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
-  tags:
-    - k8srunner
   only:
     refs:
       - tags
@@ -355,9 +444,11 @@ clean_staging_mid:
   - *uninstall_scripts
   environment:
     name: "staging-mid"
+    action: stop
 
-deploy_staging_low:
+syscore_low_deploy_staging:
   stage: deploy_staging
+  tags: *tags_syscore
   variables:
     HELM_REPO_NAME: "skatelescope"
     UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-low"
@@ -372,14 +463,38 @@ deploy_staging_low:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
+    on_stop: syscore_low_clean_staging
   only:
     refs:
       - tags
   needs:
-    - job: clean_staging_low
-
-deploy_staging_mid:
+    - job: syscore_low_clean_staging
+      
+psi_low_deploy_staging:
   stage: deploy_staging
+  tags: *tags_psi_low
+  variables:
+    HELM_REPO_NAME: "skatelescope"
+    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-low"
+    HELM_RELEASE: "staging-low"
+    KUBE_NAMESPACE: "staging-low"
+    KUBE_NAMESPACE_SDP: "staging-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    INGRESS_HOST: "202.9.15.131" # psi-head ip
+  <<: *deploy_definition
+  environment:
+    name: "psi-low-staging"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    on_stop: psi_low_clean_staging
+  only:
+    refs:
+      - tags
+  needs:
+    - job: psi_low_clean_staging
+
+syscore_mid_deploy_staging:
+  stage: deploy_staging
+  tags: *tags_syscore
   variables:
     HELM_REPO_NAME: "skatelescope"
     UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-mid"
@@ -394,11 +509,12 @@ deploy_staging_mid:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
+    on_stop: syscore_mid_clean_staging
   only:
     refs:
       - tags
   needs:
-    - job: clean_staging_mid
+    - job: syscore_mid_clean_staging
 
 version_bump_charts:
   stage: update_versions

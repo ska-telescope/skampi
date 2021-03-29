@@ -14,6 +14,7 @@ all: test
 # copy TEST_ARTIFACTS into build directory
 # exit with same exit code as test run
 test: install
+	unset http_proxy && unset https_proxy && unset HTTP_PROXY && unset HTTPS_PROXY && \
 	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \
 	(python3 resources/log_consumer/log_consumer.py log &); \
 	mkdir -p build && \

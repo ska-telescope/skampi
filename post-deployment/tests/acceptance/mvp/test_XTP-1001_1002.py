@@ -19,12 +19,7 @@ from resources.test_support.oet_helpers import ScriptExecutor, resource
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant
-SUT_EXECUTED = 'SUT executed'
-TEST_PASSED = 'Test Passed'
-STATE_CHECK = "State Transitions"
-OET_TASK_ID = 'OET Task ID'
-SCHEDULING_BLOCK = 'Scheduling Block'
-SUBARRAY = 'Subarray Used'
+CENTRAL_NODE_USED = 'central_node'
 
 # OET task completion can occur before TMC has completed its activity - so allow time for the
 # last transitions to take place
@@ -35,15 +30,24 @@ EXECUTOR = ScriptExecutor()
 LOGGER = logging.getLogger(__name__)
 
 
-@pytest.fixture()
-def oet_result():
-    """structure used to hold details of the intermediate result at each stage of the test
-    we also use this to track the task id and the scheduling block - not convinced this
-    is the best way to do this, it may make more sense as part of the OET REST CLI fixture.
-    """
-    fixture = {SUT_EXECUTED: False, TEST_PASSED: False, SCHEDULING_BLOCK: None,
-               STATE_CHECK: None, OET_TASK_ID: None, SUBARRAY: None}
+@pytest.fixture(name="result")
+def fixture_result():
+    """structure used to hold details of the intermediate result at each stage of the test"""
+    fixture = {CENTRAL_NODE_USED: 'ska_mid/tm_central/central_node'}
     yield fixture
+    # teardown
+    end(fixture)
+
+
+def end():
+    """ teardown any state that was previously setup with a setup_function
+    call.
+    """
+    # obsstate = resource(result[CENTRAL_NODE_USED]).get('State')
+    # if obsstate == "ON":
+    #     LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
+    if not telescope_is_in_standby():
+        set_telescope_to_standby()
 
 
 @pytest.mark.fast
@@ -53,35 +57,40 @@ def test_telescope_startup():
     """Telescope startup test."""
 
 
+@pytest.mark.fast
+@pytest.mark.skamid
 @scenario("XTP-1001.feature", "Setting telescope to stand-by")
 def test_telescope_in_standby():
     """Telescope is in standby test."""
 
 
+@given('telescope is in ON State')
+def set_telescope_in_on_state(result):
+    """Setup and check the subarray is in the right
+    state to begin the test - this will be the first
+    state in the list passed in.
+    """
+    LOGGER.info("PROCESS: Start up telescope")
+    if telescope_is_in_standby():
+        set_telescope_to_running()
+    assert resource(result[CENTRAL_NODE_USED]).get('State') == 'ON'
+    LOGGER.info("Telescope is in ON state")
+
+
 @given('telescope is in OFF State')
-def set_telescope_in_standby_state():
+def set_telescope_in_off_state(result):
     """Setup and check the subarray is in the right
     state to begin the test - this will be the first
     state in the list passed in.
     """
     LOGGER.info("PROCESS: Standby Telescope")
-    assert (telescope_is_in_standby())
+    if not telescope_is_in_standby():
+        set_telescope_to_standby()
+    assert resource(result[CENTRAL_NODE_USED]).get('State') == 'OFF'
     LOGGER.info("Telescope is in OFF state")
 
 
-@given('telescope is in ON State')
-def set_telescope_in_startup_state():
-    """Setup and check the subarray is in the right
-    state to begin the test - this will be the first
-    state in the list passed in.
-    """
-    if telescope_is_in_standby():
-        LOGGER.info("PROCESS: Start up telescope")
-        set_telescope_to_running()
-    LOGGER.info("Telescope is in ON state")
-
-
-@when('I tell the OET to run <script>')
+@when(parsers.parse('I tell the OET to run <script>'))
 def setup_telescope(script):
     """
     Use the OET Rest API to setup telescope
@@ -94,13 +103,14 @@ def setup_telescope(script):
 
     # Telescope startup and standby
     script_completion_state = EXECUTOR.execute_script(
-        script=script
+        script=script,
+        timeout=15
     )
-    assert script_completion_state == 'COMPLETED', "PROCESS: Telescope setting up operation failed"
+    assert script_completion_state == 'COMPLETED'
 
 
-@then('the central node goes to state <state>')
-def check_transitions(expected_states):
+@then(parsers.parse('the central node goes to state <state>'))
+def check_transitions(expected_states, result):
     """Check that the central node device passed through the expected
     obsState transitions.
     The method deliberately pauses at the start to allow TMC time
@@ -110,9 +120,7 @@ def check_transitions(expected_states):
         expected_states (str): String containing states central node is expected to have
         passed through
     """
-    time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
-    assert_that(resource('ska_mid/tm_central/central_node').get('obsState')).is_equal_to(expected_states)
-    LOGGER.info("All states match")
-
-
-
+    final_state = resource(result[CENTRAL_NODE_USED]).get('State')
+    assert final_state == expected_states
+    resource(result[CENTRAL_NODE_USED]).assert_attribute('State').equals(expected_states)
+    LOGGER.info("Telescope Startup - Standby Operations Successfully completed")

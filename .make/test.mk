@@ -23,12 +23,12 @@ SLEEPTIME ?= 30s ##amount of sleep time for the smoketest target
 # This code detects environment and sets the variables
 ENV_CHECK := $(shell echo $(CI_ENVIRONMENT_SLUG) | egrep psi-low)
 ifneq ($(ENV_CHECK),)
-CUSTOM_VALUES = --env=HTTP_PROXY=http://delphinus.atnf.csiro.au:8888 \
+PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=http://delphinus.atnf.csiro.au:8888 \
 				--env=HTTPS_PROXY=http://delphinus.atnf.csiro.au:8888 \
-				--env=NO_PROXY=localhost,127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16 \
+				--env=NO_PROXY=localhost,127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local \
 				--env=http_proxy=http://delphinus.atnf.csiro.au:8888 \
 				--env=https_proxy=http://delphinus.atnf.csiro.au:8888 \
-				--env=no_proxy=localhost,127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16
+				--env=no_proxy=localhost,127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local
 endif
 
 
@@ -49,7 +49,7 @@ k8s_test = tar -c post-deployment/ | \
 		--env=ARCHIVER_TANGO_HOST=$2 \
 		--env=ARCHIVER_NAMESPACE=$3 \
 		--env=INGRESS_HOST=$(INGRESS_HOST) \
-		$(CUSTOM_VALUES) \
+		$(PSI_LOW_PROXY_VALUES) \
 		--serviceaccount=$(TESTING_ACCOUNT) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
 		make SKUID_URL=skuid-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK='$(MARK)' TEST_RUN_SPEC=$(TEST_RUN_SPEC) $1 && \

@@ -32,11 +32,9 @@ def check_coming_out_of_standby():
 def check_going_out_of_configured():
     ## Verify the Subarray obstate = READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-
-def check_going_out_of_aborted():
-    ## Verify the Subarray obstate = ABORTED
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
-
+    # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('READY')
+    # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('READY')
+    
 def check_going_out_of_abort():
     ## Verify the Subarray obstate = ABORTED
     # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('ABORTED')
@@ -69,6 +67,7 @@ class WaitConfigure():
         self.w1.wait_until_value_changed_to('READY',timeout=200)
         self.w2.wait_until_value_changed_to('READY',timeout=200)
 
+
     def wait_oet(self):
         self.w.wait_until_value_changed_to('READY',timeout=200)
 
@@ -92,16 +91,6 @@ class WaitRestart():
         # self.the_watch.wait_until_value_changed_to('RESTARTING',timeout)
         logging.info("Restart command invoked. Waiting for obsState to change to EMPTY")
         self.the_watch.wait_until_value_changed_to('EMPTY',timeout=200)
-
-class WaitObsReset():
-
-    def __init__(self):
-        self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
-
-    def wait(self,timeout):
-        logging.info("ObsReset command invoked. Waiting for obsState to change to IDLE")
-        self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
-
 
 class WaitObsReset():
 

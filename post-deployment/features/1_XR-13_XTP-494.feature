@@ -39,7 +39,7 @@ Feature: Execute a basic observation for the MVP PI5 subarray
 	Scenario: A4-Test, Sub-array deallocation of resources
 		Given A running telescope with "4" dishes are allocated to "subarray 1"
 		When I deallocate the resources
-		Then "subarray 1" should go into OFF state
+		Then "subarray 1" should go into EMPTY obsState
 		And ReceptorList for "subarray 1" should be empty
 
 

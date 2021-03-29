@@ -10,15 +10,12 @@ import logging
 import time
 import pytest
 from assertpy import assert_that
-from oet.procedure.application.restclient import RestClientUI
 from pytest_bdd import given, parsers, scenario, then, when
-from resources.test_support.controls import (restart_subarray,
-                                             set_telescope_to_running,
+from resources.test_support.controls import (set_telescope_to_running,
                                              set_telescope_to_standby,
-                                             take_subarray,
                                              telescope_is_in_standby)
 
-from resources.test_support.oet_helpers import Subarray, Poller, ScriptExecutor, resource
+from resources.test_support.oet_helpers import ScriptExecutor, resource
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant
@@ -85,34 +82,31 @@ def set_telescope_in_startup_state():
 
 
 @when('I tell the OET to run <script>')
-def setup_telescope(oet_result, rest_client, script):
+def setup_telescope(script):
     """
     Use the OET Rest API to setup telescope
 
     Args:
-        oet_result (dict): fixture used to track progress
-        rest_client (RestClientUI):
         script (str): file path to an observing script
     """
     LOGGER.info("PROCESS: setting up telescope using oet script %s ",
                 script)
 
     # Telescope startup and standby
-    oet_result[TEST_PASSED] = EXECUTOR.execute_script(
+    script_completion_state = EXECUTOR.execute_script(
         script=script
     )
-    assert oet_result[TEST_PASSED], "PROCESS: Telescope setting up operation failed"
+    assert script_completion_state == 'COMPLETED', "PROCESS: Telescope setting up operation failed"
 
 
 @then('the central node goes to state <state>')
-def check_transitions(oet_result, expected_states):
+def check_transitions(expected_states):
     """Check that the central node device passed through the expected
     obsState transitions.
     The method deliberately pauses at the start to allow TMC time
     to complete any operation still in progress.
 
     Args:
-        oet_result (dict): fixture used to track progress
         expected_states (str): String containing states central node is expected to have
         passed through
     """

@@ -254,6 +254,10 @@ class ScriptExecutor:
         tasks = ScriptExecutor.parse_rest_response(resp)
         return tasks
 
+    def get_latest_script(self):
+        tasks = self.list_scripts()
+        return tasks[-1]
+
     def get_script_by_id(self, task_id):
         tasks = self.list_scripts()
         for task in tasks:

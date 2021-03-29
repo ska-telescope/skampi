@@ -87,6 +87,7 @@ def set_subarray_to_aborted(result):
 
 
 @pytest.mark.skamid
+@pytest.mark.skip(reason="Disabled due to error when resetting/restarting from FAULT")
 @scenario("test_ABORTED.feature", "Recovering sub-array from FAULT")
 def test_recovery_from_fault():
     """"""

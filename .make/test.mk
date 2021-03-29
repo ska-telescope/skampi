@@ -18,21 +18,6 @@ TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 MARK ?= fast## this will allow to add the mark parameter of pytest
 SLEEPTIME ?= 30s ##amount of sleep time for the smoketest target
 
-
-# PSI Low Environment need PROXY values to be set
-# This code detects environment and sets the variables
-ENV_CHECK := $(shell echo $(CI_ENVIRONMENT_SLUG) | egrep psi-low)
-ifneq ($(ENV_CHECK),)
-PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=http://delphinus.atnf.csiro.au:8888 \
-				--env=HTTPS_PROXY=http://delphinus.atnf.csiro.au:8888 \
-				--env=NO_PROXY=localhost,127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local \
-				--env=http_proxy=http://delphinus.atnf.csiro.au:8888 \
-				--env=https_proxy=http://delphinus.atnf.csiro.au:8888 \
-				--env=no_proxy=localhost,127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local
-endif
-
-
-
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.

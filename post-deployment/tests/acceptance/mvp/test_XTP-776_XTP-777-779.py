@@ -65,7 +65,8 @@ def end(result):
         restart_subarray(1)
         # raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
-    set_telescope_to_standby()
+    if not telescope_is_in_standby():
+        set_telescope_to_standby()
     LOGGER.info("CLEANUP: Sub-array is in %s ",
                 subarray.get('obsState'))
 

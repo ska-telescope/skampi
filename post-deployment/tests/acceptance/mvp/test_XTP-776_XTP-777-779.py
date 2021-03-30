@@ -1,0 +1,273 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+test_XTP-776
+----------------------------------
+Tests for creating SBI (XTP-779), allocating resources from SBI (XTP-777)
+and observing SBI (XTP-778)
+"""
+import os
+import logging
+import pytest
+from pytest_bdd import given, parsers, scenario, then, when
+from resources.test_support.controls import (restart_subarray,
+                                             set_telescope_to_running,
+                                             set_telescope_to_standby,
+                                             take_subarray,
+                                             telescope_is_in_standby)
+
+from resources.test_support.helpers import resource
+from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray
+from skuid.client import SkuidClient
+
+# used as labels within the oet_result fixture
+# this should be refactored at some point to something more elegant
+SUBARRAY_USED = 'subarray_node'
+SCHEDULING_BLOCK = 'Scheduling Block'
+STATE_CHECK = 'State Transitions'
+
+EXECUTOR = ScriptExecutor()
+
+LOGGER = logging.getLogger(__name__)
+
+
+@pytest.fixture(name="result")
+def fixture_result():
+    """structure used to hold details of the intermediate result at each stage of the test"""
+    fixture = {SUBARRAY_USED: 'ska_mid/tm_subarray_node/1',
+               SCHEDULING_BLOCK: None,
+               STATE_CHECK: None}
+    yield fixture
+    # teardown
+    end(fixture)
+
+
+def end(result):
+    """ teardown any state that was previously setup for the tests.
+
+    Args:
+        result (dict): fixture to track test state
+    """
+    subarray = resource(result[SUBARRAY_USED])
+    obsstate = subarray.get('obsState')
+    if obsstate == "IDLE":
+        LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
+        take_subarray(1).and_release_all_resources()
+    if obsstate == "READY":
+        LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
+        take_subarray(1).and_end_sb_when_ready(
+        ).and_release_all_resources()
+    if obsstate in ["CONFIGURING", "SCANNING"]:
+        LOGGER.warning(
+            "Subarray is still in %s Please restart MVP manually to complete tear down",
+            obsstate)
+        restart_subarray(1)
+        # raise exception since we are unable to continue with tear down
+        raise Exception("Unable to tear down test setup")
+    set_telescope_to_standby()
+    LOGGER.info("CLEANUP: Sub-array is in %s ",
+                subarray.get('obsState'))
+
+
+@pytest.mark.oet
+@pytest.mark.skamid
+@scenario("XTP-776.feature", "Creating a new SBI with updated SB IDs and PB IDs")
+def test_sbi_creation():
+    """
+    Given the SKUID service is running
+    When I tell the OET to run file:///app/scripts/create_sbi.py using scripts/data/example_sb.json
+    Then the script completes successfully
+    """
+
+
+@pytest.mark.oet
+@pytest.mark.skamid
+@scenario("XTP-776.feature", "Allocating resources with a SBI")
+def test_resource_allocation():
+    """
+    Given sub-array is in ObsState EMPTY
+    And the OET has used file:///app/scripts/create_sbi.py to create SBI scripts/data/example_sb.json
+    When I tell the OET to allocate resources using script file:///app/scripts/allocate_from_file_sb.py
+      and SBI scripts/data/example_sb.json
+    Then the sub-array goes to ObsState IDLE
+    """
+
+
+@pytest.mark.oet
+@pytest.mark.skamid
+@scenario("XTP-776.feature", "Observing a Scheduling Block")
+def test_observing_sbi():
+    """
+    Given the OET has used file:///app/scripts/create_sbi.py to create SBI scripts/data/example_sb.json
+    And OET has allocated resources with file:///app/scripts/allocate_from_file_sb.py and scripts/data/example_sb.json
+    When I tell the OET to observe SBI scripts/data/example_sb.json using script file:///app/scripts/observe_sb.py
+    Then the sub-array passes through ObsStates IDLE, CONFIGURING, SCANNING, CONFIGURING, SCANNING, CONFIGURING,
+      SCANNING, CONFIGURING, SCANNING, IDLE
+    """
+
+
+@given('the SKUID service is running')
+def check_skuid_service_is_running(result):
+    """
+
+    """
+    SKUID_URL = os.environ["SKUID_URL"]
+    LOGGER.info("PROCESS: Checking SKUID is running at %s", SKUID_URL)
+    skuid_client = SkuidClient(SKUID_URL)
+    scan_id = skuid_client.fetch_scan_id()
+    assert scan_id
+
+
+@given('sub-array is in ObsState EMPTY')
+def start_up_telescope(result):
+    if telescope_is_in_standby():
+        LOGGER.info("PROCESS: Starting up telescope")
+        set_telescope_to_running()
+
+    assert resource(result[SUBARRAY_USED]).get('obsState') == 'EMPTY'
+
+
+@given(parsers.parse('the OET has used {script} to create SBI {sb_json}'))
+def create_sbi(script, sb_json):
+    """
+    Use the OET Rest API to run a script with SB JSON
+
+    Args:
+        script (str): file path to an observing script
+        sb_json (str): file path to a scheduling block
+    """
+    LOGGER.info("PROCESS: Running script %s ",
+                script)
+
+    script_completion_state = EXECUTOR.execute_script(
+        script,
+        sb_json,
+        timeout=10
+    )
+    assert script_completion_state == 'COMPLETED', "PROCESS: SBI creation failed"
+
+
+@given(parsers.parse('OET has allocated resources with {script} and {sb_json}'))
+def allocate_resources(script, sb_json):
+    """
+    Use the OET Rest API to run a script with SB JSON
+
+    Args:
+        script (str): file path to an observing script
+        sb_json (str): file path to a scheduling block
+    """
+    if telescope_is_in_standby():
+        set_telescope_to_running()
+
+    LOGGER.info("PROCESS: Running script %s ",
+                script)
+
+    script_completion_state = EXECUTOR.execute_script(
+        script,
+        sb_json,
+        timeout=30
+    )
+    assert script_completion_state == 'COMPLETED', "PROCESS: Resource allocation failed"
+
+
+@when(parsers.parse('I tell the OET to create SBI using script {script} and SB {sb_json}'))
+def allocate_resources_from_sbi(script, sb_json):
+    """
+    Use the OET Rest API to run a script with SB JSON
+
+    Args:
+        script (str): file path to an observing script
+        sb_json (str): file path to a scheduling block
+    """
+    LOGGER.info("PROCESS: Running script %s ",
+                script)
+
+    script_completion_state = EXECUTOR.execute_script(
+        script,
+        sb_json,
+        timeout=30
+    )
+    assert script_completion_state == 'COMPLETED', "PROCESS: Script execution failed"
+
+
+@when(parsers.parse('I tell the OET to allocate resources using script {script} and SBI {sb_json}'))
+def allocate_resources_from_sbi(script, sb_json):
+    """
+    Use the OET Rest API to run a script with SB JSON
+
+    Args:
+        script (str): file path to an observing script
+        sb_json (str): file path to a scheduling block
+    """
+    LOGGER.info("PROCESS: Running script %s ",
+                script)
+
+    script_completion_state = EXECUTOR.execute_script(
+        script,
+        sb_json,
+        timeout=30
+    )
+    assert script_completion_state == 'COMPLETED', "PROCESS: Script execution failed"
+
+
+@when(parsers.parse('I tell the OET to observe SBI {sb_json} using script {script}'))
+def observe_sbi(sb_json, script, result):
+    """
+    Use the OET Rest API to observe SBI using observing script and SBI JSON
+
+    Args:
+        sb_json (str): file path to a scheduling block
+        script (str): file path to an observing script
+        result (dict): fixture used to track progress
+    """
+    subarray = Subarray(result[SUBARRAY_USED])
+    poller = Poller(subarray)
+    poller.start_polling()
+    result[STATE_CHECK] = poller
+
+    LOGGER.info("PROCESS: Running script %s ",
+                script)
+
+    script_completion_state = EXECUTOR.execute_script(
+        script,
+        sb_json,
+        timeout=200
+    )
+    assert script_completion_state == 'COMPLETED', "PROCESS: Observation execution failed"
+
+
+@then(parsers.parse('the sub-array passes through ObsStates {expected_states}'))
+def check_transitions(expected_states, result):
+    """Check that the device passed through the expected
+    obsState transitions.
+
+    Args:
+        expected_states (str): String containing states sub-array is expected to have
+        passed through, separated by a comma
+        result (dict): fixture used to track progress
+    """
+    expected_states = [x.strip() for x in expected_states.split(',')]
+    assert result[STATE_CHECK].state_transitions_match(expected_states)
+
+
+@then('the script completes successfully')
+def check_script_completed(result):
+    """
+
+    """
+    script = EXECUTOR.get_latest_script()
+    assert script.state == 'COMPLETED'
+
+
+@then(parsers.parse('the sub-array goes to ObsState {obsstate}'))
+def check_final_subarray_state(obsstate, result):
+    """
+
+    Args:
+        obsstate (str): Sub-array Tango device ObsState
+    """
+    subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
+    assert subarray_state == obsstate
+    LOGGER.info("sub-array is in ObsState %s", obsstate)
+

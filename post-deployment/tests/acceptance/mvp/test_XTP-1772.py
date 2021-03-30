@@ -65,7 +65,7 @@ def end(result):
     set_telescope_to_standby()
 
 
-@pytest.mark.script_execution
+@pytest.mark.oet
 @pytest.mark.skamid
 @scenario("XTP-1772.feature", "Recovering sub-array from ABORTED")
 def test_recovery_from_aborted():
@@ -87,6 +87,7 @@ def set_subarray_to_aborted(result):
     assert resource(result[SUBARRAY_USED]).get('obsState') == 'ABORTED'
 
 
+@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.skip(reason="Disabled due to error when resetting/restarting from FAULT")
 @scenario("XTP-1772.feature", "Recovering sub-array from FAULT")

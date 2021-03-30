@@ -4,7 +4,7 @@
 """
 test_XTP-782
 ----------------------------------
-
+Test for releasing resources
 """
 import logging
 
@@ -43,18 +43,13 @@ def end(result):
     if obsstate == "IDLE":
         LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
         take_subarray(1).and_release_all_resources()
-    if obsstate in ["RESTARTING", "RESETTING", "ABORTING", "ABORTED"]:
-        LOGGER.warning(
-            "Subarray is still in %s Please restart MVP manually to complete tear down",
-            obsstate)
-        raise Exception("Unable to tear down test setup")
     set_telescope_to_standby()
 
 
-@pytest.mark.oet
+@pytest.mark.now
 @pytest.mark.fast
 @pytest.mark.skamid
-@scenario("XTP-782.feature", "Releasing resources of sub-array")
+@scenario("XTP-776.feature", "Release resources")
 def test_release_resources():
     """Deallocate Resources."""
     pass
@@ -74,8 +69,8 @@ def set_subarray_to_idle(result):
     LOGGER.info("sub-array is in ObsState IDLE")
 
 
-@when(parsers.parse('I tell the OET to run {script}'))
-def run_script(script):
+@when(parsers.parse('I tell the OET to release resources by running {script}'))
+def run_deallocation_script(script):
     """
 
     Args:
@@ -86,7 +81,7 @@ def run_script(script):
         script=script,
         timeout=30
     )
-    assert script_completion_state == 'COMPLETED', "PROCESS: Script execution failed"
+    assert script_completion_state == 'COMPLETED', "PROCESS: Deallocation script failed"
 
 
 @then(parsers.parse('the sub-array goes to ObsState {obsstate}'))

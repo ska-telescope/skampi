@@ -65,6 +65,7 @@ def end(result):
     set_telescope_to_standby()
 
 
+@pytest.mark.script_execution
 @pytest.mark.skamid
 @scenario("XTP-1772.feature", "Recovering sub-array from ABORTED")
 def test_recovery_from_aborted():
@@ -150,12 +151,14 @@ def check_final_subarray_state(obsstate, result):
     assert subarray_state == obsstate
 
 
+@pytest.mark.oet
 @pytest.mark.skamid
 @scenario("XTP-1772.feature", "Stopping script execution and sending Abort command to sub-array")
 def test_stop_script_and_abort_subarray():
     """"""
 
 
+@pytest.mark.oet
 @pytest.mark.skamid
 @scenario("XTP-1772.feature", "Stopping script execution without aborting sub-array")
 def test_stop_script():

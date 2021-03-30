@@ -67,6 +67,7 @@ def attempt_to_clean_subarray_to_empty(subarray: Subarray):
     LOGGER.info("PROCESS: Sub-array state is %s ", subarray.get_obsstate())
 
 
+@pytest.mark.oet
 @pytest.mark.skamid
 @scenario("XTP-966.feature",
           "SKA Mid Scheduling Block - Resource allocation and observation")

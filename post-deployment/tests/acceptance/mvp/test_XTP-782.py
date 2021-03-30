@@ -51,6 +51,7 @@ def end(result):
     set_telescope_to_standby()
 
 
+@pytest.mark.oet
 @pytest.mark.fast
 @pytest.mark.skamid
 @scenario("XTP-782.feature", "Releasing resources of sub-array")

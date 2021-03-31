@@ -14,13 +14,14 @@ all: test
 # copy TEST_ARTIFACTS into build directory
 # exit with same exit code as test run
 test: install
+	unset http_proxy && unset https_proxy && unset HTTP_PROXY && unset HTTPS_PROXY && \
 	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \
 	(python3 resources/log_consumer/log_consumer.py log &); \
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \
 	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest \
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
-		--disable-pytest-warnings --timeout=300 | tee pytest.stdout; \
+		--disable-pytest-warnings --timeout=300 $(FILE) | tee pytest.stdout; \
 	status=$$?; \
 	(tango_admin --delete-server log_consumer/log &) && \
 	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
@@ -31,6 +32,7 @@ test: install
 TEST_RUN_SPEC = example.yaml
 
 test_multiple_runs: install
+	unset http_proxy && unset https_proxy && unset HTTP_PROXY && unset HTTPS_PROXY && \
 	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \
 	(python3 resources/log_consumer/log_consumer.py log &); \
 	mkdir -p build && \

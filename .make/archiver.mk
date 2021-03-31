@@ -8,8 +8,6 @@ CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion t
 DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
 ARCHIVER_CHART = https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.2.tgz
 
-.DEFAULT_GOAL := help-archiver
-
 help-archiver:  ## show this help.
 	@echo "Deploy EDA archiver service:"
 

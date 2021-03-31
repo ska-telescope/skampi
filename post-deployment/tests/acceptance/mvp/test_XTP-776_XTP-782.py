@@ -46,7 +46,6 @@ def end(result):
     set_telescope_to_standby()
 
 
-@pytest.mark.now
 @pytest.mark.fast
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Release resources")

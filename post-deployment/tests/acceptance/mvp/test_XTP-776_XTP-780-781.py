@@ -66,7 +66,9 @@ def set_telescope_in_off_state(result):
     LOGGER.info("PROCESS: Set telescope to stand-by")
     if not telescope_is_in_standby():
         set_telescope_to_standby()
-    assert resource(result[CENTRAL_NODE_USED]).get('State') == 'OFF'
+    telescope_state = resource(result[CENTRAL_NODE_USED]).get('State')
+    assert telescope_state == 'OFF', ("Expected telescope to be OFF but "
+                                      "instead was %s", telescope_state)
     LOGGER.info("Telescope is in OFF state")
 
 
@@ -79,7 +81,9 @@ def set_telescope_in_on_state(result):
     LOGGER.info("PROCESS: Starting up telescope")
     if telescope_is_in_standby():
         set_telescope_to_running()
-    assert resource(result[CENTRAL_NODE_USED]).get('State') == 'ON'
+    telescope_state = resource(result[CENTRAL_NODE_USED]).get('State')
+    assert telescope_state == 'ON', ("Expected telescope to be ON but "
+                                     "instead was %s", telescope_state)
     LOGGER.info("Telescope is in ON state")
 
 
@@ -99,7 +103,8 @@ def run_startup_standby_script(script):
         script=script,
         timeout=30
     )
-    assert script_completion_state == 'COMPLETED', "PROCESS: Script execution failed"
+    assert script_completion_state == 'COMPLETED', ("Expected script to be COMPLETED, "
+                                                    "instead was %s", script_completion_state)
 
 
 @then(parsers.parse('the central node goes to state {state}'))
@@ -111,7 +116,7 @@ def check_final_state(state, result):
         result (dict): fixture used
     """
     final_state = resource(result[CENTRAL_NODE_USED]).get('State')
-    assert final_state == state
-    resource(result[CENTRAL_NODE_USED]).assert_attribute('State').equals(state)
+    assert final_state == state, ("Expected telescope to be %s but instead was %s",
+                                  state, final_state)
     LOGGER.info("Central node is in %s state", state)
 

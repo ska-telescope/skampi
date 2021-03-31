@@ -84,12 +84,17 @@ def set_subarray_to_aborted(result):
 
     subarray = SubArray(1)
     subarray.abort()
-    assert resource(result[SUBARRAY_USED]).get('obsState') == 'ABORTED'
+
+    subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
+    assert subarray_state == 'ABORTED', ("Expected sub-array to be in ABORTED "
+                                         "but instead was in %s", subarray_state)
+
+    LOGGER.info("Sub-array has been set to ABORTED")
 
 
 @pytest.mark.oet
 @pytest.mark.skamid
-@pytest.mark.skip(reason="Disabled due to error when resetting/restarting from FAULT")
+@pytest.mark.skip(reason="Partial Fault scenario is not yet handled in MVP")
 @scenario("XTP-1772.feature", "Recovering sub-array from FAULT")
 def test_recovery_from_fault():
     """"""
@@ -117,11 +122,11 @@ def set_subarray_to_fault(result):
     except DevFailed:
         pass
 
-    assert resource(result[SUBARRAY_USED]).get('obsState') == 'FAULT'
+    subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
+    assert subarray_state == 'FAULT', ("Expected sub-array to be in FAULT "
+                                       "but instead was in %s", subarray_state)
 
-    # Need to sleep here because sub-array goes to FAULT before FAULT callbacks are
-    # complete and so the Restart command gets stuck (bug).
-    #sleep(4)
+    LOGGER.info("Sub-array has been set to FAULT")
 
 
 @when('I tell the OET to run <script>')
@@ -131,12 +136,14 @@ def run_script(script):
     Args:
         script (str): file path to an observing script
     """
-    LOGGER.info("PROCESS: Running script %s ", script)
     script_completion_state = EXECUTOR.execute_script(
         script=script,
         timeout=10
     )
-    assert script_completion_state == 'COMPLETED',  "PROCESS: Script execution failed"
+    assert script_completion_state == 'COMPLETED', \
+        ("Expected script to be COMPLETED, instead was %s", script_completion_state)
+
+    LOGGER.info("Script completed successfully")
 
 
 @then('the sub-array goes to ObsState <obsstate>')
@@ -149,7 +156,10 @@ def check_final_subarray_state(obsstate, result):
         result (dict): Sub-array Tango device ObsState
     """
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
-    assert subarray_state == obsstate
+    assert subarray_state == obsstate, ("Expected sub-array to be in %s but "
+                                        "instead was in %s", obsstate, subarray_state)
+
+    LOGGER.info("Sub-array is in ObsState %s", obsstate)
 
 
 @pytest.mark.oet
@@ -179,7 +189,8 @@ def start_script_execution(script, sb_json, result):
 
     result[SCRIPT_ID] = task.task_id
 
-    assert task.state == 'RUNNING'
+    assert task.state == 'RUNNING', \
+        ("Expected script to be RUNNING, instead was %s", task.state)
 
 
 @when('I stop the script execution using OET')
@@ -190,10 +201,15 @@ def stop_script_execution_and_abort():
 @then('abort.py script is run')
 def check_abort_script_is_run(result):
     abort_script = EXECUTOR.get_latest_script()
-    LOGGER.info('Abort script: %s', abort_script.script)
+
+    # Wait for abort script to complete to make sure it succeeds and
+    # sub-array will be in ObsState ABORTED
     script_end_state = EXECUTOR.wait_for_script_to_complete(abort_script.task_id,
                                                             timeout=10)
-    assert script_end_state == 'COMPLETED'
+    assert script_end_state == 'COMPLETED', \
+        ("Expected abort script to be COMPLETED, instead was %s", script_end_state)
+
+    LOGGER.info("Abort script was completed successfully")
 
 
 @when('I stop the script execution using OET setting abort flag to False')
@@ -206,8 +222,10 @@ def check_script_was_stopped(result):
     script = EXECUTOR.get_script_by_id(result[SCRIPT_ID])
     assert script.state == 'STOPPED', ('Observing script state is %s instead of STOPPED', script.state)
 
+    LOGGER.info("Script execution was stopped successfully")
+
 
 @then('the sub-array ObsState is not ABORTED')
 def check_subarray_is_not_aborted(result):
-    assert resource(result[SUBARRAY_USED]).get('obsState') not in ['ABORTED', 'ABORTING']
-
+    assert resource(result[SUBARRAY_USED]).get('obsState') not in ['ABORTED', 'ABORTING'], \
+        "Sub-array should not have been aborted"

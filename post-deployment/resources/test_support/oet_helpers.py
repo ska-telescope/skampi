@@ -223,17 +223,16 @@ class ScriptExecutor:
         while t != 0:
             task = ScriptExecutor().get_script_by_id(task_id)
             if not task.state_is('RUNNING'):
-                LOGGER.info(
-                    "PROCESS: Task state changed from RUNNING to %s", task.state)
+                LOGGER.info("Script state changed from RUNNING to %s", task.state)
                 return task.state
             time.sleep(1)
             t -= 1
 
-        LOGGER.info("PROCESS: Timeout occurred (> %d seconds) when waiting for task "
+        LOGGER.info("Timeout occurred (> %d seconds) when waiting for script "
                     "to complete. Stopping script.", timeout)
         ScriptExecutor().stop_script()
         task = ScriptExecutor().get_script_by_id(task_id)
-        LOGGER.info("PROCESS: Script state: %s", task.state)
+        LOGGER.info("Script state: %s", task.state)
         return task.state
 
     def create_script(self, script) -> Task:
@@ -280,6 +279,8 @@ class ScriptExecutor:
             script_final_state: State of the script after completion.
             None if something goes wrong.
         """
+        LOGGER.info("Running script %s", script)
+
         # create script
         created_task = self.create_script(script)
 

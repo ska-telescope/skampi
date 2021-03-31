@@ -10,6 +10,7 @@ and observing SBI (XTP-778)
 import os
 import logging
 import pytest
+import requests
 from pytest_bdd import given, parsers, scenario, then, when
 from resources.test_support.controls import (restart_subarray,
                                              set_telescope_to_running,
@@ -113,11 +114,12 @@ def check_skuid_service_is_running(result):
     """
 
     """
-    SKUID_URL = os.environ["SKUID_URL"]
-    LOGGER.info("PROCESS: Checking SKUID is running at %s", SKUID_URL)
-    skuid_client = SkuidClient(SKUID_URL)
-    scan_id = skuid_client.fetch_scan_id()
-    assert scan_id
+    skuid_url = os.environ["SKUID_URL"]
+    if not skuid_url.startswith("http"):
+        skuid_url = "http://" + skuid_url
+    LOGGER.info("Checking SKUID is running at %s", skuid_url)
+    resp = requests.get(skuid_url)
+    assert resp.status_code == 200
 
 
 @given('sub-array is in ObsState EMPTY')

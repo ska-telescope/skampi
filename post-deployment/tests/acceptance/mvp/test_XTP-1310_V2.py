@@ -10,8 +10,10 @@ from pytest_bdd import (
 import tango
 import logging
 import time  # used to sleep between measurements
-from tango import DeviceProxy
 from skallop.transactions.atomic import atomic
+from tango import DeviceProxy
+
+
 logger = logging.getLogger(__name__)
 
 class DeviceStates:
@@ -77,7 +79,7 @@ def i_send_the_command_to_the_tmc(devices):
  
     if devices.tmc_central_node.State() is not ON:
         logger.info('Control system is off. Starting up telescope...')
-        with atomic(devices.all_device_names,'State','ON',20):
+        with atomic(devices.all_device_names,'State','ON',5):
             devices.tmc_central_node.startuptelescope()
             #time.sleep(20)
     else:
@@ -118,7 +120,7 @@ def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
 
     logger.info(temperature)
     logger.info(mccs_time)
-    with atomic(devices.all_device_names,'State','OFF',):
+    with atomic(devices.all_device_names,'State','OFF',5):
         devices.tmc_central_node.standbytelescope()
 
 

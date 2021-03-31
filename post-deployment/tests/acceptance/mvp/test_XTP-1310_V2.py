@@ -32,6 +32,8 @@ class DeviceStates:
             self.mccs_tile_0001
         ]
 
+        self.all_device_names = [device.name() for device in self.ALL_DEVICES]
+
     def print_device_states(self):
         for device in self.ALL_DEVICES:
             device_name = str(device).split('(')[0]
@@ -75,7 +77,7 @@ def i_send_the_command_to_the_tmc(devices):
  
     if devices.tmc_central_node.State() is not ON:
         logger.info('Control system is off. Starting up telescope...')
-        with atomic('ska_low/tm_central/central_node','State','ON',20):
+        with atomic(devices.all_device_names,'State','ON',20):
             devices.tmc_central_node.startuptelescope()
             #time.sleep(20)
     else:
@@ -116,7 +118,7 @@ def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
 
     logger.info(temperature)
     logger.info(mccs_time)
-    with atomic('ska_low/tm_central/central_node','State','OFF',):
+    with atomic(devices.all_device_names,'State','OFF',):
         devices.tmc_central_node.standbytelescope()
 
 

@@ -1,36 +1,42 @@
-release=0.5.1-dev
-tag=0.5.1-dev
+release=0.6.0
+tag=0.6.0
 tag_description=
-Charts:
+**Charts:**
 
-    ska-mid
-        mid-csp:   0.1.2 - 0.1.4
-            Off command in Subarray drives each sub-element component to the final OFF/EMPTY state, independently from the initial obsstates.
-            CspMaster On/Standby commands are executed synchronously
-            CSP Subarray state and obsstate is coherent with sub-elements state/obsstate after re-initialization
-            Solved race condition on Abort Command during Configuration
-            Removed tango forwarded-attributes from MidCspSubarray device.
-        sdp: 0.3.6 - 0.3.7
-            Update SDP LMC to 0.16.2. This implements ADR-22 (versioning of JSON schemas) in the subarray device. Only the latest version of the interface (0.2) is supported by the    AssignResources and Configure commands.
-        tmc: 0.2.3 - 0.2.7
-            changes related to objective spo-990
-        oet-scripts: 0.3.3 - 0.3.6
-        webjive: 1.0.13 - 1.0.15
-            fixes timeline, X axis, auto-zoom and negative values
-    Ska-low
-        tmc-low: 0.1.5 - 0.1.8
-            Implement abort and obs reset
-        ska-low-mccs: 0.4.0 - 0.6.0
-            Implement abort and obs reset
-        webjive: 1.0.13 - 1.0.15
-            fixes timeline, X axis, auto-zoom and negative values
-            
-Testing infrastructure:
-    Add timeout of 300 seconds to overall tests
-    Bdd tests for oet-scripts,scan id use by sdp, low abort and obsreset
-    Add scallop (ska-testing-runway) as a package with telescope fixtures
-    Add test verifying startup transits is correct
-    Add tests verifying landing page loads
-    Updates to skampi documentation
+**1. ska-mid 0.5.0 - 0.6.0:**
+
+   **1.1. tango-base - 0.2.16 - 0.2.20**:
+
+        a. change the way devices wait for dependent connections
+
+   **1.2. tango-util - 0.2.9 - 0.2.13:**
+
+        a. change the way devices wait for dependent connections
+
+    **1.3. mid-csp - 0.1.4 - 0.1.5:**
+
+        a. Ensure csp master waits for children before changing status to ON
+
+   **1.4. sdp - 0.3.7 - 0.4.0:**
+
+        a. Integrate the newly parameterised version of the SDP Helm chart with the SKAMPI Low and Mid Helm charts.
+
+    **1.5. webjive - 1.0.15 - 1.0.16:**
+
+        a. timeline widget can now handle tango DevState
+
+**2. Ska-low 0.4.0 - 0.5.0:**
+
+   **2.1. tango-base - 0.2.16 - 0.2.20**:
+
+        a. change the way devices wait for dependent connections
+
+   **2.2. tango-util - 0.2.9 - 0.2.13:**
+
+        a. change the way devices wait for dependent connections
+
+   **2.3. webjive - 1.0.15 - 1.0.16:**
+
+        c. timeline widget can now handle tango DevState
 
 

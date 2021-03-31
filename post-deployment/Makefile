@@ -21,7 +21,7 @@ test: install
 	find . -name "*.pyc" -type f -delete && \
 	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest \
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
-		--disable-pytest-warnings --timeout=300 | tee pytest.stdout; \
+		--disable-pytest-warnings --timeout=300 $(FILE) | tee pytest.stdout; \
 	status=$$?; \
 	(tango_admin --delete-server log_consumer/log &) && \
 	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \

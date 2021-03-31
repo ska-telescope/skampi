@@ -8,9 +8,11 @@ from pytest_bdd import (
     when,
 )
 import tango
+import logging
 import time  # used to sleep between measurements
 from tango import DeviceProxy
 from skallop.transactions.atomic import atomic
+logger = logging.getLogger(__name__)
 
 class DeviceStates:
     
@@ -34,7 +36,7 @@ class DeviceStates:
         for device in self.ALL_DEVICES:
             device_name = str(device).split('(')[0]
             device_state = device.State()
-            print(f'{device_name}: {device_state}')
+            logger.info(f'{device_name}: {device_state}')
 
 
 @pytest.fixture
@@ -74,12 +76,12 @@ def i_send_the_command_to_the_tmc(devices):
     """I send the command to the TMC."""
  
     if devices.tmc_central_node.State() is not ON:
-        print('Control system is off. Starting up telescope...')
+        logger.info('Control system is off. Starting up telescope...')
         with atomic('ska_low/tm_central/central_node','State','ON',20):
             devices.tmc_central_node.startuptelescope()
             #time.sleep(20)
     else:
-        print('Control system is already on. No start up command issued.')
+        logger.info('Control system is already on. No start up command issued.')
 
 @then('the TPM_HW will be programmed and initialized')
 def the_tpm_hw_will_be_programmed_and_initialized(devices):
@@ -114,8 +116,8 @@ def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
     # assert (len(set(temperature))!=1), f"No variation seen in the temperature values of {device} over {num_secs} seconds"
     # assert (len(set(mccs_time))!=1), f"No variation seen in the time values of {device} over {num_secs} seconds"
 
-    print(temperature)
-    print(mccs_time)
+    logger.info(temperature)
+    logger.info(mccs_time)
     with atomic('ska_low/tm_central/central_node','State','OFF',):
         devices.tmc_central_node.standbytelescope()
 

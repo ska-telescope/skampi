@@ -65,14 +65,15 @@ def set_subarray_to_idle(result):
     LOGGER.info("Assigning 2 dishes")
     take_subarray(1).to_be_composed_out_of(2)
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
-    assert subarray_state == 'IDLE', ("Expected sub-array to be in IDLE but "
-                                      "instead was in %s", subarray_state)
+    assert subarray_state == 'IDLE', \
+        f"Expected sub-array to be in IDLE but instead was in {subarray_state}"
     LOGGER.info("Sub-array is in ObsState IDLE")
 
 
 @when(parsers.parse('I tell the OET to release resources by running {script}'))
 def run_deallocation_script(script):
     """
+    Use the OET Rest API to run a deallocation script
 
     Args:
         script (str): file path to an deallocate script
@@ -82,7 +83,7 @@ def run_deallocation_script(script):
         timeout=30
     )
     assert script_completion_state == 'COMPLETED', \
-        ("Expected deallocation script to be COMPLETED, instead was %s", script_completion_state)
+        f"Expected deallocation script to be COMPLETED, instead was {script_completion_state}"
 
     LOGGER.info("Deallocation script completed successfully")
 
@@ -90,11 +91,13 @@ def run_deallocation_script(script):
 @then(parsers.parse('the sub-array goes to ObsState {obsstate}'))
 def check_final_subarray_state(obsstate, result):
     """
+    Check that sub-array device is in the expected state.
 
     Args:
         obsstate (str): Sub-array Tango device ObsState
+        result (dict): fixture used to track test progress
     """
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
-    assert subarray_state == obsstate, ("Expected sub-array to be in %s but "
-                                        "instead was in %s", obsstate, subarray_state)
+    assert subarray_state == obsstate, \
+        f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
     LOGGER.info("Sub-array is in ObsState %s", obsstate)

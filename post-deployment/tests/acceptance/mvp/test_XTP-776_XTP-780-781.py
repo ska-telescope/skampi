@@ -54,36 +54,34 @@ def test_telescope_startup():
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Setting telescope to stand-by")
 def test_telescope_in_standby():
-    """Telescope is in standby test."""
+    """Set telescope to standby test."""
 
 
 @given('telescope is in OFF State')
 def set_telescope_in_off_state(result):
-    """Setup and check the subarray is in the right
-    state to begin the test - this will be the first
-    state in the list passed in.
     """
-    LOGGER.info("PROCESS: Set telescope to stand-by")
+    Set telescope to OFF state (stand-by) if it is not yet OFF.
+    """
+    LOGGER.info("Set telescope to stand-by")
     if not telescope_is_in_standby():
         set_telescope_to_standby()
     telescope_state = resource(result[CENTRAL_NODE_USED]).get('State')
-    assert telescope_state == 'OFF', ("Expected telescope to be OFF but "
-                                      "instead was %s", telescope_state)
+    assert telescope_state == 'OFF', \
+        f"Expected telescope to be OFF but instead was {telescope_state}"
     LOGGER.info("Telescope is in OFF state")
 
 
 @given('telescope is in ON State')
 def set_telescope_in_on_state(result):
-    """Setup and check the subarray is in the right
-    state to begin the test - this will be the first
-    state in the list passed in.
     """
-    LOGGER.info("PROCESS: Starting up telescope")
+    Set telescope to ON state (startup) if it's not yet ON.
+    """
+    LOGGER.info("Starting up telescope")
     if telescope_is_in_standby():
         set_telescope_to_running()
     telescope_state = resource(result[CENTRAL_NODE_USED]).get('State')
-    assert telescope_state == 'ON', ("Expected telescope to be ON but "
-                                     "instead was %s", telescope_state)
+    assert telescope_state == 'ON', \
+        f"Expected telescope to be ON but instead was {telescope_state}"
     LOGGER.info("Telescope is in ON state")
 
 
@@ -95,28 +93,26 @@ def run_startup_standby_script(script):
     Args:
         script (str): file path to an observing script
     """
-    LOGGER.info("PROCESS: Executing script %s ",
-                script)
-
     # Execute startup or standby script
     script_completion_state = EXECUTOR.execute_script(
         script=script,
         timeout=30
     )
-    assert script_completion_state == 'COMPLETED', ("Expected script to be COMPLETED, "
-                                                    "instead was %s", script_completion_state)
+    assert script_completion_state == 'COMPLETED', \
+        f"Expected script to be COMPLETED, instead was {script_completion_state}"
 
 
 @then(parsers.parse('the central node goes to state {state}'))
 def check_final_state(state, result):
-    """Check that the central node device is in the expected state.
+    """
+    Check that the central node device is in the expected state.
 
     Args:
         state (str): State central node is expected to be in
-        result (dict): fixture used
+        result (dict): fixture used to track test progress
     """
     final_state = resource(result[CENTRAL_NODE_USED]).get('State')
-    assert final_state == state, ("Expected telescope to be %s but instead was %s",
-                                  state, final_state)
+    assert final_state == state, \
+        f"Expected telescope to be {state} but instead was {final_state}"
     LOGGER.info("Central node is in %s state", state)
 

@@ -112,7 +112,7 @@ def test_observing_sbi():
 @given('the SKUID service is running')
 def check_skuid_service_is_running(result):
     """
-
+    Check that the SKA UID service is reachable at SKUID_URL environment variable.
     """
     skuid_url = os.environ["SKUID_URL"]
     if not skuid_url.startswith("http"):
@@ -129,36 +129,33 @@ def start_up_telescope(result):
         set_telescope_to_running()
 
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
-    assert subarray_state == 'EMPTY', ("Expected sub-array to be in EMPTY but "
-                                       "instead was in %s", subarray_state)
+    assert subarray_state == 'EMPTY', \
+        f"Expected sub-array to be in EMPTY but instead was in {subarray_state}"
     LOGGER.info("Sub-array is in ObsState EMPTY")
 
 
 @given(parsers.parse('the OET has used {script} to create SBI {sb_json}'))
 def create_sbi(script, sb_json):
     """
-    Use the OET Rest API to run a script with SB JSON
+    Use the OET Rest API to run SBI creation script.
 
     Args:
         script (str): file path to an observing script
         sb_json (str): file path to a scheduling block
     """
-    LOGGER.info("PROCESS: Running script %s ",
-                script)
-
     script_completion_state = EXECUTOR.execute_script(
         script,
         sb_json,
         timeout=10
     )
     assert script_completion_state == 'COMPLETED', \
-        ("Expected SBI creation script to be COMPLETED, instead was %s", script_completion_state)
+        f"Expected SBI creation script to be COMPLETED, instead was {script_completion_state}"
 
 
 @given(parsers.parse('OET has allocated resources with {script} and {sb_json}'))
-def allocate_resources(script, sb_json):
+def allocate_resources_from_sbi(script, sb_json):
     """
-    Use the OET Rest API to run a script with SB JSON
+    Use the OET Rest API to run resource allocation script with SB JSON
 
     Args:
         script (str): file path to an observing script
@@ -172,14 +169,14 @@ def allocate_resources(script, sb_json):
         sb_json,
         timeout=30
     )
-    assert script_completion_state == 'COMPLETED', ("Expected resource allocation script "
-                                                    "to be COMPLETED, instead was %s", script_completion_state)
+    assert script_completion_state == 'COMPLETED', \
+        f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
 
 
 @when(parsers.parse('I tell the OET to create SBI using script {script} and SB {sb_json}'))
-def allocate_resources_from_sbi(script, sb_json):
+def when_create_sbi(script, sb_json):
     """
-    Use the OET Rest API to run a script with SB JSON
+    Use the OET Rest API to run a script that creates SBI from given SB.
 
     Args:
         script (str): file path to an observing script
@@ -190,14 +187,14 @@ def allocate_resources_from_sbi(script, sb_json):
         sb_json,
         timeout=30
     )
-    assert script_completion_state == 'COMPLETED', ("Expected SBI creation script to be COMPLETED, "
-                                                    "instead was %s", script_completion_state)
+    assert script_completion_state == 'COMPLETED', \
+        f"Expected SBI creation script to be COMPLETED, instead was {script_completion_state}"
 
 
 @when(parsers.parse('I tell the OET to allocate resources using script {script} and SBI {sb_json}'))
-def allocate_resources_from_sbi(script, sb_json):
+def when_allocate_resources_from_sbi(script, sb_json):
     """
-    Use the OET Rest API to run a script with SB JSON
+    Use the OET Rest API to run script that allocates resources from given SBI.
 
     Args:
         script (str): file path to an observing script
@@ -208,8 +205,8 @@ def allocate_resources_from_sbi(script, sb_json):
         sb_json,
         timeout=30
     )
-    assert script_completion_state == 'COMPLETED', ("Expected resource allocation script "
-                                                    "to be COMPLETED, instead was %s", script_completion_state)
+    assert script_completion_state == 'COMPLETED', \
+        f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
 
 
 @when(parsers.parse('I tell the OET to observe SBI {sb_json} using script {script}'))
@@ -232,14 +229,14 @@ def observe_sbi(sb_json, script, result):
         sb_json,
         timeout=200
     )
-    assert script_completion_state == 'COMPLETED', ("Expected SBI observation script "
-                                                    "to be COMPLETED, instead was %s", script_completion_state)
+    assert script_completion_state == 'COMPLETED', \
+        f"Expected SBI observation script to be COMPLETED, instead was {script_completion_state}"
 
 
 @then(parsers.parse('the sub-array passes through ObsStates {expected_states}'))
 def check_transitions(expected_states, result):
-    """Check that the device passed through the expected
-    obsState transitions.
+    """
+    Check that the device passed through the expected obsState transitions.
 
     Args:
         expected_states (str): String containing states sub-array is expected to have
@@ -251,24 +248,26 @@ def check_transitions(expected_states, result):
 
 
 @then('the script completes successfully')
-def check_script_completed(result):
+def check_script_completed():
     """
-
+    Check that the script that was last run has completed successfully.
     """
     script = EXECUTOR.get_latest_script()
     assert script.state == 'COMPLETED', \
-        ("Expected script to be COMPLETED, instead was %s", script.state)
+        f"Expected script to be COMPLETED, instead was {script.state}"
 
 
 @then(parsers.parse('the sub-array goes to ObsState {obsstate}'))
 def check_final_subarray_state(obsstate, result):
     """
+    Check that the final state of the sub-array is as expected.
 
     Args:
         obsstate (str): Sub-array Tango device ObsState
+        result (dict): fixture used to track progress
     """
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
-    assert subarray_state == obsstate, ("Expected sub-array to be in %s but "
-                                        "instead was in %s", obsstate, subarray_state)
+    assert subarray_state == obsstate, \
+        f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
     LOGGER.info("Sub-array is in ObsState %s", obsstate)
 

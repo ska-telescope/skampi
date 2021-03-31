@@ -52,9 +52,10 @@ def end(result):
     """
     obsstate = resource(result[SUBARRAY_USED]).get('obsState')
     if obsstate == "IDLE":
-        LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
+        LOGGER.info("CLEANUP: tearing down composed sub-array (IDLE)")
         take_subarray(1).and_release_all_resources()
     if obsstate == "ABORTED":
+        LOGGER.info("CLEANUP: restarting aborted sub-array")
         sub = SubArray(1)
         sub.restart()
     if obsstate in ["RESTARTING", "RESETTING", "ABORTING"]:
@@ -69,7 +70,7 @@ def end(result):
 @pytest.mark.skamid
 @scenario("XTP-1772.feature", "Recovering sub-array from ABORTED")
 def test_recovery_from_aborted():
-    """"""
+    """Test recovering (resetting/restarting) sub-array from ABORTED state"""
 
 
 @given('the sub-array is in ObsState ABORTED')
@@ -86,8 +87,8 @@ def set_subarray_to_aborted(result):
     subarray.abort()
 
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
-    assert subarray_state == 'ABORTED', ("Expected sub-array to be in ABORTED "
-                                         "but instead was in %s", subarray_state)
+    assert subarray_state == 'ABORTED', \
+        f"Expected sub-array to be in ABORTED but instead was in {subarray_state}"
 
     LOGGER.info("Sub-array has been set to ABORTED")
 
@@ -97,7 +98,7 @@ def set_subarray_to_aborted(result):
 @pytest.mark.skip(reason="Partial Fault scenario is not yet handled in MVP")
 @scenario("XTP-1772.feature", "Recovering sub-array from FAULT")
 def test_recovery_from_fault():
-    """"""
+    """Test recovering (resetting/restarting) sub-array from FAULT state"""
 
 
 @given('the sub-array is in ObsState FAULT')
@@ -123,8 +124,8 @@ def set_subarray_to_fault(result):
         pass
 
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
-    assert subarray_state == 'FAULT', ("Expected sub-array to be in FAULT "
-                                       "but instead was in %s", subarray_state)
+    assert subarray_state == 'FAULT', \
+        f"Expected sub-array to be in FAULT but instead was in {subarray_state}"
 
     LOGGER.info("Sub-array has been set to FAULT")
 
@@ -141,7 +142,7 @@ def run_script(script):
         timeout=10
     )
     assert script_completion_state == 'COMPLETED', \
-        ("Expected script to be COMPLETED, instead was %s", script_completion_state)
+        f"Expected script to be COMPLETED, instead was {script_completion_state}"
 
     LOGGER.info("Script completed successfully")
 
@@ -156,8 +157,8 @@ def check_final_subarray_state(obsstate, result):
         result (dict): Sub-array Tango device ObsState
     """
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
-    assert subarray_state == obsstate, ("Expected sub-array to be in %s but "
-                                        "instead was in %s", obsstate, subarray_state)
+    assert subarray_state == obsstate, \
+        f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
 
     LOGGER.info("Sub-array is in ObsState %s", obsstate)
 
@@ -190,7 +191,7 @@ def start_script_execution(script, sb_json, result):
     result[SCRIPT_ID] = task.task_id
 
     assert task.state == 'RUNNING', \
-        ("Expected script to be RUNNING, instead was %s", task.state)
+        f"Expected script to be RUNNING, instead was {task.state}"
 
 
 @when('I stop the script execution using OET')
@@ -202,12 +203,17 @@ def stop_script_execution_and_abort():
 def check_abort_script_is_run(result):
     abort_script = EXECUTOR.get_latest_script()
 
+    assert 'abort.py' in abort_script.script, \
+        f"Expected abort script to be the latest script, instead got {abort_script.script}"
+
+    LOGGER.info("Waiting for script %s to complete", abort_script.script)
+
     # Wait for abort script to complete to make sure it succeeds and
     # sub-array will be in ObsState ABORTED
     script_end_state = EXECUTOR.wait_for_script_to_complete(abort_script.task_id,
                                                             timeout=10)
     assert script_end_state == 'COMPLETED', \
-        ("Expected abort script to be COMPLETED, instead was %s", script_end_state)
+        f"Expected abort script to be COMPLETED, instead was {script_end_state}"
 
     LOGGER.info("Abort script was completed successfully")
 
@@ -220,9 +226,9 @@ def stop_script_execution():
 @then('the script execution is terminated')
 def check_script_was_stopped(result):
     script = EXECUTOR.get_script_by_id(result[SCRIPT_ID])
-    assert script.state == 'STOPPED', ('Observing script state is %s instead of STOPPED', script.state)
+    assert script.state == 'STOPPED', f'Observing script state is {script.state} instead of STOPPED'
 
-    LOGGER.info("Script execution was stopped successfully")
+    LOGGER.info("Script %s was stopped successfully", script.script)
 
 
 @then('the sub-array ObsState is not ABORTED')

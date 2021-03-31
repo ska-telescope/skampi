@@ -52,8 +52,6 @@ DISABLE = tango._tango.DevState.DISABLE
 
 # Define a function to print the state of all devices
 
-
-@pytest.mark.singlerun
 @scenario('XTP-1310.feature', 'PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)')
 def test_psi01_test_initialise_the_tpm_using_the_oet_jupyter_notebook():
     """PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)."""
@@ -98,7 +96,7 @@ def tpm_hardware_working_state():
 def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
     """the state and the temperature of the TPM_HW can be monitored.."""
     if devices.mccs_tile_0001.simulationmode == 1:
-        print ('MCCS tile 0001 is in simulation mode')
+        logger.info('MCCS tile 0001 is in simulation mode')
     devices.print_device_states()
 
     device = devices.mccs_tile_0001

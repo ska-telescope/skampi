@@ -72,7 +72,7 @@ def end(result):
                 subarray.get('obsState'))
 
 
-@pytest.mark.oet
+@pytest.mark.oetmid
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Creating a new SBI with updated SB IDs and PB IDs")
 def test_sbi_creation():
@@ -83,7 +83,7 @@ def test_sbi_creation():
     """
 
 
-@pytest.mark.oet
+@pytest.mark.oetmid
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Allocating resources with a SBI")
 def test_resource_allocation():
@@ -96,7 +96,7 @@ def test_resource_allocation():
     """
 
 
-@pytest.mark.oet
+@pytest.mark.oetmid
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Observing a Scheduling Block")
 def test_observing_sbi():
@@ -167,7 +167,7 @@ def allocate_resources_from_sbi(script, sb_json):
     script_completion_state = EXECUTOR.execute_script(
         script,
         sb_json,
-        timeout=30
+        timeout=60
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
@@ -203,7 +203,7 @@ def when_allocate_resources_from_sbi(script, sb_json):
     script_completion_state = EXECUTOR.execute_script(
         script,
         sb_json,
-        timeout=30
+        timeout=60
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
@@ -227,7 +227,7 @@ def observe_sbi(sb_json, script, result):
     script_completion_state = EXECUTOR.execute_script(
         script,
         sb_json,
-        timeout=200
+        timeout=300
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected SBI observation script to be COMPLETED, instead was {script_completion_state}"

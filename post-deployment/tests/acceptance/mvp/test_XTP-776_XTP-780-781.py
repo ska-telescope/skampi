@@ -41,16 +41,16 @@ def end():
         set_telescope_to_standby()
 
 
-@pytest.mark.oet
 @pytest.mark.fast
+@pytest.mark.oetmid
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Starting up telescope")
 def test_telescope_startup():
     """Telescope startup test."""
 
 
-@pytest.mark.oet
 @pytest.mark.fast
+@pytest.mark.oetmid
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Setting telescope to stand-by")
 def test_telescope_in_standby():

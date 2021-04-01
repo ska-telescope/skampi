@@ -5,9 +5,7 @@ from assertpy import assert_that
 
 @pytest.fixture(name='url')
 def fxt_url():
-    namespace = os.environ.get('KUBE_NAMESPACE','integration')
-    host = os.environ.get('INGRESS_HOST',default='k8s.stfc.skao.int')
-    return f'http://{host}/{namespace}/start/'
+    return "http://landingpage"
 
 @pytest.mark.fast
 @pytest.mark.skamid

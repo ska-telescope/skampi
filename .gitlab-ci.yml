@@ -92,7 +92,7 @@ syscore_mid_uninstall:
     KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
-    name: "test"
+    name: "stfc-test"
     action: stop
 
 syscore_low_uninstall:
@@ -106,7 +106,7 @@ syscore_low_uninstall:
     KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
-    name: "test-low"
+    name: "stfc-test-low"
     action: stop
 
 psi_low_uninstall:
@@ -135,7 +135,7 @@ syscore_mid_on_demand_uninstall:
   script:
   - *uninstall_scripts
   environment:
-    name: "test/$CI_COMMIT_REF_NAME"
+    name: "stfc-test/$CI_COMMIT_REF_NAME"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
@@ -158,7 +158,7 @@ syscore_low_on_demand_uninstall:
   script:
   - *uninstall_scripts
   environment:
-    name: "test-low/$CI_COMMIT_REF_NAME"
+    name: "stfc-test-low/$CI_COMMIT_REF_NAME"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
@@ -203,7 +203,7 @@ syscore_mid_test:
     DBNAME: "integration_mid_archiver_db"
   <<: *test_definition
   environment:
-    name: "test"
+    name: "stfc-test"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       namespace: $KUBE_NAMESPACE
@@ -234,7 +234,7 @@ syscore_mid_on_demand_test:
   #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
   #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
   environment:
-    name: "test/$CI_COMMIT_REF_NAME"
+    name: "stfc-test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
@@ -259,7 +259,7 @@ syscore_low_test:
     DBNAME: "integration_low_archiver_db"
   <<: *test_definition
   environment:
-    name: "test-low"
+    name: "stfc-test-low"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
@@ -313,7 +313,7 @@ syscore_low_on_demand_test:
   #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
   #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
   environment:
-    name: "test-low/$CI_COMMIT_REF_NAME"
+    name: "stfc-test-low/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
@@ -368,7 +368,7 @@ syscore_mid_sdp_config_dump:
     paths:
     - sdp.config.json
   environment:
-    name: "test"
+    name: "stfc-test"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
@@ -409,7 +409,7 @@ syscore_low_clean_staging:
   script:
   - *uninstall_scripts
   environment:
-    name: "staging-low"
+    name: "stfc-staging-low"
     action: stop
 
 psi_low_clean_staging:
@@ -443,7 +443,7 @@ syscore_mid_clean_staging:
   script:
   - *uninstall_scripts
   environment:
-    name: "staging-mid"
+    name: "stfc-staging-mid"
     action: stop
 
 syscore_low_deploy_staging:
@@ -458,7 +458,7 @@ syscore_low_deploy_staging:
     DEPLOYMENT_CONFIGURATION: "skalow"
   <<: *deploy_definition
   environment:
-    name: "staging-low"
+    name: "stfc-staging-low"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
@@ -504,7 +504,7 @@ syscore_mid_deploy_staging:
     DEPLOYMENT_CONFIGURATION: "skamid"
   <<: *deploy_definition
   environment:
-    name: "staging-mid"
+    name: "stfc-staging-mid"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly

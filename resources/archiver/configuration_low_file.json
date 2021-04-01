@@ -1,14 +1,14 @@
 [
-    {
-      "attributes": [
-        "ska_low/tm_subarray_node/1/State",
-        "ska_low/tm_central/central_node/State",
-        "low-mccs/control/control/healthState",
-        "ska_low/tm_subarray_node/1/obsState",
-        "ska_low/tm_central/central_node/telescopeHealthState",
-        "ska_low/tm_subarray_node/1/healthState"
-      ],
-      "polling_period": 1000,
-      "period_event": 3000
-    }
-  ]
+  {
+    "attributes": [
+      "ska_low/tm_subarray_node/1/State",
+      "ska_low/tm_central/central_node/State",
+      "low-mccs/control/control/healthState",
+      "ska_low/tm_subarray_node/1/obsState",
+      "ska_low/tm_central/central_node/telescopeHealthState",
+      "ska_low/tm_subarray_node/1/healthState"
+    ],
+    "polling_period": 1000,
+    "period_event": 3000
+  }
+]

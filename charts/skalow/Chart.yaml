@@ -37,3 +37,7 @@ dependencies:
   version: 0.1.0
   repository: file://../landingpage
   condition: landingpage.enabled
+- name: ska-archiver
+  version: 0.1.2
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+

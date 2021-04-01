@@ -140,7 +140,6 @@ syscore_mid_on_demand_uninstall:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
     action: stop
-    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
@@ -163,7 +162,6 @@ syscore_low_on_demand_uninstall:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     action: stop
-    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
@@ -183,7 +181,6 @@ psi_low_on_demand_uninstall:
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     action: stop
-    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
@@ -240,6 +237,7 @@ syscore_mid_on_demand_test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
     on_stop: syscore_mid_on_demand_uninstall
+    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
@@ -319,6 +317,7 @@ syscore_low_on_demand_test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     on_stop: syscore_low_on_demand_uninstall
+    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
@@ -350,6 +349,7 @@ psi_low_on_demand_test:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
     on_stop: psi_low_on_demand_uninstall
+    auto_stop_in: 2 hours
   when: manual
   only:
     refs:

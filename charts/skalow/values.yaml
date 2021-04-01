@@ -49,7 +49,7 @@ tango-base:
     enabled: true
   ingress:
     enabled: true
-    hostname: integration.engageska-portugal.pt
+    hostname: k8s.stfc.skao.int
   tangodb:
     use_pv: false
 
@@ -76,12 +76,12 @@ webjive:
   ingress:
     enabled: true
     nginx: true
-    hostname: low.integration.engageska-portugal.pt
+    hostname: low.k8s.stfc.skao.int
 
 oet-scripts:
   enabled: true
   ingress:
-    hostname: low.integration.engageska-portugal.pt
+    hostname: low.k8s.stfc.skao.int
   system: TM-low
   telescope: SKA-low
   central_node: ska_low/tm_central/central_node

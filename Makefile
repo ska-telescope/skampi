@@ -27,6 +27,24 @@ HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
+# PSI Low Environment need PROXY values to be set
+# This code detects environment and sets the variables
+ENV_CHECK := $(shell echo $(CI_ENVIRONMENT_SLUG) | egrep psi-low)
+ifneq ($(ENV_CHECK),)
+PSI_LOW_PROXY=http://delphinus.atnf.csiro.au:8888
+PSI_LOW_NO_PROXY=localhost,127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local
+PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
+				--env=HTTPS_PROXY=${PSI_LOW_PROXY} \
+				--env=NO_PROXY=${PSI_LOW_NO_PROXY} \
+				--env=http_proxy=${PSI_LOW_PROXY} \
+				--env=https_proxy=${PSI_LOW_PROXY} \
+				--env=no_proxy=${PSI_LOW_NO_PROXY}
+
+PSI_LOW_SDP_PROXY_VARS= --set sdp.proxy.server=${PSI_LOW_PROXY} \
+					--set "sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
+endif
+
+
 .DEFAULT_GOAL := help
 
 # include makefile targets for release management
@@ -141,6 +159,7 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
+		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
@@ -175,6 +194,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
+		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
@@ -202,6 +222,7 @@ template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
+		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 

@@ -6,7 +6,8 @@ from assertpy import assert_that
 @pytest.fixture(name='url')
 def fxt_url():
     namespace = os.environ.get('KUBE_NAMESPACE','integration')
-    return f'http://kubernetes.engageska-portugal.pt/{namespace}/start/'
+    host = os.environ.get('INGRESS_HOST',default='kubernetes.engageska-portugal.pt')
+    return f'http://{host}/{namespace}/start/'
 
 @pytest.mark.fast
 @pytest.mark.skamid

@@ -18,6 +18,8 @@ CHART_SET ?=#for additional flags you want to set when deploying (default empty)
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 
 KUBE_NAMESPACE ?= integration#namespace to be used
+ARCHIVER_NAMESPACE ?= ska-archiver#archiver namespace
+CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
 TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the Tango DB
@@ -233,6 +235,35 @@ install-or-upgrade: ## install or upgrade the release
 	then make install; \
 	else make upgrade-chart; \
 	fi
+
+# Get the database service name from archiver deployment and MVP deployment
+get-service:
+	$(eval DBMVPSERVICE := $(shell kubectl get svc -n $(KUBE_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
+	echo $(DBMVPSERVICE); \
+	$(eval DBEDASERVICE := $(shell kubectl get svc -n $(ARCHIVER_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
+	echo $(DBEDASERVICE); \
+
+# Runs a pod to execute a script. 
+# This script configures the archiver for attribute archival defined in json file. Once script is executed, pod is deleted.
+configure-archiver: get-service ##configure attributes to archive
+		tar -c resources/archiver/ | \
+		kubectl run $(CONFIGURE_ARCHIVER) \
+		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
+		--image-pull-policy=IfNotPresent \
+		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
+		/bin/bash -c "sudo tar xv && \
+		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/master/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
+		cd /resources/archiver && \
+		sudo python configure_hdbpp.py \
+            --cm=tango://$(DBEDASERVICE).$(KUBE_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/confmanager01 \
+            --es=tango://$(DBEDASERVICE).$(KUBE_NAMESPACE).svc.cluster.local:10000/archiving/hdbpp/eventsubscriber01 \
+            --attrfile=configuation_low_file.json \
+            --th=tango://$(DBEDASERVICE).$(KUBE_NAMESPACE).svc.cluster.local:10000 \
+			--ds=$(DBMVPSERVICE) \
+			--ns=$(KUBE_NAMESPACE)" && \
+		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(CONFIGURE_ARCHIVER);
+
+
 
 quotas: namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml

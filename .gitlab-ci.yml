@@ -75,7 +75,7 @@ stages:
     when: always
 
 .tags_syscore: &tags_syscore
-- k8srunner
+- k8srunner-stfc
 
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low
@@ -385,7 +385,7 @@ tag_commit:
     EMAILID: $GITLAB_USER_EMAIL
     PRIVATE_TOKEN: $SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
   tags:
-    - k8srunner
+    - k8srunner-stfc
   when: manual
   # needs:
   #   - job: publish-chart
@@ -523,7 +523,7 @@ version_bump_charts:
     EMAILID: $MARVIN_EMAIL
     PRIVATE_TOKEN: $MARVIN_PRIVATE_TOKEN
   tags:
-    - k8srunner
+    - k8srunner-stfc
   only:
     refs:
       - tags

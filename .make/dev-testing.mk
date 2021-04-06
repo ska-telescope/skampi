@@ -177,7 +177,7 @@ make get_web_logs:
 	kubectl logs $(testing-pod) --namespace $(KUBE_NAMESPACE) -c web-pytest 
 
 ping_web_py:
-	@curl -H "HOST: dev-testing.engageska-portugal.pt" http://$(THIS_HOST)/dev-testing/ping
+	@curl -H "HOST: dev-testing.k8s.stfc.skao.int" http://$(THIS_HOST)/dev-testing/ping
 
 KEY_NAME=""
 

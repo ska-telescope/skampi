@@ -17,7 +17,7 @@ def test_check_connection():
     else:
         host_name = socket.gethostname()
         host_ip = socket.gethostbyname(host_name)  # IP of this host
-    ingress_host="integration.engageska-portugal.pt"   # Ingress HTTP hostname
+    ingress_host="k8s.stfc.skao.int"   # Ingress HTTP hostname
     url = "https://" + str(host_ip)
     exception = ""
     result = ""

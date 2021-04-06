@@ -1,0 +1,9 @@
+group: 
+  runs: 20
+  path: "exploration/tests/"
+  modules:
+    - path: "test_TMC_config.py"
+      tests:
+        - name: "test_configure_scan"
+
+      

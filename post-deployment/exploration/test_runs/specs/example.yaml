@@ -1,0 +1,10 @@
+group: 
+  runs: 1
+  path: "exploration/tests/"
+  modules:
+    - path: "test_explore_configuring.py"
+      tests:
+        - name: "test_configure_subarray"
+
+
+      

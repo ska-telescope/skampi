@@ -25,8 +25,9 @@ HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
-DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
-DBHOST ?= 192.168.93.137 # DBHOST is the IP address for the cluster machine where archiver database is created
+ARCHIVER_CONFIG_FILE ?= configuation_file.json## archiver attribute configure json file to work with
+ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
+ARCHIVER_DBHOST ?= 192.168.93.137 # ARCHIVER_DBHOST is the IP address for the cluster machine where archiver database is created
 CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
@@ -89,7 +90,7 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 
 # Checks if the Database name is provided by user while deploying the archiver otherwise gives the default name to the database
 check-dbname: ## Check if database name is empty
-	@if [ $(DBNAME) = "default_mvp_archiver_db" ]; then \
+	@if [ $(ARCHIVER_DBNAME) = "default_mvp_archiver_db" ]; then \
 	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
 	fi
 
@@ -127,7 +128,6 @@ help:  ## show this help.
 install: clean namespace namespace_sdp check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
 	@if [ "" = "$(HELM_REPO_NAME)" ]; then \
 	echo "Installing from git repository"; \
-	echo $(DBNAME); \
 	helm dependency update $(UMBRELLA_CHART_PATH); \
 	else \
 	helm repo add $(HELM_REPO_NAME) $(HELM_HOST)/repository/helm-chart; \
@@ -156,19 +156,24 @@ install: clean namespace namespace_sdp check-dbname## install the helm chart on 
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		--set global.dbname=$(DBNAME) \
+		--set global.hostname=$(ARCHIVER_DBHOST) \
+		--set global.dbname=$(ARCHIVER_DBNAME) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
+
 # Runs a pod to execute a script. 
 # This script configures the archiver for attribute archival defined in json file. Once script is executed, pod is deleted.
-configure-archiver: get-service ##configure attributes to archive
+configure-archiver:  get-service ##configure attributes to archive
 		tar -c resources/archiver/ | \
 		kubectl run $(CONFIGURE_ARCHIVER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
 		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
-		/bin/bash -c "sudo tar xv && \
+		/bin/bash -c "cd /resources/archiver && \
+		ls -all && \
+		cd ../../ && \
+		sudo tar xv && \
 		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/at1-804/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
 		cd /resources/archiver && \
 		ls -all && \
@@ -214,8 +219,8 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		--set global.hostname=$(DBHOST) \
-		--set global.dbname=$(DBNAME) \
+		--set global.hostname=$(ARCHIVER_DBHOST) \
+		--set global.dbname=$(ARCHIVER_DBNAME) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 

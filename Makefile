@@ -32,6 +32,7 @@ DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided b
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
+
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
 ENV_CHECK := $(shell echo $(CI_ENVIRONMENT_SLUG) | egrep psi-low)
@@ -255,16 +256,32 @@ get-service:
 	echo $(DBMVPSERVICE); \
 
 ##WIP: job to check deployement configuration
-check-archiver-config:
-	@if [$(DEPLOYMENT_CONFIGURATION) = "skamid"]; then \
-	$(eval ARCHIVER_CONFIG_FILE := "mid_file.json") \
+# check-archiver-config:
+# 	if [ "$$DEPLOYMENT_CONFIGURATION" = "skamid" ]; then \
+# 		$(eval "ARCHIVER_CONFIG_FILE" := "ska_mid.json") \
+# 		else \
+# 		$(eval "ARCHIVER_CONFIG_FILE" := "ska_low.json") \
+# 	fi
+
+# check-archiver-config: ## Check if database name is empty
+# 	if [ "$(DEPLOYMENT_CONFIGURATION)" = "skalow" ]; then \
+# 	echo "done"; \
+# 	else \
+# 	echo "nope"; \
+# 	fi
+
+check-archiver-config: ## Check if database name is empty
+	@if [ "$(DEPLOYMENT_CONFIGURATION)" = "skalow" ]; then \
+	echo $(ARCHIVER_CONFIG_FILE); \
+	$(eval ARCHIVER_CONFIG_FILE := "mid_configuration.json") \
 	else \
-	$(eval ARCHIVER_CONFIG_FILE := "low_file.json") \
+	$(eval ARCHIVER_CONFIG_FILE := "low_configuration.json") \
+	echo $(ARCHIVER_CONFIG_FILE); \
 	fi
 
 # Runs a pod to execute a script. 
 # This script configures the archiver for attribute archival defined in json file. Once script is executed, pod is deleted.
-configure-archiver: get-service ##configure attributes to archive
+configure-archiver: get-service check-archiver-config##configure attributes to archive
 		tar -c resources/archiver/ | \
 		kubectl run $(CONFIGURE_ARCHIVER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
@@ -277,7 +294,7 @@ configure-archiver: get-service ##configure attributes to archive
 		sudo python configure_hdbpp.py \
             --cm=tango://$(TANGO_DATABASE_DS):10000/archiving/hdbpp/confmanager01 \
             --es=tango://$(TANGO_DATABASE_DS):10000/archiving/hdbpp/eventsubscriber01 \
-            --attrfile=low_configuration.json \
+            --attrfile=$(ARCHIVER_CONFIG_FILE) \
             --th=tango://$(TANGO_DATABASE_DS):10000 \
 			--ds=$(DBMVPSERVICE) \
 			--ns=$(KUBE_NAMESPACE)" && \

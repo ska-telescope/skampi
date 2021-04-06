@@ -44,17 +44,38 @@ PSI_LOW_SDP_PROXY_VARS= --set sdp.proxy.server=${PSI_LOW_PROXY} \
 					--set "sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
 endif
 
+CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
+	--set logging.ingress.hostname=$(INGRESS_HOST) \
+	--set logging.ingress.nginx=$(USE_NGINX) \
+	--set oet-scripts.ingress.hostname=$(INGRESS_HOST) \
+	--set oet-scripts.ingress.nginx=$(USE_NGINX) \
+	--set skuid.ingress.hostname=$(INGRESS_HOST) \
+	--set skuid.ingress.nginx=$(USE_NGINX) \
+	--set tango-base.ingress.hostname=$(INGRESS_HOST) \
+	--set tango-base.ingress.nginx=$(USE_NGINX) \
+	--set webjive.ingress.hostname=$(INGRESS_HOST) \
+	--set webjive.ingress.nginx=$(USE_NGINX) \
+	--set minikube=$(MINIKUBE) \
+	--set global.minikube=$(MINIKUBE) \
+	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+	--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+	--set oet-scripts.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
+	--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
+	--set tango-base.ingress.hostname=$(INGRESS_HOST) \
+	--set webjive.ingress.hostname=$(INGRESS_HOST) \
+	$(PSI_LOW_SDP_PROXY_VARS)
+
 
 .DEFAULT_GOAL := help
+
+.PHONY: help
 
 # include makefile targets for release management
 -include .make/release.mk
 
 # include makefile targets for testing
 -include .make/test.mk
-
-# include makefile targets that wrap helm
--include .make/helm.mk
 
 # include makefile targets that EDA deployment
 -include .make/archiver.mk
@@ -129,110 +150,31 @@ help:  ## show this help.
 	@echo ""; echo "make vars (+defaults):"
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-install: clean namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
-	@if [ "" = "$(HELM_REPO_NAME)" ]; then \
-	echo "Installing from git repository"; \
-	helm dependency update $(UMBRELLA_CHART_PATH); \
-	else \
-	helm repo add $(HELM_REPO_NAME) $(HELM_HOST)/repository/helm-chart; \
-	helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
-	helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
-	fi; \
-	helm install $(HELM_RELEASE) \
-        --set tango-base.xauthority="$(XAUTHORITYx)" \
-    	--set logging.ingress.hostname=$(INGRESS_HOST) \
-        --set logging.ingress.nginx=$(USE_NGINX) \
-        --set oet-scripts.ingress.hostname=$(INGRESS_HOST) \
-        --set oet-scripts.ingress.nginx=$(USE_NGINX) \
-        --set skuid.ingress.hostname=$(INGRESS_HOST) \
-        --set skuid.ingress.nginx=$(USE_NGINX) \
-        --set tango-base.ingress.hostname=$(INGRESS_HOST) \
-        --set tango-base.ingress.nginx=$(USE_NGINX) \
-        --set webjive.ingress.hostname=$(INGRESS_HOST) \
-        --set webjive.ingress.nginx=$(USE_NGINX) \
-		--set minikube=$(MINIKUBE) \
-		--set global.minikube=$(MINIKUBE) \
-		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
-		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-		--set oet-scripts.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
-		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
-		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
-		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		$(PSI_LOW_SDP_PROXY_VARS) \
-		--values $(VALUES) \
-		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
+install: clean namespace namespace_sdp upgrade-chart## install the helm chart on the namespace KUBE_NAMESPACE
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
-	then helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE); \
+	then helm uninstall $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE); \
 	fi
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	helm dependency update $(UMBRELLA_CHART_PATH); \
-	helm upgrade $(HELM_RELEASE) \
-        --set tango-base.xauthority="$(XAUTHORITYx)" \
-    	--set logging.ingress.hostname=$(INGRESS_HOST) \
-        --set logging.ingress.nginx=$(USE_NGINX) \
-        --set oet-scripts.ingress.hostname=$(INGRESS_HOST) \
-        --set oet-scripts.ingress.nginx=$(USE_NGINX) \
-        --set skuid.ingress.hostname=$(INGRESS_HOST) \
-        --set skuid.ingress.nginx=$(USE_NGINX) \
-        --set tango-base.ingress.hostname=$(INGRESS_HOST) \
-        --set tango-base.ingress.nginx=$(USE_NGINX) \
-        --set webjive.ingress.hostname=$(INGRESS_HOST) \
-        --set webjive.ingress.nginx=$(USE_NGINX) \
-		--set minikube=$(MINIKUBE) \
-		--set global.minikube=$(MINIKUBE) \
-		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
-		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-		--set oet-scripts.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
-		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
-		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
-		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		$(PSI_LOW_SDP_PROXY_VARS) \
+	helm upgrade $(HELM_RELEASE) --install \
+		$(CHART_PARAMS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
 template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
 	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm template $(HELM_RELEASE) \
-        --set tango-base.xauthority="$(XAUTHORITYx)" \
-    	--set logging.ingress.hostname=$(INGRESS_HOST) \
-        --set logging.ingress.nginx=$(USE_NGINX) \
-        --set oet-scripts.ingress.hostname=$(INGRESS_HOST) \
-        --set oet-scripts.ingress.nginx=$(USE_NGINX) \
-        --set skuid.ingress.hostname=$(INGRESS_HOST) \
-        --set skuid.ingress.nginx=$(USE_NGINX) \
-        --set tango-base.ingress.hostname=$(INGRESS_HOST) \
-        --set tango-base.ingress.nginx=$(USE_NGINX) \
-        --set webjive.ingress.hostname=$(INGRESS_HOST) \
-        --set webjive.ingress.nginx=$(USE_NGINX) \
-		--set minikube=$(MINIKUBE) \
-		--set global.minikube=$(MINIKUBE) \
-		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
-		--set sdp.tango-base.enabled=false \
-		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-		--set oet-scripts.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
-		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
-		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
-		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
-		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		$(PSI_LOW_SDP_PROXY_VARS) \
+        $(CHART_PARAMS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
-install-or-upgrade: ## install or upgrade the release
-	helm history $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) > /dev/null 2>&1; \
-	K_DESC=$$? ; \
-	if [ $$K_DESC -eq 1 ] ; \
-	then make install; \
-	else make upgrade-chart; \
-	fi
+install-or-upgrade: upgrade-chart## install or upgrade the release
 
 quotas: namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
@@ -247,6 +189,7 @@ poddescribe: ## describe Pods executed from Helm chart
 	echo "---------------------------------------------------"; \
 	echo ""; echo ""; echo ""; \
 	done
+
 podlogs: ## show Helm chart POD logs
 	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(HELM_RELEASE) -o=name`; \
 	do \
@@ -270,27 +213,9 @@ podlogs: ## show Helm chart POD logs
 	echo "---------------------------------------------------"; \
 	echo ""; echo ""; echo ""; \
 	done
-get_pods: ##lists the pods deploued for a particular namespace. @param: KUBE_NAMESPACE
+
+get_pods: ##lists the pods deployed for a particular namespace. @param: KUBE_NAMESPACE
 	kubectl get pods -n $(KUBE_NAMESPACE)
 
 get_versions: ## lists the container images used for particular pods
 	kubectl get pods -l release=$(HELM_RELEASE) -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{range .spec.containers[*]}{.name}{'\t'}{.image}{'\n\n'}{end}{'\n'}{end}{'\n'}"
-
-set_context: ## Set current kubectl context. @param: KUBE_NAMESPACE
-	kubectl config set-context $$(kubectl config current-context) --namespace $${NAMESPACE:-$(KUBE_NAMESPACE)}
-
-get_status:
-	kubectl get pod,svc,deployments,pv,pvc,ingress -n $(KUBE_NAMESPACE)
-
-redeploy: delete_all deploy_ordered get_status
-wait:
-	pods=$$( kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{' '}{end}" ) && \
-	for pod in $$pods ;  do \
-		phase=$$(kubectl get pod -n $(KUBE_NAMESPACE) $$pod -o=jsonpath='{.status.phase}'); \
-		if [ "$$phase" = "Succeeded" ]; then \
-			echo $$pod $$phase; else \
-			kubectl wait --for=condition=Ready -n $(KUBE_NAMESPACE) pod/$$pod; \
-		fi; \
-	done
-
-.PHONY: help

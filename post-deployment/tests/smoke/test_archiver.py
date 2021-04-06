@@ -12,11 +12,9 @@ from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, De
 
 @pytest.mark.archiver
 @pytest.mark.skamid
-# @pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
+@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
 def test_mid_archiver():
   logging.info("Init test archiver")
-  # archiver_namespace = os.getenv('ARCHIVER_NAMESPACE')
-  # archiver_tango_host = os.getenv('ARCHIVER_TANGO_HOST')
   mvp_tango_host = os.getenv('TANGO_HOST')[:-6]
   mvp_namespace = os.getenv('KUBE_NAMESPACE')
 
@@ -26,8 +24,6 @@ def test_mid_archiver():
     f'tango://{mvp_tango_host}:10000/archiving/hdbpp/eventsubscriber01'
   attribute = f"tango://{mvp_tango_host}:10000/ska_mid/tm_subarray_node/1/State"
   
-  # logging.info(f'Archiver namespace  : {archiver_namespace}')
-  # logging.info(f'Archiver Tango host : {archiver_tango_host}')
   logging.info(f'MVP namespace       : {mvp_namespace}')
   logging.info(f'MVP Tango host      : {mvp_tango_host}')
   logging.info(f'Config manager      : {conf_manager}')
@@ -49,11 +45,9 @@ def test_mid_archiver():
 
 @pytest.mark.archiver
 @pytest.mark.skalow
-# @pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
+@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
 def test_low_archiver():
   logging.info("Init test archiver")
-  # archiver_namespace = os.getenv('ARCHIVER_NAMESPACE')
-  # archiver_tango_host = os.getenv('ARCHIVER_TANGO_HOST')
   mvp_tango_host = os.getenv('TANGO_HOST')[:-6]
   mvp_namespace = os.getenv('KUBE_NAMESPACE')
 
@@ -63,8 +57,6 @@ def test_low_archiver():
     f'tango://{mvp_tango_host}:10000/archiving/hdbpp/eventsubscriber01'
   attribute = f"tango://{mvp_tango_host}:10000/ska_low/tm_subarray_node/1/State"
 
-  # logging.info(f'Archiver namespace  : {archiver_namespace}')
-  # logging.info(f'Archiver Tango host : {archiver_tango_host}')
   logging.info(f'MVP namespace       : {mvp_namespace}')
   logging.info(f'MVP Tango host      : {mvp_tango_host}')
   logging.info(f'Config manager      : {conf_manager}')

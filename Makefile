@@ -6,15 +6,6 @@ BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
 THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
-INGRESS_HOST ?= integration.engageska-portugal.pt# Ingress HTTP hostname
-USE_NGINX ?= true# Use NGINX as the Ingress Controller
-API_SERVER_IP ?= $(THIS_HOST)# Api server IP of k8s
-API_SERVER_PORT ?= 6443# Api server port of k8s
-EXTERNAL_IP ?= $(THIS_HOST)# For traefik installation
-CLUSTER_NAME ?= integration.cluster# For the gangway kubectl setup
-CLIENT_ID ?= 417ea12283741e0d74b22778d2dd3f5d0dcee78828c6e9a8fd5e8589025b8d2f# For the gangway kubectl setup, taken from Gitlab
-CLIENT_SECRET ?= 27a5830ca37bd1956b2a38d747a04ae9414f9f411af300493600acc7ebe6107f# For the gangway kubectl setup, taken from Gitlab
-CHART_SET ?=#for additional flags you want to set when deploying (default empty)
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 
 KUBE_NAMESPACE ?= integration#namespace to be used
@@ -44,12 +35,17 @@ PSI_LOW_SDP_PROXY_VARS= --set sdp.proxy.server=${PSI_LOW_PROXY} \
 					--set "sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
 endif
 
+## OET variables 
+oet_podname = $(shell kubectl get pods -l app=oet,component=rest,release=$(HELM_RELEASE) -o=jsonpath='{..metadata.name}')
+sut_cdm_ver= $(shell kubectl exec -it $(oet_podname) -- pip list | grep "cdm-shared-library" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
+sut_oet_ver = $(shell kubectl exec -it $(oet_podname) -- pip list | grep "oet-scripts" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
+sut_oet_cur_ver=$(shell grep "oet-scripts" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
+
 CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 	--set oet-scripts.ingress.nginx=$(USE_NGINX) \
 	--set skuid.ingress.nginx=$(USE_NGINX) \
 	--set tango-base.ingress.nginx=$(USE_NGINX) \
 	--set webjive.ingress.nginx=$(USE_NGINX) \
-	--set minikube=$(MINIKUBE) \
 	--set global.minikube=$(MINIKUBE) \
 	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
@@ -67,6 +63,14 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 
 # include makefile targets that EDA deployment
 -include .make/archiver.mk
+
+check_oet_packages:
+	@echo "MVP is based on cdm-shared-library=$(sut_cdm_ver)"
+	@echo "MVP is based on oet-scripts=$(sut_oet_ver)"
+	@echo "Test are based on oet-scripts=$(sut_oet_cur_ver)"
+	@if [ $(sut_oet_ver) != $(sut_oet_cur_ver) ] ; then \
+	echo "Warning: oet-scripts package for MVP is not the same as used for testing!"; \
+	fi
 
 vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"

@@ -16,21 +16,7 @@ TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 MARK ?= fast## this variable allow the mark parameter in the pytest
 FILE ?= ##this variable allow to execution of a single file in the pytest 
-SLEEPTIME ?= 30s ##amount of sleep time for the smoketest target
-
-oet_podname = $(shell kubectl get pods -l app=oet,component=rest,release=$(HELM_RELEASE) -o=jsonpath='{..metadata.name}')
-sut_cdm_ver= $(shell kubectl exec -it $(oet_podname) -- pip list | grep "cdm-shared-library" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
-sut_oet_ver = $(shell kubectl exec -it $(oet_podname) -- pip list | grep "oet-scripts" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
-sut_oet_cur_ver=$(shell grep "oet-scripts" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
-
-
-check_oet_packages:
-	@echo "MVP is based on cdm-shared-library=$(sut_cdm_ver)"
-	@echo "MVP is based on oet-scripts=$(sut_oet_ver)"
-	@echo "Test are based on oet-scripts=$(sut_oet_cur_ver)"
-	@if [ $(sut_oet_ver) != $(sut_oet_cur_ver) ] ; then \
-	echo "Warning: oet-scripts package for MVP is not the same as used for testing!"; \
-	fi
+SLEEPTIME ?= 120s ##amount of sleep time for the smoketest target
 
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
@@ -75,7 +61,6 @@ k8s_test: smoketest## test the application on K8s
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		exit $$status
 
-
 clear_sdp_config:
 	@echo "clearing the sdp config db using a temporary call on the console pod on namespace: $(KUBE_NAMESPACE)"
 	kubectl exec -n $(KUBE_NAMESPACE) deploy/test-sdp-prototype-console -- sdpcfg delete -R /
@@ -83,22 +68,11 @@ clear_sdp_config:
 smoketest: wait## wait for pods to be ready and jobs to be completed
 
 wait:## wait for pods to be ready
-	@echo "Waiting for pods to be ready and jobs to be completed. Timeout 120s"
+	@echo "Waiting for pods to be ready and jobs to be completed. Timeout $(SLEEPTIME)"
 	@date
 	@kubectl -n $(KUBE_NAMESPACE) get pods
 	@date
-	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=120s $$jobs -n $(KUBE_NAMESPACE)
+	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=$(SLEEPTIME) $$jobs -n $(KUBE_NAMESPACE)
 	@date
-	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$$(echo $$p | cut -d';' -f3); if [ ! -z "$$v_owner_name" ]; then v_pod_name=$$(echo $$p | cut -d';' -f1); pods="$$pods $$v_pod_name"; fi; done; kubectl wait pods --all --for=condition=ready --timeout=120s $$pods -n $(KUBE_NAMESPACE)
+	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$$(echo $$p | cut -d';' -f3); if [ ! -z "$$v_owner_name" ]; then v_pod_name=$$(echo $$p | cut -d';' -f1); pods="$$pods $$v_pod_name"; fi; done; kubectl wait pods --all --for=condition=ready --timeout=$(SLEEPTIME) $$pods -n $(KUBE_NAMESPACE)
 	@date
-
-tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.readthedocs.io/en/latest/development/advanced/rest-api.html#tango-rest-api-implementations
-	@echo "---------------------------------------------------"
-	@echo "Test HTTP:"; echo ""
-	curl -u "tango-cs:tango" -XGET http://tango.rest.$(INGRESS_HOST)/tango/rest/rc4/hosts/databaseds-tango-base-$(HELM_RELEASE)/10000 | json_pp
-	# @echo "", echo ""
-	# @echo "---------------------------------------------------"
-	# @echo "Test HTTPS:"; echo ""
-	# curl -k -u "tango-cs:tango" -XGET https://tango.rest.$(INGRESS_HOST)/tango/rest/rc4/hosts/databaseds-tango-base-$(HELM_RELEASE)/10000 | json_pp
-	# @echo ""
-

@@ -258,15 +258,17 @@ get-service:
 	echo $(DBMVPSERVICE); \
 
 # Checks if the Database name is provided by user while deploying the archiver otherwise gives the default name to the database
-check-archiver-config: ## Check if database name is empty
-	if [ $$DEPLOYMENT_CONFIGURATION = skalow ] ; \
-	then $(eval ARCHIVER_CONFIG_FILE := low_configuation_file.json) \
-    echo $(ARCHIVER_CONFIG_FILE); \
-	fi
+# check-archiver-config: ## Check if database name is empty
+# 	if [ $$DEPLOYMENT_CONFIGURATION = skalow ] ; \
+# 	then $(eval ARCHIVER_CONFIG_FILE := low_configuation_file.json) \
+#     echo $(ARCHIVER_CONFIG_FILE); \
+# 	fi
 
-check-dbname: ## Check if database name is empty
-	@if [ $(DBNAME) = "default_mvp_archiver_db" ]; then \
-	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
+check-archiver-config: ## Check if database name is empty
+	@if [$(DEPLOYMENT_CONFIGURATION) = "skamid"]; then \
+	$(eval ARCHIVER_CONFIG_FILE := "mid_file.json") \
+	else \
+	$(eval ARCHIVER_CONFIG_FILE := "low_file.json") \
 	fi
 
 # Runs a pod to execute a script. 

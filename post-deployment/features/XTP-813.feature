@@ -13,7 +13,7 @@ Feature: Dish simulator confidence test via TM-Dish interface
 		
 		Examples:
 		| dish_master             | start_mode | end_mode   | end_state |
-		| mid_d0001/elt/master    | STANDBY-LP | STANDBY-FP | STANDBY   |
-		| mid_d0001/elt/master    | STANDBY-FP | OPERATE    | ON        |
-		| mid_d0001/elt/master    | OPERATE    | STANDBY-FP | STANDBY   |
-		| mid_d0001/elt/master    | STANDBY-FP | STANDBY-LP | STANDBY   |
+		| mid_d0001/elt/master    | STANDBY_LP | STANDBY_FP | STANDBY   |
+		| mid_d0001/elt/master    | STANDBY_FP | OPERATE    | ON        |
+		| mid_d0001/elt/master    | OPERATE    | STANDBY_FP | STANDBY   |
+		| mid_d0001/elt/master    | STANDBY_FP | STANDBY_LP | STANDBY   |

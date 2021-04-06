@@ -59,6 +59,7 @@ def set_to_running():
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
+    wait_before_test(timeout=10)
 
 @when("I allocate resources to TMC and MCCS Subarray")
 def allocate_four_dishes():

@@ -16,7 +16,7 @@ from time import sleep
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 ##SUT
-from ska.scripting.domain import SKAMid, SubArray, ResourceAllocation, Dish
+from ska.scripting.domain import Telescope, SubArray
 #SUT infra
 from tango import DeviceProxy, DevState
 #local dependencies
@@ -63,12 +63,15 @@ def test_deallocate_resources():
 
 @given('A running telescope with "4" dishes are allocated to "subarray 1"')
 def set_to_running(result):
-    LOGGER.info("A running telescope with '2' dishes are allocated to 'subarray 1'")
+    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy")
     assert(telescope_is_in_standby())
+    LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    LOGGER.info("Assigning 2 dishes")
+    LOGGER.info("Telescope started")
+    LOGGER.info("Assigning 2 dishes to subarray 1")
     take_subarray(1).to_be_composed_out_of(2)
+    LOGGER.info("Resources are successfully assigned to subarray 1.")
 
 @when("I deallocate the resources")
 def deallocate_resources():
@@ -77,30 +80,22 @@ def deallocate_resources():
     def release():
         SubArray(1).deallocate()
     release()
-    LOGGER.info("ReleaseResources command is involked on subarray ")
+    LOGGER.info("ReleaseResources command executed successfully on subarray ")
 
 
-@then('"subarray 1" should go into OFF state')
-def subarray_state_OFF():
-    LOGGER.info("Now deallocating resources ... ")
-    LOGGER.info("subarray state: " + resource('ska_mid/tm_subarray_node/1').get("State"))
-    # Confirm
-    #assert_that(resource('ska_mid/tm_subarray_node/1').get("State") == "OFF")
+# Here, @then clause should be changed as per new implementation. also update the method's assert statements
+@then('"subarray 1" should go into EMPTY obsState')
+def subarray_state_EMPTY():
+    # TODO: Can we assert obsState assertion for CSP and SDP SA?
     assert_that(resource('ska_mid/tm_subarray_node/1').get("obsState")).is_equal_to("EMPTY")
     LOGGER.info("subarray obsState: " + resource('ska_mid/tm_subarray_node/1').get("obsState"))
-    # Confirm
-    LOGGER.info("Subarray is now deallocated")
+    LOGGER.info("Subarray is now in EMPTY obsState")
 
 
 @then('ReceptorList for "subarray 1" should be empty')
 def receptorID_list_empty():
-   # watch_receptorIDList = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("receptorIDList")
-    # gather info
-   # receptorIDList_val = watch_receptorIDList.get_value_when_changed()
-    # confirm
     resource('ska_mid/tm_subarray_node/1').assert_attribute('receptorIDList').equals(None)
-   # assert_that(receptorIDList_val == [])
-    logging.info("ReceptorIDList is empty")
+    logging.info("ReceptorIDList is empty. Resources are successfully deallocated.")
 
 def teardown_function(function):
     LOGGER.info("Put Telescope back to standby")

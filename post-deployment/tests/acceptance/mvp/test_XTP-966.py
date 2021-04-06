@@ -10,7 +10,7 @@ import enum
 import logging
 from os import environ
 import time
-from multiprocessing import Process, Manager
+from multiprocessing import Process, Manager, Queue
 
 import pytest
 from assertpy import assert_that
@@ -24,8 +24,6 @@ from resources.test_support.controls import (restart_subarray,
                                              take_subarray,
                                              telescope_is_in_standby)
 from resources.test_support.helpers import resource
-
-# local imports
 
 
 DEV_TEST_TOGGLE = environ.get('DISABLE_DEV_TESTS')
@@ -50,6 +48,8 @@ PAUSE_BETWEEN_OET_TASK_LIST_CHECKS_IN_SECS = 5
 # OET task completion can occur before TMC has completed its activity - so allow time for the
 # last transitions to take place
 PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS = 10
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ObsState(enum.Enum):
@@ -83,8 +83,8 @@ def fixture_result():
     we also use this to track the task id and the scheduling block - not convinced this
     is the best way to do this, it may make more sense as part of the OET REST CLI fixture.
     """
-    fixture = {SUT_EXECUTED: False, TEST_PASSED: True, SCHEDULING_BLOCK: None,
-               STATE_CHECK: None, OET_TASK_ID: None}
+    fixture = {SUT_EXECUTED: False, TEST_PASSED: False, SCHEDULING_BLOCK: None,
+               STATE_CHECK: None, OET_TASK_ID: None, SUBARRAY: None}
     yield fixture
     # teardown
     end(fixture[SUBARRAY])
@@ -124,6 +124,7 @@ class Subarray:
 class Poller:
     proc = None
     device = None
+    exit_q = None
     results = []
 
     def __init__(self, device):
@@ -131,27 +132,48 @@ class Poller:
 
     def start_polling(self):
         manager = Manager()
+        self.exit_q = Queue()
         self.results = manager.list()
         self.proc = Process(target=self.track_obsstates,
-                            args=(self.device, self.results,))
+                            args=(self.device, self.results, self.exit_q))
         self.proc.start()
-        print("Starting")
 
     def stop_polling(self):
         if self.proc is not None:
-            self.proc.terminate()
+            self.exit_q.put(True)
+            self.proc.join()
 
     def get_results(self):
         return self.results
 
-    def track_obsstates(self, device, recorded_states):
+    def track_obsstates(self, device, recorded_states, exit_q):
         LOGGER.info("STATE MONITORING: Started Tracking")
-        while True:
+        while exit_q.empty():
             current_state = device.get_obsstate()
             if len(recorded_states) == 0 or current_state != recorded_states[-1]:
                 LOGGER.info(
                     "STATE MONITORING: State has changed to %s", current_state)
                 recorded_states.append(current_state)
+
+
+def parse_rest_response_line(line):
+    """Split a line from the REST API lines
+    into columns
+
+    Args:
+        line (string): A line from OET REST CLI response
+
+    Returns:
+        rest_response_object: A dicts containing
+        information on a script.
+    """
+    elements = line.split()
+    rest_response_object = {
+        'id': elements[0],
+        'script': elements[1],
+        'creation_time': str(elements[2] + ' ' + elements[3]),
+        'state': elements[4]}
+    return rest_response_object
 
 
 def parse_rest_response(resp):
@@ -169,14 +191,31 @@ def parse_rest_response(resp):
     lines = resp.splitlines()
     del lines[0:2]
     for line in lines:
-        elements = line.split()
-        rest_response_object = {
-            'id': elements[0],
-            'script': elements[1],
-            'creation_time': str(elements[2] + ' ' + elements[3]),
-            'state': elements[4]}
+        rest_response_object = parse_rest_response_line(line)
         rest_responses.append(rest_response_object)
     return rest_responses
+
+
+def parse_rest_start_response(resp):
+    """ Split the response from the REST API start
+    command into columns.
+
+    This needs to be done separately from other OET REST
+    Client responses because starting a script returns a
+    Python Generator object instead of a static string.
+
+    Args:
+        resp (Generator): Response from OET REST CLI start
+
+    Returns:
+        [rest_response_object]: List of dicts containing
+        information on each script.
+    """
+    for line in resp:
+        # Only get line with script details (ignore header lines)
+        if 'RUNNING' in line:
+            return [parse_rest_response_line(line)]
+    return []
 
 
 def get_task_status(task, resp):
@@ -189,7 +228,8 @@ def get_task_status(task, resp):
         resp (str): The response message to be parsed
 
     Returns:
-        [str]: The current OET status of the task
+        str: The current OET status of the task or
+        None if task is not present in resp
     """
     rest_responses = parse_rest_response(resp)
     result_for_task = [x['state'] for x in rest_responses if x['id'] == task]
@@ -201,27 +241,38 @@ def get_task_status(task, resp):
 
 
 def task_has_status(task, expected_status, resp):
-    """Confirm the task is in the expected status by
+    """Confirm the task has the expected status by
     querying the OET client
 
     Args:
-        task (str): OET ID for the task
-        expected_status (str): Expected status
-        resp ([type]): [description]
+        task (str): OET ID for the task (script)
+        expected_status (str): Expected script state
+        resp (str): Response from OET REST CLI list
 
     Returns:
-        [type]: [description]
+        bool: True if task is in expected_status
     """
     return get_task_status(task, resp) == expected_status
 
 
-def confirm_script_status_and_return_id(resp, expected_status='READY'):
+def confirm_script_status_and_return_id(resp, expected_status='CREATED'):
     """
     Confirm that the script is in a given state and return the ID
+
+    Args:
+        resp (str): Response from OET REST CLI list
+        expected_status (str): Expected script state
+
+    Returns:
+        str: Task ID
     """
-    details = parse_rest_response(resp)
+    if expected_status is 'RUNNING':
+        details = parse_rest_start_response(resp)
+    else:
+        details = parse_rest_response(resp)
     assert_that(
-        len(details), "Expected a valid reply when creating the script").is_equal_to(1)
+        len(details), "Expected details for 1 script, instead got "
+                      "details for {} scripts".format(len(details))).is_equal_to(1)
     resp_state = details[0].get('state')
     assert_that(
         resp_state,
@@ -231,44 +282,46 @@ def confirm_script_status_and_return_id(resp, expected_status='READY'):
     return script_id
 
 
-LOGGER = logging.getLogger(__name__)
-
-
-def attempt_to_clean_subarray_to_idle(subarray: Subarray):
+def attempt_to_clean_subarray_to_empty(subarray: Subarray):
     """
     Ideally the telescope would always be in the same state
     when running the test - this method will cleanup the
-    subarray provided to the expected IDLE state where
+    subarray provided to the expected EMPTY state where
     this test starts
     """
-
+    # TODO: this does not cover the case where sub-array is in IDLE and resources need
+    #  released. Should there be a general helper function for BDD tests which, if
+    #  telescope is not in standby, attempts to set it to standby before every test?
+    #  This would make more sense than implementing a new function for each test which
+    #  attempts to set the telescope to standby
     if telescope_is_in_standby():
         LOGGER.info("PROCESS: Starting up telescope")
         set_telescope_to_running()
     if subarray.obsstate_is('READY'):
         take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
 
-    LOGGER.info("PROCESS: Telescope is in %s ", subarray.get_obsstate())
+    LOGGER.info("PROCESS: Sub-array state is %s ", subarray.get_obsstate())
 
 
-def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block, additional_json=None):
-
-    oet_task_id = None
+def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block):
     resp = oet_rest_cli.create(script, subarray_id=1)
     # confirm that creating the task worked and we have a valid ID
-    oet_task_id = confirm_script_status_and_return_id(resp, 'READY')
+    oet_create_task_id = confirm_script_status_and_return_id(resp, 'CREATED')
     # we  can now start the observing task passing in the scheduling block as a parameter
-    if additional_json is not None:
-        resp = oet_rest_cli.start(scheduling_block, additional_json)
-    else:
-        resp = oet_rest_cli.start(scheduling_block)
+    resp = oet_rest_cli.start(scheduling_block, listen=False)
     # confirm that it didn't fail on starting
-    oet_task_id = confirm_script_status_and_return_id(resp, 'RUNNING')
+    oet_start_task_id = confirm_script_status_and_return_id(resp, 'RUNNING')
+
+    # If task IDs do not match, wrong script was started
+    if oet_create_task_id != oet_start_task_id:
+        LOGGER.info("Script IDs did not match, created script with ID %s but started script with ID %s",
+                    oet_create_task_id, oet_start_task_id)
+        return False
 
     timeout = DEFAUT_LOOPS_DEFORE_TIMEOUT  # arbitrary number
     while timeout != 0:
         resp = oet_rest_cli.list()
-        if not task_has_status(oet_task_id, 'RUNNING', resp):
+        if not task_has_status(oet_start_task_id, 'RUNNING', resp):
             LOGGER.info(
                 "PROCESS: Task has run to completion - no longer present on task list")
             return True
@@ -277,12 +330,10 @@ def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block, addit
     # if we get here we timed out so need to fail the test
     return False
 
-
-# @pytest.mark.select
-@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.fast
 @pytest.mark.skamid
 @scenario("XTP-966.feature",
-          "Scheduling Block Resource Allocation and Observation")
+          "SKA Mid Scheduling Block - Resource allocation and observation")
 def test_sb_resource_allocation():
     """Scheduling Block Resource allocation test."""
 
@@ -294,29 +345,45 @@ def setup_telescope(result, subarray_name, scheduling_block):
     state in the list passed in.
 
     Args:
-        result ([type]): fixture used to track progress
-        expected_states ([type]): list of expected states
-        subarray ([type]): the subarray to be used for the test
+        result (dict): fixture used to track progress
+        subarray_name (str): Sub-array ID
+        scheduling_block (str): file path to SB JSON file
     """
 
     subarray = Subarray(subarray_name)
-    attempt_to_clean_subarray_to_idle(subarray)
+    attempt_to_clean_subarray_to_empty(subarray)
 
-    # start the track_obsstate function in a separate thread
-
+    # start the track_obsstate function in a separate thread
     poller = Poller(subarray)
     poller.start_polling()
 
+    result[STATE_CHECK] = poller
     result[SCHEDULING_BLOCK] = scheduling_block
     result[SUBARRAY] = subarray
-    result[STATE_CHECK] = poller
 
 
 @when(parsers.parse('the OET allocates resources for the SB with the script {script}'))
 def allocate_resources(result, oet_rest_cli, script):
     """
     Use the OET Rest API to allocate resources for the Scheduling Block
+
+    Args:
+        result (dict): fixture used to track progress
+        oet_rest_cli (RestClientUI):
+        script (str): file path to an observing script
     """
+    LOGGER.info("PROCESS: Creating SBI from SB %s ",
+                result[SCHEDULING_BLOCK])
+
+    # create Scheduling Block Instance so that the same SB ID is maintained through
+    # resource allocation and observation execution
+    result[TEST_PASSED] = run_task_using_oet_rest_client(
+        oet_rest_cli,
+        script='file://scripts/create_sbi.py',
+        scheduling_block=result[SCHEDULING_BLOCK]
+    )
+    assert result[TEST_PASSED],  "PROCESS: SBI creation failed"
+
     LOGGER.info("PROCESS: Allocating resources for the SB %s ",
                 result[SCHEDULING_BLOCK])
     result[TEST_PASSED] = run_task_using_oet_rest_client(
@@ -327,23 +394,21 @@ def allocate_resources(result, oet_rest_cli, script):
     assert result[TEST_PASSED],  "PROCESS: Resource Allocation failed"
 
 
-@then(parsers.parse('the OET observes the SB with the script {script}'))
+@then(parsers.parse('the OET observes the SB with the script {script}'))
 def run_scheduling_block(result, oet_rest_cli, script):
     """[summary]
 
     Args:
-        result ([type]): [description]
+        result (dict): fixture used to track progress
         oet_rest_cli ([type]): [description]
     """
     LOGGER.info("PROCESS: Starting to observe the SB %s using script %s",
                 result[SCHEDULING_BLOCK], script)
 
-    # TODO additional_json seems to be manadatory for configure at the moment but should be optional
     result[TEST_PASSED] = run_task_using_oet_rest_client(
         oet_rest_cli,
         script=script,
-        scheduling_block=result[SCHEDULING_BLOCK],
-        additional_json='scripts/data/example_configure.json'
+        scheduling_block=result[SCHEDULING_BLOCK]
     )
     assert result[TEST_PASSED],  "PROCESS: Observation failed"
 
@@ -351,7 +416,7 @@ def run_scheduling_block(result, oet_rest_cli, script):
 @then(parsers.parse(
     'the SubArrayNode obsState passes in order through the following states {expected_states}'
 ))
-def check_transitions(expected_states, result):
+def check_transitions(result, expected_states):
     """Check that the device passed through the expected
     obsState transitions. This has been being monitored
     on a separate thread in the background.
@@ -360,23 +425,25 @@ def check_transitions(expected_states, result):
     to complete any operation still in progress.
 
     Args:
-        result ([type]): [description]
+        result (dict): fixture used to track progress
+        expected_states (str): String containing states sub-array is expected to have
+        passed through, separated by a comma
     """
-
     time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
-    expected_states = [x.strip() for x in expected_states.split(',')]
 
     result[STATE_CHECK].stop_polling()
-    recorded_states = result[STATE_CHECK].get_results()
+    expected_states = [x.strip() for x in expected_states.split(',')]
+    recorded_states = list(result[STATE_CHECK].get_results())
 
     # ignore 'READY' as it can be a transitory state so we don't rely
     # on it being present in the list to be matched
-    recorded_states = list(filter(('READY').__ne__, recorded_states))
+    recorded_states = [i for i in recorded_states if i != 'READY']
+
     result[TEST_PASSED] = False
     LOGGER.info("Comparing the list of states observed with the expected states")
     for expected_state, recorded_state in zip(expected_states, recorded_states):
         LOGGER.info("Expected %s was %s ", expected_state, recorded_state)
-        assert expected_state == recorded_state, "State observeed was not as expected"
+        assert expected_state == recorded_state, "State observed was not as expected"
     LOGGER.info("All states match")
     result[TEST_PASSED] = True
 
@@ -384,24 +451,24 @@ def check_transitions(expected_states, result):
 def end(subarray: Subarray):
     """ teardown any state that was previously setup with a setup_function
     call.
+
+    Args:
+        subarray (Subarray): Subarray object referencing
+        sub-array to reset
     """
     if subarray is not None:
-        if (subarray.state_is("ON")) and (subarray.obsstate_is("IDLE")):
+        obsstate = subarray.get_obsstate()
+        if subarray.state_is("ON") and obsstate == "IDLE":
             LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
             take_subarray(1).and_release_all_resources()
-        if subarray.obsstate_is("READY"):
+        if obsstate == "READY":
             LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
             take_subarray(1).and_end_sb_when_ready(
             ).and_release_all_resources()
-        if subarray.obsstate_is("CONFIGURING"):
+        if obsstate in ["CONFIGURING", "SCANNING"]:
             LOGGER.warning(
-                "Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
-            restart_subarray(1)
-            # raise exception since we are unable to continue with tear down
-            raise Exception("Unable to tear down test setup")
-        if subarray.obsstate_is("SCANNING"):
-            LOGGER.warning(
-                "Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
+                "Subarray is still in %s Please restart MVP manually to complete tear down",
+                obsstate)
             restart_subarray(1)
             # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")

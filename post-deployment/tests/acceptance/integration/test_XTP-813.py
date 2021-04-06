@@ -19,8 +19,8 @@ from resources.test_support.helpers import resource, watch
 LOGGER = logging.getLogger(__name__)
 
 mode_cmd_map = {
-    "STANDBY-LP": "SetStandbyLPMode",
-    "STANDBY-FP": "SetStandbyFPMode",
+    "STANDBY_LP": "SetStandbyLPMode",
+    "STANDBY_FP": "SetStandbyFPMode",
     "OPERATE": "SetOperateMode",
 }
 # to be used in teardown
@@ -36,10 +36,11 @@ def _change_dish_mode(dev_proxy, cmd, device_name):
 def pre_condition(dev_proxy, device_name, expected):
     """verify the device dish mode before executing mode transition requests"""
     actual = resource(device_name).get("dishMode")
+    LOGGER.info(f"Resource actual dishMode: {actual}. Expected dishMode: {expected}")
     if actual != expected:
         # standbyfp is used as initial condition because it can be reached from other
         # dish modes but dont request standbyfp if this is the current dish mode
-        if actual != "STANDBY-FP":
+        if actual != "STANDBY_FP":
             _change_dish_mode(dev_proxy, "SetStandbyFPMode", device_name)
         _change_dish_mode(dev_proxy, mode_cmd_map[expected], device_name)
     assert_that(resource(device_name).get("dishMode")).is_equal_to(expected)
@@ -62,10 +63,6 @@ def restore_dish_state(request):
 
 @pytest.mark.fast
 @pytest.mark.skamid
-@pytest.mark.xfail(
-    reason="New DishMaster doesn't update the Tango state. It should be removed when a "
-    "version of tmc-mid chart (> 0.2.0) with the required updates is published."
-)
 @scenario("XTP-813.feature", "Test dish master simulator dishMode change")
 def test_mode_transitions():
     pass

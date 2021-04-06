@@ -1,4 +1,42 @@
-release=0.4.1
-tag=0.4.1
-tag_description=patch release to rev 0.4 in order to work in webjive 0.1.13
+release=0.6.0
+tag=0.6.0
+tag_description=
+**Charts:**
+
+**1. ska-mid 0.5.0 - 0.6.0:**
+
+   **1.1. tango-base - 0.2.16 - 0.2.20**:
+
+        a. change the way devices wait for dependent connections
+
+   **1.2. tango-util - 0.2.9 - 0.2.13:**
+
+        a. change the way devices wait for dependent connections
+
+    **1.3. mid-csp - 0.1.4 - 0.1.5:**
+
+        a. Ensure csp master waits for children before changing status to ON
+
+   **1.4. sdp - 0.3.7 - 0.4.0:**
+
+        a. Integrate the newly parameterised version of the SDP Helm chart with the SKAMPI Low and Mid Helm charts.
+
+    **1.5. webjive - 1.0.15 - 1.0.16:**
+
+        a. timeline widget can now handle tango DevState
+
+**2. Ska-low 0.4.0 - 0.5.0:**
+
+   **2.1. tango-base - 0.2.16 - 0.2.20**:
+
+        a. change the way devices wait for dependent connections
+
+   **2.2. tango-util - 0.2.9 - 0.2.13:**
+
+        a. change the way devices wait for dependent connections
+
+   **2.3. webjive - 1.0.15 - 1.0.16:**
+
+        c. timeline widget can now handle tango DevState
+
 

@@ -6,7 +6,7 @@ BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
 THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
 DISPLAY := $(THIS_HOST):0
 XAUTHORITYx ?= ${XAUTHORITY}
-INGRESS_HOST ?= integration.engageska-portugal.pt# Ingress HTTP hostname
+INGRESS_HOST ?= k8s.stfc.skao.int# Ingress HTTP hostname
 USE_NGINX ?= true# Use NGINX as the Ingress Controller
 API_SERVER_IP ?= $(THIS_HOST)# Api server IP of k8s
 API_SERVER_PORT ?= 6443# Api server port of k8s
@@ -31,16 +31,34 @@ ARCHIVER_DBHOST ?= 192.168.93.137 # ARCHIVER_DBHOST is the IP address for the cl
 CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
+# PSI Low Environment need PROXY values to be set
+# This code detects environment and sets the variables
+ENV_CHECK := $(shell echo $(CI_ENVIRONMENT_SLUG) | egrep psi-low)
+ifneq ($(ENV_CHECK),)
+PSI_LOW_PROXY=http://delphinus.atnf.csiro.au:8888
+PSI_LOW_NO_PROXY=localhost,127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local
+PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
+				--env=HTTPS_PROXY=${PSI_LOW_PROXY} \
+				--env=NO_PROXY=${PSI_LOW_NO_PROXY} \
+				--env=http_proxy=${PSI_LOW_PROXY} \
+				--env=https_proxy=${PSI_LOW_PROXY} \
+				--env=no_proxy=${PSI_LOW_NO_PROXY}
+
+PSI_LOW_SDP_PROXY_VARS= --set sdp.proxy.server=${PSI_LOW_PROXY} \
+					--set "sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
+endif
+
+
 .DEFAULT_GOAL := help
 
 # include makefile targets for release management
 -include .make/release.mk
 
 # include makefile targets for testing
--include test.mk
+-include .make/test.mk
 
 # include makefile targets that wrap helm
- -include helm.mk
+-include .make/helm.mk
 
 # include makefile targets that EDA deployment
 #  -include archiver.mk
@@ -149,7 +167,6 @@ install: clean namespace namespace_sdp check-dbname## install the helm chart on 
 		--set minikube=$(MINIKUBE) \
 		--set global.minikube=$(MINIKUBE) \
 		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
-		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set oet-scripts.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
@@ -158,6 +175,7 @@ install: clean namespace namespace_sdp check-dbname## install the helm chart on 
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--set global.hostname=$(ARCHIVER_DBHOST) \
 		--set global.dbname=$(ARCHIVER_DBNAME) \
+		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
@@ -212,6 +230,35 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set minikube=$(MINIKUBE) \
 		--set global.minikube=$(MINIKUBE) \
 		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set oet-scripts.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
+		--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
+		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
+		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
+		--set webjive.ingress.hostname=$(INGRESS_HOST) \
+		--set global.hostname=$(ARCHIVER_DBHOST) \
+		--set global.dbname=$(ARCHIVER_DBNAME) \
+		$(PSI_LOW_SDP_PROXY_VARS) \
+		--values $(VALUES) \
+		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
+
+template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
+	helm dependency update $(UMBRELLA_CHART_PATH); \
+	helm template $(HELM_RELEASE) \
+        --set tango-base.xauthority="$(XAUTHORITYx)" \
+    	--set logging.ingress.hostname=$(INGRESS_HOST) \
+        --set logging.ingress.nginx=$(USE_NGINX) \
+        --set oet-scripts.ingress.hostname=$(INGRESS_HOST) \
+        --set oet-scripts.ingress.nginx=$(USE_NGINX) \
+        --set skuid.ingress.hostname=$(INGRESS_HOST) \
+        --set skuid.ingress.nginx=$(USE_NGINX) \
+        --set tango-base.ingress.hostname=$(INGRESS_HOST) \
+        --set tango-base.ingress.nginx=$(USE_NGINX) \
+        --set webjive.ingress.hostname=$(INGRESS_HOST) \
+        --set webjive.ingress.nginx=$(USE_NGINX) \
+		--set minikube=$(MINIKUBE) \
+		--set global.minikube=$(MINIKUBE) \
+		--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 		--set sdp.tango-base.enabled=false \
 		--set tangoDatabaseDS=$(TANGO_DATABASE_DS) \
 		--set oet-scripts.tangoDatabaseDS=$(TANGO_DATABASE_DS) \
@@ -221,6 +268,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--set global.hostname=$(ARCHIVER_DBHOST) \
 		--set global.dbname=$(ARCHIVER_DBNAME) \
+		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 

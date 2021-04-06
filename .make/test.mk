@@ -80,8 +80,13 @@ wait:## wait for pods to be ready
 	@date
 	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=120s $$jobs -n $(KUBE_NAMESPACE)
 	@date
-	@kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready --all --timeout=120s pods || exit 1
+	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$$(echo $$p | cut -d';' -f3); if [ ! -z "$$v_owner_name" ]; then v_pod_name=$$(echo $$p | cut -d';' -f1); pods="$$pods $$v_pod_name"; fi; done; kubectl wait pods --all --for=condition=ready $$pods -n $(KUBE_NAMESPACE)
 	@date
+
+##  pods=$$(kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{' '}{end}"); kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready --all --timeout=120s $$pods || exit 1
+
+## for p in `kubectl get pods  -n ci-skampi-st-746-low -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$(echo $p | cut -d';' -f3); if [ ! -z "$v_owner_name" ]; then v_pod_name=$(echo $p | cut -d';' -f1); echo $v_pod_name; fi; done
+
 
 tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.readthedocs.io/en/latest/development/advanced/rest-api.html#tango-rest-api-implementations
 	@echo "---------------------------------------------------"

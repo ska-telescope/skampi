@@ -255,22 +255,8 @@ get-service:
 	$(eval DBMVPSERVICE := $(shell kubectl get svc -n $(KUBE_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
 	echo $(DBMVPSERVICE); \
 
-##WIP: job to check deployement configuration
-# check-archiver-config:
-# 	if [ "$$DEPLOYMENT_CONFIGURATION" = "skamid" ]; then \
-# 		$(eval "ARCHIVER_CONFIG_FILE" := "ska_mid.json") \
-# 		else \
-# 		$(eval "ARCHIVER_CONFIG_FILE" := "ska_low.json") \
-# 	fi
 
-# check-archiver-config: ## Check if database name is empty
-# 	if [ "$(DEPLOYMENT_CONFIGURATION)" = "skalow" ]; then \
-# 	echo "done"; \
-# 	else \
-# 	echo "nope"; \
-# 	fi
-
-check-archiver-config: ## Check if database name is empty
+check-archiver-config: ## Check which MVP deployment is running
 	@if [ "$(DEPLOYMENT_CONFIGURATION)" = "skalow" ]; then \
 	echo $(ARCHIVER_CONFIG_FILE); \
 	$(eval ARCHIVER_CONFIG_FILE := "mid_configuration.json") \

@@ -25,7 +25,7 @@ DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
 TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the Tango DB
 HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
-ARCHIVER_CONFIG_FILE ?= configuation_file.json## archiver attribute configure json file to work with
+ARCHIVER_CONFIG_FILE ?= mid_configuration.json## archiver attribute configure json file for MVP-mid to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 DBHOST ?= 192.168.93.137 # DBHOST is the IP address for the cluster machine where archiver database is created
 DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
@@ -60,9 +60,6 @@ endif
 
 # include makefile targets that wrap helm
 -include .make/helm.mk
-
-# include makefile targets that EDA deployment
-#-include .make/archiver.mk
 
 vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"
@@ -257,14 +254,8 @@ get-service:
 	$(eval DBMVPSERVICE := $(shell kubectl get svc -n $(KUBE_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
 	echo $(DBMVPSERVICE); \
 
-# Checks if the Database name is provided by user while deploying the archiver otherwise gives the default name to the database
-# check-archiver-config: ## Check if database name is empty
-# 	if [ $$DEPLOYMENT_CONFIGURATION = skalow ] ; \
-# 	then $(eval ARCHIVER_CONFIG_FILE := low_configuation_file.json) \
-#     echo $(ARCHIVER_CONFIG_FILE); \
-# 	fi
-
-check-archiver-config: ## Check if database name is empty
+##WIP: job to check deployement configuration
+check-archiver-config:
 	@if [$(DEPLOYMENT_CONFIGURATION) = "skamid"]; then \
 	$(eval ARCHIVER_CONFIG_FILE := "mid_file.json") \
 	else \
@@ -273,7 +264,7 @@ check-archiver-config: ## Check if database name is empty
 
 # Runs a pod to execute a script. 
 # This script configures the archiver for attribute archival defined in json file. Once script is executed, pod is deleted.
-configure-archiver: get-service check-archiver-config ##configure attributes to archive
+configure-archiver: get-service ##configure attributes to archive
 		tar -c resources/archiver/ | \
 		kubectl run $(CONFIGURE_ARCHIVER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
@@ -286,7 +277,7 @@ configure-archiver: get-service check-archiver-config ##configure attributes to 
 		sudo python configure_hdbpp.py \
             --cm=tango://$(TANGO_DATABASE_DS):10000/archiving/hdbpp/confmanager01 \
             --es=tango://$(TANGO_DATABASE_DS):10000/archiving/hdbpp/eventsubscriber01 \
-            --attrfile=$(ARCHIVER_CONFIG_FILE) \
+            --attrfile=low_configuration.json \
             --th=tango://$(TANGO_DATABASE_DS):10000 \
 			--ds=$(DBMVPSERVICE) \
 			--ns=$(KUBE_NAMESPACE)" && \

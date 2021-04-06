@@ -25,10 +25,11 @@ HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
-ARCHIVER_CONFIG_FILE ?= configuation_file.json## archiver attribute configure json file to work with
-ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
-ARCHIVER_DBHOST ?= 192.168.93.137 # ARCHIVER_DBHOST is the IP address for the cluster machine where archiver database is created
-CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
+
+# ARCHIVER_CONFIG_FILE ?= configuation_file.json## archiver attribute configure json file to work with
+# ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
+# ARCHIVER_DBHOST ?= 192.168.93.137 # ARCHIVER_DBHOST is the IP address for the cluster machine where archiver database is created
+# CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
 # PSI Low Environment need PROXY values to be set
@@ -61,7 +62,7 @@ endif
 -include .make/helm.mk
 
 # include makefile targets that EDA deployment
-#  -include archiver.mk
+-include archiver.mk
 
 vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"
@@ -105,16 +106,6 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	then kubectl describe namespace $(KUBE_NAMESPACE_SDP) ; \
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
-
-# Checks if the Database name is provided by user while deploying the archiver otherwise gives the default name to the database
-check-dbname: ## Check if database name is empty
-	@if [ $(ARCHIVER_DBNAME) = "default_mvp_archiver_db" ]; then \
-	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
-	fi
-
-get-service:
-	$(eval DBMVPSERVICE := $(shell kubectl get svc -n $(KUBE_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
-	echo $(DBMVPSERVICE);
 
 delete_namespace: ## delete the kubernetes namespace
 	@if [ "default" = "$(KUBE_NAMESPACE)" ] || [ "kube-system" = "$(KUBE_NAMESPACE)" ] ; then \
@@ -178,31 +169,6 @@ install: clean namespace namespace_sdp check-dbname## install the helm chart on 
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
-
-
-# Runs a pod to execute a script. 
-# This script configures the archiver for attribute archival defined in json file. Once script is executed, pod is deleted.
-configure-archiver:  get-service ##configure attributes to archive
-		tar -c resources/archiver/ | \
-		kubectl run $(CONFIGURE_ARCHIVER) \
-		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
-		--image-pull-policy=IfNotPresent \
-		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
-		/bin/bash -c "cd /resources/archiver && \
-		ls -all && \
-		cd ../../ && \
-		sudo tar xv && \
-		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/at1-804/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
-		cd /resources/archiver && \
-		ls -all && \
-		sudo python configure_hdbpp.py \
-            --cm=tango://$(TANGO_DATABASE_DS):10000/archiving/hdbpp/confmanager01 \
-            --es=tango://$(TANGO_DATABASE_DS):10000/archiving/hdbpp/eventsubscriber01 \
-            --attrfile=configuation_file.json \
-            --th=tango://$($(TANGO_DATABASE_DS)):10000 \
-			--ds=$(DBMVPSERVICE) \
-			--ns=$(KUBE_NAMESPACE)" && \
-		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(CONFIGURE_ARCHIVER);
 
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE

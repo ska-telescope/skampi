@@ -23,6 +23,15 @@ sut_cdm_ver= $(shell kubectl exec -it $(oet_podname) -- pip list | grep "cdm-sha
 sut_oet_ver = $(shell kubectl exec -it $(oet_podname) -- pip list | grep "oet-scripts" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
 sut_oet_cur_ver=$(shell grep "oet-scripts" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
 
+
+check_oet_packages:
+	@echo "MVP is based on cdm-shared-library=$(sut_cdm_ver)"
+	@echo "MVP is based on oet-scripts=$(sut_oet_ver)"
+	@echo "Test are based on oet-scripts=$(sut_oet_cur_ver)"
+	@if [ $(sut_oet_ver) != $(sut_oet_cur_ver) ] ; then \
+	echo "Warning: oet-scripts package for MVP is not the same as used for testing!"; \
+	fi
+
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
@@ -80,13 +89,8 @@ wait:## wait for pods to be ready
 	@date
 	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=120s $$jobs -n $(KUBE_NAMESPACE)
 	@date
-	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$$(echo $$p | cut -d';' -f3); if [ ! -z "$$v_owner_name" ]; then v_pod_name=$$(echo $$p | cut -d';' -f1); pods="$$pods $$v_pod_name"; fi; done; kubectl wait pods --all --for=condition=ready $$pods -n $(KUBE_NAMESPACE)
+	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$$(echo $$p | cut -d';' -f3); if [ ! -z "$$v_owner_name" ]; then v_pod_name=$$(echo $$p | cut -d';' -f1); pods="$$pods $$v_pod_name"; fi; done; kubectl wait pods --all --for=condition=ready --timeout=120s $$pods -n $(KUBE_NAMESPACE)
 	@date
-
-##  pods=$$(kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{' '}{end}"); kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready --all --timeout=120s $$pods || exit 1
-
-## for p in `kubectl get pods  -n ci-skampi-st-746-low -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$(echo $p | cut -d';' -f3); if [ ! -z "$v_owner_name" ]; then v_pod_name=$(echo $p | cut -d';' -f1); echo $v_pod_name; fi; done
-
 
 tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.readthedocs.io/en/latest/development/advanced/rest-api.html#tango-rest-api-implementations
 	@echo "---------------------------------------------------"
@@ -98,11 +102,3 @@ tango_rest_ingress_check:  ## curl test Tango REST API - https://tango-controls.
 	# curl -k -u "tango-cs:tango" -XGET https://tango.rest.$(INGRESS_HOST)/tango/rest/rc4/hosts/databaseds-tango-base-$(HELM_RELEASE)/10000 | json_pp
 	# @echo ""
 
-check_oet_packages:
-	@echo "MVP is based on cdm-shared-library=$(sut_cdm_ver)"
-	@echo "MVP is based on oet-scripts=$(sut_oet_ver)"
-	@echo "Test are based on oet-scripts=$(sut_oet_cur_ver)"
-	@if [ $(sut_oet_ver) != $(sut_oet_cur_ver) ] ; then \
-	echo "Warning: oet-scripts package for MVP is not the same as used for testing!"; \
-	fi
-	

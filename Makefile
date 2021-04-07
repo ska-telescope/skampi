@@ -25,7 +25,7 @@ DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
 TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the Tango DB
 HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
-ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json ## archiver attribute configure json file for MVP-mid to work with
+ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archiver attribute configure json file for MVP-mid to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 DBHOST ?= 192.168.93.137 # DBHOST is the IP address for the cluster machine where archiver database is created
 DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
@@ -255,6 +255,7 @@ get-service:
 	$(eval DBMVPSERVICE := $(shell kubectl get svc -n $(KUBE_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
 	echo $(DBMVPSERVICE); \
 
+
 # Runs a pod to execute a script. 
 # This script configures the archiver for attribute archival defined in json file. Once script is executed, pod is deleted.
 configure-archiver: get-service##configure attributes to archive
@@ -267,7 +268,6 @@ configure-archiver: get-service##configure attributes to archive
 		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/at1-804/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
 		cd /resources/archiver && \
 		ls -all && \
-		echo $(ARCHIVER_CONFIG_FILE) && \
 		sudo python configure_hdbpp.py \
             --cm=tango://$(TANGO_DATABASE_DS):10000/archiving/hdbpp/confmanager01 \
             --es=tango://$(TANGO_DATABASE_DS):10000/archiving/hdbpp/eventsubscriber01 \

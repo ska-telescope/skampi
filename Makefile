@@ -18,8 +18,6 @@ DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
-CI_PROJECT_PATH_SLUG ?= skampi
-CI_ENVIRONMENT_SLUG ?= skampi
 
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
@@ -44,6 +42,10 @@ sut_cdm_ver= $(shell kubectl exec -it $(oet_podname) -- pip list | grep "cdm-sha
 sut_oet_ver = $(shell kubectl exec -it $(oet_podname) -- pip list | grep "oet-scripts" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
 sut_oet_cur_ver=$(shell grep "oet-scripts" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
 
+CI_PROJECT_PATH_SLUG?=skampi
+CI_ENVIRONMENT_SLUG?=skampi
+$(shell echo 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gilab_values.yaml)
+
 CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 	--set oet-scripts.ingress.nginx=$(USE_NGINX) \
 	--set skuid.ingress.nginx=$(USE_NGINX) \
@@ -52,8 +54,7 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.minikube=$(MINIKUBE) \
 	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
-	--set global.annotations.app.gitlab.com/app=$(CI_PROJECT_PATH_SLUG) \
-	--set global.annotations.app.gitlab.com/env=$(CI_ENVIRONMENT_SLUG) \
+	--values gilab_values.yaml \
 	$(PSI_LOW_SDP_PROXY_VARS)
 
 .DEFAULT_GOAL := help

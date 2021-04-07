@@ -16,7 +16,7 @@ TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 MARK ?= fast## this variable allow the mark parameter in the pytest
 FILE ?= ##this variable allow to execution of a single file in the pytest 
-SLEEPTIME ?= 120s ##amount of sleep time for the smoketest target
+SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER

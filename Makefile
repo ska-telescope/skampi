@@ -18,7 +18,6 @@ CHART_SET ?=#for additional flags you want to set when deploying (default empty)
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 
 KUBE_NAMESPACE ?= integration#namespace to be used
-ARCHIVER_NAMESPACE ?= ska-archiver#archiver namespace
 CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
@@ -27,9 +26,10 @@ HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archiver attribute configure json file for MVP-mid to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
-DBHOST ?= 192.168.93.137 # DBHOST is the IP address for the cluster machine where archiver database is created
-DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
 MINIKUBE ?= true## Minikube or not
+# ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
+# ARCHIVER_DBHOST ?= 192.168.93.137 # ARCHIVER_DBHOST is the IP address for the cluster machine where archiver database is created
+# CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
 
@@ -61,6 +61,9 @@ endif
 
 # include makefile targets that wrap helm
 -include .make/helm.mk
+
+# include makefile targets that EDA deployment
+-include archiver.mk
 
 vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"
@@ -105,12 +108,6 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
 
-# Checks if the Database name is provided by user while deploying the archiver otherwise gives the default name to the database
-check-dbname: ## Check if database name is empty
-	@if [ $(DBNAME) = "default_mvp_archiver_db" ]; then \
-	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
-	fi
-
 delete_namespace: ## delete the kubernetes namespace
 	@if [ "default" = "$(KUBE_NAMESPACE)" ] || [ "kube-system" = "$(KUBE_NAMESPACE)" ] ; then \
 	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
@@ -141,7 +138,6 @@ help:  ## show this help.
 install: clean namespace namespace_sdp check-dbname## install the helm chart on the namespace KUBE_NAMESPACE
 	@if [ "" = "$(HELM_REPO_NAME)" ]; then \
 	echo "Installing from git repository"; \
-	echo $(DBNAME); \
 	helm dependency update $(UMBRELLA_CHART_PATH); \
 	else \
 	helm repo add $(HELM_REPO_NAME) $(HELM_HOST)/repository/helm-chart; \
@@ -169,11 +165,12 @@ install: clean namespace namespace_sdp check-dbname## install the helm chart on 
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		--set global.hostname=$(DBHOST) \
-		--set global.dbname=$(DBNAME) \
+		--set global.hostname=$(ARCHIVER_DBHOST) \
+		--set global.dbname=$(ARCHIVER_DBNAME) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
+
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \
@@ -206,8 +203,8 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		--set global.hostname=$(DBHOST) \
-		--set global.dbname=$(DBNAME) \
+		--set global.hostname=$(ARCHIVER_DBHOST) \
+		--set global.dbname=$(ARCHIVER_DBNAME) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
@@ -236,8 +233,8 @@ template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		--set global.hostname=$(DBHOST) \
-		--set global.dbname=$(DBNAME) \
+		--set global.hostname=$(ARCHIVER_DBHOST) \
+		--set global.dbname=$(ARCHIVER_DBNAME) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);

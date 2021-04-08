@@ -135,7 +135,7 @@ syscore_mid_on_demand_uninstall:
   script:
   - *uninstall_scripts
   environment:
-    name: "test/$CI_COMMIT_REF_NAME"
+    name: "syscore/$CI_COMMIT_REF_NAME"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
@@ -158,7 +158,7 @@ syscore_low_on_demand_uninstall:
   script:
   - *uninstall_scripts
   environment:
-    name: "test-low/$CI_COMMIT_REF_NAME"
+    name: "syscore-low/$CI_COMMIT_REF_NAME"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
@@ -234,7 +234,7 @@ syscore_mid_on_demand_test:
   #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
   #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
   environment:
-    name: "test/$CI_COMMIT_REF_NAME"
+    name: "syscore/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
@@ -313,7 +313,7 @@ syscore_low_on_demand_test:
   #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
   #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
   environment:
-    name: "test-low/$CI_COMMIT_REF_NAME"
+    name: "syscore-low/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly

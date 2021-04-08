@@ -79,7 +79,8 @@ class ScanIDStore:
         return self.current_id
 
 
-@pytest.mark.skamid
+#@pytest.mark.skamid
+@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
 @scenario(
     "XTP-1561.feature",
     (

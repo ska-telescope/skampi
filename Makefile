@@ -18,7 +18,6 @@ CHART_SET ?=#for additional flags you want to set when deploying (default empty)
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 
 KUBE_NAMESPACE ?= integration#namespace to be used
-CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
 TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the Tango DB

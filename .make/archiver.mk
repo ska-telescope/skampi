@@ -1,4 +1,4 @@
-.PHONY: deploy-archiver delete-archiver test-archiver check-archiver-dbname configure-archiver get-service download
+.PHONY: check-archiver-dbname configure-archiver get-service download
 
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 ARCHIVER_RELEASE ?= test
@@ -11,7 +11,7 @@ ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archive
 
 # Checks if the Database name is provided by user while deploying the archiver and notifies the user
 check-archiver-dbname:
-	@if [ "$(DBNAME)" = "default_mvp_archiver_db" ]; then \
+	@if [ "$(ARCHIVER_DBNAME)" = "default_mvp_archiver_db" ]; then \
 	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
 	fi
 

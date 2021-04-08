@@ -75,7 +75,7 @@ stages:
     when: always
 
 .tags_syscore: &tags_syscore
-- k8srunner
+- k8srunner-syscore
 
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low

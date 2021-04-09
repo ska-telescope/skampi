@@ -13,7 +13,7 @@ const MVPInstance = (MVP === 'mvp-mid') ? skaMid : (MVP === 'mvp-low' ? skaLow :
 
 
 
-const kibanaURL = 'https://kibana.engageska-portugal.pt/app/logs/stream?'+
+const kibanaURL = 'http://logging.skao.stfc:5601/app/logs/stream?'+
   'flyoutOptions=(flyoutId:!n,flyoutVisibility:hidden,surroundingLogsId:!n)&'+
   'logPosition=(end:now,position:(tiebreaker:277595,time:1612798881864),start:now-1d,streamLive:!f)&'+
   `logFilter=(expression:%27kubernetes.namespace:%20${NAMESPACE}%27,kind:kuery)`

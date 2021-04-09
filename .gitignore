@@ -50,3 +50,4 @@ post-deployment/resources/test_data/polaris_b1_no_cam.json
 docs/src/_build/
 post-deployment/venv
 .vscode/settings.json
+gilab_values.yaml

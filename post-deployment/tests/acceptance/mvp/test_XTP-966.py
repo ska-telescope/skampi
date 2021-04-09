@@ -332,7 +332,6 @@ def run_task_using_oet_rest_client(oet_rest_cli, script, scheduling_block):
 
 @pytest.mark.fast
 @pytest.mark.skamid
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
 @scenario("XTP-966.feature",
           "SKA Mid Scheduling Block - Resource allocation and observation")
 def test_sb_resource_allocation():

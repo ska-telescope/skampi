@@ -1,13 +1,9 @@
-# Set dir of Makefile to a variable to use later
-MAKEPATH := $(abspath $(lastword $(MAKEFILE_LIST)))
-BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
-
-# find IP addresses of this machine, setting THIS_HOST to the first address found
-THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
-DISPLAY := $(THIS_HOST):0
-XAUTHORITYx ?= ${XAUTHORITY}
+THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)##find IP addresses of this machine, setting THIS_HOST to the first address found
+DISPLAY := $(THIS_HOST):0##for GUI applications
+XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 
+INGRESS_HOST ?= k8s.stfc.skao.int## default ingress host
 KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
@@ -17,7 +13,7 @@ HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
-UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
+UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
 
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables

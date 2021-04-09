@@ -52,7 +52,7 @@ k8s_test = tar -c post-deployment/ | \
 # exit the saved status
 k8s_test: smoketest## test the application on K8s
 	echo $(ARCHIVER_DBNAME); \
-	$(call k8s_test,test,$(ARCHIVER_DBHOST),$(KUBE_NAMESPACE)); \
+	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \
 		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \

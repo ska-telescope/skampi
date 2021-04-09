@@ -4,7 +4,7 @@ variables:
   MINIKUBE: "false"
   VALUES: "pipeline.yaml"
   CHARTS_TO_PUBLISH: skalow skamid
-  INGRESS_HOST: "kubernetes.engageska-portugal.pt"
+  INGRESS_HOST: "k8s.stfc.skao.int"
 
 stages:
   - clean

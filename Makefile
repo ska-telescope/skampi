@@ -32,14 +32,8 @@ PSI_LOW_SDP_PROXY_VARS= --set sdp.proxy.server=${PSI_LOW_PROXY} \
 					--set "sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
 endif
 
-## OET variables 
-oet_podname = $(shell kubectl get pods -l app=oet,component=rest,release=$(HELM_RELEASE) -o=jsonpath='{..metadata.name}')
-sut_cdm_ver= $(shell kubectl exec -it $(oet_podname) -- pip list | grep "cdm-shared-library" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
-sut_oet_ver = $(shell kubectl exec -it $(oet_podname) -- pip list | grep "oet-scripts" | awk ' {print $$2}' | awk 'BEGIN { FS = "+" } ; {print $$1}')
-sut_oet_cur_ver=$(shell grep "oet-scripts" post-deployment/SUT_requirements.txt | awk 'BEGIN { FS = "==" } ; {print $$2}')
-
-CI_PROJECT_PATH_SLUG?=skampi
-CI_ENVIRONMENT_SLUG?=skampi
+CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that are not a-z or 0-9 replaced with -. Use in URLs and domain names.
+CI_ENVIRONMENT_SLUG?=skampi##The simplified version of the environment name, suitable for inclusion in DNS, URLs, Kubernetes labels, and so on. Available if environment:name is set.
 $(shell echo 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gilab_values.yaml)
 
 CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
@@ -65,14 +59,6 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 
 # include makefile targets that EDA deployment
 -include .make/archiver.mk
-
-check_oet_packages:
-	@echo "MVP is based on cdm-shared-library=$(sut_cdm_ver)"
-	@echo "MVP is based on oet-scripts=$(sut_oet_ver)"
-	@echo "Test are based on oet-scripts=$(sut_oet_cur_ver)"
-	@if [ $(sut_oet_ver) != $(sut_oet_cur_ver) ] ; then \
-	echo "Warning: oet-scripts package for MVP is not the same as used for testing!"; \
-	fi
 
 vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"

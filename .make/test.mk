@@ -61,10 +61,6 @@ k8s_test: smoketest## test the application on K8s
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		exit $$status
 
-clear_sdp_config:
-	@echo "clearing the sdp config db using a temporary call on the console pod on namespace: $(KUBE_NAMESPACE)"
-	kubectl exec -n $(KUBE_NAMESPACE) deploy/test-sdp-prototype-console -- sdpcfg delete -R /
-
 smoketest: wait## wait for pods to be ready and jobs to be completed
 
 wait:## wait for pods to be ready

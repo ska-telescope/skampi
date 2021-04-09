@@ -227,9 +227,9 @@ mid_on_demand_test:
     - *create_k8s_creds
   <<: *test_definition
   # Following block is commented because archiver is not deployed.
-  after_script:
-    - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+  # after_script:
+  #   - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+  #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
   #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
@@ -307,9 +307,9 @@ low_on_demand_test:
     - *create_k8s_creds
   <<: *test_definition
   # Following block is commented because archiver is not deployed.
-  after_script:
-    - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+  # after_script:
+    # - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    # - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
   #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
   environment:
     name: "test-low/$CI_COMMIT_REF_NAME"
@@ -342,9 +342,9 @@ psi_low_on_demand_test:
     - *create_k8s_creds
   <<: *test_definition
   # Following block is commented because archiver is not deployed.
-  after_script:
-    - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+  # after_script:
+  #   - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+  #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
   #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"

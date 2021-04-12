@@ -134,7 +134,7 @@ help:  ## show this help.
 	@echo ""; echo "make vars (+defaults):"
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-install: clean namespace namespace_sdp upgrade-chart## install the helm chart on the namespace KUBE_NAMESPACE
+install: clean namespace namespace_sdp check-archiver-dbname upgrade-chart## install the helm chart on the namespace KUBE_NAMESPACE
 
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE

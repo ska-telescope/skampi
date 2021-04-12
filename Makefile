@@ -57,7 +57,7 @@ endif
 -include .make/helm.mk
 
 # include makefile targets that EDA deployment
--include archiver.mk
+-include .make/archiver.mk
 
 vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"

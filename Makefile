@@ -129,7 +129,7 @@ help:  ## show this help.
 	@echo ""; echo "make vars (+defaults):"
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-install: clean namespace namespace_sdp## install the helm chart on the namespace KUBE_NAMESPACE
+install: clean namespace namespace_sdp check-archiver-dbname## install the helm chart on the namespace KUBE_NAMESPACE
 	@if [ "" = "$(HELM_REPO_NAME)" ]; then \
 	echo "Installing from git repository"; \
 	helm dependency update $(UMBRELLA_CHART_PATH); \
@@ -159,6 +159,11 @@ install: clean namespace namespace_sdp## install the helm chart on the namespace
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
+		--set archiver.hostname=$(ARCHIVER_DBHOST) \
+		--set archiver.dbname=$(ARCHIVER_DBNAME) \
+		--set archiver.port=$(ARCHIVER_PORT) \
+		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
+		--set archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
@@ -194,6 +199,11 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
+		--set archiver.hostname=$(ARCHIVER_DBHOST) \
+		--set archiver.dbname=$(ARCHIVER_DBNAME) \
+		--set archiver.port=$(ARCHIVER_PORT) \
+		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
+		--set archiver.hostname=$(ARCHIVER_DBPASSWORD) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
@@ -222,6 +232,11 @@ template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
+		--set archiver.hostname=$(ARCHIVER_DBHOST) \
+		--set archiver.dbname=$(ARCHIVER_DBNAME) \
+		--set archiver.port=$(ARCHIVER_PORT) \
+		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
+		--set archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);

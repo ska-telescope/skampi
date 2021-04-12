@@ -5,6 +5,7 @@ VALUES ?= values.yaml# root level values files. This will override the chart val
 
 INGRESS_HOST ?= k8s.stfc.skao.int## default ingress host
 KUBE_NAMESPACE ?= integration#namespace to be used
+CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
 TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the Tango DB
@@ -14,6 +15,7 @@ DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
+
 
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
@@ -44,6 +46,8 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.minikube=$(MINIKUBE) \
 	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
+	--set archiver.hostname=$(ARCHIVER_DBHOST) \
+	--set archiver.dbname=$(ARCHIVER_DBNAME) \
 	--values gilab_values.yaml \
 	$(PSI_LOW_SDP_PROXY_VARS)
 
@@ -130,7 +134,8 @@ help:  ## show this help.
 	@echo ""; echo "make vars (+defaults):"
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-install: clean namespace namespace_sdp upgrade-chart## install the helm chart on the namespace KUBE_NAMESPACE
+install: clean namespace namespace_sdp check-archiver-dbname upgrade-chart## install the helm chart on the namespace KUBE_NAMESPACE
+
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \

@@ -27,7 +27,6 @@ HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##
 
-
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
 ENV_CHECK := $(shell echo $(CI_ENVIRONMENT_SLUG) | egrep psi-low)
@@ -162,10 +161,12 @@ install: clean namespace namespace_sdp check-archiver-dbname## install the helm 
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--set archiver.hostname=$(ARCHIVER_DBHOST) \
 		--set archiver.dbname=$(ARCHIVER_DBNAME) \
+		--set archiver.port=$(ARCHIVER_PORT) \
+		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
+		--set archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
-
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \
@@ -200,6 +201,9 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--set archiver.hostname=$(ARCHIVER_DBHOST) \
 		--set archiver.dbname=$(ARCHIVER_DBNAME) \
+		--set archiver.port=$(ARCHIVER_PORT) \
+		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
+		--set archiver.hostname=$(ARCHIVER_DBPASSWORD) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
@@ -230,6 +234,9 @@ template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--set archiver.hostname=$(ARCHIVER_DBHOST) \
 		--set archiver.dbname=$(ARCHIVER_DBNAME) \
+		--set archiver.port=$(ARCHIVER_PORT) \
+		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
+		--set archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);

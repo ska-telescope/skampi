@@ -43,3 +43,38 @@ configure-archiver:  get-service ##configure attributes to archive
 			--ds=$(DBMVPSERVICE) \
 			--ns=$(KUBE_NAMESPACE)" && \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(CONFIGURE_ARCHIVER);
+
+#
+# defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
+# and then runs the requested make target in the container.
+# capture the output of the test in a tar file
+# stream the tar file base64 encoded to the Pod logs
+#
+archiver_k8s_test = tar -c post-deployment/ | \
+		kubectl run $(TEST_RUNNER) \
+		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
+		--image-pull-policy=IfNotPresent \
+		--image=$(IMAGE_TO_TEST) \
+		--limits='cpu=1000m,memory=500Mi' \
+		--requests='cpu=900m,memory=400Mi' \
+		--env=INGRESS_HOST=$(INGRESS_HOST) \
+		$(PSI_LOW_PROXY_VALUES) -- \
+		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
+		make SKUID_URL=skuid-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK='$(MARK)' FILE='$(FILE)' $1 && \
+		tar -czvf /tmp/build.tgz build && \
+		echo '~~~~BOUNDARY~~~~' && \
+		cat /tmp/build.tgz | base64 && \
+		echo '~~~~BOUNDARY~~~~'" \
+		2>&1
+
+archiver_k8s_test: get_archiver_tango_host smoketest## test the application on K8s
+	$(call archiver_k8s_test,test); \
+		status=$$?; \
+		rm -fr build; \
+		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
+		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
+		base64 -d | tar -xzf -; mkdir -p build; \
+		python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
+			--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt; \
+		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
+		exit $$status

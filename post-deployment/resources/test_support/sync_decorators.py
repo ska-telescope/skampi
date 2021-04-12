@@ -249,7 +249,7 @@ def sync_end_sb(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_ending_SB()
         result = func(*args, **kwargs)
-        the_waiter.wait(100)
+        the_waiter.wait(200)
         return result
     return wrapper
 

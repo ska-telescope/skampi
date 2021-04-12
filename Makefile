@@ -161,6 +161,9 @@ install: clean namespace namespace_sdp check-archiver-dbname## install the helm 
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--set archiver.hostname=$(ARCHIVER_DBHOST) \
 		--set archiver.dbname=$(ARCHIVER_DBNAME) \
+		--set archiver.port=$(ARCHIVER_PORT) \
+		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
+		--set archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
@@ -198,6 +201,9 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--set archiver.hostname=$(ARCHIVER_DBHOST) \
 		--set archiver.dbname=$(ARCHIVER_DBNAME) \
+		--set archiver.port=$(ARCHIVER_PORT) \
+		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
+		--set archiver.hostname=$(ARCHIVER_DBPASSWORD) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
@@ -228,6 +234,9 @@ template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
 		--set archiver.hostname=$(ARCHIVER_DBHOST) \
 		--set archiver.dbname=$(ARCHIVER_DBNAME) \
+		--set archiver.port=$(ARCHIVER_PORT) \
+		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
+		--set archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
 		$(PSI_LOW_SDP_PROXY_VARS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);

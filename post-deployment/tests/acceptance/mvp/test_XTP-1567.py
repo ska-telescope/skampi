@@ -41,6 +41,7 @@ non_default_states_to_check = {}
 def result():
     return {}
 
+@pytest.mark.xfail
 @pytest.mark.skalow
 @scenario("XTP-1567.feature", "BDD test case for ObsReset command in MVP Low")
 def test_subarray_obsreset():

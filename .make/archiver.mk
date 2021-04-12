@@ -1,10 +1,7 @@
 .PHONY: check-archiver-dbname get-service configure-archiver archiver_k8s_test download
 
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
-ARCHIVER_RELEASE ?= test
-ARCHIVER_NAMESPACE ?= ska-archiver
 CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
-ARCHIVER_CHART = https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.2.tgz
 ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
 ARCHIVER_DBHOST ?= 192.168.99.229 # ARCHIVER_DBHOST is the IP address for the cluster machine where archiver database is created
 ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archiver attribute configure json file for MVP-mid to work with
@@ -30,7 +27,7 @@ configure-archiver: get-service##configure attributes to archive
 		--image-pull-policy=IfNotPresent \
 		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
 		/bin/bash -c "sudo tar xv && \
-		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/at1-804/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
+		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/master/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
 		cd /resources/archiver && \
 		ls -all && \
 		sudo python configure_hdbpp.py \

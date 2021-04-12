@@ -54,7 +54,6 @@ stages:
 
 .test_template: &test_definition
   script:
-  - branch_name=$(echo $CI_COMMIT_BRANCH | tr '-' '_')
   - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
   - echo $ARCHIVER_DBNAME
   - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME
@@ -218,10 +217,6 @@ mid_on_demand_test:
   before_script:
     - *create_k8s_creds
   <<: *test_definition
-  # Following block is commented because archiver is not deployed.
-  after_script:
-    - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
@@ -294,10 +289,6 @@ low_on_demand_test:
   before_script:
     - *create_k8s_creds
   <<: *test_definition
-  # Following block is commented because archiver is not deployed.
-  after_script:
-    - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
   environment:
     name: "test-low/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
@@ -327,10 +318,6 @@ psi_low_on_demand_test:
   before_script:
     - *create_k8s_creds
   <<: *test_definition
-  # Following block is commented because archiver is not deployed.
-  after_script:
-    - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"

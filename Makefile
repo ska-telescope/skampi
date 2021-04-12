@@ -159,7 +159,7 @@ install: clean namespace namespace_sdp check-archiver-dbname## install the helm 
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		--set archiver.hostname=$(ARCHIVER_DBHOST) \
+		--set archiver.hostname=$(ARCHIVER_HOST) \
 		--set archiver.dbname=$(ARCHIVER_DBNAME) \
 		--set archiver.port=$(ARCHIVER_PORT) \
 		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
@@ -199,7 +199,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		--set archiver.hostname=$(ARCHIVER_DBHOST) \
+		--set archiver.hostname=$(ARCHIVER_HOST) \
 		--set archiver.dbname=$(ARCHIVER_DBNAME) \
 		--set archiver.port=$(ARCHIVER_PORT) \
 		--set archiver.dbuser=$(ARCHIVER_DBUSER) \
@@ -232,7 +232,7 @@ template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
 		--set tango-base.databaseds.domainTag=$(DOMAIN_TAG) \
 		--set tango-base.ingress.hostname=$(INGRESS_HOST) \
 		--set webjive.ingress.hostname=$(INGRESS_HOST) \
-		--set archiver.hostname=$(ARCHIVER_DBHOST) \
+		--set archiver.hostname=$(ARCHIVER_HOST) \
 		--set archiver.dbname=$(ARCHIVER_DBNAME) \
 		--set archiver.port=$(ARCHIVER_PORT) \
 		--set archiver.dbuser=$(ARCHIVER_DBUSER) \

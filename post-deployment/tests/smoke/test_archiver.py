@@ -12,7 +12,7 @@ from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, De
 
 @pytest.mark.archiver
 @pytest.mark.skamid
-@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
+#@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
 def test_mid_archiver():
   logging.info("Init test archiver")
   mvp_tango_host = os.getenv('TANGO_HOST')[:-6]
@@ -45,7 +45,7 @@ def test_mid_archiver():
 
 @pytest.mark.archiver
 @pytest.mark.skalow
-@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
+#@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
 def test_low_archiver():
   logging.info("Init test archiver")
   mvp_tango_host = os.getenv('TANGO_HOST')[:-6]

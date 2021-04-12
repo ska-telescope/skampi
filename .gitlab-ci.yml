@@ -54,18 +54,12 @@ stages:
 
 .test_template: &test_definition
   script:
-  # EDA architecture is going to change as it needs additional resources.
-  # Archiver will be deployed as a subchart.
-  # Thus Archiver deployment is disabled for now.
   - branch_name=$(echo $CI_COMMIT_BRANCH | tr '-' '_')
   - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
   - echo $ARCHIVER_DBNAME
-  #- make install-or-upgrade-archiver ARCHIVER_NAMESPACE=$ARCHIVER_NAMESPACE DBNAME=$DBNAME
   - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  # - kubectl get all,ingress -n $ARCHIVER_NAMESPACE
-  #- make k8s_test ARCHIVER_NAMESPACE=$ARCHIVER_NAMESPACE && [ -f "build/report.xml" ]
   - make k8s_test
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
@@ -221,16 +215,14 @@ mid_on_demand_test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    #ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
   before_script:
     - *create_k8s_creds
   <<: *test_definition
   # Following block is commented because archiver is not deployed.
-  # after_script:
-  #   - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-  #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-  #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
+  after_script:
+    - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
@@ -254,7 +246,6 @@ low_test:
     DEPLOYMENT_CONFIGURATION: "skalow"
     MARK: "skalow or common"
     KEEP_NAMESPACE: "true"
-    #ARCHIVER_NAMESPACE: "integration-low-archiver"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
   <<: *test_definition
   environment:
@@ -278,7 +269,6 @@ psi_low_test:
     DEPLOYMENT_CONFIGURATION: "skalow"
     MARK: "skalow or common"
     KEEP_NAMESPACE: "true"
-    #ARCHIVER_NAMESPACE: "integration-low-archiver"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
   <<: *test_definition
@@ -301,16 +291,14 @@ low_on_demand_test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    #ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
   before_script:
     - *create_k8s_creds
   <<: *test_definition
   # Following block is commented because archiver is not deployed.
-  # after_script:
-    # - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    # - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-  #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
+  after_script:
+    - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
   environment:
     name: "test-low/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
@@ -335,17 +323,15 @@ psi_low_on_demand_test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    #ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
   before_script:
     - *create_k8s_creds
   <<: *test_definition
   # Following block is commented because archiver is not deployed.
-  # after_script:
-  #   - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-  #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-  #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
+  after_script:
+    - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"

@@ -1,8 +1,6 @@
-.PHONY: check-archiver-dbname configure-archiver get-service download
+.PHONY: check-archiver-dbname get-service configure-archiver archiver_k8s_test download
 
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
-ARCHIVER_RELEASE ?= test
-ARCHIVER_NAMESPACE ?= ska-archiver
 CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 # ARCHIVER_CHART = https://nexus.engageska-portugal.pt/repository/helm-chart/ska-archiver-0.1.2.tgz
 ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
@@ -14,7 +12,7 @@ ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archive
 
 # Checks if the Database name is provided by user while deploying the archiver and notifies the user
 check-archiver-dbname:
-	@if [ "$(ARCHIVER_DBNAME)" = "default_mvp_archiver_db" ]; then \
+	@if [ $(ARCHIVER_DBNAME) = default_mvp_archiver_db ]; then \
 	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
 	fi
 
@@ -67,8 +65,8 @@ archiver_k8s_test = tar -c post-deployment/ | \
 		echo '~~~~BOUNDARY~~~~'" \
 		2>&1
 
-archiver_k8s_test: get_archiver_tango_host smoketest## test the application on K8s
-	$(call archiver_k8s_test,test); \
+archiver_k8s_test: smoketest## test the application on K8s
+	$(call archiver_k8s_test,test)); \
 		status=$$?; \
 		rm -fr build; \
 		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \

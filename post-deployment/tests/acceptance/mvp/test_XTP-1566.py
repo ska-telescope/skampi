@@ -39,7 +39,6 @@ devices_to_log = [
     'low-mccs/subarray/01']
 non_default_states_to_check = {}
 
-@pytest.mark.xfail
 @pytest.mark.skalow
 @scenario("XTP-1566.feature", "BDD test case for Abort functionality in MVP Low")
 def test_subarray_abort():

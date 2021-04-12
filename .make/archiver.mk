@@ -1,4 +1,4 @@
-.PHONY: deploy-archiver delete-archiver test-archiver check-archiver-dbname configure-archiver get-service download
+.PHONY: check-archiver-dbname configure-archiver get-service download
 
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 ARCHIVER_RELEASE ?= test

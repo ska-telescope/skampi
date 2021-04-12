@@ -63,11 +63,6 @@ k8s_test: smoketest## test the application on K8s
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		exit $$status
 
-# # get the tango host of archiver deployment
-# get_archiver_tango_host:
-# 	$(eval ARCHIVER_TANGO_HOST := $(shell kubectl get svc -n $(ARCHIVER_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
-# 	echo $(ARCHIVER_TANGO_HOST);
-
 TEST_RUN_SPEC=spec2.yaml
 k8s_multiple_test_runs: enable_test_auth
 	$(call k8s_test,test_multiple_runs); \
@@ -87,7 +82,7 @@ clear_sdp_config:
 
 smoketest: ## check that the number of waiting containers is zero (10 attempts, wait time 30s).
 	@echo "Smoke test START"; \
-	n=40; \
+	n=30; \
 	while [ $$n -gt 0 ]; do \
 		waiting=`kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath='{.items[*].status.containerStatuses[*].state.waiting.reason}' | wc -w`; \
 		echo "Waiting containers=$$waiting"; \

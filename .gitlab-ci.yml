@@ -191,7 +191,6 @@ mid_test:
     DEPLOYMENT_CONFIGURATION: "skamid"
     MARK: "skamid or common"
     KEEP_NAMESPACE: "true"
-    #ARCHIVER_NAMESPACE: "integration-mid-archiver"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
   <<: *test_definition
   environment:

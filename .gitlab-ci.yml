@@ -4,7 +4,7 @@ variables:
   MINIKUBE: "false"
   VALUES: "pipeline.yaml"
   CHARTS_TO_PUBLISH: skalow skamid
-  INGRESS_HOST: "kubernetes.engageska-portugal.pt"
+  INGRESS_HOST: "k8s.stfc.skao.int"
 
 stages:
   - clean
@@ -74,16 +74,16 @@ stages:
       junit: build/report.xml
     when: always
 
-.tags_syscore: &tags_syscore
+.tags_default: &tags_default
 - k8srunner
 
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low
  
 
-syscore_mid_uninstall:
+mid_uninstall:
   stage: clean
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     HELM_RELEASE: "test-mid"
     KUBE_NAMESPACE: "integration-mid"
@@ -95,9 +95,9 @@ syscore_mid_uninstall:
     name: "test"
     action: stop
 
-syscore_low_uninstall:
+low_uninstall:
   stage: clean
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
@@ -123,9 +123,9 @@ psi_low_uninstall:
     name: "psi-low-integration"
     action: stop
 
-syscore_mid_on_demand_uninstall:
+mid_on_demand_uninstall:
   stage: cleanup
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
@@ -140,15 +140,14 @@ syscore_mid_on_demand_uninstall:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
     action: stop
-    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
       - branches
 
-syscore_low_on_demand_uninstall:
+low_on_demand_uninstall:
   stage: cleanup
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
@@ -163,7 +162,6 @@ syscore_low_on_demand_uninstall:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     action: stop
-    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
@@ -183,15 +181,14 @@ psi_low_on_demand_uninstall:
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     action: stop
-    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
       - branches
 
-syscore_mid_test:
+mid_test:
   stage: test
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     HELM_RELEASE: "test-mid"
     KUBE_NAMESPACE: "integration-mid"
@@ -207,14 +204,14 @@ syscore_mid_test:
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       namespace: $KUBE_NAMESPACE
-    on_stop: syscore_mid_uninstall
+    on_stop: mid_uninstall
   only:
     refs:
       - master
 
-syscore_mid_on_demand_test:
+mid_on_demand_test:
   stage: test
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     DEPLOYMENT_CONFIGURATION: "skamid"
     MARK: "skamid or common"
@@ -239,15 +236,16 @@ syscore_mid_on_demand_test:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-    on_stop: syscore_mid_on_demand_uninstall
+    on_stop: mid_on_demand_uninstall
+    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
       - branches
 
-syscore_low_test:
+low_test:
   stage: test
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
@@ -264,7 +262,7 @@ syscore_low_test:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-    on_stop: syscore_low_uninstall
+    on_stop: low_uninstall
   only:
     refs:
       - master
@@ -291,9 +289,9 @@ psi_low_test:
     refs:
       - master
 
-syscore_low_on_demand_test:
+low_on_demand_test:
   stage: test
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     DEPLOYMENT_CONFIGURATION: "skalow"
     MARK: "skalow or common"
@@ -318,7 +316,8 @@ syscore_low_on_demand_test:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
-    on_stop: syscore_low_on_demand_uninstall
+    on_stop: low_on_demand_uninstall
+    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
@@ -350,14 +349,15 @@ psi_low_on_demand_test:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
     on_stop: psi_low_on_demand_uninstall
+    auto_stop_in: 2 hours
   when: manual
   only:
     refs:
       - branches
 
-syscore_mid_sdp_config_dump:
+mid_sdp_config_dump:
   stage: debug
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
@@ -395,9 +395,9 @@ tag_commit:
   script:
     - make release-skampi
 
-syscore_low_clean_staging:
+low_clean_staging:
   stage: clean_staging
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
@@ -429,9 +429,9 @@ psi_low_clean_staging:
     name: "psi-low-staging"
     action: stop
 
-syscore_mid_clean_staging:
+mid_clean_staging:
   stage: clean_staging
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     HELM_RELEASE: "staging-mid"
     KUBE_NAMESPACE: "staging-mid"
@@ -446,9 +446,9 @@ syscore_mid_clean_staging:
     name: "staging-mid"
     action: stop
 
-syscore_low_deploy_staging:
+low_deploy_staging:
   stage: deploy_staging
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     HELM_REPO_NAME: "skatelescope"
     UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-low"
@@ -463,12 +463,12 @@ syscore_low_deploy_staging:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-    on_stop: syscore_low_clean_staging
+    on_stop: low_clean_staging
   only:
     refs:
       - tags
   needs:
-    - job: syscore_low_clean_staging
+    - job: low_clean_staging
       
 psi_low_deploy_staging:
   stage: deploy_staging
@@ -492,9 +492,9 @@ psi_low_deploy_staging:
   needs:
     - job: psi_low_clean_staging
 
-syscore_mid_deploy_staging:
+mid_deploy_staging:
   stage: deploy_staging
-  tags: *tags_syscore
+  tags: *tags_default
   variables:
     HELM_REPO_NAME: "skatelescope"
     UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-mid"
@@ -509,12 +509,12 @@ syscore_mid_deploy_staging:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-    on_stop: syscore_mid_clean_staging
+    on_stop: mid_clean_staging
   only:
     refs:
       - tags
   needs:
-    - job: syscore_mid_clean_staging
+    - job: mid_clean_staging
 
 version_bump_charts:
   stage: update_versions

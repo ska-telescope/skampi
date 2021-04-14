@@ -46,6 +46,7 @@ def test_subarray_abort():
 
 def start_up():
     LOGGER.info("Check whether telescope is in StandBy")
+    #Added timeout of 10 sec to wait tmc_low subarray to become OFF
     wait_before_test(timeout=10)
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")

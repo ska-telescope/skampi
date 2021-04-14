@@ -55,7 +55,7 @@ OFF = tango._tango.DevState.OFF
 DISABLE = tango._tango.DevState.DISABLE
 
 # Define a function to print the state of all devices
-@pytest.mark.skip(reason="disabled to check pipeline failure")
+#@pytest.mark.skip(reason="disabled to check pipeline failure")
 @pytest.mark.skalow
 @scenario('XTP-1310.feature', 'PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)')
 def test_psi01_test_initialise_the_tpm_using_the_oet_jupyter_notebook():
@@ -121,7 +121,7 @@ def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
 
     logger.info(temperature)
     logger.info(mccs_time)
-    with atomic(devices.all_device_names,'State','OFF',10):
+    with atomic(devices.all_device_names,'State','OFF',5):
         devices.tmc_central_node.standbytelescope()
 
 

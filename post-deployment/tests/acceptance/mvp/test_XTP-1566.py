@@ -44,15 +44,19 @@ non_default_states_to_check = {}
 def test_subarray_abort():
     """Abort Operation"""
 
-def start_up():
+# def start_up():
+#     LOGGER.info("Check whether telescope is in StandBy")
+#     assert(telescope_is_in_standby())
+#     LOGGER.info("Starting up telescope")
+#     set_telescope_to_running()
+
+@given("operator has a running low telescope with a subarray in obsState <subarray_obsstate>")
+def set_up_telescope(subarray_obsstate : str):
+    #start_up()
     LOGGER.info("Check whether telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-
-@given("operator has a running low telescope with a subarray in obsState <subarray_obsstate>")
-def set_up_telescope(subarray_obsstate : str):
-    start_up()
     wait_before_test(timeout=10)
     
     # Currently MCCS supports ABORT command only in SCANNING obsState. Therefore test case covers only this scenario.

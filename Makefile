@@ -44,11 +44,11 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.minikube=$(MINIKUBE) \
 	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
-	--set archiver.hostname=$(ARCHIVER_HOST) \
-	--set archiver.dbname=$(ARCHIVER_DBNAME) \
-	--set archiver.port=$(ARCHIVER_PORT) \
-	--set archiver.dbuser=$(ARCHIVER_DBUSER) \
-	--set archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
+	--set ska-archiver.hostname=$(ARCHIVER_HOST) \
+	--set ska-archiver.dbname=$(ARCHIVER_DBNAME) \
+	--set ska-archiver.port=$(ARCHIVER_PORT) \
+	--set ska-archiver.dbuser=$(ARCHIVER_DBUSER) \
+	--set ska-archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
 	--values gilab_values.yaml \
 	$(PSI_LOW_SDP_PROXY_VARS)
 

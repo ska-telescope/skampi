@@ -44,6 +44,11 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.minikube=$(MINIKUBE) \
 	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
+	--set ska-archiver.hostname=$(ARCHIVER_HOST) \
+	--set ska-archiver.dbname=$(ARCHIVER_DBNAME) \
+	--set ska-archiver.port=$(ARCHIVER_PORT) \
+	--set ska-archiver.dbuser=$(ARCHIVER_DBUSER) \
+	--set ska-archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
 	--values gilab_values.yaml \
 	$(PSI_LOW_SDP_PROXY_VARS)
 
@@ -130,7 +135,7 @@ help:  ## show this help.
 	@echo ""; echo "make vars (+defaults):"
 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-install: clean namespace namespace_sdp upgrade-chart## install the helm chart on the namespace KUBE_NAMESPACE
+install: clean namespace namespace_sdp check-archiver-dbname upgrade-chart## install the helm chart on the namespace KUBE_NAMESPACE
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \

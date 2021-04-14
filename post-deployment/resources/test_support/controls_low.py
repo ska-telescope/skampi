@@ -6,6 +6,8 @@ import logging
 from resources.test_support.helpers_low import resource, waiter
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.mappings import device_to_subarrays
+from resources.test_support.mappings_low import device_to_subarray
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,6 +46,22 @@ def set_telescope_to_standby():
 def restart_subarray(id):
     devices = device_to_subarrays.keys()
     filtered_devices = [device for device in devices if device_to_subarrays[device] == id ]
+    the_waiter = waiter()
+    the_waiter.set_wait_for_going_to_standby()
+    exceptions_raised = ""
+    for device in filtered_devices:
+        try:
+            resource(device).restart()
+        except Exception as e:
+            exceptions_raised += f'\nException raised on reseting {device}:{e}'
+    if exceptions_raised != "":
+        raise Exception(f'Error in initialising devices:{exceptions_raised}')
+    the_waiter.wait()
+
+
+def restart_subarray_low(id):
+    devices = device_to_subarray.keys()
+    filtered_devices = [device for device in devices if device_to_subarray[device] == id ]
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
     exceptions_raised = ""

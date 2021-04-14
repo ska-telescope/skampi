@@ -27,6 +27,13 @@ global:
       tag: 9.3.1
       pullPolicy: IfNotPresent
 
+ska-archiver:
+  hostname: 192.168.99.229
+  dbname: default_mvp_archiver_db
+  port: 3306
+  dbuser: eda_admin
+  dbpassword: '@v3ng3rs@ss3mbl3'
+
 landingpage:
   enabled: true
   MVPInstance: mvp-mid

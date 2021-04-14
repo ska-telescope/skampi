@@ -100,3 +100,10 @@ sdp:
     nsubarray: 3
   tango-base:
     enabled: false
+
+ska-archiver:
+  hostname: 192.168.99.229
+  dbname: default_mvp_archiver_db
+  port: 3306
+  dbuser: eda_admin
+  dbpassword: '@v3ng3rs@ss3mbl3'

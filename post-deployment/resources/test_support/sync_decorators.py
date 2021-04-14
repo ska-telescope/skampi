@@ -181,6 +181,7 @@ def sync_configure_oet(func):
         ################ 
         result = func(*args, **kwargs)
         ################ 
+        w.wait()
         w.wait_oet()
         return result
     return wrapper

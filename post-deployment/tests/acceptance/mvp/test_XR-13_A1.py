@@ -26,6 +26,7 @@ from resources.test_support.logging_decorators import log_it
 from resources.test_support.sync_decorators import sync_assign_resources
 from resources.test_support.persistance_helping import update_resource_config_file
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray
+from resources.test_support.helpers_low import wait_before_test
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -65,6 +66,7 @@ def test_allocate_resources():
 @given("A running telescope for executing observations on a subarray")
 def set_to_running():
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
+    wait_before_test(timeout=10)
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Invoking Startup Telescope command on the telescope.")

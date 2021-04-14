@@ -49,9 +49,11 @@ def test_subarray_obsreset():
 @given("Subarray has transitioned into obsState ABORTED during an observation")
 def set_to_abort():
     LOGGER.info("Given A running telescope for executing observations on a subarray")
+    wait_before_test(timeout=10)
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
+    wait_before_test(timeout=10)
     tmc.compose_sub()
     LOGGER.info("AssignResources is invoked on Subarray")
     wait_before_test(timeout=10)

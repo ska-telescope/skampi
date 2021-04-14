@@ -33,8 +33,8 @@ Currently there is only a platform for the Low instance (PSI Low).
 **Staging:**
 The following URLs can be used to access the deployed instances:
 
-    - `ska mid <https://staging.engageska-portugal.pt/staging-mid>`_ 
-    - `ska low <https://staging.engageska-portugal.pt/staging-mid>`_ 
+    - `ska mid <https://k8s.stfc.skao.int/staging-mid>`_ 
+    - `ska low <https://k8s.stfc.skao.int/staging-mid>`_ 
 
 **Pipeline Testing:**
 For each branch (including master) git lab ci provides a deployed instance of mid and low.

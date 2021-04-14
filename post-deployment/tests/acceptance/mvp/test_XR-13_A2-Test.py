@@ -67,9 +67,9 @@ def test_configure_subarray():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
-    LOGGER.info("Given I am accessing the console interface for the OET")
-    LOGGER.info("Check whether telescope is in StandBy")
+    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     assert(telescope_is_in_standby())
+    LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
     LOGGER.info("Telescope is in ON state")
@@ -77,19 +77,19 @@ def start_up():
 
 @given("sub-array is in IDLE state")
 def assign(result):
-    LOGGER.info("Allocate dishes to Subarray 1")
+    LOGGER.info("Allocate 2 dishes to Subarray 1")
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
-    LOGGER.info("Sdp block from subarray command :" +str(sdp_block) + str(pilot))
     result['sdp_block'] = sdp_block
     LOGGER.info("Subarray 1 is ready and composed out of 2 dishes")
-    LOGGER.info("result is :" + str(result))
+    LOGGER.info("SDP block in AssignResources json input is :" + str(result))
     return result
 
 @when("I call the configure scan execution instruction")
 def config(result):
     @log_it('AX-13_A2',devices_to_log,non_default_states_to_check)
     @sync_configure_oet
-    @time_it(120)
+    #TODO: Confirm if @time_it is required. Currently commenting as seem to be not required
+    # @time_it(120)
     def test_SUT(sdp_block):
         file = 'resources/test_data/OET_integration/configure1.json'
         update_scan_config_file(file, sdp_block)
@@ -103,14 +103,14 @@ def config(result):
 
 @then("sub-array is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():
-    LOGGER.info("Checking the results")
-    # check that the TMC report subarray as being in the obsState = READY
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
-    # check that the CSP report subarray as being in the obsState = READY
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
+    LOGGER.info("Checking the results for Configure command execution")
     # check that the SDP report subarray as being in the obsState = READY
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('READY')
-    LOGGER.info("Results OK")
+    # check that the CSP report subarray as being in the obsState = READY
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('READY')
+    # check that the TMC report subarray as being in the obsState = READY
+    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
+    LOGGER.info("Results OK for Configure command")
 
 
 def teardown_function(function):

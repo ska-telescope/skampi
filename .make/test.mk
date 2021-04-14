@@ -15,7 +15,8 @@ TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s
 #
 TESTING_ACCOUNT = testing-pod ## this is the service acount name that is used by testing pod enabling it roles to manipulate k8
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
-MARK ?= fast## this will allow to add the mark parameter of pytest
+MARK ?= fast## this variable allow the mark parameter in the pytest
+FILE ?= ##this variable allow to execution of a single file in the pytest 
 SLEEPTIME ?= 30s ##amount of sleep time for the smoketest target
 
 #
@@ -33,9 +34,10 @@ k8s_test = tar -c post-deployment/ | \
 		--requests='cpu=900m,memory=400Mi' \
 		--env=ARCHIVER_TANGO_HOST=$2 \
 		--env=ARCHIVER_NAMESPACE=$3 \
-		--serviceaccount=$(TESTING_ACCOUNT) -- \
+		--env=INGRESS_HOST=$(INGRESS_HOST) \
+		$(PSI_LOW_PROXY_VALUES) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
-		make SKUID_URL=skuid-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK='$(MARK)' TEST_RUN_SPEC=$(TEST_RUN_SPEC) $1 && \
+		make SKUID_URL=skuid-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK='$(MARK)' FILE='$(FILE)' TEST_RUN_SPEC=$(TEST_RUN_SPEC) $1 && \
 		tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
 		cat /tmp/build.tgz | base64 && \
@@ -50,7 +52,7 @@ k8s_test = tar -c post-deployment/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-k8s_test: enable_test_auth get_archiver_tango_host smoketest## test the application on K8s
+k8s_test: get_archiver_tango_host smoketest## test the application on K8s
 	echo $(DBNAME); \
 	echo $(ARCHIVER_NAMESPACE); \
 	$(call k8s_test,test,$(ARCHIVER_TANGO_HOST),$(ARCHIVER_NAMESPACE)); \

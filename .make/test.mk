@@ -1,4 +1,4 @@
-.PHONY: k8s_test smoketest template_tests tango_rest_ingress_check get_archiver_tango_host
+.PHONY: k8s_test smoketest template_tests tango_rest_ingress_check
 
 CI_JOB_ID?=local
 #

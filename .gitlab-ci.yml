@@ -230,8 +230,8 @@ low_on_demand_uninstall:
 
 mid_test_quarantine:
   extends: .mid_test_config
-  before_script:
-    - *uninstall_scripts
+  # before_script:
+  #   - *uninstall_scripts
   after_script:
     - *uninstall_scripts
   variables:

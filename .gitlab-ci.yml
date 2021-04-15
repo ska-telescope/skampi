@@ -224,8 +224,9 @@ low_on_demand_uninstall:
     kubernetes:
       namespace: $KUBE_NAMESPACE
     on_stop: mid_uninstall
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
+  only:
+    refs:
+    - master
 
 mid_test_quarantine:
   extends: .mid_test_config
@@ -239,8 +240,9 @@ mid_test_quarantine:
   environment:
     name: "mid-quarantine"
     on_stop: mid_quarantine_uninstall
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "st-755-q"'
+  only:
+    refs:
+    - branches
 
 mid_test_all:
   extends: .mid_test_config
@@ -291,8 +293,9 @@ mid_on_demand_test:
     on_stop: mid_on_demand_uninstall
     auto_stop_in: 2 hours
   when: manual
-  rules:
-    - if: '$CI_COMMIT_BRANCH != "master"'
+  only:
+    refs:
+    - branches
 
 low_test:
   stage: test

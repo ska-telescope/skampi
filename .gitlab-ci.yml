@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.5
 
 variables:
   MINIKUBE: "false"
@@ -96,7 +96,7 @@ mid_uninstall:
     action: stop
 
 mid_quarantine_uninstall:
-  stage: cleanup
+  stage: clean
   tags: *tags_default
   variables:
     HELM_RELEASE: "test-mid-q"
@@ -108,6 +108,9 @@ mid_quarantine_uninstall:
     name: "mid-quarantine"
     action: stop
   when: always
+  only:
+    refs:
+      - branches
 
 low_uninstall:
   stage: clean

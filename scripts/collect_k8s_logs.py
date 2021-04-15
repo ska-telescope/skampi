@@ -4,8 +4,8 @@ Kubernetes log collection script
 
 Usage:
   collect_k8s_logs.py <ns>... [--timefmt=<format>]
-      [--pp=<out>] [--dump=<out>] [--tests=<out>] [--test=<test>]
-      [--pp-thread]
+      [--pp=<out>] [--dump=<out>] [--tests=<out>] [--test=<out>]
+      [--report=<out>] [-v <0,1,2>] [--pp-thread]
 
 Options:
   <ns>           Namespaces or JSON dump files (files must have '/' or '.')
@@ -13,8 +13,10 @@ Options:
   --pp=<out>     Pretty-print to file ('-' for stdout - default)
   --dump=<out>   Write JSON strings to file ('-' for stdout)
   --tests=<out>  Put test case summary into file ('-' for stdout)
+  --report=<out> Classify test results, make report
   --test=<test>  Filter out only test of given name
   --pp-thread    Include thread field in pretty-printed output
+  -v <0,1,2>     Verbosity level for report (table, list, matching lines)
 """
 
 from kubernetes import client, config
@@ -23,7 +25,11 @@ import datetime
 from datetime import timedelta, timezone
 import sys
 import re
-import json
+import time
+try:
+    import orjson as json
+except ImportError:
+    import json
 from docopt import docopt
 import os
 
@@ -60,6 +66,7 @@ def parse_log_line(line :str, attrs :dict, previous :dict) -> dict:
             out.update(previous)
         else:
             print('could not parse K8s timestamp: ', line)
+            out['time'] = None
     else:
         out['time'] = parse_date(m['kube_time'])
         line = m['rest']
@@ -193,9 +200,12 @@ def collect_events(namespace):
 
     return lines
 
-def collect_file(filename):
+def collect_file(filename, verbosity):
 
-    print(f"Reading from {filename}...")
+    t = time.time()
+
+    if verbosity > 0:
+        print(f"Reading from {filename}...")
     # Read JSON lines from a file
     lines = []
     with open(filename, 'r') as f:
@@ -205,16 +215,18 @@ def collect_file(filename):
                 line_dict['time'] = parse_date(line_dict['time'])
             lines.append(line_dict)
 
-    print(f"  ... {len(lines)} lines read")
+    if verbosity > 0:
+        print(f"  ... {len(lines)} lines read ({time.time() - t} s)")
     return lines
 
 # Collect lines
-arguments = docopt(__doc__, version='Naval Fate 2.0')
+arguments = docopt(__doc__, version='SKAMPI log analysis')
+verbosity = int(arguments.get('-v', 1))
 
 lines = []
 for namespace in arguments['<ns>']:
     if '.' in namespace or '/' in namespace:
-        lines += collect_file(namespace)
+        lines += collect_file(namespace, verbosity)
     else:
         lines += collect_pod_logs(namespace)
         lines += collect_events(namespace)
@@ -224,7 +236,8 @@ lines = sorted(lines, key = lambda line: line['time'])
 pp_target = arguments['--pp']
 dump_target = arguments['--dump']
 tests_target = arguments['--tests']
-if pp_target is None and dump_target is None and tests_target is None:
+report_target = arguments['--report']
+if pp_target is None and dump_target is None and tests_target is None and report_target is None:
     pp_target = '-'
 
 # Small helper for printing to stdout/file
@@ -265,12 +278,12 @@ for dump_file in make_target(dump_target, f'Dumping JSON to {dump_target}...'):
         print(json.dumps( { **line, 'time': render_date(line['time']) }),
               file=dump_file)
 
-def collect_tests(lines):
+def collect_tests(lines, verbosity):
     """ Collect and reorganise pytest results """
 
     tests = []
     test_start_re = re.compile('(?P<file>tests/[\w\d/_\-\.]+\.py)\:\:(?P<name>[\w\d/_\-\.]+)(?P<param>\[[^\]]*\])?')
-    test_end_re = re.compile('(?P<status>[A-Z]+) +\[[ ]*\d+\%\]$')
+    test_end_re = re.compile('(?P<status>[A-Z]+) (?P<msg>\([^\)]*\))? *\[[ ]*\d+\%\]$')
     test_teardown_re = re.compile('\-+\ [\w ]+ \-+')
     test_error_report_re = re.compile('=+ [A-Z]+ =+')
 
@@ -342,18 +355,18 @@ def collect_tests(lines):
         test['msgs'] = test_lines
 
         # Add further lines if there's a teardown (up to an empty line)
+        failed_teardown_prefix = test['file']+'::'+test['name']+' '
         if i < len(lines) and is_test_runner(lines[i]) and \
            test_teardown_re.match(lines[i]['msg']):
 
             teardown_lines = []
-            while i < len(lines) and lines[i]['msg']:
+            while i < len(lines) and (not is_test_runner(lines[i]) or lines[i]['msg']):
                 teardown_lines.append(lines[i])
                 i += 1
 
             # Except if the teardown failed, which will be indicated
             # by an empty line followed by a 'FAILED' for the
             # test. Those two lines we also want.
-            failed_teardown_prefix = test['file']+'::'+test['name']+' '
             if i+1 < len(lines) and lines[i+1]['msg'].startswith(failed_teardown_prefix):
                 teardown_lines.append(lines[i])
                 teardown_lines.append(lines[i+1])
@@ -363,6 +376,15 @@ def collect_tests(lines):
                 i+=2
 
             test['teardown'] = teardown_lines
+
+        # Alternatively we can also have a "naked" teardown failure, without log
+        elif i < len(lines) and lines[i]['msg'].startswith(failed_teardown_prefix):
+            m = test_end_re.search(lines[i]['msg'])
+            if m:
+                test['teardown_status'] = m['status']
+            test['teardown'] = [lines[i]]
+            i += 1
+        
 
     # Second phase: Detailed error reports. We get the reports in the
     # same order, which is a god-send because the names are often not
@@ -431,21 +453,22 @@ def collect_tests(lines):
                 i += 1
                 continue
             current_lines.append(lines[i])
-            i+= 1
+            i += 1
 
         # Complete reports
         sections[current_section] = current_lines
-        test['detail' if occasion is None else occasion+'_detail'] = sections
+        test['main' if occasion is None else occasion+'_detail'] = sections
 
     skipped += len(lines) - i
-    print(f'Finished, {len(lines)-skipped-start_line}/{len(lines)-start_line} lines of test report used')
+    if verbosity > 0:
+        print(f'Finished, {len(lines)-skipped-start_line}/{len(lines)-start_line} lines of test report used')
     return tests
 
 # Find test cases
 for tests_file in make_target(tests_target, f'Writing test report to {tests_target}...'):
 
     # Done, print results
-    for test in collect_tests(lines):
+    for test in collect_tests(lines, verbosity):
         if arguments['--test'] is not None:
             if test['name'] != arguments['--test']:
                 continue
@@ -455,7 +478,7 @@ for tests_file in make_target(tests_target, f'Writing test report to {tests_targ
         # Show test case report + detail
         for tl in test['msgs']:
            print(pp_line(tl), file=tests_file)
-        for section_name, section_lines in test.get('detail', {}).items():
+        for section_name, section_lines in test.get('main', {}).items():
             print(f' # {section_name}:', file=tests_file)
             for sct_line in section_lines:
                 print(' ', sct_line['msg'], file=tests_file)
@@ -471,3 +494,38 @@ for tests_file in make_target(tests_target, f'Writing test report to {tests_targ
             for sct_line in section_lines:
                 print(' ', sct_line['msg'], file=tests_file)
 
+# Find test cases
+for report_file in make_target(report_target, f'Writing report to {tests_target}...'):
+
+    # Get classifiers
+    from classifiers import classifiers, classify_test_results
+    triggers = classify_test_results(collect_tests(lines, verbosity))
+
+    if verbosity >= 1:
+        for trigger in triggers:
+
+            # Show the trigger message
+            cfr = trigger['cfr']
+            matched = trigger['matched']
+            test = trigger['test']
+            print(f"{'!! ' if cfr.taints else ''}{cfr.skb} {cfr.message}  [{len(matched)} instance{'s' if len(matched)>1 else ''} "
+                  f"in {test['file']} {test['name']} {test['status']}{', possibly more' if cfr.only_once else ''}]", file=report_file)
+
+            # For high verbosity, also print the matched lines
+            if verbosity >= 2:
+                for match in matched:
+                    print("  ", pp_line(match), file=report_file)
+
+    # At low verbosity, we only show a table of triggers
+    if verbosity <= 0:
+        if verbosity == 0:
+            print('name',end=';')
+            for clfr in sorted(classifiers, key=lambda cfr: cfr.skb):
+                print(clfr.skb, end=';', file=report_file)
+            print(file=report_file)
+        print(','.join(arguments['<ns>']), end=';')
+        for clfr in sorted(classifiers, key=lambda cfr: cfr.skb):
+            print(sum([ 1 for trigger in triggers if trigger['cfr'].skb == clfr.skb]),
+                  file=report_file, end=';')
+        print(file=report_file)
+        

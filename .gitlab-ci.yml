@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.5 
 
 variables:
   MINIKUBE: "false"
@@ -66,6 +66,9 @@ stages:
     reports:
       junit: build/report.xml
     when: always
+  only:
+    refs:
+      - master
 
 .xray_upload: &xray_upload
   after_script:
@@ -80,7 +83,6 @@ stages:
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low
  
-
 mid_uninstall:
   stage: clean
   tags: *tags_default

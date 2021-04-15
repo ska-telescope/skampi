@@ -97,7 +97,7 @@ mid_uninstall:
     name: "test"
     action: stop
 
-mid_quarantine_uninstall:
+.mid_quarantine_uninstall:
   stage: clean
   tags: *tags_default
   variables:
@@ -230,6 +230,10 @@ low_on_demand_uninstall:
 
 mid_test_quarantine:
   extends: .mid_test_config
+  before_script:
+    - *uninstall_scripts
+  after_script:
+    - *uninstall_scripts
   variables:
     MARK: "(skamid or common) and quarantine"
     HELM_RELEASE: "test-mid-q"

@@ -243,7 +243,6 @@ mid_test_quarantine:
     DELETE: "true"
   environment:
     name: "mid-quarantine"
-    on_stop: mid_quarantine_uninstall
   only:
     refs:
     - branches

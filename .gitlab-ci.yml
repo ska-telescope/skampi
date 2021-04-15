@@ -96,7 +96,7 @@ mid_uninstall:
     action: stop
 
 mid_quarantine_uninstall:
-  stage: clean
+  stage: cleanup
   tags: *tags_default
   variables:
     HELM_RELEASE: "test-mid-q"
@@ -107,6 +107,7 @@ mid_quarantine_uninstall:
   environment:
     name: "mid-quarantine"
     action: stop
+  when: always
 
 low_uninstall:
   stage: clean
@@ -229,6 +230,7 @@ mid_test_quarantine:
     KUBE_NAMESPACE: "integration-mid-q"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp-q"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
+    DELETE: "true"
   environment:
     name: "mid-quarantine"
     on_stop: mid_quarantine_uninstall

@@ -68,7 +68,7 @@ stages:
     when: always
   only:
     refs:
-      - "st-755-q"'
+      - branches
 
 .xray_upload: &xray_upload
   after_script:

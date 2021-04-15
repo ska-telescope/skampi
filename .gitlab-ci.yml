@@ -230,8 +230,6 @@ low_on_demand_uninstall:
 
 mid_test_quarantine:
   extends: .mid_test_config
-  # before_script:
-  #   - *uninstall_scripts
   after_script:
     - *uninstall_scripts
   variables:
@@ -241,34 +239,31 @@ mid_test_quarantine:
     KUBE_NAMESPACE_SDP: "integration-mid-sdp-q"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
     DELETE: "true"
-  only:
-    refs:
-    - branches
 
 mid_test_all:
   extends: .mid_test_config
   variables:
-    MARK: "skamid or common"
+    MARK: "skamid or common and not quarantine"
 
 mid_test_stateless:
   extends: .mid_test_config
   variables:
-    MARK: "(skamid or common) and stateless"
+    MARK: "(skamid or common) and stateless and not quarantine"
 
 mid_test_subarray1:
   extends: .mid_test_config
   variables:
-    MARK: "(skamid or common) and subarray1"
+    MARK: "(skamid or common) and subarray1 and not quarantine"
 
 mid_test_subarray2:
   extends: .mid_test_config
   variables:
-    MARK: "(skamid or common) and subarray2"
+    MARK: "(skamid or common) and subarray2 and not quarantine"
 
 mid_test_non_mvp:
   extends: .mid_test_config
   variables:
-    MARK: "(skamid or common) and non_mvp"
+    MARK: "(skamid or common) and non_mvp and not quarantine"
 
 mid_on_demand_test:
   stage: test

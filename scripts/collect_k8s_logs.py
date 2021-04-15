@@ -221,7 +221,11 @@ def collect_file(filename, verbosity):
 
 # Collect lines
 arguments = docopt(__doc__, version='SKAMPI log analysis')
-verbosity = int(arguments.get('-v', 1))
+verbosity = arguments['-v']
+if verbosity is None:
+    verbosity = 1
+else:
+    verbosity = int(verbosity)
 
 lines = []
 for namespace in arguments['<ns>']:

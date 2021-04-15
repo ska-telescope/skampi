@@ -53,6 +53,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
+@pytest.mark.quarantine
 @pytest.mark.select
 @pytest.mark.skamid
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")

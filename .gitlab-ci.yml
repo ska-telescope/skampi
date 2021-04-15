@@ -95,6 +95,19 @@ mid_uninstall:
     name: "test"
     action: stop
 
+mid_quarantine_uninstall:
+  stage: clean
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-mid-q"
+    KUBE_NAMESPACE: "integration-mid-q"
+    KUBE_NAMESPACE_SDP: "integration-mid-sdp-q"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+  <<: *uninstall_definition
+  environment:
+    name: "mid-quarantine"
+    action: stop
+
 low_uninstall:
   stage: clean
   tags: *tags_default
@@ -186,7 +199,7 @@ low_on_demand_uninstall:
     refs:
       - branches
 
-mid_test:
+.mid_test_config:
   stage: test
   tags: *tags_default
   variables:
@@ -205,9 +218,47 @@ mid_test:
     kubernetes:
       namespace: $KUBE_NAMESPACE
     on_stop: mid_uninstall
-  only:
-    refs:
-      - master
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+
+mid_test_quarantine:
+  extends: .mid_test_config
+  variables:
+    MARK: "(skamid or common) and quarantine"
+    HELM_RELEASE: "test-mid-q"
+    KUBE_NAMESPACE: "integration-mid-q"
+    KUBE_NAMESPACE_SDP: "integration-mid-sdp-q"
+    ARCHIVER_DBNAME: "integration_mid_archiver_db"
+  environment:
+    name: "mid-quarantine"
+    on_stop: mid_quarantine_uninstall
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "st-755-q"'
+
+mid_test_all:
+  extends: .mid_test_config
+  variables:
+    MARK: "skamid or common"
+
+mid_test_stateless:
+  extends: .mid_test_config
+  variables:
+    MARK: "(skamid or common) and stateless"
+
+mid_test_subarray1:
+  extends: .mid_test_config
+  variables:
+    MARK: "(skamid or common) and subarray1"
+
+mid_test_subarray2:
+  extends: .mid_test_config
+  variables:
+    MARK: "(skamid or common) and subarray2"
+
+mid_test_non_mvp:
+  extends: .mid_test_config
+  variables:
+    MARK: "(skamid or common) and non_mvp"
 
 mid_on_demand_test:
   stage: test

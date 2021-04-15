@@ -66,8 +66,9 @@ stages:
     reports:
       junit: build/report.xml
     when: always
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "st-755-q"'
+  only:
+    refs:
+      - "st-755-q"'
 
 .xray_upload: &xray_upload
   after_script:

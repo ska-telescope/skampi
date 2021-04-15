@@ -109,7 +109,7 @@ low_uninstall:
     name: "test-low"
     action: stop
 
-.psi_low_uninstall:
+psi_low_uninstall:
   stage: clean
   tags: *tags_psi_low
   variables:
@@ -167,7 +167,7 @@ low_on_demand_uninstall:
     refs:
       - branches
 
-.psi_low_on_demand_uninstall:
+psi_low_on_demand_uninstall:
   stage: cleanup
   tags: *tags_psi_low
   variables:
@@ -261,7 +261,7 @@ low_test:
     refs:
       - master
       
-.psi_low_test:
+psi_low_test:
   stage: test
   tags: *tags_psi_low
   variables:
@@ -311,7 +311,7 @@ low_on_demand_test:
     refs:
       - branches
       
-.psi_low_on_demand_test:
+psi_low_on_demand_test:
   stage: test
   tags: *tags_psi_low
   variables:
@@ -394,7 +394,7 @@ low_clean_staging:
     name: "staging-low"
     action: stop
 
-.psi_low_clean_staging:
+psi_low_clean_staging:
   stage: clean_staging
   tags: *tags_psi_low
   variables:
@@ -452,7 +452,7 @@ low_deploy_staging:
   needs:
     - job: low_clean_staging
       
-.psi_low_deploy_staging:
+psi_low_deploy_staging:
   stage: deploy_staging
   tags: *tags_psi_low
   variables:

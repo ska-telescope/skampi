@@ -27,5 +27,5 @@ spec:
     requests.memory: 16Gi
     requests.ephemeral-storage: 25Gi
     limits.cpu: 29000m
-    limits.memory: 32Gi
+    limits.memory: 35Gi
     limits.ephemeral-storage: 50Gi

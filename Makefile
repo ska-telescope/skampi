@@ -29,6 +29,7 @@ PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
 				--env=no_proxy=${PSI_LOW_NO_PROXY}
 
 PSI_LOW_SDP_PROXY_VARS= --set sdp.proxy.server=${PSI_LOW_PROXY} \
+					--set ska-archiver.enabled=false \
 					--set "sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
 endif
 

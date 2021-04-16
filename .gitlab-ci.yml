@@ -355,7 +355,7 @@ mid_on_demand_test:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
     MARK: "skalow or common"
-    # KEEP_NAMESPACE: "true"
+    KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
     # probably this line is only needed while testing the pipeline on a branch
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
@@ -411,7 +411,7 @@ low_test_quarantine:
     KUBE_NAMESPACE_SDP: "integration-low-sdp-q"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     DELETE: "true"
-  when: manual
+  # when: manual
 
 .psi_low_test:
   stage: test

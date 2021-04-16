@@ -183,13 +183,8 @@ add_classifier(
     "SKBX-008", "CSP master is not OFF",
     )
 add_classifier(
-    [("tests/acceptance/mvp/test_XTP-826.py", "test_multi_scan")],
-    [match_msg(r".*Command On not allowed when the device is in OFF state.*",
-               pod='cspmasterleafnode-01-0', level='ERROR'),],
-    "SKBX-009", "CSP leaf node fails to invoke On() in OFF state?!",
-    )
-add_classifier(
-    [("tests/acceptance/mvp/test_XTP-966.py", "test_sb_resource_allocation")],
+    [("tests/acceptance/mvp/test_XTP-826.py", "test_multi_scan"),
+     ("tests/acceptance/mvp/test_XTP-966.py", "test_sb_resource_allocation")],
     [match_msg(r".*Command On not allowed when the device is in OFF state.*",
                pod='cspmasterleafnode-01-0', level='ERROR'),],
     "SKBX-009", "CSP leaf node fails to invoke On() in OFF state?!",
@@ -265,10 +260,21 @@ add_classifier(
     "SKBX-017", "Teardown fails to get dish to stop TRACKing", taints=True
 )
 add_classifier(
-    [("tests/acceptance/mvp/test_XR-13_A2-Test.py", "test_configure_subarray")],
+    [(None, None)],
     [match_msg(r".*DevError.*The polling thread is late", pod='subarraynode1-sa1-0')],
-    "SKBX-018", "Tango polling thread goes out of synch"
+    "SKBX-018", "Tango polling thread goes out of synch on TM", harmless=True
 )
+add_classifier(
+    [(None, None)],
+    [match_msg(r".*DevError.*The polling thread is late", level='ERROR', pod='dishleafnode1-01-0')],
+    "SKBX-018b", "Tango polling thread goes out of synch on Dish", harmless=True
+)
+add_classifier(
+    [(None, None)],
+    [match_msg(r"API_PollThreadOutOfSync", level='WARNING', pod='midcspsubarray01-subarray1-0')],
+    "SKBX-018c", "Tango polling thread goes out of synch on CSP", harmless=True
+)
+
 add_classifier(
     [("tests/acceptance/mvp/test_XR-13_A2-Test.py", "test_configure_subarray")],
     [match_and(
@@ -377,6 +383,18 @@ add_classifier(
     'SKBX-029', 'Base classes object to end scan callback?'
     )
 add_classifier(
+    [('tests/acceptance/mvp/test_XR-13_A2-Test.py', 'test_configure_subarray'),
+     ('tests/acceptance/mvp/test_XTP-826.py', 'test_multi_scan'),
+     ('tests/acceptance/mvp/test_XTP-1561.py', 'test_scan_id')],
+    [match_msg(r'ska\.base\.faults\.StateModelError: Action end_succeeded is not allowed in operational state ON, admin mode 2, observation state 2.', section='teardown')],
+    'SKBX-029b', 'Base classes object to end callback in teardown?', taints=True
+    )
+add_classifier(
+    [('tests/acceptance/mvp/test_XTP-776_XTP-777-779.py', 'test_observing_sbi')],
+    [match_msg(r'ska\.base\.faults\.StateModelError: Action end_succeeded is not allowed in operational state ON, admin mode 2, observation state 2.')],
+    'SKBX-029c', 'Base classes object to end callback?'
+    )
+add_classifier(
     [('tests/acceptance/mvp/test_mvp_start_up.py', 'test_start_up')],
     [match_and(
         match_msg('Exiting command StartUpTelescope with return_code ResultCode\.OK.*',
@@ -385,10 +403,45 @@ add_classifier(
     "SKBX-030", "test_start_up doesn't get torn down after turning the telescope on",
     suppresses=['SKBX-015']
     )
+add_classifier(
+    [("tests/acceptance/mvp/test_XTP-1096.py", "test_subarray_obsreset"),
+     ("tests/acceptance/mvp/test_XTP-1106.py", "test_subarray_restart"),
+     ("tests/acceptance/mvp/test_XTP-1772.py", "test_recovery_from_aborted"),
+    ],
+    [match_msg(r"Calling ABORT command succeeded.*", missing=True,
+               after_msg_r=r"Exiting command Abort with return_code ResultCode\.STARTED.*")],
+    "SKBX-031", "TM subarray node never finishes abort (subelements change obsState too quickly?)",
+    taints=True
+)
+add_classifier(
+    [('tests/acceptance/mvp/test_XTP-826.py', 'test_multi_scan')],
+    [match_msg(r"Exception.*while unsubscribing attribute.*This device proxy does not own this subscription.*",
+               device='subarraynode1-sa1-0', section='teardown')],
+    "SKBX-032", "TM subarray node never finishes abort (subelements change obsState too quickly?)"
+)
+add_classifier(
+    [('tests/acceptance/mvp/test_XTP-1561.py', 'test_scan_id'),
+     ('tests/acceptance/mvp/test_XR-13_A2-Test.py', 'test_configure_subarray')],
+    [match_msg(r"invalid literal for int.*", device='cbfsubarray01-cbfsubarray-01-0')],
+    "SKBX-033", "CBF subarray complains about delay model not being integer?"
+)
+
+add_classifier(
+    [('tests/acceptance/mvp/test_XTP-1561.py', 'test_scan_id'),
+     ('tests/acceptance/mvp/test_XR-13_A2-Test.py', 'test_configure_subarray')],
+    [match_msg(r"invalid literal for int.*", device='cbfsubarray01-cbfsubarray-01-0')],
+    "SKBX-033", "CBF subarray complains about delay model not being integer?"
+)
+add_classifier(
+    [('tests/acceptance/mvp/test_XR-13_A2-Test.py', 'test_configure_subarray')],
+    [match_msg(r"errors.*DevError.*The polling \(necessary to send events\) for the attribute pointingstate is not started",
+               pod='subarraynode1-sa1-0')],
+    'SKBX-034', "Failure to subscribe to pointingstate, polling not started"
+)
 
 # Special pseudo-classifiers
-UNKNOWN = Classifier([(None, None)], [], 'UNKOWN', 'Unclassified test failure')
-UNKNOWN_TD = Classifier([(None, None)], [], 'UNKOWN-TD', 'Unclassified teardown failure')
+UNKNOWN = Classifier([(None, None)], [], 'UNKNOWN', 'Unclassified test failure')
+UNKNOWN_TD = Classifier([(None, None)], [], 'UNKNOWN-TD', 'Unclassified teardown failure')
 TAINT = Classifier([(None, None)], [], 'TAINT', 'Ignored test failure due to taint')
 TAINT_TD = Classifier([(None, None)], [], 'TAINT-TD', 'Ignored teardown failure due to taint')
 classifiers += [UNKNOWN, UNKNOWN_TD, TAINT, TAINT_TD]

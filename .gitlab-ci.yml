@@ -381,13 +381,8 @@ low_on_demand_test:
   only:
     refs:
       - branches
-<<<<<<< HEAD
-
-.psi_low_on_demand_test:
-=======
       
 psi_low_on_demand_test:
->>>>>>> master
   stage: test
   tags: *tags_psi_low
   variables:

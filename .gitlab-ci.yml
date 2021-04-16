@@ -228,7 +228,7 @@ low_on_demand_uninstall:
     refs:
     - branches
 
-.mid_test_config:
+.mid_test_config: # HERE BE DRAGONS - remove job before merge
   stage: test
   tags: *tags_default
   variables:
@@ -351,8 +351,8 @@ mid_on_demand_test:
   tags: *tags_default
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_COMMIT_BRANCH-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_COMMIT_BRANCH-low-sdp"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
     MARK: "skalow or common"
     KEEP_NAMESPACE: "true"

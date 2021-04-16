@@ -66,9 +66,6 @@ stages:
     reports:
       junit: build/report.xml
     when: always
-  only:
-    refs:
-      - branches
 
 .xray_upload: &xray_upload
   after_script:

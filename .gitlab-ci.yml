@@ -240,7 +240,7 @@ psi_low_on_demand_uninstall:
     on_stop: mid_uninstall
   only:
     refs:
-    - master
+      - master
 
 mid_test:
   extends: .mid_test_config

@@ -252,7 +252,7 @@ low_on_demand_uninstall:
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
     on_stop: mid_on_demand_uninstall
     auto_stop_in: 2 hours
-  when: auto
+  when: always
   only:
     refs:
     - branches

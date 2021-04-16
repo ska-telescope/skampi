@@ -97,7 +97,7 @@ mid_uninstall:
     name: "test"
     action: stop
 
-.mid_quarantine_uninstall:
+mid_quarantine_uninstall:
   stage: clean
   tags: *tags_default
   variables:
@@ -112,7 +112,24 @@ mid_uninstall:
   when: always
   only:
     refs:
-      - branches
+      - master
+
+low_quarantine_uninstall:
+  stage: clean
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-low-q"
+    KUBE_NAMESPACE: "integration-low-q"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp-q"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+  <<: *uninstall_definition
+  environment:
+    name: "low-quarantine"
+    action: stop
+  when: always
+  only:
+    refs:
+      - master
 
 low_uninstall:
   stage: clean
@@ -205,7 +222,7 @@ low_on_demand_uninstall:
     refs:
       - branches
 
-.mid_test_config_eventual: # HERE BE DRAGONS - rename to mid_test_config and remove other one
+.mid_test_config:
   stage: test
   tags: *tags_default
   variables:
@@ -226,61 +243,12 @@ low_on_demand_uninstall:
     on_stop: mid_uninstall
   only:
     refs:
-    - branches
-
-.mid_test_config: # HERE BE DRAGONS - remove job before merge
-  stage: test
-  tags: *tags_default
-  variables:
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
-    MARK: "skamid or common"
-    KEEP_NAMESPACE: "true"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
-    # probably this line is only needed while testing the pipeline on a branch
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-  <<: *test_definition
-  environment:
-    name: "test/$CI_COMMIT_REF_NAME"
-    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-    on_stop: mid_on_demand_uninstall
-    auto_stop_in: 2 hours
-  when: always
-  only:
-    refs:
-    - branches
-
-mid_test_uninstall: # HERE BE DRAGONS - remove job before merge
-  stage: clean
-  tags: *tags_default
-  variables:
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
-    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-  script:
-  - *uninstall_scripts
-  environment:
-    name: "test/$CI_COMMIT_REF_NAME"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-    action: stop
-  when: always
-  only:
-    refs:
-      - branches
+    - master
 
 mid_test:
   extends: .mid_test_config
-  variables: # This should include all tests not yet marked (see further jobs)
-    MARK: "(skamid or common) and not (stateless or subarray1 or subarray2 or non_mvp or quarantine)"
+  variables:
+    MARK: "(skamid or common) and not quarantine"
 
 mid_test_quarantine:
   extends: .mid_test_config
@@ -322,7 +290,7 @@ mid_on_demand_test:
     refs:
     - branches
 
-.low_test_config_eventual: # HERE BE DRAGONS - rename to low_test_config and delete next job once all is same
+.low_test_config:
   stage: test
   tags: *tags_default
   variables:
@@ -346,59 +314,10 @@ mid_on_demand_test:
     refs:
       - master
 
-.low_test_config: # HERE BE DRAGONS - remove job before merge
-  stage: test
-  tags: *tags_default
-  variables:
-    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
-    MARK: "skalow or common"
-    KEEP_NAMESPACE: "true"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
-    # probably this line is only needed while testing the pipeline on a branch
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-  <<: *test_definition
-  environment:
-    name: "test-low/$CI_COMMIT_REF_NAME"
-    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
-    on_stop: low_on_demand_uninstall
-    auto_stop_in: 2 hours
-  when: always
-  only:
-    refs:
-      - branches
-
-low_test_uninstall: # HERE BE DRAGONS - remove job before merge
-  stage: clean
-  tags: *tags_default
-  variables:
-    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
-    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-  script:
-  - *uninstall_scripts
-  environment:
-    name: "test/$CI_COMMIT_REF_NAME"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
-    action: stop
-  when: always
-  only:
-    refs:
-      - branches
-
 low_test:
   extends: .low_test_config
-  variables: # This should include all tests not yet marked (see further jobs)
-    MARK: "(skalow or common) and not (stateless or subarray1 or subarray2 or non_mvp or quarantine)"
+  variables:
+    MARK: "(skalow or common) and not quarantine"
 
 low_test_quarantine:
   extends: .low_test_config

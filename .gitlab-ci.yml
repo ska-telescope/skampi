@@ -1,4 +1,5 @@
-image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.5
+# image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.5
+image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
 
 variables:
   MINIKUBE: "false"

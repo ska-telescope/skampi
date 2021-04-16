@@ -292,12 +292,12 @@ mid_test_quarantine:
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
     DELETE: "true"
 
-mid_test_all:
+mid_test_default:
   extends: .mid_test_config
   before_script: # HERE BE DRAGONS - remove because this will not be available on master
     - *create_k8s_creds # HERE BE DRAGONS - remove because this will not be available on master
-  variables:
-    MARK: "(skamid or common) and not quarantine"
+  variables: # This should include all tests not yet marked (see further jobs)
+    MARK: "(skamid or common) and not (stateless or subarray1 or subarray2 or non_mvp or quarantine)"
 
 mid_test_stateless:
   extends: .mid_test_config

@@ -209,13 +209,22 @@ low_on_demand_uninstall:
   stage: test
   tags: *tags_default
   variables:
-    HELM_RELEASE: "test-mid"
-    KUBE_NAMESPACE: "integration-mid"
-    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
     MARK: "skamid or common"
-    KEEP_NAMESPACE: "true"
-    ARCHIVER_DBNAME: "integration_mid_archiver_db"
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+  # variables:
+  #   HELM_RELEASE: "test-mid"
+  #   KUBE_NAMESPACE: "integration-mid"
+  #   KUBE_NAMESPACE_SDP: "integration-mid-sdp"
+  #   DEPLOYMENT_CONFIGURATION: "skamid"
+  #   MARK: "skamid or common"
+  #   KEEP_NAMESPACE: "true"
+  #   ARCHIVER_DBNAME: "integration_mid_archiver_db"
   <<: *test_definition
   <<: *xray_upload
   environment:
@@ -226,7 +235,7 @@ low_on_demand_uninstall:
     on_stop: mid_uninstall
   only:
     refs:
-    - master
+    - branches
 
 mid_test_quarantine:
   extends: .mid_test_config
@@ -243,7 +252,7 @@ mid_test_quarantine:
 mid_test_all:
   extends: .mid_test_config
   variables:
-    MARK: "skamid or common and not quarantine"
+    MARK: "(skamid or common) and not quarantine"
 
 mid_test_stateless:
   extends: .mid_test_config

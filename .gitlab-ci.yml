@@ -373,6 +373,28 @@ mid_on_demand_test:
     refs:
       - branches
 
+low_test_uninstall: # HERE BE DRAGONS - remove job before merge
+  stage: clean
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "test/$CI_COMMIT_REF_NAME"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
+    action: stop
+  when: always
+  only:
+    refs:
+      - branches
+
 low_test:
   extends: .low_test_config
   variables: # This should include all tests not yet marked (see further jobs)

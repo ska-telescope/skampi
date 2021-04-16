@@ -217,6 +217,7 @@ low_on_demand_uninstall:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+    KEEP_NAMESPACE: "true"
   # variables:
   #   HELM_RELEASE: "test-mid"
   #   KUBE_NAMESPACE: "integration-mid"
@@ -232,7 +233,8 @@ low_on_demand_uninstall:
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       namespace: $KUBE_NAMESPACE
-    on_stop: mid_uninstall
+    # on_stop: mid_uninstall
+    on_stop: mid_on_demand_uninstall # HERE BE DRAGONS - switch back to mid_uninstall or you will have problems
   only:
     refs:
     - branches

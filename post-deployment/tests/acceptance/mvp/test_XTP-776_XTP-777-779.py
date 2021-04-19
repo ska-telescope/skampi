@@ -99,6 +99,7 @@ def test_resource_allocation():
 
 @pytest.mark.oetmid
 @pytest.mark.skamid
+@pytest.mark.quarantine
 @scenario("XTP-776.feature", "Observing a Scheduling Block")
 def test_observing_sbi():
     """

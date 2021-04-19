@@ -327,9 +327,13 @@ low_test_quarantine:
   variables:
     MARK: "(skalow or common) and quarantine"
     HELM_RELEASE: "test-low-q"
-    KU  except:
-    refs:
-      - masterw_test:
+    KUBE_NAMESPACE: "integration-low-q"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp-q"
+    ARCHIVER_DBNAME: "integration_low_archiver_db"
+    DELETE: "true"
+  allow_failure: true
+      
+psi_low_test:
   stage: test
   tags: *tags_psi_low
   variables:

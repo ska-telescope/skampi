@@ -9,3 +9,7 @@ import pytest
 def test_quarantined_test_is_executed():
     # this test should always pass and is just a waste of resources
     pass
+
+def test_quarantined_tests_fail_and_pipeline_succeeds():
+    # This test should fail and pipeline should remain orange
+    assert False

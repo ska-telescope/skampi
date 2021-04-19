@@ -40,6 +40,7 @@ devices_to_log = [
 non_default_states_to_check = {}
 
 @pytest.mark.skalow
+@pytest.mark.quarantine
 @scenario("XTP-1566.feature", "BDD test case for Abort functionality in MVP Low")
 def test_subarray_abort():
     """Abort Operation"""

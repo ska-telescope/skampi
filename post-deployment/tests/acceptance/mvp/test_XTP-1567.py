@@ -41,6 +41,7 @@ def result():
     return {}
 
 @pytest.mark.skalow
+@pytest.mark.quarantine
 @scenario("XTP-1567.feature", "BDD test case for ObsReset command in MVP Low")
 def test_subarray_obsreset():
     """reset subarray"""

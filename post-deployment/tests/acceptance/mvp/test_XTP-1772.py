@@ -67,6 +67,7 @@ def end(result):
 
 
 @pytest.mark.oetmid
+@pytest.mark.quarantine
 @pytest.mark.skamid
 @scenario("XTP-1772.feature", "Recovering sub-array from ABORTED")
 def test_recovery_from_aborted():
@@ -172,6 +173,7 @@ def test_stop_script_and_abort_subarray():
 
 @pytest.mark.oetmid
 @pytest.mark.skamid
+@pytest.mark.quarantine
 @scenario("XTP-1772.feature", "Stopping script execution without aborting sub-array")
 def test_stop_script():
     """"""

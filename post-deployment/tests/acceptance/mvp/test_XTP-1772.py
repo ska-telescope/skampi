@@ -166,6 +166,7 @@ def check_final_subarray_state(obsstate, result):
 
 @pytest.mark.oetmid
 @pytest.mark.skamid
+@pytest.mark.quarantine
 @scenario("XTP-1772.feature", "Stopping script execution and sending Abort command to sub-array")
 def test_stop_script_and_abort_subarray():
     """"""

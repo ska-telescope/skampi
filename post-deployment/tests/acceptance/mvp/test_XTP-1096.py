@@ -55,6 +55,7 @@ def result():
 
 @pytest.mark.select
 @pytest.mark.skamid
+@pytest.mark.quarantine
 # @pytest.mark.skip(reason="feature not working consistently")
 @scenario("XTP-1096.feature", "BDD test case for ObsReset command")
 def test_subarray_obsreset():

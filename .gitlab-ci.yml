@@ -259,6 +259,7 @@ mid_test_quarantine:
     KUBE_NAMESPACE_SDP: "integration-mid-sdp-q"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
     DELETE: "true"
+  allow_failure: true
 
 mid_on_demand_test:
   stage: test

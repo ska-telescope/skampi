@@ -341,7 +341,7 @@ psi_low_test:
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-    MARK: "(skalow or common) and not archiver"
+    MARK: "(skalow or common) and not archiver and not quarantine"
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip

@@ -169,6 +169,9 @@ mid_on_demand_uninstall:
   only:
     refs:
       - branches
+  except:
+    refs:
+      - master
 
 low_on_demand_uninstall:
   stage: cleanup
@@ -191,6 +194,9 @@ low_on_demand_uninstall:
   only:
     refs:
       - branches
+  except:
+    refs:
+      - master
 
 psi_low_on_demand_uninstall:
   stage: cleanup
@@ -210,6 +216,9 @@ psi_low_on_demand_uninstall:
   only:
     refs:
       - branches
+  except:
+    refs:
+      - master
 
 .mid_test_config:
   stage: test
@@ -318,13 +327,9 @@ low_test_quarantine:
   variables:
     MARK: "(skalow or common) and quarantine"
     HELM_RELEASE: "test-low-q"
-    KUBE_NAMESPACE: "integration-low-q"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp-q"
-    ARCHIVER_DBNAME: "integration_low_archiver_db"
-    DELETE: "true"
-  # when: manual
-
-psi_low_test:
+    KU  except:
+    refs:
+      - masterw_test:
   stage: test
   tags: *tags_psi_low
   variables:

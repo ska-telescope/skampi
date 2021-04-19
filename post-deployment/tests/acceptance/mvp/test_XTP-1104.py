@@ -51,7 +51,6 @@ def fixture():
     return {}
 
 @pytest.mark.select
-@pytest.mark.quarantine
 @pytest.mark.skamid
 # @pytest.mark.xfail
 @pytest.mark.skipif(reason= "failure")

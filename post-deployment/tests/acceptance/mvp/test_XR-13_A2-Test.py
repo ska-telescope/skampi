@@ -58,7 +58,6 @@ def result():
     return {}
 
 @pytest.mark.select
-@pytest.mark.quarantine
 @pytest.mark.skamid
 # @pytest.mark.skip(reason="sdp subarray still in IDLE after tmc returned to READY, see SKB-22")
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")

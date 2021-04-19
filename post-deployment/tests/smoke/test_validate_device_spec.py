@@ -60,7 +60,6 @@ def test_ska_devices():
     assert not test_result.keys()
 
 
-
 @pytest.mark.skamid
 def test_dishmaster_conforms_to_tango_wide():
     """Check that dishmaster conforms to tango developers guide"""
@@ -68,7 +67,6 @@ def test_dishmaster_conforms_to_tango_wide():
         "mid_d0001/elt/master", SPEC_URLS["ska_tango_guide_ska_wide"], False
     )
     assert not result
-
 
 
 @pytest.mark.skamid

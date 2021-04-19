@@ -11,6 +11,7 @@ from resources.test_support.archiver import ArchiverHelper
 from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
 
 @pytest.mark.archiver
+@pytest.mark.quarantine
 @pytest.mark.skamid
 #@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
 def test_mid_archiver():

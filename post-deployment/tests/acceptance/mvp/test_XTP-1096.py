@@ -55,6 +55,7 @@ def result():
     return {}
 
 @pytest.mark.select
+@pytest.mark.quarantine
 @pytest.mark.skamid
 # @pytest.mark.skip(reason="feature not working consistently")
 @scenario("XTP-1096.feature", "BDD test case for ObsReset command")

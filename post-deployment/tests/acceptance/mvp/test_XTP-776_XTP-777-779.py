@@ -73,6 +73,7 @@ def end(result):
 
 
 @pytest.mark.oetmid
+@pytest.mark.quarantine
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Creating a new SBI with updated SB IDs and PB IDs")
 def test_sbi_creation():
@@ -84,6 +85,7 @@ def test_sbi_creation():
 
 
 @pytest.mark.oetmid
+@pytest.mark.quarantine
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Allocating resources with a SBI")
 def test_resource_allocation():
@@ -97,6 +99,7 @@ def test_resource_allocation():
 
 
 @pytest.mark.oetmid
+@pytest.mark.quarantine
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Observing a Scheduling Block")
 def test_observing_sbi():

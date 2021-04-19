@@ -17,7 +17,6 @@ from ska.scripting.domain import SubArray
 
 # local imports
 from resources.test_support.helpers import resource
-from resources.test_support.logging_decorators import log_it
 from resources.test_support.controls import set_telescope_to_standby, set_telescope_to_running
 from resources.test_support.controls import telescope_is_in_standby, take_subarray
 
@@ -136,7 +135,7 @@ def execute_second_scan(result):
     """
     LOGGER.info("Invoking second scan.")
     #####################SUT is execucted#################
-    # @log_it('XTP-826', DEVICES_TO_LOG, NON_DEFAULT_DEVICES_TO_CHECK)
+    #
     def scan():
         SubArray(1).scan()
     scan()

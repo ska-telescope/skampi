@@ -21,7 +21,6 @@ import pytest
 from ska.scripting.domain import Telescope, SubArray
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers import  obsState, resource, watch, waiter, map_dish_nr_to_device_name
-from resources.test_support.logging_decorators import log_it
 import logging
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
 from resources.test_support.sync_decorators import  sync_scan_oet,sync_configure_oet,time_it
@@ -90,7 +89,6 @@ def scan_duration(fixture):
 @when("I call the execution of the scan instruction")
 def invoke_scan_command(fixture):
     #TODO add method to clear thread in case of failure
-    @log_it('AX-13_A3',devices_to_log,non_default_states_to_check)
     @sync_scan_oet
     def scan():
         def send_scan(duration):

@@ -23,7 +23,6 @@ from tango import DeviceProxy, DevState
 from resources.test_support.helpers import  obsState, resource, watch
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,\
     telescope_is_in_standby,take_subarray,restart_subarray
-from resources.test_support.logging_decorators import log_it
 from resources.test_support.sync_decorators import sync_release_resources
 
 LOGGER = logging.getLogger(__name__)
@@ -75,7 +74,7 @@ def set_to_running(result):
 
 @when("I deallocate the resources")
 def deallocate_resources():
-    @log_it('AX-13_A4',devices_to_log,non_default_states_to_check)
+   
     @sync_release_resources
     def release():
         SubArray(1).deallocate()

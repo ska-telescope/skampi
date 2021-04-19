@@ -22,7 +22,6 @@ from ska.cdm.schemas import CODEC as cdm_CODEC
 from tango import DeviceProxy, DevState
 ## local imports
 from resources.test_support.helpers import resource
-from resources.test_support.logging_decorators import log_it
 from resources.test_support.sync_decorators import sync_assign_resources
 from resources.test_support.persistance_helping import update_resource_config_file
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray
@@ -77,7 +76,6 @@ def set_to_running():
 def allocate_four_dishes(result):
     LOGGER.info("Allocating 4 dishes to subarray 1")
     ##############################
-    @log_it('AX-13_A1',devices_to_log,non_default_states_to_check)
     @sync_assign_resources(4, 150)
     def test_SUT():
         cdm_file_path = 'resources/test_data/OET_integration/example_allocate.json'

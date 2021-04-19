@@ -16,7 +16,6 @@ from pytest_bdd import scenario, given, when, then
 from tango import DeviceProxy, DevState
 ## local imports
 from resources.test_support.helpers_low import resource, wait_before_test
-from resources.test_support.logging_decorators import log_it
 from resources.test_support.sync_decorators_low import sync_obsreset
 from resources.test_support.persistance_helping import load_config_from_file
 from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray_low
@@ -75,7 +74,7 @@ def set_to_abort():
 
 @when("the operator invokes ObsReset command")
 def reset_subarray():
-    @log_it('XTP-1567',devices_to_log,non_default_states_to_check)
+   
     @sync_obsreset(200)
     def obsreset_subarray():
         tmc.obsreset()

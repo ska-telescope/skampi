@@ -19,7 +19,6 @@ import json
 #local dependencies
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.persistance_helping import update_scan_config_file
-from resources.test_support.logging_decorators import log_it
 from resources.test_support.sync_decorators_low import sync_configure
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 import pytest

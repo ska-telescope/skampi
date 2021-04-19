@@ -15,7 +15,6 @@ from pytest_bdd import scenario, given, when, then
 import pytest
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
-from resources.test_support.logging_decorators import log_it
 import logging
 from resources.test_support.persistance_helping import load_config_from_file
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray

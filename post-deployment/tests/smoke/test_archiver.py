@@ -22,7 +22,7 @@ def test_mid_archiver():
     f'tango://{mvp_tango_host}:10000/archiving/hdbpp/confmanager01'
   event_subscriber = \
     f'tango://{mvp_tango_host}:10000/archiving/hdbpp/eventsubscriber01'
-  attribute = f"tango://{mvp_tango_host}:10000/ska_mid/tm_subarray_node/1/State"
+  attribute = f"tango://{mvp_tango_host}:10000/ska_mid/tm_central/central_node/State"
   
   logging.info(f'MVP namespace       : {mvp_namespace}')
   logging.info(f'MVP Tango host      : {mvp_tango_host}')
@@ -55,7 +55,7 @@ def test_low_archiver():
     f'tango://{mvp_tango_host}:10000/archiving/hdbpp/confmanager01'
   event_subscriber = \
     f'tango://{mvp_tango_host}:10000/archiving/hdbpp/eventsubscriber01'
-  attribute = f"tango://{mvp_tango_host}:10000/ska_low/tm_subarray_node/1/State"
+  attribute = f"tango://{mvp_tango_host}:10000/ska_low/tm_central/central_node/State"
 
   logging.info(f'MVP namespace       : {mvp_namespace}')
   logging.info(f'MVP Tango host      : {mvp_tango_host}')

@@ -202,61 +202,7 @@ def k8(run_context) -> None:
     '''
     yield  K8_env(run_context)
 
-@pytest.fixture
-def running_telescope() -> None:
-    set_telescope_to_running()
-    try:
-        yield
-    except RecoverableException as e:
-        # only set telescope to standby if an recoverable exception was raised
-        set_telescope_to_standby()
-        raise e
-    # at the moment only set to telescope if no exceptions was raised or Recoverable Exception
-    # in order to investigate the cause of failure
-    set_telescope_to_standby()
 
-@pytest.fixture
-def idle_subarray(request,running_telescope) -> None:
-    id = getattr(request.module, "subbarray_id",1)
-    resource_config_file = getattr(request.module, "config_file", 'resources/test_data/TMC_integration/assign_resources1.json')
-    sdp_block = update_resource_config_file(resource_config_file,disable_logging=True)
-    subArray = SubArray(id)
-    assign_subarray(subArray,resource_config_file)
-    try:
-        yield subArray,sdp_block
-    except RecoverableException as e: 
-        release_subarray(subArray)
-        raise e
-    release_subarray(subArray)
-
-
-@pytest.fixture
-def configured_subarray(request,idle_subarray) -> None:
-    scan_config_file = getattr(request.module, "config_file", 'resources/test_data/OET_integration/configure1.json')
-    subArray,sdp_block = idle_subarray
-    update_scan_config_file(scan_config_file, sdp_block,disable_logging=True)
-    configure_subarray(subArray,scan_config_file)
-    try:
-        yield subArray
-    except RecoverableException as e:
-        release_configuration(subArray)
-        raise e
-    release_configuration(subArray)
-
-
-
-@pytest.fixture
-def resource_config() -> str:
-    assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
-    update_resource_config_file(assign_resources_file,disable_logging=True)
-    config = load_config_from_file(assign_resources_file)
-    yield config
-
-@pytest.fixture
-def resource_config_file() -> str:
-    assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
-    update_resource_config_file(assign_resources_file,disable_logging=True)
-    yield 'resources/test_data/TMC_integration/assign_resources1.json'
 
 
 

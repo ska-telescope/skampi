@@ -15,6 +15,7 @@ LOGGER = logging.getLogger(__name__)
 #         'mid_csp_cbf/sub_elt/subarray_01',
 #         'mid_sdp/elt/subarray_1']
 
+
 @pytest.mark.skamid
 @pytest.mark.first
 @pytest.mark.xfail 

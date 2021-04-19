@@ -79,6 +79,7 @@ class ScanIDStore:
         return self.current_id
 
 
+@pytest.mark.quarantine
 @pytest.mark.skamid
 @scenario(
     "XTP-1561.feature",

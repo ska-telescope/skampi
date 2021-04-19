@@ -5,6 +5,7 @@ from elasticsearch import Elasticsearch
 from resources.log_consumer.tracer_helper import TraceHelper
 
 @pytest.mark.logging
+@pytest.mark.quarantine
 @pytest.mark.skamid
 @pytest.mark.skip(reason="ELK moved")
 def test_logging_namespace(run_context):

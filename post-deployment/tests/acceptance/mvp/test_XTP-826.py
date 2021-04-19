@@ -82,6 +82,7 @@ def check_resource_ready(resource_name):
 LOGGER = logging.getLogger(__name__)
 
 @pytest.mark.select
+@pytest.mark.quarantine
 @pytest.mark.skamid
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabled by local env")
 @scenario("XTP-826.feature", "Run more than one scan on a sub array")

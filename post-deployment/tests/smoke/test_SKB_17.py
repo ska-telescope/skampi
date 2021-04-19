@@ -1,6 +1,6 @@
 from typing import Iterator
 import pytest
-from tango import DeviceProxy,EventType
+from tango import DeviceProxy,EventType # type: ignore
 from queue import Queue
 from assertpy import assert_that
 

@@ -58,7 +58,6 @@ non_default_states_to_check = {
     'mid_d0004/elt/master' : 'pointingState'}
 
 @pytest.mark.select
-@pytest.mark.quarantine
 @pytest.mark.skamid
 # @pytest.mark.skip(reason="disabled  due to bug SKB-38")
 @scenario("1_XR-13_XTP-494.feature", "A3-Test, Sub-array performs an observational imaging scan")

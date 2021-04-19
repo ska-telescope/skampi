@@ -7,7 +7,7 @@ import logging
 import pytest
 from collections import defaultdict
 from random import shuffle
-from tango import Database, DeviceProxy, DevFailed # type: ignore
+from tango import Database, DeviceProxy, DevFailed
 import os
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')

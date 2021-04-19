@@ -66,7 +66,6 @@ class ExampleApplication:
 
 
 @pytest.mark.xfail
-@pytest.mark.quarantine
 @pytest.mark.skamid
 @scenario("XTP-1079.feature", "Executing a transaction that fails")
 def test_executing_a_transaction_that_fails():

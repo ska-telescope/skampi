@@ -38,12 +38,14 @@ class Classifier:
 
 # Message match predictate
 def match_msg(msg_r,
-              after_msg_r=None, section='msgs', missing=False,
+              after_msg_r=None, after_msg_attrs={},
+              section='msgs', missing=False,
               max_time=None, max_count=None,
               **kwargs):
     """ Regex-match a message of given warning level 
     :param msg_r: Regular expression for message to match
-    :param after_msg_r: Must appear after matching a  (in same log)
+    :param after_msg_r: Must appear after matching a message (in same log)
+    :param after_msg_attrs: Message above must also have given attributes
     :param section: Section to search for message
     :param missing: Inverse predicate - trigger if message does *not* appear
     :param max_time: Must appear within given number of seconds from first message
@@ -69,6 +71,8 @@ def match_msg(msg_r,
         for l in elem:
             # Didn't find initial line yet?
             if not found_after:
+                if any(l.get(k) != v for k, v in after_msg_attrs.items()):
+                    continue
                 if not after_msg_rc.match(l['msg']):
                     continue
                 found_after = True
@@ -262,17 +266,17 @@ add_classifier(
 add_classifier(
     [(None, None)],
     [match_msg(r".*DevError.*The polling thread is late", pod='subarraynode1-sa1-0')],
-    "SKBX-018", "Tango polling thread goes out of synch on TM", harmless=True
+    "SKBX-018", "Tango polling thread goes out of synch on TM", harmless=True, only_once=True
 )
 add_classifier(
     [(None, None)],
     [match_msg(r".*DevError.*The polling thread is late", level='ERROR', pod='dishleafnode1-01-0')],
-    "SKBX-018b", "Tango polling thread goes out of synch on Dish", harmless=True
+    "SKBX-018b", "Tango polling thread goes out of synch on Dish", harmless=True, only_once=True
 )
 add_classifier(
     [(None, None)],
     [match_msg(r"API_PollThreadOutOfSync", level='WARNING', pod='midcspsubarray01-subarray1-0')],
-    "SKBX-018c", "Tango polling thread goes out of synch on CSP", harmless=True
+    "SKBX-018c", "Tango polling thread goes out of synch on CSP", harmless=True, only_once=True
 )
 
 add_classifier(
@@ -437,6 +441,14 @@ add_classifier(
     [match_msg(r"errors.*DevError.*The polling \(necessary to send events\) for the attribute pointingstate is not started",
                pod='subarraynode1-sa1-0')],
     'SKBX-034', "Failure to subscribe to pointingstate, polling not started"
+)
+add_classifier(
+    [('tests/acceptance/mvp/test_XR-13_A2-Test.py', 'test_configure_subarray')],
+    [match_msg(r"Finished processing state READY enter callbacks\.", pod='midcspsubarray01-subarray1-0',
+               after_msg_r=r"Finished processing state READY enter callbacks\.",
+               after_msg_attrs=dict(pod='subarraynode1-sa1-0')
+    )],
+    'SKB-050', "TMC enters obsState READY ahead of CSP"
 )
 
 # Special pseudo-classifiers

@@ -30,7 +30,7 @@ Feature: Examples of using ska testing runway
     Given a subarray <subarray_id> that has been allocated <nr_of_dishes> according to <SB_config>
     And that subarray is busy configuring in order to get ready to peforma a <scan_config> scan
     When I give the command to Abort
-    Then I expect the subarray to cancel the configuration and go the aborted state$1
+    Then I expect the subarray to cancel the configuration and go the aborted state
     Examples:
       | scan_config |
       | standard    |

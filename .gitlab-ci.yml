@@ -278,6 +278,9 @@ mid_on_demand_test:
   only:
     refs:
     - branches
+  except:
+    refs:
+      - master
 
 .low_test_config:
   stage: test
@@ -370,6 +373,9 @@ low_on_demand_test:
   only:
     refs:
       - branches
+  except:
+    refs:
+      - master
       
 psi_low_on_demand_test:
   stage: test
@@ -396,6 +402,9 @@ psi_low_on_demand_test:
   only:
     refs:
       - branches
+  except:
+    refs:
+      - master
 
 mid_sdp_config_dump:
   stage: debug

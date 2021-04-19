@@ -29,12 +29,10 @@ configure-archiver:  get-service ##configure attributes to archive
 		--image-pull-policy=IfNotPresent \
 		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
 		/bin/bash -c "sudo tar xv && \
-		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/master/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
+		sudo curl https://gitlab.com/ska-telescope/ska-archiver/-/raw/at1-833/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
 		cd /resources/archiver && \
 		ls -all && \
 		sudo python configure_hdbpp.py \
-            --cm=tango://$(TANGO_DATABASE_DS):10000/archiving/hdbpp/confmanager01 \
-            --es=tango://$(TANGO_DATABASE_DS):10000/archiving/hdbpp/eventsubscriber01 \
             --attrfile=$(ARCHIVER_CONFIG_FILE) \
             --th=tango://$(TANGO_DATABASE_DS):10000 \
 			--ds=$(DBMVPSERVICE) \

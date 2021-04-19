@@ -3,7 +3,7 @@
 Some simple unit tests of the PowerSupply device, exercising the device from
 the same host as the tests by using a DeviceTestContext.
 """
-from tango import Database, DeviceProxy,EventType
+from tango import Database, DeviceProxy,EventType # type: ignore
 from time import sleep
 import pytest
 from assertpy import assert_that

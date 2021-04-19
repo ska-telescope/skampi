@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 import requests
 import pytest
 
-from tango import Database
+from tango import Database # type: ignore
 from tango_simlib.utilities.validate_device import (
     validate_device_from_path,
     validate_device_from_url,

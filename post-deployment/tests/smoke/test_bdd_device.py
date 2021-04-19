@@ -3,7 +3,7 @@
 """
 
 from pytest_bdd import scenario, given, when, then, scenarios, parsers
-from tango import Database, DeviceProxy, CmdArgType as ArgType
+from tango import Database, DeviceProxy, CmdArgType as ArgType # type: ignore
 from time import sleep
 import requests
 import json

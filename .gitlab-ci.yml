@@ -106,9 +106,6 @@ mid_quarantine_uninstall:
   environment:
     name: "mid-quarantine"
     action: stop
-  only:
-    refs:
-      - master
 
 low_quarantine_uninstall:
   stage: clean
@@ -122,9 +119,6 @@ low_quarantine_uninstall:
   environment:
     name: "low-quarantine"
     action: stop
-  only:
-    refs:
-      - master
 
 low_uninstall:
   stage: clean

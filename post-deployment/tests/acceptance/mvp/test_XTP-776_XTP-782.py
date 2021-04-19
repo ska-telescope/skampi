@@ -48,6 +48,7 @@ def end(result):
 
 @pytest.mark.oetmid
 @pytest.mark.skamid
+@pytest.mark.quarantine
 @scenario("XTP-776.feature", "Release resources")
 def test_release_resources():
     """Deallocate Resources."""

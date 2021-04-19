@@ -85,6 +85,7 @@ def test_sbi_creation():
 
 @pytest.mark.oetmid
 @pytest.mark.skamid
+@pytest.mark.quarantine
 @scenario("XTP-776.feature", "Allocating resources with a SBI")
 def test_resource_allocation():
     """

@@ -60,7 +60,6 @@ def fxt_prepare_switch_on(running_telescope_args,
             yield
 
 @pytest.mark.xfail
-@pytest.mark.quarantine
 @pytest.mark.skamid
 def test_start_up(prepare_switch_on,running_telescope_args:tel_fxt.RunningTelescopeArgs,context:Context):
     board: builders.MessageBoard = context.board

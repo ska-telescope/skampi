@@ -47,7 +47,6 @@ def end(result):
 
 
 @pytest.mark.oetmid
-@pytest.mark.quarantine
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Release resources")
 def test_release_resources():

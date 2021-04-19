@@ -181,6 +181,7 @@ class TestLoggingChartThrottledTemplates:
 
 @pytest.mark.chart_deploy
 @pytest.mark.usefixtures("logging_chart_deployment")
+@pytest.mark.quarantine
 class TestLoggingDeployment(SearchElasticMixin):
 
     @pytest.mark.usefixtures("echoserver")

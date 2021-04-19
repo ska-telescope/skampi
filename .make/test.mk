@@ -33,8 +33,16 @@ k8s_test = tar -c post-deployment/ | \
 		--requests='cpu=900m,memory=400Mi' \
 		--env=INGRESS_HOST=$(INGRESS_HOST) \
 		$(PSI_LOW_PROXY_VALUES) -- \
-		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
-		make SKUID_URL=skuid-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK='$(MARK)' FILE='$(FILE)' $1 && \
+		/bin/bash -c "mkdir skampi && tar xv --directory skampi \
+		--strip-components 1 --warning=all && cd skampi && \
+		make \
+			SKUID_URL=skuid-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 \
+			KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
+			HELM_RELEASE=$(HELM_RELEASE) \
+			TANGO_HOST=$(TANGO_HOST) \
+			MARK='$(MARK)' \
+			FILE='$(FILE)' \
+			$1 && \
 		tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
 		cat /tmp/build.tgz | base64 && \

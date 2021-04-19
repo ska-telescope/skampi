@@ -55,7 +55,7 @@ stages:
   script:
   - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
   - echo $ARCHIVER_DBNAME
-  - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME
+  - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   - make k8s_test
@@ -80,7 +80,6 @@ stages:
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low
  
-
 mid_uninstall:
   stage: clean
   tags: *tags_default
@@ -94,6 +93,40 @@ mid_uninstall:
   environment:
     name: "test"
     action: stop
+
+mid_quarantine_uninstall:
+  stage: clean
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-mid-q"
+    KUBE_NAMESPACE: "integration-mid-q"
+    KUBE_NAMESPACE_SDP: "integration-mid-sdp-q"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+  <<: *uninstall_definition
+  environment:
+    name: "mid-quarantine"
+    action: stop
+  when: always
+  only:
+    refs:
+      - master
+
+low_quarantine_uninstall:
+  stage: clean
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-low-q"
+    KUBE_NAMESPACE: "integration-low-q"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp-q"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+  <<: *uninstall_definition
+  environment:
+    name: "low-quarantine"
+    action: stop
+  when: always
+  only:
+    refs:
+      - master
 
 low_uninstall:
   stage: clean
@@ -186,7 +219,7 @@ psi_low_on_demand_uninstall:
     refs:
       - branches
 
-mid_test:
+.mid_test_config:
   stage: test
   tags: *tags_default
   variables:
@@ -208,6 +241,23 @@ mid_test:
   only:
     refs:
       - master
+
+mid_test:
+  extends: .mid_test_config
+  variables:
+    MARK: "(skamid or common) and not quarantine"
+
+mid_test_quarantine:
+  extends: .mid_test_config
+  after_script:
+    - *uninstall_scripts
+  variables:
+    MARK: "(skamid or common) and quarantine"
+    HELM_RELEASE: "test-mid-q"
+    KUBE_NAMESPACE: "integration-mid-q"
+    KUBE_NAMESPACE_SDP: "integration-mid-sdp-q"
+    ARCHIVER_DBNAME: "integration_mid_archiver_db"
+    DELETE: "true"
 
 mid_on_demand_test:
   stage: test
@@ -235,9 +285,9 @@ mid_on_demand_test:
   when: manual
   only:
     refs:
-      - branches
+    - branches
 
-low_test:
+.low_test_config:
   stage: test
   tags: *tags_default
   variables:
@@ -260,7 +310,25 @@ low_test:
   only:
     refs:
       - master
-      
+
+low_test:
+  extends: .low_test_config
+  variables:
+    MARK: "(skalow or common) and not quarantine"
+
+low_test_quarantine:
+  extends: .low_test_config
+  after_script:
+    - *uninstall_scripts
+  variables:
+    MARK: "(skalow or common) and quarantine"
+    HELM_RELEASE: "test-low-q"
+    KUBE_NAMESPACE: "integration-low-q"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp-q"
+    ARCHIVER_DBNAME: "integration_low_archiver_db"
+    DELETE: "true"
+  # when: manual
+
 psi_low_test:
   stage: test
   tags: *tags_psi_low
@@ -269,7 +337,7 @@ psi_low_test:
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-    MARK: "skalow or common"
+    MARK: "(skalow or common) and not archiver"
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
@@ -316,7 +384,7 @@ psi_low_on_demand_test:
   tags: *tags_psi_low
   variables:
     DEPLOYMENT_CONFIGURATION: "skalow"
-    MARK: "skalow or common"
+    MARK: "(skalow or common) and not archiver"
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"

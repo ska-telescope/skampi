@@ -19,7 +19,7 @@ from ska.scripting.domain import Telescope, SubArray, ResourceAllocation, Dish
 from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
 from ska.cdm.schemas import CODEC as cdm_CODEC
 #SUT infrastructure
-from tango import DeviceProxy, DevState
+from tango import DeviceProxy, DevState # type: ignore
 ## local imports
 from resources.test_support.helpers import resource
 from resources.test_support.sync_decorators import sync_assign_resources

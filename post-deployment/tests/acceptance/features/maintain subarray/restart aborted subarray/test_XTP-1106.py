@@ -17,13 +17,12 @@ from pytest_bdd import scenario, given, when, then
 #SUT
 from ska.scripting.domain import Telescope, SubArray
 #SUT infrastructure
-from tango import DeviceProxy, DevState
+from tango import DeviceProxy, DevState # type: ignore
 ## local imports
 from resources.test_support.helpers import resource
-from resources.test_support.sync_decorators import sync_assign_resources, sync_obsreset,sync_abort
+from resources.test_support.sync_decorators import sync_assign_resources, sync_restart, sync_abort
 from resources.test_support.persistance_helping import update_resource_config_file
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
-
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -56,46 +55,52 @@ def result():
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.quarantine
-# @pytest.mark.skip(reason="feature not working consistently")
-@scenario("XTP-1096.feature", "BDD test case for ObsReset command")
-def test_subarray_obsreset():
-    """reset subarray"""
+# @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+# @pytest.mark.skip(reason="bug as repoted by SKB-20")
+@scenario("XTP-1106.feature", "BDD test case for Restart functionality")
+def test_subarray_restart():
+    """RESTART Subarray"""
 
-@given("Subarray has transitioned into obsState ABORTED during an observation")
-def set_to_abort():
+@given("A running telescope for executing observations on a subarray")
+def set_to_running():
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     assert(telescope_is_in_standby())
-    LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Invoking Startup Telescope command on the telescope.")
     set_telescope_to_running()
     LOGGER.info("Telescope is started successfully.")
 
+@given("resources are successfully assigned")
+def allocate_four_dishes(result):
+    LOGGER.info("Invoking AssignResources command on the Subarray.")
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
-    LOGGER.info("AssignResources is successfully invoked on Subarray.")
+    LOGGER.info("Resources are assigned successfully to a Subarray.")
+
+@given("the subarray is in ABORTED obsState")
+def abort_subarray():
     @sync_abort(200)
     def abort():
         LOGGER.info("Invoking ABORT command on the Subarray.")
         SubArray(1).abort()
         LOGGER.info("Abort command is invoked on subarray")
     abort()
-    LOGGER.info("Abort is completed on Subarray")
+    LOGGER.info("ABORT is successful on Subarray.")
 
-@when("the operator invokes ObsReset command")
-def reset_subarray():
+@when("I invoke Restart command")
+def restart():
    
-    @sync_obsreset(200)
-    def obsreset_subarray():
-        LOGGER.info("Invoking ObsReset command on the Subarray.")
-        SubArray(1).reset()
-        LOGGER.info("ObsReset command is invoked on subarray")
-    obsreset_subarray()
-    LOGGER.info("ObsReset is completed on Subarray.")
+    @sync_restart(200)
+    def command_restart():
+        LOGGER.info("Invoking Restart command on the Subarray.")
+        SubArray(1).restart()
+        LOGGER.info("Restart command is invoked on subarray")
+    command_restart()
+    LOGGER.info("Subarray is restarted successfully.")
 
-@then("the subarray should transition to obsState IDLE")
-def check_idle_state():
-    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('IDLE')
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
+@then("subarray changes its obsState to EMPTY")
+def check_empty_state():
+    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('EMPTY')
+    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('EMPTY')
+    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('EMPTY')
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
@@ -108,13 +113,13 @@ def teardown_function(function):
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTING"):
         LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup") 
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "RESTARTING"):
         LOGGER.warn("Subarray is still in RESTARTING! Please restart MVP manually to complete tear down")
         restart_subarray(1)
-        #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup") 
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "EMPTY"):
+        LOGGER.info("Subarray is in EMPTY state.")
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
     LOGGER.info("Telescope is in standby")

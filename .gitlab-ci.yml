@@ -73,6 +73,19 @@ stages:
       junit: build/report.xml
     when: always
 
+.stress_test_template: &stress_test_definition
+  tags:
+  - k8srunner
+  script:
+  # We specifically need Bash for $SECONDS
+  - bash scripts/run-stresstest.sh $(( `date +%s --date $CI_PIPELINE_CREATED_AT` + $STRESS_TEST_DURATION ))
+  - tar cJf logs.tar.xz logs/*/k8s_dumps.txt
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - logs.tar.xz
+    when: always
+    
 .xray_upload: &xray_upload
   after_script:
     - 'curl -X POST -H "Content-type: application/json" --fail
@@ -191,7 +204,7 @@ psi_low_on_demand_uninstall:
   only:
     refs:
       - branches
-
+    
 mid_test:
   stage: test
   tags: *tags_default
@@ -245,6 +258,32 @@ mid_on_demand_test:
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
     on_stop: mid_on_demand_uninstall
     auto_stop_in: 2 hours
+  when: manual
+  only:
+    refs:
+      - branches
+
+mid_on_demand_stress_test:
+  stage: test
+  variables:
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    MARK: "skamid or common"
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE_PREFIX: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    SERVICE_ACCOUNT: "stress-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_NAMESPACE: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
+    DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+    STRESS_TEST_DURATION: "84600"
+  before_script:
+    - *create_k8s_cred_dependencies
+  <<: *stress_test_definition
+  environment:
+    name: "test"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
   when: manual
   only:
     refs:

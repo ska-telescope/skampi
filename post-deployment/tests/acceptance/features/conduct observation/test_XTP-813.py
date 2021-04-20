@@ -12,8 +12,8 @@ import pytest
 from functools import partial
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then, parsers
-from tango import DeviceProxy
-from resources.test_support.helpers import resource, watch
+from tango import DeviceProxy # type: ignore
+from resources.test_support.helpers import monitor, resource, watch
 
 
 LOGGER = logging.getLogger(__name__)
@@ -30,6 +30,7 @@ device_proxies = {}
 def _change_dish_mode(dev_proxy, cmd, device_name):
     dev_proxy.command_inout(cmd)
     watch_dish_mode = watch(resource(device_name)).for_a_change_on("dishMode")
+    assert isinstance(watch_dish_mode, monitor)
     watch_dish_mode.wait_until_value_changed()
 
 

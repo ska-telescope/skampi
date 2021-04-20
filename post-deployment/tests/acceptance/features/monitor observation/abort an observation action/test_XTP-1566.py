@@ -13,7 +13,7 @@ import logging
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 #SUT infrastructure
-from tango import DeviceProxy
+from tango import DeviceProxy # type: ignore
 ## local imports
 from resources.test_support.helpers_low import resource, wait_before_test
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray_low

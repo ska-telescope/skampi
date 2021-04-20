@@ -23,7 +23,7 @@ from resources.test_support.controls import (restart_subarray,
 from resources.test_support.helpers import resource
 from resources.test_support.oet_helpers import ScriptExecutor, REST_CLIENT
 
-from tango import DevFailed
+from tango import DevFailed # type: ignore
 from time import sleep
 
 

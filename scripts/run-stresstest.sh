@@ -10,19 +10,18 @@ while (( `date +%s` < $END_TIME )); do
     export KUBE_NAMESPACE_SDP=$KUBE_NAMESPACE_PREFIX-$i-sdp
 
     echo === Iteration $i \(namespaces $KUBE_NAMESPACE / $KUBE_NAMESPACE_SDP\) ===
-    curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP    
     kubectl delete namespace $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP
     kubectl create namespace $KUBE_NAMESPACE &&
         kubectl create namespace $KUBE_NAMESPACE_SDP && \
         make install && \
         make smoketest && \
-        make k8s_test
-    sleep 1
+        (make k8s_test | grep -E "xfailed|PASSED|FAILED|XFAIL|XPASS|ERROR|\.py::")
 
     # Move logs
     mkdir -p logs
     mv build logs/$i
-    
+
+    # Clear up afterwards
     kubectl delete namespace $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP &
     i=$((i + 1))
 done

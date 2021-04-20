@@ -275,8 +275,6 @@ mid_on_demand_stress_test:
     ARCHIVER_NAMESPACE: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
     DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
     STRESS_TEST_DURATION: "84600"
-  before_script:
-    - *create_k8s_cred_dependencies
   <<: *stress_test_definition
   environment:
     name: "test"

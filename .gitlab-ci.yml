@@ -94,32 +94,6 @@ mid_uninstall:
     name: "test"
     action: stop
 
-mid_quarantine_uninstall:
-  stage: clean
-  tags: *tags_default
-  variables:
-    HELM_RELEASE: "test-mid-q"
-    KUBE_NAMESPACE: "integration-mid-q"
-    KUBE_NAMESPACE_SDP: "integration-mid-sdp-q"
-    DEPLOYMENT_CONFIGURATION: "skamid"
-  <<: *uninstall_definition
-  environment:
-    name: "mid-quarantine"
-    action: stop
-
-low_quarantine_uninstall:
-  stage: clean
-  tags: *tags_default
-  variables:
-    HELM_RELEASE: "test-low-q"
-    KUBE_NAMESPACE: "integration-low-q"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp-q"
-    DEPLOYMENT_CONFIGURATION: "skalow"
-  <<: *uninstall_definition
-  environment:
-    name: "low-quarantine"
-    action: stop
-
 low_uninstall:
   stage: clean
   tags: *tags_default

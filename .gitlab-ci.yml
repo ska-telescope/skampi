@@ -78,7 +78,7 @@ stages:
   - k8srunner
   script:
   # We specifically need Bash for $SECONDS
-  - bash scripts/run-stresstest.sh $(( `date +%s --date $CI_PIPELINE_CREATED_AT` + $STRESS_TEST_DURATION ))
+  - bash scripts/run-stresstest.sh $STRESS_TEST_DURATION
   - tar cJf logs.tar.xz logs/*/k8s_dumps.txt
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"

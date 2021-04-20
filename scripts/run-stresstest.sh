@@ -1,13 +1,15 @@
 #!/bin/bash
 
-END_TIME=$1
+END_TIME=$(( `date +%s --date $CI_PIPELINE_CREATED_AT` + $1 ))
+echo Running until `date --date=@$END_TIME`
+
 i=0
 while (( `date +%s` < $END_TIME )); do
     
     export KUBE_NAMESPACE=$KUBE_NAMESPACE_PREFIX-$i
     export KUBE_NAMESPACE_SDP=$KUBE_NAMESPACE_PREFIX-$i-sdp
 
-    echo === Iteration $i (namespaces $KUBE_NAMESPACE / $KUBE_NAMESPACE_SDP) ===
+    echo === Iteration $i \(namespaces $KUBE_NAMESPACE / $KUBE_NAMESPACE_SDP\) ===
     curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP    
     kubectl delete namespace $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP
     kubectl create namespace $KUBE_NAMESPACE &&

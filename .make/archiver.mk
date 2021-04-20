@@ -33,7 +33,7 @@ configure-archiver:  get-service ##configure attributes to archive
 		cd /resources/archiver && \
 		ls -all && \
 		sudo python configure_hdbpp.py \
-            --attrfile=$(ARCHIVER_CONFIG_FILE) \
+            --f=$(ARCHIVER_CONFIG_FILE) \
             --th=tango://$(TANGO_DATABASE_DS):10000 \
 			--ds=$(DBMVPSERVICE) \
 			--ns=$(KUBE_NAMESPACE)" && \

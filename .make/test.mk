@@ -57,7 +57,7 @@ k8s_test = tar -c post-deployment/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-k8s_test: smoketest## test the application on K8s
+k8s_test: ## test the application on K8s
 	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \

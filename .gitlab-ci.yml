@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.9
 
 variables:
   MINIKUBE: "false"
@@ -195,6 +195,7 @@ psi_low_on_demand_uninstall:
       - master
 
 .mid_test_config:
+  retry: 2
   stage: test
   tags: *tags_default
   variables:
@@ -268,6 +269,7 @@ mid_on_demand_test:
       - master
 
 .low_test_config:
+  retry: 2
   stage: test
   tags: *tags_default
   variables:

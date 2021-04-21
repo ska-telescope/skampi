@@ -1,15 +1,49 @@
-[
-  {
-    "attributes": [
-      "ska_mid/tm_subarray_node/1/State",
-      "ska_mid/tm_central/central_node/State",
-      "ska_mid/tm_leaf_node/csp_master/State",
-      "ska_mid/tm_leaf_node/sdp_master/State",
-      "ska_mid/tm_subarray_node/1/obsState",
-      "ska_mid/tm_central/central_node/telescopeHealthState",
-      "ska_mid/tm_subarray_node/1/healthState"
-    ],
-    "polling_period": 1000,
-    "period_event": 3000
-  }
-]
+{
+  "archiver": [
+    {
+      "confmanager": "archiving/hdbpp/confmanager01",
+      "configuration": [
+        {
+          "eventsubscriber": "archiving/hdbpp/eventsubscriber01",
+          "attributes": [
+            "ska_mid/tm_central/central_node/State",
+            "ska_mid/tm_central/central_node/telescopeHealthState"
+          ],
+          "polling_period": 1000,
+          "period_event": 3000
+        },
+        {
+          "eventsubscriber": "archiving/hdbpp/eventsubscriber02",
+          "attributes": [
+            "ska_mid/tm_subarray_node/1/State",
+            "ska_mid/tm_subarray_node/1/obsState",
+            "ska_mid/tm_subarray_node/1/healthState"
+          ],
+          "polling_period": 1000,
+          "period_event": 3000
+        }
+      ]
+    },
+    {
+      "confmanager": "archiving/hdbpp/confmanager02",
+      "configuration": [
+        {
+          "eventsubscriber": "archiving/hdbpp/eventsubscriber03",
+          "attributes": [
+            "ska_mid/tm_leaf_node/csp_master/State"
+          ],
+          "polling_period": 1000,
+          "period_event": 3000
+        },
+        {
+          "eventsubscriber": "archiving/hdbpp/eventsubscriber04",
+          "attributes": [
+            "ska_mid/tm_leaf_node/sdp_master/State"
+          ],
+          "polling_period": 1000,
+          "period_event": 3000
+        }
+      ]
+    }
+  ]
+}

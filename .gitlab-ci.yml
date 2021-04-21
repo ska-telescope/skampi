@@ -69,10 +69,10 @@ stages:
 
 .xray_upload: &xray_upload
   after_script:
-    - 'curl -X POST -H "Content-type: application/json" --fail
-         -H "Authorization: Basic $JIRA_AUTH"
-         --data @build/cucumber.json
-         https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
+  - &xray_upload_scripts |
+    'curl -X POST -H "Content-type: application/json" --fail \
+    -H "Authorization: Basic $JIRA_AUTH" --data @build/cucumber.json \
+    https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
 
 .tags_default: &tags_default
 - k8srunner
@@ -226,6 +226,7 @@ mid_test_quarantine:
   extends: .mid_test_config
   after_script:
     - *uninstall_scripts
+    - *xray_upload_scripts
   variables:
     MARK: "(skamid or common) and quarantine"
     HELM_RELEASE: "test-mid-q"
@@ -299,6 +300,7 @@ low_test_quarantine:
   extends: .low_test_config
   after_script:
     - *uninstall_scripts
+    - *xray_upload_scripts
   variables:
     MARK: "(skalow or common) and quarantine"
     HELM_RELEASE: "test-low-q"

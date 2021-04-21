@@ -61,6 +61,7 @@ def test_ska_devices():
 
 
 @pytest.mark.skamid
+@pytest.mark.quarantine
 def test_dishmaster_conforms_to_tango_wide():
     """Check that dishmaster conforms to tango developers guide"""
     result = validate_device_from_url(

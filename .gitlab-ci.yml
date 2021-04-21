@@ -1,4 +1,4 @@
-image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.8
+image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.9
 
 variables:
   MINIKUBE: "false"

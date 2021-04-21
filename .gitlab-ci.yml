@@ -221,6 +221,7 @@ psi_low_on_demand_uninstall:
       - master
 
 .mid_test_config:
+  retry: 2
   stage: test
   tags: *tags_default
   variables:
@@ -293,6 +294,7 @@ mid_on_demand_test:
       - master
 
 .low_test_config:
+  retry: 2
   stage: test
   tags: *tags_default
   variables:

@@ -8,10 +8,6 @@ from kubernetes import config, client
 
 ## shared fixtures
 from resources.test_support.fixtures import run_context
-#from resources.test_support.fixtures import k8
-#from resources.test_support.fixtures import idle_subarray
-#from resources.test_support.fixtures import running_telescope
-#from resources.test_support.fixtures import configured_subarray
 from skallop.mvp_fixtures.telescope import (
     fxt_running_telescope, fxt_running_telescope_args, fxt_fixed_telescope
 )

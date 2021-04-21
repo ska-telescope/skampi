@@ -47,6 +47,7 @@ dependencies:
 - name: ska-archiver
   version: 0.1.4
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: archiver.enabled
 ## it was disabled in the old version of skampi
 # - name: dsh-lmc-prototype
 #   version: 0.0.1

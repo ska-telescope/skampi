@@ -82,17 +82,4 @@ wait:## wait for pods to be ready
 	@date
 
 
-TEST_RUN_SPEC=spec2.yaml
-k8s_multiple_test_runs: enable_test_auth
-   $(call k8s_test,test_multiple_runs); \
-      status=$$?; \
-      rm -fr build; \
-      kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
-      perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
-      base64 -d | tar -xzf -; mkdir -p build; \
-      python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
-         --pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt; \
-      kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
-      exit $$status
-
 

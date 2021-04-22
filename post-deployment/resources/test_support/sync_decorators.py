@@ -15,6 +15,11 @@ def check_going_into_configure():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
+def check_going_into_configuring():
+    ## Can only configure a subarray that is in State ON and obsState IDLE/READY
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','CONFIGURING'])
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+
 def check_going_into_abort():
     ## Can only invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
@@ -177,6 +182,20 @@ def sync_configure_oet(func):
     def wrapper(*args, **kwargs):
         ##Can only configure a subarray that is in IDLE/ON
         check_going_into_configure()
+        w = WaitConfigure()
+        ################ 
+        result = func(*args, **kwargs)
+        ################ 
+        w.wait()
+        w.wait_oet()
+        return result
+    return wrapper
+
+def sync_configure(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        ##Can only configure a subarray that is in IDLE/ON
+        check_going_into_configuring()
         w = WaitConfigure()
         ################ 
         result = func(*args, **kwargs)

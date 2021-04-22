@@ -52,12 +52,13 @@ def result():
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.quarantine
+@pytest.mark.trial
 # @pytest.mark.skip(reason="feature not working consistently")
 @scenario("XTP-4444.feature", "BDD test case for Abort command Invoked while subarry is in configuring")
 def test_subarray_abort_in_configuring():
     """Abort subarray"""
 
-@given("The subarray is in CONFIGURING obsState")
+@given("a running telescope upon which a previously configure scan is run")
 def assign():
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     assert(telescope_is_in_standby())
@@ -68,7 +69,7 @@ def assign():
     pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
     LOGGER.info("Resources are assigned successfully on Subarray.")
     LOGGER.info("Invoking configure command on the Subarray.")
-    take_subarray(1).and_configure_scan_by_file(sdp_block)
+    take_subarray(1).and_configuring_by_file(sdp_block)
     LOGGER.info("Configure command is invoked on Subarray.")
     assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('CONFIGURING')
 

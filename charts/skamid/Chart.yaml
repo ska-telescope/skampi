@@ -45,7 +45,7 @@ dependencies:
   repository: file://../landingpage
   condition: landingpage.enabled
 - name: ska-archiver
-  version: 5.5.8
+  version: 0.1.4
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: archiver.enabled
 ## it was disabled in the old version of skampi

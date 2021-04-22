@@ -224,8 +224,8 @@ mid_test:
 mid_test_quarantine:
   extends: .mid_test_config
   after_script:
-    - *uninstall_scripts
     - *xray_upload_scripts
+    - *uninstall_scripts
   variables:
     MARK: "(skamid or common) and quarantine"
     HELM_RELEASE: "test-mid-q"
@@ -299,8 +299,8 @@ low_test:
 low_test_quarantine:
   extends: .low_test_config
   after_script:
-    - *uninstall_scripts
     - *xray_upload_scripts
+    - *uninstall_scripts
   variables:
     MARK: "(skalow or common) and quarantine"
     HELM_RELEASE: "test-low-q"

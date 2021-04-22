@@ -80,3 +80,21 @@ wait:## wait for pods to be ready
 	@date
 	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$$(echo $$p | cut -d';' -f3); if [ ! -z "$$v_owner_name" ]; then v_pod_name=$$(echo $$p | cut -d';' -f1); pods="$$pods $$v_pod_name"; fi; done; kubectl wait pods --all --for=condition=ready --timeout=$(SLEEPTIME) $$pods -n $(KUBE_NAMESPACE)
 	@date
+
+TEST_RUN_SPEC=spec2.yaml
+k8s_multiple_test_runs: enable_test_auth
+	$(call k8s_test,test_multiple_runs); \
+		status=$$?; \
+		rm -fr build; \
+		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
+		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
+		base64 -d | tar -xzf -; \
+		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
+		exit $$status
+
+enable_test_auth:
+	@helm upgrade --install testing-auth post-deployment/resources/testing_auth \
+		--namespace $(KUBE_NAMESPACE) \
+		--set accountName=$(TESTING_ACCOUNT)
+
+

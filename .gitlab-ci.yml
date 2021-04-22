@@ -1,4 +1,4 @@
-image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.9
+image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.10
 
 variables:
   MINIKUBE: "false"
@@ -193,7 +193,6 @@ psi_low_on_demand_uninstall:
       - master
 
 .mid_test_config:
-  retry: 2
   stage: test
   tags: *tags_default
   variables:
@@ -217,6 +216,7 @@ psi_low_on_demand_uninstall:
       - master
 
 mid_test:
+  retry: 2
   extends: .mid_test_config
   variables:
     MARK: "(skamid or common) and not quarantine"
@@ -267,7 +267,6 @@ mid_on_demand_test:
       - master
 
 .low_test_config:
-  retry: 2
   stage: test
   tags: *tags_default
   variables:
@@ -292,6 +291,7 @@ mid_on_demand_test:
       - master
 
 low_test:
+  retry: 2
   extends: .low_test_config
   variables:
     MARK: "(skalow or common) and not quarantine"

@@ -15,7 +15,7 @@ while (( `date +%s` < $END_TIME )); do
         kubectl create namespace $KUBE_NAMESPACE_SDP && \
         make install && \
         make smoketest && \
-        (make k8s_test | grep -E "xfailed|PASSED|FAILED|XFAIL|XPASS|ERROR|\.py::")
+        (make k8s_test | grep --line-buffered -E "xfailed|PASSED|FAILED|XFAIL|XPASS|ERROR|\.py::")
 
     # Move logs
     mkdir -p logs

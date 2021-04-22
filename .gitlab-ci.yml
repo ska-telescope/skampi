@@ -58,7 +58,7 @@ stages:
   - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make k8s_test
+  - make k8s_multiple_test_runs
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -77,7 +77,7 @@ stages:
 
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low
- 
+
 mid_uninstall:
   stage: clean
   tags: *tags_default
@@ -309,7 +309,7 @@ low_test_quarantine:
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     DELETE: "true"
   allow_failure: true
-      
+
 psi_low_test:
   stage: test
   tags: *tags_psi_low
@@ -362,7 +362,7 @@ low_on_demand_test:
   except:
     refs:
       - master
-      
+
 psi_low_on_demand_test:
   stage: test
   tags: *tags_psi_low
@@ -506,7 +506,7 @@ low_deploy_staging:
       - tags
   needs:
     - job: low_clean_staging
-      
+
 psi_low_deploy_staging:
   stage: deploy_staging
   tags: *tags_psi_low

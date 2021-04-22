@@ -1,0 +1,7 @@
+group: 
+  runs: 40
+  path: "tests/acceptance/mvp/"
+  modules:
+    - path: "test_XR-13_A2-Test.py"
+      tests:
+        - name: "test_configure_subarray"

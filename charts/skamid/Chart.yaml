@@ -17,11 +17,11 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: mid-cbf.enabled
 - name: mid-csp
-  version: 0.1.5
+  version: 0.1.4
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: mid-csp.enabled
 - name: sdp
-  version: 0.4.0
+  version: 0.3.7
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
 - name: tmc-mid

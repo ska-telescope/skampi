@@ -1,7 +1,11 @@
 group: 
   runs: 40
-  path: "tests/acceptance/mvp/"
+  path: "tests/acceptance/enduses/conduct observation/configure scan/"
   modules:
     - path: "test_XR-13_A2-Test.py"
       tests:
         - name: "test_configure_subarray"
+
+
+
+

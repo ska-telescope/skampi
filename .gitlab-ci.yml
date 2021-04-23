@@ -210,7 +210,7 @@ mid_test:
     name: "test"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
-      namespace: $KUBE_NAMESPACE
+      namespace: integration-mid
     on_stop: mid_uninstall
   only:
     refs:
@@ -291,7 +291,7 @@ low_test:
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
+      namespace: integration-low
     on_stop: low_uninstall
   only:
     refs:

@@ -52,3 +52,4 @@ post-deployment/venv
 .vscode/settings.json
 gilab_values.yaml
 .devcontainer/
+KUBECONFIG

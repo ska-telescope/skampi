@@ -229,8 +229,8 @@ mid_test_quarantine:
   variables:
     MARK: "(skamid or common) and quarantine"
     HELM_RELEASE: "test-mid-q"
-    KUBE_NAMESPACE: "quarantine-mid"
-    KUBE_NAMESPACE_SDP: "quarantine-mid-sdp"
+    KUBE_NAMESPACE: "ci-quarantine-mid"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-mid-sdp"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
     DELETE: "true"
   allow_failure: true
@@ -304,8 +304,8 @@ low_test_quarantine:
   variables:
     MARK: "(skalow or common) and quarantine"
     HELM_RELEASE: "test-low-q"
-    KUBE_NAMESPACE: "quarantine-low"
-    KUBE_NAMESPACE_SDP: "quarantine-low-sdp"
+    KUBE_NAMESPACE: "ci-quarantine-low"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-low-sdp"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     DELETE: "true"
   allow_failure: true

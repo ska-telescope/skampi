@@ -5,7 +5,7 @@ CI_JOB_ID?=local
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
 #nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.6-dirty
-IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.1## docker image that will be run for testing purpose
+IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.5## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #
@@ -17,6 +17,7 @@ TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 MARK ?= fast## this variable allow the mark parameter in the pytest
 FILE ?= ##this variable allow to execution of a single file in the pytest 
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
+COUNT ?= 1## amount of repetition for pytest-repeat
 
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
@@ -41,6 +42,7 @@ k8s_test = tar -c post-deployment/ | \
 			HELM_RELEASE=$(HELM_RELEASE) \
 			TANGO_HOST=$(TANGO_HOST) \
 			MARK='$(MARK)' \
+			COUNT=$(COUNT) \
 			FILE='$(FILE)' \
 			$1 && \
 		tar -czvf /tmp/build.tgz build && \
@@ -57,7 +59,7 @@ k8s_test = tar -c post-deployment/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-k8s_test: smoketest## test the application on K8s
+k8s_test: ## test the application on K8s
 	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \

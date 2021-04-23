@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.10
 
 variables:
   MINIKUBE: "false"
@@ -69,10 +69,8 @@ stages:
 
 .xray_upload: &xray_upload
   after_script:
-    - 'curl -X POST -H "Content-type: application/json" --fail
-         -H "Authorization: Basic $JIRA_AUTH"
-         --data @build/cucumber.json
-         https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
+  - &xray_upload_scripts |
+    curl -X POST -H "Content-type: application/json" --fail -H "Authorization: Basic $JIRA_AUTH" --data @build/cucumber.json https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber
 
 .tags_default: &tags_default
 - k8srunner
@@ -94,6 +92,20 @@ mid_uninstall:
     name: "test"
     action: stop
 
+mid_quarantine_uninstall:
+  stage: clean
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-mid-q"
+    KUBE_NAMESPACE: "ci-quarantine-mid"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "mid-quarantine"
+    action: stop
+
 low_uninstall:
   stage: clean
   tags: *tags_default
@@ -106,6 +118,20 @@ low_uninstall:
   <<: *uninstall_definition
   environment:
     name: "test-low"
+    action: stop
+
+low_quarantine_uninstall:
+  stage: clean
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-low-q"
+    KUBE_NAMESPACE: "ci-quarantine-low"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "low-quarantine"
     action: stop
 
 psi_low_uninstall:
@@ -194,15 +220,16 @@ psi_low_on_demand_uninstall:
     refs:
       - master
 
-.mid_test_config:
+mid_test:
+  retry: 2
   stage: test
   tags: *tags_default
   variables:
+    MARK: "(skamid or common) and not quarantine"
     HELM_RELEASE: "test-mid"
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
-    MARK: "skamid or common"
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
   <<: *test_definition
@@ -217,22 +244,29 @@ psi_low_on_demand_uninstall:
     refs:
       - master
 
-mid_test:
-  extends: .mid_test_config
-  variables:
-    MARK: "(skamid or common) and not quarantine"
-
 mid_test_quarantine:
-  extends: .mid_test_config
-  after_script:
-    - *uninstall_scripts
+  stage: test
+  tags: *tags_default
   variables:
     MARK: "(skamid or common) and quarantine"
     HELM_RELEASE: "test-mid-q"
-    KUBE_NAMESPACE: "integration-mid-q"
-    KUBE_NAMESPACE_SDP: "integration-mid-sdp-q"
+    KUBE_NAMESPACE: "ci-quarantine-mid"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-mid-sdp"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
     DELETE: "true"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true"
+  <<: *test_definition
+  <<: *xray_upload
+  environment:
+    name: "mid-quarantine"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+    on_stop: mid_quarantine_uninstall
+  only:
+    refs:
+      - master
   allow_failure: true
 
 mid_on_demand_test:
@@ -266,15 +300,16 @@ mid_on_demand_test:
     refs:
       - master
 
-.low_test_config:
+low_test:
+  retry: 2
   stage: test
   tags: *tags_default
   variables:
+    MARK: "(skalow or common) and not quarantine"
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-    MARK: "skalow or common"
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
   <<: *test_definition
@@ -290,22 +325,30 @@ mid_on_demand_test:
     refs:
       - master
 
-low_test:
-  extends: .low_test_config
-  variables:
-    MARK: "(skalow or common) and not quarantine"
-
 low_test_quarantine:
-  extends: .low_test_config
-  after_script:
-    - *uninstall_scripts
+  stage: test
+  tags: *tags_default
   variables:
     MARK: "(skalow or common) and quarantine"
     HELM_RELEASE: "test-low-q"
-    KUBE_NAMESPACE: "integration-low-q"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp-q"
+    KUBE_NAMESPACE: "ci-quarantine-low"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-low-sdp"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     DELETE: "true"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
+  <<: *test_definition
+  <<: *xray_upload
+  environment:
+    name: "low-quarantine"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: $KUBE_NAMESPACE
+    on_stop: low_quarantine_uninstall
+  only:
+    refs:
+      - master
   allow_failure: true
       
 psi_low_test:

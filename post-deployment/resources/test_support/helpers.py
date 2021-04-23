@@ -363,6 +363,10 @@ class waiter():
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become('obsState',changed_to='RESETTING'))
         self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become('obsState',changed_to='RESETTING'))
 
+    def set_wait_for_going_into_obsreseting(self):
+        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become('obsState',changed_to='IDLE'))  
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become('obsState',changed_to='IDLE'))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become('obsState',changed_to='IDLE'))
 
     def set_wait_for_starting_up(self):
         self.waits.append(watch(resource('mid_csp/elt/master')).to_become("State",changed_to='ON'))

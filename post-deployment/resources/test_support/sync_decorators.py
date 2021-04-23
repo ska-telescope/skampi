@@ -265,6 +265,16 @@ def sync_restart_sa(func):
         return result
     return wrapper
 
+def sync_reset_sa(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        check_going_out_of_abort()
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_into_obsreseting()
+        result = func(*args, **kwargs)
+        the_waiter.wait(100)
+        return result
+    return wrapper
 
 # defined as a context manager
 @contextmanager

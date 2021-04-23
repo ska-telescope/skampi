@@ -57,7 +57,6 @@ def result():
 
 @pytest.mark.select
 @pytest.mark.skamid
-@pytest.mark.trial
 @pytest.mark.quarantine
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")

@@ -228,9 +228,9 @@ mid_test_quarantine:
     - *uninstall_scripts
   variables:
     MARK: "(skamid or common) and quarantine"
-    HELM_RELEASE: "test-mid-q"
-    KUBE_NAMESPACE: "integration-mid-q"
-    KUBE_NAMESPACE_SDP: "integration-mid-sdp-q"
+    HELM_RELEASE: "ci-q-test-mid"
+    KUBE_NAMESPACE: "ci-q-integration-mid"
+    KUBE_NAMESPACE_SDP: "ci-q-integration-mid-sdp"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
     DELETE: "true"
   allow_failure: true
@@ -303,9 +303,9 @@ low_test_quarantine:
     - *uninstall_scripts
   variables:
     MARK: "(skalow or common) and quarantine"
-    HELM_RELEASE: "test-low-q"
-    KUBE_NAMESPACE: "integration-low-q"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp-q"
+    HELM_RELEASE: "ci-q-test-low"
+    KUBE_NAMESPACE: "ci-q-integration-low"
+    KUBE_NAMESPACE_SDP: "ci-q-integration-low-sdp"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     DELETE: "true"
   allow_failure: true

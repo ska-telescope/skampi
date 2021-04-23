@@ -20,8 +20,8 @@ test: install
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
 		--disable-pytest-warnings --timeout=300 $(FILE) --count=$(COUNT) | tee pytest.stdout; \
 	status=$$?; \
-	make remove_log_consumer && \
-	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
+	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) && \
+	make remove_log_consumer \
 	exit $$status
 
 install:

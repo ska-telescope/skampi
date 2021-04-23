@@ -350,7 +350,7 @@ low_test_quarantine:
     refs:
       - master
   allow_failure: true
-      
+
 psi_low_test:
   stage: test
   tags: *tags_psi_low

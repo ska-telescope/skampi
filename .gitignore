@@ -51,3 +51,4 @@ docs/src/_build/
 post-deployment/venv
 .vscode/settings.json
 gilab_values.yaml
+.devcontainer/

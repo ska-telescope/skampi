@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.10
 
 variables:
   MINIKUBE: "false"
@@ -69,10 +69,8 @@ stages:
 
 .xray_upload: &xray_upload
   after_script:
-    - 'curl -X POST -H "Content-type: application/json" --fail
-         -H "Authorization: Basic $JIRA_AUTH"
-         --data @build/cucumber.json
-         https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
+  - &xray_upload_scripts |
+    curl -X POST -H "Content-type: application/json" --fail -H "Authorization: Basic $JIRA_AUTH" --data @build/cucumber.json https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber
 
 .tags_default: &tags_default
 - k8srunner
@@ -218,6 +216,7 @@ psi_low_on_demand_uninstall:
       - master
 
 mid_test:
+  retry: 2
   extends: .mid_test_config
   variables:
     MARK: "(skamid or common) and not quarantine"
@@ -225,6 +224,7 @@ mid_test:
 mid_test_quarantine:
   extends: .mid_test_config
   after_script:
+    - *xray_upload_scripts
     - *uninstall_scripts
   variables:
     MARK: "(skamid or common) and quarantine"
@@ -291,6 +291,7 @@ mid_on_demand_test:
       - master
 
 low_test:
+  retry: 2
   extends: .low_test_config
   variables:
     MARK: "(skalow or common) and not quarantine"
@@ -298,6 +299,7 @@ low_test:
 low_test_quarantine:
   extends: .low_test_config
   after_script:
+    - *xray_upload_scripts
     - *uninstall_scripts
   variables:
     MARK: "(skalow or common) and quarantine"

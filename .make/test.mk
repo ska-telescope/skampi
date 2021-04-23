@@ -17,6 +17,7 @@ TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 MARK ?= fast## this variable allow the mark parameter in the pytest
 FILE ?= ##this variable allow to execution of a single file in the pytest 
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
+COUNT ?= 1 ## amount of repetition for pytest-repeat
 
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
@@ -41,6 +42,7 @@ k8s_test = tar -c post-deployment/ | \
 			HELM_RELEASE=$(HELM_RELEASE) \
 			TANGO_HOST=$(TANGO_HOST) \
 			MARK='$(MARK)' \
+			COUNT='$(COUNT)' \
 			FILE='$(FILE)' \
 			$1 && \
 		tar -czvf /tmp/build.tgz build && \

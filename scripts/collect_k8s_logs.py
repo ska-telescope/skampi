@@ -51,8 +51,8 @@ for namespace in arguments['<ns>']:
     if '.' in namespace or '/' in namespace:
         lines += logs.collect_file(namespace, verbosity)
     else:
-        lines += logs.collect_pod_logs(namespace)
-        lines += logs.collect_events(namespace)
+        lines += logs.collect_pod_logs(v1, namespace)
+        lines += logs.collect_events(v1, namespace)
 lines = sorted(lines, key = lambda line: line['time'])
 
 # Default is pretty-print to stdout

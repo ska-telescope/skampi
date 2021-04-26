@@ -9,6 +9,8 @@ try:
 except:
     orjson = json
 
+import kubernetes
+
 # Regular expressions
 kube_time_re = re.compile('^(?P<kube_time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{0,6})\d*Z (?P<rest>.*)')
 ska_re = re.compile('^1\|(?P<ska_time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d*Z)\|(?P<ska_level>[^\|]*)\|(?P<ska_thread>[^\|]*)\|(?P<ska_function>[^\|]*)\|(?P<ska_source>[^\|]*)\|(?P<ska_tags>[^\|]*)\|(?P<msg>.*)$')
@@ -82,8 +84,8 @@ def aggregate_status(dct, statuses):
         else:
             statuses[dct['level']] += 1
 
-def collect_pod_logs(namespace):
-    ret = v1.list_namespaced_pod(namespace, watch=False)
+def collect_pod_logs(api, namespace):
+    ret = api.list_namespaced_pod(namespace, watch=False)
     lines = []
     print(f"Obtaining logs from {len(ret.items)} pods on namespace {namespace}...")
     for pod in ret.items:
@@ -104,11 +106,11 @@ def collect_pod_logs(namespace):
 
             for previous in [True, False]:
                 try:
-                    logs = v1.read_namespaced_pod_log(podName, namespace,
-                                                      previous=previous,
-                                                      container=containerName,
-                                                      timestamps=True)
-                except client.rest.ApiException as e:
+                    logs = api.read_namespaced_pod_log(podName, namespace,
+                                                       previous=previous,
+                                                       container=containerName,
+                                                       timestamps=True)
+                except kubernetes.client.rest.ApiException as e:
 
                     # Try to parse as JSON to figure out whether
                     # something strange happened. As we are
@@ -137,11 +139,11 @@ def collect_pod_logs(namespace):
     return lines
 
 
-def collect_events(namespace):
+def collect_events(api, namespace):
 
     print(f"Obtaining events from namespace {namespace}...")
     lines = []
-    api_response = v1.list_namespaced_event(namespace, watch=False)
+    api_response = api.list_namespaced_event(namespace, watch=False)
     cont_re = re.compile('^spec.containers{(?P<container>.*)}$')
 
     statuses = {}

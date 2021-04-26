@@ -45,10 +45,14 @@ k8s_test = tar -c post-deployment/ | \
 			COUNT=$(COUNT) \
 			FILE='$(FILE)' \
 			$1 && \
-		tar -czvf /tmp/build.tgz build && \
+		(tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
 		cat /tmp/build.tgz | base64 && \
-		echo '~~~~BOUNDARY~~~~'" \
+		echo '~~~~BOUNDARY~~~~') || \
+		(tar -czvf /tmp/build.tgz build && \
+		echo '~~~~BOUNDARY~~~~' && \
+		cat /tmp/build.tgz | base64 && \
+		echo '~~~~BOUNDARY~~~~' && exit 1)" \
 		2>&1
 
 # run the test function

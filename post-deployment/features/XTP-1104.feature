@@ -12,5 +12,6 @@ Feature:
 		| IDLE               | 
 		| READY              | 
 		| SCANNING           | 
+		| RESETTING           | 
 
 

@@ -139,7 +139,7 @@ class Report:
         else:
             self.add_log(fname, logs.collect_file(fname, 1))
 
-    def add_from_gitlab(self, uri, header, project, search, job_name, artifact):
+    def add_from_gitlab(self, uri, header, project, search, job_names, artifact):
 
         # Get project, search for pipelines
         gl = gitlab.Gitlab(uri, **header)
@@ -152,7 +152,7 @@ class Report:
 
             # Find a (successful) job matching the desired name
             jobs = pip.jobs.list(scope='success', include_retried='yes')
-            for job in ( job for job in jobs if job.name == job_name ):
+            for job in ( job for job in jobs if job.name in job_names ):
 
                 # (Attempt to) download the artefact
                 try:

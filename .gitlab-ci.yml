@@ -618,7 +618,7 @@ pages:
         --gitlab-header job_token=$CI_JOB_TOKEN
         --gitlab-project $CI_PROJECT_PATH
         --gitlab-search "user=$GITLAB_USER_LOGIN&per_page=20"
-        --gitlab-job "mid_on_demand_stress_test"
+        --gitlab-job mid_stress_test,mid_on_demand_stress_test
         --gitlab-artifact logs.tar.xz
   - make html
   - mv _build/html ../../public

@@ -54,7 +54,7 @@ if arguments['--gitlab'] is not None:
         split_map(arguments['--gitlab-header'] or ''),
         arguments['--gitlab-project'],
         split_map(arguments['--gitlab-search'] or ''),
-        arguments['--gitlab-job'],
+        arguments['--gitlab-job'].split(','),
         arguments['--gitlab-artifact'])
 
 # Read triggers from files

@@ -602,12 +602,21 @@ version_bump_charts:
 
 pages:
   stage: deploy
+  tags:
+  - k8srunner
   script:
+  - pip3 install python-gitlab rstgen urllib3 sphinx sphinx-autobuild sphinx_rtd_theme
   - cd docs/analysis
-  - python ../../scripts/mk_eval_report.py --gitlab $CI_API_V4_URL
+  - echo python3 ../../scripts/make_analysis.py --gitlab $CI_SERVER_URL
         --gitlab-header job_token=$CI_JOB_TOKEN
         --gitlab-project $CI_PROJECT_PATH
-        --gitlab-search "user=$GITLAB_USER_NAME&per_page=10"
+        --gitlab-search "user=$GITLAB_USER_LOGIN&per_page=20"
+        --gitlab-job "stress test mid on demand"
+        --gitlab-artifact logs.tar.xz
+  - python3 ../../scripts/make_analysis.py --gitlab $CI_SERVER_URL
+        --gitlab-header job_token=$CI_JOB_TOKEN
+        --gitlab-project $CI_PROJECT_PATH
+        --gitlab-search "user=$GITLAB_USER_LOGIN&per_page=20"
         --gitlab-job "mid_on_demand_stress_test"
         --gitlab-artifact logs.tar.xz
   - make html

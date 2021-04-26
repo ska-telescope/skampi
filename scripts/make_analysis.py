@@ -1,0 +1,97 @@
+#/bin/env python3
+"""
+Analyse results from many stress-test runs into a report
+
+Usage:
+  make_analysis.py [<eval>...] [--matches-per-clfr=<N>] [--context-lines=<N>]
+     [--gitlab=<uri>] [--gitlab-header=<k=v>] [--gitlab-project=<id>]
+     [--gitlab-search=<k=v>] [--gitlab-job=<name>] [--gitlab-artifact=<name>]
+
+Options:
+  <eval>                   Path/URIs of log files (possibly in tarballs)
+  --matches-per-clfr=<N>   How many matches to report per classifier (default 3)
+  --context-lines=<N>      Log lines to show for context around match (default 30)
+  --gitlab=<uri>           Gitlab instance to query
+  --gitlab-header=<k=v>    Parameters to GitLab API (e.g. private_token=...)
+  --gitlab-project=<name>  Project ID to query (e.g. ska-telescope/skampi)
+  --gitlab-search=<k=v>    Pipeline search parameters (e.g. user=...)
+  --gitlab-job=<name>      Job to locate
+  --gitlab-artifact=<name> Artefact to download
+"""
+
+from docopt import docopt
+import sys
+import os
+import rstgen
+import traceback
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from analysis import logs, tests, classifiers
+from analysis.report import Report
+
+arguments = docopt(__doc__, version='SKAMPI log analysis')
+
+matches_per_clfr_count = int(arguments['--matches-per-clfr'] or 3)
+context_lines = int(arguments['--context-lines'] or 30)
+
+# Collected data
+report = Report(matches_per_clfr_count, context_lines)
+
+# Read from GitLab
+if arguments['--gitlab'] is not None:
+
+    if arguments['--gitlab-project'] is None or arguments['--gitlab-job'] is None \
+       or arguments['--gitlab-artifact'] is None:
+        print("Please specify GitLab project, job and artefact!")
+        exit(1)
+
+    def split_map(s):
+        # Split first by '&', then into key=value pairs
+        return { k: v for k,v in [ kv.split('=') for kv in s.split('&') if kv ] }
+
+    report.add_from_gitlab(
+        arguments['--gitlab'],
+        split_map(arguments['--gitlab-header'] or ''),
+        arguments['--gitlab-project'],
+        split_map(arguments['--gitlab-search'] or ''),
+        arguments['--gitlab-job'],
+        arguments['--gitlab-artifact'])
+
+# Read triggers from files
+for fname in arguments['<eval>']:
+    try:
+        report.add_file_or_uri(fname)
+    except Exception:
+        traceback.print_exc()
+
+# Create overview
+pages = ['overview.rst']
+with open("overview.rst", "w") as f:
+
+    print(rstgen.header(1, 'Test Overview'), file=f)
+    print(f'{report.total_lines} lines scanned against {len(classifiers.classifiers)} '
+          'classifiers, result summary:\n', file=f)
+    report.make_matches_table(f)
+   
+# For every classifier, create report
+for cfr in sorted(classifiers.classifiers, key=lambda cfr: cfr.skb):
+    try:
+        with open(cfr.skb + ".rst", "w") as f:
+            report.make_cfr_report(f, cfr)
+        pages.append(cfr.skb + ".rst")
+    except Exception:
+        traceback.print_exc()
+
+# Write raw log files
+report.write_logs('.')
+
+# Generate index
+with open('index.rst', 'w') as f:
+
+    print(rstgen.header(1, "Test Report"), file=f)
+
+    summary = f"Total {report.total_lines} lines scanned, {report.log_id} logs included in full."
+    print(summary, file=f)
+    print(rstgen.toctree(*pages, maxdepth=2), file=f)
+
+    print(summary)

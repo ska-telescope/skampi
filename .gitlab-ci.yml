@@ -79,7 +79,8 @@ stages:
   script:
   # We specifically need Bash for $SECONDS
   - bash scripts/run-stresstest.sh $STRESS_TEST_DURATION
-  - tar cJf logs.tar.xz logs/*/k8s_dump.txt
+  - mv logs $CI_PROJECT_NAME-$CI_JOB_ID
+  - tar cJf logs.tar.xz $CI_PROJECT_NAME-$CI_JOB_ID/*/k8s_dump.txt
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

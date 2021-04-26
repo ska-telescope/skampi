@@ -133,14 +133,14 @@ add_classifier(
 add_classifier(
     [("tests/smoke/test_landing_page_loads.py", "test_landing_page_loads")],
     [match_msg(r'.*AssertionError: Expected <400> to be equal to <200>.*',
-               section='main/main')],
+               section='detail/main')],
     "SKBX-003", "Trying to access landing page yields error 400"
 )
 add_classifier(
     [("tests/smoke/test_landing_page_loads.py", "test_landing_page_loads")],
     [match_and(
         match_msg(r'.*AssertionError: Expected <400> to be equal to <200>.*',
-                  section='main/main', missing=True),
+                  section='detail/main', missing=True),
         match_status('FAILED')
     )],
     "SKBX-003b", "Trying to access landing page fails silently"
@@ -183,7 +183,7 @@ add_classifier(
 add_classifier(
     [("tests/acceptance/mvp/test_XTP-1561.py", "test_scan_id")],
     [match_msg(r".*Expected all masters' dev state to be \('OFF', 'STANDBY'\) "
-               r"but instead found \['mid_csp_cbf/sub_elt/master'\] to be ON", section='main/main'),],
+               r"but instead found \['mid_csp_cbf/sub_elt/master'\] to be ON", section='detail/main'),],
     "SKBX-008", "CSP master is not OFF",
     )
 add_classifier(
@@ -216,7 +216,7 @@ add_classifier(
     )
 add_classifier(
     [("tests/acceptance/mvp/test_XR-13_A2-Test.py", "test_configure_subarray")],
-    [match_msg(r"E.*tm_subarray_node.*receptorIDList.*current val=\(1, 2, 3, 4, 1, 2\).*", section='main/main')],
+    [match_msg(r"E.*tm_subarray_node.*receptorIDList.*current val=\(1, 2, 3, 4, 1, 2\).*", section='detail/main')],
     "SKBX-013", "TM subarray node double-assigns receptors?"
 )
 add_classifier(
@@ -232,12 +232,12 @@ add_classifier(
      ("tests/acceptance/mvp/test_XTP-1096.py", "test_subarray_obsreset")],
     [match_msg(r".*where False = telescope_is_in_standby\(\).*",
                after_msg_r=".*assert[ \(]telescope_is_in_standby\(.*",
-               section='main/main')],
+               section='detail/main')],
     "SKBX-015", "Telescope not in standby at start of test"
 )
 add_classifier(
     [("tests/acceptance/mvp/test_XTP-1561.py", "test_scan_id")],
-    [match_msg(r".*INCONSISTENT state.*", section='main/main')],
+    [match_msg(r".*INCONSISTENT state.*", section='detail/main')],
     "SKBX-015b", "Telescope master devices not in consistent state at start of test"
 )
 add_classifier(
@@ -245,7 +245,7 @@ add_classifier(
     [match_and(
         match_msg(r"Dish transitioned to the 'STANDBY_FP'.*"),
         match_msg(r".*timed out waiting for .*/master\.dishMode to change from STANDBY_FP.*",
-                  section='main/main')
+                  section='detail/main')
      )],
     "SKB-31", "test_mode_transitions sometimes times out waiting for dishMode change"
 )
@@ -301,7 +301,7 @@ add_classifier(
 )
 add_classifier(
     [("tests/acceptance/mvp/test_XTP-966.py", "test_sb_resource_allocation")],
-    [match_msg(r".*Server encountered error 504 Gateway Timeout:", section="main/main")],
+    [match_msg(r".*Server encountered error 504 Gateway Timeout:", section="detail/main")],
     "SKBX-022", "OET encounteres a gateway timeout, ends up with 0 scripts"
 )
 add_classifier(
@@ -313,7 +313,7 @@ add_classifier(
 add_classifier(
     [("tests/smoke/test_mvp_clean.py", "test_smell_mvp")],
     [match_msg(r".*Device.*is not exported \(hint: try starting the device server\)",
-               section='main/main')],
+               section='detail/main')],
     "SKBX-024", "Sometimes startup is incomplete", taints=True
 )
 add_classifier(
@@ -321,7 +321,7 @@ add_classifier(
     [match_and(
         match_msg(r".*Dish state set to 'STANDBY'\..*", pod='dishmaster1-01-0'),
         match_msg(r"E.*Expected <ON> to be equal to <STANDBY>, but was not\..*",
-                  section='main/main')
+                  section='detail/main')
     )],
     "SKBX-025a", "Dish master in state ON after claiming to transition to STANDBY", taints=True
 )
@@ -330,14 +330,14 @@ add_classifier(
     [match_and(
         match_msg(r"Dish state set to 'ON'\.", pod='dishmaster1-01-0'),
         match_msg(r"E.*Expected <STANDBY> to be equal to <ON>, but was not\.",
-                  section='main/main')
+                  section='detail/main')
     )],
     "SKBX-025b", "Dish master in state STANDBY after claiming to transition to ON", taints=True
 )
 add_classifier(
     [("tests/smoke/test_mvp_clean.py", "test_smell_mvp")],
     [match_msg(r'.*TRANSIENT CORBA system exception: TRANSIENT_ConnectFailed.*',
-               section='main/main')],
+               section='detail/main')],
     "SKBX-026", "Tango database not available - incomplete deployment?", taints=True
 )
 add_classifier(
@@ -367,7 +367,7 @@ add_classifier(
 )
 add_classifier(
     [("tests/acceptance/mvp/test_XR-13_A2-Test.py", "test_configure_subarray")],
-    [match_msg(r'.*Failed to execute read_attribute on device.*', section='main/main'),
+    [match_msg(r'.*Failed to execute read_attribute on device.*', section='detail/main'),
      match_msg(r'.*Failed to execute read_attribute on device.*', section='teardown_detail/main')
     ],
     "SKBX-027d", "Failing to read TANGO attribute"
@@ -450,6 +450,16 @@ add_classifier(
     )],
     'SKB-050', "TMC enters obsState READY ahead of CSP"
 )
+add_classifier(
+    [("tests/smoke/test_logging_namespace.py", "test_logging_namespace")],
+    [match_msg(r'urllib3.exceptions.ConnectTimeoutError.*')],
+    "SKBX-035", "Attempt to access elastic search times out"
+)
+add_classifier(
+    [("tests/smoke/test_logging_namespace.py", "test_logging_namespace")],
+    [match_msg(r'push_event generated the following python exception:.*')],
+    "SKBX-036", "Spurious 'push_event generated the following Python exception' messages from TM subarray node"
+)
 
 # Special pseudo-classifiers
 UNKNOWN = Classifier([(None, None)], [], 'UNKNOWN', 'Unclassified test failure')
@@ -466,7 +476,7 @@ def classify_test_results(test_results):
        in the order they were matched
     """
     
-    triggers = []
+    matches = []
 
     # Walk through tests
     tainted = False; tainted_results = 0
@@ -486,7 +496,7 @@ def classify_test_results(test_results):
                 if not cfr.skb in skbs_suppressed and \
                    (not cfr.only_once or cfr.skb not in skbs_shown):
 
-                    triggers.append({ 'test': test, 'cfr': cfr, 'matched': matched })
+                    matches.append({ 'test': test, 'cfr': cfr, 'matched': matched })
                     skbs_shown.add(cfr.skb)
 
                 # Update state - do we see this as a possible cause
@@ -502,12 +512,12 @@ def classify_test_results(test_results):
         if not found_classifier:
             if test.get('status') not in ['PASSED', 'SKIPPED', 'XPASS'] and not found_classifier:
                 if tainted:
-                    triggers.append({ 'test': test, 'cfr': TAINT, 'matched': [] })
+                    matches.append({ 'test': test, 'cfr': TAINT, 'matched': [] })
                 else:
-                    triggers.append({ 'test': test, 'cfr': UNKNOWN, 'matched': [] })
+                    matches.append({ 'test': test, 'cfr': UNKNOWN, 'matched': [] })
             if test.get('teardown_status') in ['ERROR']:
                 if tainted:
-                    triggers.append({ 'test': test, 'cfr': TAINT_TD, 'matched': [] })
+                    matches.append({ 'test': test, 'cfr': TAINT_TD, 'matched': [] })
                 else:
-                    triggers.append({ 'test': test, 'cfr': UNKNOWN_TD, 'matched': [] })
-    return triggers
+                    matches.append({ 'test': test, 'cfr': UNKNOWN_TD, 'matched': [] })
+    return matches

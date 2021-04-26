@@ -263,6 +263,29 @@ mid_on_demand_test:
     refs:
       - branches
 
+mid_stress_test:
+  stage: test
+  variables:
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    MARK: "skamid or common"
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE_PREFIX: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    SERVICE_ACCOUNT: "stress-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_NAMESPACE: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
+    DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+  <<: *stress_test_definition
+  environment:
+    name: "test"
+    url: "http://$INGRESS_HOST/stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+  when: manual
+  only:
+    variables:
+      - $STRESS_TEST_DURATION
+
 mid_on_demand_stress_test:
   stage: test
   variables:
@@ -278,7 +301,7 @@ mid_on_demand_stress_test:
   <<: *stress_test_definition
   environment:
     name: "test"
-    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
+    url: "http://$INGRESS_HOST/stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
@@ -576,6 +599,23 @@ version_bump_charts:
   script:
     - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
     - make commit-and-push-to-master
+
+pages:
+  stage: deploy
+  script:
+  - cd docs/analysis
+  - python ../../scripts/mk_eval_report.py --gitlab $CI_API_V4_URL
+        --gitlab-header job_token=$CI_JOB_TOKEN
+        --gitlab-project $CI_PROJECT_PATH
+        --gitlab-search "user=$GITLAB_USER_NAME&per_page=10"
+        --gitlab-job "mid_on_demand_stress_test"
+        --gitlab-artifact logs.tar.xz
+  - make html
+  - mv _build/html ../../public
+  when: manual
+  artifacts:
+    paths: [public/]
+    expire_in: 1 week
 
 publish-chart:
   when: on_success

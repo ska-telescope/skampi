@@ -110,10 +110,8 @@ class WaitResetting():
         
     
     def wait(self,timeout):
-        SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
-        logging.info("Subarray obsState before ObsReset: " + str(SubarrayNode.obsState))
         logging.info("ObsReset command invoked. Waiting for obsState to change to Resetting")
-        self.the_watch.wait_until_value_changed_to('RESETTING',timeout=60)
+        self.the_watch.wait_until_value_changed_to('RESETTING',timeout=200)
 
 
 class WaitScanning():
@@ -386,7 +384,7 @@ def sync_obsreset(timeout=200):
         return wrapper
     return decorator
 
-def sync_resetting(timeout=60):
+def sync_resetting(timeout=200):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):

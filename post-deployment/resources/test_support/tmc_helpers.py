@@ -96,7 +96,7 @@ def obsreset():
     LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
     LOGGER.info('Invoked Obsreset on Subarray')
 
-@sync_resetting(60)
+@sync_resetting(200)
 def sub_resetting():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')

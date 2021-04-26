@@ -70,7 +70,7 @@ def fixture():
     return {}
 
 
-@pytest.mark.ncra
+#@pytest.mark.ncra
 @pytest.mark.select
 @pytest.mark.skamid
 # @pytest.mark.xfail
@@ -107,7 +107,6 @@ def configure_ready(sdp_block):
 
 
 def reset_subarray():
-    @sync_resetting(60)
     def obsreset_subarray():
         LOGGER.info("Invoking ObsReset command on the Subarray.")
         # SubArray(1).reset()

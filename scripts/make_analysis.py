@@ -66,7 +66,7 @@ for fname in arguments['<eval>']:
 
 # Create overview
 pages = ['overview.rst']
-with open("overview.rst", "w") as f:
+with open("overview.rst", "w", encoding='utf-8') as f:
 
     print(rstgen.header(1, 'Test Overview'), file=f)
     print(f'{report.total_lines} lines scanned against {len(classifiers.classifiers)} '
@@ -86,7 +86,7 @@ for cfr in sorted(classifiers.classifiers, key=lambda cfr: cfr.skb):
 report.write_logs('.')
 
 # Generate index
-with open('index.rst', 'w') as f:
+with open('index.rst', 'w', encoding='utf-8') as f:
 
     print(rstgen.header(1, "Test Report"), file=f)
 

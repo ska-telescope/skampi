@@ -358,6 +358,6 @@ class Report:
 
         # Generate them!
         for log_id, cfr_matches in logs_to_generate.items():
-            with open(pathlib.Path(directory, f'log-{log_id}.txt'), 'w') as f:
+            with open(pathlib.Path(directory, f'log-{log_id}.txt'), 'w', encoding='utf-8') as f:
                 self.write_log(f, cfr_matches)
 

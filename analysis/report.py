@@ -160,32 +160,6 @@ class Report:
                 except Exception:
                     traceback.print_exc()
             
-    def make_matches_table(self):
-
-        # Compose header from classifier names
-        header = [ 'name' ]
-        for cfr in classifiers.classifiers:
-            header.append(cfr.skb)
-
-        # Now go through files
-        rows = []
-        match_count = { cfr.skb: 0 for cfr in classifiers.classifiers }
-        for fname in sorted(matches_per_file.keys()):
-            matches = self.matches_per_file[fname]
-            row = [fname]
-            for cfr in cfrs_sorted:
-                cfr_matches = [ match for match in matches if match['cfr'] is cfr ]
-                if cfr_matches:
-                    row.append('X')
-                    match_count[cfr.skb] += 1
-                else:
-                    row.append('')
-            rows.append(row)
-
-        # Add a table with the count at the end
-        rows.append(["Sum:"] + [ str(match_count[cfr.skb]) for cfr in cfrs_sorted])
-        return rstgen.table(header, rows)
-
     def make_matches_table(self, f):
 
         # Compose header from classifier names

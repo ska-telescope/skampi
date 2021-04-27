@@ -176,6 +176,6 @@ def teardown_function(function):
             LOGGER.warn("Subarray is still in RESETTING! Please restart MVP manually to complete tear down")
             restart_subarray(1)
             raise Exception("Unable to tear down test setup")
-    LOGGER.info("Put Telescope back to standby")
+    LOGGER.info("Put Telescope back to StandBy")
     set_telescope_to_standby()
     LOGGER.info("Telescope is in StandBy.")

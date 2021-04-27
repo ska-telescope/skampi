@@ -71,7 +71,6 @@ def configure_sub(sdp_block, configure_file):
 
 @sync_configuring
 def configuring_sub(sdp_block, configure_file):
-    #resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     update_scan_config_file(configure_file, sdp_block)
     config = load_config_from_file(configure_file)
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')

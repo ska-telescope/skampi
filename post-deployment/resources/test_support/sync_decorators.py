@@ -63,32 +63,21 @@ class WaitConfigure():
         self.w2 = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
 
     def wait(self):
-        # self.w.wait_until_value_changed_to('CONFIGURING',timeout=100)
-        # self.w1.wait_until_value_changed_to('CONFIGURING',timeout=100)
-        # self.w2.wait_until_value_changed_to('CONFIGURING',timeout=100)
         self.w.wait_until_value_changed_to('READY',timeout=200)
         self.w1.wait_until_value_changed_to('READY',timeout=200)
         self.w2.wait_until_value_changed_to('READY',timeout=200)
 
-
     def wait_oet(self):
-        # self.w.wait_until_value_changed_to('CONFIGURING',timeout=200)
         self.w.wait_until_value_changed_to('READY',timeout=200)
-
 
 class WaitConfiguring():
 
     def __init__(self):
         self.w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
-        self.w1  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
-        self.w2 = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
 
-    def wait(self):
-        self.w.wait_until_value_changed_to('CONFIGURING',timeout=100)
-        self.w1.wait_until_value_changed_to('CONFIGURING',timeout=100)
-        self.w2.wait_until_value_changed_to('CONFIGURING',timeout=100)
-
-
+    def wait(self, timeout):
+        self.w.wait_until_value_changed_to('CONFIGURING',timeout=200)
+    
 class WaitAbort():
 
     def __init__(self):
@@ -203,18 +192,20 @@ def sync_configure_oet(func):
         return result
     return wrapper
 
-def sync_configuring(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        ##Can only configure a subarray that is in IDLE/ON
-        check_going_into_configure()
-        w = WaitConfiguring()
-        ################ 
-        result = func(*args, **kwargs)
-        ################ 
-        w.wait()
-        return result
-    return wrapper
+
+def sync_configuring(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_into_configure()
+            w = WaitConfiguring()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
 
 # defined as a context manager
 @contextmanager

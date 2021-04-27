@@ -19,7 +19,7 @@ from tango import DeviceProxy, DevState
 ## local imports
 from resources.test_support.helpers import resource
 from resources.test_support.sync_decorators import sync_assign_resources, sync_obsreset,sync_abort,sync_scan_oet,sync_configuring
-from resources.test_support.persistance_helping import update_resource_config_file
+from resources.test_support.persistance_helping import update_resource_config_file, update_scan_config_file, load_config_from_file
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray, restart_subarray
 #import resources.test_support.tmc_helpers as tmc
 from resources.test_support.tmc_helpers import configuring_sub
@@ -92,12 +92,40 @@ def configure_ready(sdp_block):
 #     LOGGER.info("Subarray is in configuring obstate")
 
 
-def tmc_configuring(sdp_block):
-    def test_SUT():
-        LOGGER.info("Invoking configure command on subarray.")
-        configuring_sub()
-    test_SUT()
-    LOGGER.info("Subarray is in configuring obstate")
+def configuring_sub(sdp_block):
+    @sync_configuring
+    #TODO: Confirm if @time_it is required. Currently commenting as seem to be not required
+    # @time_it(120)
+    def test_SUT(sdp_block):
+        file = 'resources/test_data/TMC_integration/configure1.json'
+        update_scan_config_file(file, sdp_block)
+        LOGGER.info("SDP block is :" +str(file))
+        LOGGER.info("Invoking Configure command on Subarray 1")
+        config = load_config_from_file(file)
+        SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+        SubarrayNode.Configure(config)
+        LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
+        LOGGER.info('Invoked Configure on Subarray')
+    test_SUT(sdp_block)
+    LOGGER.info("Configure command on Subarray 1 is successful")
+
+
+# @sync_configuring
+# def configuring_sub(sdp_block, configure_file):
+#     #resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+#     update_scan_config_file(configure_file, sdp_block)
+#     config = load_config_from_file(configure_file)
+#     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+#     SubarrayNode.Configure(config)
+#     LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
+#     LOGGER.info('Invoked Configure on Subarray')
+
+# def tmc_configuring(sdp_block):
+#     def test_SUT():
+#         LOGGER.info("Invoking configure command on subarray.")
+#         configuring_sub()
+#     test_SUT()
+#     LOGGER.info("Subarray is in configuring obstate")
 
 def scanning(fixture):
     fixture['scans'] = '{"id":1}'
@@ -124,7 +152,7 @@ def set_up_telescope(subarray_obsstate : str):
     elif subarray_obsstate == 'CONFIGURING':
         sdp_block = assign()
         LOGGER.info("Resources are assigned successfully and configuring the subarray now")
-        tmc_configuring(sdp_block)
+        configuring_sub(sdp_block)
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'CONFIGURING'")
     elif subarray_obsstate == 'READY':
         sdp_block = assign()

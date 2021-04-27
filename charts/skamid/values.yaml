@@ -46,9 +46,11 @@ skuid:
 tango-base:
   enabled: true
   vnc:
+    replicas: 1
     enabled: true
   tangorest:
     enabled: true
+    replicas: 1
   tangodb:
     use_pv: false
 

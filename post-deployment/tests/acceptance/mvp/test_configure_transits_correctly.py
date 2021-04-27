@@ -99,7 +99,7 @@ def fxt_context()->Context:
 
 @pytest.fixture(name='entry_point')
 def fxt_entry_point(context) -> base.EntryPoint:
-    entry_point = base.EntryPoint()
+    entry_point = oet.EntryPoint()
     return entry_point
 
 

@@ -24,6 +24,19 @@ import mock
 
 logger = logging.getLogger("__name__")
 
+class ScanConfigArgs(NamedTuple):
+    subarray_id: int
+    receptors: List[int]
+    configuration: types.ConfigurationByFile
+    devices_to_log: List[log.DeviceLogSpec]
+    time_out: int
+    live_logging: bool
+    filter_logs: bool
+    log_filter_pattern: str
+
+class Context(SimpleNamespace):
+    pass
+
 
 # background fixtures
 @given("A running telescope for executing observations on a subarray")
@@ -36,7 +49,6 @@ def set_entry_point():
     pass
 
 
-@pytest.mark.xfail
 @pytest.mark.skamid
 @scenario(
     "configure_transitions.feature",
@@ -81,7 +93,11 @@ def check_transits_correctly(scan_config_args: ScanConfigArgs, context: Context)
 
 ## fixtures ##
 
-@pytest.fixture(scope="session",name='entry_point')
+@pytest.fixture(name='context')
+def fxt_context()->Context:
+    return Context()
+
+@pytest.fixture(name='entry_point')
 def fxt_entry_point(context) -> base.EntryPoint:
     entry_point = base.EntryPoint()
     return entry_point
@@ -92,7 +108,7 @@ def fxt_entry_point(context) -> base.EntryPoint:
 # overrides base fixture
 
 
-@pytest.fixture(scope="session",name='running_telescope_args')
+@pytest.fixture(name='running_telescope_args')
 def fxt_running_telescope_args(entry_point):
     return tel_fxt.RunningTelescopeArgs(
         entry_point=entry_point,
@@ -117,16 +133,6 @@ def fxt_composed_subarray_args(tmp_path, SB_config, nr_of_dishes, subarray_id: i
         composition=composition,
     )
 
-
-class ScanConfigArgs(NamedTuple):
-    subarray_id: int
-    receptors: List[int]
-    configuration: types.ConfigurationByFile
-    devices_to_log: List[log.DeviceLogSpec]
-    time_out: int
-    live_logging: bool
-    filter_logs: bool
-    log_filter_pattern: str
 
 
 @pytest.fixture(name='scan_config_args')

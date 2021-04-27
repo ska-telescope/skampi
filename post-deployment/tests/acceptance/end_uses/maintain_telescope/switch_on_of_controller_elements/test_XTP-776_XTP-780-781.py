@@ -44,6 +44,7 @@ def end():
 @pytest.mark.fast
 @pytest.mark.oetmid
 @pytest.mark.skamid
+@pytest.mark.quarantine
 @scenario("XTP-776.feature", "Starting up telescope")
 def test_telescope_startup():
     """Telescope startup test."""

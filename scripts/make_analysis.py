@@ -65,7 +65,10 @@ for fname in arguments['<eval>']:
         traceback.print_exc()
 
 # Create overview
-pages = ['overview.rst']
+pages = {
+    'Overview': ['overview.rst'],
+    'Never': [], 'Always': [], 'Sometimes': []
+}
 with open("overview.rst", "w", encoding='utf-8') as f:
 
     print(rstgen.header(1, 'Test Overview'), file=f)
@@ -77,8 +80,13 @@ with open("overview.rst", "w", encoding='utf-8') as f:
 for cfr in sorted(classifiers.classifiers, key=lambda cfr: cfr.skb):
     try:
         with open(cfr.skb + ".rst", "w") as f:
-            report.make_cfr_report(f, cfr)
-        pages.append(cfr.skb + ".rst")
+            matches = report.make_cfr_report(f, cfr)
+        if matches == 0:
+            pages['Never'].append(cfr.skb + ".rst")
+        elif matches >= 0.9:
+            pages['Always'].append(cfr.skb + ".rst")
+        else:
+            pages['Sometimes'].append(cfr.skb + ".rst")
     except Exception:
         traceback.print_exc()
 
@@ -92,6 +100,8 @@ with open('index.rst', 'w', encoding='utf-8') as f:
 
     summary = f"Total {report.total_lines} lines scanned, {report.log_id} logs included in full."
     print(summary, file=f)
-    print(rstgen.toctree(*pages, maxdepth=2), file=f)
+
+    for section in ['Overview', 'Always', 'Sometimes', 'Never']:
+        print(rstgen.toctree(*pages[section], maxdepth=2, caption=section), file=f)
 
     print(summary)

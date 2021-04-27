@@ -82,6 +82,7 @@ class Report:
                     date = log_date, log = log, log_id=self.log_id, cfr=cfr,
                     name = fname, source = source, matches = cfr_matches))
                 match_list = sorted(match_list, key=lambda match: match['date'], reverse=True)
+                self.matches_per_clfr[cfr.skb] = match_list[:self.matches_per_clfr_count]
 
                 # Retain stripped matches for all
                 all_matches_list = self.all_matches_per_clfr.get(cfr.skb, [])
@@ -263,7 +264,7 @@ class Report:
         files_matched_rel = len(files_with_matches) / max(1, len(self.matches_per_file))
 
         print(f'Found a total of {len(self.all_matches_per_clfr[cfr.skb])} matches in '
-              f'{len(files_with_matches)} ({files_matched_rel*100}%) runs '
+              f'{len(files_with_matches)} ({files_matched_rel*100:.1f}%) runs '
               f'{", ".join(sorted(files_with_matches))}\n',file=f)
 
         # Show example matches
@@ -292,6 +293,8 @@ class Report:
                       f", recorded {cfr_match['date']}\n", file=f)
                 
                 self.make_test_report(f, test, matches)
+
+        return files_matched_rel
                 
     def write_log(self, f, cfr_matches):
 

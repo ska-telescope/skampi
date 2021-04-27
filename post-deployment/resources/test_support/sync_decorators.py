@@ -106,12 +106,13 @@ class WaitResetting():
     
     def __init__(self):
         self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.the_watch1  = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
         resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
-        
     
     def wait(self,timeout):
         logging.info("ObsReset command invoked. Waiting for obsState to change to Resetting")
         self.the_watch.wait_until_value_changed_to('RESETTING',timeout=200)
+        self.the_watch1.wait_until_value_changed_to('IDLE',timeout=200)
 
 
 class WaitScanning():

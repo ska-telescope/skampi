@@ -70,7 +70,7 @@ def fixture():
     return {}
 
 
-#@pytest.mark.ncra
+@pytest.mark.ncra
 @pytest.mark.select
 @pytest.mark.skamid
 # @pytest.mark.xfail
@@ -109,13 +109,11 @@ def configure_ready(sdp_block):
 def reset_subarray():
     def obsreset_subarray():
         LOGGER.info("Invoking ObsReset command on the Subarray.")
+        # Disable calling OET.Reset() API
         # SubArray(1).reset()
-        # Call tmc reset
+        # Call tmc ObsReset Command
         sub_resetting()
-        LOGGER.info("ObsReset command is invoked on subarray")
-
     obsreset_subarray()
-    LOGGER.info("Subarray is resetting.")
 
 
 def scanning(fixture):

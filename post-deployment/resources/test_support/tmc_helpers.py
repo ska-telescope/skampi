@@ -103,5 +103,6 @@ def sub_resetting():
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
     LOGGER.info("Subarray obsState before ObsReset: " + str(SubarrayNode.obsState))
     SubarrayNode.ObsReset()
-    LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
     LOGGER.info('Invoked Obsreset on Subarray')
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
+    

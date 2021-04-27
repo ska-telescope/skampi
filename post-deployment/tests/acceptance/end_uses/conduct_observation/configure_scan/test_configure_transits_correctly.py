@@ -153,7 +153,7 @@ def fxt_scan_config_args(
         log.DeviceLogSpec(device)
         for device in mvp_names.SubArrays(subarray_id).subtract("cbf domain")
     ]
-    # note the compositon.metadata in order to tie the ids togethor
+    # note the composition.metadata in order to tie the ids together
     if scan_config == "standard":
         configuration = types.ConfigurationByFile(
             tmp_path,

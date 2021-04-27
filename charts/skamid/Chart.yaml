@@ -25,7 +25,7 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
 - name: tmc-mid
-  version: 0.2.7
+  version: 0.3.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: tmc-mid.enabled
 - name: oet-scripts
@@ -44,6 +44,10 @@ dependencies:
   version: 0.1.0
   repository: file://../landingpage
   condition: landingpage.enabled
+- name: ska-archiver
+  version: 0.1.4
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: archiver.enabled
 ## it was disabled in the old version of skampi
 # - name: dsh-lmc-prototype
 #   version: 0.0.1

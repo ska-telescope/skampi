@@ -6,7 +6,7 @@ from resources.log_consumer.tracer_helper import TraceHelper
 
 @pytest.mark.logging
 @pytest.mark.skamid
-@pytest.mark.xfail(reason="until the elastic search is switched from the local one to the main one")
+@pytest.mark.skip(reason="ELK moved")
 def test_logging_namespace(run_context):
     """Test that we only get logs from our namespace"""
 

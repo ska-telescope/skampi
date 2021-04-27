@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.10
 
 variables:
   MINIKUBE: "false"
@@ -10,7 +10,6 @@ stages:
   - clean
   - deploy
   - test
-  - post_test
   - debug
   - publish
   - release
@@ -54,18 +53,12 @@ stages:
 
 .test_template: &test_definition
   script:
-  # EDA architecture is going to change as it needs additional resources.
-  # Archiver will be deployed as a subchart.
-  # Thus Archiver deployment is disabled for now.
-  # - branch_name=$(echo $CI_COMMIT_BRANCH | tr '-' '_')
-  # - DBNAME=$(echo $DBNAME | tr '-' '_')
-  # - echo $DBNAME
-  # - make install-or-upgrade-archiver ARCHIVER_NAMESPACE=$ARCHIVER_NAMESPACE DBNAME=$DBNAME
-  - make install-or-upgrade
+  - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
+  - echo $ARCHIVER_DBNAME
+  - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  # - kubectl get all,ingress -n $ARCHIVER_NAMESPACE
-  - make k8s_test ARCHIVER_NAMESPACE=$ARCHIVER_NAMESPACE && [ -f "build/report.xml" ]
+  - make k8s_test
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -74,13 +67,17 @@ stages:
       junit: build/report.xml
     when: always
 
+.xray_upload: &xray_upload
+  after_script:
+  - &xray_upload_scripts |
+    curl -X POST -H "Content-type: application/json" --fail -H "Authorization: Basic $JIRA_AUTH" --data @build/cucumber.json https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber
+
 .tags_default: &tags_default
 - k8srunner
 
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low
  
-
 mid_uninstall:
   stage: clean
   tags: *tags_default
@@ -95,6 +92,21 @@ mid_uninstall:
     name: "test"
     action: stop
 
+mid_quarantine_uninstall:
+  stage: cleanup
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-mid-q"
+    KUBE_NAMESPACE: "ci-quarantine-mid"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "mid-quarantine"
+    action: stop
+  when: manual
+
 low_uninstall:
   stage: clean
   tags: *tags_default
@@ -108,6 +120,21 @@ low_uninstall:
   environment:
     name: "test-low"
     action: stop
+
+low_quarantine_uninstall:
+  stage: cleanup
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-low-q"
+    KUBE_NAMESPACE: "ci-quarantine-low"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "low-quarantine"
+    action: stop
+  when: manual
 
 psi_low_uninstall:
   stage: clean
@@ -144,6 +171,9 @@ mid_on_demand_uninstall:
   only:
     refs:
       - branches
+  except:
+    refs:
+      - master
 
 low_on_demand_uninstall:
   stage: cleanup
@@ -166,6 +196,9 @@ low_on_demand_uninstall:
   only:
     refs:
       - branches
+  except:
+    refs:
+      - master
 
 psi_low_on_demand_uninstall:
   stage: cleanup
@@ -185,20 +218,24 @@ psi_low_on_demand_uninstall:
   only:
     refs:
       - branches
+  except:
+    refs:
+      - master
 
 mid_test:
+  retry: 2
   stage: test
   tags: *tags_default
   variables:
+    MARK: "(skamid or common) and not quarantine"
     HELM_RELEASE: "test-mid"
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
-    MARK: "skamid or common"
     KEEP_NAMESPACE: "true"
-    ARCHIVER_NAMESPACE: "integration-mid-archiver"
-    DBNAME: "integration_mid_archiver_db"
+    ARCHIVER_DBNAME: "integration_mid_archiver_db"
   <<: *test_definition
+  <<: *xray_upload
   environment:
     name: "test"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -208,6 +245,31 @@ mid_test:
   only:
     refs:
       - master
+
+mid_test_quarantine:
+  stage: test
+  tags: *tags_default
+  variables:
+    MARK: "(skamid or common) and quarantine"
+    HELM_RELEASE: "test-mid-q"
+    KUBE_NAMESPACE: "ci-quarantine-mid"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-mid-sdp"
+    ARCHIVER_DBNAME: "integration_mid_archiver_db"
+    DELETE: "true"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true"
+  <<: *test_definition
+  <<: *xray_upload
+  environment:
+    name: "mid-quarantine"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+    on_stop: mid_quarantine_uninstall
+  only:
+    refs:
+      - master
+  allow_failure: true
 
 mid_on_demand_test:
   stage: test
@@ -220,16 +282,10 @@ mid_on_demand_test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
-    DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
   before_script:
     - *create_k8s_creds
   <<: *test_definition
-  # Following block is commented because archiver is not deployed.
-  # after_script:
-  #   - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
-  #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
-  #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
@@ -241,21 +297,25 @@ mid_on_demand_test:
   when: manual
   only:
     refs:
-      - branches
+    - branches
+  except:
+    refs:
+      - master
 
 low_test:
+  retry: 2
   stage: test
   tags: *tags_default
   variables:
+    MARK: "(skalow or common) and not quarantine"
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-    MARK: "skalow or common"
     KEEP_NAMESPACE: "true"
-    ARCHIVER_NAMESPACE: "integration-low-archiver"
-    DBNAME: "integration_low_archiver_db"
+    ARCHIVER_DBNAME: "integration_low_archiver_db"
   <<: *test_definition
+  <<: *xray_upload
   environment:
     name: "test-low"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -266,6 +326,32 @@ low_test:
   only:
     refs:
       - master
+
+low_test_quarantine:
+  stage: test
+  tags: *tags_default
+  variables:
+    MARK: "(skalow or common) and quarantine"
+    HELM_RELEASE: "test-low-q"
+    KUBE_NAMESPACE: "ci-quarantine-low"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-low-sdp"
+    ARCHIVER_DBNAME: "integration_low_archiver_db"
+    DELETE: "true"
+    DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
+  <<: *test_definition
+  <<: *xray_upload
+  environment:
+    name: "low-quarantine"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: $KUBE_NAMESPACE
+    on_stop: low_quarantine_uninstall
+  only:
+    refs:
+      - master
+  allow_failure: true
       
 psi_low_test:
   stage: test
@@ -275,12 +361,12 @@ psi_low_test:
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
-    MARK: "skalow or common"
+    MARK: "(skalow or common) and not archiver and not quarantine"
     KEEP_NAMESPACE: "true"
-    ARCHIVER_NAMESPACE: "integration-low-archiver"
-    DBNAME: "integration_low_archiver_db"
+    ARCHIVER_DBNAME: "integration_low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
   <<: *test_definition
+  <<: *xray_upload
   environment:
     name: "psi-low-integration"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -300,16 +386,10 @@ low_on_demand_test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
-    DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
   before_script:
     - *create_k8s_creds
   <<: *test_definition
-  # Following block is commented because archiver is not deployed.
-  # after_script:
-  #   - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
-  #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
-  #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
   environment:
     name: "test-low/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
@@ -322,29 +402,26 @@ low_on_demand_test:
   only:
     refs:
       - branches
+  except:
+    refs:
+      - master
       
 psi_low_on_demand_test:
   stage: test
   tags: *tags_psi_low
   variables:
     DEPLOYMENT_CONFIGURATION: "skalow"
-    MARK: "skalow or common"
+    MARK: "(skalow or common) and not archiver"
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
-    DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
   before_script:
     - *create_k8s_creds
   <<: *test_definition
-  # Following block is commented because archiver is not deployed.
-  # after_script:
-  #   - kubectl logs archiver-es-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
-  #   - kubectl logs archiver-cm-archiver-test-01-0 -n "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
-  #   - make delete-archiver ARCHIVER_NAMESPACE="ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-archiver"
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
@@ -354,6 +431,9 @@ psi_low_on_demand_test:
   only:
     refs:
       - branches
+  except:
+    refs:
+      - master
 
 mid_sdp_config_dump:
   stage: debug
@@ -530,19 +610,6 @@ version_bump_charts:
   script:
     - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
     - make commit-and-push-to-master
-
-xray_report:
-  stage: post_test
-  tags:
-  - docker-executor
-  script:
-    - 'curl -X POST -H "Content-type: application/json" --fail
-         -H "Authorization: Basic $JIRA_AUTH"
-         --data @build/cucumber.json
-         https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber'
-  when: always
-  only: [master]
-  retry: 2
 
 publish-chart:
   when: on_success

@@ -1,18 +1,1 @@
-elastic:
-  enabled: false
-fluentd:
-  enabled: false
-kibana:
-  enabled: false
-tests:
-  enabled: false
-hdbppdb:
-  enabled: true
-archiver:
-  enabled: true
-tangodb:
-  use_pv: false
-tangotest:
-  enabled: true
-
 minikube: false

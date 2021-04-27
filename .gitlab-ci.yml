@@ -93,7 +93,7 @@ mid_uninstall:
     action: stop
 
 mid_quarantine_uninstall:
-  stage: clean
+  stage: cleanup
   tags: *tags_default
   variables:
     HELM_RELEASE: "test-mid-q"
@@ -105,6 +105,7 @@ mid_quarantine_uninstall:
   environment:
     name: "mid-quarantine"
     action: stop
+  when: manual
 
 low_uninstall:
   stage: clean
@@ -121,7 +122,7 @@ low_uninstall:
     action: stop
 
 low_quarantine_uninstall:
-  stage: clean
+  stage: cleanup
   tags: *tags_default
   variables:
     HELM_RELEASE: "test-low-q"
@@ -133,6 +134,7 @@ low_quarantine_uninstall:
   environment:
     name: "low-quarantine"
     action: stop
+  when: manual
 
 psi_low_uninstall:
   stage: clean
@@ -350,7 +352,7 @@ low_test_quarantine:
     refs:
       - master
   allow_failure: true
-
+      
 psi_low_test:
   stage: test
   tags: *tags_psi_low

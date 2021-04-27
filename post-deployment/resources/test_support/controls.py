@@ -12,7 +12,7 @@ from ska.cdm.messages.central_node.assign_resources import AssignResourcesReques
 from resources.test_support.helpers import subarray_devices,resource,ResourceGroup,waiter,watch
 from resources.test_support.persistance_helping import update_scan_config_file,update_resource_config_file
 from resources.test_support.sync_decorators import sync_assign_resources,sync_configure_oet,sync_configure,time_it,\
-    sync_release_resources,sync_end_sb,sync_scan_oet,sync_restart_sa
+    sync_release_resources,sync_end_sb,sync_scan_oet,sync_restart_sa,sync_configuring
 from resources.test_support.mappings import device_to_subarrays
 
 LOGGER = logging.getLogger(__name__)
@@ -75,15 +75,19 @@ class pilot():
         return self
 
 
-    def and_configuring_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/configure2.json'):
-        ##Reference tests/acceptance/mvp/test_abort_configuring.py
-        @sync_configure
-        @time_it(120)
-        def config(file, sdp_block):
-            update_scan_config_file(file, sdp_block)
-            LOGGER.info("___________Input file in configure_oet_____________" + str(file))
-            self.state = "Configuring"
-        return self
+    # def and_configuring_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/configure2.json'):
+    #     ##Reference tests/acceptance/mvp/test_abort_configuring.py
+    #     @sync_configuring_oet
+    #     @time_it(120)
+    #     def config(file, sdp_block):
+    #         update_scan_config_file(file, sdp_block)
+    #         LOGGER.info("___________Input file in configure_oet_____________" + str(file))
+    #         self.state = "Configuring"
+    #         self.SubArray.configure_from_file(file, 6, with_processing = False)
+    #     LOGGER.info("___________SDP block from configure_oet_____________" + str(sdp_block))
+    #     config(file, sdp_block)
+    #     self.state = "Configuring"
+    #     return self
 
 
     def and_run_a_scan(self):

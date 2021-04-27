@@ -15,10 +15,6 @@ def check_going_into_configure():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
-def check_going_into_configuring():
-    ## Can only configure a subarray that is in State ON and obsState IDLE/READY
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','CONFIGURING'])
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_going_into_abort():
     ## Can only invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
@@ -67,14 +63,30 @@ class WaitConfigure():
         self.w2 = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
 
     def wait(self):
-        # self.w.wait_until_value_changed_to('CONFIGURING')
+        # self.w.wait_until_value_changed_to('CONFIGURING',timeout=100)
+        # self.w1.wait_until_value_changed_to('CONFIGURING',timeout=100)
+        # self.w2.wait_until_value_changed_to('CONFIGURING',timeout=100)
         self.w.wait_until_value_changed_to('READY',timeout=200)
         self.w1.wait_until_value_changed_to('READY',timeout=200)
         self.w2.wait_until_value_changed_to('READY',timeout=200)
 
 
     def wait_oet(self):
+        # self.w.wait_until_value_changed_to('CONFIGURING',timeout=200)
         self.w.wait_until_value_changed_to('READY',timeout=200)
+
+
+class WaitConfiguring():
+
+    def __init__(self):
+        self.w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.w1  = watch(resource('mid_csp/elt/subarray_01')).for_a_change_on("obsState")
+        self.w2 = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
+
+    def wait(self):
+        self.w.wait_until_value_changed_to('CONFIGURING',timeout=100)
+        self.w1.wait_until_value_changed_to('CONFIGURING',timeout=100)
+        self.w2.wait_until_value_changed_to('CONFIGURING',timeout=100)
 
 
 class WaitAbort():
@@ -191,20 +203,18 @@ def sync_configure_oet(func):
         return result
     return wrapper
 
-def sync_configure(func):
+def sync_configuring(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         ##Can only configure a subarray that is in IDLE/ON
-        check_going_into_configuring()
-        w = WaitConfigure()
+        check_going_into_configure()
+        w = WaitConfiguring()
         ################ 
         result = func(*args, **kwargs)
         ################ 
         w.wait()
-        w.wait_oet()
         return result
     return wrapper
-
 
 # defined as a context manager
 @contextmanager

@@ -1,4 +1,4 @@
-from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it,sync_abort,sync_restart,sync_obsreset
+from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it,sync_abort,sync_restart,sync_obsreset, sync_configuring
 from tango import DeviceProxy   
 from resources.test_support.helpers import waiter,watch,resource
 from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby
@@ -61,6 +61,16 @@ def set_to_standby():
 
 @sync_configure
 def configure_sub(sdp_block, configure_file):
+    #resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    update_scan_config_file(configure_file, sdp_block)
+    config = load_config_from_file(configure_file)
+    SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+    SubarrayNode.Configure(config)
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
+    LOGGER.info('Invoked Configure on Subarray')
+
+@sync_configuring
+def configuring_sub(sdp_block, configure_file):
     #resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     update_scan_config_file(configure_file, sdp_block)
     config = load_config_from_file(configure_file)

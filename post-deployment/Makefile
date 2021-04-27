@@ -11,18 +11,8 @@ all: test
 
 .PHONY: all test install start_log_consumer remove_log_consumer setup_ipython config_git check_running get_mem_usage get_cpu_usage
 
-test: install
-	unset http_proxy && unset https_proxy && unset HTTP_PROXY && unset HTTPS_PROXY && \
-	make start_log_consumer; \
-	mkdir -p build && \
-	find . -name "*.pyc" -type f -delete && \
-	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest \
-		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
-		--disable-pytest-warnings --timeout=300 $(FILE) --count=$(COUNT) | tee pytest.stdout; \
-	status=$$?; \
-	make remove_log_consumer && \
-	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
-	exit $$status
+test: 
+	echo "hallo world"
 
 install:
 	pip3 install -r test_requirements.txt -qq

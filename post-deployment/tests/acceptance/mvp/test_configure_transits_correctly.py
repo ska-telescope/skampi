@@ -76,7 +76,7 @@ def configure_subarray(
     entry_point.configure_subarray(args.subarray_id, args.receptors, args.configuration)
 
 
-@then("Then I expect the tmc subarray to transit to IDLE state when sdp and csp has done so")
+@then("I expect the tmc subarray to transit to IDLE state when sdp and csp has done so")
 def check_transits_correctly(scan_config_args: ScanConfigArgs, context: Context):
     args = scan_config_args
     wait.wait(context.board, args.time_out, args.live_logging)
@@ -101,6 +101,10 @@ def fxt_context()->Context:
 def fxt_entry_point(context) -> base.EntryPoint:
     entry_point = oet.EntryPoint()
     return entry_point
+
+@pytest.fixture(name='subarray_internals')
+def fxt_subarray_internals(subarray_id: int) -> List[str]:
+    return mvp_names.SubArrays(subarray_id).subtract("tm").subtract("cbf domain").list
 
 
 # fixture arguments
@@ -190,17 +194,17 @@ def fxt_scan_transitions() -> List[Union[str, Tuple[str, str]]]:
     return ["IDLE", ("CONFIGURING", "ahead"), "READY"]
 
 
+
 # use this fixture if you want to specifically test and verify the transitions states of one device
 # compared to another
 @pytest.fixture(name='checking_transits_during_configuration')
 def fxt_checking_transits_during_configuration(
     subarray_id: int,
     scan_transitions: List[Union[str, Tuple[str, str]]],
-    subarray_internals: List[str],
-    base_factory,
+    subarray_internals: List[str]
 ) -> Tuple[builders.Occurrences, builders.MessageBoardBuilder]:
 
-    builder = builders.MessageBoardBuilder(base_factory)
+    builder = builders.MessageBoardBuilder()
     subarray_node = str(mvp_names.Mid.tm.subarray(subarray_id))
     checker = (
         builder.check_that(subarray_node)

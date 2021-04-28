@@ -1,4 +1,3 @@
-
 import urllib3
 import rstgen
 import io
@@ -50,6 +49,9 @@ class Report:
         self.all_matches_per_clfr = { cfr.skb: [] for cfr in cfrs_sorted }
         self.total_lines = 0
         self.log_id = 0
+
+        # See build_maps()
+        self.files_per_cfr = None
 
     def add_log(self, fname, log, source=None):
 
@@ -162,7 +164,7 @@ class Report:
                     self.add_file_or_uri(f'{uri}/{project}/-/jobs/{job.id}/artifacts/raw/{artifact}?inline=false')
                 except Exception:
                     traceback.print_exc()
-            
+
     def make_matches_table(self, f):
 
         # Compose header from classifier names
@@ -187,6 +189,60 @@ class Report:
 
         # Add a table with the count at the end
         rows.append(["Sum:"] + [ str(match_count[cfr.skb]) for cfr in cfrs_sorted])
+        print(rstgen.table(header, rows), file=f)
+
+    def build_maps(self):
+
+        # Files that match a given classifier
+        self.files_per_cfr = {
+            cfr.skb: { fname for fname, matches in self.matches_per_file.items()
+                       if any( match['cfr'] is cfr for match in matches ) }
+            for cfr in classifiers.classifiers
+        }
+
+    def make_overview_table(self, f):
+
+        header = [ '**SKB**', '**Message**', '**Affected Runs**', '**Last**', '**Cross-Check**'  ]
+        rows = []
+        file_count = max(1, len(self.matches_per_file))
+        for cfr in sorted(cfrs_sorted, key=lambda cfr: len(self.files_per_cfr[cfr.skb]),
+                          reverse=True):
+
+            matches = self.all_matches_per_clfr[cfr.skb]
+            files_with_matches = self.files_per_cfr[cfr.skb]
+            files_matched_rel = len(files_with_matches) / file_count
+
+            # Include date + link to latest match
+            if matches:
+                last_ref = f":ref:`{matches[-1]['date']} <{cfr.skb}-{matches[-1]['log_id']}>`"
+            else:
+                last_ref = ""
+
+
+            # Determine whether another kind of error appears to happen more often
+            other_skb_changes = ''
+            if files_with_matches:
+
+                cfr_intersection = {
+                    cfr2.skb: len(self.files_per_cfr[cfr2.skb] & files_with_matches)
+                    for cfr2 in classifiers.classifiers
+                }
+                cfr_intersection_changes = sorted([
+                    (cfr2, cfr_intersection[cfr2.skb] / len(files_with_matches) -
+                           len(self.files_per_cfr[cfr2.skb]) / file_count)
+                    for cfr2 in classifiers.classifiers
+                    if len(self.files_per_cfr[cfr2.skb]) > 0 and cfr2.skb != cfr.skb
+                ], key=lambda skb_diff: skb_diff[1], reverse=True)
+
+                other_skb_changes = ", ".join( f":ref:`{cfr2.skb} <{cfr2.skb}>`: {change*100:+.1f}%"
+                                               for cfr2, change in cfr_intersection_changes[:3]
+                                               if change > 0 )
+
+            rows.append( [ f":ref:`{cfr.skb} <{cfr.skb}>`", cfr.message,
+                           f"{len(files_with_matches)} ({files_matched_rel*100:.1f}%)",
+                           last_ref, other_skb_changes ] )
+
+
         print(rstgen.table(header, rows), file=f)
 
     def make_log_block(self, f, log, highlight_lines):
@@ -258,11 +314,11 @@ class Report:
 
     def make_cfr_report(self, f, cfr):
 
+        print(f".. _{cfr.skb}:\n", file=f)
         print(rstgen.header(1, cfr.skb + " " + cfr.message), file=f)
 
         total_matches = len(self.all_matches_per_clfr[cfr.skb])
-        files_with_matches = { fname for fname, matches in self.matches_per_file.items()
-                               if any( match['cfr'] is cfr for match in matches ) }
+        files_with_matches = self.files_per_cfr[cfr.skb]
         files_matched_rel = len(files_with_matches) / max(1, len(self.matches_per_file))
 
         print(f'Found a total of {len(self.all_matches_per_clfr[cfr.skb])} matches in '
@@ -272,6 +328,7 @@ class Report:
         # Show example matches
         for cfr_match in self.matches_per_clfr[cfr.skb]:
 
+            first = True
             def test_id(match):
                 return (match['test']['file'], match['test']['name'], match['test'].get('param'))
             for tid in { test_id(match) for match in cfr_match['matches'] }:
@@ -288,16 +345,19 @@ class Report:
                     test_name = f"{test.get('status')} test {test['file']}::{test['name']}"
 
                 date = cfr_match['date'].strftime('%Y-%m-%d')
+                if first:
+                    print(f".. _{cfr.skb}-{cfr_match['log_id']}:\n", file=f)
+                    first = False
                 print(rstgen.header(2, f" {date} {test_name}"), file=f)
 
                 print(f"See also :download:`{cfr_match['name']} <log-{cfr_match['log_id']}.txt>`"
                       f"{'' if cfr_match['source'] is None else ' (source ' + cfr_match['source'] + ')'}"
                       f", recorded {cfr_match['date']}\n", file=f)
-                
+
                 self.make_test_report(f, test, matches)
 
         return files_matched_rel
-                
+
     def write_log(self, f, cfr_matches):
 
         # Indicate where log came from
@@ -342,4 +402,3 @@ class Report:
         for log_id, cfr_matches in logs_to_generate.items():
             with open(pathlib.Path(directory, f'log-{log_id}.txt'), 'w', encoding='utf-8') as f:
                 self.write_log(f, cfr_matches)
-

@@ -63,6 +63,7 @@ for fname in arguments['<eval>']:
         report.add_file_or_uri(fname)
     except Exception:
         traceback.print_exc()
+report.build_maps()
 
 # Create overview
 pages = {
@@ -74,8 +75,9 @@ with open("overview.rst", "w", encoding='utf-8') as f:
     print(rstgen.header(1, 'Test Overview'), file=f)
     print(f'{report.total_lines} lines scanned against {len(classifiers.classifiers)} '
           'classifiers, result summary:\n', file=f)
+    report.make_overview_table(f)
     report.make_matches_table(f)
-   
+
 # For every classifier, create report
 for cfr in sorted(classifiers.classifiers, key=lambda cfr: cfr.skb):
     try:

@@ -483,6 +483,12 @@ add_classifier(
     )],
     "SKBX-038", "TMC never finished transition to READY"
 )
+add_classifier(
+    [("tests/acceptance/mvp/test_XTP-776_XTP-780-781.py", "test_telescope_in_standby")],
+    [match_msg('E       AssertionError: Expected telescope to be ON but instead was OFF', section='detail/main')],
+    "SKBX-039", "Central node state is reported as OFF right after turning telescope on"
+)
+
 
 # Special pseudo-classifiers
 UNKNOWN = Classifier([(None, None)], [], 'UNKNOWN', 'Unclassified test failure')

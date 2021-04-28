@@ -1,6 +1,7 @@
 
 import datetime
 import re
+import time
 
 __all__ = [ 'classifiers', 'classify_by_test' ]
 
@@ -249,14 +250,14 @@ add_classifier(
      )],
     "SKB-31", "test_mode_transitions sometimes times out waiting for dishMode change"
 )
-add_classifier(
-    [(None, None)],
-    [match_msg(r"deleting pod for node scale down.*", level='Normal'),
-     match_msg(r"deleting pod for node scale down.*", section='teardown', level='Normal'),
-     match_msg(r"Stopping container.*", level='Normal'),
-     match_msg(r"Stopping container.*", section='teardown', level='Normal')],
-    "SKBX-016", "Kubernetes starts killing pods mid-test?", taints=True
-)
+#add_classifier(
+#    [(None, None)],
+#    [match_msg(r"deleting pod for node scale down.*", level='Normal'),
+#     match_msg(r"deleting pod for node scale down.*", section='teardown', level='Normal'),
+#     match_msg(r"Stopping container.*", level='Normal'),
+#     match_msg(r"Stopping container.*", section='teardown', level='Normal')],
+#    "SKBX-016", "Kubernetes starts killing pods mid-test?", taints=True
+#)
 add_classifier(
     [("tests/acceptance/mvp/test_XR-13_A2-Test.py", "test_configure_subarray")],
     [match_msg(r".*mid_d0001/elt/master timed out whilst waiting for pointingState to change from TRACK to READY.*",
@@ -482,14 +483,21 @@ def classify_test_results(test_results):
     tainted = False; tainted_results = 0
     skbs_shown = set()
     skbs_suppressed = set()
+    start_time = time.time()
+    cfr_time = { cfr.skb: 0 for cfr in classifiers }
     for test in test_results:
     
         # Check whether we can match it to a classifier
         cfrs = classifier_by_test.get((test['file'], test['name']), [])
         cfrs += classifier_by_test.get((None, None), [])
+        cfrs = [ cfr for cfr in cfrs if not cfr.only_once or cfr.skb not in skbs_shown ]
+
         found_classifier = False
         for cfr in cfrs:
             matched = []
+            if cfr.only_once and cfr.skb in skbs_shown:
+                continue
+            s = time.time()
             if cfr(test, matched) > 0:
 
                 # Decide whether to generate a new trigger
@@ -508,6 +516,7 @@ def classify_test_results(test_results):
                 # Check whether this is meant to suppress other messages
                 for skb in cfr.suppresses:
                     skbs_suppressed.add(skb)
+            cfr_time[cfr.skb] += time.time() - s
 
         if not found_classifier:
             if test.get('status') not in ['PASSED', 'SKIPPED', 'XPASS'] and not found_classifier:
@@ -520,4 +529,10 @@ def classify_test_results(test_results):
                     matches.append({ 'test': test, 'cfr': TAINT_TD, 'matched': [] })
                 else:
                     matches.append({ 'test': test, 'cfr': UNKNOWN_TD, 'matched': [] })
+
+    # Show some timing statistics
+    cfr_times = ", ".join( f"{skb}: {t:.2f}s"
+                           for skb, t in sorted(cfr_time.items(), key=lambda skb_t: skb_t[1],
+                                                reverse = True)[:3] )
+    print(f"Classifiers evaluated in {time.time()-start_time:.2f} s ({cfr_times})", flush=True)
     return matches

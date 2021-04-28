@@ -205,5 +205,5 @@ def collect_tests(lines, verbosity=0):
     skipped += len(lines) - i
     if verbosity > 0:
         print(f'Finished, {len(lines)-skipped-start_line}/{len(lines)-start_line} lines of test report used '
-              f'({time.time()-start_time} s)')
+              f'({time.time()-start_time:.2f} s)')
     return tests

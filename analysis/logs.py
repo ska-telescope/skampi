@@ -197,7 +197,7 @@ def collect_file(filename, verbosity, fileobj=None):
             lines.append(line_dict)
 
     if verbosity > 0:
-        print(f"  ... {len(lines)} lines read ({time.time() - t} s)", flush=True)
+        print(f"  ... {len(lines)} lines read ({time.time() - t:.2f} s)", flush=True)
     return lines
 
 # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python

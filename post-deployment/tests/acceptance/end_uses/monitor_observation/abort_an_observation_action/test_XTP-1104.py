@@ -27,8 +27,9 @@ from resources.test_support.sync_decorators import (
     sync_abort,
     sync_scan_oet,
     sync_resetting,
+    sync_configuring,
 )
-from resources.test_support.persistance_helping import update_resource_config_file
+from resources.test_support.persistance_helping import update_resource_config_file, update_scan_config_file, load_config_from_file
 from resources.test_support.controls import (
     set_telescope_to_standby,
     set_telescope_to_running,
@@ -36,8 +37,7 @@ from resources.test_support.controls import (
     take_subarray,
     restart_subarray,
 )
-
-from resources.test_support.tmc_helpers import sub_resetting, obsreset
+from resources.test_support.tmc_helpers import sub_resetting, obsreset, configuring_sub
 
 DEV_TEST_TOGGLE = os.environ.get("DISABLE_DEV_TESTS")
 if DEV_TEST_TOGGLE == "False":
@@ -73,8 +73,8 @@ def fixture():
 @pytest.mark.ncra
 @pytest.mark.select
 @pytest.mark.skamid
+@pytest.mark.trial
 # @pytest.mark.xfail
-#@pytest.mark.skipif(reason="failure")
 @scenario(
     "XTP-1104.feature",
     "when the telescope subarrays can be aborted then abort brings them in ABORTED",
@@ -116,6 +116,21 @@ def reset_subarray():
     obsreset_subarray()
 
 
+def configuring_sub(sdp_block):
+    @sync_configuring
+    def test_SUT(sdp_block):
+        file = 'resources/test_data/TMC_integration/configure1.json'
+        update_scan_config_file(file, sdp_block)
+        LOGGER.info("Invoking Configure command on Subarray 1")
+        config = load_config_from_file(file)
+        SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+        SubarrayNode.Configure(config)
+        LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
+        LOGGER.info('Invoked Configure on Subarray')
+    test_SUT(sdp_block)
+    LOGGER.info("Configure command is invoked on Subarray 1")
+
+
 def scanning(fixture):
     fixture["scans"] = '{"id":1}'
 
@@ -140,10 +155,13 @@ def scanning(fixture):
 def set_up_telescope(subarray_obsstate: str):
     if subarray_obsstate == "IDLE":
         assign()
-        LOGGER.info(
-            "Abort command can be invoked on Subarray with Subarray obsState as 'IDLE'"
-        )
-    elif subarray_obsstate == "READY":
+        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'IDLE'")
+    elif subarray_obsstate == 'CONFIGURING':
+        sdp_block = assign()
+        LOGGER.info("Resources are assigned successfully and configuring the subarray now")
+        configuring_sub(sdp_block)
+        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'CONFIGURING'")
+    elif subarray_obsstate == 'READY':
         sdp_block = assign()
         LOGGER.info(
             "Resources are assigned successfully and configuring the subarray now"

@@ -74,7 +74,6 @@ class pilot():
         self.state = "Ready"
         return self
 
-
     def and_run_a_scan(self):
         ##Reference tests/acceptance/mvp/test_XR-13_A3-Test.py
         ##note this is a different sync decorator as test since test performs the command as non blocking

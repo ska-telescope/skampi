@@ -214,7 +214,8 @@ class Report:
 
             # Include date + link to latest match
             if matches:
-                last_ref = f":ref:`{matches[-1]['date']} <{cfr.skb}-{matches[-1]['log_id']}>`"
+                last_match = sorted(matches, key=lambda match: match['date'])[-1]
+                last_ref = f":ref:`{last_match['date']} <{cfr.skb}-{last_match['log_id']}>`"
             else:
                 last_ref = ""
 

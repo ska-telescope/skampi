@@ -77,6 +77,9 @@ def match_msg(msg_r,
                 if not after_msg_rc.match(l['msg']):
                     continue
                 found_after = True
+                if max_time is not None and l.get('time'):
+                    end_time = l['time'] + datetime.timedelta(seconds=max_time)
+                continue
             # Note time of first message
             if max_time is not None and end_time is None and l.get('time'):
                 end_time = l['time'] + datetime.timedelta(seconds=max_time)
@@ -458,8 +461,27 @@ add_classifier(
 )
 add_classifier(
     [("tests/smoke/test_logging_namespace.py", "test_logging_namespace")],
+    [match_msg(r'OSError: \[Errno 101\] Network is unreachable')],
+    "SKBX-035b", "Attempt to access elastic search causes 'Network is unreachable'"
+)
+add_classifier(
+    [("tests/acceptance/mvp/test_XR-13_A1.py", "test_allocate_resources")
+    ],
     [match_msg(r'push_event generated the following python exception:.*')],
     "SKBX-036", "Spurious 'push_event generated the following Python exception' messages from TM subarray node"
+)
+add_classifier(
+    [("tests/acceptance/mvp/test_XR-13_A1.py", "test_allocate_resources")],
+    [match_msg(r'               desc = Timeout .* exceeded on device ska_mid/tm_subarray_node/1, command AssignResources')],
+    "SKBX-037", "Timeout on AssignResources from TMC central node"
+)
+add_classifier(
+    [("tests/acceptance/mvp/test_XR-13_A2-Test.py", "test_configure_subarray")],
+    [match_and(
+        match_msg('Waiting for obsState to transition to READY', section='detail/Captured stdout call'),
+        match_msg('E       Failed: Timeout >300.0s', section='detail/main')
+    )],
+    "SKBX-038", "TMC never finished transition to READY"
 )
 
 # Special pseudo-classifiers

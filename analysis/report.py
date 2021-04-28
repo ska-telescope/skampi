@@ -114,7 +114,7 @@ class Report:
 
             # Read it to a memory buffer
             bio = io.BytesIO()
-            print(f"Retrieving {fname}...")
+            print(f"Retrieving {fname}...", flush=True)
             _fname = urllib3.util.parse_url(fname).path
             with self.http.request('GET', fname, preload_content=False) as r:
                 # Get suggested file name from header
@@ -122,7 +122,7 @@ class Report:
                     _fname = r.getheaders().get('Content-Disposition')[22:-1]
                 # Copy data
                 shutil.copyfileobj(r, bio)
-            print(f" ... got {len(bio.getvalue())} bytes.")
+            print(f" ... got {len(bio.getvalue())} bytes.", flush=True)
             bio.seek(0)
 
             # Tarball?
@@ -148,7 +148,7 @@ class Report:
         gl = gitlab.Gitlab(uri, **header)
         proj = gl.projects.get(project)
         pips = proj.pipelines.list(**search)
-        print(f"Found {len(pips)} GitLab pipelines")
+        print(f"Found {len(pips)} GitLab pipelines", flush=True)
 
         # Go through pipelines, look for matching jobs
         for pip in pips:

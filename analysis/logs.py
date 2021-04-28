@@ -178,7 +178,7 @@ def collect_file(filename, verbosity, fileobj=None):
 
     t = time.time()
     if verbosity > 0:
-        print(f"Reading from {filename}...")
+        print(f"Reading from {filename}...", flush=True)
     # Read JSON lines from a file
     lines = []
     with (open(filename, 'r') if fileobj is None else fileobj) as f:
@@ -197,7 +197,7 @@ def collect_file(filename, verbosity, fileobj=None):
             lines.append(line_dict)
 
     if verbosity > 0:
-        print(f"  ... {len(lines)} lines read ({time.time() - t} s)")
+        print(f"  ... {len(lines)} lines read ({time.time() - t} s)", flush=True)
     return lines
 
 # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python

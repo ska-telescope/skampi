@@ -12,10 +12,5 @@ Feature:
 		| IDLE               | 
 		| CONFIGURING        |
 		| READY              | 
-		| SCANNING           | 
-<<<<<<< HEAD
-=======
-		| RESETTING           | 
-
-
->>>>>>> master
+		| SCANNING           |
+		| RESETTING          |

@@ -21,20 +21,15 @@ from tango import DeviceProxy, DevState
 
 ## local imports
 from resources.test_support.helpers import resource
-<<<<<<< HEAD
-from resources.test_support.sync_decorators import sync_assign_resources, sync_obsreset,sync_abort,sync_scan_oet,sync_configuring
-from resources.test_support.persistance_helping import update_resource_config_file, update_scan_config_file, load_config_from_file
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray, restart_subarray
-from resources.test_support.tmc_helpers import configuring_sub
-=======
 from resources.test_support.sync_decorators import (
     sync_assign_resources,
     sync_obsreset,
     sync_abort,
     sync_scan_oet,
     sync_resetting,
+    sync_configuring,
 )
-from resources.test_support.persistance_helping import update_resource_config_file
+from resources.test_support.persistance_helping import update_resource_config_file, update_scan_config_file, load_config_from_file
 from resources.test_support.controls import (
     set_telescope_to_standby,
     set_telescope_to_running,
@@ -42,9 +37,7 @@ from resources.test_support.controls import (
     take_subarray,
     restart_subarray,
 )
->>>>>>> master
-
-from resources.test_support.tmc_helpers import sub_resetting, obsreset
+from resources.test_support.tmc_helpers import sub_resetting, obsreset, configuring_sub
 
 DEV_TEST_TOGGLE = os.environ.get("DISABLE_DEV_TESTS")
 if DEV_TEST_TOGGLE == "False":
@@ -80,6 +73,7 @@ def fixture():
 @pytest.mark.ncra
 @pytest.mark.select
 @pytest.mark.skamid
+@pytest.mark.trial
 # @pytest.mark.xfail
 @scenario(
     "XTP-1104.feature",

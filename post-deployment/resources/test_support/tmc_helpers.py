@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it,sync_abort,sync_restart,sync_obsreset, sync_configuring
-=======
-from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it,sync_abort,sync_restart,sync_obsreset, sync_resetting
->>>>>>> master
+
+from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it,sync_abort,sync_restart,sync_obsreset, sync_configuring, sync_resetting
 from tango import DeviceProxy   
 from resources.test_support.helpers import waiter,watch,resource
 from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby

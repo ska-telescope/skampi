@@ -223,15 +223,23 @@ class Report:
             other_skb_changes = ''
             if files_with_matches:
 
+                # Collect number of runs that fail for other classifiers as well
                 cfr_intersection = {
                     cfr2.skb: len(self.files_per_cfr[cfr2.skb] & files_with_matches)
                     for cfr2 in classifiers.classifiers
                 }
+
+                # Determine ratio of those other failures in relation
+                # to our failures with the ratio to all runs.  Filter
+                # out classifiers that did not happen, this SKB - as
+                # well as taints if this classifier likely caused the
+                # taint.
                 cfr_intersection_changes = sorted([
                     (cfr2, cfr_intersection[cfr2.skb] / len(files_with_matches) -
                            len(self.files_per_cfr[cfr2.skb]) / file_count)
                     for cfr2 in classifiers.classifiers
-                    if len(self.files_per_cfr[cfr2.skb]) > 0 and cfr2.skb != cfr.skb
+                    if len(self.files_per_cfr[cfr2.skb]) > 0 and cfr2.skb != cfr.skb and
+                       (not cfr.taints or cfr2.skb.startswith('TAINT'))
                 ], key=lambda skb_diff: skb_diff[1], reverse=True)
 
                 other_skb_changes = ", ".join( f":ref:`{cfr2.skb} <{cfr2.skb}>`: {change*100:+.1f}%"

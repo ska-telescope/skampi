@@ -54,7 +54,6 @@ def fixture():
 @pytest.mark.skamid
 # @pytest.mark.xfail
 @pytest.mark.trial
-# @pytest.mark.skipif(reason= "failure")
 @scenario("XTP-1104.feature", "when the telescope subarrays can be aborted then abort brings them in ABORTED")
 def test_subarray_abort():
     """Abort subarray"""
@@ -80,12 +79,9 @@ def configure_ready(sdp_block):
 
 def configuring_sub(sdp_block):
     @sync_configuring
-    #TODO: Confirm if @time_it is required. Currently commenting as seem to be not required
-    # @time_it(120)
     def test_SUT(sdp_block):
         file = 'resources/test_data/TMC_integration/configure1.json'
         update_scan_config_file(file, sdp_block)
-        LOGGER.info("SDP block is :" +str(file))
         LOGGER.info("Invoking Configure command on Subarray 1")
         config = load_config_from_file(file)
         SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
@@ -93,25 +89,8 @@ def configuring_sub(sdp_block):
         LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
         LOGGER.info('Invoked Configure on Subarray')
     test_SUT(sdp_block)
-    LOGGER.info("Configure command on Subarray 1 is successful")
+    LOGGER.info("Configure command is invoked on Subarray 1")
 
-
-# @sync_configuring
-# def configuring_sub(sdp_block, configure_file):
-#     #resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
-#     update_scan_config_file(configure_file, sdp_block)
-#     config = load_config_from_file(configure_file)
-#     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
-#     SubarrayNode.Configure(config)
-#     LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
-#     LOGGER.info('Invoked Configure on Subarray')
-
-# def tmc_configuring(sdp_block):
-#     def test_SUT():
-#         LOGGER.info("Invoking configure command on subarray.")
-#         configuring_sub()
-#     test_SUT()
-#     LOGGER.info("Subarray is in configuring obstate")
 
 def scanning(fixture):
     fixture['scans'] = '{"id":1}'

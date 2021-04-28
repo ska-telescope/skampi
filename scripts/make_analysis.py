@@ -66,7 +66,7 @@ for fname in arguments['<eval>']:
 
 # Create overview
 pages = {
-    'Overview': ['overview.rst'],
+    'Overview': [ 'index.rst', 'overview.rst'],
     'Never': [], 'Always': [], 'Sometimes': []
 }
 with open("overview.rst", "w", encoding='utf-8') as f:

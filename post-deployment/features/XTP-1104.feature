@@ -13,3 +13,9 @@ Feature:
 		| CONFIGURING        |
 		| READY              | 
 		| SCANNING           | 
+<<<<<<< HEAD
+=======
+		| RESETTING           | 
+
+
+>>>>>>> master

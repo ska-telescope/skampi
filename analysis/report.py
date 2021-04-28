@@ -73,22 +73,24 @@ class Report:
                 cfr_matches = [ match for match in matches if match['cfr'] is cfr ]
                 if not cfr_matches:
                     continue
+                cfr_matches_stripped = [ _strip_match(cfr_match) for cfr_match in cfr_matches ]
 
                 # Add to list, retaining only a number of matches (as
                 # we keep basically the entire log for them in
                 # memory!)
                 match_list = self.matches_per_clfr.get(cfr.skb, [])
-                match_list.append(dict(
-                    date = log_date, log = log, log_id=self.log_id, cfr=cfr,
-                    name = fname, source = source, matches = cfr_matches))
+                match_log = dict( date = log_date, log = log, log_id=self.log_id, cfr=cfr,
+                                  name = fname, source = source, matches = cfr_matches )
+                match_list.append(match_log)
                 match_list = sorted(match_list, key=lambda match: match['date'], reverse=True)
                 self.matches_per_clfr[cfr.skb] = match_list[:self.matches_per_clfr_count]
 
                 # Retain stripped matches for all
                 all_matches_list = self.all_matches_per_clfr.get(cfr.skb, [])
-                for match in match_list:
-                    all_matches_list.append(_strip_match(match))
-                self.all_matches_per_clfr[cfr.skb] = all_matches_list
+                match_log_stripped = dict(match_log)
+                match_log_stripped['matches'] = cfr_matches_stripped
+                all_matches_list.append(match_log_stripped)
+                self.all_matches_per_clfr[cfr.skb] = list(all_matches_list)
 
         self.log_id += 1
 
@@ -331,7 +333,10 @@ class Report:
                 log_id = cfr_match['log_id']
                 if log_id not in logs_to_generate:
                     logs_to_generate[log_id] = []
-                logs_to_generate[log_id] += self.all_matches_per_clfr[cfr.skb]
+                logs_to_generate[log_id] += [
+                    cfr_match for cfr_match in self.all_matches_per_clfr[cfr.skb]
+                    if cfr_match['log_id'] == log_id
+                ]
 
         # Generate them!
         for log_id, cfr_matches in logs_to_generate.items():

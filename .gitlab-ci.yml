@@ -601,7 +601,7 @@ version_bump_charts:
     - make commit-and-push-to-master
 
 pages:
-  stage: deploy
+  stage: test
   tags:
   - k8srunner
   script:

@@ -223,3 +223,32 @@ def pp_line(line, date_format='%H:%M:%S.%f', with_thread=False):
     else:
         return f"{time} {level:>7} {pod}:{container} | {message}"
     
+
+def collect_pod_timings(lines):
+    """ Finds first log message from each container for every pod.
+    :param lines: Log lines
+    :returns: Dictionary of (container, time) pairs
+    """
+
+    timings = {}
+    pod_container = {}
+    start = None
+    for l in lines:
+
+        # Get pod
+        pod = l.get('pod')
+        container = l.get('container')
+        if pod is None or container is None:
+            continue
+
+        # Get container, check whether it's the current one
+        if pod_container.get(pod) == container:
+            continue
+        pod_container[pod] = container
+
+        # Add a new timing!
+        if pod not in timings:
+            timings[pod] = []
+        timings[pod].append( (container, l['time']) )
+
+    return timings

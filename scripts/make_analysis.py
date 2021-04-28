@@ -67,7 +67,7 @@ report.build_maps()
 
 # Create overview
 pages = {
-    'Overview': [ 'overview.rst'],
+    'Overview': [ 'overview.rst', 'timing.rst' ],
     'Never': [], 'Always': [], 'Sometimes': []
 }
 with open("overview.rst", "w", encoding='utf-8') as f:
@@ -77,6 +77,15 @@ with open("overview.rst", "w", encoding='utf-8') as f:
           'classifiers, result summary:\n', file=f)
     report.make_overview_table(f)
     report.make_matches_table(f)
+
+# Create timing overview
+with open("timing.rst", "w", encoding='utf-8') as f:
+
+    print(rstgen.header(1, 'Timing Overview'), file=f)
+
+    print("Average time of first message from every container and pod.\n", file=f)
+
+    report.make_pod_timing_table(f)
 
 # For every classifier, create report
 for cfr in sorted(classifiers.classifiers, key=lambda cfr: cfr.skb):

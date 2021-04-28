@@ -49,6 +49,7 @@ class Report:
         self.all_matches_per_clfr = { cfr.skb: [] for cfr in cfrs_sorted }
         self.total_lines = 0
         self.log_id = 0
+        self.pod_timings = {}
 
         # See build_maps()
         self.files_per_cfr = None
@@ -75,26 +76,43 @@ class Report:
                 cfr_matches = [ match for match in matches if match['cfr'] is cfr ]
                 if not cfr_matches:
                     continue
-                cfr_matches_stripped = [ _strip_match(cfr_match) for cfr_match in cfr_matches ]
+                self.add_cfr_matches(fname, source, log, log_date, cfr, cfr_matches)
 
-                # Add to list, retaining only a number of matches (as
-                # we keep basically the entire log for them in
-                # memory!)
-                match_list = self.matches_per_clfr.get(cfr.skb, [])
-                match_log = dict( date = log_date, log = log, log_id=self.log_id, cfr=cfr,
-                                  name = fname, source = source, matches = cfr_matches )
-                match_list.append(match_log)
-                match_list = sorted(match_list, key=lambda match: match['date'], reverse=True)
-                self.matches_per_clfr[cfr.skb] = match_list[:self.matches_per_clfr_count]
-
-                # Retain stripped matches for all
-                all_matches_list = self.all_matches_per_clfr.get(cfr.skb, [])
-                match_log_stripped = dict(match_log)
-                match_log_stripped['matches'] = cfr_matches_stripped
-                all_matches_list.append(match_log_stripped)
-                self.all_matches_per_clfr[cfr.skb] = list(all_matches_list)
+            # Collect timings
+            timings = logs.collect_pod_timings(log)
+            for pod, pod_ts in timings.items():
+                current_pod_ts = self.pod_timings.get(pod, {})
+                # Note that theoretically a container can appear multiple times.
+                # We ignore that here.
+                for cont, cont_t in pod_ts:
+                    if cont not in current_pod_ts:
+                        current_pod_ts[cont] = []
+                    current_pod_ts[cont].append((cont_t - log_date).total_seconds())
+                self.pod_timings[pod] = current_pod_ts
 
         self.log_id += 1
+
+    def add_cfr_matches(self, fname, source, log, log_date, cfr, cfr_matches):
+
+        # Strip test information
+        cfr_matches_stripped = [ _strip_match(cfr_match) for cfr_match in cfr_matches ]
+
+        # Add to list, retaining only a number of matches (as
+        # we keep basically the entire log for them in
+        # memory!)
+        match_list = self.matches_per_clfr.get(cfr.skb, [])
+        match_log = dict( date = log_date, log = log, log_id=self.log_id, cfr=cfr,
+                          name = fname, source = source, matches = cfr_matches )
+        match_list.append(match_log)
+        match_list = sorted(match_list, key=lambda match: match['date'], reverse=True)
+        self.matches_per_clfr[cfr.skb] = match_list[:self.matches_per_clfr_count]
+
+        # Retain stripped matches for all
+        all_matches_list = self.all_matches_per_clfr.get(cfr.skb, [])
+        match_log_stripped = dict(match_log)
+        match_log_stripped['matches'] = cfr_matches_stripped
+        all_matches_list.append(match_log_stripped)
+        self.all_matches_per_clfr[cfr.skb] = list(all_matches_list)
 
     def add_tarball(self,tar):
         while True:
@@ -411,3 +429,33 @@ class Report:
         for log_id, cfr_matches in logs_to_generate.items():
             with open(pathlib.Path(directory, f'log-{log_id}.txt'), 'w', encoding='utf-8') as f:
                 self.write_log(f, cfr_matches)
+
+    def make_pod_timing_table(self, f):
+
+        # Determine average start
+        pod_timings_avg = {
+            pod : {
+                cont : sum(ts) / len(ts)
+                for cont, ts in pod_conts.items()
+            } for pod, pod_conts in self.pod_timings.items()
+            if all(len(ts) > 1 for ts in pod_conts.values())
+        }
+
+        max_stages = max( len(container) for container in pod_timings_avg.values() )
+        header = ['**Pod**'] + [''] * max_stages
+
+        # Go through pods sorted by last average finish
+        pods_sorted = sorted( pod_timings_avg.items(),
+                              key = lambda pod_map: max(pod_map[1].values()) )
+        rows = []
+        for pod, cont_avgs in pods_sorted:
+
+            # Right-justify the row
+            row = [pod] + (max_stages - len(cont_avgs)) * ['']
+            for cont, avg in sorted(cont_avgs.items(), key=lambda cont_avg: cont_avg[1]):
+                row.append(f"{cont}: {avg:.2f} s")
+            rows.append(row)
+
+        print(rstgen.table(header, rows), file=f)
+
+        

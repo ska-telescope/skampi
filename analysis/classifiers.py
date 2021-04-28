@@ -488,7 +488,12 @@ add_classifier(
     [match_msg('E       AssertionError: Expected telescope to be ON but instead was OFF', section='detail/main')],
     "SKBX-039", "Central node state is reported as OFF right after turning telescope on"
 )
-
+add_classifier(
+    [("tests/smoke/test_validate_device_spec.py", "test_dishmaster_conforms_to_dishmaster_spec")],
+    [match_msg("E           requests.exceptions.HTTPError: 429 Client Error: Too Many Requests for url: .*",
+               section='detail/main')],
+    "SKBX-040", "GitLab blocks access to device spec due to too many requests"
+)
 
 # Special pseudo-classifiers
 UNKNOWN = Classifier([(None, None)], [], 'UNKNOWN', 'Unclassified test failure')

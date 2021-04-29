@@ -45,6 +45,7 @@ def result():
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
+@pytest.mark.snehal
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1208.feature", "TMC and MCCS subarray transitions from IDLE to READY state")
 def test_configure_subarray():
@@ -60,27 +61,27 @@ def start_up():
     wait_before_test(timeout=10)
     LOGGER.info("Telescope is in ON state")
 
-@given("Subarray is in IDLE state")
-def assign(result):
-    LOGGER.info("Allocating resources to Low Subarray 1")
-    compose_sub()
-    LOGGER.info("Subarray 1 is ready")
+# @given("Subarray is in IDLE state")
+# def assign(result):
+#     LOGGER.info("Allocating resources to Low Subarray 1")
+#     compose_sub()
+#     LOGGER.info("Subarray 1 is ready")
 
-@when("I call the configure scan execution instruction")
-def config(result):
-    def test_SUT():
-        configure_sub()
-    test_SUT()
-    LOGGER.info("Configure command on Subarray 1 is successful")
+# @when("I call the configure scan execution instruction")
+# def config(result):
+#     def test_SUT():
+#         configure_sub()
+#     test_SUT()
+#     LOGGER.info("Configure command on Subarray 1 is successful")
 
-@then("Subarray is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
-def check_state():
-    LOGGER.info("Checking the results")
-    # check that the TMC report subarray as being in the obsState = READY
-    assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
-    # check that the MCCS report subarray as being in the obsState = READY
-    assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('READY')
-    LOGGER.info("Results OK")
+# @then("Subarray is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
+# def check_state():
+#     LOGGER.info("Checking the results")
+#     # check that the TMC report subarray as being in the obsState = READY
+#     assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('READY')
+#     # check that the MCCS report subarray as being in the obsState = READY
+#     assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('READY')
+#     LOGGER.info("Results OK")
 
 
 def teardown_function(function):

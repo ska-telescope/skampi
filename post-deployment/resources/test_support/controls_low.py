@@ -2,12 +2,12 @@ import pytest
 from datetime import date,datetime
 import os
 import logging
+from ska.scripting.domain import Telescope, SubArray
 
 from resources.test_support.helpers_low import resource, waiter
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.mappings import device_to_subarrays
 from resources.test_support.mappings_low import device_to_subarray
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ def set_telescope_to_running(disable_waiting = False):
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('OFF')
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
-    tmc.start_up()
+    Telescope().start_up()
     if not disable_waiting:
         the_waiter.wait(100)
         if the_waiter.timed_out:
@@ -36,7 +36,7 @@ def set_telescope_to_standby():
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
-    tmc.set_to_standby()
+    Telescope().standby()
     #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
     #therefore timeout is given as 12 sec
     the_waiter.wait(100)

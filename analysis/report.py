@@ -425,6 +425,8 @@ class Report:
             with open(pathlib.Path(directory, f'log-{log_id}.txt'), 'w', encoding='utf-8') as f:
                 self.write_log(f, cfr_match)
 
+        return len(logs_to_generate)
+
     def make_pod_timing_table(self, f):
 
         # Determine average start

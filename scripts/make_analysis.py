@@ -102,14 +102,14 @@ for cfr in sorted(classifiers.classifiers, key=lambda cfr: cfr.skb):
         traceback.print_exc()
 
 # Write raw log files
-report.write_logs('.')
+full_log_count = report.write_logs('.')
 
 # Generate index
 with open('index.rst', 'w', encoding='utf-8') as f:
 
     print(rstgen.header(1, "Test Report"), file=f)
 
-    summary = f"Total {report.total_lines} lines scanned, {report.log_id} logs included in full."
+    summary = f"Total {report.total_lines} lines scanned, {full_log_count} logs included in full."
     print(summary, file=f)
 
     for section in ['Overview', 'Always', 'Sometimes', 'Never']:

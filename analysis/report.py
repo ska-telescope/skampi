@@ -259,7 +259,7 @@ class Report:
                            len(self.files_per_cfr[cfr2.skb]) / file_count)
                     for cfr2 in classifiers.classifiers
                     if len(self.files_per_cfr[cfr2.skb]) > 0 and cfr2.skb != cfr.skb and
-                       (not cfr.taints or cfr2.skb.startswith('TAINT'))
+                       (not cfr.taints or not cfr2.skb.startswith('TAINT'))
                 ], key=lambda skb_diff: skb_diff[1], reverse=True)
 
                 other_skb_changes = ", ".join( f":ref:`{cfr2.skb} <{cfr2.skb}>`: {change*100:+.1f}%"

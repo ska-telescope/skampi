@@ -489,7 +489,9 @@ add_classifier(
     "SKBX-039", "Central node state is reported as OFF right after turning telescope on"
 )
 add_classifier(
-    [("tests/smoke/test_validate_device_spec.py", "test_dishmaster_conforms_to_dishmaster_spec")],
+    [("tests/smoke/test_validate_device_spec.py", "test_dishmaster_conforms_to_dishmaster_spec"),
+     ("tests/smoke/test_validate_device_spec.py", "test_dishmaster_conforms_to_tango_wide")
+    ],
     [match_msg("E           requests.exceptions.HTTPError: 429 Client Error: Too Many Requests for url: .*",
                section='detail/main')],
     "SKBX-040", "GitLab blocks access to device spec due to too many requests"

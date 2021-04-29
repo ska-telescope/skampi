@@ -167,6 +167,11 @@ add_classifier(
     "SKBX-006", "Not all SKA devices comply to spec at present"
 )
 add_classifier(
+    [("tests/smoke/test_validate_device_spec.py", "test_ska_devices")],
+    [match_and( match_msg(r"INFO.*", missing=True), match_status('XFAIL') )],
+    "SKBX-006b", "test_ska_devices fails silently"
+)
+add_classifier(
     [("tests/acceptance/mvp/test_XR-13_A2-Test.py", "test_configure_subarray"),
      ("tests/acceptance/mvp/test_XR-13_A1.py", "test_allocate_resources")
     ],
@@ -192,10 +197,16 @@ add_classifier(
     )
 add_classifier(
     [("tests/acceptance/mvp/test_XTP-826.py", "test_multi_scan"),
-     ("tests/acceptance/mvp/test_XTP-966.py", "test_sb_resource_allocation")],
-    [match_msg(r".*Command On not allowed when the device is in OFF state.*",
-               pod='cspmasterleafnode-01-0', level='ERROR'),],
-    "SKBX-009", "CSP leaf node fails to invoke On() in OFF state?!",
+     ("tests/acceptance/mvp/test_XTP-966.py", "test_sb_resource_allocation"),
+     ("tests/acceptance/mvp/test_XTP-1772.py", "test_recovery_from_aborted"),
+     ("tests/acceptance/mvp/test_XTP-776_XTP-782.py", "test_release_resources")
+    ],
+    [match_and(
+        match_msg(r".*Command On not allowed when the device is in OFF state.*",
+                  pod='cspmasterleafnode-01-0', level='ERROR'),
+        match_msg(r"E           mid_csp/elt/master timed out.*", section='detail/main')
+    )],
+    "SKBX-009", "CSP master leaf node fails to invoke On() in OFF state", taints = True
     )
 add_classifier(
     [("tests/smoke/test_mvp_clean.py", "test_is_running")],

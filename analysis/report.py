@@ -111,6 +111,7 @@ class Report:
         all_matches_list = self.all_matches_per_clfr.get(cfr.skb, [])
         match_log_stripped = dict(match_log)
         match_log_stripped['matches'] = cfr_matches_stripped
+        del match_log_stripped['log']
         all_matches_list.append(match_log_stripped)
         self.all_matches_per_clfr[cfr.skb] = list(all_matches_list)
 
@@ -385,31 +386,31 @@ class Report:
 
         return files_matched_rel
 
-    def write_log(self, f, cfr_matches):
+    def write_log(self, f, cfr_match):
 
         # Indicate where log came from
-        source = cfr_matches[0]['source']
+        source = cfr_match['source']
         if source:
-            print(f"Log {cfr_matches[0]['name']} retrieved from {source}, matched:", file=f)
+            print(f"Log {cfr_match['name']} retrieved from {source}, matched:", file=f)
         else:
-            print(f"Log {cfr_matches[0]['name']}, matched:", file=f)
+            print(f"Log {cfr_match['name']}, matched:", file=f)
 
         # List matched classifiers, collecting lines to highlight
         to_highlight = {}
-        for cfr_match in cfr_matches:
-            print(f" * {cfr_match['cfr'].skb} {cfr_match['cfr'].message}", file=f)
-            for match in cfr_match['matches']:
-                for line in match['matched']:
-                    if line['time'] not in to_highlight:
-                        to_highlight[line['time']] = [cfr_match]
-                    else:
-                        to_highlight[line['time']].append(cfr_match)
+        other_matches = self.matches_per_file[cfr_match['name']]
+        for other in other_matches:
+            print(f" * {other['cfr'].skb} {other['cfr'].message}", file=f)
+            for line in other['matched']:
+                if line['time'] not in to_highlight:
+                    to_highlight[line['time']] = [other]
+                else:
+                    to_highlight[line['time']].append(other)
 
         # Now pretty-print lines
-        for l in cfr_matches[0]['log']:
+        for l in cfr_match['log']:
             print(logs.pp_line(l), file=f)
-            for cfr_match in to_highlight.get(l['time'], []):
-                print(f" ^^ {cfr_match['cfr'].skb} {cfr_match['cfr'].message}", file=f)
+            for other in to_highlight.get(l['time'], []):
+                print(f" ^^ {other['cfr'].skb} {other['cfr'].message}", file=f)
 
     def write_logs(self, directory):
 
@@ -417,18 +418,12 @@ class Report:
         logs_to_generate = {}
         for cfr in classifiers.classifiers:
             for cfr_match in self.matches_per_clfr[cfr.skb]:
-                log_id = cfr_match['log_id']
-                if log_id not in logs_to_generate:
-                    logs_to_generate[log_id] = []
-                logs_to_generate[log_id] += [
-                    cfr_match for cfr_match in self.all_matches_per_clfr[cfr.skb]
-                    if cfr_match['log_id'] == log_id
-                ]
+                logs_to_generate[cfr_match['log_id']] = cfr_match
 
         # Generate them!
-        for log_id, cfr_matches in logs_to_generate.items():
+        for log_id, cfr_match in logs_to_generate.items():
             with open(pathlib.Path(directory, f'log-{log_id}.txt'), 'w', encoding='utf-8') as f:
-                self.write_log(f, cfr_matches)
+                self.write_log(f, cfr_match)
 
     def make_pod_timing_table(self, f):
 

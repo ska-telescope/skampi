@@ -34,18 +34,13 @@ class ScanConfigArgs(NamedTuple):
     filter_logs: bool
     log_filter_pattern: str
 
-class Context(SimpleNamespace):
+class ExecutionContext(SimpleNamespace):
     pass
 
 
 # background fixtures
 @given("A running telescope for executing observations on a subarray")
 def a_running_telescope(running_telescope):
-    pass
-
-
-@given("An OET base API for commanding the telescope")
-def set_entry_point():
     pass
 
 
@@ -62,22 +57,30 @@ def test_configure_transits_correctly():
 
 @given("subarray <subarray_id> that has been allocated <nr_of_dishes> according to <SB_config>")
 def allocated_subarray(composed_subarray):
+    """The composed_subarray fixture assigns dishes and other resources and returns
+    only after the subarray transitioned to IDLE. It uses subarray_id, nr_of_dishes and SB_config as the
+    input paramaters.
+
+    Args:
+        composed_subarray ([type]): the fixture 
+    """
+    # needs to pass subarray_id nr_of_dishes SB_config as paramaters to composed_subarray fixture
     pass
 
 
 @when("I configure the subarray to perform a <scan_config> scan")
 def configure_subarray(
-    prepare_for_configure,
+    prepare_for_configure, # name should include maybe
     entry_point: oet.EntryPoint,
     scan_config_args: ScanConfigArgs,
-    context: Context,
+    context: ExecutionContext, # name is maybe to general
 ):
     args = scan_config_args
     entry_point.configure_subarray(args.subarray_id, args.receptors, args.configuration)
 
 
-@then("I expect the tmc subarray to transit to IDLE state when sdp and csp has done so")
-def check_transits_correctly(scan_config_args: ScanConfigArgs, context: Context):
+@then("the tmc subarray transits to READY state after sdp subarray and csp subarray has done so")
+def check_transits_correctly(scan_config_args: ScanConfigArgs, context: ExecutionContext):
     args = scan_config_args
     wait.wait(context.board, args.time_out, args.live_logging)
     context.state = "configured"
@@ -94,8 +97,8 @@ def check_transits_correctly(scan_config_args: ScanConfigArgs, context: Context)
 ## fixtures ##
 
 @pytest.fixture(name='context')
-def fxt_context()->Context:
-    return Context()
+def fxt_context()->ExecutionContext:
+    return ExecutionContext()
 
 @pytest.fixture(name='entry_point')
 def fxt_entry_point(context) -> base.EntryPoint:
@@ -174,36 +177,28 @@ def fxt_scan_config_args(
     )
 
 
-@pytest.fixture(name='waiting_for_configuration')
-def fxt_waiting_for_configuration(
-    scan_config_args: ScanConfigArgs, base_factory
-) -> builders.MessageBoardBuilder:
-    args = scan_config_args
-    builder = builders.MessageBoardBuilder(base_factory)
-    subarray_node = str(mvp_names.Mid.tm.subarray(args.subarray_id))
-    builder.set_waiting_on(subarray_node).for_attribute("obsState").to_become_equal_to(
-        "READY", master=True
-    )
-    for device in mvp_names.SubArrays(args.subarray_id).subtract("tm").subtract("cbf domain"):
-        builder.set_waiting_on(device).for_attribute("obsState").and_observe()
-    return builder
-
-
 @pytest.fixture(name='scan_transitions')
 def fxt_scan_transitions() -> List[Union[str, Tuple[str, str]]]:
     return ["IDLE", ("CONFIGURING", "ahead"), "READY"]
 
 
 
-# use this fixture if you want to specifically test and verify the transitions states of one device
-# compared to another
-@pytest.fixture(name='checking_transits_during_configuration')
-def fxt_checking_transits_during_configuration(
-    subarray_id: int,
-    scan_transitions: List[Union[str, Tuple[str, str]]],
-    subarray_internals: List[str]
-) -> Tuple[builders.Occurrences, builders.MessageBoardBuilder]:
 
+@pytest.fixture(name='checking_transits_during_configuration')
+def fxt_checking_transits_during_configuration(subarray_id: int, scan_transitions: List[Union[str, Tuple[str, str]]], subarray_internals: List[str]) -> Tuple[builders.Occurrences, builders.MessageBoardBuilder]:
+    """sets up an object that checks for transitions to occur on  given set of devices in a given order
+
+    Args:
+        subarray_id (int): the subarray instance in use
+        scan_transitions (List[Union[str, Tuple[str, str]]]): a list of events that the subjects are expected to transition to
+        subarray_internals (List[str]): a list containing the internal components (e.g. sdp and csp) for which their transitions will be monitored
+        relative to that of the subarray node
+
+    Returns:
+        Tuple[builders.Occurrences, builders.MessageBoardBuilder]: the occurrences object that will be used to hold record of occurrences as well as the messageboard builder that will set
+        up subscriptions to populate these occurrences.
+    """
+    
     builder = builders.MessageBoardBuilder()
     subarray_node = str(mvp_names.Mid.tm.subarray(subarray_id))
     checker = (
@@ -234,16 +229,25 @@ def fxt_prepare_for_configure(
     checking_transits_during_configuration: Tuple[
         builders.Occurrences, builders.MessageBoardBuilder
     ],
-    context: Context,
+    execution_context: ExecutionContext,
 ):
+    """ prepare for the configuration command by performing pre checks and post tear down steps as well
+    as setting up monitoring asynchronously whilst performing the command.
 
-    context.checker, builder = checking_transits_during_configuration
+    Args:
+        clear_args (configure.ConFigureSubarrayArgs): the arguments to use when clearing the configuration of the subarray (fixture)
+        scan_config_args (ScanConfigArgs): the arguments that will be used in configuration step to obtain data for checking scan can be done.
+        checking_transits_during_configuration (Tuple[ builders.Occurrences, builders.MessageBoardBuilder ]): a predefined monitoring builder set up to
+        record a set of occurrences expected during the execution of the configure command as well as the occurrences object that will contain the data.
+        execution_context (ExecutionContext): An container holding references to the occurrences and messageboard being populated with data during execution of configure command.
+    """
+    execution_context.checker, builder = checking_transits_during_configuration
     configure.assert_I_can_configure_a_subarray(
         scan_config_args.subarray_id, scan_config_args.receptors
     )
-    # with log.device_logging(builder,scan_config_args.devices_to_log):
     with wait.waiting_context(builder) as board:
-        context.board = board
+        execution_context.board = board
+        # holds a reference to the board for future use
         with configure.tear_down_when_finished(clear_args):
             yield
 

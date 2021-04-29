@@ -90,7 +90,7 @@ with open("timing.rst", "w", encoding='utf-8') as f:
 # For every classifier, create report
 for cfr in sorted(classifiers.classifiers, key=lambda cfr: cfr.skb):
     try:
-        with open(cfr.skb + ".rst", "w") as f:
+        with open(cfr.skb + ".rst", "w", encoding='utf-8') as f:
             matches = report.make_cfr_report(f, cfr)
         if matches == 0:
             pages['Never'].append(cfr.skb + ".rst")

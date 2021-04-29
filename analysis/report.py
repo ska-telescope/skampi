@@ -441,6 +441,8 @@ class Report:
             if all(len(ts) > 1 for ts in pod_conts.values())
         }
 
+        if not pod_timings_avg:
+            return
         max_stages = max( len(container) for container in pod_timings_avg.values() )
         header = ['**Pod**'] + [''] * max_stages
 

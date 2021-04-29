@@ -4,6 +4,9 @@ import os
 import logging
 from ska.scripting.domain import Telescope, SubArray
 
+##SUT imports
+from ska.scripting.domain import Telescope
+
 from resources.test_support.helpers_low import resource, waiter
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.mappings import device_to_subarrays

@@ -114,7 +114,7 @@ class Report:
         all_matches_list.append(match_log_stripped)
         self.all_matches_per_clfr[cfr.skb] = list(all_matches_list)
 
-    def add_tarball(self,tar):
+    def add_tarball(self, tar, source):
         while True:
             # Read through tar file sequentially to minimise seeking
             info = tar.next()
@@ -123,7 +123,7 @@ class Report:
             # Extract
             with tar.extractfile(info) as f:
                 try:
-                    self.add_log(info.name, logs.collect_file(info.name, 1, f))
+                    self.add_log(info.name, logs.collect_file(info.name, 1, f), source)
                 except Exception:
                     traceback.print_exc()
 
@@ -148,17 +148,17 @@ class Report:
             # Tarball?
             if _is_tarball(_fname):
                 with tarfile.open(mode='r:*', fileobj=bio) as tar:
-                    self.add_tarball(tar)
+                    self.add_tarball(tar, fname)
 
             else:
                 # Otherwise expect it to be a flat file
-                self.add_log(_fname, logs.collect_file(fname, 1, bio))
+                self.add_log(_fname, logs.collect_file(fname, 1, bio), fname)
             return
 
         # Assume it's a file. Tarball?
         if _is_tarball(fname):
             with tarfile.open(fname, mode='r:*') as tar:
-                self.add_tarball(tar)
+                self.add_tarball(tar, fname)
         else:
             self.add_log(fname, logs.collect_file(fname, 1))
 

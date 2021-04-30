@@ -63,7 +63,7 @@ def update_resource_config_file(file,disable_logging=False):
         data = json.load(f)
     if not disable_logging:
         LOGGER.info("READ file before update:" + str(data))
-    client = SkuidClient("http://127.0.0.1:8080")
+    client = SkuidClient(os.environ['SKUID_URL'])
     sb_id = client.fetch_skuid("sbi")
     data["sdp"]["id"] = sb_id
     if "processing_blocks" in data["sdp"]:

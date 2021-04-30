@@ -42,6 +42,8 @@ skuid:
   enabled: true
   skuid:
     use_pv: false
+    config:
+      generator_id: mvp01
 
 tango-base:
   enabled: true

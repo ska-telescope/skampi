@@ -20,8 +20,6 @@ from ska.scripting.domain import SubArray
 from resources.test_support.persistance_helping import load_config_from_file
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 from resources.test_support.sync_decorators_low import sync_assign_resources
-from resources.test_support.tmc_helpers_low import compose_sub
-import resources.test_support.tmc_helpers_low as tmc
 
 LOGGER = logging.getLogger(__name__)
 
@@ -68,7 +66,7 @@ def allocate_resources_to_subarray():
     def compose_sub():
         resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
         resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
-        assign_resources_file = 'resources/test_data/TMC_integration/mccs_assign_resources.json'
+        assign_resources_file = 'resources/test_data/OET_integration/mccs_assign_resources.json'
         subarray = SubArray(1)
         LOGGER.info('Subarray has been created.')
         subarray.allocate_from_file(cdm_file=assign_resources_file, with_processing=False)

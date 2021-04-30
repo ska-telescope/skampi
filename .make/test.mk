@@ -19,8 +19,9 @@ FILE ?= ##this variable allow to execution of a single file in the pytest
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
 
+
 # Define environment variables required by OET
-ifneq (,$(findstring skalow,$(MARK)))
+ifneq ($(shell kubectl get -n integration pods -l app=ska-low-mccs | wc -l), 0)
     TELESCOPE = 'SKA-Low'
     CENTRALNODE = 'ska_low/tm_central/central_node'
     SUBARRAY = 'ska_low/tm_subarray_node'

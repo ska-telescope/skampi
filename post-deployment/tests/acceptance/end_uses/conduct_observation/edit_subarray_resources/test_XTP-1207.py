@@ -46,7 +46,6 @@ def result():
 
 @pytest.mark.quarantine
 @pytest.mark.skalow
-@pytest.mark.jk
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1207.feature", "TMC and MCCS subarray resource allocation")
 def test_allocate_resources():

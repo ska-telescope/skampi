@@ -1,11 +1,11 @@
-.PHONY: k8s_test smoketest template_tests tango_rest_ingress_check get_archiver_tango_host
+.PHONY: k8s_test smoketest template_tests tango_rest_ingress_check
 
 CI_JOB_ID?=local
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
 #nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.6-dirty
-IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.1## docker image that will be run for testing purpose
+IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.5## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #
@@ -17,6 +17,20 @@ TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 MARK ?= fast## this variable allow the mark parameter in the pytest
 FILE ?= ##this variable allow to execution of a single file in the pytest 
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
+COUNT ?= 1## amount of repetition for pytest-repeat
+
+# Define environment variables required by OET
+ifneq (,$(findstring skalow,$(MARK)))
+    TELESCOPE = 'SKA-Low'
+    CENTRALNODE = 'ska_low/tm_central/central_node'
+    SUBARRAY = 'ska_low/tm_subarray_node'
+    PUBSUB = true
+else
+    TELESCOPE = 'SKA-Mid'
+    CENTRALNODE = 'ska_mid/tm_central/central_node'
+    SUBARRAY = 'ska_mid/tm_subarray_node'
+    PUBSUB = false
+endif
 
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
@@ -33,12 +47,29 @@ k8s_test = tar -c post-deployment/ | \
 		--requests='cpu=900m,memory=400Mi' \
 		--env=INGRESS_HOST=$(INGRESS_HOST) \
 		$(PSI_LOW_PROXY_VALUES) -- \
-		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
-		make SKUID_URL=skuid-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK='$(MARK)' FILE='$(FILE)' $1 && \
-		tar -czvf /tmp/build.tgz build && \
+		/bin/bash -c "mkdir skampi && tar xv --directory skampi \
+		--strip-components 1 --warning=all && cd skampi && \
+		make \
+			SKUID_URL=skuid-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 \
+			KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
+			HELM_RELEASE=$(HELM_RELEASE) \
+			TANGO_HOST=$(TANGO_HOST) \
+			MARK='$(MARK)' \
+			COUNT=$(COUNT) \
+			FILE='$(FILE)' \
+			SKA_TELESCOPE=$(TELESCOPE) \
+			CENTRALNODE_FQDN=$(CENTRALNODE) \
+			SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
+			OET_READ_VIA_PUBSUB=$(PUBSUB) \
+			$1 && \
+		(tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
 		cat /tmp/build.tgz | base64 && \
-		echo '~~~~BOUNDARY~~~~'" \
+		echo '~~~~BOUNDARY~~~~') || \
+		(tar -czvf /tmp/build.tgz build && \
+		echo '~~~~BOUNDARY~~~~' && \
+		cat /tmp/build.tgz | base64 && \
+		echo '~~~~BOUNDARY~~~~' && exit 1)" \
 		2>&1
 
 # run the test function
@@ -49,7 +80,7 @@ k8s_test = tar -c post-deployment/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-k8s_test: smoketest## test the application on K8s
+k8s_test: ## test the application on K8s
 	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \

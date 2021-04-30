@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import signal
 import logging
 from contextlib import contextmanager
+from tango import DeviceProxy
 
 # pre cheks
 def check_going_out_of_empty():
@@ -15,9 +16,10 @@ def check_going_into_configure():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
+
 def check_going_into_abort():
-    ## Can only invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
+    ## Can only invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY, RESETTING
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY','RESETTING'])
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
 def check_going_into_restart():
@@ -62,16 +64,21 @@ class WaitConfigure():
         self.w2 = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
 
     def wait(self):
-        # self.w.wait_until_value_changed_to('CONFIGURING')
         self.w.wait_until_value_changed_to('READY',timeout=200)
         self.w1.wait_until_value_changed_to('READY',timeout=200)
         self.w2.wait_until_value_changed_to('READY',timeout=200)
 
-
     def wait_oet(self):
         self.w.wait_until_value_changed_to('READY',timeout=200)
 
+class WaitConfiguring():
 
+    def __init__(self):
+        self.w  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+
+    def wait(self, timeout):
+        self.w.wait_until_value_changed_to('CONFIGURING',timeout=200)
+    
 class WaitAbort():
 
     def __init__(self):
@@ -100,6 +107,18 @@ class WaitObsReset():
     def wait(self,timeout):
         logging.info("ObsReset command invoked. Waiting for obsState to change to IDLE")
         self.the_watch.wait_until_value_changed_to('IDLE',timeout=200)
+
+class WaitResetting():
+    
+    def __init__(self):
+        self.the_watch  = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on("obsState")
+        self.the_watch1  = watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("obsState")
+        resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+    
+    def wait(self,timeout):
+        logging.info("ObsReset command invoked. Waiting for obsState to change to Resetting")
+        self.the_watch.wait_until_value_changed_to('RESETTING',timeout=200)
+        self.the_watch1.wait_until_value_changed_to('IDLE',timeout=200)
 
 
 class WaitScanning():
@@ -181,10 +200,25 @@ def sync_configure_oet(func):
         ################ 
         result = func(*args, **kwargs)
         ################ 
+        w.wait()
         w.wait_oet()
         return result
     return wrapper
 
+
+def sync_configuring(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_into_configure()
+            w = WaitConfiguring()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
 
 # defined as a context manager
 @contextmanager
@@ -264,6 +298,16 @@ def sync_restart_sa(func):
         return result
     return wrapper
 
+def sync_reset_sa(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        check_going_out_of_abort()
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_into_obsreset()
+        result = func(*args, **kwargs)
+        the_waiter.wait(100)
+        return result
+    return wrapper
 
 # defined as a context manager
 @contextmanager
@@ -371,6 +415,20 @@ def sync_obsreset(timeout=200):
         return wrapper
     return decorator
 
+def sync_resetting(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            check_going_out_of_abort()
+            w = WaitResetting()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
+
 # defined as a context manager
 @contextmanager
 def sync_scanning(timeout=200):
@@ -400,6 +458,3 @@ def sync_oet_scanning(timeout=200):
     the_waiter.set_wait_for_going_into_scanning()
     yield
     the_waiter.wait()
-
-
-

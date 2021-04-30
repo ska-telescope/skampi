@@ -18,7 +18,7 @@ test: install
 	find . -name "*.pyc" -type f -delete && \
 	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest \
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
-		--disable-pytest-warnings --timeout=300 $(FILE) | tee pytest.stdout; \
+		--disable-pytest-warnings --timeout=300 $(FILE) --count=$(COUNT) | tee pytest.stdout; \
 	status=$$?; \
 	make remove_log_consumer && \
 	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
@@ -28,11 +28,11 @@ install:
 	pip3 install -r test_requirements.txt -qq
 
 start_log_consumer:
-	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01
+	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \
 	(python3 resources/log_consumer/log_consumer.py log &)
 
 remove_log_consumer:
-	kill $$(ps aux | grep -v grep | grep 'python3 resources/log_consumer/log_consumer.py' | awk '{print $$2}')
+	kill $$(ps aux | grep -v grep | grep 'python3 resources/log_consumer/log_consumer.py' | awk '{print $$2}') && \
 	(tango_admin --delete-server log_consumer/log &)
 
 setup_ipython:

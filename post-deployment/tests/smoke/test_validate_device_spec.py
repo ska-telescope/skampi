@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 import requests
 import pytest
 
-from tango import Database
+from tango import Database # type: ignore
 from tango_simlib.utilities.validate_device import (
     validate_device_from_path,
     validate_device_from_url,
@@ -61,6 +61,7 @@ def test_ska_devices():
 
 
 @pytest.mark.skamid
+@pytest.mark.quarantine
 def test_dishmaster_conforms_to_tango_wide():
     """Check that dishmaster conforms to tango developers guide"""
     result = validate_device_from_url(

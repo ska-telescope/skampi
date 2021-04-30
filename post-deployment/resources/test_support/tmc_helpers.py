@@ -1,5 +1,5 @@
-from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it,sync_abort,sync_restart,sync_obsreset
-from resources.test_support.logging_decorators import log_it
+
+from resources.test_support.sync_decorators import sync_start_up_telescope,sync_assign_resources,sync_configure,sync_end_sb,sync_release_resources,sync_set_to_standby,time_it,sync_abort,sync_restart,sync_obsreset, sync_configuring, sync_resetting
 from tango import DeviceProxy   
 from resources.test_support.helpers import waiter,watch,resource
 from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby
@@ -70,6 +70,15 @@ def configure_sub(sdp_block, configure_file):
     LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
     LOGGER.info('Invoked Configure on Subarray')
 
+@sync_configuring
+def configuring_sub(sdp_block, configure_file):
+    update_scan_config_file(configure_file, sdp_block)
+    config = load_config_from_file(configure_file)
+    SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+    SubarrayNode.Configure(config)
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
+    LOGGER.info('Invoked Configure on Subarray')
+
 @sync_abort
 def abort():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
@@ -96,3 +105,14 @@ def obsreset():
     SubarrayNode.ObsReset()
     LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
     LOGGER.info('Invoked Obsreset on Subarray')
+
+@sync_resetting(200)
+def sub_resetting():
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
+    SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+    LOGGER.info("Subarray obsState before ObsReset: " + str(SubarrayNode.obsState))
+    SubarrayNode.ObsReset()
+    LOGGER.info('Invoked Obsreset on Subarray')
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))
+    

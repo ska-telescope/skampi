@@ -214,7 +214,8 @@ add_classifier(
     "SKBX-010", "Could not query to check whether telescope was running?",
     )
 add_classifier(
-    [("tests/acceptance/mvp/test_XR-13_A1.py", "test_allocate_resources")],
+    [("tests/acceptance/mvp/test_XR-13_A1.py", "test_allocate_resources"),
+     ("tests/acceptance/mvp/test_XR-13_A2-Test.py", "test_configure_subarray")],
     [match_msg(r"Message: 'Subarray healthState event returned unknown value.*",
                pod='subarraynode1-sa1-0'),],
     "SKBX-011", "Subarray node complains about unknown healthState value?", harmless=True
@@ -490,9 +491,20 @@ add_classifier(
     [("tests/acceptance/mvp/test_XR-13_A2-Test.py", "test_configure_subarray")],
     [match_and(
         match_msg('Waiting for obsState to transition to READY', section='detail/Captured stdout call'),
+        match_msg('obsState reached target state READY', missing=True, section='detail/Captured stdout call'),
         match_msg('E       Failed: Timeout >300.0s', section='detail/main')
     )],
-    "SKBX-038", "TMC never finished transition to READY"
+    "SKBX-038", "TMC gets stuck on transition to READY"
+)
+add_classifier(
+    [("tests/acceptance/mvp/test_XR-13_A2-Test.py", "test_configure_subarray"),
+     ("tests/acceptance/mvp/test_XTP-1772.py", "test_recovery_from_aborted")],
+    [match_and(
+        match_msg('Waiting for obsState to transition to IDLE', section='detail/Captured stdout call'),
+        match_msg('obsState reached target state IDLE', missing=True, section='detail/Captured stdout call'),
+        match_msg('E       Failed: Timeout >300.0s', section='detail/main')
+    )],
+    "SKBX-038b", "TMC gets stuck on transition to IDLE"
 )
 add_classifier(
     [("tests/acceptance/mvp/test_XTP-776_XTP-780-781.py", "test_telescope_in_standby")],

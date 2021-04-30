@@ -71,8 +71,12 @@ def update_resource_config_file(file,disable_logging=False):
             sb_id = client.fetch_skuid("pb")
             data["sdp"]["processing_blocks"][i]["id"] = sb_id
             if "dependencies" in data["sdp"]["processing_blocks"][i]:
-                data["sdp"]["processing_blocks"][i]["dependencies"][0]["pb_id"] = \
-                data["sdp"]["processing_blocks"][i - 1]["id"]
+                if i == 0:
+                    data["sdp"]["processing_blocks"][i]["dependencies"][0]["pb_id"] = \
+                        data["sdp"]["processing_blocks"][i]["id"]
+                else:
+                    data["sdp"]["processing_blocks"][i]["dependencies"][0]["pb_id"] = \
+                    data["sdp"]["processing_blocks"][i - 1]["id"]
     LOGGER.info(data)
     # data['sdp']['id'] = inc_from_old_nr(data['sdp']['id'],disable_logging=disable_logging)
     # #assumes index nrs are following inbrokenly from loweest nr to highest nr in the list

@@ -73,7 +73,6 @@ def fixture():
 @pytest.mark.ncra
 @pytest.mark.select
 @pytest.mark.skamid
-@pytest.mark.trial
 # @pytest.mark.xfail
 @scenario(
     "XTP-1104.feature",

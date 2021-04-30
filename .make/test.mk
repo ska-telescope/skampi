@@ -19,7 +19,6 @@ FILE ?= ##this variable allow to execution of a single file in the pytest
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
 
-
 # Define environment variables required by OET
 ifneq (,$(findstring skalow,$(MARK)))
     TELESCOPE = 'SKA-Low'

@@ -20,7 +20,7 @@ import json
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.persistance_helping import update_scan_config_file
 from resources.test_support.sync_decorators_low import sync_configure
-from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
+from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray, to_be_composed_out_of, configure_by_file
 import pytest
 from resources.test_support.tmc_helpers_low import compose_sub, configure_sub, release_resources, end
 
@@ -63,13 +63,13 @@ def start_up():
 @given("Subarray is in IDLE state")
 def assign(result):
     LOGGER.info("Allocating resources to Low Subarray 1")
-    compose_sub()
+    to_be_composed_out_of()
     LOGGER.info("Subarray 1 is ready")
 
 @when("I call the configure scan execution instruction")
 def config(result):
     def test_SUT():
-        configure_sub()
+        configure_by_file()
     test_SUT()
     LOGGER.info("Configure command on Subarray 1 is successful")
 

@@ -2,15 +2,17 @@ import pytest
 from datetime import date,datetime
 import os
 import logging
+from tango import DeviceProxy   
+from ska.scripting.domain import Telescope, SubArray
 
 ##SUT imports
 from ska.scripting.domain import Telescope
 
 from resources.test_support.helpers_low import resource, waiter
+from resources.test_support.sync_decorators_low import sync_assign_resources, sync_configure
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.mappings import device_to_subarrays
 from resources.test_support.mappings_low import device_to_subarray
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -45,6 +47,28 @@ def set_telescope_to_standby():
     the_waiter.wait(100)
     if the_waiter.timed_out:
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
+
+
+@sync_assign_resources(100)
+def to_be_composed_out_of():
+    resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
+    assign_resources_file = 'resources/test_data/OET_integration/mccs_assign_resources.json'
+    subarray = SubArray(1)
+    LOGGER.info('Subarray has been created.')
+    subarray.allocate_from_file(cdm_file=assign_resources_file, with_processing=False)
+    LOGGER.info('Invoked AssignResources on CentralNodeLow')
+
+@sync_configure
+def configure_by_file():
+    configure_file = 'resources/test_data/OET_integration/mccs_configure.json'
+    SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
+    subarray = SubArray(1)
+    LOGGER.info('Subarray has been created.')
+    subarray.configure_from_file(configure_file, 10, with_processing = False)
+    LOGGER.info("Subarray obsState is: " + str(SubarrayNodeLow.obsState))
+    LOGGER.info('Invoked Configure on Subarray')
+
 
 def restart_subarray(id):
     devices = device_to_subarrays.keys()

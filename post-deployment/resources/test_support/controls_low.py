@@ -49,21 +49,19 @@ def set_telescope_to_standby():
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
 
-@sync_assign_resources(300)
+@sync_assign_resources(100)
 def to_be_composed_out_of():
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
-    assign_resources_file = 'resources/test_data/TMC_integration/mccs_assign_resources.json'
+    assign_resources_file = 'resources/test_data/OET_integration/mccs_assign_resources.json'
     subarray = SubArray(1)
     LOGGER.info('Subarray has been created.')
     subarray.allocate_from_file(cdm_file=assign_resources_file, with_processing=False)
-    the_waiter = waiter()
-    the_waiter.wait()
     LOGGER.info('Invoked AssignResources on CentralNodeLow')
 
 @sync_configure
 def configure_by_file():
-    configure_file = 'resources/test_data/TMC_integration/mccs_configure.json'
+    configure_file = 'resources/test_data/OET_integration/mccs_configure.json'
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
     subarray = SubArray(1)
     LOGGER.info('Subarray has been created.')

@@ -19,6 +19,20 @@ FILE ?= ##this variable allow to execution of a single file in the pytest
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
 
+
+# Define environment variables required by OET
+ifneq (,$(findstring skalow,$(MARK)))
+    TELESCOPE = 'SKA-Low'
+    CENTRALNODE = 'ska_low/tm_central/central_node'
+    SUBARRAY = 'ska_low/tm_subarray_node'
+    PUBSUB = true
+else
+    TELESCOPE = 'SKA-Mid'
+    CENTRALNODE = 'ska_mid/tm_central/central_node'
+    SUBARRAY = 'ska_mid/tm_subarray_node'
+    PUBSUB = false
+endif
+
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
@@ -44,6 +58,10 @@ k8s_test = tar -c post-deployment/ | \
 			MARK='$(MARK)' \
 			COUNT=$(COUNT) \
 			FILE='$(FILE)' \
+			SKA_TELESCOPE=$(TELESCOPE) \
+			CENTRALNODE_FQDN=$(CENTRALNODE) \
+			SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
+			OET_READ_VIA_PUBSUB=$(PUBSUB) \
 			$1 && \
 		(tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \

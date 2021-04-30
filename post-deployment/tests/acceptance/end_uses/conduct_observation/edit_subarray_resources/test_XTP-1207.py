@@ -16,11 +16,10 @@ import pytest
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 import logging
+from ska.scripting.domain import SubArray
 from resources.test_support.persistance_helping import load_config_from_file
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 from resources.test_support.sync_decorators_low import sync_assign_resources
-from resources.test_support.tmc_helpers_low import compose_sub
-import resources.test_support.tmc_helpers_low as tmc
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,7 +28,6 @@ if DEV_TEST_TOGGLE == "False":
     DISABLE_TESTS_UNDER_DEVELOPMENT = False
 else:
     DISABLE_TESTS_UNDER_DEVELOPMENT = True
-
 
 @pytest.fixture
 def fixture():
@@ -62,15 +60,15 @@ def set_to_running():
     wait_before_test(timeout=10)
 
 @when("I allocate resources to TMC and MCCS Subarray")
-def allocate_four_dishes():
+def allocate_resources_to_subarray():
     @sync_assign_resources(150)
     def compose_sub():
         resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
         resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
-        assign_resources_file = 'resources/test_data/TMC_integration/mccs_assign_resources.json'
-        config = load_config_from_file(assign_resources_file)
-        CentralNode = DeviceProxy('ska_low/tm_central/central_node')
-        CentralNode.AssignResources(config)
+        assign_resources_file = 'resources/test_data/OET_integration/mccs_assign_resources.json'
+        subarray = SubArray(1)
+        LOGGER.info('Subarray has been created.')
+        subarray.allocate_from_file(cdm_file=assign_resources_file, with_processing=False)
         LOGGER.info('Invoked AssignResources on CentralNode')
 
     compose_sub()
@@ -92,7 +90,8 @@ def teardown_function(function):
     """
     if (resource('ska_low/tm_subarray_node/1').get("obsState") == "IDLE"):
         LOGGER.info("Release all resources assigned to subarray")
-        tmc.release_resources()
+        subarray = SubArray(1)
+        subarray.deallocate()
         LOGGER.info("ResourceIdList is empty for Subarray 1 ")
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()

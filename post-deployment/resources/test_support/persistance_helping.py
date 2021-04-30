@@ -7,7 +7,9 @@ import csv
 import re
 import string
 import logging
-
+import os
+from os.path import dirname, join
+from ska_ser_skuid.client import SkuidClient
 LOGGER = logging.getLogger(__name__)
 
 def inc_from_old_nr(oldnr,incremental=1,disable_logging=False):
@@ -61,23 +63,34 @@ def update_resource_config_file(file,disable_logging=False):
         data = json.load(f)
     if not disable_logging:
         LOGGER.info("READ file before update:" + str(data))
-    data['sdp']['id'] = inc_from_old_nr(data['sdp']['id'],disable_logging=disable_logging)
-    #assumes index nrs are following inbrokenly from loweest nr to highest nr in the list
-    #this means each indix needs to inc by their range = size of the list
-    incremental = len(data['sdp']['processing_blocks'])
-    for index,item in enumerate(data['sdp']['processing_blocks']):
-        if(index==0):
-            data['sdp']['processing_blocks'][index]['id'] = inc_from_old_nr(item['id'],incremental,disable_logging)
-            first_pb_id_num = data['sdp']['processing_blocks'][index]['id']
-            next_pb_id_num =  int(re.findall(r'\d{5}(?=$|-\D)',first_pb_id_num)[0])
-            if not disable_logging:
-                LOGGER.info("Last 5 digits of ID:" + str(next_pb_id_num)) 
-        else:
-            next_pb_id_num += 1
-            data['sdp']['processing_blocks'][index]['id'] =  re.sub(r'\d{5}(?=$|-\D)',str(next_pb_id_num).zfill(5),first_pb_id_num)
-        if 'dependencies' in item.keys():
-            for index2,item2 in enumerate(item['dependencies']):
-                data['sdp']['processing_blocks'][index]['dependencies'][index2]['pb_id'] = data['sdp']['processing_blocks'][0]['id']
+    client = SkuidClient("http://127.0.0.1:8080")
+    sb_id = client.fetch_skuid("sbi")
+    data["sdp"]["id"] = sb_id
+    if "processing_blocks" in data["sdp"]:
+        for i in range(len(data["sdp"]["processing_blocks"])):
+            sb_id = client.fetch_skuid("pb")
+            data["sdp"]["processing_blocks"][i]["id"] = sb_id
+            if "dependencies" in data["sdp"]["processing_blocks"][i]:
+                data["sdp"]["processing_blocks"][i]["dependencies"][0]["pb_id"] = \
+                data["sdp"]["processing_blocks"][i - 1]["id"]
+    LOGGER.info(data)
+    # data['sdp']['id'] = inc_from_old_nr(data['sdp']['id'],disable_logging=disable_logging)
+    # #assumes index nrs are following inbrokenly from loweest nr to highest nr in the list
+    # #this means each indix needs to inc by their range = size of the list
+    # incremental = len(data['sdp']['processing_blocks'])
+    # for index,item in enumerate(data['sdp']['processing_blocks']):
+    #     if(index==0):
+    #         data['sdp']['processing_blocks'][index]['id'] = inc_from_old_nr(item['id'],incremental,disable_logging)
+    #         first_pb_id_num = data['sdp']['processing_blocks'][index]['id']
+    #         next_pb_id_num =  int(re.findall(r'\d{5}(?=$|-\D)',first_pb_id_num)[0])
+    #         if not disable_logging:
+    #             LOGGER.info("Last 5 digits of ID:" + str(next_pb_id_num))
+    #     else:
+    #         next_pb_id_num += 1
+    #         data['sdp']['processing_blocks'][index]['id'] =  re.sub(r'\d{5}(?=$|-\D)',str(next_pb_id_num).zfill(5),first_pb_id_num)
+    #     if 'dependencies' in item.keys():
+    #         for index2,item2 in enumerate(item['dependencies']):
+    #             data['sdp']['processing_blocks'][index]['dependencies'][index2]['pb_id'] = data['sdp']['processing_blocks'][0]['id']
     with open(file, 'w') as f:
         json.dump(data, f)
         #f.write(json.dump(data))

@@ -23,6 +23,7 @@ from resources.test_support.sync_decorators_low import sync_configure
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray, to_be_composed_out_of, configure_by_file
 import pytest
 from resources.test_support.tmc_helpers_low import compose_sub, configure_sub, release_resources, end
+from ska.scripting.domain import Telescope, SubArray
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -45,6 +46,7 @@ def result():
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
+@pytest.mark.trail
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1208.feature", "TMC and MCCS subarray transitions from IDLE to READY state")
 def test_configure_subarray():
@@ -87,20 +89,21 @@ def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
+    subarray=SubArray(1)
     if (resource('ska_low/tm_subarray_node/1').get('State') == "ON"):
         #this means there must have been an error
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            release_resources()
+            subarray.deallocate()
     if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
         #this means test must have passed
         LOGGER.info("tearing down configured subarray (READY)")
-        end()
-        release_resources()
+        subarray.end()
+        subarray.deallocate()
         LOGGER.info("End and ReleaseResources is invoked on Subarray 1")
     if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         LOGGER.warn("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
-        restart_subarray(1)
+        subarray.restart(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")

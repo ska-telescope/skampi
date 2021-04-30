@@ -22,9 +22,9 @@ from tango import DeviceProxy, DevState
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.persistance_helping import load_config_from_file
 import logging
-from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
+from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby, to_be_composed_out_of, configure_by_file
 from resources.test_support.sync_decorators_low import  sync_scan_oet,sync_configure_oet, sync_scan, time_it
-import resources.test_support.tmc_helpers_low as tmc
+from ska.scripting.domain import SubArray
 
 LOGGER = logging.getLogger(__name__)
 
@@ -48,6 +48,7 @@ non_default_states_to_check = {}
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
+@pytest.mark.trial
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1209.feature", "TMC and MCCS subarray performs an observational scan")
 def test_subarray_scan():
@@ -63,10 +64,10 @@ def start_up():
 
 @given("Subarray is configured successfully")
 def set_to_ready():
-    tmc.compose_sub()
+    to_be_composed_out_of()
     LOGGER.info("AssignResources is invoked on Subarray")
     wait_before_test(timeout=10)
-    tmc.configure_sub()
+    configure_by_file()
     LOGGER.info("Configure is invoke on Subarray")
     wait_before_test(timeout=10)
 
@@ -74,14 +75,12 @@ def set_to_ready():
 def invoke_scan_command(fixture):
     @sync_scan(200)
     def scan():
-        def send_scan(duration):
-            SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
-            SubarrayNodeLow.Scan(duration)
+        def send_scan():
+           subarray=SubArray(1)
+           subarray.scan()
         LOGGER.info("Scan is invoked on Subarray 1")
-        scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
-        scan_string = load_config_from_file(scan_file)
         executor = futures.ThreadPoolExecutor(max_workers=1)
-        return executor.submit(send_scan, scan_string)
+        return executor.submit(send_scan)
     fixture['future'] = scan()
     return fixture
 
@@ -110,33 +109,34 @@ def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
+    subarray=SubArray(1)
     if (resource('ska_low/tm_subarray_node/1').get('State') == "ON"):
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            tmc.release_resources()
+            subarray.deallocate()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
             LOGGER.info("tearing down configured subarray (READY)")
-            tmc.end()
+            subarray.end()
             resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
             LOGGER.info('Invoked End on Subarray')
             wait_before_test(timeout=10)
-            tmc.release_resources()
+            subarray.deallocate()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
             LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
-            restart_subarray(1)
+            subarray.restart(1)
             # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "SCANNING"):
             LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
-            restart_subarray(1)
+            subarray.restart(1)
             # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         LOGGER.info("Put Telescope back to standby")
         set_telescope_to_standby()
     else:
         LOGGER.warn("Subarray is in inconsistent state! Please restart MVP manualy to complete tear down")
-        restart_subarray(1)
+        subarray.restart(1)

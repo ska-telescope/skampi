@@ -338,30 +338,6 @@ mid_stress_test:
     variables:
       - $STRESS_TEST_DURATION
 
-mid_on_demand_stress_test:
-  stage: test
-  variables:
-    DEPLOYMENT_CONFIGURATION: "skamid"
-    MARK: "skamid or common"
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE_PREFIX: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    SERVICE_ACCOUNT: "stress-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_NAMESPACE: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
-    DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
-    STRESS_TEST_DURATION: "3600"
-  <<: *stress_test_definition
-  environment:
-    name: "test"
-    url: "http://$INGRESS_HOST/stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-  when: manual
-  only:
-    refs:
-      - branches
-
 low_test:
   retry: 2
   stage: test

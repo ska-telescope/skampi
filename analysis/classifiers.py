@@ -519,6 +519,31 @@ add_classifier(
                section='detail/main')],
     "SKBX-040", "GitLab blocks access to device spec due to too many requests"
 )
+add_classifier(
+    [(None, None)],
+    [match_msg("resources/test_support/oet_helpers.py:2.*: IndexError", section='detail/main')],
+    "SKBX-041", "Task index error in OET helpers"
+)
+add_classifier(
+    [(None, None)],
+    [match_msg("resources/test_support/oet_helpers.py:2.*: AttributeError", section='detail/main')],
+    "SKBX-041b", "Task attribute error in OET helpers"
+)
+add_classifier(
+    [(None, None)],
+    [match_msg("Error in subscribing CSP/SDP Subarray obsState on respective LeafNodes.*",
+               pod='subarraynode1-sa1-0', level='DEBUG')],
+    "SKBX-042", "Subarray node fails to subscribe to obsState on leaf nodes"
+)
+add_classifier(
+    [("tests/smoke/test_mvp_clean.py", "test_is_running")],
+    [match_msg(r"\(DevError.*TRANSIENT CORBA system exception: TRANSIENT_CallTimedout.*on device mid_sdp/elt/subarray_1, command On.*",
+               pod='sdpsubarrayleafnode1-01-0',
+               after_msg_r=r"<- SdpSubarrayLeafNode.On.*",
+               after_msg_attrs=dict(pod='sdpsubarrayleafnode1-01-0')
+    )],
+    "SKBX-043", "Call timeout on SDP leaf node On() even though call finished", taints=True
+)
 
 # Special pseudo-classifiers
 UNKNOWN = Classifier([(None, None)], [], 'UNKNOWN', 'Unclassified test failure')

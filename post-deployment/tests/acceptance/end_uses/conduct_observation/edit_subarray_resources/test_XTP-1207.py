@@ -16,6 +16,7 @@ import pytest
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 import logging
+from ska.scripting.domain import SubArray
 from resources.test_support.persistance_helping import load_config_from_file
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 from resources.test_support.sync_decorators_low import sync_assign_resources
@@ -29,7 +30,6 @@ if DEV_TEST_TOGGLE == "False":
     DISABLE_TESTS_UNDER_DEVELOPMENT = False
 else:
     DISABLE_TESTS_UNDER_DEVELOPMENT = True
-
 
 @pytest.fixture
 def fixture():
@@ -48,6 +48,7 @@ def result():
 
 @pytest.mark.quarantine
 @pytest.mark.skalow
+@pytest.mark.jk
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1207.feature", "TMC and MCCS subarray resource allocation")
 def test_allocate_resources():
@@ -68,9 +69,9 @@ def allocate_four_dishes():
         resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
         resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
         assign_resources_file = 'resources/test_data/TMC_integration/mccs_assign_resources.json'
-        config = load_config_from_file(assign_resources_file)
-        CentralNode = DeviceProxy('ska_low/tm_central/central_node')
-        CentralNode.AssignResources(config)
+        subarray = SubArray(1)
+        LOGGER.info('Subarray has been created.')
+        subarray.allocate_from_file(cdm_file=assign_resources_file, with_processing=False)
         LOGGER.info('Invoked AssignResources on CentralNode')
 
     compose_sub()

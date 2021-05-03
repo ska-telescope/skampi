@@ -38,6 +38,7 @@ def update_file(file):
     with open(file, 'w') as f:
         json.dump(data, f)
 
+
 def update_resource_config_file(file,disable_logging=False):
     with open(file, 'r') as f:
         data = json.load(f)
@@ -60,7 +61,6 @@ def update_resource_config_file(file,disable_logging=False):
     LOGGER.info(data)
     with open(file, 'w') as f:
         json.dump(data, f)
-        #f.write(json.dump(data))
     if not disable_logging:
         LOGGER.info("________ AssignResources Updated string for next iteration_______" + str(data))
         LOGGER.info("________ SDP block is_______" + str(data['sdp']))
@@ -69,7 +69,6 @@ def update_resource_config_file(file,disable_logging=False):
     if not disable_logging:
         LOGGER.info("READ file after update:" + str(data1))
     return data['sdp']
-
 
 
 def update_scan_config_file(file, sdp_block,disable_logging=False):

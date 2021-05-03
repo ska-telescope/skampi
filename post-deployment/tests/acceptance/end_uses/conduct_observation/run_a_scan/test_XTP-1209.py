@@ -50,7 +50,6 @@ subarray=SubArray(1)
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
-# @pytest.mark.trial
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1209.feature", "TMC and MCCS subarray performs an observational scan")
 def test_subarray_scan():

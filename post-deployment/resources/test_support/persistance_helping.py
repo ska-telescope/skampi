@@ -45,8 +45,9 @@ def update_resource_config_file(file,disable_logging=False):
     if not disable_logging:
         LOGGER.info("READ file before update:" + str(data))
     client = SkuidClient(os.environ['SKUID_URL'])
-    sb_id = client.fetch_skuid("sbi")
-    data["sdp"]["id"] = sb_id
+    # New type of id "eb_id" is used to distinguish between real SB and id used during testing
+    eb_id = client.fetch_skuid("eb")
+    data["sdp"]["id"] = eb_id
     if "processing_blocks" in data["sdp"]:
         for i in range(len(data["sdp"]["processing_blocks"])):
             pb_id = client.fetch_skuid("pb")

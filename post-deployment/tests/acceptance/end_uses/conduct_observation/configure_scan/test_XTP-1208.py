@@ -46,7 +46,7 @@ def result():
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
-@pytest.mark.trail
+@pytest.mark.trial
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1208.feature", "TMC and MCCS subarray transitions from IDLE to READY state")
 def test_configure_subarray():
@@ -99,11 +99,12 @@ def teardown_function(function):
         #this means test must have passed
         LOGGER.info("tearing down configured subarray (READY)")
         subarray.end()
+        LOGGER.info("End is invoked on Subarray 1")
         subarray.deallocate()
-        LOGGER.info("End and ReleaseResources is invoked on Subarray 1")
+        LOGGER.info("ReleaseResources is invoked on Subarray 1")
     if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         LOGGER.warn("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
-        subarray.restart(1)
+        subarray.restart()
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")

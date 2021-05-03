@@ -1,0 +1,16 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: chartinfo
+data:
+  chartinfo.js: |-
+    const CHARTINFO = {
+        name: '{{ .Chart.Name }}',
+        version: '{{ .Chart.Version }}',
+        dependencies: [
+        {{- range  .Chart.Dependencies }}
+        { name: '{{ .Name }}' , version: '{{ .Version }}' },
+        {{- end }}
+        ]
+    }
+

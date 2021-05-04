@@ -1,7 +1,16 @@
+"""
+Classification of test results as produced by collect_tests()
+
+The general approach here is that each classifier runs on the results
+of certain test, and matches lines in the different log sections. This
+can be used for automatically scanning for events.
+"""
 
 import datetime
 import re
 import time
+import pathlib
+import os
 
 __all__ = [ 'classifiers', 'classify_by_test' ]
 
@@ -108,7 +117,10 @@ def match_and(*predicates):
                 return False
         return True
     return check
-        
+
+# Check whether a certain test file exists, possibly replace
+TEST_DIRECTORY = pathlib.Path(__file__).parent.parent.joinpath('post-deployment')
+
 # Classifiers - simple map of pairs for now
 classifiers = []
 classifier_by_test = {}
@@ -120,6 +132,21 @@ def add_classifier(tests, *args, **kwargs):
         if test_id not in classifier_by_test:
             classifier_by_test[test_id] = []
         classifier_by_test[test_id].append(cfr)
+
+        # Check whether test file exists
+        if test_id[1] is None:
+            continue
+        if not TEST_DIRECTORY.joinpath(test_id[0]).exists():
+            print(f"Test file {test_id[0]} not found locally! Check {cfr.skb} classifier!")
+            fname = pathlib.Path(test_id[0]).name
+            for root, dirs, files in os.walk(TEST_DIRECTORY):
+                if fname in files:
+                    path2 = pathlib.Path(root).relative_to(TEST_DIRECTORY).joinpath(fname)
+                    print(f" ... speculatively also matching {path2}")
+                    test_id2 = (str(path2), test_id[1])
+                    if test_id2 not in classifier_by_test:
+                        classifier_by_test[test_id2] = []
+                    classifier_by_test[test_id2].append(cfr)
 
 # Add classifiers
 add_classifier(

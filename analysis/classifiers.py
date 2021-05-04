@@ -571,6 +571,29 @@ add_classifier(
     )],
     "SKBX-043", "Call timeout on SDP leaf node On() even though call finished", taints=True
 )
+add_classifier(
+    [(None,None)],
+    [match_msg(r"Logging level set to .* on Python and Tango loggers",
+               pod='sdpsubarrayleafnode1-01-0')],
+    "SKBX-044", "SDP subarray leaf node restarts mid-test?", taints=True
+)
+add_classifier(
+    [(None,None)],
+    [match_msg(r"Logging level set to .* on Python and Tango loggers",
+               pod='cspsubarrayleafnode1-01-0'),
+     match_msg(r"Logging level set to .* on Python and Tango loggers",
+               pod='cspsubarrayleafnode1-01-0', section='teardown')],
+    "SKBX-044b", "CSP subarray leaf node restarts mid-test?", taints=True
+)
+add_classifier(
+    [(None,None)],
+    [match_msg(r"Logging level set to .* on Python and Tango loggers",
+               pod='subarraynode1-sa1-0'),
+     match_msg(r"Logging level set to .* on Python and Tango loggers",
+               pod='subarraynode1-sa1-0', section='teardown')],
+    "SKBX-044c", "Subarray node restarts mid-test?", taints=True
+)
+
 
 # Special pseudo-classifiers
 UNKNOWN = Classifier([(None, None)], [], 'UNKNOWN', 'Unclassified test failure')

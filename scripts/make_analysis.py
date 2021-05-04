@@ -76,7 +76,12 @@ with open("overview.rst", "w", encoding='utf-8') as f:
     print(f'{report.total_lines} lines scanned against {len(classifiers.classifiers)} '
           'classifiers, result summary:\n', file=f)
     report.make_overview_table(f)
-    report.make_matches_table(f)
+
+    for rev,date in sorted(report.revisions.items(),
+                           key = lambda rev_date: rev_date[1],
+                           reverse = True):
+        print(rstgen.header(2, rev), file=f)
+        report.make_overview_table(f, rev)
 
 # Create timing overview
 with open("timing.rst", "w", encoding='utf-8') as f:

@@ -50,11 +50,21 @@ class Report:
         self.total_lines = 0
         self.log_id = 0
         self.pod_timings = {}
+        self.revisions = {}
+        self.revision_files = {}
+        self.file_date = {}
 
         # See build_maps()
         self.files_per_cfr = None
 
-    def add_log(self, fname, log, source=None):
+    def add_log(self, fname, log, source=None, revision=None):
+        """ Adds a log to the report
+
+        :param fname: (File) name of the log
+        :param log: List of log lines as dictionaries
+        :param source: Original source of the log, say if extracted from an URL
+        :param sha: The Git revision associated witht the log
+        """
 
         # Extract test data, classify
         self.total_lines += len(log)
@@ -64,6 +74,12 @@ class Report:
         # Note all matches, but remove detailed test logs to save space
         self.matches_per_file[fname] = [ _strip_match(match) for match in matches ]
 
+        # Add to revision-file map
+        if revision is not None:
+            if revision not in self.revision_files:
+                self.revision_files[revision] = set()
+            self.revision_files[revision].add(fname)
+
         # Extract date from first log message
         log_date = None
         for l in log:
@@ -71,12 +87,19 @@ class Report:
                 log_date = l['time']
                 break
         if log_date is not None:
+            self.file_date[fname] = log_date
+
+            # Add revision to dictionary, noting the latest date we have seen it
+            # (for sorting later)
+            if revision is not None and (revision not in self.revisions or
+                                         self.revisions[revision] < log_date):
+                self.revisions[revision] = log_date
 
             for cfr in classifiers.classifiers:
                 cfr_matches = [ match for match in matches if match['cfr'] is cfr ]
                 if not cfr_matches:
                     continue
-                self.add_cfr_matches(fname, source, log, log_date, cfr, cfr_matches)
+                self.add_cfr_matches(fname, source, log, log_date, cfr, cfr_matches, revision)
 
             # Collect timings
             timings = logs.collect_pod_timings(log)
@@ -92,7 +115,7 @@ class Report:
 
         self.log_id += 1
 
-    def add_cfr_matches(self, fname, source, log, log_date, cfr, cfr_matches):
+    def add_cfr_matches(self, fname, source, log, log_date, cfr, cfr_matches, revision):
 
         # Strip test information
         cfr_matches_stripped = [ _strip_match(cfr_match) for cfr_match in cfr_matches ]
@@ -102,7 +125,8 @@ class Report:
         # memory!)
         match_list = self.matches_per_clfr.get(cfr.skb, [])
         match_log = dict( date = log_date, log = log, log_id=self.log_id, cfr=cfr,
-                          name = fname, source = source, matches = cfr_matches )
+                          name = fname, source = source, matches = cfr_matches,
+                          revision = revision )
         match_list.append(match_log)
         match_list = sorted(match_list, key=lambda match: match['date'], reverse=True)
         self.matches_per_clfr[cfr.skb] = match_list[:self.matches_per_clfr_count]
@@ -115,7 +139,7 @@ class Report:
         all_matches_list.append(match_log_stripped)
         self.all_matches_per_clfr[cfr.skb] = list(all_matches_list)
 
-    def add_tarball(self, tar, source):
+    def add_tarball(self, tar, source, revision=None):
         while True:
             # Read through tar file sequentially to minimise seeking
             info = tar.next()
@@ -124,11 +148,11 @@ class Report:
             # Extract
             with tar.extractfile(info) as f:
                 try:
-                    self.add_log(info.name, logs.collect_file(info.name, 1, f), source)
+                    self.add_log(info.name, logs.collect_file(info.name, 1, f), source, revision)
                 except Exception:
                     traceback.print_exc()
 
-    def add_file_or_uri(self, fname):
+    def add_file_or_uri(self, fname, revision=None):
 
         # Is a URI?
         if fname.startswith('http://') or fname.startswith('https://'):
@@ -149,19 +173,18 @@ class Report:
             # Tarball?
             if _is_tarball(_fname):
                 with tarfile.open(mode='r:*', fileobj=bio) as tar:
-                    self.add_tarball(tar, fname)
-
+                    self.add_tarball(tar, fname, revision)
             else:
                 # Otherwise expect it to be a flat file
-                self.add_log(_fname, logs.collect_file(fname, 1, bio), fname)
+                self.add_log(_fname, logs.collect_file(fname, 1, bio), fname, revision)
             return
 
         # Assume it's a file. Tarball?
         if _is_tarball(fname):
             with tarfile.open(fname, mode='r:*') as tar:
-                self.add_tarball(tar, fname)
+                self.add_tarball(tar, fname, revision)
         else:
-            self.add_log(fname, logs.collect_file(fname, 1))
+            self.add_log(fname, logs.collect_file(fname, 1), revision)
 
     def add_from_gitlab(self, uri, header, project, search, job_names, artifact):
 
@@ -219,25 +242,51 @@ class Report:
             for cfr in classifiers.classifiers
         }
 
-    def make_overview_table(self, f):
+    def make_overview_table(self, f, revision=None):
 
+        # Print a header
+        if revision is None:
+            files = self.matches_per_file.keys()
+        else:
+            files = self.revision_files[revision]
+        file_count = len(files)
+        print(f"Covering {file_count} logs.", file=f)
+        if file_count > 0:
+            files_sorted = sorted(files, key = lambda fname: self.file_date.get(fname))
+            print(f"Date range: {self.file_date[files_sorted[0]]} to {self.file_date[files_sorted[-1]]}\n", file=f)
+
+        # Start composing table
         header = [ '**SKB**', '**Message**', '**Affected Runs**', '**Last**', '**Cross-Check**'  ]
         rows = []
-        file_count = max(1, len(self.matches_per_file))
         for cfr in sorted(cfrs_sorted, key=lambda cfr: len(self.files_per_cfr[cfr.skb]),
                           reverse=True):
 
             matches = self.all_matches_per_clfr[cfr.skb]
             files_with_matches = self.files_per_cfr[cfr.skb]
+
+            # Specialise to revision, if requested.
+            if revision is not None:
+
+                # Skip rows that have no matches globally (so we don't
+                # repeat them for every revision).
+                if not matches:
+                    continue
+
+                matches = [ cfr_match for cfr_match in matches if cfr_match['revision'] == revision]
+                files_with_matches = files_with_matches & self.revision_files[revision]
             files_matched_rel = len(files_with_matches) / file_count
 
             # Include date + link to latest match
             if matches:
                 last_match = sorted(matches, key=lambda match: match['date'])[-1]
-                last_ref = f":ref:`{last_match['date']} <{cfr.skb}-{last_match['log_id']}>`"
+                # Generate link - if it is one of the matches we are keeping
+                if any( cfr_match['log_id'] == last_match['log_id']
+                        for cfr_match in self.matches_per_clfr[cfr.skb] ):
+                    last_ref = f":ref:`{last_match['date']} <{cfr.skb}-{last_match['log_id']}>`"
+                else:
+                    last_ref = last_match['date']
             else:
                 last_ref = ""
-
 
             # Determine whether another kind of error appears to happen more often
             other_skb_changes = ''

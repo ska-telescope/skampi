@@ -1,3 +1,7 @@
+"""
+Functions for reading logs and events out of Kubernetes, as well
+as (de)serialisation as JSON files.
+"""
 
 import re
 import datetime

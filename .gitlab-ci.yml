@@ -37,7 +37,6 @@ stages:
 - apt-get install -y curl ca-certificates jq --no-install-recommends
 - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
 
-
 .deploy_template: &deploy_definition
   script:
   - make install-or-upgrade
@@ -65,20 +64,6 @@ stages:
       - "build/"
     reports:
       junit: build/report.xml
-    when: always
-
-.stress_test_template: &stress_test_definition
-  tags:
-  - k8srunner
-  script:
-  # We specifically need Bash for $SECONDS
-  - bash scripts/run-stresstest.sh $STRESS_TEST_DURATION
-  - mv logs $CI_PROJECT_NAME-$CI_JOB_ID
-  - tar cJf logs.tar.xz $CI_PROJECT_NAME-$CI_JOB_ID/*/k8s_dump.txt
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - logs.tar.xz
     when: always
     
 .xray_upload: &xray_upload
@@ -315,28 +300,6 @@ mid_on_demand_test:
   except:
     refs:
       - master
-
-mid_stress_test:
-  stage: test
-  variables:
-    DEPLOYMENT_CONFIGURATION: "skamid"
-    MARK: "skamid or common"
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE_PREFIX: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    SERVICE_ACCOUNT: "stress-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_NAMESPACE: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
-    DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
-  <<: *stress_test_definition
-  environment:
-    name: "test"
-    url: "http://$INGRESS_HOST/stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-  only:
-    variables:
-      - $STRESS_TEST_DURATION
 
 low_test:
   retry: 2
@@ -647,29 +610,6 @@ version_bump_charts:
     - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
     - make commit-and-push-to-master
 
-pages:
-  stage: test
-  tags:
-  - k8srunner
-  script:
-  - pip3 install python-gitlab rstgen urllib3 sphinx sphinx-autobuild sphinx_rtd_theme
-  - cd docs/analysis
-  - python3 ../../scripts/make_analysis.py --gitlab $CI_SERVER_URL
-        --gitlab-header job_token=$CI_JOB_TOKEN
-        --gitlab-project $CI_PROJECT_PATH
-        --gitlab-search $STRESS_TEST_ANALYSIS_PIPELINES
-        --gitlab-job $STRESS_TEST_ANALYSIS_JOBS
-        --gitlab-artifact logs.tar.xz
-  - make html
-  - mv _build/html ../../public
-  only:
-    variables:
-      - $STRESS_TEST_ANALYSIS_PIPELINES
-      - $STRESS_TEST_ANALYSIS_JOBS
-  artifacts:
-    paths: [public/]
-    expire_in: 1 week
-
 publish-chart:
   when: on_success
   except:
@@ -680,3 +620,4 @@ include:
 # https://developer.skatelescope.org/en/latest/development/software_package_release_procedure.html#package-and-publish-helm-charts-to-the-ska-helm-chart-repository
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/helm_publish.yml'
+- local: .gitlab/ci/stress-test.gitlab-ci.yml

@@ -1,0 +1,57 @@
+
+.stress_test_template: 
+  stage: test
+  tags:
+  - !reference [.tags_default]
+  script:
+  # We specifically need Bash for $SECONDS
+  - bash scripts/run-stresstest.sh $STRESS_TEST_DURATION
+  - mv logs $CI_PROJECT_NAME-$CI_JOB_ID
+  - tar cJf logs.tar.xz $CI_PROJECT_NAME-$CI_JOB_ID/*/k8s_dump.txt
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - logs.tar.xz
+    when: always
+
+mid_stress_test:
+  extends:
+    - .stress_test_template
+  variables:
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    MARK: "skamid or common"
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE_PREFIX: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    SERVICE_ACCOUNT: "stress-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_NAMESPACE: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
+    DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+  environment:
+    name: "test"
+    url: "http://$INGRESS_HOST/stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+  rules:
+    if: $STRESS_TEST_DURATION
+
+pages:
+  stage: publish
+  tags:
+  - !reference [.tags_default]
+  script:
+  - pip3 install python-gitlab rstgen urllib3 sphinx sphinx-autobuild sphinx_rtd_theme
+  - cd docs/analysis
+  - python3 ../../scripts/make_analysis.py --gitlab $CI_SERVER_URL
+        --gitlab-header job_token=$CI_JOB_TOKEN
+        --gitlab-project $CI_PROJECT_PATH
+        --gitlab-search $STRESS_TEST_ANALYSIS_PIPELINES
+        --gitlab-job $STRESS_TEST_ANALYSIS_JOBS
+        --gitlab-artifact logs.tar.xz
+  - make html
+  - mv _build/html ../../public
+  rules:
+    if: $STRESS_TEST_ANALYSIS_PIPELINES && $STRESS_TEST_ANALYSIS_JOBS
+  artifacts:
+    paths: [public/]
+    expire_in: 1 week

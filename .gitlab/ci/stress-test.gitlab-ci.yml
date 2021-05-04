@@ -33,7 +33,7 @@ mid_stress_test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
   rules:
-    if: $STRESS_TEST_DURATION
+    - if: $STRESS_TEST_DURATION
 
 pages:
   stage: publish
@@ -51,7 +51,7 @@ pages:
   - make html
   - mv _build/html ../../public
   rules:
-    if: $STRESS_TEST_ANALYSIS_PIPELINES && $STRESS_TEST_ANALYSIS_JOBS
+    - if: $STRESS_TEST_ANALYSIS_PIPELINES && $STRESS_TEST_ANALYSIS_JOBS
   artifacts:
     paths: [public/]
     expire_in: 1 week

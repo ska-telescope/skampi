@@ -2,6 +2,8 @@
 .stress_test_template: 
   stage: test
   tags: !reference [.tags_default]
+  cache: {}
+  needs: []
   script:
   # We specifically need Bash for $SECONDS
   - bash scripts/run-stresstest.sh $STRESS_TEST_DURATION
@@ -37,6 +39,7 @@ mid_stress_test:
 pages:
   stage: publish
   tags: !reference [.tags_default]
+  cache: {}
   script:
   - pip3 install python-gitlab rstgen urllib3 sphinx sphinx-autobuild sphinx_rtd_theme
   - cd docs/analysis

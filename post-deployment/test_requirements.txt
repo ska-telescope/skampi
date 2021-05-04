@@ -25,3 +25,5 @@ lmcbaseclasses
 ska-log-transactions
 tabulate
 skallop==0.1.3
+ska-ser-skuid
+ska-ser-logging

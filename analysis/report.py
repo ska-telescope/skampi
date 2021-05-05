@@ -275,7 +275,7 @@ class Report:
 
                 matches = [ cfr_match for cfr_match in matches if cfr_match['revision'] == revision]
                 files_with_matches = files_with_matches & self.revision_files[revision]
-            files_matched_rel = len(files_with_matches) / file_count
+            files_matched_rel = len(files_with_matches) / max(1, file_count)
 
             # Include date + link to latest match
             if matches:

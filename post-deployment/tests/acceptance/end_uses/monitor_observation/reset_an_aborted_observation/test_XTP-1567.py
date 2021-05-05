@@ -44,11 +44,12 @@ def result():
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
+@pytest.mark.rushi
 @scenario("XTP-1567.feature", "BDD test case for ObsReset command in MVP Low")
 def test_subarray_obsreset():
     """reset subarray"""
 
-def assign(result):
+def assign():
     LOGGER.info("Given A running telescope for executing observations on a subarray")
     #Added timeout of 10 sec to wait tmc_low subarray to become OFF
     wait_before_test(timeout=10)
@@ -60,7 +61,7 @@ def assign(result):
     LOGGER.info("AssignResources is invoked on Subarray")
     wait_before_test(timeout=10)
 
-def config(result):
+def config():
     def test_SUT():
         configure_by_file()
     test_SUT()

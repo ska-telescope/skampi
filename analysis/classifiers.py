@@ -46,13 +46,18 @@ class Classifier:
                 return i
         return False
 
+
+ATTR_EQUIVALENTS = {
+    "subarraynode1-sa1-0": { "subarraynode-sa1-0" }
+}
+
 # Message match predictate
 def match_msg(msg_r,
               after_msg_r=None, after_msg_attrs={},
               section='msgs', missing=False,
               max_time=None, max_count=None,
               **kwargs):
-    """ Regex-match a message of given warning level 
+    """ Regex-match a message of given warning level
     :param msg_r: Regular expression for message to match
     :param after_msg_r: Must appear after matching a message (in same log)
     :param after_msg_attrs: Message above must also have given attributes
@@ -66,6 +71,17 @@ def match_msg(msg_r,
     # Compile regular expressions
     msg_rc = re.compile(msg_r)
     after_msg_rc = (None if after_msg_r is None else re.compile(after_msg_r))
+
+    # Convert attributes to sets (if not already), applying equivalences
+    msg_attrs = dict(kwargs)
+    for attrs in [ msg_attrs, after_msg_attrs ]:
+        for k, vals in attrs.items():
+            vals_new = set()
+            for v in (vals if isinstance(vals, set) else [vals]):
+                vals_new.add(v)
+                if v in ATTR_EQUIVALENTS:
+                    vals_new |= ATTR_EQUIVALENTS[v]
+            attrs[k] = vals_new
 
     def check(test, matched):
         # Traverse dictionary to get element containing lines
@@ -81,7 +97,7 @@ def match_msg(msg_r,
         for l in elem:
             # Didn't find initial line yet?
             if not found_after:
-                if any(l.get(k) != v for k, v in after_msg_attrs.items()):
+                if any(l.get(k,'') not in v_set for k, v_set in after_msg_attrs.items()):
                     continue
                 if not after_msg_rc.match(l['msg']):
                     continue
@@ -96,7 +112,7 @@ def match_msg(msg_r,
             if max_time is not None and 'time' in l and l['time'] > end_time:
                 break
             # Check whether attributes and message match
-            if all(l.get(k) == v for k,v in kwargs.items()) and msg_rc.match(l['msg']):
+            if all(l.get(k,'') in v_set for k, v_set in msg_attrs.items()) and msg_rc.match(l['msg']):
                 i += 1
                 if matched is not None:
                     matched.append(l)

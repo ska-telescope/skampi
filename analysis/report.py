@@ -203,7 +203,8 @@ class Report:
 
                 # (Attempt to) download the artefact
                 try:
-                    self.add_file_or_uri(f'{uri}/{project}/-/jobs/{job.id}/artifacts/raw/{artifact}?inline=false')
+                    self.add_file_or_uri(f'{uri}/{project}/-/jobs/{job.id}/artifacts/raw/{artifact}?inline=false',
+                                         pip.sha)
                 except Exception:
                     traceback.print_exc()
 

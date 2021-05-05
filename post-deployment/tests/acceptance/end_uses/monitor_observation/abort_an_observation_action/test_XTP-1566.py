@@ -46,6 +46,7 @@ subarray=SubArray(1)
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
+@pytest.mark.snehal
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then abort brings them in ABORTED in MVP Low")
 def test_subarray_abort():
     """Abort Operation"""
@@ -82,13 +83,16 @@ def invoke_scan_command(fixture):
 @given("operator has a running low telescope with a subarray in obsState <subarray_obsstate>")
 def set_up_telescope(subarray_obsstate : str):
     if subarray_obsstate == "IDLE":
+        start_up()
         assign()
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'IDLE'")
     elif subarray_obsstate == 'READY':
+        start_up()
         assign()
         config()
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'READY'")
     elif subarray_obsstate == "SCANNING":
+        start_up()
         assign()
         config()
         invoke_scan_command(fixture)
@@ -184,6 +188,3 @@ def teardown_function(function):
             wait_before_test(timeout=10)
         set_telescope_to_standby()
         LOGGER.info("Telescope is in standby")
-    else:
-        LOGGER.warn("Subarray is in inconsistent state! Please restart MVP manualy to complete tear down")
-        subarray.restart()

@@ -9,7 +9,7 @@ Feature:
 		
 		Examples:
 		| subarray_obsstate  | 
-		| IDLE               |         |
+		| IDLE               |
 		| READY              | 
 		| SCANNING           |
 

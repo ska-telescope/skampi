@@ -19,7 +19,7 @@ from ska.scripting.domain import SubArray
 
 ## local imports
 from resources.test_support.helpers_low import resource, wait_before_test
-from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray_low, to_be_composed_out_of, configure_by_file
+from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray_low, to_be_composed_out_of, configure_by_file , take_subarray
 from resources.test_support.sync_decorators_low import sync_abort
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.persistance_helping import load_config_from_file
@@ -143,10 +143,10 @@ def set_up_telescope(subarray_obsstate : str):
     if subarray_obsstate == "IDLE":
         assign()
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'IDLE'")
-    elif subarray_obsstate == 'READY':
-        assign()
-        config()
-        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'READY'")
+    # elif subarray_obsstate == 'READY':
+    #     assign()
+    #     config()
+    #     LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'READY'")
     # elif subarray_obsstate == "SCANNING":
     #     start_up()
     #     assign()
@@ -236,12 +236,13 @@ def teardown_function(function):
             subarray.restart()
         if(resource('ska_low/tm_subarray_node/1').get('obsState') == "ABORTED"):
             LOGGER.info("tearing down configured subarray (ABORTED)")
-            wait_before_test(timeout=200)
-            subarray.reset()
+            wait_before_test(timeout=20)
+            LOGGER.info(str(resource("ska_low/tm_subarray_node/1").get("obsState")))
+            # subarray.reset()
+            take_subarray(1).reset_when_aborted()
             LOGGER.info('Invoked ObsReset on Subarray')
-            LOGGER.info(str(resource("ska_low/tm_subarray_node/1").get("obsState")))
-            wait_before_test(timeout=100)
-            LOGGER.info(str(resource("ska_low/tm_subarray_node/1").get("obsState")))
+            wait_before_test(timeout=10)
+            # LOGGER.info(str(resource("ska_low/tm_subarray_node/1").get("obsState")))
             subarray.deallocate()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)

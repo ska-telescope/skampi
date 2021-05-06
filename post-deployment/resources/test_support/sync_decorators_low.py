@@ -346,3 +346,14 @@ def sync_abort(timeout=200):
             return result
         return wrapper
     return decorator
+
+def sync_reset_sa(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        check_going_out_of_abort()
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_into_obsreset()
+        result = func(*args, **kwargs)
+        the_waiter.wait(300)
+        return result
+    return wrapper

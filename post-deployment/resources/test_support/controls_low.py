@@ -17,6 +17,39 @@ from resources.test_support.mappings_low import device_to_subarray
 LOGGER = logging.getLogger(__name__)
 
 
+def take_subarray(id):
+    return pilot(id)
+
+class pilot():
+    
+    def __init__(self, id):
+        self.SubArray = SubArray(id)
+        self.logs = ""
+        self.agents = ResourceGroup(resource_names=subarray_devices)
+        self.state = "Empty"
+        self.rollback_order = {
+            'Composed': self.and_release_all_resources,
+            'Ready':self.and_end_sb_when_ready,
+           # 'Configuring':restart_subarray,
+           # 'Scanning':restart_subarray
+        }
+
+    def and_display_state(self):
+        print("state at {} is:\n{}".format(datetime.now(),self.agents.get('State')))
+        return self
+
+    def and_display_obsState(self):
+        print("state at {} is:\n{}".format(datetime.now(),self.agents.get('obsState')))
+        return self
+    
+    def reset_when_aborted(self):
+        @sync_reset_sa
+        def reset():
+            subarray = SubArray(1)
+            subarray.reset()
+        reset()
+        self.state = "IDLE"
+        return self
 # def telescope_is_in_standby():
 #     LOGGER.info(
 #         'resource("ska_low/tm_subarray_node/1").get("State")'
@@ -56,7 +89,7 @@ def set_telescope_to_running(disable_waiting = False):
     the_waiter.set_wait_for_starting_up()
     Telescope().start_up()
     if not disable_waiting:
-        the_waiter.wait(800)
+        the_waiter.wait(1100)
         if the_waiter.timed_out:
             pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 
@@ -123,3 +156,5 @@ def restart_subarray_low(id):
     if exceptions_raised != "":
         raise Exception(f'Error in initialising devices:{exceptions_raised}')
     the_waiter.wait()
+
+

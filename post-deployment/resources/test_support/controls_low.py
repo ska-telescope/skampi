@@ -56,7 +56,7 @@ def set_telescope_to_running(disable_waiting = False):
     the_waiter.set_wait_for_starting_up()
     Telescope().start_up()
     if not disable_waiting:
-        the_waiter.wait(200)
+        the_waiter.wait(800)
         if the_waiter.timed_out:
             pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 

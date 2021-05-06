@@ -50,7 +50,7 @@ subarray=SubArray(1)
 @pytest.mark.skalow
 @pytest.mark.quarantine
 @pytest.mark.snehal
-@pytest.mark.xfailed
+# @pytest.mark.xfailed
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then abort brings them in ABORTED in MVP Low")
 def test_subarray_abort_obsreset():
     """Abort Operation"""
@@ -79,10 +79,11 @@ def assign():
     assert telescope_is_in_standby()
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Invoking Startup Telescope command on the telescope.")
+    wait_before_test(timeout=10)
     set_telescope_to_running()
     LOGGER.info("Telescope is started successfully.")
     LOGGER.info("Allocating resources to Low Subarray 1")
-    wait_before_test(timeout=20)
+    wait_before_test(timeout=30)
     to_be_composed_out_of()
     LOGGER.info("Subarray 1 is ready")
 
@@ -235,9 +236,12 @@ def teardown_function(function):
             subarray.restart()
         if(resource('ska_low/tm_subarray_node/1').get('obsState') == "ABORTED"):
             LOGGER.info("tearing down configured subarray (ABORTED)")
-            subarray.obsreset()
+            wait_before_test(timeout=200)
+            subarray.reset()
             LOGGER.info('Invoked ObsReset on Subarray')
-            wait_before_test(timeout=10)
+            LOGGER.info(str(resource("ska_low/tm_subarray_node/1").get("obsState")))
+            wait_before_test(timeout=100)
+            LOGGER.info(str(resource("ska_low/tm_subarray_node/1").get("obsState")))
             subarray.deallocate()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)

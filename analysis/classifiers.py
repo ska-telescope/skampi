@@ -48,7 +48,18 @@ class Classifier:
 
 
 ATTR_EQUIVALENTS = {
-    "subarraynode1-sa1-0": { "subarraynode-sa1-0" }
+    "subarraynode1-sa1-0": { "subarraynode-sa1-0" },
+    "subarraynode2-sa2-0": { "subarraynode-sa2-0" },
+    "subarraynode3-sa3-0": { "subarraynode-sa3-0" },
+    "cspsubarrayleafnode1-01-0": { "cspsubarrayleafnode-01-0" },
+    "cspsubarrayleafnode2-02-0": { "cspsubarrayleafnode-02-0" },
+    "cspsubarrayleafnode3-03-0": { "cspsubarrayleafnode-03-0" },
+    "sdpsubarrayleafnode1-01-0": { "sdpsubarrayleafnode-01-0" },
+    "sdpsubarrayleafnode2-02-0": { "sdpsubarrayleafnode-02-0" },
+    "sdpsubarrayleafnode3-03-0": { "sdpsubarrayleafnode-03-0" },
+    "dishleafnode1-01-0": { "dishleafnode-01-0" },
+    "dishleafnode2-02-0": { "dishleafnode-02-0" },
+    "dishleafnode3-03-0": { "dishleafnode-03-0" },
 }
 
 # Message match predictate

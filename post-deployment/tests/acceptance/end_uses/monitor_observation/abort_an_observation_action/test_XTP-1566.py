@@ -19,11 +19,7 @@ from ska.scripting.domain import SubArray
 
 ## local imports
 from resources.test_support.helpers_low import resource, wait_before_test
-<<<<<<< HEAD
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray_low, to_be_composed_out_of, configure_by_file, take_subarray
-=======
-from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray_low, to_be_composed_out_of, configure_by_file , take_subarray
->>>>>>> a6e5dd53957ed9794c2902fcd734e273d9c2ff35
 from resources.test_support.sync_decorators_low import sync_abort
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.persistance_helping import load_config_from_file
@@ -53,11 +49,7 @@ subarray=SubArray(1)
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
-@pytest.mark.snehal
-<<<<<<< HEAD
-=======
-# @pytest.mark.xfailed
->>>>>>> a6e5dd53957ed9794c2902fcd734e273d9c2ff35
+@pytest.mark.ncra
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then abort brings them in ABORTED in MVP Low")
 def test_subarray_abort_obsreset():
     """Abort Operation"""
@@ -74,11 +66,7 @@ def assign():
     wait_before_test(timeout=100)
     LOGGER.info("Telescope is started successfully.")
     LOGGER.info("Allocating resources to Low Subarray 1")
-<<<<<<< HEAD
     wait_before_test(timeout=100)
-=======
-    wait_before_test(timeout=30)
->>>>>>> a6e5dd53957ed9794c2902fcd734e273d9c2ff35
     to_be_composed_out_of()
     LOGGER.info("Subarray 1 is ready")
 

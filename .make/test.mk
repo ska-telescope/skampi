@@ -20,7 +20,7 @@ SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
 
 # Define environment variables required by OET
-ifneq (,$(findstring snehal,$(MARK)))
+ifneq (,$(findstring ncra,$(MARK)))
     TELESCOPE = 'SKA-Low'
     CENTRALNODE = 'ska_low/tm_central/central_node'
     SUBARRAY = 'ska_low/tm_subarray_node'

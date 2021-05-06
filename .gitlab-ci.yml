@@ -77,7 +77,7 @@ stages:
 
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low
- 
+
 mid_uninstall:
   stage: clean
   tags: *tags_default
@@ -352,7 +352,7 @@ low_test_quarantine:
     refs:
       - master
   allow_failure: true
-      
+
 psi_low_test:
   stage: test
   tags: *tags_psi_low
@@ -405,7 +405,7 @@ low_on_demand_test:
   except:
     refs:
       - master
-      
+
 psi_low_on_demand_test:
   stage: test
   tags: *tags_psi_low
@@ -434,6 +434,15 @@ psi_low_on_demand_test:
   except:
     refs:
       - master
+
+validate_bdd_tests:
+  stage: test
+  script:
+    - pip3 install pytest_bdd
+    - curl https://gitlab.com/ska-telescope/ska-testing-runway/-/raw/SAR-217_add_test_compare/skallop/scripts/bdd_helper_scripts/xtp_compare.py -o xtp_compare.py
+    - ls -l
+    - python3 xtp_compare.py -d ./post-deployment/features -b ${JIRA_AUTH}
+  when: manual
 
 mid_sdp_config_dump:
   stage: debug
@@ -549,7 +558,7 @@ low_deploy_staging:
       - tags
   needs:
     - job: low_clean_staging
-      
+
 psi_low_deploy_staging:
   stage: deploy_staging
   tags: *tags_psi_low

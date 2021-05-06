@@ -438,7 +438,7 @@ psi_low_on_demand_test:
 validate_bdd_tests:
   stage: test
   script:
-    - pip3 install pytest_bdd
+    - pip3 install pytest-bdd==3.4.0
     - curl https://gitlab.com/ska-telescope/ska-testing-runway/-/raw/SAR-217_add_test_compare/skallop/scripts/bdd_helper_scripts/xtp_compare.py -o xtp_compare.py
     - ls -l
     - python3 xtp_compare.py -d ./post-deployment/features -b ${JIRA_AUTH}

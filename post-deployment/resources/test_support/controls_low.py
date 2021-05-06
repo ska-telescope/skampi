@@ -17,31 +17,6 @@ from resources.test_support.mappings_low import device_to_subarray
 LOGGER = logging.getLogger(__name__)
 
 
-# def telescope_is_in_standby():
-#     LOGGER.info(
-#         'resource("ska_low/tm_subarray_node/1").get("State")'
-#         + str(resource("ska_low/tm_subarray_node/1").get("State"))
-#     )
-#     LOGGER.info(
-#         'resource("ska_low/tm_leaf_node/mccs_master").get("State")'
-#         + str(resource("ska_low/tm_leaf_node/mccs_master").get("State"))
-#     )
-#     LOGGER.info(
-#         'resource("low-mccs/control/control").get("State")'
-#         + str(resource("low-mccs/control/control").get("State"))
-#     )
-#     # LOGGER.info(
-#     #     'resource("low-mccs/control/control").get("State")'
-#     #     + str(resource("low-mccs/control/control").get("State"))
-#     # )
-#     return [
-#         resource("ska_low/tm_subarray_node/1").get("State"),
-#         resource("ska_low/tm_leaf_node/mccs_master").get("State"),
-#         resource("low-mccs/control/control").get("State"),
-#     ] == ["OFF", "OFF", "OFF"]
-#         #resource("low-mccs/control/control").get("State"),
-#     ] == ["OFF", "OFF"]
-
 def take_subarray(id):
     return pilot(id)
 
@@ -157,3 +132,5 @@ def restart_subarray_low(id):
     if exceptions_raised != "":
         raise Exception(f'Error in initialising devices:{exceptions_raised}')
     the_waiter.wait()
+
+

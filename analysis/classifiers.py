@@ -620,6 +620,11 @@ add_classifier(
                pod='subarraynode1-sa1-0', section='teardown')],
     "SKBX-044c", "Subarray node restarts mid-test?", taints=True
 )
+add_classifier(
+    [(None, None)],
+    [match_msg(r"Process .* ended with exitcode .*", container='oet-rest')]
+    "SKBX-045", "OET process exits within a test"
+)
 
 
 # Special pseudo-classifiers

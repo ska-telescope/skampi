@@ -62,6 +62,8 @@ ATTR_EQUIVALENTS = {
     "dishleafnode3-03-0": { "dishleafnode-03-0" },
 }
 
+QUICKSCAN_TAGS = ['container', 'pod', 'level', 'source', 'thread', 'msg']
+
 # Message match predictate
 def match_msg(msg_r,
               after_msg_r=None, after_msg_attrs={},
@@ -93,6 +95,35 @@ def match_msg(msg_r,
                 if v in ATTR_EQUIVALENTS:
                     vals_new |= ATTR_EQUIVALENTS[v]
             attrs[k] = vals_new
+
+    # Optimised version if we scanning for something in "msgs" with given attributes
+    if section == 'msgs' and after_msg_r is None and max_time is None and max_count is None:
+
+        # Make a composed regular expression for quickly scanning the entire text
+        t = "\n\n#(?P<line>\d*)\n"
+        def attr_match(k):
+            if k == 'msg':
+                return msg_r
+            if k not in msg_attrs:
+                return '.*'
+            if len(msg_attrs[k]) == 1:
+                return re.escape(next(iter(msg_attrs[k])))
+            return '(' + '|'.join(re.escape(v) for v in msg_attrs[k]) + ')'
+        t += "\n".join(attr_match(k) for k in QUICKSCAN_TAGS)
+        t_rc = re.compile(t)
+
+        # Scan
+        def check(test, matched):
+            i = 0
+            for match in t_rc.finditer(test['msgs_t']):
+                l = test['msgs'][int(match['line'])]
+                # Recheck, just to make sure (we might be checking extra attributes)
+                if all(l.get(k,'') in v_set for k, v_set in msg_attrs.items()) and msg_rc.match(l['msg']):
+                    i += 1
+                    if matched is not None:
+                        matched.append(l)
+            return i
+        return check
 
     def check(test, matched):
         # Traverse dictionary to get element containing lines
@@ -622,7 +653,7 @@ add_classifier(
 )
 add_classifier(
     [(None, None)],
-    [match_msg(r"Process .* ended with exitcode .*", container='oet-rest')]
+    [match_msg(r"Process .* ended with exitcode .*", container='oet-rest')],
     "SKBX-045", "OET process exits within a test"
 )
 
@@ -656,6 +687,12 @@ def classify_test_results(test_results):
         cfrs = list(classifier_by_test.get((test['file'], test['name']), []))
         cfrs += classifier_by_test.get((None, None), [])
         cfrs = [ cfr for cfr in cfrs if not cfr.only_once or cfr.skb not in skbs_shown ]
+
+        # Make messages into a single string for quick scan (see match_msg)
+        test['msgs_t'] = "\n\n\n".join(
+            '\n'.join([f'\n\n#{i}'] + [msg.get(k, '') for k in QUICKSCAN_TAGS])
+            for i,msg in enumerate(test['msgs'])
+        )
 
         found_classifier = False
         for cfr in cfrs:

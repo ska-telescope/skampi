@@ -24,4 +24,4 @@ tango-simlib>=0.9.0
 lmcbaseclasses
 ska-log-transactions
 tabulate
-skallop==0.1.3
+git+https://gitlab.com/ska-telescope/ska-testing-runway.git@master#egg=skallop

@@ -49,7 +49,7 @@ subarray=SubArray(1)
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
-@pytest.mark.ncra
+@pytest.mark.obsreset
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then abort brings them in ABORTED in MVP Low")
 def test_subarray_abort_obsreset():
     """Abort Operation"""
@@ -94,10 +94,10 @@ def set_up_telescope(subarray_obsstate : str):
     if subarray_obsstate == "IDLE":
         assign()
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'IDLE'")
-    # elif subarray_obsstate == 'READY':
-    #     assign()
-    #     config()
-    #     LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'READY'")
+    elif subarray_obsstate == 'READY':
+        assign()
+        config()
+        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'READY'")
     # elif subarray_obsstate == "SCANNING":
     #     start_up()
     #     assign()

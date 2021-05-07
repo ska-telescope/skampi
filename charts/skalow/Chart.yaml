@@ -17,7 +17,7 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
 - name: tmc-low
-  version: 0.3.0
+  version: 9.9.9
   repository:  https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: ska-low-mccs
   version: 0.7.1

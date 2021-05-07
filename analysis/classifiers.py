@@ -653,7 +653,7 @@ def classify_test_results(test_results):
     for test in test_results:
     
         # Check whether we can match it to a classifier
-        cfrs = classifier_by_test.get((test['file'], test['name']), [])
+        cfrs = list(classifier_by_test.get((test['file'], test['name']), []))
         cfrs += classifier_by_test.get((None, None), [])
         cfrs = [ cfr for cfr in cfrs if not cfr.only_once or cfr.skb not in skbs_shown ]
 

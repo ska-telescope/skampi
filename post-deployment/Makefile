@@ -25,6 +25,7 @@ test: install
 	exit $$status
 
 install:
+	apt-get update && apt-get install -y git
 	pip3 install -r test_requirements.txt -qq
 
 start_log_consumer:
@@ -37,10 +38,10 @@ remove_log_consumer:
 
 setup_ipython:
 	ipython profile create &&  \
-	cp resources/ipython_config.py /home/tango/.ipython/profile_default/ipython_config.py 
+	cp resources/ipython_config.py /home/tango/.ipython/profile_default/ipython_config.py
 
 check_running:
-	ps aux 
+	ps aux
 
 get_mem_usage:
 	@raw=$$(cat /sys/fs/cgroup/memory/memory.usage_in_bytes) && \

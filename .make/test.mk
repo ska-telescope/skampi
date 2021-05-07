@@ -15,7 +15,7 @@ TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s
 #
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 MARK ?= fast## this variable allow the mark parameter in the pytest
-FILE ?= ##this variable allow to execution of a single file in the pytest 
+FILE ?= ##this variable allow to execution of a single file in the pytest
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
 
@@ -54,6 +54,7 @@ k8s_test = tar -c post-deployment/ | \
 			KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
 			HELM_RELEASE=$(HELM_RELEASE) \
 			TANGO_HOST=$(TANGO_HOST) \
+			JIRA_AUTH=$(JIRA_AUTH) \
 			MARK='$(MARK)' \
 			COUNT=$(COUNT) \
 			FILE='$(FILE)' \

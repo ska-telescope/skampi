@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -25,9 +26,9 @@ def test_validate_bdd_features():
     parsed_local_files = parse_local_feature_files(mocked_args)
     found_issues = []
     for local_file in parsed_local_files:
-        print(f"\nChecking file {local_file.file_path}")
+        logging.info("Checking file %s", local_file.file_path)
         issues = check_local_file(mocked_args, local_file)
         for issue in issues:
-            print(issue)
+            logging.info(issue)
         found_issues.extend(issues)
     assert not found_issues, "Some BDD files not valid"

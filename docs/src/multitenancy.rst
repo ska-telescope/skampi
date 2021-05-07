@@ -79,13 +79,13 @@ Branch names and access patterns
 
 From the namespace pattern, a URL can be formed for accessing Webjive / Jupyter / Tango REST interface. For instance, if you branch name is *st-605* and you are running the tests for SKA MID telescope:
 
-* Webjive: https://integration.engageska-portugal.pt/ci-skampi-st-605-mid/taranta/devices
+* Webjive: https://k8s.stfc.skao.int/ci-skampi-st-605-mid/taranta/devices
         * which comes from: <hostname>/ci-skampi-<branch>-mid/taranta/devices
-* Jupyter: https://integration.engageska-portugal.pt/ci-skampi-st-605-mid/jupyter
+* Jupyter: https://k8s.stfc.skao.int/ci-skampi-st-605-mid/jupyter
         * which comes from: <hostname>/ci-skampi-<branch>-mid/jupyter
-* TANGO REST interface: https://integration.engageska-portugal.pt/ci-skampi-st-605-mid/tango/rest/rc4/hosts/databaseds-tango-base-test-st-605/10000
+* TANGO REST interface: https://k8s.stfc.skao.int/ci-skampi-st-605-mid/tango/rest/rc4/hosts/databaseds-tango-base-test-st-605/10000
         * which comes from understanding the TANGO REST interface - refer to the documentation.
 
-For any deployment of SKAMPI, there is also now a start page from which most the above resources can be reached, at https://integration.engageska-portugal.pt/ci-skampi-<branch>-mid/start and https://integration.engageska-portugal.pt/ci-skampi-<branch>-low/start/.
+For any deployment of SKAMPI, there is also now a start page from which most the above resources can be reached, at https://k8s.stfc.skao.int/ci-skampi-<branch>-mid/start and https://k8s.stfc.skao.int/ci-skampi-<branch>-low/start/.
 
 If you replace the `ci-skampi-<branch>` part with `staging` or `integration`, you will reach the Staging and latest Integration deployments (based on the master branch) respectively.

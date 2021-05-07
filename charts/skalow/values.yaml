@@ -3,6 +3,9 @@ xauthority: "~/.Xauthority"
 minikube: true
 
 global:
+  retry: 
+  - "--sleep=1"
+  - "--tries=100"
   sub-system:
     tango-base:
       enabled: false
@@ -11,6 +14,7 @@ global:
   minikube: false
   tango_host: databaseds-tango-base-test:10000
   dsconfig:
+    timeout: 300s
     image:
       registry: nexus.engageska-portugal.pt/ska-docker
       image: tango-dsconfig
@@ -29,8 +33,10 @@ landingpage:
 
 tango-base:
   vnc:
+    replicas: 1
     enabled: true
   tangorest:
+    replicas: 1
     enabled: true
     resources:
       requests:
@@ -45,7 +51,7 @@ tango-base:
     enabled: true
   ingress:
     enabled: true
-    hostname: integration.engageska-portugal.pt
+    hostname: k8s.stfc.skao.int
   tangodb:
     use_pv: false
 
@@ -72,12 +78,21 @@ webjive:
   ingress:
     enabled: true
     nginx: true
-    hostname: low.integration.engageska-portugal.pt
+    hostname: low.k8s.stfc.skao.int
+  tangogql:
+    replicas: 3
+    resources:
+      requests:
+        cpu: 600m     # 600m = 0.6 CPU
+        memory: 512Mi # 512Mi = 0.5 GB mem
+      limits:
+        cpu: 1000m     # 1000m = 1 CPU
+        memory: 1024Mi # 1024Mi = 1 GB mem
 
 oet-scripts:
   enabled: true
   ingress:
-    hostname: low.integration.engageska-portugal.pt
+    hostname: low.k8s.stfc.skao.int
   system: TM-low
   telescope: SKA-low
   central_node: ska_low/tm_central/central_node
@@ -88,3 +103,18 @@ oet-scripts:
   rest:
     featureFlags:
       readViaPubSub: true
+
+sdp:
+  enabled: true
+  lmc:
+    prefix: low
+    nsubarray: 3
+  tango-base:
+    enabled: false
+
+ska-archiver:
+  hostname: 192.168.99.229
+  dbname: default_mvp_archiver_db
+  port: 3306
+  dbuser: eda_admin
+  dbpassword: '@v3ng3rs@ss3mbl3'

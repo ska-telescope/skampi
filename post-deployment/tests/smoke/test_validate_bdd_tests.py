@@ -24,6 +24,11 @@ def test_validate_bdd_features():
     mocked_args = MagicMock()
     mocked_args.directory = features_path
     mocked_args.basic_auth_token = os.environ.get("JIRA_AUTH", "")
+    mocked_args.feature_file = ""
+    mocked_args.username = ""
+    mocked_args.password = ""
+    mocked_args.verbose = False
+
 
     parsed_local_files = parse_local_feature_files(mocked_args)
     assert parsed_local_files, "No parsed feature files."

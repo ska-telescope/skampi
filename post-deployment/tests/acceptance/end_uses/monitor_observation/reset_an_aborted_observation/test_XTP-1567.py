@@ -16,11 +16,12 @@ from pytest_bdd import scenario, given, when, then
 from tango import DeviceProxy, DevState # type: ignore
 ## local imports
 from resources.test_support.helpers_low import resource, wait_before_test
-from resources.test_support.sync_decorators_low import sync_obsreset
+from resources.test_support.sync_decorators_low import sync_obsreset, sync_scan, sync_abort
 from resources.test_support.persistance_helping import load_config_from_file
-from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray_low, to_be_composed_out_of, configure_by_file
+from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray_low, to_be_composed_out_of, configure_by_file, take_subarray
 import resources.test_support.tmc_helpers_low as tmc
 from ska.scripting.domain import Telescope, SubArray
+from concurrent import futures
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -44,7 +45,7 @@ def result():
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
-@pytest.mark.rushi
+@pytest.mark.obsreset
 @scenario("XTP-1567.feature", "BDD test case for ObsReset command in MVP Low")
 def test_subarray_obsreset():
     """reset subarray"""
@@ -67,16 +68,16 @@ def config():
     test_SUT()
     LOGGER.info("Configure command on Subarray 1 is successful")
 
-def scanning(fixture):
-    @sync_scan(200)
-    def scan():
-        def send_scan():
-           subarray.scan()
-        LOGGER.info("Scan is invoked on Subarray 1")
-        executor = futures.ThreadPoolExecutor(max_workers=1)
-        return executor.submit(send_scan)
-    fixture['future'] = scan()
-    return fixture
+# def scanning(fixture):
+#     @sync_scan(200)
+#     def scan():
+#         def send_scan():
+#            subarray.scan()
+#         LOGGER.info("Scan is invoked on Subarray 1")
+#         executor = futures.ThreadPoolExecutor(max_workers=1)
+#         return executor.submit(send_scan)
+#     fixture['future'] = scan()
+#     return fixture
     # tmc.configure_sub()
     # LOGGER.info("Configure is invoked on Subarray")
     # wait_before_test(timeout=10)
@@ -97,16 +98,25 @@ def set_up_telescope(subarray_obsstate : str):
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'IDLE'")
     elif subarray_obsstate == 'READY':
         assign()
-        LOGGER.info("Resources are assigned successfully and configuring the subarray now")
         config()
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'READY'")
-    elif subarray_obsstate == 'SCANNING':
-        assign()
-        LOGGER.info("Resources are assigned successfully and configuring the subarray now")
-        config()
-        LOGGER.info("Subarray is configured and executing a scan on subarray")
-        scanning()
-        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'SCANNING'")
+    # elif subarray_obsstate == 'SCANNING':
+    #     assign()
+    #     LOGGER.info("Resources are assigned successfully and configuring the subarray now")
+    #     config()
+    #     LOGGER.info("Subarray is configured and executing a scan on subarray")
+        #scanning(fixture)
+    #     def scanning(fixture):
+    #     @sync_scan(200)
+    #         def scan():
+    #             def send_scan():
+    #                 subarray.scan()
+    #         LOGGER.info("Scan is invoked on Subarray 1")
+    #         executor = futures.ThreadPoolExecutor(max_workers=1)
+    #         return executor.submit(send_scan)
+    #     fixture['future'] = scan()
+    # return fixture
+        # LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'SCANNING'")
     else:
         msg = 'obsState {} is not settable with command methods'
         raise ValueError(msg.format(subarray_obsstate))
@@ -116,6 +126,7 @@ def set_up_telescope(subarray_obsstate : str):
         def abort():
             LOGGER.info("Invoking ABORT command.")
             subarray.abort()
+            #take_subarray(1).reset_when_aborted()
             LOGGER.info("Abort command is invoked on subarray")
         abort()
         LOGGER.info("Abort is completed on Subarray")

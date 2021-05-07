@@ -2,15 +2,15 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock
 
-import pytest
+# import pytest
 from skallop.scripts.bdd_helper_scripts.xtp_compare import (
     check_local_file,
     parse_local_feature_files,
 )
 
 
-@pytest.mark.xfail
-def test_validate_bdd_tests():
+# @pytest.mark.xfail
+def test_validate_bdd_features():
     """Make sure all the BDD feature files are in line with that in Jira"""
 
     test_file_path = Path(__file__)

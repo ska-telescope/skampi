@@ -8,7 +8,6 @@ from ska.scripting.domain import Telescope, SubArray
 ##SUT imports
 from ska.scripting.domain import Telescope
 from resources.test_support.helpers_low import subarray_devices,resource,ResourceGroup,waiter,watch
-#from resources.test_support.helpers_low import resource, waiter
 from resources.test_support.sync_decorators_low import sync_assign_resources, sync_configure, sync_reset_sa
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.mappings import device_to_subarrays
@@ -65,7 +64,7 @@ def set_telescope_to_running(disable_waiting = False):
     the_waiter.set_wait_for_starting_up()
     Telescope().start_up()
     if not disable_waiting:
-        the_waiter.wait(1000)
+        the_waiter.wait(100)
         if the_waiter.timed_out:
             pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 
@@ -132,5 +131,3 @@ def restart_subarray_low(id):
     if exceptions_raised != "":
         raise Exception(f'Error in initialising devices:{exceptions_raised}')
     the_waiter.wait()
-
-

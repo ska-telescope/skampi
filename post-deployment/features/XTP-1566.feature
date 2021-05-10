@@ -8,7 +8,8 @@ Feature:
 		Then the subarray eventually transitions into obsState ABORTED
 		
 		Examples:
-		| subarray_obsstate  | 
+		| subarray_obsstate  |
 		| IDLE               |
 		| READY              | 
+		| SCANNING           |
 		

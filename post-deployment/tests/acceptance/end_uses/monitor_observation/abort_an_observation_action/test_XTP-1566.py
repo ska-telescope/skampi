@@ -9,7 +9,7 @@ Acceptance tests for MVP.
 import os
 import pytest
 import logging
-# from concurrent import futures
+from concurrent import futures
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 from concurrent import futures
@@ -20,7 +20,7 @@ from ska.scripting.domain import SubArray
 ## local imports
 from resources.test_support.helpers_low import resource, wait_before_test
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray_low, to_be_composed_out_of, configure_by_file, take_subarray
-from resources.test_support.sync_decorators_low import sync_abort
+from resources.test_support.sync_decorators_low import sync_abort, sync_scan
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.persistance_helping import load_config_from_file
 from ska.scripting.domain import Telescope, SubArray
@@ -49,7 +49,7 @@ subarray=SubArray(1)
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
-@pytest.mark.obsreset
+@pytest.mark.xfail(reason="Latest MCCS images are not available")
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then abort brings them in ABORTED in MVP Low")
 def test_subarray_abort_obsreset():
     """Abort Operation"""
@@ -61,33 +61,33 @@ def assign():
     assert telescope_is_in_standby()
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Invoking Startup Telescope command on the telescope.")
-    wait_before_test(timeout=10)
     set_telescope_to_running()
-    wait_before_test(timeout=100)
+    wait_before_test(timeout=10)
     LOGGER.info("Telescope is started successfully.")
     LOGGER.info("Allocating resources to Low Subarray 1")
-    wait_before_test(timeout=100)
     to_be_composed_out_of()
+    wait_before_test(timeout=10)
     LOGGER.info("Subarray 1 is ready")
 
 
 def config():
     def test_SUT():
-        configure_by_file()
+        configure_by_file()     
     test_SUT()
     LOGGER.info("Configure command on Subarray 1 is successful")
 
 
-# def invoke_scan_command(fixture):
-#     @sync_scan(200)
-#     def scan():
-#         def send_scan():
-#            subarray.scan()
-#         LOGGER.info("Scan is invoked on Subarray 1")
-#         executor = futures.ThreadPoolExecutor(max_workers=1)
-#         return executor.submit(send_scan)
-#     fixture['future'] = scan()
-#     return fixture
+def invoke_scan_command(fixture):
+    @sync_scan_oet
+    def scan():
+        def send_scan():
+           subarray.scan()
+        LOGGER.info("Scan is invoked on Subarray 1")
+        executor = futures.ThreadPoolExecutor(max_workers=1)
+        return executor.submit(send_scan)
+    fixture['future'] = scan()
+    return fixture
+
 
 @given("operator has a running low telescope with a subarray in obsState <subarray_obsstate>")
 def set_up_telescope(subarray_obsstate : str):
@@ -98,12 +98,11 @@ def set_up_telescope(subarray_obsstate : str):
         assign()
         config()
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'READY'")
-    # elif subarray_obsstate == "SCANNING":
-    #     start_up()
-    #     assign()
-    #     config()
-    #     invoke_scan_command(fixture)
-    #     LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'SCANNING'")
+    elif subarray_obsstate == "SCANNING":
+        assign()
+        config()
+        invoke_scan_command(fixture)
+        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'SCANNING'")
     else:
         msg = "obsState {} is not settable with command methods"
         raise ValueError(msg.format(subarray_obsstate))
@@ -145,13 +144,11 @@ def teardown_function(function):
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
             LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
-            #subarray.restart()
             restart_subarray_low(1)
             # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "SCANNING"):
             LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
-            #subarray.restart()
             restart_subarray_low(1)
             # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
@@ -162,8 +159,6 @@ def teardown_function(function):
             LOGGER.info("tearing down configured subarray (ABORTED)")
             take_subarray(1).reset_when_aborted()
             LOGGER.info('Invoked ObsReset on Subarray')
-            wait_before_test(timeout=10)
-            # LOGGER.info(str(resource("ska_low/tm_subarray_node/1").get("obsState")))
             subarray.deallocate()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)

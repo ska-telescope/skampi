@@ -11,4 +11,5 @@ Feature:
 		| subarray_obsstate  | 
 		| IDLE               | 
 		| READY              | 
+		| SCANNING           |
 		 

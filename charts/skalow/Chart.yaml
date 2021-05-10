@@ -40,4 +40,5 @@ dependencies:
 - name: ska-archiver
   version: 0.1.4
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: ska-archiver.enabled
 

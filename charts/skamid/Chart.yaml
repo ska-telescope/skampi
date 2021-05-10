@@ -37,7 +37,7 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: webjive.enabled
 - name: skuid
-  version: 0.1.0
+  version: 0.2.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: skuid.enabled
 - name: landingpage
@@ -47,7 +47,7 @@ dependencies:
 - name: ska-archiver
   version: 0.1.4
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: archiver.enabled
+  condition: ska-archiver.enabled
 ## it was disabled in the old version of skampi
 # - name: dsh-lmc-prototype
 #   version: 0.0.1

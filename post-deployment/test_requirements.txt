@@ -25,3 +25,5 @@ lmcbaseclasses
 ska-log-transactions
 tabulate
 git+https://gitlab.com/ska-telescope/ska-testing-runway.git@master#egg=skallop
+ska-ser-skuid
+ska-ser-logging

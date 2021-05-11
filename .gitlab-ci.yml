@@ -68,8 +68,9 @@ stages:
     when: always
 
 .stress_test_template: &stress_test_definition
-  tags:
-  - k8srunner
+  tags: *tags_default
+  cache: {}
+  needs: []
   script:
   # We specifically need Bash for $SECONDS
   - bash scripts/run-stresstest.sh $STRESS_TEST_DURATION
@@ -329,14 +330,13 @@ mid_stress_test:
     DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
   <<: *stress_test_definition
   environment:
-    name: "test"
+    name: "stress-test"
     url: "http://$INGRESS_HOST/stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-  only:
-    variables:
-      - $STRESS_TEST_DURATION
+  rules:
+    - if: $STRESS_TEST_DURATION
 
 low_test:
   retry: 2
@@ -651,6 +651,7 @@ pages:
   stage: test
   tags:
   - k8srunner
+  cache: {}
   script:
   - pip3 install python-gitlab rstgen urllib3 sphinx sphinx-autobuild sphinx_rtd_theme
   - cd docs/analysis
@@ -662,10 +663,8 @@ pages:
         --gitlab-artifact logs.tar.xz
   - make html
   - mv _build/html ../../public
-  only:
-    variables:
-      - $STRESS_TEST_ANALYSIS_PIPELINES
-      - $STRESS_TEST_ANALYSIS_JOBS
+  rules:
+    - if: $STRESS_TEST_ANALYSIS_PIPELINES && $STRESS_TEST_ANALYSIS_JOBS
   artifacts:
     paths: [public/]
     expire_in: 1 week

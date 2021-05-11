@@ -8,7 +8,9 @@ logger = logging.getLogger(__name__)
 from skallop.event_handling import builders
 from skallop.mvp_control.describing import mvp_names
 from skallop.mvp_control.telescope import start_up as tel
+from skallop.mvp_control.entry_points.base import EntryPoint
 from skallop.mvp_fixtures import telescope as tel_fxt
+from skallop.connectors import configuration as con_conf
 from skallop.mvp_control.event_waiting import wait
 
 class Context(SimpleNamespace):
@@ -41,8 +43,8 @@ def fxt_checking_transits_during_start_up(devices: List[str]) -> Tuple[builders.
     checker = (
         builder.check_that(central_node)
         .transits_according_to(transitions)
-        .on_attr("State")
-        .when_transist_occur_on(devices,ignore_first=True)
+        .on_attr("state")
+        .when_transit_occur_on(devices,ignore_first=True)
     )
     return checker, builder
 
@@ -60,17 +62,16 @@ def fxt_prepare_switch_on(running_telescope_args,
             yield
 
 
+
+
 @pytest.mark.skamid
-def test_start_up(prepare_switch_on,running_telescope_args:tel_fxt.RunningTelescopeArgs,context:Context):
-    board: builders.MessageBoard = context.board
+def test_start_up(prepare_switch_on,running_telescope_args:tel_fxt.RunningTelescopeSettings,context:Context, entry_point: EntryPoint):
     checker: builders.Occurrences = context.checker
     args = running_telescope_args
     # when I start up the telescope
-    args.entry_point.set_telescope_to_running()
-
-    board: builders.MessageBoard = context.board
+    entry_point.set_telescope_to_running()
     checker: builders.Occurrences = context.checker
-    wait.wait(context.board, args.time_out)
+    wait.wait(context.board, 100)
     #logs = board.play_log_book()
     #logger.info(f"Log messages during waiting:\n{logs}")
     checking_logs = checker.print_outcome_for(checker.subject_device)

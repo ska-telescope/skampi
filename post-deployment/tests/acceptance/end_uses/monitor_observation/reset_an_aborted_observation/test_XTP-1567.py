@@ -21,7 +21,6 @@ from resources.test_support.persistance_helping import load_config_from_file
 from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray_low, to_be_composed_out_of, configure_by_file, take_subarray
 import resources.test_support.tmc_helpers_low as tmc
 from ska.scripting.domain import Telescope, SubArray
-from concurrent import futures
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -73,17 +72,6 @@ def config():
         configure_by_file()
     test_SUT()
     LOGGER.info("Configure command on Subarray 1 is successful")
-
-def scanning(fixture):
-    @sync_scan_oet
-    def scan():
-        def send_scan():
-           subarray.scan()
-        LOGGER.info("Scan is invoked on Subarray 1")
-        executor = futures.ThreadPoolExecutor(max_workers=1)
-        return executor.submit(send_scan)
-    fixture['future'] = scan()
-    return fixture
    
 @given("operator has a running telescope with a subarray in state <subarray_obsstate> and Subarray has transitioned into obsState ABORTED")
 def set_up_telescope(subarray_obsstate : str):
@@ -94,11 +82,15 @@ def set_up_telescope(subarray_obsstate : str):
         assign()
         config()
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'READY'")
-    if subarray_obsstate == 'SCANNING':
+    elif subarray_obsstate == 'SCANNING':
         assign()
         config()
         LOGGER.info("Subarray is configured and executing a scan on subarray")
-        scanning(fixture)
+        @sync_scan_oet
+        def scan():
+            subarray.scan()
+            LOGGER.info("scan command is invoked")
+        scan()
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'SCANNING'")
     else:
         msg = 'obsState {} is not settable with command methods'

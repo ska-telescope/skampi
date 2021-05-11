@@ -43,6 +43,7 @@ def test_mid_archiver():
   # Teardown
   archiver_helper.stop_archiving(attribute)
 
+@pytest.mark.quarantine
 @pytest.mark.archiver
 @pytest.mark.skalow
 #@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")

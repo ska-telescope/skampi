@@ -76,7 +76,7 @@ ska-low-mccs:
 webjive:
   minikube: false
   ingress:
-    enabled: false
+    enabled: true
     nginx: true
     hostname: low.k8s.stfc.skao.int
   tangogql:

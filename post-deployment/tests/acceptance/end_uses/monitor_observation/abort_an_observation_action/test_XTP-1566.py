@@ -12,7 +12,6 @@ import logging
 from concurrent import futures
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-from concurrent import futures
 #SUT infrastructure
 from tango import DeviceProxy # type: ignore
 from ska.scripting.domain import SubArray

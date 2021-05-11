@@ -28,9 +28,6 @@ class pilot():
         self.state = "Empty"
         self.rollback_order = {
             'IDLE': self.reset_when_aborted
-            #'Ready':self.and_end_sb_when_ready,
-           # 'Configuring':restart_subarray,
-           # 'Scanning':restart_subarray
         }
 
     def and_display_state(self):

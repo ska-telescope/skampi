@@ -71,8 +71,8 @@ class WaitAbort():
 
     def wait(self,timeout):
         logging.info("ABORT command invoked. Waiting for obsState to change to ABORTED")
-        self.w.wait_until_value_changed_to('ABORTED',timeout=500)
-        self.w1.wait_until_value_changed_to('ABORTED',timeout=500)
+        self.w.wait_until_value_changed_to('ABORTED',timeout=200)
+        self.w1.wait_until_value_changed_to('ABORTED',timeout=200)
 
 class WaitRestart():
 
@@ -91,8 +91,8 @@ class WaitObsReset():
 
     def wait(self,timeout):
         logging.info("ObsReset command invoked. Waiting for obsState to change to IDLE")
-        self.w.wait_until_value_changed_to('IDLE',timeout=500)
-        self.w1.wait_until_value_changed_to('IDLE',timeout=500)
+        self.w.wait_until_value_changed_to('IDLE',timeout=200)
+        self.w1.wait_until_value_changed_to('IDLE',timeout=200)
 
 class WaitScanning():
     def __init__(self):

@@ -68,7 +68,6 @@ stages:
     when: always
 
 .stress_test_template: &stress_test_definition
-  tags: *tags_default
   cache: {}
   needs: []
   script:
@@ -649,8 +648,6 @@ version_bump_charts:
 
 pages:
   stage: test
-  tags:
-  - k8srunner
   cache: {}
   script:
   - pip3 install python-gitlab rstgen urllib3 sphinx sphinx-autobuild sphinx_rtd_theme

@@ -647,6 +647,8 @@ version_bump_charts:
     - make commit-and-push-to-master
 
 pages:
+  tags:
+  - k8srunner
   stage: test
   cache: {}
   script:

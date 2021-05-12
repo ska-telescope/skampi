@@ -8,20 +8,22 @@ from kubernetes import config, client
 
 ## shared fixtures
 from resources.test_support.fixtures import run_context
-from skallop.mvp_fixtures.telescope import (
-    fxt_running_telescope, fxt_running_telescope_settings, fxt_fixed_telescope
-)
 from skallop.mvp_fixtures.subarray_composition import (
     fxt_allocated_subarray,
     fxt_allocate_subarray_settings,
     fxt_allocating_subarray,
+    fxt_sb_config,
 )
 from skallop.mvp_fixtures.subarray_configuration import (
     fxt_configured_subarray,
     fxt_configure_subarray_settings,
     fxt_configuring_subarray,
 )
-
+from skallop.mvp_fixtures.telescope import (
+    fxt_fixed_telescope,
+    fxt_running_telescope,
+    fxt_running_telescope_settings,
+)
 from skallop.mvp_fixtures.env_handling import (
     fxt_factory,
     fxt_inject_factory,

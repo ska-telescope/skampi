@@ -31,7 +31,7 @@ def fxt_devices()->List[str]:
     for index in range(1,4):
         devices = devices + mvp_names.SubArrays(index)
     for index in range(1,5):
-        devices = devices + mvp_names.Sensors(index)
+        devices = devices + mvp_names.Sensors(index).subtract('vcc')
     return devices.list
     
 @pytest.fixture(name='checking_transits_during_start_up')
@@ -56,9 +56,9 @@ def fxt_prepare_switch_on(running_telescope_args,
 
     context.checker, builder = checking_transits_during_start_up
     # with log.device_logging(builder,compose_args.devices_to_log):
-    with wait.waiting_context(builder) as board:
-        context.board = board
-        with tel_fxt.tear_down_when_finished(running_telescope_args):
+    with tel_fxt.tear_down_when_finished(running_telescope_args):
+        with wait.waiting_context(builder) as board:
+            context.board = board
             yield
 
 
@@ -69,10 +69,11 @@ def test_start_up(prepare_switch_on,running_telescope_args:tel_fxt.RunningTelesc
     checker: builders.Occurrences = context.checker
     args = running_telescope_args
     # when I start up the telescope
+    logger.info('setting telescope to running')
     entry_point.set_telescope_to_running()
     checker: builders.Occurrences = context.checker
-    wait.wait(context.board, 100)
-    #logs = board.play_log_book()
+    wait.wait(context.board, 15)
+    #logs = context.board.play_log_book()
     #logger.info(f"Log messages during waiting:\n{logs}")
     checking_logs = checker.print_outcome_for(checker.subject_device)
     logger.info(f"Results of checking:\n{checking_logs}")

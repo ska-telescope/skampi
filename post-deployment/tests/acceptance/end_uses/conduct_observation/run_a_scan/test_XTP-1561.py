@@ -64,7 +64,7 @@ def check_skuid_url():
     assert "SKUID_URL" in os.environ
 
 
-@given("a scan ID has been retrieved prior to the scan")
+@given("a scan ID has been retrieved prior to the scan",target_fixture='scan_ID_store')
 def scan_ID_store():
     """Set up the ScanIDStore and increment the scan ID a few times so we don't accidentally get 0"""
     store = ScanIDStore()

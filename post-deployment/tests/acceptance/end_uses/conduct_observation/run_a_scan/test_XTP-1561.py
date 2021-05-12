@@ -74,7 +74,7 @@ def scan_ID_store():
 
 
 @given("Subarray is configured successfully")
-def subarray_configure(scan_ID_store,composed_subarray,configured_subarray):
+def subarray_configure(scan_ID_store,allocated_subarray,configured_subarray):
     """Configure the subarray"""
     dp = tango.DeviceProxy("mid_sdp/elt/subarray_1")
     dp.subscribe_event("scanID", tango.EventType.CHANGE_EVENT, scan_ID_store.callback)

@@ -13,9 +13,6 @@ from ska.scripting.domain import SubArray
 from oet.command import RemoteScanIdGenerator
 from ska.scripting import observingtasks
 
-from skallop.mvp_fixtures import subarray_composition as sub_comp_fxt
-from skallop.mvp_fixtures import subarray_configuration as sub_conf_fxt
-
 from resources.test_support.controls import (
     set_telescope_to_standby,
     set_telescope_to_running,
@@ -23,44 +20,9 @@ from resources.test_support.controls import (
     take_subarray,
     restart_subarray,
 )
-from resources.test_support.helpers import resource
+
 
 logger = logging.getLogger(__name__)
-
-@pytest.fixture
-def subarray_id():
-    return 1
-
-@pytest.fixture
-def nr_of_dishes():
-    return 2
-
-# overrides composed subarray fixture args
-@pytest.fixture(name='composed_subarray_args')
-def fxt_composed_subarray_args(tmp_path, nr_of_dishes, subarray_id: int):
-    # SB_config == "standard"
-    composition = sub_comp_fxt.conf_types.CompositionByFile(
-        tmp_path, sub_comp_fxt.conf_types.FileCompositionType.standard
-    )
-    return sub_comp_fxt.Args(
-        subarray_id=subarray_id,
-        receptors=list(range(1, nr_of_dishes + 1)),
-        composition=composition,
-    )
-
-# overrides skallop.mvp_fixtures.subarray_composition.configured_subarray_args
-@pytest.fixture(name='configured_subarray_args')
-def fxt_configured_subarray_args(tmp_path, composed_subarray_args: sub_comp_fxt.Args):
-    configuration = sub_conf_fxt.conf_types.ConfigurationByFile(
-        tmp_path,
-        sub_conf_fxt.conf_types.FileConfigurationType.standard,
-        composed_subarray_args.composition.metadata,
-    )
-    return sub_conf_fxt.Args(
-        subarray_id= composed_subarray_args.subarray_id,
-        receptors=composed_subarray_args.receptors,
-        configuration=configuration,
-    )
 
 
 class ScanIDStore:

@@ -8,6 +8,7 @@
           "attributes": [
             "ska_low/tm_central/central_node/State",
             "ska_low/tm_central/central_node/telescopeHealthState",
+            "ska_low/tm_central/central_node/healthState",
             "ska_low/tm_leaf_node/mccs_master/State"
           ],
           "polling_period": 1000,

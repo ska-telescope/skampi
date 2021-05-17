@@ -22,7 +22,7 @@ def test_mid_archiver():
     f'tango://{mvp_tango_host}:10000/archiving/hdbpp/confmanager01'
   event_subscriber = \
     f'tango://{mvp_tango_host}:10000/archiving/hdbpp/eventsubscriber01'
-  attribute = f"tango://{mvp_tango_host}:10000/ska_mid/tm_central/central_node/State"
+  attribute = f"tango://{mvp_tango_host}:10000/ska_mid/tm_leaf_node/sdp_subarray01/healthState"
   
   logging.info(f'MVP namespace       : {mvp_namespace}')
   logging.info(f'MVP Tango host      : {mvp_tango_host}')
@@ -43,6 +43,7 @@ def test_mid_archiver():
   # Teardown
   archiver_helper.stop_archiving(attribute)
 
+@pytest.mark.quarantine
 @pytest.mark.archiver
 @pytest.mark.skalow
 #@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
@@ -55,7 +56,7 @@ def test_low_archiver():
     f'tango://{mvp_tango_host}:10000/archiving/hdbpp/confmanager01'
   event_subscriber = \
     f'tango://{mvp_tango_host}:10000/archiving/hdbpp/eventsubscriber01'
-  attribute = f"tango://{mvp_tango_host}:10000/ska_low/tm_central/central_node/State"
+  attribute = f"tango://{mvp_tango_host}:10000/ska_low/tm_leaf_node/mccs_subarray01/healthState"
 
   logging.info(f'MVP namespace       : {mvp_namespace}')
   logging.info(f'MVP Tango host      : {mvp_tango_host}')

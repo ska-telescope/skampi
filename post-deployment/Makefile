@@ -34,7 +34,7 @@ start_log_consumer:
 
 remove_log_consumer:
 	kill $$(ps aux | grep -v grep | grep 'python3 resources/log_consumer/log_consumer.py' | awk '{print $$2}') && \
-	(tango_admin --delete-server log_consumer/log &)
+	 (tango_admin --delete-server log_consumer/log &)
 
 setup_ipython:
 	ipython profile create &&  \

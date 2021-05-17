@@ -656,7 +656,12 @@ add_classifier(
     [match_msg(r"Process .* ended with exitcode .*", container='oet-rest')],
     "SKBX-045", "OET process exits within a test"
 )
-
+add_classifier(
+    [(None, None)],
+    [match_msg(r"AttributeError: 'NoneType' object has no attribute 'update_resource_deallocation'",
+               pod='centralnode-01-0')],
+    "SKBX-046", "resource_manager is None in TMC central node", taints=True
+)
 
 # Special pseudo-classifiers
 UNKNOWN = Classifier([(None, None)], [], 'UNKNOWN', 'Unclassified test failure')

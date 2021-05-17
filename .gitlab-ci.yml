@@ -176,6 +176,31 @@ mid_on_demand_uninstall:
     refs:
       - master
 
+mid_emu_on_demand_uninstall:
+  stage: cleanup
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "test/$CI_COMMIT_REF_NAME"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated
+    action: stop
+  when: manual
+  only:
+    refs:
+      - branches
+  except:
+    refs:
+      - master
+
 low_on_demand_uninstall:
   stage: cleanup
   tags: *tags_default
@@ -294,6 +319,37 @@ mid_on_demand_test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
     on_stop: mid_on_demand_uninstall
+    auto_stop_in: 2 hours
+  when: manual
+  only:
+    refs:
+    - branches
+  except:
+    refs:
+      - master
+
+mid_emu_on_demand_test:
+  stage: test
+  tags: *tags_default
+  variables:
+    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
+    MARK: "skamid or common"
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+  before_script:
+    - *create_k8s_creds
+  <<: *test_definition
+  environment:
+    name: "test/$CI_COMMIT_REF_NAME"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated/taranta"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated
+    on_stop: mid_emu_on_demand_uninstall
     auto_stop_in: 2 hours
   when: manual
   only:

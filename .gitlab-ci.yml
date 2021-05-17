@@ -342,7 +342,7 @@ mid_emu_on_demand_test:
   tags: *tags_default
   variables:
     DEPLOYMENT_CONFIGURATION: "skamid-emulated"
-    MARK: "skamid or common"
+    MARK: "skamid-emulated or fast"
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu"

@@ -73,7 +73,7 @@ class resource:
         # p.DevRestart("ska_mid/tm_central/central_node")
         # API to get admin device -used in archiver
         # Called RestartServer 
-        p = DeviceProxy("dserver/centralnodeds/01")
+        p = DeviceProxy(self.device_name)
         p.RestartServer()
         # Calling Reset method of device server
         # p = DeviceProxy("ska_mid/tm_central/central_node")

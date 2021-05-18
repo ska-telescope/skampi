@@ -129,3 +129,9 @@ device_to_subarrays = {"mid_csp_cbf/fspSubarray/01_01" : 1 ,
 "ska_mid/tm_leaf_node/sdp_subarray02": 2 ,
 "ska_mid/tm_leaf_node/sdp_subarray03": 3 ,
 "ska_mid/tm_leaf_node/sdp_subarray01": 1}
+
+device_for_dserver = {
+"dserver/centralnodeds/01" : "centralnode",
+"dserver/subarraynodeds/01" : "subarray1",
+"dserver/cbfmaster/master" : "cbfmaster"
+}

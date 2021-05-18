@@ -66,9 +66,19 @@ class resource:
             return getattr(p, attr)
     
     def restart(self):
-        #current suggested method is through 'init' maybe reset would be better in future
-        p = DeviceProxy(self.device_name)
-        p.init()
+        # current suggested method is through 'init' maybe reset would be better in future
+        # reset method is allowed only when device is in FAULT state.
+        # Called DevRestart method of Admin device Server
+        # p = DeviceProxy("dserver/centralnodeds/01")
+        # p.DevRestart("ska_mid/tm_central/central_node")
+        # API to get admin device -used in archiver
+        # Called RestartServer 
+        p = DeviceProxy("dserver/centralnodeds/01")
+        p.RestartServer()
+        # Calling Reset method of device server
+        # p = DeviceProxy("ska_mid/tm_central/central_node")
+        # p.Reset()
+        
 
     def assert_attribute(self,attr):
         return ObjectComparison("{}.{}".format(self.device_name,attr),self.get(attr))

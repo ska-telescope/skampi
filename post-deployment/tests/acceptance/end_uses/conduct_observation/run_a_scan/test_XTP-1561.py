@@ -4,6 +4,8 @@ import logging
 import time
 
 import pytest
+
+
 import tango
 
 from pytest_bdd import scenario, given, when, then
@@ -12,14 +14,10 @@ from ska.skuid.client import SkuidClient
 from ska.scripting.domain import SubArray
 from oet.command import RemoteScanIdGenerator
 from ska.scripting import observingtasks
+from skallop.mvp_fixtures.env_handling import ExecEnv
+from skallop.mvp_fixtures.context import SubarrayContext
+from skallop.mvp_control.event_waiting import set_to_wait, wait
 
-from resources.test_support.controls import (
-    set_telescope_to_standby,
-    set_telescope_to_running,
-    telescope_is_in_standby,
-    take_subarray,
-    restart_subarray,
-)
 
 
 logger = logging.getLogger(__name__)
@@ -40,6 +38,8 @@ class ScanIDStore:
         self.current_id = self.skuid_client.fetch_scan_id()
         return self.current_id
 
+def set_entry_point(exec_env: ExecEnv):
+    exec_env.entrypoint = "tmc"
 
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -74,7 +74,7 @@ def scan_ID_store():
 
 
 @given("Subarray is configured successfully")
-def subarray_configure(scan_ID_store,allocated_subarray,configured_subarray):
+def subarray_configure(scan_ID_store,configured_subarray):
     """Configure the subarray"""
     dp = tango.DeviceProxy("mid_sdp/elt/subarray_1")
     dp.subscribe_event("scanID", tango.EventType.CHANGE_EVENT, scan_ID_store.callback)
@@ -82,7 +82,7 @@ def subarray_configure(scan_ID_store,allocated_subarray,configured_subarray):
 
 
 @when("I call the execution of the scan command for duration of 6 seconds")
-def do_scan(monkeypatch):
+def do_scan(monkeypatch, configured_subarray: SubarrayContext,):
     """Monkeypatching the SCAN_ID_GENERATOR to ensure that the RemoteScanIdGenerator will
     be used"""
     monkeypatch.setattr(
@@ -91,7 +91,9 @@ def do_scan(monkeypatch):
         RemoteScanIdGenerator(os.environ["SKUID_URL"]),
         raising=True,
     )
-    SubArray(1).scan()
+    board = set_to_wait.set_waiting_for_scanning_to_complete(configured_subarray.id, configured_subarray.receptors)
+    with wait.wait_for(board, timeout=60):
+        SubArray(1).scan()
 
 
 @then(

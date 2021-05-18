@@ -35,7 +35,7 @@ from resources.test_support.controls import (
     set_telescope_to_running,
     telescope_is_in_standby,
     take_subarray,
-    restart_subarray,
+    restart_mvp,
 )
 from resources.test_support.tmc_helpers import sub_resetting, obsreset, configuring_sub
 
@@ -244,7 +244,7 @@ def teardown_function(function):
         LOGGER.warn(
             "Subarray is still in CONFIFURING! Please restart MVP manually to complete tear down"
         )
-        restart_subarray(1)
+        restart_mvp()
         raise Exception("Unable to tear down test setup")
     if resource("ska_mid/tm_subarray_node/1").get("obsState") == "READY":
         LOGGER.info("tearing down configured subarray (READY)")
@@ -253,13 +253,13 @@ def teardown_function(function):
         LOGGER.warn(
             "Subarray is still in SCANNING! Please restart MVP manually to complete tear down"
         )
-        restart_subarray(1)
+        restart_mvp()
         raise Exception("Unable to tear down test setup")
     if resource("ska_mid/tm_subarray_node/1").get("obsState") == "ABORTING":
         LOGGER.warn(
             "Subarray is still in ABORTING! Please restart MVP manually to complete tear down"
         )
-        restart_subarray(1)
+        restart_mvp()
     if resource("ska_mid/tm_subarray_node/1").get("obsState") == "ABORTED":
         take_subarray(1).restart_when_aborted()
     LOGGER.info("Put Telescope back to standby")

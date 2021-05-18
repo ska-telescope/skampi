@@ -72,7 +72,7 @@ def end(result):
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
-@scenario("XTP-790.feature", "Allocating resources without a SBI")
+@scenario("XTP-795.feature", "Allocating resources without a SBI")
 def test_resource_allocation():
     """
     Given sub-array is in ObsState EMPTY
@@ -85,7 +85,7 @@ def test_resource_allocation():
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
-@scenario("XTP-791.feature", "Configuring a subarray and performing scan without a SBI")
+@scenario("XTP-795.feature", "Configuring a subarray and performing scan without a SBI")
 def test_observing_sbi():
     """
     Given OET has allocated resources with file:///app/scripts/allocate_from_file.py

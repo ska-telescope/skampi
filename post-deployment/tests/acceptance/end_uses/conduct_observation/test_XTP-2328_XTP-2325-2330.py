@@ -86,7 +86,7 @@ def test_resource_allocation():
 @pytest.mark.skamid
 @pytest.mark.quarantine
 @scenario("XTP-2328.feature", "Configuring a subarray and performing scan without an SBI")
-def test_observing_sbi():
+def test_observing_without_sbi():
     """
     Given OET has allocated resources with file:///app/scripts/allocate_from_file.py
     and scripts/data/example_allocate.json
@@ -109,7 +109,7 @@ def start_up_telescope(result):
 
 
 @given(parsers.parse('OET has allocated resources with {script} and {allocate_json}'))
-def allocate_resources_from_sbi(script, allocate_json):
+def allocate_resources_from_file(script, allocate_json):
     """
     Use the OET Rest API to run resource allocation script with allocate JSON
 
@@ -123,14 +123,14 @@ def allocate_resources_from_sbi(script, allocate_json):
     script_completion_state = EXECUTOR.execute_script(
         script,
         allocate_json,
-        timeout=60
+        timeout=100
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
 
 
 @when(parsers.parse('I tell the OET to allocate resources using script {script} and {allocate_json}'))
-def when_allocate_resources_from_sbi(script, allocate_json):
+def when_allocate_resources_from_file(script, allocate_json):
     """
     Use the OET Rest API to run script that allocates resources from given JSON.
 
@@ -150,7 +150,7 @@ def when_allocate_resources_from_sbi(script, allocate_json):
 @when(
     parsers.parse('I tell the OET to configure a subarray and perform scan for duration {duration} sec using script '
                   '{script} and {configure_json}'))
-def observe_sbi(duration, script, configure_json, result):
+def observe_without_sbi(duration, script, configure_json, result):
     """
     Use the OET Rest API to observe using observing script and Configure JSON
 

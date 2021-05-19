@@ -123,7 +123,7 @@ def allocate_resources_from_file(script, allocate_json):
     script_completion_state = EXECUTOR.execute_script(
         script,
         allocate_json,
-        timeout=100
+        timeout=600
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
@@ -141,7 +141,7 @@ def when_allocate_resources_from_file(script, allocate_json):
     script_completion_state = EXECUTOR.execute_script(
         script,
         allocate_json,
-        timeout=60
+        timeout=600
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
@@ -169,7 +169,7 @@ def observe_without_sbi(duration, script, configure_json, result):
         script,
         configure_json,
         duration,
-        timeout=300
+        timeout=600
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected SBI observation script to be COMPLETED, instead was {script_completion_state}"

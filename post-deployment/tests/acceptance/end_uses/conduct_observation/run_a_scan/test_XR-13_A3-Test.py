@@ -22,7 +22,7 @@ from ska.scripting.domain import Telescope, SubArray
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers import  obsState, resource, watch, waiter, map_dish_nr_to_device_name
 import logging
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_mvp
 from resources.test_support.sync_decorators import  sync_scan_oet,sync_configure_oet,time_it
 
 LOGGER = logging.getLogger(__name__)
@@ -138,12 +138,12 @@ def teardown_function(function):
         take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manually to complete tear down")
-        restart_subarray(1)
+        restart_mvp()
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
         LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manually to complete tear down")
-        restart_subarray(1)
+        restart_mvp()
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")

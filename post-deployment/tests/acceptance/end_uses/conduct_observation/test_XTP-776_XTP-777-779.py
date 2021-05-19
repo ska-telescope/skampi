@@ -12,10 +12,10 @@ import logging
 import pytest
 import requests
 from pytest_bdd import given, parsers, scenario, then, when
-from resources.test_support.controls import (restart_subarray,
-                                             set_telescope_to_running,
+from resources.test_support.controls import (set_telescope_to_running,
                                              set_telescope_to_standby,
                                              take_subarray,
+                                             restart_mvp,
                                              telescope_is_in_standby)
 
 from resources.test_support.helpers import resource
@@ -63,7 +63,7 @@ def end(result):
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)
-        restart_subarray(1)
+        restart_mvp()
         # raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     if not telescope_is_in_standby():

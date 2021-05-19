@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-test_XTP-795
+test_XTP-2328
 ----------------------------------
-Tests for allocating resources from JSON (XTP-790)
-and configure subarray and observe scan (XTP-791)
+Tests for allocating resources from JSON (XTP-2325)
+and configure subarray and observe scan (XTP-2330)
 """
 import logging
 import pytest
@@ -72,7 +72,7 @@ def end(result):
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
-@scenario("XTP-795.feature", "Allocating resources without a SBI")
+@scenario("XTP-2328.feature", "Allocating resources without an SBI")
 def test_resource_allocation():
     """
     Given sub-array is in ObsState EMPTY
@@ -85,7 +85,7 @@ def test_resource_allocation():
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
-@scenario("XTP-795.feature", "Configuring a subarray and performing scan without a SBI")
+@scenario("XTP-2328.feature", "Configuring a subarray and performing scan without an SBI")
 def test_observing_sbi():
     """
     Given OET has allocated resources with file:///app/scripts/allocate_from_file.py
@@ -148,12 +148,14 @@ def when_allocate_resources_from_sbi(script, allocate_json):
 
 
 @when(
-    parsers.parse('I tell the OET to configure a subarray and perform scan using script {script} and {configure_json}'))
-def observe_sbi(script, configure_json, result):
+    parsers.parse('I tell the OET to configure a subarray and perform scan for duration {duration} sec using script '
+                  '{script} and {configure_json}'))
+def observe_sbi(duration, script, configure_json, result):
     """
     Use the OET Rest API to observe using observing script and Configure JSON
 
     Args:
+        duration (float): scan duration time
         script (str): file path to an observing script
         configure_json (str): file path to a configuree json
         result (dict): fixture used to track progress
@@ -166,6 +168,7 @@ def observe_sbi(script, configure_json, result):
     script_completion_state = EXECUTOR.execute_script(
         script,
         configure_json,
+        duration,
         timeout=300
     )
     assert script_completion_state == 'COMPLETED', \

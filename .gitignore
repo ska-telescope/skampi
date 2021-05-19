@@ -53,3 +53,4 @@ post-deployment/venv
 gilab_values.yaml
 .devcontainer/
 KUBECONFIG
+/venv/

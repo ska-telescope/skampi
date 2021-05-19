@@ -5,6 +5,13 @@
 /playbooks/*.retry
 /ubuntu-bionic-18.04-cloudimg-console.log
 /docs/build
+/docs/analysis/SKB*.rst
+/docs/analysis/TAINT*.rst
+/docs/analysis/UNKNOWN*.rst
+/docs/analysis/_build
+/docs/analysis/index.rst
+/docs/analysis/overview.rst
+/docs/analysis/log*
 /PrivateRules.mak
 /tmp
 /build
@@ -28,6 +35,7 @@ ansible-playbooks
 /test-harness/build/
 /test-harness/dist/
 /test-harness/report.json
+*~
 *__pycache__
 *.swp
 *.ipynb

@@ -88,4 +88,6 @@ From the namespace pattern, a URL can be formed for accessing Webjive / Jupyter 
 
 For any deployment of SKAMPI, there is also now a start page from which most the above resources can be reached, at https://k8s.stfc.skao.int/ci-skampi-<branch>-mid/start and https://k8s.stfc.skao.int/ci-skampi-<branch>-low/start/.
 
-If you replace the `ci-skampi-<branch>` part with `staging` or `integration`, you will reach the Staging and latest Integration deployments (based on the master branch) respectively.
+.. hint:: **Staging and Integration permanent environments**
+
+  If you replace the `ci-skampi-<branch>` part with `staging` or `integration`, you will reach the latest Staging and Integration deployments (based on the master branch), respectively.

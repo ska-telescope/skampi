@@ -7,7 +7,9 @@
           "eventsubscriber": "archiving/hdbpp/eventsubscriber01",
           "attributes": [
             "ska_low/tm_central/central_node/State",
-            "ska_low/tm_central/central_node/telescopeHealthState"
+            "ska_low/tm_central/central_node/telescopeHealthState",
+            "ska_low/tm_central/central_node/healthState",
+            "ska_low/tm_leaf_node/mccs_master/State"
           ],
           "polling_period": 1000,
           "period_event": 3000
@@ -15,8 +17,10 @@
         {
           "eventsubscriber": "archiving/hdbpp/eventsubscriber02",
           "attributes": [
+            "ska_low/tm_subarray_node/1/State",
             "ska_low/tm_subarray_node/1/obsState",
-            "ska_low/tm_subarray_node/1/healthState"
+            "ska_low/tm_subarray_node/1/healthState",
+            "ska_low/tm_leaf_node/mccs_subarray01/State"
           ],
           "polling_period": 1000,
           "period_event": 3000
@@ -29,8 +33,8 @@
         {
           "eventsubscriber": "archiving/hdbpp/eventsubscriber03",
           "attributes": [
-            "low-mccs/control/control/healthState",
-            "ska_low/tm_leaf_node/mccs_master/healthState"
+            "low-mccs/control/control/State",
+            "low-mccs/control/control/healthState"
           ],
           "polling_period": 1000,
           "period_event": 3000
@@ -38,9 +42,9 @@
         {
           "eventsubscriber": "archiving/hdbpp/eventsubscriber04",
           "attributes": [
+          "low-mccs/subarray/01/State",
           "low-mccs/subarray/01/healthState",
-          "low-mccs/subarray/01/obsState",
-          "ska_low/tm_leaf_node/mccs_subarray01/healthState"
+          "low-mccs/subarray/01/obsState"
           ],
           "polling_period": 1000,
           "period_event": 3000

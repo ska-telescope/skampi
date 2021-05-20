@@ -1,3 +1,4 @@
+import os
 import logging
 
 from tempfile import NamedTemporaryFile
@@ -5,11 +6,9 @@ from tempfile import NamedTemporaryFile
 import requests
 import pytest
 
-from tango import Database # type: ignore
-from tango_simlib.utilities.validate_device import (
-    validate_device_from_path,
-    validate_device_from_url,
-)
+from tango import Database  # type: ignore
+from tango_simlib.utilities.validate_device import validate_device_from_path
+
 
 SPEC_URLS = {
     "ska_tango_guide_ska_wide": (
@@ -31,6 +30,25 @@ def check_mid_low(device_name):
     return False
 
 
+def get_job_token_header():
+    """Build the request headers
+
+    Authenticated requests for resources from Gitlab are not rate limited as harshly.
+    See https://jira.skatelescope.org/browse/SKB-66 for details.
+
+    Returns
+    -------
+    dict
+        The headers to use in the HTTP request
+    """
+    request_headers = {}
+    job_token = os.environ.get("CI_JOB_TOKEN", {})
+    if job_token:
+        request_headers = {"JOB-TOKEN": job_token}
+
+    return request_headers
+
+
 @pytest.mark.xfail(reason="Not all SKA devices complies to spec at present")
 @pytest.mark.skamid
 def test_ska_devices():
@@ -38,9 +56,13 @@ def test_ska_devices():
     devices = Database().get_device_exported("*")
     devices = list(filter(check_mid_low, devices))
 
+    request_headers = get_job_token_header()
+    if request_headers:
+        logging.info("Using job token")
+
     test_result = {}
     with NamedTemporaryFile(mode="wb") as tmp_file:
-        spec_response = requests.get(SPEC_URLS["ska_tango_guide_ska_wide"])
+        spec_response = requests.get(SPEC_URLS["ska_tango_guide_ska_wide"], headers=request_headers)
         tmp_file.write(spec_response.content)
         tmp_file.seek(0)
 
@@ -64,14 +86,28 @@ def test_ska_devices():
 @pytest.mark.quarantine
 def test_dishmaster_conforms_to_tango_wide():
     """Check that dishmaster conforms to tango developers guide"""
-    result = validate_device_from_url(
-        "mid_d0001/elt/master", SPEC_URLS["ska_tango_guide_ska_wide"], False
-    )
+    request_headers = get_job_token_header()
+    if request_headers:
+        logging.info("Using job token")
+
+    with NamedTemporaryFile(mode="wb") as tmp_file:
+        spec_response = requests.get(SPEC_URLS["ska_tango_guide_ska_wide"], headers=request_headers)
+        tmp_file.write(spec_response.content)
+        tmp_file.seek(0)
+        result = validate_device_from_path("mid_d0001/elt/master", tmp_file.name, False)
     assert not result
 
 
 @pytest.mark.skamid
 def test_dishmaster_conforms_to_dishmaster_spec():
     """Check that dishmaster device conforms to dishmaster specification"""
-    result = validate_device_from_url("mid_d0001/elt/master", SPEC_URLS["dish_master"], False)
+    request_headers = get_job_token_header()
+    if request_headers:
+        logging.info("Using job token")
+
+    with NamedTemporaryFile(mode="wb") as tmp_file:
+        spec_response = requests.get(SPEC_URLS["dish_master"], headers=request_headers)
+        tmp_file.write(spec_response.content)
+        tmp_file.seek(0)
+        result = validate_device_from_path("mid_d0001/elt/master", tmp_file.name, False)
     assert not result

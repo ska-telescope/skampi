@@ -1,0 +1,8 @@
+
+# Required
+version: 2
+
+# Build documentation in the docs/src directory with Sphinx (and
+# ignore docs/analysis!)
+sphinx:
+   configuration: docs/src/conf.py

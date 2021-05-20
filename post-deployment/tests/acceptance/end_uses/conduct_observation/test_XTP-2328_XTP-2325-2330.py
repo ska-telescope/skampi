@@ -69,6 +69,7 @@ def end(result):
                 subarray.get('obsState'))
 
 
+
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -80,6 +81,7 @@ def test_resource_allocation():
      and scripts/data/example_allocate.json
     Then the sub-array goes to ObsState IDLE
     """
+
 
 
 @pytest.mark.oetmid
@@ -123,7 +125,7 @@ def allocate_resources_from_file(script, allocate_json):
     script_completion_state = EXECUTOR.execute_script(
         script,
         allocate_json,
-        timeout=600
+        timeout=300
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
@@ -141,7 +143,7 @@ def when_allocate_resources_from_file(script, allocate_json):
     script_completion_state = EXECUTOR.execute_script(
         script,
         allocate_json,
-        timeout=600
+        timeout=300
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
@@ -169,7 +171,7 @@ def observe_without_sbi(duration, script, configure_json, result):
         script,
         configure_json,
         duration,
-        timeout=600
+        timeout=300
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected SBI observation script to be COMPLETED, instead was {script_completion_state}"

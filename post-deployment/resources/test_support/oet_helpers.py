@@ -6,6 +6,10 @@ from multiprocessing import Process, Manager, Queue
 
 from oet.procedure.application.restclient import RestClientUI
 from resources.test_support.helpers import resource
+from ska.cdm.schemas import CODEC as cdm_CODEC
+
+from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
+from skuid.client import SkuidClient
 
 # OET task completion can occur before TMC has completed its activity - so allow time for the
 # last transitions to take place
@@ -18,8 +22,43 @@ rest_cli_uri = f"http://oet-rest-{helm_release}:5000/api/v1.0/procedures"
 REST_CLIENT = RestClientUI(rest_cli_uri)
 
 
-class Subarray:
+def update_all_uids(allocate_json: str):
+    """
+   Replace UIDs with fresh UIDs retrieved from the UID generator.
 
+   This function modifies the SDPConfiguration in-place.
+   :param sdp_config: SDP configuration to process
+   :return:
+   """
+    LOGGER.info(f'Updating UIDs')
+    request: AssignResourcesRequest = cdm_CODEC.load_from_file(AssignResourcesRequest, allocate_json)
+    uid_client = SkuidClient(environ['SKUID_URL'])
+
+    # Create a mapping of old SB IDs to new IDs
+    new_sbi_mapping = {request.sdp_config.sdp_id: uid_client.fetch_skuid('sbi')}
+    for old_id, new_id in new_sbi_mapping.items():
+        LOGGER.info(f'New SBI ID mapping: {old_id} -> {new_id}')
+
+    # Create a mapping of old processing block IDs to new IDs
+    new_pb_mapping = {pb.pb_id: uid_client.fetch_skuid('pb')
+                      for pb in request.sdp_config.processing_blocks}
+    for old_id, new_id in new_pb_mapping.items():
+        LOGGER.info(f'New PB ID mapping: {old_id} -> {new_id}')
+    # Trawl through the SDP configuration replacing old IDs with new
+    request.sdp_config.sdp_id = new_sbi_mapping[request.sdp_config.sdp_id]
+    for pb in request.sdp_config.processing_blocks:
+        pb.pb_id = new_pb_mapping[pb.pb_id]
+        if pb.dependencies:
+            for dependency in pb.dependencies:
+                dependency.pb_id = new_pb_mapping[dependency.pb_id]
+
+    marshalled_json = cdm_CODEC.dumps(request)
+    with open(allocate_json, 'w') as outfile:
+        outfile.write(marshalled_json)
+    return allocate_json
+
+
+class Subarray:
     resource = None
 
     def __init__(self, device):

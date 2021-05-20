@@ -17,7 +17,7 @@ from resources.test_support.controls import (restart_subarray,
                                              telescope_is_in_standby)
 
 from resources.test_support.helpers import resource
-from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray
+from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray, update_all_uids
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant
@@ -69,7 +69,6 @@ def end(result):
                 subarray.get('obsState'))
 
 
-
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -81,7 +80,6 @@ def test_resource_allocation():
      and scripts/data/example_allocate.json
     Then the sub-array goes to ObsState IDLE
     """
-
 
 
 @pytest.mark.oetmid
@@ -122,6 +120,7 @@ def allocate_resources_from_file(script, allocate_json):
     if telescope_is_in_standby():
         set_telescope_to_running()
 
+    allocate_json = update_all_uids(allocate_json)
     script_completion_state = EXECUTOR.execute_script(
         script,
         allocate_json,
@@ -140,6 +139,7 @@ def when_allocate_resources_from_file(script, allocate_json):
         script (str): file path to an observing script
         allocate_json (str): file path to a allocate json
     """
+    allocate_json = update_all_uids(allocate_json)
     script_completion_state = EXECUTOR.execute_script(
         script,
         allocate_json,

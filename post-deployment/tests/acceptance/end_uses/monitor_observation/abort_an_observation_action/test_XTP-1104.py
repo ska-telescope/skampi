@@ -262,6 +262,10 @@ def teardown_function(function):
         restart_mvp()
     if resource("ska_mid/tm_subarray_node/1").get("obsState") == "ABORTED":
         take_subarray(1).restart_when_aborted()
-    LOGGER.info("Put Telescope back to standby")
-    set_telescope_to_standby()
-    LOGGER.info("Telescope is in StandBy.")
+    # LOGGER.info("Put Telescope back to standby")
+    # set_telescope_to_standby()
+    # LOGGER.info("Telescope is in StandBy.")
+    LOGGER.warn(
+            "Please restart MVP manually to complete tear down"
+        )
+    restart_mvp()

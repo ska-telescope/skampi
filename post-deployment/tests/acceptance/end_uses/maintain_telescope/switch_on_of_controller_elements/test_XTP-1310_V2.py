@@ -7,11 +7,11 @@ from pytest_bdd import (
     then,
     when,
 )
-import tango
 import logging
 import time  # used to sleep between measurements
 from skallop.transactions.atomic import atomic
-from tango import DeviceProxy
+from skallop.connectors.configuration import get_device_proxy
+from skallop.datatypes.attributes import DevState
 
 
 logger = logging.getLogger(__name__)
@@ -20,12 +20,12 @@ class DeviceStates:
     
     def __init__(self):
         # create device proxy to TMC CentralNode
-        self.tmc_central_node = DeviceProxy('ska_low/tm_central/central_node')
+        self.tmc_central_node = get_device_proxy('ska_low/tm_central/central_node')
 
         # create device proxy to MCCS controller, station, and tile
-        self.mccs_controller = DeviceProxy('low-mccs/control/control')
-        self.mccs_station_001 = DeviceProxy('low-mccs/station/001')
-        self.mccs_tile_0001 = DeviceProxy('low-mccs/tile/0001')
+        self.mccs_controller = get_device_proxy('low-mccs/control/control')
+        self.mccs_station_001 = get_device_proxy('low-mccs/station/001')
+        self.mccs_tile_0001 = get_device_proxy('low-mccs/tile/0001')
         # Create a list holding the target devices in the control chain
         self.ALL_DEVICES = [
             self.tmc_central_node,
@@ -50,9 +50,9 @@ def devices()-> DeviceStates:
     return DeviceStates()
 
 # Create a shortcut for ON and OFF states
-ON = tango._tango.DevState.ON
-OFF = tango._tango.DevState.OFF
-DISABLE = tango._tango.DevState.DISABLE
+ON =DevState.ON
+OFF = DevState.OFF
+DISABLE = DevState.DISABLE
 
 # Define a function to print the state of all devices
 #@pytest.mark.skip(reason="disabled to check pipeline failure")
@@ -81,8 +81,8 @@ def i_send_the_command_to_the_tmc(devices):
  
     if devices.tmc_central_node.State() is not ON:
         logger.info('Control system is off. Starting up telescope...')
-        with atomic(devices.all_device_names,'State','ON',5):
-            devices.tmc_central_node.startuptelescope()
+        with atomic(devices.all_device_names,'state','ON',5):
+            devices.tmc_central_node.StartUpTelescope()
             #time.sleep(20)
     else:
         logger.info('Control system is already on. No start up command issued.')
@@ -101,7 +101,7 @@ def tpm_hardware_working_state():
 @then('the state and the temperature of the TPM_HW can be monitored')
 def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
     """the state and the temperature of the TPM_HW can be monitored.."""
-    if devices.mccs_tile_0001.simulationmode == 1:
+    if devices.mccs_tile_0001.simulationMode == 1:
         logger.info('MCCS tile 0001 is in simulation mode')
     devices.print_device_states()
 
@@ -123,7 +123,7 @@ def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
     logger.info(temperature)
     logger.info(mccs_time)
     with atomic(devices.all_device_names,'State','OFF',5):
-        devices.tmc_central_node.standbytelescope()
+        devices.tmc_central_node.StandByTelescope()
 
 
 

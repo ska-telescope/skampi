@@ -20,10 +20,12 @@ import json
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.persistance_helping import update_scan_config_file
 from resources.test_support.sync_decorators_low import sync_configure
-from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray, to_be_composed_out_of, configure_by_file
+from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray, to_be_composed_out_of, configure_by_file, take_subarray
 import pytest
 from resources.test_support.tmc_helpers_low import compose_sub, configure_sub, release_resources, end
 from ska.scripting.domain import Telescope, SubArray
+import resources.test_support.tmc_helpers_low as tmc
+
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -93,13 +95,17 @@ def teardown_function(function):
         #this means there must have been an error
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            subarray.deallocate()
+            #subarray.deallocate()
+            tmc.release_resources()
     if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
         #this means test must have passed
         LOGGER.info("tearing down configured subarray (READY)")
-        subarray.end()
+        #subarray.end()
+        #take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+        take_subarray(1).and_end_sb_when_ready()
         LOGGER.info("End is invoked on Subarray 1")
-        subarray.deallocate()
+        #subarray.deallocate()
+        tmc.release_resources()
         LOGGER.info("ReleaseResources is invoked on Subarray 1")
     if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         LOGGER.warn("Subarray is still in configuring! Please restart MVP manualy to complete tear down")

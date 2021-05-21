@@ -169,7 +169,7 @@ def observe_without_sbi(duration, script, configure_json, result):
         timeout=300
     )
     assert script_completion_state == 'COMPLETED', \
-        f"Expected SBI observation script to be COMPLETED, instead was {script_completion_state}"
+        f"Expected observation script to be COMPLETED, instead was {script_completion_state}"
 
 
 @then(parsers.parse('the sub-array goes to ObsState {obsstate}'))

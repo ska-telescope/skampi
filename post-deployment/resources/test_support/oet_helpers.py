@@ -116,8 +116,8 @@ class Poller:
         recorded_states = [i for i in recorded_states if i != 'READY']
 
         LOGGER.info("STATE MONITORING: Comparing the list of states observed with the expected states")
-        LOGGER.info("STATE MONITORING: Expected states: %s", ','.join(expected_states))
-        LOGGER.info("STATE MONITORING: Recorded states: %s", ','.join(recorded_states))
+        LOGGER.debug("STATE MONITORING: Expected states: %s", ','.join(expected_states))
+        LOGGER.debug("STATE MONITORING: Recorded states: %s", ','.join(recorded_states))
         if len(expected_states) != len(recorded_states):
             LOGGER.warning("STATE MONITORING: Expected %d states but recorded %d states",
                            len(expected_states), len(recorded_states))

@@ -13,5 +13,5 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	Scenario: Configuring a subarray and performing scan without an SBI
 		Given A running telescope with 2 dishes are allocated to sub-array for executing observations
 		When I tell the OET to configure a sub-array and perform scan for duration 10.0 sec using script file:///app/scripts/observe.py and scripts/data/example_configure.json
-		Then the sub-array passes through ObsStates IDLE, CONFIGURING, SCANNING, IDLE
+		Then the sub-array passes through ObsStates IDLE, CONFIGURING, SCANNING
 

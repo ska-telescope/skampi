@@ -24,6 +24,6 @@ tango-simlib>=0.9.0
 lmcbaseclasses
 ska-log-transactions
 tabulate
-skallop==1.0.0-dev
+skallop==1.0.0-beta
 ska-ser-skuid
 ska-ser-logging

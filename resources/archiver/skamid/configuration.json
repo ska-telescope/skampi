@@ -36,13 +36,10 @@
             "ska_mid/tm_subarray_node/3/obsState",
             "ska_mid/tm_subarray_node/3/healthState",
             "ska_mid/tm_leaf_node/csp_subarray01/State",
-            "ska_mid/tm_leaf_node/csp_subarray01/delayModel",
             "ska_mid/tm_leaf_node/sdp_subarray01/State",
             "ska_mid/tm_leaf_node/csp_subarray02/State",
-            "ska_mid/tm_leaf_node/csp_subarray02/delayModel",
             "ska_mid/tm_leaf_node/sdp_subarray02/State",
             "ska_mid/tm_leaf_node/csp_subarray03/State",
-            "ska_mid/tm_leaf_node/csp_subarray03/delayModel",
             "ska_mid/tm_leaf_node/sdp_subarray03/State"
           ],
           "polling_period": 1000,

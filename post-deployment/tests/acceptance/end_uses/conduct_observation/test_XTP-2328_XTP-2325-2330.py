@@ -108,25 +108,21 @@ def start_up_telescope(result):
     LOGGER.info("Sub-array is in ObsState EMPTY")
 
 
-@given(parsers.parse('OET has allocated resources with {script} and {allocate_json}'))
-def allocate_resources_from_file(script, allocate_json):
+@given('A running telescope with 2 dishes are allocated to sub-array for executing observations')
+def allocate_resources():
     """
-    Use the OET Rest API to run resource allocation script with allocate JSON
-
-    Args:
-        script (str): file path to an observing script
-        allocate_json (str): file path to a allocate_json
+    setting up running telescope with 2 dishes are allocated
     """
+    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy")
     if telescope_is_in_standby():
+        assert (telescope_is_in_standby())
+        LOGGER.info("Telescope is in StandBy.")
+        LOGGER.info("Starting up telescope")
         set_telescope_to_running()
-
-    script_completion_state = EXECUTOR.execute_script(
-        script,
-        allocate_json,
-        timeout=600
-    )
-    assert script_completion_state == 'COMPLETED', \
-        f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
+        LOGGER.info("Telescope started")
+    LOGGER.info("Assigning 2 dishes to subarray 1")
+    take_subarray(1).to_be_composed_out_of(2)
+    LOGGER.info("Resources are successfully assigned to subarray 1.")
 
 
 @when(parsers.parse('I tell the OET to allocate resources using script {script} and {allocate_json}'))
@@ -138,17 +134,18 @@ def when_allocate_resources_from_file(script, allocate_json):
         script (str): file path to an observing script
         allocate_json (str): file path to a allocate json
     """
+
     script_completion_state = EXECUTOR.execute_script(
         script,
         allocate_json,
-        timeout=600
+        timeout=300
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
 
 
 @when(
-    parsers.parse('I tell the OET to configure a subarray and perform scan for duration {duration} sec using script '
+    parsers.parse('I tell the OET to configure a sub-array and perform scan for duration {duration} sec using script '
                   '{script} and {configure_json}'))
 def observe_without_sbi(duration, script, configure_json, result):
     """
@@ -168,8 +165,8 @@ def observe_without_sbi(duration, script, configure_json, result):
     script_completion_state = EXECUTOR.execute_script(
         script,
         configure_json,
-        duration,
-        timeout=600
+        float(duration),
+        timeout=300
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected SBI observation script to be COMPLETED, instead was {script_completion_state}"

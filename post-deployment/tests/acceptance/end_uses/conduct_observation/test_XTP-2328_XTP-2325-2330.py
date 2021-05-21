@@ -88,9 +88,8 @@ def test_resource_allocation():
 @scenario("XTP-2328.feature", "Configuring a subarray and performing scan without an SBI")
 def test_observing_without_sbi():
     """
-    Given OET has allocated resources with file:///app/scripts/allocate_from_file.py
-    and scripts/data/example_allocate.json
-    When I tell the OET to configure a subarray and perform scan using script
+    Given A running telescope with 2 dishes are allocated to sub-array for executing observations
+    When I tell the OET to configure a sub-array and perform scan using script
     file:///app/scripts/observe.py and scripts/data/example_configure.json
     Then the sub-array passes through ObsStates IDLE, CONFIGURING, SCANNING, IDLE
     """

@@ -2,6 +2,7 @@ import pytest
 from datetime import date,datetime
 import os
 import logging
+import time
 
 ##SUT imports
 from ska.scripting.domain import Telescope, SubArray
@@ -149,7 +150,9 @@ def restart_mvp():
     exceptions_raised = ""
     for device in devices:
         try:
+            LOGGER.info('Restarting on device'+ str(device))
             resource(device).restart()
+            time.sleep(1)
         except Exception as e:
             exceptions_raised += f'\nException raised on reseting {device}:{e}'
     if exceptions_raised != "":

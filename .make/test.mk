@@ -55,6 +55,7 @@ k8s_test = tar -c post-deployment/ | \
 			HELM_RELEASE=$(HELM_RELEASE) \
 			TANGO_HOST=$(TANGO_HOST) \
 			JIRA_AUTH=$(JIRA_AUTH) \
+			CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
 			MARK='$(MARK)' \
 			COUNT=$(COUNT) \
 			FILE='$(FILE)' \

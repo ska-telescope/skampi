@@ -260,6 +260,9 @@ mid_test:
   only:
     refs:
       - master
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
 
 mid_test_quarantine:
   stage: test
@@ -284,6 +287,9 @@ mid_test_quarantine:
   only:
     refs:
       - master
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
   allow_failure: true
 
 mid_on_demand_test:
@@ -363,6 +369,9 @@ low_test:
   only:
     refs:
       - master
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
 
 low_test_quarantine:
   stage: test
@@ -388,6 +397,9 @@ low_test_quarantine:
   only:
     refs:
       - master
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
   allow_failure: true
       
 psi_low_test:
@@ -411,6 +423,9 @@ psi_low_test:
   only:
     refs:
       - master
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
 
 low_on_demand_test:
   stage: test
@@ -439,6 +454,9 @@ low_on_demand_test:
   only:
     refs:
       - branches
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
   except:
     refs:
       - master

@@ -319,7 +319,7 @@ def sync_scan_oet(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_going_into_scanning()
         result = func(*args, **kwargs)
-        the_waiter.wait()
+        the_waiter.wait(timeout=200)
         return result
     return wrapper
     
@@ -339,6 +339,32 @@ def sync_abort(timeout=200):
         def wrapper(*args, **kwargs):
             check_going_into_abort()
             w = WaitAbort()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
+
+def sync_reset_sa(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        check_going_out_of_abort()
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_into_obsreset()
+        result = func(*args, **kwargs)
+        the_waiter.wait(100)
+        return result
+    return wrapper
+
+def sync_restart(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            #check_going_into_restart()
+            check_going_out_of_abort()
+            w = WaitRestart()
             ################
             result = func(*args, **kwargs)
             ################

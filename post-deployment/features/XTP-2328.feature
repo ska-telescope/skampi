@@ -11,7 +11,7 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	#Scenario: Observing without a SBI
 	@XTP-2330 @XTP-2328
 	Scenario: Configuring a subarray and performing scan without an SBI
-		Given OET has allocated resources with file:///app/scripts/allocate_from_file.py and scripts/data/example_allocate.json
-		When I tell the OET to configure a subarray and perform scan for duration 10.0 sec using script file:///app/scripts/observe.py and scripts/data/example_configure.json
+		Given A running telescope with 2 dishes are allocated to sub-array for executing observations
+		When I tell the OET to configure a sub-array and perform scan for duration 10.0 sec using script file:///app/scripts/observe.py and scripts/data/example_configure.json
 		Then the sub-array passes through ObsStates IDLE, CONFIGURING, SCANNING, IDLE
 

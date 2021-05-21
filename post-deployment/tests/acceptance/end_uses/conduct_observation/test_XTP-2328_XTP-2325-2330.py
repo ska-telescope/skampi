@@ -165,7 +165,7 @@ def observe_without_sbi(duration, script, configure_json, result):
     script_completion_state = EXECUTOR.execute_script(
         script,
         configure_json,
-        duration,
+        float(duration),
         timeout=300
     )
     assert script_completion_state == 'COMPLETED', \

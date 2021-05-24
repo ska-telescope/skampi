@@ -13,7 +13,7 @@ def test_central_node_sync():
     tmc_central_node = get_device_proxy('ska_low/tm_central/central_node')
     def callback(event):
         state = tmc_central_node.State()
-        event_state = event.value
+        event_state = event.attr_value.value
         assert_that(event_state).is_equal_to(state)
     tmc_central_node.subscribe_event('State',CHANGE_EVENT,callback)
     with atomic('ska_low/tm_central/central_node','state','ON',5):

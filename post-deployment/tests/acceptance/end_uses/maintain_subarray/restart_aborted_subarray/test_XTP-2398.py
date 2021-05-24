@@ -46,7 +46,7 @@ def result():
 @pytest.mark.quarantine 
 @pytest.mark.restart
 #@pytest.mark.xfail(reason="Latest MCCS images are not available")
-@scenario("XTP-AT1-887.feature", "BDD test case for Restart functionality")
+@scenario("XTP-AT1-887.feature", "BDD Test case for subarray Restart functionality")
 def test_subarray_restart():
     """RESTART Subarray"""
 
@@ -107,7 +107,7 @@ def set_up_telescope(subarray_obsstate : str):
         LOGGER.info("Abort is completed on Subarray")
     abort_subarray()
 
-@when("I invoke Restart command")
+@when("the operator invokes Restart command")
 def restart():
     @sync_restart(200)
     def command_restart():
@@ -117,7 +117,7 @@ def restart():
     command_restart()
     LOGGER.info("Subarray is restarted successfully.")
 
-@then("subarray changes its obsState to EMPTY")
+@then("the subarray changes its obsState to EMPTY")
 def check_idle_state():
     assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('EMPTY')
     assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('EMPTY')

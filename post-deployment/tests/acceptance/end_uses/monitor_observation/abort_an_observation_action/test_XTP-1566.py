@@ -48,7 +48,7 @@ subarray=SubArray(1)
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
-@pytest.mark.xfail(reason="Latest MCCS images are not available")
+# @pytest.mark.xfail(reason="Latest MCCS images are not available")
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then Abort brings them in ABORTED observation state in MVP Low")
 def test_subarray_abort_obsreset():
     """Abort Operation"""
@@ -93,6 +93,7 @@ def set_up_telescope(subarray_obsstate : str):
             subarray.scan()
             LOGGER.info("scan command is called")
         scan()
+        LOGGER.info("Subarray OBSSTATE '%s'", resource('ska_low/tm_subarray_node/1').get('obsState'))
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'SCANNING'")
     else:
         msg = "obsState {} is not settable with command methods"
@@ -121,16 +122,19 @@ def teardown_function(function):
     if (resource('ska_low/tm_subarray_node/1').get('State') == "ON"):
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            subarray.deallocate()
+            #subarray.deallocate()
+            tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
             LOGGER.info("tearing down configured subarray (READY)")
-            subarray.end()
+            # subarray.end()
+            take_subarray(1).and_end_sb_when_ready()
             resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
             LOGGER.info('Invoked End on Subarray')
             wait_before_test(timeout=10)
-            subarray.deallocate()
+            #subarray.deallocate()
+            tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
@@ -150,7 +154,8 @@ def teardown_function(function):
             LOGGER.info("tearing down configured subarray (ABORTED)")
             take_subarray(1).reset_when_aborted()
             LOGGER.info('Invoked ObsReset on Subarray')
-            subarray.deallocate()
+            #subarray.deallocate()
+            tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
         set_telescope_to_standby()

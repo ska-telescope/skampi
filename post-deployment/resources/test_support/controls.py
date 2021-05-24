@@ -136,7 +136,7 @@ def restart_subarray(id):
     for device in filtered_devices:
         try:
             resource(device).restart()
-            LOGGER.info('Restart subarray API invoked on device'+str(resource(device)))
+            LOGGER.info('Restart subarray API invoked on device :'+str(device))
         except Exception as e:
             exceptions_raised += f'\nException raised on reseting {device}:{e}'
     if exceptions_raised != "":

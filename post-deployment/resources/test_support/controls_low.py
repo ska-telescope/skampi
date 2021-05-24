@@ -8,7 +8,7 @@ from ska.scripting.domain import Telescope, SubArray
 ##SUT imports
 from ska.scripting.domain import Telescope
 from resources.test_support.helpers_low import subarray_devices,resource,ResourceGroup,waiter,watch
-from resources.test_support.sync_decorators_low import sync_assign_resources, sync_configure, sync_reset_sa
+from resources.test_support.sync_decorators_low import sync_assign_resources, sync_configure, sync_reset_sa, sync_end_sb
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.mappings import device_to_subarrays
 from resources.test_support.mappings_low import device_to_subarray
@@ -50,6 +50,15 @@ class pilot():
         self.state = "IDLE"
         return self
 
+    def and_end_sb_when_ready(self):
+        @sync_end_sb
+        def end_sb():
+            self.SubArray.end()
+        end_sb()
+        self.state = "Composed"
+        return self
+
+
 
 def telescope_is_in_standby():
     LOGGER.info('resource("ska_low/tm_subarray_node/1").get("State")'+ str(resource('ska_low/tm_subarray_node/1').get("State")))
@@ -57,10 +66,13 @@ def telescope_is_in_standby():
                 str(resource('ska_low/tm_leaf_node/mccs_master').get("State")))
     LOGGER.info('resource("low-mccs/control/control").get("State")' +
                 str(resource('low-mccs/control/control').get("State")))
+    # return  [resource('ska_low/tm_subarray_node/1').get("State"),
+    #         resource('ska_low/tm_leaf_node/mccs_master').get("State"),
+    #         resource('low-mccs/control/control').get("State")] == \
+    #         ['OFF','OFF', 'OFF']
     return  [resource('ska_low/tm_subarray_node/1').get("State"),
-            resource('ska_low/tm_leaf_node/mccs_master').get("State"),
-            resource('low-mccs/control/control').get("State")] == \
-            ['OFF','OFF', 'OFF']
+            resource('ska_low/tm_leaf_node/mccs_master').get("State")] == \
+            ['OFF','OFF']
 
 
 def set_telescope_to_running(disable_waiting = False):

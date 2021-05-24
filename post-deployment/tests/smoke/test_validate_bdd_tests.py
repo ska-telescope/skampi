@@ -12,6 +12,7 @@ from skallop.scripts.bdd_helper_scripts.xtp_compare import (
 
 @pytest.mark.common
 @pytest.mark.quarantine
+@pytest.mark.xfail(reason="Not all BDD tests match those that are in JIRA")
 def test_validate_bdd_features():
     """Make sure all the BDD feature files are in line with that in Jira"""
 

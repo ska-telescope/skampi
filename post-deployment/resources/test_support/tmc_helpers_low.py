@@ -75,14 +75,6 @@ def obsreset():
     LOGGER.info("Subarray obsState is: " + str(SubarrayNodeLow.obsState))
     LOGGER.info('Invoked ObsReset command on Subarray')
 
-@sync_obsreset()
-def obsreset():
-    resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
-    SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
-    SubarrayNodeLow.ObsReset()
-    LOGGER.info("Subarray obsState is: " + str(SubarrayNodeLow.obsState))
-    LOGGER.info('Invoked ObsReset command on Subarray')
-
 @sync_restart()
 def restart():
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')

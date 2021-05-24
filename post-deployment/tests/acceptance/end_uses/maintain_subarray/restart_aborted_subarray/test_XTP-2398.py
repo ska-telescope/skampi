@@ -18,7 +18,7 @@ from tango import DeviceProxy, DevState # type: ignore
 from resources.test_support.helpers_low import resource, wait_before_test
 from resources.test_support.sync_decorators_low import sync_scan_oet, sync_abort, sync_restart
 from resources.test_support.persistance_helping import load_config_from_file
-from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray_low, to_be_composed_out_of, configure_by_file, take_subarray
+from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray_low, to_be_composed_out_of, configure_by_file
 import resources.test_support.tmc_helpers_low as tmc
 from ska.scripting.domain import Telescope, SubArray
 

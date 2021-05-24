@@ -44,9 +44,8 @@ def result():
 
 @pytest.mark.skalow
 @pytest.mark.quarantine 
-@pytest.mark.restart
 #@pytest.mark.xfail(reason="Latest MCCS images are not available")
-@scenario("XTP-AT1-887.feature", "BDD Test case for subarray Restart functionality")
+@scenario("XTP-2398.feature", "BDD Test case for subarray Restart functionality")
 def test_subarray_restart():
     """RESTART Subarray"""
 
@@ -113,7 +112,6 @@ def restart():
     def command_restart():
         LOGGER.info("Invoking Restart command on the Subarray.")
         tmc.restart()
-        LOGGER.info("Restart command is invoked on subarray")
     command_restart()
     LOGGER.info("Subarray is restarted successfully.")
 

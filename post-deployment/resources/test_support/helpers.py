@@ -69,17 +69,11 @@ class resource:
         # current suggested method is through 'init' maybe reset would be better in future
         # reset method is allowed only when device is in FAULT state.
         p = DeviceProxy(self.device_name)
+        LOGGER.info('Inside restart method invoking init API.')
         p.init()
-
-        # Called DevRestart method of Admin device Server
-        # p = DeviceProxy("dserver/centralnodeds/01")
-        # p.DevRestart("ska_mid/tm_central/central_node")
-        # API to get admin device -used in archiver
-        # Called RestartServer 
-        # p = DeviceProxy(self.device_name)
-        # p.RestartServer()
+        LOGGER.info('Inside restart method init API invoked successfully.')
         # Calling Reset method of device server
-        # p = DeviceProxy("ska_mid/tm_central/central_node")
+        # p = DeviceProxy(self.device_name)
         # p.Reset()
         
 

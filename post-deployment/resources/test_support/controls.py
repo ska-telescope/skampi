@@ -132,31 +132,16 @@ def restart_subarray(id):
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
     exceptions_raised = ""
+    LOGGER.info('Inside restart subarray method.')
     for device in filtered_devices:
         try:
             resource(device).restart()
+            LOGGER.info('Restart subarray API invoked on device'+str(resource(device)))
         except Exception as e:
             exceptions_raised += f'\nException raised on reseting {device}:{e}'
     if exceptions_raised != "":
         raise Exception(f'Error in initialising devices:{exceptions_raised}')
     the_waiter.wait()
-
-# def restart_mvp():
-#     devices = device_for_dserver.keys()
-#     #filtered_devices = [device for device in devices if device_to_subarrays[device] == id ]
-#     the_waiter = waiter()
-#     the_waiter.set_wait_for_going_to_standby()
-#     exceptions_raised = ""
-#     for device in devices:
-#         try:
-#             LOGGER.info('Restarting on device'+ str(device))
-#             resource(device).restart()
-#             time.sleep(2)
-#         except Exception as e:
-#             exceptions_raised += f'\nException raised on reseting {device}:{e}'
-#     if exceptions_raised != "":
-#         raise Exception(f'Error in initialising devices:{exceptions_raised}')
-#     the_waiter.wait(timeout=290)
 
 def set_telescope_to_standby():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')

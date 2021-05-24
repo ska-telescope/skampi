@@ -23,7 +23,7 @@ from tango import DeviceProxy, DevState # type: ignore
 from resources.test_support.helpers import resource
 from resources.test_support.sync_decorators import sync_assign_resources, sync_obsreset,sync_abort, sync_scan_oet
 from resources.test_support.persistance_helping import update_resource_config_file
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_mvp
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
 
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
@@ -156,25 +156,25 @@ def teardown_function(function):
             LOGGER.info("Resources are deallocated successfully from Subarray.")
         if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
             LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manually to complete tear down")
-            restart_mvp()
+            restart_subarray(1)
             raise Exception("Unable to tear down test setup")  
         if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
             LOGGER.info("tearing down configured subarray (READY)")
             take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
         if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
             LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manually to complete tear down")
-            restart_mvp()
+            restart_subarray(1)
             raise Exception("Unable to tear down test setup")
         if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTING"):
             LOGGER.warn("Subarray is still in ABORTING! Please restart MVP manually to complete tear down")
-            restart_mvp()
+            restart_subarray(1)
             raise Exception("Unable to tear down test setup")
         if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "ABORTED"):
             take_subarray(1).reset_when_aborted()
             take_subarray(1).and_release_all_resources()
         if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "RESETTING"):
             LOGGER.warn("Subarray is still in RESETTING! Please restart MVP manually to complete tear down")
-            restart_mvp()
+            restart_subarray(1)
             raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to StandBy")
     set_telescope_to_standby()

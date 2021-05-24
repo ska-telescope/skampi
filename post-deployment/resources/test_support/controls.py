@@ -2,7 +2,6 @@ import pytest
 from datetime import date,datetime
 import os
 import logging
-import time
 
 ##SUT imports
 from ska.scripting.domain import Telescope, SubArray
@@ -14,7 +13,7 @@ from resources.test_support.helpers import subarray_devices,resource,ResourceGro
 from resources.test_support.persistance_helping import update_scan_config_file,update_resource_config_file
 from resources.test_support.sync_decorators import sync_assign_resources,sync_configure_oet,time_it,\
     sync_release_resources,sync_end_sb,sync_scan_oet,sync_restart_sa, sync_reset_sa
-from resources.test_support.mappings import device_to_subarrays, device_for_dserver
+from resources.test_support.mappings import device_to_subarrays
 
 LOGGER = logging.getLogger(__name__)
 
@@ -142,22 +141,22 @@ def restart_subarray(id):
         raise Exception(f'Error in initialising devices:{exceptions_raised}')
     the_waiter.wait()
 
-def restart_mvp():
-    devices = device_for_dserver.keys()
-    #filtered_devices = [device for device in devices if device_to_subarrays[device] == id ]
-    # the_waiter = waiter()
-    # the_waiter.set_wait_for_going_to_standby()
-    exceptions_raised = ""
-    for device in devices:
-        try:
-            LOGGER.info('Restarting on device'+ str(device))
-            resource(device).restart()
-            time.sleep(1)
-        except Exception as e:
-            exceptions_raised += f'\nException raised on reseting {device}:{e}'
-    if exceptions_raised != "":
-        raise Exception(f'Error in initialising devices:{exceptions_raised}')
-    # the_waiter.wait()
+# def restart_mvp():
+#     devices = device_for_dserver.keys()
+#     #filtered_devices = [device for device in devices if device_to_subarrays[device] == id ]
+#     the_waiter = waiter()
+#     the_waiter.set_wait_for_going_to_standby()
+#     exceptions_raised = ""
+#     for device in devices:
+#         try:
+#             LOGGER.info('Restarting on device'+ str(device))
+#             resource(device).restart()
+#             time.sleep(2)
+#         except Exception as e:
+#             exceptions_raised += f'\nException raised on reseting {device}:{e}'
+#     if exceptions_raised != "":
+#         raise Exception(f'Error in initialising devices:{exceptions_raised}')
+#     the_waiter.wait(timeout=290)
 
 def set_telescope_to_standby():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')

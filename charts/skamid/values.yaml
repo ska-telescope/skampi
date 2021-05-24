@@ -58,7 +58,7 @@ tango-base:
     use_pv: false
 
 webjive:
-  enabled: false
+  enabled: true
   minikube: false
   ingress:
     enabled: true

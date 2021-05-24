@@ -22,7 +22,7 @@ from resources.test_support.helpers import obsState, resource, watch, waiter, \
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.persistance_helping import update_scan_config_file
 from resources.test_support.sync_decorators import sync_configure_oet,time_it
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_mvp
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
 import pytest
 #SUT dependencies
 from ska.scripting.domain import Telescope, SubArray
@@ -128,7 +128,7 @@ def teardown_function(function):
         LOGGER.info("EndSb and ReleaseResources is involked on Subarray 1")
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         LOGGER.warn("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
-        restart_mvp()
+        restart_subarray(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")

@@ -33,7 +33,6 @@ ska-archiver:
   port: 3306
   dbuser: eda_admin
   dbpassword: "@v3ng3rs@ss3mbl3"
-  enabled: false
 
 landingpage:
   enabled: true

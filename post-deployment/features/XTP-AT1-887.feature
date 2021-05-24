@@ -10,5 +10,6 @@ Feature:
 		Examples:
 		| subarray_obsstate  | 
 		| IDLE               | 
-		| READY              | 
-		| SCANNING           | 
+		| READY              |
+		| SCANNING           |  
+

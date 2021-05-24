@@ -15,7 +15,7 @@ TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s
 #
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 MARK ?= fast## this variable allow the mark parameter in the pytest
-FILE ?= ##this variable allow to execution of a single file in the pytest 
+FILE ?= ##this variable allow to execution of a single file in the pytest
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
 
@@ -61,6 +61,7 @@ k8s_test = tar -c post-deployment/ | \
 			CENTRALNODE_FQDN=$(CENTRALNODE) \
 			SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
 			OET_READ_VIA_PUBSUB=$(PUBSUB) \
+			JIRA_AUTH=$(JIRA_AUTH) \
 			$1 && \
 		(tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \

@@ -64,7 +64,7 @@ def assign():
     LOGGER.info("Telescope is started successfully.")
     LOGGER.info("Allocating resources to Low Subarray 1")
     to_be_composed_out_of()
-    LOGGER.info("AssignResources is invoked on Subarray")
+    LOGGER.info("AssignResources execution successful on Subarray 1")
     wait_before_test(timeout=10)
 
 def config():

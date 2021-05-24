@@ -1,12 +1,14 @@
 from assertpy import assert_that
 from time import sleep
 
+import pytest
+
 from skallop.subscribing.base import CHANGE_EVENT
 from skallop.connectors.configuration import get_device_proxy
 from skallop.transactions.atomic import atomic
 
 
-
+@pytest.mark.skalow
 def test_central_node_sync():
     tmc_central_node = get_device_proxy('ska_low/tm_central/central_node')
     def callback(event):

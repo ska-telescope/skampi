@@ -4,8 +4,14 @@ from os import environ
 import time
 from multiprocessing import Process, Manager, Queue
 
+#SUT
+from ska.cdm.schemas import CODEC as cdm_CODEC
+from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
+from ska.scripting.domain import Telescope, SubArray, ResourceAllocation, Dish
+
 from oet.procedure.application.restclient import RestClientUI
 from resources.test_support.helpers import resource
+from resources.test_support.persistance_helping import update_resource_config_file
 
 # OET task completion can occur before TMC has completed its activity - so allow time for the
 # last transitions to take place
@@ -17,6 +23,15 @@ helm_release = environ.get("HELM_RELEASE", "test")
 rest_cli_uri = f"http://oet-rest-{helm_release}:5000/api/v1.0/procedures"
 REST_CLIENT = RestClientUI(rest_cli_uri)
 
+def oet_compose_sub():
+    cdm_file_path = 'resources/test_data/OET_integration/example_allocate.json'
+    LOGGER.info("cdm_file_path :" + str(cdm_file_path))
+    update_resource_config_file(cdm_file_path)
+    cdm_request_object = cdm_CODEC.load_from_file(AssignResourcesRequest, cdm_file_path)
+    cdm_request_object.dish.receptor_ids = [str(x).zfill(4) for x in range(1, 5)]
+    subarray = SubArray(1)
+    LOGGER.info("Allocated Subarray is :" + str(subarray))
+    return subarray.allocate_from_cdm(cdm_request_object)
 
 class Subarray:
 

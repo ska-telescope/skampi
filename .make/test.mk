@@ -62,6 +62,7 @@ k8s_test = tar -c post-deployment/ | \
 			CENTRALNODE_FQDN=$(CENTRALNODE) \
 			SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
 			OET_READ_VIA_PUBSUB=$(PUBSUB) \
+			JIRA_AUTH=$(JIRA_AUTH) \
 			$1 && \
 		(tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \

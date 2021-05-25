@@ -48,9 +48,9 @@ class Classifier:
 
 
 ATTR_EQUIVALENTS = {
-    "subarraynode1-sa1-0": { "subarraynode-sa1-0" },
-    "subarraynode2-sa2-0": { "subarraynode-sa2-0" },
-    "subarraynode3-sa3-0": { "subarraynode-sa3-0" },
+    "subarraynode1-sa1-0": { "subarraynode-sa1-0", "subarraynode-01-0" },
+    "subarraynode2-sa2-0": { "subarraynode-sa2-0", "subarraynode-02-0" },
+    "subarraynode3-sa3-0": { "subarraynode-sa3-0", "subarraynode-03-0" },
     "cspsubarrayleafnode1-01-0": { "cspsubarrayleafnode-01-0" },
     "cspsubarrayleafnode2-02-0": { "cspsubarrayleafnode-02-0" },
     "cspsubarrayleafnode3-03-0": { "cspsubarrayleafnode-03-0" },
@@ -122,7 +122,10 @@ def match_msg(msg_r,
                     i += 1
                     if matched is not None:
                         matched.append(l)
-            return i
+            if missing:
+                return (0 if i > 0 else 1)
+            else:
+                return i
         return check
 
     def check(test, matched):
@@ -526,16 +529,12 @@ add_classifier(
 )
 add_classifier(
     [('tests/acceptance/mvp/test_XTP-1561.py', 'test_scan_id'),
-     ('tests/acceptance/mvp/test_XR-13_A2-Test.py', 'test_configure_subarray')],
-    [match_msg(r"invalid literal for int.*", device='cbfsubarray01-cbfsubarray-01-0')],
-    "SKBX-033", "CBF subarray complains about delay model not being integer?"
-)
-
-add_classifier(
-    [('tests/acceptance/mvp/test_XTP-1561.py', 'test_scan_id'),
-     ('tests/acceptance/mvp/test_XR-13_A2-Test.py', 'test_configure_subarray')],
-    [match_msg(r"invalid literal for int.*", device='cbfsubarray01-cbfsubarray-01-0')],
-    "SKBX-033", "CBF subarray complains about delay model not being integer?"
+     ('tests/acceptance/mvp/test_XR-13_A2-Test.py', 'test_configure_subarray'),
+     ('tests/acceptance/end_uses/conduct_observation/run_a_scan/test_XTP-826.py', 'test_multi_scan')],
+    [match_msg(r"invalid literal for int.*",
+               pod='cbfsubarray01-cbfsubarray-01-0')],
+    "SKBX-033", "CBF subarray complains about delay model not being integer?",
+    harmless=True
 )
 add_classifier(
     [('tests/acceptance/mvp/test_XR-13_A2-Test.py', 'test_configure_subarray')],
@@ -601,7 +600,8 @@ add_classifier(
      ("tests/smoke/test_validate_device_spec.py", "test_dishmaster_conforms_to_tango_wide")
     ],
     [match_msg("E           requests.exceptions.HTTPError: 429 Client Error: Too Many Requests for url: .*",
-               section='detail/main')],
+               section='detail/main'),
+     match_msg(r"specification_yaml = 'Rate limit exceeded.*", section='detail/main')],
     "SKBX-040", "GitLab blocks access to device spec due to too many requests"
 )
 add_classifier(
@@ -661,6 +661,17 @@ add_classifier(
     [match_msg(r"AttributeError: 'NoneType' object has no attribute 'update_resource_deallocation'",
                pod='centralnode-01-0')],
     "SKBX-046", "resource_manager is None in TMC central node", taints=True
+)
+add_classifier(
+    [("tests/acceptance/end_uses/conduct_observation/test_XTP-776_XTP-777-779.py", "test_observing_sbi")],
+    [match_msg(r".*STATE MONITORING: Expected .* states but recorded .* states")],
+    "SKBX-047", "State monitoring does not see all expected states"
+)
+add_classifier(
+    [(None, None)],
+    [match_msg(r"Exception Shutdown: Cannot stop PID .*: procedure is not running",
+               container='oet-rest')],
+    "SKBX-047", "Procedure not running error in OET", taints=True
 )
 
 # Special pseudo-classifiers

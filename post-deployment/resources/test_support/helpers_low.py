@@ -302,8 +302,7 @@ class waiter():
         self.waits.append(watch(resource('low-mccs/control/control')).to_become("State",changed_to='ON'))
         self.waits.append(watch(resource('ska_low/tm_central/central_node')).to_become("State",changed_to='ON'))
         
-       
-
+        
     def wait(self, timeout=30,resolution=0.1):
         self.logs = ""
         while self.waits:

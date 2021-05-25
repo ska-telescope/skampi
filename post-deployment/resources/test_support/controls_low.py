@@ -7,9 +7,8 @@ from ska.scripting.domain import Telescope, SubArray
 
 ##SUT imports
 from ska.scripting.domain import Telescope
-
-from resources.test_support.helpers_low import resource, waiter
-from resources.test_support.sync_decorators_low import sync_assign_resources, sync_configure
+from resources.test_support.helpers_low import subarray_devices,resource,ResourceGroup,waiter,watch
+from resources.test_support.sync_decorators_low import sync_assign_resources, sync_configure, sync_reset_sa
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.mappings import device_to_subarrays
 from resources.test_support.mappings_low import device_to_subarray
@@ -25,7 +24,8 @@ def telescope_is_in_standby():
     return  [resource('ska_low/tm_subarray_node/1').get("State"),
             resource('ska_low/tm_leaf_node/mccs_master').get("State"),
             resource('low-mccs/control/control').get("State")] == \
-            ['OFF','OFF', 'OFF']
+            ['OFF','OFF','OFF']
+
 
 def set_telescope_to_running(disable_waiting = False):
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('OFF')

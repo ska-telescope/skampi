@@ -294,6 +294,7 @@ class waiter():
         self.waits.append(watch(resource('ska_low/tm_central/central_node')).to_become("State",changed_to='OFF'))
 
     def set_wait_for_going_into_scanning(self):
+        LOGGER.info("helpers set_wait_into scanning ------------")
         self.waits.append(watch(resource('ska_low/tm_subarray_node/1')).to_become('obsState',changed_to='SCANNING'))  
 
 

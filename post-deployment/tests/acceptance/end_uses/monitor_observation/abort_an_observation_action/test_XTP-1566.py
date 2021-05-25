@@ -19,7 +19,7 @@ from ska.scripting.domain import SubArray
 ## local imports
 from resources.test_support.helpers_low import resource, wait_before_test
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray_low, to_be_composed_out_of, configure_by_file, take_subarray
-from resources.test_support.sync_decorators_low import sync_abort, sync_scan, sync_scan_oet
+from resources.test_support.sync_decorators_low import sync_abort, sync_scan, sync_scanning_oet
 import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.persistance_helping import load_config_from_file
 from ska.scripting.domain import Telescope, SubArray
@@ -88,7 +88,7 @@ def set_up_telescope(subarray_obsstate : str):
     elif subarray_obsstate == "SCANNING":
         assign()
         config()
-        @sync_scan_oet
+        @sync_scanning_oet
         def scan():
             subarray.scan()
             LOGGER.info("scan command is called")
@@ -114,6 +114,7 @@ def check_state():
     assert_that(resource('ska_low/tm_subarray_node/1').get('obsState')).is_equal_to('ABORTED')
     assert_that(resource('low-mccs/subarray/01').get('obsState')).is_equal_to('ABORTED')
     LOGGER.info("Results OK")
+    
 
 def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function

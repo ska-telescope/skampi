@@ -120,10 +120,11 @@ def reset_subarray():
 def configuring_sub(sdp_block):
     @sync_configuring
     def test_SUT(sdp_block):
-        file = download_test_data("configure1.json", "skampi-test-data/tmc-integration/configure")
+        file = download_test_data("mid_configure_1.json", "skampi-test-data/tmc-integration/configure")
         update_scan_config_file(file, sdp_block)
         LOGGER.info("Invoking Configure command on Subarray 1")
         config = load_config_from_file(file)
+        os.remove(file)
         SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
         SubarrayNode.Configure(config)
         LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))

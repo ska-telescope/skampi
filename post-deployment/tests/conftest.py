@@ -8,20 +8,28 @@ from kubernetes import config, client
 
 ## shared fixtures
 from resources.test_support.fixtures import run_context
-from skallop.mvp_fixtures.telescope import (
-    fxt_running_telescope, fxt_running_telescope_args, fxt_fixed_telescope
-)
-from skallop.mvp_fixtures.subarray_composition import (
-    fxt_composed_subarray,
-    fxt_composed_subarray_args,
-    fxt_composing_subarray,
-)
-from skallop.mvp_fixtures.subarray_configuration import (
+from skallop.mvp_fixtures.fixtures import (
+    fxt_telescope_context,
+    fxt_exec_settings,
+    fxt_allocated_subarray,
+    fxt_running_telescope,
+    fxt_standby_telescope,
     fxt_configured_subarray,
-    fxt_configured_subarray_args,
-    fxt_configuring_subarray,
+    fxt_factory,
+    fxt_inject_factory,
+    fxt_entry_point,
+    fxt_exec_env,
+    pytest_runtest_makereport,
+    fxt_sb_config,
+    fxt_maintain_on
 )
 
+
+# overrides the default setting that makes the telescope remain on
+# in between tests, change to True for it to remain on
+@pytest.fixture(name='maintain_on', scope="session",autouse=True)
+def fxt_override_maintain_on():
+    return False
 
 """
 RunContext is a metadata object to access values from the environment, 

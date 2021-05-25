@@ -60,9 +60,9 @@ def test_psi01_test_initialise_the_tpm_using_the_oet_jupyter_notebook():
 def subsystems_are_online_and_in_the_tango_device_off_state(devices):
     """subsystems <subsystem-list> are ONLINE and in the Tango Device OFF state."""
        
-    assert devices.tmc_central_node.State().name is 'OFF', f'tmc_central_node is not in OFF state'
-    assert devices.mccs_controller.State().name is 'OFF', f'mccs_controller is not in OFF state'
-    assert devices.mccs_station_001.State().name is 'OFF', f'mccs_station_001 is not in OFF state'
+    assert devices.tmc_central_node.State().name == 'OFF', f'tmc_central_node is not in OFF state'
+    assert devices.mccs_controller.State().name == 'OFF', f'mccs_controller is not in OFF state'
+    assert devices.mccs_station_001.State().name == 'OFF', f'mccs_station_001 is not in OFF state'
     assert devices.mccs_tile_0001.State().name in ['OFF','DISABLE'], f'mccs_tile_0001 is not in OFF or DISABLE state'
     devices.print_device_states()
 
@@ -74,7 +74,7 @@ def the_tpm_hw_is_powered_on_and_in_the_idle_state():
 def i_send_the_command_to_the_tmc(devices):
     """I send the command to the TMC."""
  
-    if devices.tmc_central_node.State().name is not 'ON':
+    if devices.tmc_central_node.State().name != 'ON':
         logger.info('Control system is off. Starting up telescope...')
         with atomic(devices.all_device_names,'state','ON',5):
             devices.tmc_central_node.StartUpTelescope()
@@ -86,7 +86,7 @@ def i_send_the_command_to_the_tmc(devices):
 def the_tpm_hw_will_be_programmed_and_initialized(devices):
     """the TPM_HW will be programmed and initialized."""
     for device in [devices.tmc_central_node, devices.mccs_controller, devices.mccs_tile_0001]:
-        assert device.State().name is 'ON', f'{device} is not in ON state'
+        assert device.State().name == 'ON', f'{device} is not in ON state'
 
 @then("the TPM_HW is in the WORKING state")
 def tpm_hardware_working_state():

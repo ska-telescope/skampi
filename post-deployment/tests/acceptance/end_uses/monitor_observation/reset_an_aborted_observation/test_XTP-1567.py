@@ -16,10 +16,11 @@ from pytest_bdd import scenario, given, when, then
 from tango import DeviceProxy, DevState # type: ignore
 ## local imports
 from resources.test_support.helpers_low import resource, wait_before_test
-from resources.test_support.sync_decorators_low import sync_obsreset
+from resources.test_support.sync_decorators_low import sync_obsreset, sync_scan_oet, sync_abort
 from resources.test_support.persistance_helping import load_config_from_file
-from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray_low
+from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray_low, to_be_composed_out_of, configure_by_file, take_subarray
 import resources.test_support.tmc_helpers_low as tmc
+from ska.scripting.domain import Telescope, SubArray
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
 if DEV_TEST_TOGGLE == "False":
@@ -35,6 +36,7 @@ devices_to_log = [
     'low-mccs/subarray/01']
 non_default_states_to_check = {}
 
+subarray=SubArray(1)
 
 @pytest.fixture
 def result():
@@ -42,43 +44,75 @@ def result():
 
 @pytest.mark.skalow
 @pytest.mark.quarantine
+@pytest.mark.xfail(reason="Latest MCCS images are not available")
 @scenario("XTP-1567.feature", "BDD test case for ObsReset command in MVP Low")
 def test_subarray_obsreset():
     """reset subarray"""
 
-@given("Subarray has transitioned into obsState ABORTED during an observation")
-def set_to_abort():
-    LOGGER.info("Given A running telescope for executing observations on a subarray")
+def assign():
+    LOGGER.info(
+        "Before starting the telescope checking if the telescope is in StandBy."
+    )
     #Added timeout of 10 sec to wait tmc_low subarray to become OFF
     wait_before_test(timeout=10)
     assert(telescope_is_in_standby())
+    LOGGER.info("Telescope is in StandBy.")
+    LOGGER.info("Invoking Startup Telescope command on the telescope.")
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
     wait_before_test(timeout=10)
-    tmc.compose_sub()
+    LOGGER.info("Telescope is started successfully.")
+    LOGGER.info("Allocating resources to Low Subarray 1")
+    to_be_composed_out_of()
     LOGGER.info("AssignResources is invoked on Subarray")
     wait_before_test(timeout=10)
 
-    tmc.configure_sub()
-    LOGGER.info("Configure is invoked on Subarray")
-    wait_before_test(timeout=10)
+def config():
+    def test_SUT():
+        configure_by_file()
+    test_SUT()
+    LOGGER.info("Configure command on Subarray 1 is successful")
+   
+@given("operator has a running telescope with a subarray in state <subarray_obsstate> and Subarray has transitioned into obsState ABORTED")
+def set_up_telescope(subarray_obsstate : str):
+    if subarray_obsstate == 'IDLE':
+        assign()
+        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'IDLE'")
+    elif subarray_obsstate == 'READY':
+        assign()
+        config()
+        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'READY'")
+    elif subarray_obsstate == 'SCANNING':
+        assign()
+        config()
+        LOGGER.info("Subarray is configured and executing a scan on subarray")
+        @sync_scan_oet
+        def scan():
+            subarray.scan()
+            LOGGER.info("scan command is invoked")
+        scan()
+        LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'SCANNING'")
+    else:
+        msg = 'obsState {} is not settable with command methods'
+        raise ValueError(msg.format(subarray_obsstate))
+        
+    def abort_subarray():
+        @sync_abort(200)
+        def abort():
+            LOGGER.info("Invoking ABORT command.")
+            subarray.abort()
+            LOGGER.info("Abort command is invoked on subarray")
+        abort()
+        LOGGER.info("Abort is completed on Subarray")
+    abort_subarray()
 
-    scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
-    scan_string = load_config_from_file(scan_file)
-    SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
-    SubarrayNodeLow.Scan(scan_string)
-    LOGGER.info("Scan is invoked on Subarray")
-
-    SubarrayNodeLow.Abort()
-    LOGGER.info("Abort is invoked on Subarray")
-    wait_before_test(timeout=10)
 
 @when("the operator invokes ObsReset command")
 def reset_subarray():
    
     @sync_obsreset(200)
     def obsreset_subarray():
-        tmc.obsreset()
+        subarray.reset()
         LOGGER.info("obsreset command is invoked on subarray")
     obsreset_subarray()
 
@@ -95,16 +129,16 @@ def teardown_function(function):
     if (resource('ska_low/tm_subarray_node/1').get('State') == "ON"):
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            tmc.release_resources()
+            subarray.deallocate()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
             LOGGER.info("tearing down configured subarray (READY)")
-            tmc.end()
+            subarray.end()
             resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
             LOGGER.info('Invoked End on Subarray')
             wait_before_test(timeout=10)
-            tmc.release_resources()
+            subarray.deallocate()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
@@ -128,4 +162,4 @@ def teardown_function(function):
             #raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup") 
         set_telescope_to_standby()
-        LOGGER.info("Telescope is in standby")
+        LOGGER.info("Telescope is in standBy")

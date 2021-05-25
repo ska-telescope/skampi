@@ -75,6 +75,7 @@ def telescope_is_in_standby():
             ['OFF','OFF']
 
 
+
 def set_telescope_to_running(disable_waiting = False):
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('OFF')
     the_waiter = waiter()

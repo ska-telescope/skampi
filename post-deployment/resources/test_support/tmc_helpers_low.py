@@ -2,6 +2,7 @@ from resources.test_support.sync_decorators_low import sync_start_up_telescope,s
 from tango import DeviceProxy   
 from resources.test_support.helpers_low import waiter,watch,resource
 from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file
+from skallop.bdd_test_data_manager.data_manager import download_test_data
 
 import logging
 
@@ -19,7 +20,8 @@ def start_up():
 def compose_sub():
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
-    assign_resources_file = 'resources/test_data/TMC_integration/mccs_assign_resources.json'
+    assign_resources_file = download_test_data(
+        "mccs_assign_resources.json", "skampi-test-data/tmc-integration/assign-resources")
     config = load_config_from_file(assign_resources_file)
     CentralNodeLow = DeviceProxy('ska_low/tm_central/central_node')
     CentralNodeLow.AssignResources(config)
@@ -60,7 +62,7 @@ def set_to_standby():
 
 @sync_configure
 def configure_sub():
-    configure_file = 'resources/test_data/TMC_integration/mccs_configure.json'
+    configure_file = download_test_data("mccs_configure.json", "skampi-test-data/tmc-integration/configure")
     config = load_config_from_file(configure_file)
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
     SubarrayNodeLow.Configure(config)

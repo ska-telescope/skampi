@@ -4,6 +4,7 @@ from tango import DeviceProxy
 from resources.test_support.helpers import waiter,watch,resource
 from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby
 from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file
+from skallop.bdd_test_data_manager.data_manager import download_test_data
 
 import logging
 
@@ -20,7 +21,8 @@ def start_up():
 def compose_sub():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
-    assign_resources_file = 'resources/test_data/TMC_integration/assign_resources1.json'
+    assign_resources_file = download_test_data(
+        "assign_resources1.json", "skampi-test-data/tmc-integration/assign-resources")
     sdp_block = update_resource_config_file(assign_resources_file)
     LOGGER.info("_______sdp_block________" + str(sdp_block))
     config = load_config_from_file(assign_resources_file)

@@ -24,13 +24,13 @@ ifneq ($(shell kubectl get -n $(KUBE_NAMESPACE) pods -l app=ska-low-mccs | wc -l
     TELESCOPE = 'SKA-Low'
     CENTRALNODE = 'ska_low/tm_central/central_node'
     SUBARRAY = 'ska_low/tm_subarray_node'
-    PUBSUB = true
 else
     TELESCOPE = 'SKA-Mid'
     CENTRALNODE = 'ska_mid/tm_central/central_node'
     SUBARRAY = 'ska_mid/tm_subarray_node'
-    PUBSUB = false
 endif
+
+PUBSUB = true
 
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER

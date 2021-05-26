@@ -22,9 +22,6 @@ def check_going_into_configure():
 def check_going_out_of_configured():
     ## Verify the Subarray obstate = READY
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
-    # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('READY')
-    # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('READY')
-    
 
 def check_going_into_abort():
     ## Can only invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY

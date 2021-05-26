@@ -92,7 +92,7 @@ def teardown_function(function):
     if (resource('ska_low/tm_subarray_node/1').get("obsState") == "IDLE"):
         LOGGER.info("Release all resources assigned to subarray")
         # subarray = SubArray(1)
-        # subarray.deallocate()
+        # subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
         tmc.release_resources()
         LOGGER.info("ResourceIdList is empty for Subarray 1 ")
     LOGGER.info("Put Telescope back to standby")

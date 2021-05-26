@@ -95,16 +95,14 @@ def teardown_function(function):
         #this means there must have been an error
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            #subarray.deallocate()
+            #subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
             tmc.release_resources()
     if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
         #this means test must have passed
         LOGGER.info("tearing down configured subarray (READY)")
-        #subarray.end()
-        #take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
         take_subarray(1).and_end_sb_when_ready()
         LOGGER.info("End is invoked on Subarray 1")
-        #subarray.deallocate()
+        #subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
         tmc.release_resources()
         LOGGER.info("ReleaseResources is invoked on Subarray 1")
     if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):

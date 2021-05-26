@@ -23,7 +23,7 @@ def compose_sub():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
     assign_resources_file = download_test_data(
-        "mid_assign_resources_1.json", "skampi-test-data/tmc-integration/assign-resources")
+        "mid_assign_resources_v1.json", "skampi-test-data/tmc-integration/assign-resources")
     sdp_block = update_resource_config_file(assign_resources_file)
     LOGGER.info("_______sdp_block________" + str(sdp_block))
     config = load_config_from_file(assign_resources_file)

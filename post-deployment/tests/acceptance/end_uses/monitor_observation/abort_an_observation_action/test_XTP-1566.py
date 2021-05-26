@@ -72,7 +72,7 @@ def set_up_telescope(subarray_obsstate : str):
         LOGGER.info("Configure is invoke on Subarray")
         wait_before_test(timeout=10)
         
-        scan_file = download_test_data("low_scan_1.json", "skampi-test-data/tmc-integration/scan")
+        scan_file = download_test_data("low_scan_v1.json", "skampi-test-data/tmc-integration/scan")
         scan_string = load_config_from_file(scan_file)
         os.remove(scan_file)
         SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')

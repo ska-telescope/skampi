@@ -22,7 +22,7 @@ def compose_sub():
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('EMPTY')
     assign_resources_file = download_test_data(
-        "low_assign_resources_1.json", "skampi-test-data/tmc-integration/assign-resources")
+        "low_assign_resources_v1.json", "skampi-test-data/tmc-integration/assign-resources")
     config = load_config_from_file(assign_resources_file)
     os.remove(assign_resources_file)
     CentralNodeLow = DeviceProxy('ska_low/tm_central/central_node')
@@ -64,7 +64,7 @@ def set_to_standby():
 
 @sync_configure
 def configure_sub():
-    configure_file = download_test_data("low_configure_1.json", "skampi-test-data/tmc-integration/configure")
+    configure_file = download_test_data("low_configure_v1.json", "skampi-test-data/tmc-integration/configure")
     config = load_config_from_file(configure_file)
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
     SubarrayNodeLow.Configure(config)

@@ -25,7 +25,6 @@ test: install
 	exit $$status
 
 install:
-	sudo apt-get update && sudo apt-get install -y git
 	pip3 install -r test_requirements.txt -qq
 
 start_log_consumer:

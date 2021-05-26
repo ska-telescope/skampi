@@ -101,7 +101,7 @@ def set_up_telescope(subarray_obsstate : str):
         raise ValueError(msg.format(subarray_obsstate))
         
     def abort_subarray():
-        @sync_abort(400)
+        @sync_abort(500)
         def abort():
             LOGGER.info("Invoking ABORT command.")
             subarray.abort()
@@ -114,7 +114,7 @@ def set_up_telescope(subarray_obsstate : str):
 @when("the operator invokes ObsReset command")
 def reset_subarray():
    
-    @sync_obsreset(400)
+    @sync_obsreset(500)
     def obsreset_subarray():
         subarray.reset()
         LOGGER.info("obsreset command is invoked on subarray")

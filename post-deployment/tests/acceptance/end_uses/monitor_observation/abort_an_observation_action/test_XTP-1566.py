@@ -106,7 +106,7 @@ def set_up_telescope(subarray_obsstate : str):
 
 @when("operator issues the ABORT command")
 def abort_subarray():
-    @sync_abort(400)
+    @sync_abort(500)
     def abort_subarray():
         subarray.abort()
         LOGGER.info("Abort command is invoked on subarray")

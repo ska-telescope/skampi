@@ -340,7 +340,7 @@ def sync_scanning_oet(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_going_into_scanning()
         result = func(*args, **kwargs)
-        the_waiter.wait(timeout=200)
+        the_waiter.wait()
         return result
     return wrapper
     

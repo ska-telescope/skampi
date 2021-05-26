@@ -43,8 +43,6 @@ k8s_test = tar -c post-deployment/ | \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
 		--image=$(IMAGE_TO_TEST) \
-		--limits='cpu=1000m,memory=500Mi' \
-		--requests='cpu=900m,memory=400Mi' \
 		--env=INGRESS_HOST=$(INGRESS_HOST) \
 		$(PSI_LOW_PROXY_VALUES) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi \

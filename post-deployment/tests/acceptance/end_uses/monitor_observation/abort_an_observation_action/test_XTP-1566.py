@@ -46,8 +46,9 @@ non_default_states_to_check = {}
 
 subarray=SubArray(1)
 
+# @pytest.mark.skip()
 @pytest.mark.skalow
-@pytest.mark.quarantine
+# @pytest.mark.quarantine
 # @pytest.mark.xfail(reason="Latest MCCS images are not available")
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then Abort brings them in ABORTED observation state in MVP Low")
 def test_subarray_abort_obsreset():
@@ -74,7 +75,7 @@ def config():
         configure_by_file()     
     test_SUT()
     LOGGER.info("Configure command on Subarray 1 is successful")
-
+    wait_before_test(timeout=10)
 
 @given("operator has a running low telescope with a subarray in obsState <subarray_obsstate>")
 def set_up_telescope(subarray_obsstate : str):
@@ -90,7 +91,11 @@ def set_up_telescope(subarray_obsstate : str):
         config()
         @sync_scanning_oet
         def scan():
-            subarray.scan()
+            scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
+            scan_string = load_config_from_file(scan_file)
+            SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
+            SubarrayNodeLow.Scan(scan_string)
+            # subarray.scan()
             LOGGER.info("scan command is called")
         scan()
         LOGGER.info("Subarray OBSSTATE '%s'", resource('ska_low/tm_subarray_node/1').get('obsState'))
@@ -101,7 +106,7 @@ def set_up_telescope(subarray_obsstate : str):
 
 @when("operator issues the ABORT command")
 def abort_subarray():
-    @sync_abort(200)
+    @sync_abort(400)
     def abort_subarray():
         subarray.abort()
         LOGGER.info("Abort command is invoked on subarray")
@@ -155,6 +160,7 @@ def teardown_function(function):
             LOGGER.info("tearing down configured subarray (ABORTED)")
             take_subarray(1).reset_when_aborted()
             LOGGER.info('Invoked ObsReset on Subarray')
+            wait_before_test(timeout=10)
             #subarray.deallocate()
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')

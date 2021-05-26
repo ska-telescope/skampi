@@ -19,7 +19,6 @@ REST_CLIENT = RestClientUI(rest_cli_uri)
 
 
 class Subarray:
-
     resource = None
 
     def __init__(self, device):

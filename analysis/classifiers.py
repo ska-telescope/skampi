@@ -122,7 +122,10 @@ def match_msg(msg_r,
                     i += 1
                     if matched is not None:
                         matched.append(l)
-            return i
+            if missing:
+                return (0 if i > 0 else 1)
+            else:
+                return i
         return check
 
     def check(test, matched):
@@ -661,6 +664,17 @@ add_classifier(
     [match_msg(r"AttributeError: 'NoneType' object has no attribute 'update_resource_deallocation'",
                pod='centralnode-01-0')],
     "SKBX-046", "resource_manager is None in TMC central node", taints=True
+)
+add_classifier(
+    [("tests/acceptance/end_uses/conduct_observation/test_XTP-776_XTP-777-779.py", "test_observing_sbi")],
+    [match_msg(r".*STATE MONITORING: Expected .* states but recorded .* states")],
+    "SKBX-047", "State monitoring does not see all expected states"
+)
+add_classifier(
+    [(None, None)],
+    [match_msg(r"Exception Shutdown: Cannot stop PID .*: procedure is not running",
+               container='oet-rest')],
+    "SKBX-047", "Procedure not running error in OET", taints=True
 )
 
 # Special pseudo-classifiers

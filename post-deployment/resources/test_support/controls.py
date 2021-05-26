@@ -53,9 +53,12 @@ class pilot():
             resource_request: AssignResourcesRequest = cdm_CODEC.load_from_file(AssignResourcesRequest, file)
             resource_request.dish.receptor_ids = [str(x).zfill(4) for x in range(1, dishes + 1)]
             self.SubArray.allocate_from_cdm(resource_request)
-            return sdp_block
-        sdp_block = assign()
-        self.state = "Composed"
+            return self
+#             return sdp_block
+# -        sdp_block = assign()
+# -        self.state = "Composed"
+        sdp_block = "Composed"
+        dish_ids = assign()
         LOGGER.info("_________Sdp block from composed function_______" + str(self) +str(sdp_block))
         return self, sdp_block
 

@@ -66,6 +66,7 @@ def set_to_standby():
 def configure_sub():
     configure_file = download_test_data("low_configure_v1.json", "skampi-test-data/tmc-integration/configure")
     config = load_config_from_file(configure_file)
+    os.remove(configure_file)
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
     SubarrayNodeLow.Configure(config)
     LOGGER.info("Subarray obsState is: " + str(SubarrayNodeLow.obsState))

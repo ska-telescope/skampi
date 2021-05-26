@@ -94,6 +94,7 @@ def test_resource_allocation():
         and SBI scripts/data/example_low_sb.json
     Then the sub-array goes to ObsState IDLE
     """
+    pass
 
 
 @pytest.mark.oetlow
@@ -108,6 +109,7 @@ def test_observing_sbi():
     Then the sub-array passes through ObsStates IDLE, CONFIGURING, SCANNING, CONFIGURING, SCANNING, CONFIGURING,
       SCANNING, CONFIGURING, SCANNING, IDLE
     """
+    pass
 
 
 @given('the SKUID service is running')

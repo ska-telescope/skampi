@@ -49,6 +49,7 @@ def end():
 @scenario("XTP-2413.feature", "Starting up telescope")
 def test_telescope_startup():
     """Telescope startup test."""
+    pass
 
 
 @pytest.mark.fast
@@ -58,6 +59,7 @@ def test_telescope_startup():
 @scenario("XTP-2413.feature", "Setting telescope to stand-by")
 def test_telescope_in_standby():
     """Set telescope to standby test."""
+    pass
 
 
 @given('telescope is in OFF State')

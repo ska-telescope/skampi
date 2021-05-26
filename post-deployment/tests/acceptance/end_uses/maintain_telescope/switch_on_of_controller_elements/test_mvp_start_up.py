@@ -7,7 +7,7 @@ from skallop.event_handling import builders
 from skallop.event_handling.occurences import Occurrences
 from skallop.subscribing.base import MessageBoardBase
 from skallop.mvp_control.describing import mvp_names
-from skallop.mvp_fixtures.context import TelescopeContext
+from skallop.mvp_fixtures.context_management import TelescopeContext
 from skallop.mvp_control.entry_points.base import EntryPoint
 from skallop.mvp_control.event_waiting import wait
 

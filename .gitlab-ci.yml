@@ -136,6 +136,20 @@ mid_quarantine_uninstall:
     action: stop
   when: manual
 
+mid_cbfemu_uninstall:
+  stage: clean
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-mid-cbfemu"
+    KUBE_NAMESPACE: "integration-mid-cbfemu"
+    KUBE_NAMESPACE_SDP: "integration-mid-cbfemu-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
+    KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "test"
+    action: stop
+
 low_uninstall:
   stage: clean
   tags: *tags_default
@@ -204,7 +218,7 @@ mid_on_demand_uninstall:
     refs:
       - master
 
-mid_emu_on_demand_uninstall:
+mid_cbfemu_on_demand_uninstall:
   stage: cleanup
   tags: *tags_default
   variables:
@@ -362,37 +376,6 @@ mid_on_demand_test:
     refs:
       - master
 
-mid_emu_on_demand_test:
-  stage: test
-  tags: *tags_default
-  variables:
-    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
-    MARK: "skamid-emulated or fast"
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu-sdp"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
-  before_script:
-    - *create_k8s_creds
-  <<: *test_definition
-  environment:
-    name: "test/$CI_COMMIT_REF_NAME"
-    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated
-    on_stop: mid_emu_on_demand_uninstall
-    auto_stop_in: 2 hours
-  when: manual
-  only:
-    refs:
-    - branches
-  except:
-    refs:
-      - master
-
 mid_stress_test:
   stage: test
   tags: *tags_default
@@ -415,6 +398,64 @@ mid_stress_test:
   rules:
     - if: $STRESS_TEST_DURATION
 
+mid_cbfemu_test:
+  stage: test
+  tags: *tags_default
+  variables:
+    MARK: "skamid_emulated or fast"
+    HELM_RELEASE: "test-mid-cbfemu"
+    KUBE_NAMESPACE: "integration-mid-cbfemu"
+    KUBE_NAMESPACE_SDP: "integration-mid-cbfemu-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
+    KEEP_NAMESPACE: "true"
+    ARCHIVER_DBNAME: "integration_mid_cbfemu_archiver_db"
+  before_script:
+    - *create_k8s_creds
+  <<: *test_definition
+  environment:
+    name: "test"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+    on_stop: mid_cbfemu_uninstall
+  only:
+    refs:
+      - master
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
+
+mid_cbfemu_on_demand_test:
+  stage: test
+  tags: *tags_default
+  variables:
+    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
+    MARK: "skamid_emulated or fast"
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+  before_script:
+    - *create_k8s_creds
+  <<: *test_definition
+  environment:
+    name: "test/$CI_COMMIT_REF_NAME"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated/taranta"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated
+    on_stop: mid_cbfemu_on_demand_uninstall
+    auto_stop_in: 2 hours
+  when: manual
+  only:
+    refs:
+    - branches
+  except:
+    refs:
+      - master
+      
 low_test:
   retry: 2
   stage: test

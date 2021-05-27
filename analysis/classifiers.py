@@ -26,7 +26,7 @@ class Classifier:
     :param only_once: Log only once
     :param suppresses: Codes of other classifiers to suppress after this one was matched
     """
-    
+
     def __init__(self, tests, predicates, skb, message,
                  taints=False, harmless=False, only_once=False,
                  suppresses=[]):
@@ -676,7 +676,8 @@ add_classifier(
 )
 add_classifier(
     [("tests/acceptance/end_uses/conduct_observation/test_XTP-776_XTP-777-779.py", "test_observing_sbi")],
-    [match_msg(r".*STATE MONITORING: Expected .* states but recorded .* states")],
+    [match_msg(r".*STATE MONITORING: Expected .* states but recorded .* states",
+               section='detail/Captured stdout call')],
     "SKBX-047", "State monitoring does not see all expected states"
 )
 add_classifier(
@@ -684,6 +685,16 @@ add_classifier(
     [match_msg(r"Exception Shutdown: Cannot stop PID .*: procedure is not running",
                container='oet-rest')],
     "SKBX-048", "Procedure not running error in OET", taints=True
+)
+add_classifier(
+    [("tests/smoke/test_validate_bdd_tests.py", "test_validate_bdd_features")],
+    [match_msg(r"E.*AssertionError: Some BDD files not valid", section='detail/main')],
+    "SKBX-049", "Some BDD files not valid"
+)
+add_classifier(
+    [("tests/acceptance/integration/test_XTP-1079.py", "test_executing_a_transaction_that_fails")],
+    [match_status('XFAIL'), match_msg(r".*", missing=True, section='detail/main')],
+    "SKBX-050", "Test transaction_that_fails fails silently"
 )
 
 # Special pseudo-classifiers
@@ -700,7 +711,7 @@ def classify_test_results(test_results):
     :returns: List of test/cfr/matched dictionaries with triggered classifiers,
        in the order they were matched
     """
-    
+
     matches = []
 
     # Walk through tests
@@ -710,7 +721,7 @@ def classify_test_results(test_results):
     start_time = time.time()
     cfr_time = { cfr.skb: 0 for cfr in classifiers }
     for test in test_results:
-    
+
         # Check whether we can match it to a classifier
         cfrs = list(classifier_by_test.get((test['file'], test['name']), []))
         cfrs += classifier_by_test.get((None, None), [])

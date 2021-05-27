@@ -81,8 +81,7 @@ def allocate_four_dishes(result):
     @sync_assign_resources(4, 150)
     def test_SUT():
         res = oet_compose_sub()
-        return res
-        
+        return res     
     result['response'] = test_SUT()
     LOGGER.info("Result of test_SUT : " + str(result))
     LOGGER.info("Result response of test_SUT : " + str(result['response']))

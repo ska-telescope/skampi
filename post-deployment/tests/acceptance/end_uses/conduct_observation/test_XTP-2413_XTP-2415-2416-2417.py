@@ -12,8 +12,7 @@ import logging
 import pytest
 import requests
 from pytest_bdd import given, parsers, scenario, then, when
-from resources.test_support.controls_low import (restart_subarray,
-                                                 set_telescope_to_running,
+from resources.test_support.controls_low import (set_telescope_to_running,
                                                  set_telescope_to_standby,
                                                  telescope_is_in_standby,
                                                  take_subarray)
@@ -73,7 +72,7 @@ def end(result):
     if not telescope_is_in_standby():
         set_telescope_to_standby()
     LOGGER.info("CLEANUP: Sub-array is in %s ",
-                subarray.get('obsState'))
+                resource(result[SUBARRAY_USED]).get('obsState'))
 
 
 @pytest.mark.oetlow

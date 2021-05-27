@@ -33,12 +33,6 @@ else
     PUBSUB = false
 endif
 
-ifeq ($(DEPLOYMENT_CONFIGURATION),skamid-emulated)
-    OVERRIDES = --overrides '{"apiVersion":"v1","spec":{"serviceAccountName":"test-svc-account"}}'
-else
-    OVERRIDES =
-endif
-
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
 # and then runs the requested make target in the container.
@@ -49,7 +43,7 @@ k8s_test = tar -c post-deployment/ | \
 		kubectl run $(TEST_RUNNER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
-		--image=$(IMAGE_TO_TEST) $(OVERRIDES) \
+		--image=$(IMAGE_TO_TEST) \
 		--limits='cpu=1000m,memory=500Mi' \
 		--requests='cpu=900m,memory=400Mi' \
 		--env=INGRESS_HOST=$(INGRESS_HOST) \

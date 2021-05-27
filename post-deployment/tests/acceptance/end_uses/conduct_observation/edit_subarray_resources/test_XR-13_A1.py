@@ -57,7 +57,7 @@ def result():
     return {}
 
 @pytest.mark.select
-@pytest.mark.skamid_assign
+@pytest.mark.skamid
 @pytest.mark.quarantine
 #@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
 @scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
@@ -80,7 +80,7 @@ def allocate_four_dishes(result):
     ##############################
     @sync_assign_resources(4, 150)
     # @sync_assign_oet(4, 150)
-    def test_SUT(result):
+    def test_SUT():
         # cdm_file_path = 'resources/test_data/OET_integration/example_allocate.json'
         # LOGGER.info("cdm_file_path :" + str(cdm_file_path))
         # update_resource_config_file(cdm_file_path)
@@ -89,15 +89,11 @@ def allocate_four_dishes(result):
         # subarray = SubArray(1)
         # LOGGER.info("Allocated Subarray is :" + str(subarray))
         # return subarray.allocate_from_cdm(cdm_request_object)
-        # res = oet_compose_sub()
-        # return res
-        pilot, sdp_block = take_subarray(1).to_be_composed_out_of(2)
-        result['response'] = pilot
-        LOGGER.info("Subarray 1 is ready and composed out of 2 dishes")
-        LOGGER.info("SDP block in AssignResources json input is :" + str(result))
-        return result
+        res = oet_compose_sub()
+        return res
+        
     
-    result['response'] = test_SUT(result)
+    result['response'] = test_SUT()
     LOGGER.info("Result of test_SUT : " + str(result))
     LOGGER.info("Result response of test_SUT : " + str(result['response']))
     ##############################

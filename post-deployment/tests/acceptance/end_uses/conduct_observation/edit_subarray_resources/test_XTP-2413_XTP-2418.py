@@ -13,10 +13,12 @@ from pytest_bdd import given, parsers, scenario, then, when
 from resources.test_support.controls_low import (set_telescope_to_running,
                                                  set_telescope_to_standby,
                                                  to_be_composed_out_of,
-                                                 telescope_is_in_standby)
-from resources.test_support.helpers_low import resource
+                                                 telescope_is_in_standby
+                                                 )
+from resources.test_support.helpers_low import resource, wait_before_test
 from resources.test_support.oet_helpers import ScriptExecutor
 from ska.scripting.domain import SubArray
+import resources.test_support.tmc_helpers_low as tmc
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,7 +46,8 @@ def end(result):
     obsstate = resource(result[SUBARRAY_USED]).get('obsState')
     if obsstate == "IDLE":
         LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
-        subarray.deallocate()
+        # subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
+        tmc.release_resources()
     set_telescope_to_standby()
 
 
@@ -65,6 +68,7 @@ def set_subarray_to_idle(result):
     if telescope_is_in_standby():
         LOGGER.info("Starting up telescope")
         set_telescope_to_running()
+        wait_before_test(timeout=20)
     LOGGER.info("Assigning resources")
     to_be_composed_out_of()
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')

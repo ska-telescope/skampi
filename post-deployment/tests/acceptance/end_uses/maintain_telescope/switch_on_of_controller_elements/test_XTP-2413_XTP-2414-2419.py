@@ -14,7 +14,7 @@ from resources.test_support.controls_low import (set_telescope_to_running,
                                                  telescope_is_in_standby)
 
 from resources.test_support.oet_helpers import ScriptExecutor
-from resources.test_support.helpers_low import resource
+from resources.test_support.helpers_low import resource, wait_before_test
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant
@@ -70,6 +70,7 @@ def set_telescope_in_off_state(result):
     LOGGER.info("Set telescope to stand-by")
     if not telescope_is_in_standby():
         set_telescope_to_standby()
+
     telescope_state = resource(result[CENTRAL_NODE_USED]).get('State')
     assert telescope_state == 'OFF', \
         f"Expected telescope to be OFF but instead was {telescope_state}"
@@ -84,6 +85,7 @@ def set_telescope_in_on_state(result):
     LOGGER.info("Starting up telescope")
     if telescope_is_in_standby():
         set_telescope_to_running()
+        wait_before_test(timeout=20)
     telescope_state = resource(result[CENTRAL_NODE_USED]).get('State')
     assert telescope_state == 'ON', \
         f"Expected telescope to be ON but instead was {telescope_state}"

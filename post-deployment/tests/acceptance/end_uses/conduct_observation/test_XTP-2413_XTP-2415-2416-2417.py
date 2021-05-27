@@ -15,11 +15,13 @@ from pytest_bdd import given, parsers, scenario, then, when
 from resources.test_support.controls_low import (restart_subarray,
                                                  set_telescope_to_running,
                                                  set_telescope_to_standby,
-                                                 telescope_is_in_standby)
+                                                 telescope_is_in_standby,
+                                                 take_subarray)
 
-from resources.test_support.helpers_low import resource
+from resources.test_support.helpers_low import resource, wait_before_test
 from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray
 from ska.scripting.domain import SubArray
+import resources.test_support.tmc_helpers_low as tmc
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant
@@ -53,16 +55,19 @@ def end(result):
     obsstate = resource(result[SUBARRAY_USED]).get('obsState')
     if obsstate == "IDLE":
         LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
-        subarray.deallocate()
+        # subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
+        tmc.release_resources()
     if obsstate == "READY":
         LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
-        subarray.end()
-        subarray.deallocate()
+        # subarray.end() #TODO: Once the OET latest charts are available this can be reverted
+        # subarray.deallocate()
+        take_subarray(1).and_end_sb_when_ready()
+        tmc.release_resources()
     if obsstate in ["CONFIGURING", "SCANNING"]:
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)
-        restart_subarray(1)
+        subarray.restart()
         # raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     if not telescope_is_in_standby():
@@ -94,7 +99,6 @@ def test_resource_allocation():
         and SBI scripts/data/example_low_sb.json
     Then the sub-array goes to ObsState IDLE
     """
-    pass
 
 
 @pytest.mark.oetlow
@@ -109,7 +113,6 @@ def test_observing_sbi():
     Then the sub-array passes through ObsStates IDLE, CONFIGURING, SCANNING, CONFIGURING, SCANNING, CONFIGURING,
       SCANNING, CONFIGURING, SCANNING, IDLE
     """
-    pass
 
 
 @given('the SKUID service is running')
@@ -130,6 +133,7 @@ def start_up_telescope(result):
     if telescope_is_in_standby():
         LOGGER.info("PROCESS: Starting up telescope")
         set_telescope_to_running()
+        wait_before_test(timeout=20)
 
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
     assert subarray_state == 'EMPTY', \
@@ -166,6 +170,7 @@ def allocate_resources_from_sbi(script, sb_json):
     """
     if telescope_is_in_standby():
         set_telescope_to_running()
+        wait_before_test(timeout=20)
 
     script_completion_state = EXECUTOR.execute_script(
         script,

@@ -79,20 +79,10 @@ def allocate_four_dishes(result):
     LOGGER.info("Allocating 4 dishes to subarray 1")
     ##############################
     @sync_assign_resources(4, 150)
-    # @sync_assign_oet(4, 150)
     def test_SUT():
-        # cdm_file_path = 'resources/test_data/OET_integration/example_allocate.json'
-        # LOGGER.info("cdm_file_path :" + str(cdm_file_path))
-        # update_resource_config_file(cdm_file_path)
-        # cdm_request_object = cdm_CODEC.load_from_file(AssignResourcesRequest, cdm_file_path)
-        # cdm_request_object.dish.receptor_ids = [str(x).zfill(4) for x in range(1, 5)]
-        # subarray = SubArray(1)
-        # LOGGER.info("Allocated Subarray is :" + str(subarray))
-        # return subarray.allocate_from_cdm(cdm_request_object)
         res = oet_compose_sub()
         return res
         
-    
     result['response'] = test_SUT()
     LOGGER.info("Result of test_SUT : " + str(result))
     LOGGER.info("Result response of test_SUT : " + str(result['response']))

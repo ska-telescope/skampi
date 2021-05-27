@@ -4,7 +4,7 @@ pyyaml
 pytest-cov
 pytest-json-report
 pycodestyle<2.7.0,>=2.6.0a1
-pytest-bdd==3.4.0
+pytest-bdd
 pytest-ordering
 pytest-timeout
 pytest-repeat
@@ -24,6 +24,6 @@ tango-simlib>=0.9.0
 lmcbaseclasses
 ska-log-transactions
 tabulate
-skallop==0.1.3
+skallop==1.0.0-beta
 ska-ser-skuid
 ska-ser-logging

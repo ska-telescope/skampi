@@ -2,6 +2,7 @@ THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/
 DISPLAY := $(THIS_HOST):0##for GUI applications
 XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
+SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-chart
 
 INGRESS_HOST ?= k8s.stfc.skao.int## default ingress host
 KUBE_NAMESPACE ?= integration#namespace to be used
@@ -19,7 +20,7 @@ UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrel
 # This code detects environment and sets the variables
 ENV_CHECK := $(shell echo $(CI_ENVIRONMENT_SLUG) | egrep psi-low)
 ifneq ($(ENV_CHECK),)
-PSI_LOW_PROXY=http://delphinus.atnf.csiro.au:8888
+PSI_LOW_PROXY=http://delphoenix.atnf.csiro.au:8888
 PSI_LOW_NO_PROXY=localhost,127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local
 PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
 				--env=HTTPS_PROXY=${PSI_LOW_PROXY} \
@@ -147,7 +148,7 @@ uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
-	helm dependency update $(UMBRELLA_CHART_PATH); \
+	test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm upgrade $(HELM_RELEASE) --install \
 		$(CHART_PARAMS) \
 		--values $(VALUES) \

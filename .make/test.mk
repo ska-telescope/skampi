@@ -5,7 +5,7 @@ CI_JOB_ID?=local
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
 #nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.6-dirty
-IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.5## docker image that will be run for testing purpose
+IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.7## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #
@@ -15,7 +15,7 @@ TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s
 #
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 MARK ?= fast## this variable allow the mark parameter in the pytest
-FILE ?= ##this variable allow to execution of a single file in the pytest 
+FILE ?= ##this variable allow to execution of a single file in the pytest
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
 
@@ -54,6 +54,7 @@ k8s_test = tar -c post-deployment/ | \
 			KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
 			HELM_RELEASE=$(HELM_RELEASE) \
 			TANGO_HOST=$(TANGO_HOST) \
+			CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
 			MARK='$(MARK)' \
 			COUNT=$(COUNT) \
 			FILE='$(FILE)' \
@@ -61,6 +62,7 @@ k8s_test = tar -c post-deployment/ | \
 			CENTRALNODE_FQDN=$(CENTRALNODE) \
 			SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
 			OET_READ_VIA_PUBSUB=$(PUBSUB) \
+			JIRA_AUTH=$(JIRA_AUTH) \
 			$1 && \
 		(tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \

@@ -12,12 +12,11 @@ import logging
 import pytest
 import requests
 from pytest_bdd import given, parsers, scenario, then, when
-from resources.test_support.controls_low import (restart_subarray,
-                                                 set_telescope_to_running,
+from resources.test_support.controls_low import (set_telescope_to_running,
                                                  set_telescope_to_standby,
                                                  telescope_is_in_standby)
 
-from resources.test_support.helpers_low import resource
+from resources.test_support.helpers_low import resource, wait_before_test
 from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray
 from ska.scripting.domain import SubArray
 
@@ -62,13 +61,13 @@ def end(result):
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)
-        restart_subarray(1)
+        subarray.restart()
         # raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     if not telescope_is_in_standby():
         set_telescope_to_standby()
     LOGGER.info("CLEANUP: Sub-array is in %s ",
-                subarray.get('obsState'))
+                resource(result[SUBARRAY_USED]).get('obsState'))
 
 
 @pytest.mark.oetlow
@@ -130,6 +129,7 @@ def start_up_telescope(result):
     if telescope_is_in_standby():
         LOGGER.info("PROCESS: Starting up telescope")
         set_telescope_to_running()
+        wait_before_test(timeout=10)
 
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
     assert subarray_state == 'EMPTY', \
@@ -166,6 +166,7 @@ def allocate_resources_from_sbi(script, sb_json):
     """
     if telescope_is_in_standby():
         set_telescope_to_running()
+        wait_before_test(timeout=10)
 
     script_completion_state = EXECUTOR.execute_script(
         script,

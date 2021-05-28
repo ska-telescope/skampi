@@ -11,7 +11,6 @@ import logging
 import time  # used to sleep between measurements
 from skallop.transactions.atomic import atomic
 from skallop.connectors.configuration import get_device_proxy
-from skallop.datatypes.attributes import DevState
 
 
 logger = logging.getLogger(__name__)
@@ -49,10 +48,12 @@ def devices()-> DeviceStates:
 
     return DeviceStates()
 
+
+@pytest.mark.skip()
 # Define a function to print the state of all devices
 #@pytest.mark.skip(reason="disabled to check pipeline failure")
-@pytest.mark.skalow
-@pytest.mark.quarantine
+# @pytest.mark.skalow
+# @pytest.mark.quarantine
 @scenario('XTP-1310.feature', 'PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)')
 def test_psi01_test_initialise_the_tpm_using_the_oet_jupyter_notebook():
     """PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)."""

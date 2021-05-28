@@ -70,7 +70,7 @@ def test_mode_transitions():
     pass
 
 
-@given("<dish_master> reports <start_mode> Dish mode")
+@given("<dish_master> reports <start_mode> Dish mode", target_fixture='device_proxy')
 def device_proxy(dish_master, start_mode):
     # update the device_proxies collection for teardown
     if dish_master not in device_proxies:

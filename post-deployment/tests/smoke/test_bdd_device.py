@@ -11,7 +11,7 @@ import sys
 import logging
 import pytest
 
-@given(parsers.parse("a device called {device_name}"))
+@given(parsers.parse("a device called {device_name}"), target_fixture='device_proxy')
 def device_proxy(run_context, device_name):
   return DeviceProxy(device_name)
 

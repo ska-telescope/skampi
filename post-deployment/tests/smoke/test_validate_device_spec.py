@@ -63,6 +63,7 @@ def test_ska_devices():
     test_result = {}
     with NamedTemporaryFile(mode="wb") as tmp_file:
         spec_response = requests.get(SPEC_URLS["ska_tango_guide_ska_wide"], headers=request_headers)
+        spec_response.raise_for_status()
         tmp_file.write(spec_response.content)
         tmp_file.seek(0)
 
@@ -92,6 +93,7 @@ def test_dishmaster_conforms_to_tango_wide():
 
     with NamedTemporaryFile(mode="wb") as tmp_file:
         spec_response = requests.get(SPEC_URLS["ska_tango_guide_ska_wide"], headers=request_headers)
+        spec_response.raise_for_status()
         tmp_file.write(spec_response.content)
         tmp_file.seek(0)
         result = validate_device_from_path("mid_d0001/elt/master", tmp_file.name, False)
@@ -107,6 +109,7 @@ def test_dishmaster_conforms_to_dishmaster_spec():
 
     with NamedTemporaryFile(mode="wb") as tmp_file:
         spec_response = requests.get(SPEC_URLS["dish_master"], headers=request_headers)
+        spec_response.raise_for_status()
         tmp_file.write(spec_response.content)
         tmp_file.seek(0)
         result = validate_device_from_path("mid_d0001/elt/master", tmp_file.name, False)

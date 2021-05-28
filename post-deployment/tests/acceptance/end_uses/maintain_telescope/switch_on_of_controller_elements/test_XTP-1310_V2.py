@@ -11,7 +11,6 @@ import logging
 import time  # used to sleep between measurements
 from skallop.transactions.atomic import atomic
 from skallop.connectors.configuration import get_device_proxy
-from skallop.datatypes.attributes import DevState
 
 
 logger = logging.getLogger(__name__)
@@ -48,6 +47,7 @@ def devices()-> DeviceStates:
 
 
     return DeviceStates()
+
 
 # Define a function to print the state of all devices
 #@pytest.mark.skip(reason="disabled to check pipeline failure")

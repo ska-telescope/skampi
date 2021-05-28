@@ -20,17 +20,17 @@ SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
 
 # Define environment variables required by OET
-ifneq (,$(findstring skalow,$(MARK)))
+ifneq ($(shell kubectl get -n $(KUBE_NAMESPACE) pods -l app=ska-low-mccs | wc -l), 0)
     TELESCOPE = 'SKA-Low'
     CENTRALNODE = 'ska_low/tm_central/central_node'
     SUBARRAY = 'ska_low/tm_subarray_node'
-    PUBSUB = true
 else
     TELESCOPE = 'SKA-Mid'
     CENTRALNODE = 'ska_mid/tm_central/central_node'
     SUBARRAY = 'ska_mid/tm_subarray_node'
-    PUBSUB = false
 endif
+
+PUBSUB = true
 
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER

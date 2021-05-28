@@ -20,7 +20,7 @@ from resources.test_support.controls import (set_telescope_to_running,
 
 from resources.test_support.helpers import resource
 from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray
-from skuid.client import SkuidClient
+
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant

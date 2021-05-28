@@ -12,6 +12,8 @@ import logging
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 
+# SUT
+from skallop.bdd_test_data_manager.data_manager import download_test_data
 #SUT infrastructure
 from tango import DeviceProxy, DevState # type: ignore
 ## local imports
@@ -63,8 +65,9 @@ def set_to_abort():
     LOGGER.info("Configure is invoked on Subarray")
     wait_before_test(timeout=10)
 
-    scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
+    scan_file = download_test_data("low_scan_v1.json", "skampi-test-data/tmc-integration/scan")
     scan_string = load_config_from_file(scan_file)
+    os.remove(scan_file)
     SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
     SubarrayNodeLow.Scan(scan_string)
     LOGGER.info("Scan is invoked on Subarray")

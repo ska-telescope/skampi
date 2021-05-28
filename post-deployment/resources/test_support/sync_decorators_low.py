@@ -18,6 +18,11 @@ def check_going_into_configure():
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','READY'])
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
 
+
+def check_going_out_of_configured():
+    ## Verify the Subarray obstate = READY
+    resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
+
 def check_going_into_abort():
     ## Can only invoke abort on a subarray when in IDLE, SCANNING, CONFIGURING, READY
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals(['IDLE','SCANNING','CONFIGURING','READY'])
@@ -266,6 +271,18 @@ def sync_end(func):
         the_waiter.set_wait_for_ending_SB()
         result = func(*args, **kwargs)
         the_waiter.wait(100)
+        return result
+    return wrapper
+
+
+def sync_end_sb(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        check_going_out_of_configured()
+        the_waiter = waiter()
+        the_waiter.set_wait_for_ending_SB()
+        result = func(*args, **kwargs)
+        the_waiter.wait(200)
         return result
     return wrapper
 

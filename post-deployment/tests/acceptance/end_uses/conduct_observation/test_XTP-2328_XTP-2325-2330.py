@@ -114,8 +114,6 @@ def allocate_resources():
     """
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy")
     if telescope_is_in_standby():
-        assert (telescope_is_in_standby())
-        LOGGER.info("Telescope is in StandBy.")
         LOGGER.info("Starting up telescope")
         set_telescope_to_running()
         LOGGER.info("Telescope started")

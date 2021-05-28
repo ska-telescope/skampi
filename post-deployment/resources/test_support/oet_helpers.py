@@ -33,6 +33,7 @@ def oet_compose_sub():
     LOGGER.info("Allocated Subarray is :" + str(subarray))
     return subarray.allocate_from_cdm(cdm_request_object)
 
+
 class Subarray:
 
     resource = None

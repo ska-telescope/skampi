@@ -544,7 +544,7 @@ tag_commit:
   script:
     - make release-skampi
 
-low_clean_staging:
+.low_clean_staging:
   stage: clean_staging
   tags: *tags_default
   variables:
@@ -579,7 +579,7 @@ psi_low_clean_staging:
     name: "psi-low-staging"
     action: stop
 
-mid_clean_staging:
+.mid_clean_staging:
   stage: clean_staging
   tags: *tags_default
   variables:

@@ -15,6 +15,7 @@ from concurrent import futures
 
 # SUT
 from ska.scripting.domain import Telescope, SubArray
+from skallop.bdd_test_data_manager.data_manager import download_test_data
 
 # SUT infrastructure
 from tango import DeviceProxy, DevState
@@ -119,10 +120,11 @@ def reset_subarray():
 def configuring_sub(sdp_block):
     @sync_configuring
     def test_SUT(sdp_block):
-        file = 'resources/test_data/TMC_integration/configure1.json'
+        file = download_test_data("mid_configure_v1.json", "skampi-test-data/tmc-integration/configure")
         update_scan_config_file(file, sdp_block)
         LOGGER.info("Invoking Configure command on Subarray 1")
         config = load_config_from_file(file)
+        os.remove(file)
         SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
         SubarrayNode.Configure(config)
         LOGGER.info("Subarray obsState is: " + str(SubarrayNode.obsState))

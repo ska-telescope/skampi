@@ -25,13 +25,13 @@ ifneq ($(shell kubectl get -n $(KUBE_NAMESPACE) pods -l app=ska-low-mccs | wc -l
     TELESCOPE = 'SKA-Low'
     CENTRALNODE = 'ska_low/tm_central/central_node'
     SUBARRAY = 'ska_low/tm_subarray_node'
-    PUBSUB = true
 else
     TELESCOPE = 'SKA-Mid'
     CENTRALNODE = 'ska_mid/tm_central/central_node'
     SUBARRAY = 'ska_mid/tm_subarray_node'
-    PUBSUB = false
 endif
+
+PUBSUB = true
 
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
@@ -64,6 +64,9 @@ k8s_test = tar -c post-deployment/ | \
 			SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
 			OET_READ_VIA_PUBSUB=$(PUBSUB) \
 			JIRA_AUTH=$(JIRA_AUTH) \
+			CAR_RAW_USERNAME=$(CAR_RAW_USERNAME) \
+			CAR_RAW_PASSWORD=$(CAR_RAW_PASSWORD) \
+			CAR_RAW_REPOSITORY_URL=$(CAR_RAW_REPOSITORY_URL) \
 			$1 && \
 		(tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \

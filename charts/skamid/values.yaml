@@ -83,10 +83,10 @@ oet-scripts:
   subarray: ska_mid/tm_subarray_node
   jupyter:
     featureFlags:
-      readViaPubSub: false
+      readViaPubSub: true
   rest:
     featureFlags:
-      readViaPubSub: false
+      readViaPubSub: true
 
 #telescope control
 ## mid-cbf

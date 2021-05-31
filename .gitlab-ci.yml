@@ -552,6 +552,7 @@ low_clean_staging:
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
   only:
     refs:
       - tags
@@ -586,6 +587,7 @@ mid_clean_staging:
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true"
   only:
     refs:
       - tags
@@ -605,6 +607,7 @@ low_deploy_staging:
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
   <<: *deploy_definition
   environment:
     name: "staging-low"
@@ -651,6 +654,7 @@ mid_deploy_staging:
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true"
   <<: *deploy_definition
   environment:
     name: "staging-mid"

@@ -48,8 +48,7 @@ subarray=SubArray(1)
 
 # @pytest.mark.skip()
 @pytest.mark.skalow
-# @pytest.mark.quarantine
-# @pytest.mark.xfail(reason="Latest MCCS images are not available")
+@pytest.mark.quarantine
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then Abort brings them in ABORTED observation state in MVP Low")
 def test_subarray_abort_obsreset():
     """Abort Operation"""

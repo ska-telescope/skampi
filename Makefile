@@ -67,6 +67,8 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets that EDA deployment
 -include .make/archiver.mk
 
+-include PrivateRules.mak
+
 vars: ## Display variables
 	@echo "Namespace: $(KUBE_NAMESPACE)"
 	@echo "HELM_RELEASE: $(HELM_RELEASE)"

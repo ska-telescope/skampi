@@ -619,8 +619,8 @@ low_deploy_staging:
   only:
     refs:
       - tags
-  needs:
-    - job: low_clean_staging
+  # needs:
+  #   - job: low_clean_staging
       
 psi_low_deploy_staging:
   stage: deploy_staging
@@ -641,8 +641,8 @@ psi_low_deploy_staging:
   only:
     refs:
       - tags
-  needs:
-    - job: psi_low_clean_staging
+  # needs:
+  #   - job: psi_low_clean_staging
 
 mid_deploy_staging:
   stage: deploy_staging
@@ -666,8 +666,8 @@ mid_deploy_staging:
   only:
     refs:
       - tags
-  needs:
-    - job: mid_clean_staging
+  # needs:
+  #   - job: mid_clean_staging
 
 version_bump_charts:
   stage: update_versions

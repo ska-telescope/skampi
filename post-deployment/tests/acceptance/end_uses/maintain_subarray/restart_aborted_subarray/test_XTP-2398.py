@@ -128,7 +128,7 @@ def teardown_function(function):
     if (resource('ska_low/tm_subarray_node/1').get('State') == "ON"):
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            subarray.deallocate()
+            tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
@@ -137,7 +137,7 @@ def teardown_function(function):
             resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
             LOGGER.info('Invoked End on Subarray')
             wait_before_test(timeout=10)
-            subarray.deallocate()
+            tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):

@@ -544,7 +544,7 @@ tag_commit:
   script:
     - make release-skampi
 
-.low_clean_staging:
+low_clean_staging:
   stage: clean_staging
   tags: *tags_default
   variables:
@@ -556,6 +556,8 @@ tag_commit:
   only:
     refs:
       - tags
+    variables:
+      - $DELETE == "true"
   script:
   - *uninstall_scripts
   environment:
@@ -573,13 +575,15 @@ psi_low_clean_staging:
   only:
     refs:
       - tags
+    variables:
+      - $DELETE == "true"
   script:
   - *uninstall_scripts
   environment:
     name: "psi-low-staging"
     action: stop
 
-.mid_clean_staging:
+mid_clean_staging:
   stage: clean_staging
   tags: *tags_default
   variables:
@@ -591,6 +595,8 @@ psi_low_clean_staging:
   only:
     refs:
       - tags
+    variables:
+      - $DELETE == "true"
   script:
   - *uninstall_scripts
   environment:

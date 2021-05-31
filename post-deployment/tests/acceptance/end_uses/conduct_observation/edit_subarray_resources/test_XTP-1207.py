@@ -17,6 +17,7 @@ from tango import DeviceProxy, DevState
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 import logging
 from ska.scripting.domain import SubArray
+import resources.test_support.tmc_helpers_low as tmc
 from resources.test_support.persistance_helping import load_config_from_file
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray
 from resources.test_support.sync_decorators_low import sync_assign_resources
@@ -91,8 +92,9 @@ def teardown_function(function):
     """
     if (resource('ska_low/tm_subarray_node/1').get("obsState") == "IDLE"):
         LOGGER.info("Release all resources assigned to subarray")
-        subarray = SubArray(1)
-        subarray.deallocate()
+        # subarray = SubArray(1)
+        # subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
+        tmc.release_resources()
         LOGGER.info("ResourceIdList is empty for Subarray 1 ")
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()

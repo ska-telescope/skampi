@@ -12,6 +12,8 @@ import logging
 from concurrent import futures
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
+# SUT
+from skallop.bdd_test_data_manager.data_manager import download_test_data
 #SUT infrastructure
 from tango import DeviceProxy # type: ignore
 from ska.scripting.domain import SubArray
@@ -166,3 +168,6 @@ def teardown_function(function):
             wait_before_test(timeout=10)
         set_telescope_to_standby()
         LOGGER.info("Telescope is in standby")
+    else:
+        LOGGER.warn("Subarray is in inconsistent state! Please restart MVP manualy to complete tear down")
+        restart_subarray_low(1)

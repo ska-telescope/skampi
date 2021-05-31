@@ -41,7 +41,6 @@ class pilot():
         print("state at {} is:\n{}".format(datetime.now(),self.agents.get('obsState')))
         return self
 
-
     def reset_when_aborted(self):
         @sync_reset_sa
         def reset():
@@ -49,7 +48,7 @@ class pilot():
         reset()
         self.state = "IDLE"
         return self
-
+        
     def and_end_sb_when_ready(self):
         @sync_end_sb
         def end_sb():
@@ -58,23 +57,13 @@ class pilot():
         self.state = "Composed"
         return self
 
-
-
 def telescope_is_in_standby():
     LOGGER.info('resource("ska_low/tm_subarray_node/1").get("State")'+ str(resource('ska_low/tm_subarray_node/1').get("State")))
     LOGGER.info('resource("ska_low/tm_leaf_node/mccs_master").get("State")' +
                 str(resource('ska_low/tm_leaf_node/mccs_master').get("State")))
-    LOGGER.info('resource("low-mccs/control/control").get("State")' +
-                str(resource('low-mccs/control/control').get("State")))
-    # return  [resource('ska_low/tm_subarray_node/1').get("State"),
-    #         resource('ska_low/tm_leaf_node/mccs_master').get("State"),
-    #         resource('low-mccs/control/control').get("State")] == \
-    #         ['OFF','OFF', 'OFF']
     return  [resource('ska_low/tm_subarray_node/1').get("State"),
             resource('ska_low/tm_leaf_node/mccs_master').get("State")] == \
             ['OFF','OFF']
-
-
 
 def set_telescope_to_running(disable_waiting = False):
     resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('OFF')
@@ -107,6 +96,7 @@ def to_be_composed_out_of():
     LOGGER.info('Subarray has been created.')
     subarray.allocate_from_file(cdm_file=assign_resources_file, with_processing=False)
     LOGGER.info('Invoked AssignResources on CentralNodeLow')
+
 
 @sync_configure
 def configure_by_file():

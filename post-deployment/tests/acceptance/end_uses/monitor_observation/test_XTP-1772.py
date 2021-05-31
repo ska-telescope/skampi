@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-test_ABORTED
+test_XTP-1772
 ----------------------------------
-
+Tests for recovering sub-array from ABORTED (XTP-1773) and FAULT (XTP-1774),
+stopping script execution and sending Abort command to sub-array (XTP-1775) and
+stopping script execution without sending Abort command to sub-array (XTP-1776)
 """
 import logging
 
@@ -71,7 +73,16 @@ def end(result):
 @pytest.mark.skamid
 @scenario("XTP-1772.feature", "Recovering sub-array from ABORTED")
 def test_recovery_from_aborted():
-    """Test recovering (resetting/restarting) sub-array from ABORTED state"""
+    """Test recovering (resetting/restarting) sub-array from ABORTED state
+    Given the sub-array is in ObsState ABORTED
+    When I tell the OET to run <script>
+    Then the sub-array goes to ObsState <obsstate>
+
+    Examples:
+        | script 				            | obsstate	|
+        | file:///app/scripts/restart.py	| EMPTY		|
+        | file:///app/scripts/reset.py		| IDLE		|
+    """
 
 
 @given('the sub-array is in ObsState ABORTED')
@@ -99,7 +110,16 @@ def set_subarray_to_aborted(result):
 @pytest.mark.skip(reason="Partial Fault scenario is not yet handled in MVP")
 @scenario("XTP-1772.feature", "Recovering sub-array from FAULT")
 def test_recovery_from_fault():
-    """Test recovering (resetting/restarting) sub-array from FAULT state"""
+    """Test recovering (resetting/restarting) sub-array from FAULT state
+    Given the sub-array is in ObsState FAULT
+    When I tell the OET to run <script>
+    Then the sub-array goes to ObsState <obsstate>
+
+    Examples:
+        | script 				            | obsstate	|
+        | file:///app/scripts/restart.py	| EMPTY		|
+        | file:///app/scripts/reset.py		| IDLE		|
+    """
 
 
 @given('the sub-array is in ObsState FAULT')
@@ -169,7 +189,13 @@ def check_final_subarray_state(obsstate, result):
 @pytest.mark.quarantine
 @scenario("XTP-1772.feature", "Stopping script execution and sending Abort command to sub-array")
 def test_stop_script_and_abort_subarray():
-    """"""
+    """
+    Given OET is executing script file:///app/scripts/observe_sb.py with SB scripts/data/long_sb.json
+    When I stop the script execution using OET
+    Then the script execution is terminated
+    And abort.py script is run
+    And the sub-array goes to ObsState ABORTED
+    """
 
 
 @pytest.mark.oetmid
@@ -177,7 +203,12 @@ def test_stop_script_and_abort_subarray():
 @pytest.mark.quarantine
 @scenario("XTP-1772.feature", "Stopping script execution without aborting sub-array")
 def test_stop_script():
-    """"""
+    """
+    Given OET is executing script file:///app/scripts/observe_sb.py with SB scripts/data/long_sb.json
+    When I stop the script execution using OET setting abort flag to False
+    Then the script execution is terminated
+    And the sub-array ObsState is not ABORTED
+    """
 
 
 @given(parsers.parse('OET is executing script {script} with SB {sb_json}'))

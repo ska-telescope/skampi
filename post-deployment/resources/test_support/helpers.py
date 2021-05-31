@@ -66,9 +66,16 @@ class resource:
             return getattr(p, attr)
     
     def restart(self):
-        #current suggested method is through 'init' maybe reset would be better in future
+        # current suggested method is through 'init' maybe reset would be better in future
+        # reset method is allowed only when device is in FAULT state.
         p = DeviceProxy(self.device_name)
+        LOGGER.info('Inside restart method invoking init API.')
         p.init()
+        LOGGER.info('Inside restart method init API invoked successfully.')
+        # Calling Reset method of device server
+        # p = DeviceProxy(self.device_name)
+        # p.Reset()
+        
 
     def assert_attribute(self,attr):
         return ObjectComparison("{}.{}".format(self.device_name,attr),self.get(attr))

@@ -5,7 +5,7 @@ CI_JOB_ID?=local
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
 #nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.6-dirty
-IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.5## docker image that will be run for testing purpose
+IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.7## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #
@@ -20,17 +20,17 @@ SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
 
 # Define environment variables required by OET
-ifneq (,$(findstring skalow,$(MARK)))
+ifneq ($(shell kubectl get -n $(KUBE_NAMESPACE) pods -l app=ska-low-mccs | wc -l), 0)
     TELESCOPE = 'SKA-Low'
     CENTRALNODE = 'ska_low/tm_central/central_node'
     SUBARRAY = 'ska_low/tm_subarray_node'
-    PUBSUB = true
 else
     TELESCOPE = 'SKA-Mid'
     CENTRALNODE = 'ska_mid/tm_central/central_node'
     SUBARRAY = 'ska_mid/tm_subarray_node'
-    PUBSUB = false
 endif
+
+PUBSUB = true
 
 #
 # defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
@@ -62,6 +62,10 @@ k8s_test = tar -c post-deployment/ | \
 			CENTRALNODE_FQDN=$(CENTRALNODE) \
 			SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
 			OET_READ_VIA_PUBSUB=$(PUBSUB) \
+			JIRA_AUTH=$(JIRA_AUTH) \
+			CAR_RAW_USERNAME=$(CAR_RAW_USERNAME) \
+			CAR_RAW_PASSWORD=$(CAR_RAW_PASSWORD) \
+			CAR_RAW_REPOSITORY_URL=$(CAR_RAW_REPOSITORY_URL) \
 			$1 && \
 		(tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \

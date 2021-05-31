@@ -12,15 +12,14 @@ import logging
 import pytest
 import requests
 from pytest_bdd import given, parsers, scenario, then, when
-from resources.test_support.controls import (restart_subarray,
-                                             set_telescope_to_running,
+from resources.test_support.controls import (set_telescope_to_running,
                                              set_telescope_to_standby,
                                              take_subarray,
+                                             restart_subarray,
                                              telescope_is_in_standby)
 
 from resources.test_support.helpers import resource
 from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray
-from skuid.client import SkuidClient
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant

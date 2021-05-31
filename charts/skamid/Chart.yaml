@@ -7,7 +7,7 @@ appVersion: 0.7.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: tango-base
-  version: 0.2.20
+  version: 0.2.22
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: tango-util
   version: 0.2.13
@@ -25,15 +25,15 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
 - name: tmc-mid
-  version: 0.3.4
+  version: 0.3.6
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: tmc-mid.enabled
 - name: oet-scripts
-  version: 0.3.6
+  version: 0.3.8
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: oet-scripts.enabled
 - name: webjive
-  version: 1.0.18
+  version: 1.0.21
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: webjive.enabled
 - name: skuid

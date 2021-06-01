@@ -151,7 +151,7 @@ reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	if [ "" == "$(HELM_REPO_NAME)" ]; then \
-		echo "Installing Helm charts from current ref of git repository..." \
+		echo "Installing Helm charts from current ref of git repository..."; \
 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
 	else \
 		helm repo add $(HELM_REPO_NAME) $(HELM_HOST)/repository/helm-chart; \

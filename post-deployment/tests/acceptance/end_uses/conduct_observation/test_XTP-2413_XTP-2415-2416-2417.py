@@ -99,8 +99,8 @@ def test_resource_allocation():
 @pytest.mark.oetlow
 @pytest.mark.skalow
 @pytest.mark.quarantine
-@pytest.xfail(reason="State transitions are too quick for the OET obsState poller to catch. "
-                     "Should be resolved once pub/sub is implemented for state tracking.")
+@pytest.mark.xfail(reason="State transitions are too quick for the OET obsState poller to catch. "
+                          "Should be resolved once pub/sub is implemented for state tracking.")
 @scenario("XTP-2413.feature", "Observing a Scheduling Block")
 def test_observing_sbi():
     """

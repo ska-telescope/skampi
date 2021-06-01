@@ -63,9 +63,9 @@ k8s_test = tar -c post-deployment/ | \
 			SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
 			OET_READ_VIA_PUBSUB=$(PUBSUB) \
 			JIRA_AUTH=$(JIRA_AUTH) \
-			CAR_RAW_USERNAME=$(CAR_RAW_USERNAME) \
-			CAR_RAW_PASSWORD=$(CAR_RAW_PASSWORD) \
-			CAR_RAW_REPOSITORY_URL=$(CAR_RAW_REPOSITORY_URL) \
+			CAR_RAW_USERNAME=$(RAW_USER) \
+			CAR_RAW_PASSWORD=$(RAW_PASS) \
+			CAR_RAW_REPOSITORY_URL=$(RAW_HOST) \
 			$1 && \
 		(tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \

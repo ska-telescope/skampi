@@ -552,9 +552,12 @@ low_clean_staging:
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
   only:
     refs:
       - tags
+    variables:
+      - $DELETE == "true"
   script:
   - *uninstall_scripts
   environment:
@@ -572,6 +575,8 @@ psi_low_clean_staging:
   only:
     refs:
       - tags
+    variables:
+      - $DELETE == "true"
   script:
   - *uninstall_scripts
   environment:
@@ -586,9 +591,12 @@ mid_clean_staging:
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true"
   only:
     refs:
       - tags
+    variables:
+      - $DELETE == "true"
   script:
   - *uninstall_scripts
   environment:
@@ -605,6 +613,7 @@ low_deploy_staging:
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "skalow"
+    KEEP_NAMESPACE: "true"
   <<: *deploy_definition
   environment:
     name: "staging-low"
@@ -616,8 +625,8 @@ low_deploy_staging:
   only:
     refs:
       - tags
-  needs:
-    - job: low_clean_staging
+  # needs:
+  #   - job: low_clean_staging
       
 psi_low_deploy_staging:
   stage: deploy_staging
@@ -638,8 +647,8 @@ psi_low_deploy_staging:
   only:
     refs:
       - tags
-  needs:
-    - job: psi_low_clean_staging
+  # needs:
+  #   - job: psi_low_clean_staging
 
 mid_deploy_staging:
   stage: deploy_staging
@@ -651,6 +660,7 @@ mid_deploy_staging:
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true"
   <<: *deploy_definition
   environment:
     name: "staging-mid"
@@ -662,8 +672,8 @@ mid_deploy_staging:
   only:
     refs:
       - tags
-  needs:
-    - job: mid_clean_staging
+  # needs:
+  #   - job: mid_clean_staging
 
 version_bump_charts:
   stage: update_versions

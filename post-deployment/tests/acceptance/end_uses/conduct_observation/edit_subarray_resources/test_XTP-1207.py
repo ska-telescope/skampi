@@ -48,6 +48,7 @@ def result():
 # @pytest.mark.skip()
 @pytest.mark.quarantine
 @pytest.mark.skalow
+@pytest.mark.assignr
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
 @scenario("XTP-1207.feature", "TMC and MCCS subarray resource allocation")
 def test_allocate_resources():
@@ -93,8 +94,8 @@ def teardown_function(function):
     if (resource('ska_low/tm_subarray_node/1').get("obsState") == "IDLE"):
         LOGGER.info("Release all resources assigned to subarray")
         # subarray = SubArray(1)
-        subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
-        # tmc.release_resources()
+        # subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
+        tmc.release_resources()
         LOGGER.info("ResourceIdList is empty for Subarray 1 ")
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()

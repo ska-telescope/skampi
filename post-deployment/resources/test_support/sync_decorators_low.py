@@ -34,7 +34,6 @@ def check_coming_out_of_standby():
 
 def check_going_out_of_configure():
     ## verify the Subarray obstate = READY
-    LOGGER.info("In check going out of configure")
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
 
 def check_going_into_empty():
@@ -340,7 +339,6 @@ def sync_scanning(timeout=200):
 def sync_scan_oet(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        LOGGER.info("Into sync scan oet --------------")
         check_going_out_of_configure()
         the_waiter = waiter()
         the_waiter.set_wait_for_going_into_scanning()
@@ -352,7 +350,6 @@ def sync_scan_oet(func):
 def sync_scanning_oet(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        LOGGER.info("Into sync scanning oet --------------")
         check_going_out_of_configure()
         the_waiter = waiter()
         the_waiter.set_wait_for_going_into_scanning()

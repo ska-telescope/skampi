@@ -46,7 +46,6 @@ non_default_states_to_check = {}
 def result():
     return {}
 
-# @pytest.mark.skip()
 @pytest.mark.skalow
 @pytest.mark.quarantine
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")

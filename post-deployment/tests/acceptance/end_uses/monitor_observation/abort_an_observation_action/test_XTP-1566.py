@@ -48,7 +48,6 @@ non_default_states_to_check = {}
 
 subarray=SubArray(1)
 
-# @pytest.mark.skip()
 @pytest.mark.skalow
 @pytest.mark.quarantine
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then Abort brings them in ABORTED observation state in MVP Low")
@@ -129,7 +128,7 @@ def teardown_function(function):
     if (resource('ska_low/tm_subarray_node/1').get('State') == "ON"):
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "IDLE"):
             LOGGER.info("tearing down composed subarray (IDLE)")
-            # subarray.deallocate()
+            # subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
@@ -140,7 +139,7 @@ def teardown_function(function):
             resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
             LOGGER.info('Invoked End on Subarray')
             wait_before_test(timeout=10)
-            # subarray.deallocate()
+            # subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)
@@ -162,7 +161,7 @@ def teardown_function(function):
             take_subarray(1).reset_when_aborted()
             LOGGER.info('Invoked ObsReset on Subarray')
             wait_before_test(timeout=10)
-            # subarray.deallocate()
+            # subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
             tmc.release_resources()
             LOGGER.info('Invoked ReleaseResources on Subarray')
             wait_before_test(timeout=10)

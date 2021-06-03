@@ -12,7 +12,6 @@ all: test
 .PHONY: all test install start_log_consumer remove_log_consumer setup_ipython config_git check_running get_mem_usage get_cpu_usage
 
 test: install
-	unset http_proxy && unset https_proxy && unset HTTP_PROXY && unset HTTPS_PROXY && \
 	make start_log_consumer; \
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \

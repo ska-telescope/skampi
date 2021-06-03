@@ -16,9 +16,9 @@ from pytest_bdd import scenario, given, when, then
 from tango import DeviceProxy, DevState # type: ignore
 ## local imports
 from resources.test_support.helpers_low import resource, wait_before_test
-from resources.test_support.sync_decorators_low import sync_scan_oet, sync_abort, sync_restart
+from resources.test_support.sync_decorators_low import sync_scan_oet, sync_abort, sync_restart, sync_scanning_oet
 from resources.test_support.persistance_helping import load_config_from_file
-from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray_low, to_be_composed_out_of, configure_by_file
+from resources.test_support.controls_low import set_telescope_to_standby, set_telescope_to_running, telescope_is_in_standby, restart_subarray_low, to_be_composed_out_of, configure_by_file, take_subarray
 import resources.test_support.tmc_helpers_low as tmc
 from ska.scripting.domain import Telescope, SubArray
 
@@ -44,7 +44,6 @@ def result():
 
 @pytest.mark.skalow
 @pytest.mark.quarantine 
-#@pytest.mark.xfail(reason="Latest MCCS images are not available")
 @scenario("XTP-2398.feature", "BDD Test case for subarray Restart functionality")
 def test_subarray_restart():
     """RESTART Subarray"""
@@ -86,9 +85,13 @@ def set_up_telescope(subarray_obsstate : str):
         assign()
         config()
         LOGGER.info("Subarray is configured and executing a scan on subarray")
-        @sync_scan_oet
+        @sync_scanning_oet
         def scan():
-            subarray.scan()
+            scan_file = 'resources/test_data/TMC_integration/mccs_scan.json'
+            scan_string = load_config_from_file(scan_file)
+            SubarrayNodeLow = DeviceProxy('ska_low/tm_subarray_node/1')
+            SubarrayNodeLow.Scan(scan_string)
+            # subarray.scan()
             LOGGER.info("scan command is invoked")
         scan()
         LOGGER.info("Abort command can be invoked on Subarray with Subarray obsState as 'SCANNING'")
@@ -111,7 +114,7 @@ def restart():
     @sync_restart(200)
     def command_restart():
         LOGGER.info("Invoking Restart command on the Subarray.")
-        tmc.restart()
+        subarray.restart()
     command_restart()
     LOGGER.info("Subarray is restarted successfully.")
 
@@ -133,7 +136,8 @@ def teardown_function(function):
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
             LOGGER.info("tearing down configured subarray (READY)")
-            subarray.end()
+            # subarray.end()
+            take_subarray(1).and_end_sb_when_ready()
             resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
             LOGGER.info('Invoked End on Subarray')
             wait_before_test(timeout=10)
@@ -159,6 +163,19 @@ def teardown_function(function):
             LOGGER.warn("Subarray is still in RESTARTING! Please restart MVP manualy to complete tear down")
             restart_subarray_low(1)
             #raise exception since we are unable to continue with tear down
-            raise Exception("Unable to tear down test setup") 
+            raise Exception("Unable to tear down test setup")
+        if(resource('ska_low/tm_subarray_node/1').get('obsState') == "ABORTED"):
+            LOGGER.info("tearing down configured subarray (ABORTED)")
+            take_subarray(1).reset_when_aborted()
+            LOGGER.info('Invoked ObsReset on Subarray')
+            wait_before_test(timeout=10)
+            # subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
+            tmc.release_resources()
+            LOGGER.info('Invoked ReleaseResources on Subarray')
+            wait_before_test(timeout=10)
         set_telescope_to_standby()
         LOGGER.info("Telescope is in standBy")
+    else:
+        LOGGER.warn("Subarray is in inconsistent state! Please restart MVP manualy to complete tear down")
+        restart_subarray_low(1)
+

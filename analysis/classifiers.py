@@ -696,6 +696,11 @@ add_classifier(
     [match_status('XFAIL'), match_msg(r".*", missing=True, section='detail/main')],
     "SKBX-050", "Test transaction_that_fails fails silently"
 )
+add_classifier(
+    [(None, None)],
+    [match_msg(r"E.*KeyError: 'StartUpTelescope'", section='detail/main')],
+    "SKBX-051", "KeyError in TM central node base class"
+)
 
 # Special pseudo-classifiers
 UNKNOWN = Classifier([(None, None)], [], 'UNKNOWN', 'Unclassified test failure')

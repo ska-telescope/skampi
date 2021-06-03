@@ -45,7 +45,7 @@ def release_resources():
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
     CentralNodeLow = DeviceProxy('ska_low/tm_central/central_node')
     release_resources_file = download_test_data(
-        "low_release_resources_v1.json", "skampi-test-data/tmc-integration/release-resources")
+        "mccs_release_resources_v1.json", "skampi-test-data/tmc-integration/release-resources")
     release_json = load_config_from_file(release_resources_file)
     os.remove(release_resources_file)
     CentralNodeLow.ReleaseResources(release_json)

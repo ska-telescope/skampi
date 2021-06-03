@@ -22,7 +22,7 @@ from tango import DeviceProxy, DevState
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.persistance_helping import load_config_from_file
 import logging
-from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby, to_be_composed_out_of, configure_by_file, take_subarray
+from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby, to_be_composed_out_of, configure_by_file, take_subarray, restart_subarray_low
 from resources.test_support.sync_decorators_low import  sync_scan_oet,sync_configure_oet, sync_scan, time_it
 from ska.scripting.domain import SubArray
 import resources.test_support.tmc_helpers_low as tmc
@@ -129,16 +129,16 @@ def teardown_function(function):
             wait_before_test(timeout=10)
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
             LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manualy to complete tear down")
-            subarray.restart()
+            restart_subarray_low(1)
             # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         if (resource('ska_low/tm_subarray_node/1').get('obsState') == "SCANNING"):
             LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manualy to complete tear down")
-            subarray.restart()
+            restart_subarray_low(1)
             # raise exception since we are unable to continue with tear down
             raise Exception("Unable to tear down test setup")
         LOGGER.info("Put Telescope back to standby")
         set_telescope_to_standby()
     else:
         LOGGER.warn("Subarray is in inconsistent state! Please restart MVP manualy to complete tear down")
-        subarray.restart()
+        restart_subarray_low(1)

@@ -393,14 +393,17 @@ def sync_reset_sa(func):
         return result
     return wrapper
 
-def sync_end_sb(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        check_going_out_of_configured()
-        the_waiter = waiter()
-        the_waiter.set_wait_for_ending_SB()
-        result = func(*args, **kwargs)
-        the_waiter.wait(200)
-        return result
-    return wrapper
-
+def sync_restart(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            #check_going_into_restart()
+            check_going_out_of_abort()
+            w = WaitRestart()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator

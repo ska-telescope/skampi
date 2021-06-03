@@ -20,7 +20,7 @@ import json
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
 from resources.test_support.persistance_helping import update_scan_config_file
 from resources.test_support.sync_decorators_low import sync_configure
-from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray, to_be_composed_out_of, configure_by_file, take_subarray
+from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray, to_be_composed_out_of, configure_by_file, take_subarray, restart_subarray_low
 import pytest
 from resources.test_support.tmc_helpers_low import compose_sub, configure_sub, release_resources, end
 from ska.scripting.domain import Telescope, SubArray
@@ -107,7 +107,7 @@ def teardown_function(function):
         LOGGER.info("ReleaseResources is invoked on Subarray 1")
     if (resource('ska_low/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
         LOGGER.warn("Subarray is still in configuring! Please restart MVP manualy to complete tear down")
-        subarray.restart()
+        restart_subarray_low(1)
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")

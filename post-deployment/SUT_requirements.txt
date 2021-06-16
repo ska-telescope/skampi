@@ -1,2 +1,2 @@
-oet-scripts==1.4.0
+oet-scripts==1.5.0
 --extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple

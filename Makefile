@@ -21,7 +21,7 @@ UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrel
 ENV_CHECK := $(shell echo $(CI_ENVIRONMENT_SLUG) | egrep psi-low)
 ifneq ($(ENV_CHECK),)
 PSI_LOW_PROXY=http://delphoenix.atnf.csiro.au:8888
-PSI_LOW_NO_PROXY=localhost,127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local
+PSI_LOW_NO_PROXY=localhost,landingpage,oet-rest-$(HELM_RELEASE),127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local
 PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
 				--env=HTTPS_PROXY=${PSI_LOW_PROXY} \
 				--env=NO_PROXY=${PSI_LOW_NO_PROXY} \
@@ -150,8 +150,13 @@ uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
+<<<<<<< HEAD
 	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
 		echo "Installing Helm charts from current ref of git repository..." \
+=======
+	if [ "" == "$(HELM_REPO_NAME)" ]; then \
+		echo "Installing Helm charts from current ref of git repository..."; \
+>>>>>>> master
 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
 	else \
 		echo "Deploying from artefact repository..."

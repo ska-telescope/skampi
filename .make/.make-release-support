@@ -140,8 +140,11 @@ function getReleaseDescription(){
 # Create GitLab release for SKAMPI-prototype with version given in .release file
 function releaseSKAMPI() {
   name=$(getRelease)
-  tag_name=$(getRelease)
+  echo "NAME = $name"
+  tag_name=$(getTag)
+  echo "TAG_NAME = $tag_name"
   release_notes=$(getReleaseDescription)
+  echo "RELEASE NOTES = $release_notes"
   private_token=$PRIVATE_TOKEN
   data1=('{ "name": "'$name'", "tag_name": "'$tag_name'", "description": "'"$release_notes"'"}')
   result=$(curl --header 'Content-Type: application/json' \
@@ -153,7 +156,7 @@ function releaseSKAMPI() {
 
 # Delete released SKAMPI-prototype with version given in .release file
 function deleteSKAMPIRelease() {
-  tag_name=$(getRelease)
+  tag_name=$(getTag)
   private_token=$PRIVATE_TOKEN
   target="https://gitlab.com/api/v4/projects/""$CI_PROJECT_ID""/releases/"$tag_name
   result=$(curl --request DELETE --header "PRIVATE-TOKEN: "$private_token "$target")
@@ -170,7 +173,7 @@ function deleteTag() {
 # Create GitLab release SKAMPI with version given in .release file.
 # If there is an error while creating GitLab release, published tag and docker (with same version number) image will be deleted.)
 function releaseSKAMPIIfNoError() {
-  tag_name=$(getRelease)
+  tag_name=$(getTag)
   private_token=$PRIVATE_TOKEN
   echo "CHECKING IF THIS RELEASE ALREADY EXISTS. IF IT DOES NOT EXISTS, IT WILL GIVE KeyError: 'tag_name' (EXPECTED BEHAVIOUR)."
   releaseAlreadyExists=$(curl --header "PRIVATE-TOKEN: "$private_token "https://gitlab.com/api/v4/projects/""$CI_PROJECT_ID""/releases/""$tag_name" | \

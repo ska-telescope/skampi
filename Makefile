@@ -36,7 +36,7 @@ endif
 
 CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that are not a-z or 0-9 replaced with -. Use in URLs and domain names.
 CI_ENVIRONMENT_SLUG?=skampi##The simplified version of the environment name, suitable for inclusion in DNS, URLs, Kubernetes labels, and so on. Available if environment:name is set.
-$(shell echo -e 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gitlab_values.yaml)
+$(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gitlab_values.yaml)
 
 CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 	--set oet-scripts.ingress.nginx=$(USE_NGINX) \

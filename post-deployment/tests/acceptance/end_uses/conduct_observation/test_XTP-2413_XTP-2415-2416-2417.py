@@ -2,25 +2,23 @@
 # -*- coding: utf-8 -*-
 
 """
-test_XTP-776
+test_XTP-2413
 ----------------------------------
-Tests for creating SBI (XTP-779), allocating resources from SBI (XTP-777)
-and observing SBI (XTP-778)
+Tests for creating SBI (XTP-2415), allocating resources from LOW SBI (XTP-2416)
+and observing LOW SBI (XTP-2417)
 """
 import os
 import logging
 import pytest
 import requests
 from pytest_bdd import given, parsers, scenario, then, when
-from resources.test_support.controls import (set_telescope_to_running,
-                                             set_telescope_to_standby,
-                                             take_subarray,
-                                             restart_subarray,
-                                             telescope_is_in_standby)
+from resources.test_support.controls_low import (set_telescope_to_running,
+                                                 set_telescope_to_standby,
+                                                 telescope_is_in_standby)
 
-from resources.test_support.helpers import resource
+from resources.test_support.helpers_low import resource, wait_before_test
 from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray
-
+from ska.scripting.domain import SubArray
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant
@@ -36,7 +34,7 @@ LOGGER = logging.getLogger(__name__)
 @pytest.fixture(name="result")
 def fixture_result():
     """structure used to hold details of the intermediate result at each stage of the test"""
-    fixture = {SUBARRAY_USED: 'ska_mid/tm_subarray_node/1',
+    fixture = {SUBARRAY_USED: 'ska_low/tm_subarray_node/1',
                SCHEDULING_BLOCK: None,
                STATE_CHECK: None}
     yield fixture
@@ -50,65 +48,69 @@ def end(result):
     Args:
         result (dict): fixture to track test state
     """
-    subarray = resource(result[SUBARRAY_USED])
-    obsstate = subarray.get('obsState')
+    subarray = SubArray(1)
+    obsstate = resource(result[SUBARRAY_USED]).get('obsState')
     if obsstate == "IDLE":
         LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
-        take_subarray(1).and_release_all_resources()
+        subarray.deallocate()
     if obsstate == "READY":
         LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
-        take_subarray(1).and_end_sb_when_ready(
-        ).and_release_all_resources()
+        subarray.end()
+        subarray.deallocate()
     if obsstate in ["CONFIGURING", "SCANNING"]:
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)
-        restart_subarray(1)
+        subarray.restart()
         # raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     if not telescope_is_in_standby():
         set_telescope_to_standby()
     LOGGER.info("CLEANUP: Sub-array is in %s ",
-                subarray.get('obsState'))
+                resource(result[SUBARRAY_USED]).get('obsState'))
 
 
-@pytest.mark.oetmid
-@pytest.mark.skamid
-@scenario("XTP-776.feature", "Creating a new SBI with updated SB IDs and PB IDs")
+@pytest.mark.oetlow
+@pytest.mark.skalow
+@scenario("XTP-2413.feature", "Creating a new SBI with updated SB IDs and PB IDs")
 def test_sbi_creation():
     """
     Given the SKUID service is running
-    When I tell the OET to run file:///app/scripts/create_sbi.py using scripts/data/example_sb.json
+    When I tell the OET to run file:///app/scripts/create_sbi.py using scripts/data/example_low_sb.json
     Then the script completes successfully
     """
 
 
-@pytest.mark.oetmid
-@pytest.mark.skamid
+@pytest.mark.oetlow
+@pytest.mark.skalow
 @pytest.mark.quarantine
-@scenario("XTP-776.feature", "Allocating resources with a SBI")
+@scenario("XTP-2413.feature", "Allocating resources with a SBI")
 def test_resource_allocation():
     """
     Given sub-array is in ObsState EMPTY
-    And the OET has used file:///app/scripts/create_sbi.py to create SBI scripts/data/example_sb.json
-    When I tell the OET to allocate resources using script file:///app/scripts/allocate_from_file_sb.py
-      and SBI scripts/data/example_sb.json
+    And the OET has used file:///app/scripts/create_sbi.py to create SBI scripts/data/example_low_sb.json
+    When I tell the OET to allocate resources using script file:///app/scripts/low_allocate_from_file_sb.py
+        and SBI scripts/data/example_low_sb.json
     Then the sub-array goes to ObsState IDLE
     """
+    pass
 
 
-@pytest.mark.oetmid
-@pytest.mark.skamid
+@pytest.mark.oetlow
+@pytest.mark.skalow
 @pytest.mark.quarantine
-@scenario("XTP-776.feature", "Observing a Scheduling Block")
+@pytest.mark.xfail(reason="State transitions are too quick for the OET obsState poller to catch. "
+                          "Should be resolved once pub/sub is implemented for state tracking.")
+@scenario("XTP-2413.feature", "Observing a Scheduling Block")
 def test_observing_sbi():
     """
-    Given the OET has used file:///app/scripts/create_sbi.py to create SBI scripts/data/example_sb.json
-    And OET has allocated resources with file:///app/scripts/allocate_from_file_sb.py and scripts/data/example_sb.json
-    When I tell the OET to observe SBI scripts/data/example_sb.json using script file:///app/scripts/observe_sb.py
+    Given the OET has used file:///app/scripts/create_sbi.py to create SBI scripts/data/example_low_sb.json
+    And OET has allocated resources with file:///app/scripts/low_allocate_from_file_sb.py and scripts/data/example_low_sb.json
+    When I tell the OET to observe SBI scripts/data/example_low_sb.json using script file:///app/scripts/low_observe_sb.py
     Then the sub-array passes through ObsStates IDLE, CONFIGURING, SCANNING, CONFIGURING, SCANNING, CONFIGURING,
       SCANNING, CONFIGURING, SCANNING, IDLE
     """
+    pass
 
 
 @given('the SKUID service is running')
@@ -129,6 +131,7 @@ def start_up_telescope(result):
     if telescope_is_in_standby():
         LOGGER.info("PROCESS: Starting up telescope")
         set_telescope_to_running()
+        wait_before_test(timeout=10)
 
     subarray_state = resource(result[SUBARRAY_USED]).get('obsState')
     assert subarray_state == 'EMPTY', \
@@ -165,6 +168,7 @@ def allocate_resources_from_sbi(script, sb_json):
     """
     if telescope_is_in_standby():
         set_telescope_to_running()
+        wait_before_test(timeout=10)
 
     script_completion_state = EXECUTOR.execute_script(
         script,
@@ -272,4 +276,3 @@ def check_final_subarray_state(obsstate, result):
     assert subarray_state == obsstate, \
         f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
     LOGGER.info("Sub-array is in ObsState %s", obsstate)
-

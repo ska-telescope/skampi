@@ -514,6 +514,9 @@ get_sizes_mid:
     - make get_size_images
   environment:
     name: "test"
+  only:
+    refs:
+      - master
 
 get_sizes_low:
   stage: debug
@@ -525,6 +528,9 @@ get_sizes_low:
     - make get_size_images
   environment:
     name: "test-low"
+  only:
+    refs:
+      - master
 
 mid_sdp_config_dump:
   stage: debug

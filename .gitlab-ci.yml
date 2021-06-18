@@ -1,4 +1,4 @@
-image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.10
+image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.13
 
 variables:
   MINIKUBE: "false"
@@ -501,6 +501,34 @@ psi_low_on_demand_test:
     refs:
       - branches
   except:
+    refs:
+      - master
+
+get_sizes_mid:
+  stage: debug
+  tags: *tags_default
+  variables:
+    KUBE_NAMESPACE: "integration-mid"
+    KEEP_NAMESPACE: "true"
+  script:
+    - make get_size_images
+  environment:
+    name: "test"
+  only:
+    refs:
+      - master
+
+get_sizes_low:
+  stage: debug
+  tags: *tags_default
+  variables:
+    KUBE_NAMESPACE: "integration-low"
+    KEEP_NAMESPACE: "true"
+  script:
+    - make get_size_images
+  environment:
+    name: "test-low"
+  only:
     refs:
       - master
 

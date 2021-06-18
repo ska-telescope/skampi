@@ -504,6 +504,23 @@ psi_low_on_demand_test:
     refs:
       - master
 
+get_sizes_mid:
+  stage: debug
+  tags: *tags_default
+  variables:
+    KUBE_NAMESPACE: "integration-mid"
+  script:
+    - make get_size_images
+
+get_sizes_low:
+  stage: debug
+  tags: *tags_default
+  variables:
+    KUBE_NAMESPACE: "integration-low"
+    script:
+    - make get_size_images
+
+
 mid_sdp_config_dump:
   stage: debug
   tags: *tags_default

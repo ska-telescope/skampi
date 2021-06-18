@@ -18,6 +18,7 @@ MARK ?= fast## this variable allow the mark parameter in the pytest
 FILE ?= ##this variable allow to execution of a single file in the pytest
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
+BIGGER_THAN ?= ## get_size_images parameter: if not empty check if images are bigger than this (in MB)
 
 # Define environment variables required by OET
 ifneq ($(shell kubectl get -n $(KUBE_NAMESPACE) pods -l app=ska-low-mccs | wc -l), 0)
@@ -108,3 +109,19 @@ wait:## wait for pods to be ready
 	@date
 	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$$(echo $$p | cut -d';' -f3); if [ ! -z "$$v_owner_name" ]; then v_pod_name=$$(echo $$p | cut -d';' -f1); pods="$$pods $$v_pod_name"; fi; done; kubectl wait pods --all --for=condition=ready --timeout=$(SLEEPTIME) $$pods -n $(KUBE_NAMESPACE)
 	@date
+
+get_size_images: ## get a list of images together with their size (both local and compressed) in the namespace KUBE_NAMESPACE
+	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{range .spec.containers[*]}{.image}{'\n'}{end}{range .spec.initContainers[*]}{.image}{'\n'}{end}{end}" | sort | uniq`; do \
+		docker pull $$p > /dev/null; \
+		B=`docker inspect -f "{{ .Size }}" $$p`; \
+		if [ ! -z "$$BIGGER_THAN" ] ; then \
+			MB=$$(((B)/1024/1024)); \
+			if [ $$MB -lt $$BIGGER_THAN ] ; then \
+				continue; \
+			fi; \
+		fi; \
+		MB=$$(((B)/1000000)); \
+		cB=`docker manifest inspect $$p | jq '[.layers[].size] | add'`; \
+		cMB=$$(((cB)/1000000)); \
+		echo $$p: $$B B \($$MB MB\), $$cB \($$cMB MB\); \
+	done;

@@ -20,15 +20,14 @@ SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
 COUNT ?= 1## amount of repetition for pytest-repeat
 BIGGER_THAN ?= ## get_size_images parameter: if not empty check if images are bigger than this (in MB)
 
-# Define environment variables required by OET
-ifneq ($(shell kubectl get -n $(KUBE_NAMESPACE) pods -l app=ska-low-mccs | wc -l), 0)
-    TELESCOPE = 'SKA-Low'
-    CENTRALNODE = 'ska_low/tm_central/central_node'
-    SUBARRAY = 'ska_low/tm_subarray_node'
-else
-    TELESCOPE = 'SKA-Mid'
-    CENTRALNODE = 'ska_mid/tm_central/central_node'
-    SUBARRAY = 'ska_mid/tm_subarray_node'
+TELESCOPE = 'SKA-Mid'
+CENTRALNODE = 'ska_mid/tm_central/central_node'
+SUBARRAY = 'ska_mid/tm_subarray_node')
+# Define environmenvariables required by OET
+ifneq (,$(findstring low,$(KUBE_NAMESPACE)))
+	TELESCOPE = 'SKA-Low'
+	CENTRALNODE = 'ska_low/tm_central/central_node'
+	SUBARRAY = 'ska_low/tm_subarray_node'
 endif
 
 PUBSUB = true

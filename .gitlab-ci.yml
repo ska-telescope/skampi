@@ -1,4 +1,4 @@
-image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.10
+image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.13
 
 variables:
   MINIKUBE: "false"
@@ -507,7 +507,6 @@ psi_low_on_demand_test:
 get_sizes_mid:
   stage: debug
   tags: *tags_default
-  image: artefact.skatelescope.org/ska-k8s-tools/docker-builder:0.2.16
   variables:
     KUBE_NAMESPACE: "integration-mid"
   script:
@@ -516,7 +515,6 @@ get_sizes_mid:
 get_sizes_low:
   stage: debug
   tags: *tags_default
-  image: artefact.skatelescope.org/ska-k8s-tools/docker-builder:0.2.16
   variables:
     KUBE_NAMESPACE: "integration-low"
   script:

@@ -22,7 +22,7 @@ BIGGER_THAN ?= ## get_size_images parameter: if not empty check if images are bi
 
 TELESCOPE = 'SKA-Mid'
 CENTRALNODE = 'ska_mid/tm_central/central_node'
-SUBARRAY = 'ska_mid/tm_subarray_node')
+SUBARRAY = 'ska_mid/tm_subarray_node'
 # Define environmenvariables required by OET
 ifneq (,$(findstring low,$(KUBE_NAMESPACE)))
 	TELESCOPE = 'SKA-Low'

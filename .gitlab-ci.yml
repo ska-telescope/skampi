@@ -509,6 +509,7 @@ get_sizes_mid:
   tags: *tags_default
   variables:
     KUBE_NAMESPACE: "integration-mid"
+    KEEP_NAMESPACE: "true"
   script:
     - make get_size_images
   environment:
@@ -519,6 +520,7 @@ get_sizes_low:
   tags: *tags_default
   variables:
     KUBE_NAMESPACE: "integration-low"
+    KEEP_NAMESPACE: "true"
   script:
     - make get_size_images
   environment:

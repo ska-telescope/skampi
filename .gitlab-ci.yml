@@ -511,6 +511,8 @@ get_sizes_mid:
     KUBE_NAMESPACE: "integration-mid"
   script:
     - make get_size_images
+  environment:
+    name: "test"
 
 get_sizes_low:
   stage: debug
@@ -519,7 +521,8 @@ get_sizes_low:
     KUBE_NAMESPACE: "integration-low"
   script:
     - make get_size_images
-
+  environment:
+    name: "test-low"
 
 mid_sdp_config_dump:
   stage: debug

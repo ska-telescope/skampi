@@ -154,7 +154,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		echo "Installing Helm charts from current ref of git repository..."; \
 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
 	else \
-		echo "Deploying from artefact repository..."
+		echo "Deploying from artefact repository..."; \
 		helm repo add $(HELM_REPO_NAME) $(HELM_HOST)/repository/helm-chart; \
 		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
 		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \

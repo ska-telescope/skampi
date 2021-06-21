@@ -150,13 +150,8 @@ uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
-<<<<<<< HEAD
-	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
-		echo "Installing Helm charts from current ref of git repository..." \
-=======
 	if [ "" == "$(HELM_REPO_NAME)" ]; then \
 		echo "Installing Helm charts from current ref of git repository..."; \
->>>>>>> master
 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
 	else \
 		echo "Deploying from artefact repository..."

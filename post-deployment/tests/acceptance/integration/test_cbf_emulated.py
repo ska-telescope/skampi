@@ -90,6 +90,9 @@ def test_ingest_visibilities_emulated():
     }''')
     observingtasks.execute_configure_command(cfg_command)
 
+    # Wait a bit for configuration
+    hacky_sleep(30, "wait for configuration to settle?")
+
     # Execute a scan
     observingtasks.scan(SubArray('1'))
 

@@ -159,7 +159,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
 		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
 	fi; \
-	helm upgrade $(HELM_RELEASE) --install \
+	helm upgrade $(HELM_RELEASE) --install --wait \
 		$(CHART_PARAMS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);

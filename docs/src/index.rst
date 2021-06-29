@@ -6,20 +6,6 @@ This project defines the integration between various component repository on Kub
 
 .. toctree::
    :maxdepth: 2
-   :caption: Readme:
 
    README
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
    multitenancy
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

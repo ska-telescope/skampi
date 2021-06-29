@@ -1,4 +1,4 @@
-# SKA MVP Prototype Integration
+# README
 [![Documentation Status](https://readthedocs.org/projects/ska-telescope-skampi/badge/?version=latest)](https://developer.skatelescope.org/projects/skampi/en/latest/?badge=latest)
 
 ## Before you begin

@@ -7,18 +7,19 @@ test_XTP-2413
 Tests for creating SBI (XTP-2415), allocating resources from LOW SBI (XTP-2416)
 and observing LOW SBI (XTP-2417)
 """
-import os
 import logging
+import os
+
 import pytest
 import requests
 from pytest_bdd import given, parsers, scenario, then, when
+from ska.scripting.domain import SubArray
+
 from resources.test_support.controls_low import (set_telescope_to_running,
                                                  set_telescope_to_standby,
                                                  telescope_is_in_standby)
-
 from resources.test_support.helpers_low import resource, wait_before_test
-from resources.test_support.oet_helpers import ScriptExecutor, ObsStateRecorder, Subarray
-from ska.scripting.domain import SubArray
+from resources.test_support.oet_helpers import ScriptExecutor, ObsStateRecorder
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant
@@ -225,8 +226,8 @@ def observe_sbi(sb_json, script, result):
         script (str): file path to an observing script
         result (dict): fixture used to track progress
     """
-    subarray = Subarray(result[SUBARRAY_USED])
-    poller = ObsStateRecorder(subarray)
+    subarray_url = result[SUBARRAY_USED]
+    poller = ObsStateRecorder(subarray_url)
     poller.start_recording()
     result[STATE_CHECK] = poller
 

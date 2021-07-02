@@ -8,16 +8,17 @@ Tests for allocating resources from JSON (XTP-2325)
 and configure subarray and observe scan (XTP-2330)
 """
 import logging
+
 import pytest
 from pytest_bdd import given, parsers, scenario, then, when
+
 from resources.test_support.controls import (restart_subarray,
                                              set_telescope_to_running,
                                              set_telescope_to_standby,
                                              take_subarray,
                                              telescope_is_in_standby)
-
 from resources.test_support.helpers import resource
-from resources.test_support.oet_helpers import ScriptExecutor, ObsStateRecorder, Subarray
+from resources.test_support.oet_helpers import ScriptExecutor, ObsStateRecorder
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant
@@ -154,8 +155,8 @@ def observe_without_sbi(duration, script, configure_json, result):
         configure_json (str): file path to a configuree json
         result (dict): fixture used to track progress
     """
-    subarray = Subarray(result[SUBARRAY_USED])
-    poller = ObsStateRecorder(subarray)
+    subarray_url = result[SUBARRAY_USED]
+    poller = ObsStateRecorder(subarray_url)
     poller.start_recording()
     result[STATE_CHECK] = poller
 

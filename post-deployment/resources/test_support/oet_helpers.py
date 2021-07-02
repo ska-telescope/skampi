@@ -1,15 +1,15 @@
 import enum
 import logging
+import threading
 import time
-from multiprocessing import Process, Queue, Event
 from os import environ
 
 from oet.procedure.application.restclient import RestClientUI
 from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
 from ska.cdm.schemas import CODEC as cdm_CODEC
 from ska.scripting.domain import SubArray
+from tango import DeviceProxy, EventType
 
-from resources.test_support.helpers import resource
 from resources.test_support.persistance_helping import update_resource_config_file
 
 # OET task completion can occur before TMC has completed its activity - so allow time for the
@@ -31,24 +31,6 @@ def oet_compose_sub():
     subarray = SubArray(1)
     LOGGER.info("Allocated Subarray is :" + str(subarray))
     return subarray.allocate_from_cdm(cdm_request_object)
-
-
-class Subarray:
-    """
-    Subarray is an abstraction of a TMC SubArrayNode Tango device. It is used
-    to monitor the device's obsState attribute which should change in response
-    to the various commands sent by the observing scripts.
-    """
-
-    def __init__(self, device):
-        self.resource = resource(device)
-
-    @property
-    def obsstate(self):
-        return self.resource.get('obsState')
-
-    def obsstate_is(self, obsstate):
-        return self.obsstate == obsstate
 
 
 class ObsState(enum.Enum):
@@ -76,48 +58,70 @@ class ObsState(enum.Enum):
 
 
 class ObsStateRecorder:
-    def __init__(self, device: Subarray):
-        # subarray tango device abstraction
-        self.device = device
-        # mp event that is set when shutdown is called
-        self.shutdown_called = Event()
+    """
+    ObsStateRecorder is an OET test helper that helps compare SubArrayNode
+    obsState transitions to those expected to occur when a script is run.
+
+    This class subscribes to SubArrayNode change events, making a memo of each
+    obsState transition that occurs between when state recording starts and
+    when state recording stops. This list of recorded obsStates is compared to
+    the expected list of obsStates in state_transitions_match. A successful
+    test occurs when the expected obsState transitions matches the observed
+    obsState transitions, otherwise the test is considered failed.
+    """
+
+    def __init__(self, device_url: str):
+        """
+        Create a new ObsStateRecorder tracking the referenced SubArrayNode.
+
+        :param device_url: Tango FQDN of SubArrayNode to monitor
+        """
+        # event that is set when recording should start
+        self._recording_enabled = threading.Event()
         # shared queue onto which obsState transitions are added
-        self.results: Queue = Queue()
-        # mp Process that will subscribe to events and add them to results
-        self.proc = Process(
-            target=self.track_obsstates,
-            args=(self.device, self.results, self.shutdown_called)
+        self.results = []
+
+        # connect to the target device and subscribe to obsState change events
+        self.dp = DeviceProxy(device_url)
+        self.subscription_id = self.dp.subscribe_event(
+            'obsState',
+            EventType.CHANGE_EVENT,
+            self._cb
         )
 
     def start_recording(self):
         """
         Start recording obsState transitions.
         """
-        # start track_obstates, which will run in a new Python child process
-        self.proc.start()
+        # the subscription is already established, so just set the event to
+        # start recording obstates
+        self._recording_enabled.set()
+        LOGGER.info("STATE MONITORING: Started tracking")
 
     def stop_recording(self):
-        self.shutdown_called.set()
-        self.proc.join()
+        """
+        Stop recording obsState change events, unsubscribing the active callback.
+        """
+        self._recording_enabled.clear()
+        LOGGER.info("STATE MONITORING: Stopped tracking")
+        self.dp.unsubscribe_event(self.subscription_id)
 
-    def track_obsstates(
-            self,
-            device: Subarray,
-            obsstate_q: Queue,
-            shutdown_called: Event
-    ):
-        LOGGER.info("STATE MONITORING: Started Tracking")
-        last_state = device.obsstate
-        obsstate_q.put(last_state)
-        while not shutdown_called.is_set():
-            current_state = device.obsstate
-            if current_state != last_state:
-                LOGGER.info(
-                    f"STATE MONITORING: State changed: {last_state} -> {current_state}"
-                )
-                obsstate_q.put(current_state)
-                last_state = current_state
-        LOGGER.info("STATE MONITORING: Stopped Tracking")
+    def _cb(self, event):
+        """
+        Function called by pytango when obsState change event is received
+        """
+        # discard any events received while recording is disabled
+        if not self._recording_enabled:
+            return
+
+        # obsstate Enum returned as a numeric ID which we need to translate to name
+        enum_id = event.attr_value.value
+        enum_name = ObsState(enum_id).name
+
+        LOGGER.info(
+            f"STATE MONITORING: State changed: {enum_name}"
+        )
+        self.results.append(enum_name)
 
     def state_transitions_match(self, expected_states) -> bool:
         """
@@ -132,9 +136,7 @@ class ObsStateRecorder:
 
         self.stop_recording()
 
-        recorded_states = list()
-        while self.results.qsize() != 0:
-            recorded_states.append(self.results.get())
+        recorded_states = self.results
 
         # ignore 'READY' as it can be a transitory state so we don't rely
         # on it being present in the list to be matched

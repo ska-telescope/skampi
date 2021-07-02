@@ -17,7 +17,7 @@ from resources.test_support.controls_low import (set_telescope_to_running,
                                                  telescope_is_in_standby)
 
 from resources.test_support.helpers_low import resource, wait_before_test
-from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray
+from resources.test_support.oet_helpers import ScriptExecutor, ObsStateRecorder, Subarray
 from ska.scripting.domain import SubArray
 
 # used as labels within the oet_result fixture
@@ -226,8 +226,8 @@ def observe_sbi(sb_json, script, result):
         result (dict): fixture used to track progress
     """
     subarray = Subarray(result[SUBARRAY_USED])
-    poller = Poller(subarray)
-    poller.start_polling()
+    poller = ObsStateRecorder(subarray)
+    poller.start_recording()
     result[STATE_CHECK] = poller
 
     script_completion_state = EXECUTOR.execute_script(

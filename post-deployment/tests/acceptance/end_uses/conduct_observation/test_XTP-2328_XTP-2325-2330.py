@@ -17,7 +17,7 @@ from resources.test_support.controls import (restart_subarray,
                                              telescope_is_in_standby)
 
 from resources.test_support.helpers import resource
-from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray
+from resources.test_support.oet_helpers import ScriptExecutor, ObsStateRecorder, Subarray
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant
@@ -155,8 +155,8 @@ def observe_without_sbi(duration, script, configure_json, result):
         result (dict): fixture used to track progress
     """
     subarray = Subarray(result[SUBARRAY_USED])
-    poller = Poller(subarray)
-    poller.start_polling()
+    poller = ObsStateRecorder(subarray)
+    poller.start_recording()
     result[STATE_CHECK] = poller
 
     script_completion_state = EXECUTOR.execute_script(

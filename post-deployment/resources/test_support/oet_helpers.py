@@ -1,15 +1,14 @@
 import enum
 import logging
-from os import environ
 import time
-from multiprocessing import Process, Manager, Queue
-
-#SUT
-from ska.cdm.schemas import CODEC as cdm_CODEC
-from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
-from ska.scripting.domain import Telescope, SubArray, ResourceAllocation, Dish
+from multiprocessing import Process, Queue, Event
+from os import environ
 
 from oet.procedure.application.restclient import RestClientUI
+from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
+from ska.cdm.schemas import CODEC as cdm_CODEC
+from ska.scripting.domain import SubArray
+
 from resources.test_support.helpers import resource
 from resources.test_support.persistance_helping import update_resource_config_file
 
@@ -35,25 +34,21 @@ def oet_compose_sub():
 
 
 class Subarray:
-
-    resource = None
+    """
+    Subarray is an abstraction of a TMC SubArrayNode Tango device. It is used
+    to monitor the device's obsState attribute which should change in response
+    to the various commands sent by the observing scripts.
+    """
 
     def __init__(self, device):
         self.resource = resource(device)
 
-    def get_obsstate(self):
+    @property
+    def obsstate(self):
         return self.resource.get('obsState')
 
-    def get_state(self):
-        return self.resource.get('State')
-
-    def state_is(self, state):
-        current_state = self.get_state()
-        return current_state == state
-
-    def obsstate_is(self, state):
-        current_state = self.get_obsstate()
-        return current_state == state
+    def obsstate_is(self, obsstate):
+        return self.obsstate == obsstate
 
 
 class ObsState(enum.Enum):
@@ -80,64 +75,82 @@ class ObsState(enum.Enum):
         return str(self.name)
 
 
-class Poller:
-    proc = None
-    device = None
-    exit_q = None
-    results = []
-
-    def __init__(self, device):
+class ObsStateRecorder:
+    def __init__(self, device: Subarray):
+        # subarray tango device abstraction
         self.device = device
+        # mp event that is set when shutdown is called
+        self.shutdown_called = Event()
+        # shared queue onto which obsState transitions are added
+        self.results: Queue = Queue()
+        # mp Process that will subscribe to events and add them to results
+        self.proc = Process(
+            target=self.track_obsstates,
+            args=(self.device, self.results, self.shutdown_called)
+        )
 
-    def start_polling(self):
-        manager = Manager()
-        self.exit_q = Queue()
-        self.results = manager.list()
-        self.proc = Process(target=self.track_obsstates,
-                            args=(self.device, self.results, self.exit_q))
+    def start_recording(self):
+        """
+        Start recording obsState transitions.
+        """
+        # start track_obstates, which will run in a new Python child process
         self.proc.start()
 
-    def stop_polling(self):
-        if self.proc is not None:
-            self.exit_q.put(True)
-            self.proc.join()
+    def stop_recording(self):
+        self.shutdown_called.set()
+        self.proc.join()
 
-    def get_results(self):
-        return self.results
-
-    def track_obsstates(self, device, recorded_states, exit_q):
+    def track_obsstates(
+            self,
+            device: Subarray,
+            obsstate_q: Queue,
+            shutdown_called: Event
+    ):
         LOGGER.info("STATE MONITORING: Started Tracking")
-        while exit_q.empty():
-            current_state = device.get_obsstate()
-            if len(recorded_states) == 0 or current_state != recorded_states[-1]:
+        last_state = device.obsstate
+        obsstate_q.put(last_state)
+        while not shutdown_called.is_set():
+            current_state = device.obsstate
+            if current_state != last_state:
                 LOGGER.info(
-                    "STATE MONITORING: State has changed to %s", current_state)
-                recorded_states.append(current_state)
+                    f"STATE MONITORING: State changed: {last_state} -> {current_state}"
+                )
+                obsstate_q.put(current_state)
+                last_state = current_state
+        LOGGER.info("STATE MONITORING: Stopped Tracking")
 
-    def state_transitions_match(self, expected_states):
-        """Check that the device passed through the expected
-            obsState transitions. This has been being monitored
-            on a separate thread in the background.
+    def state_transitions_match(self, expected_states) -> bool:
+        """
+        Check that the device passed through the expected
+        obsState transitions. This has been being monitored
+        on a separate process in the background.
 
-            The method deliberately pauses at the start to allow TMC time
-            to complete any operation still in progress.
+        The method deliberately pauses at the start to allow TMC time
+        to complete any operation still in progress.
         """
         time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
 
-        self.stop_polling()
-        LOGGER.info("STATE MONITORING: Stopped Tracking")
-        recorded_states = list(self.get_results())
+        self.stop_recording()
+
+        recorded_states = list()
+        while self.results.qsize() != 0:
+            recorded_states.append(self.results.get())
 
         # ignore 'READY' as it can be a transitory state so we don't rely
         # on it being present in the list to be matched
         recorded_states = [i for i in recorded_states if i != 'READY']
 
+        n_expected = len(expected_states)
+        n_recorded = len(recorded_states)
+
         LOGGER.info("STATE MONITORING: Comparing the list of states observed with the expected states")
         LOGGER.debug("STATE MONITORING: Expected states: %s", ','.join(expected_states))
         LOGGER.debug("STATE MONITORING: Recorded states: %s", ','.join(recorded_states))
-        if len(expected_states) != len(recorded_states):
-            LOGGER.warning("STATE MONITORING: Expected %d states but recorded %d states",
-                           len(expected_states), len(recorded_states))
+
+        if n_expected != n_recorded:
+            LOGGER.warning(
+                f"STATE MONITORING: Expected {n_expected} states, got {n_recorded}"
+            )
             return False
 
         if expected_states != recorded_states:
@@ -149,7 +162,6 @@ class Poller:
 
 
 class Task:
-
     def __init__(self, task_id, script, creation_time, state):
         self.task_id = task_id
         self.script = script

@@ -144,7 +144,7 @@ install: clean namespace namespace_sdp check-archiver-dbname upgrade-chart## ins
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
-	then helm uninstall $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE); \
+	then helm uninstall $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true; \
 	fi
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE

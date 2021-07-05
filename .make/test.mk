@@ -75,7 +75,7 @@ k8s_test_kubectl_run_args = \
 k8s_test: ## test the application on K8s
 	rm -fr build; mkdir build
 
-	( tar -c post-deployment/ \
+	@( tar -c post-deployment/ \
 	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
 	sleep 1; \

@@ -59,6 +59,12 @@ k8s_test_command = /bin/bash -c "\
 		$1; \
 	echo \$$? > build/status; tar cf ../results-pipe build"
 
+k8s_test_runner = $(TEST_RUNNER) -n $(KUBE_NAMESPACE)
+k8s_test_kubectl_run_args = \
+	$(k8s_test_runner) --restart=Never \
+	--image-pull-policy=IfNotPresent --image=$(IMAGE_TO_TEST) \
+	--env=INGRESS_HOST=$(INGRESS_HOST) $(PSI_LOW_PROXY_VALUES)
+
 # Set up of the testing pod. This goes through the following steps:
 # 1. Create the pod, piping the contents of post-deployment in. This is
 #    run in the background, with stdout left attached - albeit slightly
@@ -66,35 +72,22 @@ k8s_test_command = /bin/bash -c "\
 # 2. In parallel we wait for the testing pod to become ready.
 # 3. Once it is there, we attempt to pull the results from the FIFO queue.
 #    This blocks until the testing pod script writes it (see above).
-k8s_test_runner = $(TEST_RUNNER) -n $(KUBE_NAMESPACE)
-k8s_test_kubectl_run_args = \
-	$(k8s_test_runner) --restart=Never \
-	--image-pull-policy=IfNotPresent --image=$(IMAGE_TO_TEST) \
-	--env=INGRESS_HOST=$(INGRESS_HOST) $(PSI_LOW_PROXY_VALUES)
-k8s_test = \
+k8s_test: ## test the application on K8s
+	rm -fr build; mkdir build
+
 	( tar -c post-deployment/ \
 	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
 	sleep 1; \
-	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=30s && \
-	kubectl exec $(k8s_test_runner) -- cat results-pipe | tar x
+	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=1m && \
+		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar x); \
+	\
+	(kubectl get all -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
+	python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
+		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt; \
+	kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER)
 
-# run the test function
-# save the status
-# clean out build dir
-# print the logs minus the base64 encoded payload
-# pull out the base64 payload and unpack build/ dir
-# base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
-# clean up the run to completion container
-# exit the saved status
-k8s_test: ## test the application on K8s
-	rm -fr build
-	@$(call k8s_test,test); \
-		kubectl get all -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt; \
-		python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
-			--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt; \
-		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
-		exit `cat build/status`
+	exit `cat build/status`
 
 smoketest: wait## wait for pods to be ready and jobs to be completed
 

@@ -3,10 +3,10 @@
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
-ARCHIVER_HOST ?= 192.168.99.229 # ARCHIVER_HOST is the IP address for the cluster machine where archiver database is created
-ARCHIVER_PORT ?= 3306
-ARCHIVER_DBUSER ?= eda_admin
-ARCHIVER_DBPASSWORD ?= @v3ng3rs@ss3mbl3
+ARCHIVER_HOST ?= $ARCHIVER_HOST_NAME # ARCHIVER_HOST is the IP address for the cluster machine where archiver database is created
+ARCHIVER_PORT ?= $ARCHIVER_PORT
+ARCHIVER_DBUSER ?= $ARCHIVER_DB_USER
+ARCHIVER_DBPASSWORD ?= $ARCHIVER_DB_PWD
 ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archiver attribute configure json file for MVP-mid to work with
 
 # Checks if the Database name is provided by user while deploying the archiver and notifies the user

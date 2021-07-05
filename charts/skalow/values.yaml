@@ -112,9 +112,9 @@ sdp:
   tango-base:
     enabled: false
 
-ska-archiver:
-  hostname: $ARCHIVER_HOST_NAME
-  dbname: default_mvp_archiver_db
-  port: $ARCHIVER_PORT
-  dbuser: $ARCHIVER_HOST_NAME
-  dbpassword: $ARCHIVER_DB_PWD
+# ska-archiver:
+#   hostname: $ARCHIVER_HOST_NAME
+#   dbname: default_mvp_archiver_db
+#   port: $ARCHIVER_PORT
+#   dbuser: $ARCHIVER_DB_USER
+#   dbpassword: $ARCHIVER_DB_PWD

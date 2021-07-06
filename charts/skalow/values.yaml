@@ -111,3 +111,6 @@ sdp:
     nsubarray: 3
   tango-base:
     enabled: false
+
+ska-archiver:
+  dbname: default_mvp_archiver_db

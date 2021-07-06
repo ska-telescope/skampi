@@ -59,7 +59,6 @@ stages:
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   - make configure-archiver
-  - make k8s_test
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

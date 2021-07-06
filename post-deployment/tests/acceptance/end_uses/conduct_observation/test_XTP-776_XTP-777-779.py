@@ -222,9 +222,9 @@ def observe_sbi(sb_json, script, result):
         result (dict): fixture used to track progress
     """
     subarray_url = result[SUBARRAY_USED]
-    poller = ObsStateRecorder(subarray_url)
-    poller.start_recording()
-    result[STATE_CHECK] = poller
+    recorder = ObsStateRecorder(subarray_url)
+    recorder.start_recording()
+    result[STATE_CHECK] = recorder
 
     script_completion_state = EXECUTOR.execute_script(
         script,
@@ -246,7 +246,9 @@ def check_transitions(expected_states, result):
         result (dict): fixture used to track progress
     """
     expected_states = [x.strip() for x in expected_states.split(',')]
-    assert result[STATE_CHECK].state_transitions_match(expected_states)
+    recorder: ObsStateRecorder = result[STATE_CHECK]
+    recorder.stop_recording()
+    recorder.state_transitions_match(expected_states)
 
 
 @then('the script completes successfully')

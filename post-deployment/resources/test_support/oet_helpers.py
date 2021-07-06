@@ -68,6 +68,10 @@ class ObsStateRecorder:
     the expected list of obsStates in state_transitions_match. A successful
     test occurs when the expected obsState transitions matches the observed
     obsState transitions, otherwise the test is considered failed.
+
+    ObsStateRecorders are intended to be activated once and cannot be reused
+    to record multiple streams of obsState transitions. A RuntimeError will be
+    raised if an attempt is made to resume obsState recording.
     """
 
     def __init__(self, device_url: str):
@@ -92,7 +96,17 @@ class ObsStateRecorder:
     def start_recording(self):
         """
         Start recording obsState transitions.
+
+        This method can be called exactly once. Calling this method after
+        stop_recording has been called will raise a RuntimeError.
+
+        :raises RuntimeError: if the caller attempts to resume recording
         """
+        if self.subscription_id is None:
+            raise RuntimeError(
+                'Cannot restart obsState recording on a stopped ObsStateRecorder'
+            )
+
         # the subscription is already established, so just set the event to
         # start recording obstates
         self._recording_enabled.set()
@@ -104,7 +118,11 @@ class ObsStateRecorder:
         """
         self._recording_enabled.clear()
         LOGGER.info("STATE MONITORING: Stopped tracking")
+
+        # unsubscribe and delete subscription ID to prevent this instance from
+        # being reused
         self.dp.unsubscribe_event(self.subscription_id)
+        self.subscription_id = None
 
     def _cb(self, event):
         """
@@ -131,10 +149,14 @@ class ObsStateRecorder:
 
         The method deliberately pauses at the start to allow TMC time
         to complete any operation still in progress.
-        """
-        time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
 
-        self.stop_recording()
+        stop_recording must be called before calling this method.
+
+        :raises RuntimeError: if called while still recording
+        """
+        if self._recording_enabled.is_set():
+            raise RuntimeError('Cannot compare states while still recording')
+        time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
 
         recorded_states = self.results
 

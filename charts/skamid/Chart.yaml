@@ -45,7 +45,7 @@ dependencies:
   repository: file://../landingpage
   condition: landingpage.enabled
 - name: ska-archiver
-  version: 0.1.6
+  version: 0.1.7
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-archiver.enabled
 ## it was disabled in the old version of skampi

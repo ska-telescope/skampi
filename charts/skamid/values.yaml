@@ -102,3 +102,6 @@ sdp:
 ## tm
 tmc-mid:
   enabled: true
+
+ska-archiver:
+  dbname: default_mvp_archiver_db

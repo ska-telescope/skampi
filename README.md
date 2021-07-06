@@ -3,6 +3,8 @@
 
 ## Before you begin
 
+### SKA Tango Examples
+If your component or product is ready for integration, skip the following sections and go to [Development](#development)
 ### Kubernetes and Kubectl
 
 ### Minikube

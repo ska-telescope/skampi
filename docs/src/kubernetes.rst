@@ -11,7 +11,7 @@ The following are key concepts to understand the project:
 * StatefulSet: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
 * Ingress: https://kubernetes.io/docs/concepts/services-networking/ingress/
 * IngressController: https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/
-* Traefik IngressController: https://docs.traefik.io/user-guide/kubernetes/
+* NGINX IngressController: https://github.com/kubernetes/ingress-nginx
 * PersistentVolume: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 * PersistentVolumeClaim: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
 

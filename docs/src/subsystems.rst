@@ -13,8 +13,17 @@ The SDP is the system of the telescope responsible for processing observed data 
 required data products, preserving these products, and delivering them to
 the SKA Regional Centres.
 
-- `SDP General Overview and Components <https://developer.skao.int/en/latest/projects/area/sdp.html>`_
-- `Interacting with SDP within SKAMPI <https://developer.skao.int/projects/ska-sdp-integration/en/latest/running/integration.html>`_
+- |sdp_general|
+- |sdp_in_skampi|
+
+.. |sdp_general| raw:: html
+
+    <a href="https://developer.skao.int/en/latest/projects/area/sdp.html" target="_blank">SDP General Overview and Components</a>
+
+.. |sdp_in_skampi| raw:: html
+
+    <a href="https://developer.skao.int/projects/ska-sdp-integration/en/latest/running/integration.html" target="_blank">Interacting with SDP within SKAMPI</a>
+
 
 OET (Observation Execution Tool)
 ================================
@@ -22,7 +31,23 @@ OET (Observation Execution Tool)
 The OET is an application, which provides on-demand Python script
 (telescope control script) execution for the SKA.
 
-- `OET Rest layers <https://developer.skao.int/projects/ska-telescope-ska-oso-oet/en/latest/index.html>`_
-- `OET scripts <https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/index.html>`_
-- `Telescope control script execution <https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/script_execution.html>`_
-- `OET Jupyter Notebooks for direct SKAMPI interactions <https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/oet_with_skampi.html#accessing-jupyter-on-skampi>`_
+- |oet_rest_layers|
+- |oet_scripts|
+- |script_execution|
+- |oet_jupyter|
+
+.. |oet_rest_layers| raw:: html
+
+    <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-oet/en/latest/index.html" target="_blank">OET Rest layers</a>
+
+.. |oet_scripts| raw:: html
+
+    <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/index.html" target="_blank">OET scripts</a>
+
+.. |script_execution| raw:: html
+
+    <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/script_execution.html" target="_blank">Telescope control script execution</a>
+
+.. |oet_jupyter| raw:: html
+
+    <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/oet_with_skampi.html#accessing-jupyter-on-skampi" target="_blank">OET Jupyter Notebooks for direct SKAMPI interactions</a>

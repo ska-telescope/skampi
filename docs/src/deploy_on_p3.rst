@@ -13,7 +13,12 @@ A Kubernetes cluster has been set up on P3 to support testing SKAMPI.
 The cluster is called ``ska-integration`` and it has been configured with two bare-metal nodes.
 
 To follow these instructions, you need to be logged in to the P3 OpenHPC cluster login node.
-(See instructions on the `P3 Confluence page <https://confluence.skatelescope.org/display/SE/P3+How+To>`_.)
+(See instructions on the |p3_confluence|.)
+
+.. |p3_confluence| raw:: html
+
+    <a href="https://confluence.skatelescope.org/display/SE/P3+How+To" target="_blank">P3 Confluence page</a>
+
 
 Connecting to the Kubernetes cluster
 ====================================

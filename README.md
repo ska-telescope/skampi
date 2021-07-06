@@ -13,7 +13,14 @@
 
 ## Installation
 
-## Accessing and Using Cloud Deployments
-## Using the MVP
+## Development
+The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.
+### Adding a new product/component
+
+### Modifying deployment configuration
+
+### Testing
+
+## FAQ
 
 ## Getting Help

@@ -14,6 +14,18 @@ check-archiver-dbname:
 	@if [ $(ARCHIVER_DBNAME) = default_mvp_archiver_db ]; then \
 	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
 	fi
+	@if [ "$(ARCHIVER_HOST_NAME)" = "" ]; then \
+	echo "Archiver host name is not provided."; \
+	fi
+	@if [ "$(ARCHIVER_PORT)" = "" ]; then \
+	echo "Archiver port name is not provided."; \
+	fi
+	@if [ "$(ARCHIVER_DB_USER)" = "" ]; then \
+	echo "Archiver database user is not provided."; \
+	fi
+	@if [ "$(ARCHIVER_DB_PWD)" = "" ]; then \
+	echo "Archiver database password is not provided."; \
+	fi
 
 # Get the database service name from MVP deployment
 get-service:

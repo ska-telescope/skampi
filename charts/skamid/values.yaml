@@ -27,13 +27,6 @@ global:
       tag: 9.3.3.7
       pullPolicy: IfNotPresent
 
-# ska-archiver:
-#   hostname: $ARCHIVER_HOST_NAME
-#   dbname: default_mvp_archiver_db
-#   port: $ARCHIVER_PORT
-#   dbuser: $ARCHIVER_DB_USER
-#   dbpassword: $ARCHIVER_DB_PWD
-
 landingpage:
   enabled: true
   MVPInstance: mvp-mid

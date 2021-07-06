@@ -5,7 +5,9 @@ This project defines the integration between various component repository on Kub
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    README
    multitenancy
+   deploy_on_p3
+   subsystems

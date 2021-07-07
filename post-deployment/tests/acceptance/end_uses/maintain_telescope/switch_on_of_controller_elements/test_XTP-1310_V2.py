@@ -11,6 +11,7 @@ import logging
 import time  # used to sleep between measurements
 from skallop.transactions.atomic import atomic
 from skallop.connectors.configuration import get_device_proxy
+from resources.test_support.helpers_low import wait_before_test
 
 
 logger = logging.getLogger(__name__)
@@ -53,6 +54,7 @@ def devices()-> DeviceStates:
 #@pytest.mark.skip(reason="disabled to check pipeline failure")
 @pytest.mark.skalow
 @pytest.mark.quarantine
+@pytest.mark.rushi
 @scenario('XTP-1310.feature', 'PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)')
 def test_psi01_test_initialise_the_tpm_using_the_oet_jupyter_notebook():
     """PSI0.1 test, Initialise the TPM using the OET (Jupyter Notebook)."""
@@ -61,7 +63,7 @@ def subsystems_are_online_and_in_the_tango_device_off_state(devices):
     """subsystems <subsystem-list> are ONLINE and in the Tango Device OFF state."""
        
     assert devices.tmc_central_node.State().name == 'OFF', f'tmc_central_node is not in OFF state'
-    assert devices.mccs_controller.State().name == 'OFF', f'mccs_controller is not in OFF state'
+    assert devices.mccs_controller.State().name in ['DISABLE','OFF'], f'mccs_controller is not in DISABLE or OFF state'
     assert devices.mccs_station_001.State().name == 'OFF', f'mccs_station_001 is not in OFF state'
     assert devices.mccs_tile_0001.State().name in ['OFF','DISABLE'], f'mccs_tile_0001 is not in OFF or DISABLE state'
     devices.print_device_states()
@@ -79,6 +81,8 @@ def i_send_the_command_to_the_tmc(devices):
         with atomic(devices.all_device_names,'state','ON',5):
             devices.tmc_central_node.StartUpTelescope()
             #time.sleep(20)
+        wait_before_test(timeout=4)
+            
     else:
         logger.info('Control system is already on. No start up command issued.')
 
@@ -119,6 +123,7 @@ def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
     logger.info(mccs_time)
     with atomic(devices.all_device_names,'State','OFF',5):
         devices.tmc_central_node.StandByTelescope()
+    wait_before_test(timeout=4)
 
 
 

@@ -38,7 +38,10 @@ class DeviceStates:
     def print_device_states(self):
         for device in self.ALL_DEVICES:
             device_name = str(device).split('(')[0]
-            device_state = device.State()
+            if "tm_central" in device:
+                device_state = device.telescopeState
+            else:
+               device_state = device.State()
             logger.info(f'{device_name}: {device_state}')
 
 

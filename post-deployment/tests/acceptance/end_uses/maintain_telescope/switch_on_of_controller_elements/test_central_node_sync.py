@@ -24,7 +24,7 @@ def fxt_context():
 def start_up_telescope(tmc_central_node):
     tmc_central_node.StartUpTelescope() #type: ignore
     yield
-    with atomic('ska_low/tm_central/central_node','state','OFF',5):
+    with atomic('ska_low/tm_central/central_node','telescopeState','OFF',5):
             tmc_central_node.StandByTelescope() #type: ignore
 
 
@@ -54,13 +54,13 @@ def test_central_node_sync(context: StackableContext):
         'low-mccs/antenna/000003',
         'low-mccs/antenna/000004',
     ]
-    tmc_central_node.subscribe_event('State',CHANGE_EVENT,callback)
+    tmc_central_node.subscribe_event('telescopeState',CHANGE_EVENT,callback)
 
     builder = builders.get_message_board_builder()
     checker = (
         builder.check_that('ska_low/tm_central/central_node')
         .transits_according_to(["ON"])
-        .on_attr("state")
+        .on_attr("telescopeState")
         .when_transit_occur_on(devices)
     )
     with wait.wait_for(builder):
@@ -70,10 +70,3 @@ def test_central_node_sync(context: StackableContext):
     checking_logs = checker.print_outcome_for(checker.subject_device)
     logger.info(f"Results of checking:\n{checking_logs}")
     checker.assert_that('ska_low/tm_central/central_node').is_behind_all_on_transit("ON")
-
-    
-
-        
-
-
-

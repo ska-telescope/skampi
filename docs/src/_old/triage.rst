@@ -1,7 +1,5 @@
-Triaging and managing Skampi bugs
-=================================
-
-This document defines a process for Triaging and managing Skampi bugs so that any SKA team member knows how to handle the funnel of incoming bugs, the allocation, distribution and management of them.
+Monitoring, alerts and bugs
+===========================
 
 The standard process for changing software includes the following phases:
 

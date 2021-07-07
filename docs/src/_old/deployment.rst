@@ -1,7 +1,6 @@
 ==========
 Deployment
 ==========
-SCAMPI deployment must be robust, repeatable, and idempotent. 
 We have multiple flavours of deployment for different configurations.
 
 Flavours
@@ -57,7 +56,7 @@ Skampi enables the deployment of two separate products as charts
 - **mvp-low:** (DEPLOYMENT_CONFIGURATION = skalow)
 - **mvp-mid:** (DEPLOYMENT_CONFIGURATION = skamid)
 
-After setting the variable, run the following:
+After setting the variable in your local `PrivateRules.mak` file, run the following:
 
 .. code-block:: bash
 

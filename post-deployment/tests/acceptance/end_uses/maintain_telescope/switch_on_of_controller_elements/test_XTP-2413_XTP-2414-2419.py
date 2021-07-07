@@ -70,7 +70,7 @@ def set_telescope_in_off_state(result):
     LOGGER.info("Set telescope to stand-by")
     if not telescope_is_in_standby():
         set_telescope_to_standby()
-    telescope_state = resource(result[CENTRAL_NODE_USED]).get('telescopeState')
+    telescope_state = resource(result[CENTRAL_NODE_USED]).get('State')
     assert telescope_state == 'OFF', \
         f"Expected telescope to be OFF but instead was {telescope_state}"
     LOGGER.info("Telescope is in OFF state")
@@ -85,7 +85,7 @@ def set_telescope_in_on_state(result):
     if telescope_is_in_standby():
         set_telescope_to_running()
         wait_before_test(timeout=10)
-    telescope_state = resource(result[CENTRAL_NODE_USED]).get('telescopeState')
+    telescope_state = resource(result[CENTRAL_NODE_USED]).get('State')
     assert telescope_state == 'ON', \
         f"Expected telescope to be ON but instead was {telescope_state}"
     LOGGER.info("Telescope is in ON state")
@@ -117,7 +117,7 @@ def check_final_state(state, result):
         state (str): State central node is expected to be in
         result (dict): fixture used to track test progress
     """
-    final_state = resource(result[CENTRAL_NODE_USED]).get('telescopeState')
+    final_state = resource(result[CENTRAL_NODE_USED]).get('State')
     assert final_state == state, \
         f"Expected telescope to be {state} but instead was {final_state}"
     LOGGER.info("Central node is in %s state", state)

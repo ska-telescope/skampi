@@ -70,7 +70,7 @@ def start_up():
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Starting up telescope")
-    set_telescope_to_running()
+    # set_telescope_to_running()
     LOGGER.info("Telescope is in ON state")
 
 

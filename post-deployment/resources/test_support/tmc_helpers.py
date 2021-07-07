@@ -15,8 +15,8 @@ LOGGER = logging.getLogger(__name__)
 @sync_start_up_telescope
 def start_up():
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
-    LOGGER.info("Before Sending StartupTelescope command on CentralNode state :" + str(CentralNode.telescopeState))
-    CentralNode.StartUpTelescope()
+    LOGGER.info("Before Sending TelescopeOn command on CentralNode state :" + str(CentralNode.telescopeState))
+    CentralNode.TelescopeOn()
 
 @sync_assign_resources(2,300)
 def compose_sub():

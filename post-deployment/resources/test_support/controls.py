@@ -14,6 +14,7 @@ from resources.test_support.persistance_helping import update_scan_config_file,u
 from resources.test_support.sync_decorators import sync_assign_resources,sync_configure_oet,time_it,\
     sync_release_resources,sync_end_sb,sync_scan_oet,sync_restart_sa, sync_reset_sa
 from resources.test_support.mappings import device_to_subarrays
+import resources.test_support.tmc_helpers as tmc
 
 LOGGER = logging.getLogger(__name__)
 
@@ -158,7 +159,8 @@ def set_telescope_to_running(disable_waiting = False):
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
-    Telescope().start_up()
+    # Telescope().start_up()
+    tmc.start_up()
     if not disable_waiting:
         the_waiter.wait(100)
         if the_waiter.timed_out:

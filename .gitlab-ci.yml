@@ -337,27 +337,36 @@ mid_on_demand_test:
     refs:
       - master
 
-mid_stress_test:
+mid_emu_on_demand_test:
   stage: test
   tags: *tags_default
   variables:
-    DEPLOYMENT_CONFIGURATION: "skamid"
+    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
     MARK: "skamid or common"
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE_PREFIX: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    SERVICE_ACCOUNT: "stress-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_NAMESPACE: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
-    DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
-  <<: *stress_test_definition
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+  before_script:
+    - *create_k8s_creds
+  <<: *test_definition
   environment:
-    name: "stress-test"
-    url: "http://$INGRESS_HOST/stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
+    name: "test/$CI_COMMIT_REF_NAME"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-  rules:
-    - if: $STRESS_TEST_DURATION
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated
+    on_stop: mid_emu_on_demand_uninstall
+    auto_stop_in: 2 hours
+  when: manual
+  only:
+    refs:
+    - branches
+  except:
+    refs:
+      - master
 
 low_test:
   retry: 2

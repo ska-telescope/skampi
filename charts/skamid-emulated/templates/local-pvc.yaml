@@ -20,11 +20,26 @@ spec:
   template:
     spec:
       restartPolicy: OnFailure
-      containers:
-        - name: local-pvc-job-pod
+      initContainers:
+        - name: local-pvc-mkdir
           image: nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0
           command: [ "/bin/bash", "-c", "--" ]
-          args: [ "mkdir /mnt/data; curl https://gitlab.com/ska-telescope/cbf-sdp-emulator/-/raw/master/data/sim-vis.ms.tar.gz | tar xzf - -C /mnt/data" ]
+          args: [ "mkdir -p /mnt/data"]
+          volumeMounts:
+            - mountPath: "/mnt"
+              name: task-pv
+      containers:
+        - name: local-pvc-sim-vis
+          image: nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "curl https://gitlab.com/ska-telescope/cbf-sdp-emulator/-/raw/master/data/sim-vis.ms.tar.gz | tar xzf - -C /mnt/data" ]
+          volumeMounts:
+            - mountPath: "/mnt"
+              name: task-pv
+        - name: local-pvc-aa05-vis
+          image: nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "curl https://gitlab.com/ska-telescope/cbf-sdp-emulator/-/raw/master/data/AA05LOW.ms.tar.gz | tar xzf - -C /mnt/data" ]
           volumeMounts:
             - mountPath: "/mnt"
               name: task-pv

@@ -136,6 +136,20 @@ mid_quarantine_uninstall:
     action: stop
   when: manual
 
+mid_cbfemu_uninstall:
+  stage: clean
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-mid-cbfemu"
+    KUBE_NAMESPACE: "integration-mid-cbfemu"
+    KUBE_NAMESPACE_SDP: "integration-mid-cbfemu-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
+    KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "test"
+    action: stop
+
 low_uninstall:
   stage: clean
   tags: *tags_default
@@ -195,6 +209,31 @@ mid_on_demand_uninstall:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+    action: stop
+  when: manual
+  only:
+    refs:
+      - branches
+  except:
+    refs:
+      - master
+
+mid_cbfemu_on_demand_uninstall:
+  stage: cleanup
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "test/$CI_COMMIT_REF_NAME"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated
     action: stop
   when: manual
   only:
@@ -337,12 +376,61 @@ mid_on_demand_test:
     refs:
       - master
 
-mid_emu_on_demand_test:
+mid_stress_test:
+  stage: test
+  tags: *tags_default
+  variables:
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    MARK: "skamid or common"
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE_PREFIX: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    SERVICE_ACCOUNT: "stress-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_NAMESPACE: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
+    DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+  <<: *stress_test_definition
+  environment:
+    name: "stress-test"
+    url: "http://$INGRESS_HOST/stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+  rules:
+    - if: $STRESS_TEST_DURATION
+
+mid_cbfemu_test:
+  stage: test
+  tags: *tags_default
+  variables:
+    MARK: "skamid_emulated or fast"
+    HELM_RELEASE: "test-mid-cbfemu"
+    KUBE_NAMESPACE: "integration-mid-cbfemu"
+    KUBE_NAMESPACE_SDP: "integration-mid-cbfemu-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
+    KEEP_NAMESPACE: "true"
+    ARCHIVER_DBNAME: "integration_mid_cbfemu_archiver_db"
+  before_script:
+    - *create_k8s_creds
+  <<: *test_definition
+  environment:
+    name: "test"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    kubernetes:
+      namespace: $KUBE_NAMESPACE
+    on_stop: mid_cbfemu_uninstall
+  only:
+    refs:
+      - master
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
+
+mid_cbfemu_on_demand_test:
   stage: test
   tags: *tags_default
   variables:
     DEPLOYMENT_CONFIGURATION: "skamid-emulated"
-    MARK: "skamid-emulated or fast"
+    MARK: "skamid_emulated or fast"
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu"
@@ -358,7 +446,7 @@ mid_emu_on_demand_test:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated
-    on_stop: mid_emu_on_demand_uninstall
+    on_stop: mid_cbfemu_on_demand_uninstall
     auto_stop_in: 2 hours
   when: manual
   only:
@@ -367,7 +455,7 @@ mid_emu_on_demand_test:
   except:
     refs:
       - master
-
+      
 low_test:
   retry: 2
   stage: test

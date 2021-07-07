@@ -223,6 +223,8 @@ Note: The archiver is available to deploy as per the architecture proposed at th
 
 The Archiver deployment is kept independent of MVP. This enables the archiver lifecycle operations independent of MVP lifecycle. To deploy the archiver use command:
 
+On gitlab ci-cd Masked Environment variables are created `ARCHIVER_DB_PWD` `ARCHIVER_DB_USER` `ARCHIVER_HOST_NAME` `ARCHIVER_PORT` which contains archiver database connection details.
+
 ```
 make deploy-archiver ARCHIVER_NAMESPACE=<archiver_namespace> DBNAME=<archiver_database_name>
 ```

@@ -159,6 +159,7 @@ def set_telescope_to_running(disable_waiting = False):
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
+    #TODO: Using TMC API for TelescopeOn command.
     # Telescope().start_up()
     tmc.start_up()
     if not disable_waiting:

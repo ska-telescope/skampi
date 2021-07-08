@@ -16,7 +16,8 @@ def test_tm_subarray_inconsistent_at_start_up():
         #when I Startup the telescope and the TM subbarray reports its state as being OFF
         CentralNode = DeviceProxy('ska_mid/tm_central/central_node')  
         # the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('State')
-        CentralNode.StartUpTelescope()
+        CentralNode.TelescopeOn()
+        # CentralNode.StartUpTelescope()
         the_waiter.wait()
         # the_watch.wait_until_value_changed_to('OFF')
         #then the children subarray devices should also be in state OFF

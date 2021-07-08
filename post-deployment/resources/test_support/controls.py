@@ -148,7 +148,9 @@ def set_telescope_to_standby():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
-    Telescope().standby()
+    #TODO: Using TMC API for TelescopeOn command.
+    # Telescope().standby()
+    tmc.set_to_standby()
     #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
     #therefore timeout is given as 12 sec
     the_waiter.wait(120)

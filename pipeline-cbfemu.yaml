@@ -1,0 +1,8 @@
+
+minikube: false
+
+# Disable CBF, enable emulated CBF
+mid-cbf:
+  enabled: true
+mid-cbf-emulated:
+  enabled: false

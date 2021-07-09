@@ -1,3 +1,7 @@
+{{- if index .Values "mid-cbf-emulated" "enabled" }}
+{{- if index .Values "mid-cbf" "enabled" }}
+{{- fail "Please enable only one of 'mid-cbf' or 'mid-cbf-emulated'!" }}
+{{- end }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -32,3 +36,4 @@ spec:
       - name: task-pv
         persistentVolumeClaim:
           claimName: local-pvc
+{{- end }}

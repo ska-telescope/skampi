@@ -143,7 +143,7 @@ mid_cbfemu_uninstall:
     HELM_RELEASE: "test-mid-cbfemu"
     KUBE_NAMESPACE: "integration-mid-cbfemu"
     KUBE_NAMESPACE_SDP: "integration-mid-cbfemu-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
+    DEPLOYMENT_CONFIGURATION: "skamid"
     KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
@@ -233,7 +233,7 @@ mid_cbfemu_on_demand_uninstall:
     name: "test/$CI_COMMIT_REF_NAME"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu
     action: stop
   when: manual
   only:
@@ -406,7 +406,8 @@ mid_cbfemu_test:
     HELM_RELEASE: "test-mid-cbfemu"
     KUBE_NAMESPACE: "integration-mid-cbfemu"
     KUBE_NAMESPACE_SDP: "integration-mid-cbfemu-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    VALUES: "pipeline-cbfemu.yaml"
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_mid_cbfemu_archiver_db"
   before_script:
@@ -429,12 +430,13 @@ mid_cbfemu_on_demand_test:
   stage: test
   tags: *tags_default
   variables:
-    DEPLOYMENT_CONFIGURATION: "skamid-emulated"
     MARK: "skamid_emulated or fast"
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu-sdp"
+    DEPLOYMENT_CONFIGURATION: "skamid"
+    VALUES: "pipeline-cbfemu.yaml"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
   before_script:
@@ -442,10 +444,10 @@ mid_cbfemu_on_demand_test:
   <<: *test_definition
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
-    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated/taranta"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emulated
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu
     on_stop: mid_cbfemu_on_demand_uninstall
     auto_stop_in: 2 hours
   when: manual

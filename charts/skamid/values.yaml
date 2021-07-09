@@ -92,6 +92,9 @@ oet-scripts:
 ## mid-cbf
 mid-cbf:
   enabled: true
+# SDP's CBF emulator - only enable this *or* mid-cbf!
+mid-cbf-emulated:
+  enabled: false
 
 ## mid-csp
 mid-csp:

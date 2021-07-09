@@ -16,6 +16,10 @@ dependencies:
   version: 0.1.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: mid-cbf.enabled
+- name: mid-cbf-emulated
+  version: 0.4.3
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: mid-cbf-emulated.enabled  
 - name: mid-csp
   version: 0.1.5
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

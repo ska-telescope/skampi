@@ -2,7 +2,7 @@
     "python.pythonPath": "venv/bin/python",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "python.linting.pylintPath": "/usr/local/bin/pylint",
+    "python.linting.pylintPath": "venv/bin/python",
     "python.testing.pytestArgs": [
         "./tests", 
     ],

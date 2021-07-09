@@ -51,6 +51,13 @@ def check_going_out_of_abort():
     logging.info("Check if the SubarrayNode obsState is ABORTED")
     resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('ABORTED')
 
+def check_going_out_of_configured():
+    ## Verify the Subarray obstate = READY
+    resource('ska_low/tm_subarray_node/1').assert_attribute('obsState').equals('READY')
+    # resource('mid_csp/elt/subarray_01').assert_attribute('obsState').equals('READY')
+    # resource('mid_sdp/elt/subarray_1').assert_attribute('obsState').equals('READY')
+
+
 # pre waitings
 
 class WaitConfigure():
@@ -76,8 +83,8 @@ class WaitAbort():
 
     def wait(self,timeout):
         logging.info("ABORT command invoked. Waiting for obsState to change to ABORTED")
-        self.w.wait_until_value_changed_to('ABORTED',timeout=200)
-        self.w1.wait_until_value_changed_to('ABORTED',timeout=200)
+        self.w.wait_until_value_changed_to('ABORTED',timeout=500)
+        self.w1.wait_until_value_changed_to('ABORTED',timeout=500)
 
 class WaitRestart():
 
@@ -96,8 +103,8 @@ class WaitObsReset():
 
     def wait(self,timeout):
         logging.info("ObsReset command invoked. Waiting for obsState to change to IDLE")
-        self.w.wait_until_value_changed_to('IDLE',timeout=200)
-        self.w1.wait_until_value_changed_to('IDLE',timeout=200)
+        self.w.wait_until_value_changed_to('IDLE',timeout=500)
+        self.w1.wait_until_value_changed_to('IDLE',timeout=500)
 
 class WaitScanning():
     def __init__(self):
@@ -336,6 +343,17 @@ def sync_scan_oet(func):
         the_waiter = waiter()
         the_waiter.set_wait_for_going_into_scanning()
         result = func(*args, **kwargs)
+        the_waiter.wait(timeout=200)
+        return result
+    return wrapper
+
+def sync_scanning_oet(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        check_going_out_of_configure()
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_into_scanning()
+        result = func(*args, **kwargs)
         the_waiter.wait()
         return result
     return wrapper
@@ -356,6 +374,32 @@ def sync_abort(timeout=200):
         def wrapper(*args, **kwargs):
             check_going_into_abort()
             w = WaitAbort()
+            ################
+            result = func(*args, **kwargs)
+            ################
+            w.wait(timeout)
+            return result
+        return wrapper
+    return decorator
+
+def sync_reset_sa(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        check_going_out_of_abort()
+        the_waiter = waiter()
+        the_waiter.set_wait_for_going_into_obsreset()
+        result = func(*args, **kwargs)
+        the_waiter.wait(500)
+        return result
+    return wrapper
+
+def sync_restart(timeout=200):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            #check_going_into_restart()
+            check_going_out_of_abort()
+            w = WaitRestart()
             ################
             result = func(*args, **kwargs)
             ################

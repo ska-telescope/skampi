@@ -50,7 +50,7 @@ by creating two set of working charts named skalow and skamid, and shifting all 
 The skalow umbrella chart includes (for SKA-Low) the following sub-charts:
 
 
-* tango-base, 
+* ska-tango-base, 
 * archiver,
 * webjive, 
 * mccs-low.
@@ -58,7 +58,7 @@ The skalow umbrella chart includes (for SKA-Low) the following sub-charts:
 The skamid umbrella chart  (for SKA-Mid) contains the following sub-charts:
 
 * etcd-operator,
-* tango-base,
+* ska-tango-base,
 * cbf-proto,
 * csp-proto,
 * sdp-prototype,
@@ -70,7 +70,9 @@ The skamid umbrella chart  (for SKA-Mid) contains the following sub-charts:
 * webjive.
 
 
-All the above sub-charts have been uploaded into the helm chart repository available on nexus.
+All the above sub-charts have been uploaded into the helm chart repository available on the Central Artefact Repository (CAR).
+
+While migration from the EngageSKA Nexus repository to the CAR is in process, developers are requested to make sure that their charts are also updated to pull from CAR.
 
 Note that values for sub-charts are namespaced in the `values.yaml`, 
 and that you can use that configuration to override the values for its sub-charts. In particular shared charts, should be disabled according to the example below:

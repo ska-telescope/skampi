@@ -402,7 +402,7 @@ mid_cbfemu_test:
   stage: test
   tags: *tags_default
   variables:
-    MARK: "skamid_emulated or fast"
+    MARK: "skamid_emulated or (skamid and fast)"
     HELM_RELEASE: "test-mid-cbfemu"
     KUBE_NAMESPACE: "integration-mid-cbfemu"
     KUBE_NAMESPACE_SDP: "integration-mid-cbfemu-sdp"
@@ -430,7 +430,7 @@ mid_cbfemu_on_demand_test:
   stage: test
   tags: *tags_default
   variables:
-    MARK: "skamid_emulated or fast"
+    MARK: "skamid_emulated or (skamid and fast)"
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-emu"

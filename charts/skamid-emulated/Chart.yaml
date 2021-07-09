@@ -26,7 +26,7 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
 - name: tmc-mid
-  version: 0.3.7
+  version: 0.3.8
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: tmc-mid.enabled
 - name: oet-scripts

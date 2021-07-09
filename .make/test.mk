@@ -99,12 +99,30 @@ k8s_test: ## test the application on K8s
 
 smoketest: wait## wait for pods to be ready and jobs to be completed
 
-wait:## wait for pods to be ready
+# Idea below is that we look for not-ready pods that are not
+# associated with a job (as those will finish, which doesn't count as
+# "ready"), then pass those to "kubectl wait pods". Note that not all
+# pods might have been created when this target is first called, so we
+# (arbitrarily) repeat the entire procedure 5 times to catch any
+# potential stragglers. Note that this can cause us to delay for
+# longer than $SLEEPTIME here.
+wait: ## wait for pods to be ready
 	@echo "Waiting for pods to be ready. Timeout $(SLEEPTIME)"
 	@date
-	@kubectl -n $(KUBE_NAMESPACE) get pods
-	@date
-	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$$(echo $$p | cut -d';' -f3); if [ ! -z "$$v_owner_name" ]; then v_pod_name=$$(echo $$p | cut -d';' -f1); pods="$$pods $$v_pod_name"; fi; done; kubectl wait pods --all --for=condition=ready --timeout=$(SLEEPTIME) $$pods -n $(KUBE_NAMESPACE)
+	@for i in $$(seq 1 5); do \
+		pods=""; \
+		for p in $$(kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"); do \
+			if [ $$(echo $$p | cut -d';' -f2) == "Ready=True" ]; then continue; fi; \
+			v_owner_name=$$(echo $$p | cut -d';' -f3); \
+			if [ ! -z "$$v_owner_name" ]; then \
+				v_pod_name=$$(echo $$p | cut -d';' -f1); \
+				pods="$$pods $$v_pod_name"; \
+			fi; \
+		done; \
+		if [ -z "$$pods" ]; then break; fi; \
+		echo "Waiting for$$pods..."; \
+		kubectl wait pods --for=condition=ready --timeout=$(SLEEPTIME) $$pods -n $(KUBE_NAMESPACE); \
+	done
 	@date
 
 get_size_images: ## get a list of images together with their size (both local and compressed) in the namespace KUBE_NAMESPACE

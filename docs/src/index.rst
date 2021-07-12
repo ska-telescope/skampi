@@ -12,8 +12,7 @@ This project defines the integration between various component repository on Kub
 .. toctree::
    :maxdepth: 1
 
-   multitenancy
+   deployment
    kubernetes
    helm
-   deploy_on_p3
    subsystems

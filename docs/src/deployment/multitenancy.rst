@@ -51,7 +51,7 @@ Multitenancy of the branch pipelines allows for the owners of a given CI Pipline
 
 Retrieving the kubeconfig file is easy. Deployment and testing of SKAMPI in the pipeline Namespace are done manually, so the first step is to start a test. Go to pipeline output screen on Gitlab and select a test on the telescope of your choice. 
 
-.. image:: _static/img/selectjobmltnt.png
+.. image:: ../_static/img/selectjobmltnt.png
 
 
 Next check the logs on Gitlab for that job. You'll see a ``curl`` in the job output towards the end:

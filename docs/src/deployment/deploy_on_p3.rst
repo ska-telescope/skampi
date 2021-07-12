@@ -29,7 +29,7 @@ If you are doing this for the first time, download the OpenStack configuration s
 from the web interface. It can be downloaded using the user menu in the upper right corner:
 click on `'OpenStack RC File'` and it should download a file called ``p3-openrc.sh``.
 Copy the file from your local machine to the OpenHPC login node. ``TODO: does it have to go to the login node or to the p3 machine?``
-The next steps are all to be run on P3.
+The next steps are all to be run on P3 so please make sure you are logged in (as described above).
 
 Run the configuration script:
 
@@ -85,7 +85,8 @@ First, clone the SKAMPI git repository and enter its directory:
     git clone https://gitlab.com/ska-telescope/skampi.git
     cd skampi
 
-Edit the values in ``pipeline.yaml`` to disable anything that needs persistent storage:
+Edit the values in ``pipeline.yaml`` to disable anything that needs persistent storage
+(since persistent storage claims cannot be satisfied on P3):
 
 .. code-block::
 
@@ -152,9 +153,7 @@ in the KUBECONFIG file:
 
 .. code-block::
 
-    cat $KUBECONFIG
-
-They will be listed under ``clusters → -cluster → server``.
+    kubectl config view -o jsonpath='{.clusters[].cluster.server}'
 
 On your local machine, add the following to the connection details to the P3 cluster within your
 ``ssh config`` file (normally located at ``$HOME/.ssh/config``):

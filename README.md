@@ -6,6 +6,7 @@ The documentation for SKAMPI is currently being reworked. To look at the documen
 
 ### SKA Tango Examples
 If your component or product is ready for integration, skip the following sections and go to [Development](#development)
+
 ### Kubernetes and Kubectl
 
 ### Minikube
@@ -18,6 +19,7 @@ If your component or product is ready for integration, skip the following sectio
 
 ## Development
 The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.
+
 ### Adding a new product/component
 
 ### Modifying deployment configuration

@@ -36,7 +36,7 @@ endif
 
 CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that are not a-z or 0-9 replaced with -. Use in URLs and domain names.
 CI_ENVIRONMENT_SLUG?=skampi##The simplified version of the environment name, suitable for inclusion in DNS, URLs, Kubernetes labels, and so on. Available if environment:name is set.
-$(shell echo 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gilab_values.yaml)
+$(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gitlab_values.yaml)
 
 CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 	--set oet-scripts.ingress.nginx=$(USE_NGINX) \
@@ -51,7 +51,7 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-archiver.dbuser=$(ARCHIVER_DBUSER) \
 	--set ska-archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
-	--values gilab_values.yaml \
+	--values gitlab_values.yaml \
 	$(PSI_LOW_SDP_PROXY_VARS)
 
 .DEFAULT_GOAL := help
@@ -144,22 +144,17 @@ install: clean namespace namespace_sdp check-archiver-dbname upgrade-chart## ins
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \
 	if [ $$K_DESC -eq 0 ] ; \
-	then helm uninstall $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE); \
+	then helm uninstall $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true; \
 	fi
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
-<<<<<<< HEAD
-	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
-		echo "Installing Helm charts from current ref of git repository..." \
-=======
 	if [ "" == "$(HELM_REPO_NAME)" ]; then \
 		echo "Installing Helm charts from current ref of git repository..."; \
->>>>>>> master
 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
 	else \
-		echo "Deploying from artefact repository..."
+		echo "Deploying from artefact repository..."; \
 		helm repo add $(HELM_REPO_NAME) $(HELM_HOST)/repository/helm-chart; \
 		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
 		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \

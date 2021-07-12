@@ -81,8 +81,6 @@ def i_send_the_command_to_the_tmc(devices):
         with atomic(devices.all_device_names,'state','ON',5):
             devices.tmc_central_node.StartUpTelescope()
             #time.sleep(20)
-        wait_before_test(timeout=4)
-            
     else:
         logger.info('Control system is already on. No start up command issued.')
 
@@ -123,7 +121,7 @@ def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
     logger.info(mccs_time)
     with atomic(devices.all_device_names,'State','OFF',5):
         devices.tmc_central_node.StandByTelescope()
-    wait_before_test(timeout=4)
+    
 
 
 

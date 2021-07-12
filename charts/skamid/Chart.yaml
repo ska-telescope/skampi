@@ -24,9 +24,9 @@ dependencies:
   version: 0.4.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
-- name: ska-tmc-mid
+- name: tmc-mid
   version: 0.4.0
-  repository: https://artefact.skao.int/repository/helm-internal
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: tmc-mid.enabled
 - name: oet-scripts
   version: 0.4.1

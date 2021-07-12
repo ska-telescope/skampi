@@ -4,7 +4,7 @@ SKAMPI - SKA Mvp Prototype Integration
 This project defines the integration between various component repository on Kubernetes.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    skampi

@@ -8,6 +8,10 @@ This project defines the integration between various component repository on Kub
    :maxdepth: 1
 
    README
+
+.. toctree::
+   :maxdepth: 1
+
    multitenancy
    kubernetes
    helm

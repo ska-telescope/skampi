@@ -1,16 +1,16 @@
 .. _`Multitenancy`:
 
-Multitenant testing of SKAMPI on Kubernetes
-*******************************************
+Testing in a shared environment
+*******************************
 
-The Kubernetes Clusters managed by the System Team are multitenant, which means that they can host multiple deployments of SKAMPI at the same time without affecting their individual performance. Those clusters are thus configured to ensure that each SKAMPI job runs isolated from the others and that the cluster resources are fairly allocated among the different jobs.  Isolation on the Kubernetes Clusters is implemented by deploying to a different Namespace.
+Multiple deployments of SKAMPI can be deployed on the Kubernetes clusters at the same time without affecting their individual performance. Separation is achieved by kubernetes namespaces and ensures that each CI job runs isolated from others.
 
-Multitenancy is implemented for SKAMPI not only in the *permanent* Integration and Staging environments, but also on the temporary Pipeline environments and this has important implications for feature branch development. 
+This "multitenancy" is implemented not only in the *permanent* Integration and Staging environments of SKAMPI, but also on the temporary Pipeline environments and this has important implications for feature branch development. 
  
 Kubernetes access to feature branch development namespaces
 ==========================================================
 
-SKAMPI is reaching a status where the resources needed in terms of CPU and memory are such that developers will not be able to simulate the target environment by using, for example, a Minikube cluster running on their local machines. The Pipeline Testing environment allows users to treat it as a Development environment. Pipeline Testing includes the following features:
+Developers may not be able to simulate the targeted deployment environment by using, for example, a Minikube cluster running on their local machines. The Pipeline Testing environment allows users to treat it as a Development environment. Pipeline Testing includes the following features:
 
 * Standard naming conventions allowing for a Namespace per development branch.
 * The same Resource Quotas and Limit Ranges as those that are applied to Staging and Integration environments.

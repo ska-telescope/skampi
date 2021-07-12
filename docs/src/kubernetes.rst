@@ -1,8 +1,8 @@
-SKAMPI - SKA Mvp Prototype Integration 
-======================================
+Kubernetes
+==========
 
-K8s Concepts
-------------
+Kubernetes Concepts
+-------------------
 The following are key concepts to understand the project: 
 
 * Namespace: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#when-to-use-multiple-namespaces
@@ -11,13 +11,14 @@ The following are key concepts to understand the project:
 * StatefulSet: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
 * Ingress: https://kubernetes.io/docs/concepts/services-networking/ingress/
 * IngressController: https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/
-* Traefik IngressController: https://docs.traefik.io/user-guide/kubernetes/
+* NGINX IngressController: https://github.com/kubernetes/ingress-nginx
 * PersistentVolume: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 * PersistentVolumeClaim: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
 
 KubeCtl references
 ------------------
 Overview: https://kubernetes.io/docs/reference/kubectl/overview/
+
 Cheat Sheet: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
 K8s Templates
@@ -42,12 +43,13 @@ Metadata tag
 ^^^^^^^^^^^^
 Every yaml file has a metadata tag which specify some important information like:
 
-* name: a string that uniquely identifies this object within the current namespace (see the identifiers docs). This value is used in the path when retrieving an individual object.
-* namespace: a namespace is a DNS compatible label that objects are subdivided into.
-* `labels <https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/>`_: a map of string keys and values that can be used to organize and categorize objects
-    * app: unique name (equals to name above) 
-    * chart: name of the chart
-    * release and heritage: used by helm for install/upgrade
+* **name**: a string that uniquely identifies this object within the current namespace (see the identifiers docs). This value is used in the path when retrieving an individual object.
+* **namespace**: a namespace is a DNS compatible label that objects are subdivided into.
+* `**labels** <https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/>`_: a map of string keys and values that can be used to organize and categorize objects:
+
+  * **app**: unique name (equals to name above) 
+  * **chart**: name of the chart
+  * **release** and **heritage**: used by helm for install/upgrade
 
 Spec
 ^^^^

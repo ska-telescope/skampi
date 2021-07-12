@@ -9,3 +9,5 @@ This project defines the integration between various component repository on Kub
 
    README
    multitenancy
+   kubernetes
+   helm

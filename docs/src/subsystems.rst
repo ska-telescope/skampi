@@ -22,7 +22,7 @@ the SKA Regional Centres.
 
 .. |sdp_in_skampi| raw:: html
 
-    <a href="https://developer.skao.int/projects/ska-sdp-integration/en/latest/running/integration.html" target="_blank">Interacting with SDP within SKAMPI</a>
+    <a href="https://developer.skao.int/projects/ska-sdp-integration/en/latest/running/skampi.html" target="_blank">Interacting with SDP within SKAMPI</a>
 
 
 OET (Observation Execution Tool)

@@ -13,6 +13,7 @@ This project defines the integration between various component repository on Kub
    :maxdepth: 1
 
    deployment
+   multitenancy
    kubernetes
    helm
    subsystems

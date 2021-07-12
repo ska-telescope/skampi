@@ -20,7 +20,7 @@ tag_description=
 
         a. allow local transaction id generation if remote fail
 
-    **1.4 ska-archiver added - 0.1.4:
+    **1.4 ska-archiver added - 0.1.8:
 
         a. ability for tango devices to archive attributes and events
 
@@ -40,7 +40,7 @@ tag_description=
         c. see https://webjive.readthedocs.io/en/latest/history.html
 
 
-    **2.3 ska-archiver added - 0.1.4:
+    **2.3 ska-archiver added - 0.1.8:
 
         a. ability for tango devices to archive attributes and events
 

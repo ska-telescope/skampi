@@ -3,16 +3,24 @@
 HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
-ARCHIVER_HOST ?= 192.168.99.229 # ARCHIVER_HOST is the IP address for the cluster machine where archiver database is created
-ARCHIVER_PORT ?= 3306
-ARCHIVER_DBUSER ?= eda_admin
-ARCHIVER_DBPASSWORD ?= @v3ng3rs@ss3mbl3
 ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archiver attribute configure json file for MVP-mid to work with
 
 # Checks if the Database name is provided by user while deploying the archiver and notifies the user
 check-archiver-dbname:
 	@if [ $(ARCHIVER_DBNAME) = default_mvp_archiver_db ]; then \
 	echo "Archiver database name is not provided. Setting archiver database name to default value: default_mvp_archiver_db"; \
+	fi
+	@if [ "$(ARCHIVER_HOST_NAME)" = "" ]; then \
+	echo "Archiver host name is not provided."; \
+	fi
+	@if [ "$(ARCHIVER_PORT)" = "" ]; then \
+	echo "Archiver port name is not provided."; \
+	fi
+	@if [ "$(ARCHIVER_DB_USER)" = "" ]; then \
+	echo "Archiver database user is not provided."; \
+	fi
+	@if [ "$(ARCHIVER_DB_PWD)" = "" ]; then \
+	echo "Archiver database password is not provided."; \
 	fi
 
 # Get the database service name from MVP deployment

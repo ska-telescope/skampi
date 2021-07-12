@@ -5,7 +5,7 @@ This project defines the integration between various component repository on Kub
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    README
 

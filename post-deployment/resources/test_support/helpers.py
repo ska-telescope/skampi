@@ -347,7 +347,7 @@ class waiter():
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='OFF'))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='OFF'))
         self.waits.append(watch(resource('mid_csp/elt/master')).to_become("State",changed_to='STANDBY'))
-        self.waits.append(watch(resource('ska_mid/tm_central/central_node')).to_become("telescopeState",changed_to='OFF'))
+        self.waits.append(watch(resource('ska_mid/tm_central/central_node')).to_become("telescopeState",changed_to='STANDBY'))
         # at the moment sdb does not go to standby
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 

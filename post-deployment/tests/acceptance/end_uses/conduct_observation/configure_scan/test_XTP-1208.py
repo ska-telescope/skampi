@@ -61,7 +61,7 @@ def start_up():
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
     wait_before_test(timeout=10)
-    LOGGER.info("Telescope is in ON telescopeState")
+    LOGGER.info("Telescope is in ON State")
 
 @given("Subarray is in IDLE state")
 def assign(result):

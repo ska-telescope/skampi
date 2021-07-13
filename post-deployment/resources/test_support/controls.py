@@ -151,7 +151,7 @@ def set_telescope_to_standby():
     # Telescope().standby()
 
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
-    CentralNode.TelescopeStandby()
+    CentralNode.TelescopeOff()
     LOGGER.info('After Standby CentralNode State:' + str(CentralNode.telescopeState))
     LOGGER.info('Standby the Telescope')
 

@@ -11,7 +11,7 @@ TODO: Either the P3 version or the more generic remote-host version will be merg
    :maxdepth: 1
 
    deployment/deploy_on_p3
-   deployment/remote_host
+   deployment/remote_deploy
 
 
 Read about the automatic deployment of SKAMPI in the CI/CD environment and how

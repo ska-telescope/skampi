@@ -58,7 +58,7 @@ def release_resources():
 @sync_set_to_standby
 def set_to_standby():
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
-    CentralNode.TelescopeOff()
+    CentralNode.TelescopeStandby()
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
     LOGGER.info('After Standby SubarrayNode State and ObsState:' + str(SubarrayNode.State()) + str(SubarrayNode.ObsState))
     LOGGER.info('After Standby CentralNode State:' + str(CentralNode.telescopeState))

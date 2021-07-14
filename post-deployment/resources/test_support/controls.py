@@ -162,7 +162,7 @@ def set_telescope_to_standby():
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
 def set_telescope_to_running(disable_waiting = False):
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
+    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
     #TODO: Using TMC API for TelescopeOn command.

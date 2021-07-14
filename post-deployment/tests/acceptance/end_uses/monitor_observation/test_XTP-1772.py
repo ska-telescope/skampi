@@ -14,8 +14,8 @@ import pytest
 from pytest_bdd import given, parsers, scenario, then, when
 
 from ska.scripting.domain import SubArray
-from ska.cdm.messages.subarray_node.configure import ConfigureRequest, DishConfiguration
-from ska.cdm.messages.subarray_node.configure.core import ReceiverBand
+from ska_tmc_cdm.messages.subarray_node.configure import ConfigureRequest, DishConfiguration
+from ska_tmc_cdm.messages.subarray_node.configure.core import ReceiverBand
 
 from resources.test_support.controls import (restart_subarray,
                                              set_telescope_to_running,

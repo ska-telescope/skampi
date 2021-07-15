@@ -21,7 +21,13 @@ obsState = {"IDLE": 0}
 
 ####typical device sets
 subarray_devices = [
+        'ska_mid/tm_central/central_node',
         'ska_mid/tm_subarray_node/1',
+        'ska_mid/tm_leaf_node/csp_subarray01',
+        'ska_mid/tm_leaf_node/sdp_subarray01',
+        'ska_mid/tm_leaf_node/csp_master',
+        'ska_mid/tm_leaf_node/sdp_master',
+        'ska_mid/tm_leaf_node/d0001',
         'mid_csp/elt/subarray_01',
         'mid_csp_cbf/sub_elt/subarray_01',
         'mid_sdp/elt/subarray_1']

@@ -53,8 +53,6 @@ stages:
 
 .test_template: &test_definition
   script:
-  - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
-  - echo $ARCHIVER_DBNAME
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   - make k8s_test MARK='trial'
@@ -316,7 +314,6 @@ mid_on_demand_test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
   before_script:
     - *create_k8s_creds
   <<: *test_definition

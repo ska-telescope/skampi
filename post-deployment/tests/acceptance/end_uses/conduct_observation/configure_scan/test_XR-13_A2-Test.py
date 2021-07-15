@@ -68,8 +68,6 @@ def test_configure_subarray():
 @given("I am accessing the console interface for the OET")
 def start_up():
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
-    the_waiter = waiter()
-    the_waiter.wait(300)
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Starting up telescope")

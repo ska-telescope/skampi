@@ -180,10 +180,10 @@ def set_telescope_to_running(disable_waiting = False):
 def telescope_is_in_standby():
     the_waiter = waiter()
     the_waiter.wait(5000)
-    LOGGER.info(
-        'resource("ska_mid/tm_central/central_node").get("State")'
-        + str(resource("ska_mid/tm_central/central_node").get("State"))
-    )
+    # LOGGER.info(
+    #     'resource("ska_mid/tm_central/central_node").get("State")'
+    #     + str(resource("ska_mid/tm_central/central_node").get("State"))
+    # )
     LOGGER.info(
         'resource("ska_mid/tm_central/central_node").get("telescopeState")'
         + str(resource("ska_mid/tm_central/central_node").get("telescopeState"))
@@ -241,7 +241,6 @@ def telescope_is_in_standby():
         + str(resource("mid_d0004/elt/master").get("State"))
     )
     return [
-       resource("ska_mid/tm_central/central_node").get("State"),
        resource("ska_mid/tm_central/central_node").get("telescopeState"),
        resource("ska_mid/tm_subarray_node/1").get("State"),
        resource("mid_csp/elt/subarray_01").get("State"),
@@ -252,7 +251,7 @@ def telescope_is_in_standby():
        resource("mid_d0002/elt/master").get("State"),
        resource("mid_d0003/elt/master").get("State"),
        resource("mid_d0004/elt/master").get("State")
-   ] == ["ON", "STANDBY", "ON", "OFF", "OFF", "STANDBY", "OFF", "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
+   ] == ["STANDBY", "ON", "OFF", "OFF", "STANDBY", "OFF", "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
 
 
 ## currently this function is not used in any testcase

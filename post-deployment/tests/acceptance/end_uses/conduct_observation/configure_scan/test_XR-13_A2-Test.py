@@ -117,11 +117,11 @@ def teardown_function(function):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-    # if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
-    #     #this means there must have been an error
-    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
-        LOGGER.info("tearing down composed subarray (IDLE)")
-        take_subarray(1).and_release_all_resources()
+    if (resource('ska_mid/tm_subarray_node/1').get('State') == "ON"):
+        #this means there must have been an error
+        if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "IDLE"):
+            LOGGER.info("tearing down composed subarray (IDLE)")
+            take_subarray(1).and_release_all_resources()  
     if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
         #this means test must have passed
         LOGGER.info("tearing down configured subarray (READY)")
@@ -134,6 +134,5 @@ def teardown_function(function):
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
-    assert telescope_is_in_standby()
     LOGGER.info("Telescope is in standby")
 

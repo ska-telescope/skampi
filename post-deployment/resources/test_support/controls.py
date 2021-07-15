@@ -47,7 +47,7 @@ class pilot():
     
     def to_be_composed_out_of(self, dishes, file = 'resources/test_data/OET_integration/example_allocate.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A1.py
-        @sync_assign_resources(dishes,200)
+        @sync_assign_resources(dishes,600)
         def assign():
             sdp_block = update_resource_config_file(file)
             resource_request: AssignResourcesRequest = cdm_CODEC.load_from_file(AssignResourcesRequest, file)
@@ -144,8 +144,6 @@ def restart_subarray(id):
     the_waiter.wait()
 
 def set_telescope_to_standby():
-    the_waiter = waiter()
-    the_waiter.wait(5000)
     # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     the_waiter.set_wait_for_going_to_standby()
     #TODO: Using TMC API for TelescopeOn command.
@@ -181,17 +179,88 @@ def set_telescope_to_running(disable_waiting = False):
 def telescope_is_in_standby():
     the_waiter = waiter()
     the_waiter.wait(5000)
-    LOGGER.info('resource("ska_mid/tm_subarray_node/1").get("State")'+ str(resource('ska_mid/tm_subarray_node/1').get("State")))
-    LOGGER.info('resource("mid_csp/elt/subarray_01").get("State")' +
-                str(resource('mid_csp/elt/subarray_01').get("State")))
-    LOGGER.info('resource("mid_csp_cbf/sub_elt/subarray_01").get("State")' +
-                str(resource('mid_csp_cbf/sub_elt/subarray_01').get("State")))
+    LOGGER.info(
+        'resource("ska_mid/tm_central/central_node").get("State")'
+        + str(resource("ska_mid/tm_central/central_node").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_central/central_node").get("telescopeState")'
+        + str(resource("ska_mid/tm_central/central_node").get("telescopeState"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_central/central_node").get("desiredTelescopeState")'
+        + str(resource("ska_mid/tm_central/central_node").get("desiredTelescopeState"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_central/central_node").get("commandInProgress")'
+        + str(resource("ska_mid/tm_central/central_node").get("commandInProgress"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_subarray_node/1").get("State")'
+        + str(resource("ska_mid/tm_subarray_node/1").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_csp/elt/subarray_01").get("State")'
+        + str(resource("mid_csp/elt/subarray_01").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_sdp/elt/subarray_1").get("State")'
+        + str(resource("mid_sdp/elt/subarray_1").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_csp/elt/master").get("State")'
+        + str(resource("mid_csp/elt/master").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_sdp/elt/master").get("State")'
+        + str(resource("mid_sdp/elt/master").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0001").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0001").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0002").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0002").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0003").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0003").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0004").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0004").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_d0001/elt/master").get("State")'
+        + str(resource("mid_d0001/elt/master").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_d0002/elt/master").get("State")'
+        + str(resource("mid_d0002/elt/master").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_d0003/elt/master").get("State")'
+        + str(resource("mid_d0003/elt/master").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_d0004/elt/master").get("State")'
+        + str(resource("mid_d0004/elt/master").get("State"))
+    )
+    return [
+       resource("ska_mid/tm_central/central_node").get("State"),
+       resource("ska_mid/tm_central/central_node").get("telescopeState"),
+       resource("ska_mid/tm_subarray_node/1").get("State"),
+       resource("mid_csp/elt/subarray_01").get("State"),
+       resource("mid_sdp/elt/subarray_1").get("State"),
+       resource("mid_csp/elt/master").get("State"),
+       resource("mid_sdp/elt/master").get("State"),
+       resource("mid_d0001/elt/master").get("State"),
+       resource("mid_d0002/elt/master").get("State"),
+       resource("mid_d0003/elt/master").get("State"),
+       resource("mid_d0004/elt/master").get("State")
+   ] == ["ON", "STANDBY", "ON", "OFF", "OFF", "STANDBY", "OFF", "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
 
-    return  [resource('ska_mid/tm_subarray_node/1').get("State"),
-            resource('mid_csp/elt/subarray_01').get("State"),
-            resource('mid_csp_cbf/sub_elt/subarray_01').get("State"),
-            resource('ska_mid/tm_central/central_node').get("telescopeState")] == \
-            ['ON','OFF','OFF','STANDBY']
 
 ## currently this function is not used in any testcase
 def run_a_config_test():

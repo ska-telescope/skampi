@@ -55,7 +55,6 @@ stages:
   script:
   - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
   - echo $ARCHIVER_DBNAME
-  - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
   - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   - make k8s_test MARK='trial'

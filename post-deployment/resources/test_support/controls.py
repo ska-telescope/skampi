@@ -145,6 +145,7 @@ def restart_subarray(id):
 
 def set_telescope_to_standby():
     # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
     #TODO: Using TMC API for TelescopeOn command.
     # Telescope().standby()
@@ -186,14 +187,6 @@ def telescope_is_in_standby():
     LOGGER.info(
         'resource("ska_mid/tm_central/central_node").get("telescopeState")'
         + str(resource("ska_mid/tm_central/central_node").get("telescopeState"))
-    )
-    LOGGER.info(
-        'resource("ska_mid/tm_central/central_node").get("desiredTelescopeState")'
-        + str(resource("ska_mid/tm_central/central_node").get("desiredTelescopeState"))
-    )
-    LOGGER.info(
-        'resource("ska_mid/tm_central/central_node").get("commandInProgress")'
-        + str(resource("ska_mid/tm_central/central_node").get("commandInProgress"))
     )
     LOGGER.info(
         'resource("ska_mid/tm_subarray_node/1").get("State")'

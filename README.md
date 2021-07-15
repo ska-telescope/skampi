@@ -5,7 +5,7 @@
 The documentation for SKAMPI is currently being reworked. To look at the documentation that was available before this rework started, please go to [this temporary build on ReadtheDocs](https://developer.skao.int/projects/skampi/en/sp-1747-docs-old/).
 
 ### SKA Tango Examples
-If your component or product is ready for integration, skip the following sections and go to [Development](#development)
+If your component or product is ready for integration, skip the following sections and go to [Development](#development).
 
 ### Kubernetes and Kubectl
 

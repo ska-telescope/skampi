@@ -17,8 +17,8 @@ dependencies:
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-mid-cbf.enabled
 - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
-  version: 0.1.8
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  version: 0.1.9
+  repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-csp-lmc-mid.enabled
 - name: sdp
   version: 0.4.0
@@ -32,9 +32,9 @@ dependencies:
   version: 0.4.1
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-oso-scripting
-- name: webjive
-  version: 1.0.21
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+- name: ska-webjive
+  version: 1.0.23
+  repository: https://artefact.skao.int/repository/helm-internal
   condition: webjive.enabled
 - name: skuid
   version: 0.2.0

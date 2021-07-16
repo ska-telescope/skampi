@@ -36,7 +36,7 @@ def _is_tarball(fname):
 
 class Report:
 
-    def __init__(self, matches_per_clfr_count = 3, context_lines = 30):
+    def __init__(self, matches_per_clfr_count = 10, context_lines = 10):
 
         # Parameters
         self.matches_per_clfr_count = matches_per_clfr_count

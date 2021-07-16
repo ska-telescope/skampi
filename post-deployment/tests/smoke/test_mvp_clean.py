@@ -92,9 +92,6 @@ def test_smell_mvp(pre_or_post="#PRE"):
         + str(resource("mid_d0004/elt/master").get("State"))
     )
 
-    assert_that(resource('mid_csp/elt/subarray_01').get('State')).is_equal_to(resource('ska_mid/tm_subarray_node/1').get('State'))
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('State')).is_equal_to(resource('mid_csp_cbf/sub_elt/subarray_01').get('State'))
-    assert_that(resource('mid_csp/elt/subarray_01').get('State')).is_equal_to(resource('mid_csp_cbf/sub_elt/subarray_01').get('State'))
     assert 0
 
 @pytest.mark.select   

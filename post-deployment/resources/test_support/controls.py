@@ -253,7 +253,7 @@ def telescope_is_in_standby():
        resource("mid_d0002/elt/master").get("State"),
        resource("mid_d0003/elt/master").get("State"),
        resource("mid_d0004/elt/master").get("State")
-   ] == ["STANDBY", "ON", "OFF", "OFF", "STANDBY", "OFF", "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
+   ] == ["STANDBY", "ON", "OFF", "OFF", "STANDBY", "STANDBY", "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
 
 
 ## currently this function is not used in any testcase

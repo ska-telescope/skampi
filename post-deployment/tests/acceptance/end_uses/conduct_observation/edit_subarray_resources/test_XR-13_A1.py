@@ -56,6 +56,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
+@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -68,7 +69,7 @@ def test_allocate_resources():
 def set_to_running():
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     wait_before_test(timeout=10)
-    assert(telescope_is_in_standby())
+    assert telescope_is_in_standby()
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Invoking Startup Telescope command on the telescope.")
     set_telescope_to_running()
@@ -78,7 +79,7 @@ def set_to_running():
 def allocate_four_dishes(result):
     LOGGER.info("Allocating 4 dishes to subarray 1")
     ##############################
-    @sync_assign_resources(4, 150)
+    @sync_assign_resources(4, 600)
     def test_SUT():
         res = oet_compose_sub()
         return res     

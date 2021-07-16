@@ -1,0 +1,4 @@
+global:
+  annotations:
+    app.gitlab.com/app: skampi
+    app.gitlab.com/env: skampi

@@ -21,10 +21,25 @@ obsState = {"IDLE": 0}
 
 ####typical device sets
 subarray_devices = [
+        'ska_mid/tm_central/central_node',
         'ska_mid/tm_subarray_node/1',
+        'ska_mid/tm_leaf_node/csp_subarray01',
+        'ska_mid/tm_leaf_node/sdp_subarray01',
+        'ska_mid/tm_leaf_node/csp_master',
+        'ska_mid/tm_leaf_node/sdp_master',
+        'ska_mid/tm_leaf_node/d0001',
+        'ska_mid/tm_leaf_node/d0002',
+        'ska_mid/tm_leaf_node/d0003',
+        'ska_mid/tm_leaf_node/d0004',
         'mid_csp/elt/subarray_01',
         'mid_csp_cbf/sub_elt/subarray_01',
-        'mid_sdp/elt/subarray_1']
+        'mid_sdp/elt/subarray_1',
+        'mid_d0001/elt/master',
+        'mid_d0002/elt/master',
+        'mid_d0003/elt/master',
+        'mid_d0004/elt/master',
+        'mid_sdp/elt/master',
+        'mid_csp/elt/master']
 
 
 def map_dish_nr_to_device_name(dish_nr):
@@ -343,11 +358,11 @@ class waiter():
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("State",changed_to='OFF'))
 
     def set_wait_for_going_to_standby(self):
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='OFF'))
+        # self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='OFF'))
         self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='OFF'))
         self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='OFF'))
         self.waits.append(watch(resource('mid_csp/elt/master')).to_become("State",changed_to='STANDBY'))
-        self.waits.append(watch(resource('ska_mid/tm_central/central_node')).to_become("State",changed_to='OFF'))
+        # self.waits.append(watch(resource('ska_mid/tm_central/central_node')).to_become("telescopeState",changed_to='STANDBY'))
         # at the moment sdb does not go to standby
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
 
@@ -377,12 +392,12 @@ class waiter():
         self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become('obsState',changed_to='IDLE'))
 
     def set_wait_for_starting_up(self):
-        self.waits.append(watch(resource('mid_csp/elt/master')).to_become("State",changed_to='ON'))
-        self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='ON'))
-        self.waits.append(watch(resource('ska_mid/tm_central/central_node')).to_become("State",changed_to='ON'))
-        # self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='OFF'))
-        # self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='OFF'))
-        # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).for_a_change_on("State"))
+        # self.waits.append(watch(resource('mid_csp/elt/master')).to_become("State",changed_to='ON'))
+        # self.waits.append(watch(resource('ska_mid/tm_subarray_node/1')).to_become("State",changed_to='ON'))
+        # self.waits.append(watch(resource('ska_mid/tm_central/central_node')).to_become("telescopeState",changed_to='ON'))
+        self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='ON'))
+        self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='ON'))
+        self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("State",changed_to='ON'))
 
     def wait(self, timeout=30,resolution=0.1):
         self.logs = ""
@@ -534,12 +549,3 @@ class AttributeWatcher():
         self._waiting = True
         self._wait(int(timeout))
         return self.elapsed_time
-
-
-
-
-
-        
-
-
-    

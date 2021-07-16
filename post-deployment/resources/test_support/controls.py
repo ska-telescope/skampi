@@ -1,3 +1,4 @@
+import time
 import pytest
 from datetime import date,datetime
 import os
@@ -184,6 +185,7 @@ def telescope_is_in_standby():
     #     'resource("ska_mid/tm_central/central_node").get("State")'
     #     + str(resource("ska_mid/tm_central/central_node").get("State"))
     # )
+    time.sleep(10)
     LOGGER.info(
         'resource("ska_mid/tm_central/central_node").get("telescopeState")'
         + str(resource("ska_mid/tm_central/central_node").get("telescopeState"))

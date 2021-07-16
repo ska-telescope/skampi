@@ -41,7 +41,6 @@ stages:
 .deploy_template: &deploy_definition
   script:
   - make install-or-upgrade
-  - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
@@ -56,9 +55,10 @@ stages:
   - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
   - echo $ARCHIVER_DBNAME
   - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
-  - make smoketest
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make configure-archiver
+  - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
+    kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  - bash scripts/gitlab_section.sh archiver "Archiver configuration"
+    make configure-archiver
   - make k8s_test
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
@@ -71,7 +71,6 @@ stages:
 .psi_test_template: &psi_test_definition
   script:
   - make install-or-upgrade || true
-  - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   - make k8s_test
   artifacts:

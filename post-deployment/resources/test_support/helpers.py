@@ -28,9 +28,18 @@ subarray_devices = [
         'ska_mid/tm_leaf_node/csp_master',
         'ska_mid/tm_leaf_node/sdp_master',
         'ska_mid/tm_leaf_node/d0001',
+        'ska_mid/tm_leaf_node/d0002',
+        'ska_mid/tm_leaf_node/d0003',
+        'ska_mid/tm_leaf_node/d0004',
         'mid_csp/elt/subarray_01',
         'mid_csp_cbf/sub_elt/subarray_01',
-        'mid_sdp/elt/subarray_1']
+        'mid_sdp/elt/subarray_1',
+        'mid_d0001/elt/master',
+        'mid_d0002/elt/master',
+        'mid_d0003/elt/master',
+        'mid_d0004/elt/master',
+        'mid_sdp/elt/master',
+        'mid_csp/elt/master']
 
 
 def map_dish_nr_to_device_name(dish_nr):

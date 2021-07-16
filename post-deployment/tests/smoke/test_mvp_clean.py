@@ -21,7 +21,7 @@ LOGGER = logging.getLogger(__name__)
 def test_is_running(running_telescope):
     pass
 
-
+@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.first

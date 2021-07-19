@@ -101,7 +101,7 @@ def set_up_telescope(subarray_obsstate : str):
         raise ValueError(msg.format(subarray_obsstate))
         
     def abort_subarray():
-        @sync_abort(200)
+        @sync_abort(500)
         def abort():
             LOGGER.info("Invoking ABORT command.")
             subarray.abort()

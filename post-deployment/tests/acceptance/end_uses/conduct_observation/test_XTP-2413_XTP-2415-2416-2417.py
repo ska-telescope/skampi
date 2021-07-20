@@ -7,18 +7,19 @@ test_XTP-2413
 Tests for creating SBI (XTP-2415), allocating resources from LOW SBI (XTP-2416)
 and observing LOW SBI (XTP-2417)
 """
-import os
 import logging
+import os
+
 import pytest
 import requests
 from pytest_bdd import given, parsers, scenario, then, when
+from ska.scripting.domain import SubArray
+
 from resources.test_support.controls_low import (set_telescope_to_running,
                                                  set_telescope_to_standby,
                                                  telescope_is_in_standby)
-
 from resources.test_support.helpers_low import resource, wait_before_test
-from resources.test_support.oet_helpers import ScriptExecutor, Poller, Subarray
-from ska.scripting.domain import SubArray
+from resources.test_support.oet_helpers import ScriptExecutor, ObsStateRecorder
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant
@@ -99,8 +100,6 @@ def test_resource_allocation():
 @pytest.mark.oetlow
 @pytest.mark.skalow
 @pytest.mark.quarantine
-@pytest.mark.xfail(reason="State transitions are too quick for the OET obsState poller to catch. "
-                          "Should be resolved once pub/sub is implemented for state tracking.")
 @scenario("XTP-2413.feature", "Observing a Scheduling Block")
 def test_observing_sbi():
     """
@@ -225,10 +224,10 @@ def observe_sbi(sb_json, script, result):
         script (str): file path to an observing script
         result (dict): fixture used to track progress
     """
-    subarray = Subarray(result[SUBARRAY_USED])
-    poller = Poller(subarray)
-    poller.start_polling()
-    result[STATE_CHECK] = poller
+    subarray_url = result[SUBARRAY_USED]
+    recorder = ObsStateRecorder(subarray_url)
+    recorder.start_recording()
+    result[STATE_CHECK] = recorder
 
     script_completion_state = EXECUTOR.execute_script(
         script,
@@ -250,7 +249,9 @@ def check_transitions(expected_states, result):
         result (dict): fixture used to track progress
     """
     expected_states = [x.strip() for x in expected_states.split(',')]
-    assert result[STATE_CHECK].state_transitions_match(expected_states)
+    recorder: ObsStateRecorder = result[STATE_CHECK]
+    recorder.stop_recording()
+    recorder.state_transitions_match(expected_states)
 
 
 @then('the script completes successfully')

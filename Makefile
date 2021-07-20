@@ -46,11 +46,11 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.minikube=$(MINIKUBE) \
 	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
-	--set ska-archiver.hostname=$(ARCHIVER_HOST) \
+	--set ska-archiver.hostname=$(ARCHIVER_HOST_NAME) \
 	--set ska-archiver.dbname=$(ARCHIVER_DBNAME) \
 	--set ska-archiver.port=$(ARCHIVER_PORT) \
-	--set ska-archiver.dbuser=$(ARCHIVER_DBUSER) \
-	--set ska-archiver.dbpassword=$(ARCHIVER_DBPASSWORD) \
+	--set ska-archiver.dbuser=$(ARCHIVER_DB_USER) \
+	--set ska-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
 	--values gitlab_values.yaml \
 	$(PSI_LOW_SDP_PROXY_VARS)
 
@@ -150,7 +150,7 @@ uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
-	if [ "" == "$(HELM_REPO_NAME)" ]; then \
+	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
 		echo "Installing Helm charts from current ref of git repository..."; \
 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
 	else \
@@ -158,8 +158,8 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		helm repo add $(HELM_REPO_NAME) $(HELM_HOST)/repository/helm-chart; \
 		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
 		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
-	fi; \
-	helm upgrade $(HELM_RELEASE) --install \
+	fi
+	helm upgrade $(HELM_RELEASE) --install --wait \
 		$(CHART_PARAMS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);

@@ -80,7 +80,6 @@ def test_sbi_creation():
     When I tell the OET to run file:///app/scripts/create_sbi.py using scripts/data/example_low_sb.json
     Then the script completes successfully
     """
-    pass
 
 
 @pytest.mark.oetlow

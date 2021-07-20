@@ -67,7 +67,7 @@ def end(result):
         raise Exception("Unable to tear down test setup")
     set_telescope_to_standby()
 
-
+@pytest.mark.xfail
 @pytest.mark.oetmid
 @pytest.mark.quarantine
 @pytest.mark.skamid
@@ -104,7 +104,7 @@ def set_subarray_to_aborted(result):
 
     LOGGER.info("Sub-array has been set to ABORTED")
 
-
+@pytest.mark.xfail
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.skip(reason="Partial Fault scenario is not yet handled in MVP")
@@ -183,7 +183,7 @@ def check_final_subarray_state(obsstate, result):
 
     LOGGER.info("Sub-array is in ObsState %s", obsstate)
 
-
+@pytest.mark.xfail
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -197,7 +197,7 @@ def test_stop_script_and_abort_subarray():
     And the sub-array goes to ObsState ABORTED
     """
 
-
+@pytest.mark.xfail
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine

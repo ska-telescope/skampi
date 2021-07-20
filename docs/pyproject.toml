@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "SKAMPI Documentation"
+version = "0.1.0"
+description = ""
+authors = ["Adriaan de Beer <adebeer42@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+docutils = "^0.14"
+imagesize = "^1.2.0"
+Pygments = "^2.9.0"
+sphinxcontrib-websupport = "^1.2.4"
+sphinx_rtd_theme = "^0.2.4"
+sphinx-notfound-page = "^0.7.1"
+Jinja2 = "^3.0.1"
+MarkupSafe = "^2.0.1"
+Sphinx = "^4.0.2"
+sphinx-autobuild = "^2021.3.14"
+sphinx-copybutton = "^0.3.3"
+sphinx-gitstamp = "^0.3.1"
+recommonmark = "^0.7.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

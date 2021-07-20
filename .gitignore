@@ -60,6 +60,7 @@ docs/src/_build/
 post-deployment/venv
 .vscode/settings.json
 gilab_values.yaml
+gitlab_values.yaml
 .devcontainer/
 KUBECONFIG
 /venv/

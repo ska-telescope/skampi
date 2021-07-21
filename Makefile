@@ -38,10 +38,10 @@ CI_ENVIRONMENT_SLUG?=skampi##The simplified version of the environment name, sui
 $(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gitlab_values.yaml)
 
 CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
-	--set oet-scripts.ingress.nginx=$(USE_NGINX) \
+	--set ska-oso-scripting.ingress.nginx=$(USE_NGINX) \
 	--set skuid.ingress.nginx=$(USE_NGINX) \
-	--set tango-base.ingress.nginx=$(USE_NGINX) \
-	--set webjive.ingress.nginx=$(USE_NGINX) \
+	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
+	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
 	--set global.minikube=$(MINIKUBE) \
 	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
@@ -66,6 +66,7 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets that EDA deployment
 -include .make/archiver.mk
 
+# include private variables for custom deployment configuration
 -include PrivateRules.mak
 
 vars: ## Display variables

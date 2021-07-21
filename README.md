@@ -10,8 +10,7 @@ If you're developing (or planning to develop or contribute to) a component or su
 ### SKA Tango Examples
 If your component or product is ready for integration, skip the following sections and go to [Development](#development).
 
-A basic understanding of the [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/) repository is required before attempting to integrate a component on SKAMPI. Please visit the repository and base your development on the examples given there. More info on this in the [Documentation](https://developer.skao.int/projects/skampi/en/latest/helm.html).
-)
+A basic understanding of the [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/) repository is required before attempting to integrate a component on SKAMPI. Please clone the repository and base your development on the examples given there. Pay particular attention to how deployment and partial integration is demonstrated using Helm. It will be helpful to follow the SKAMPI [Documentation on Helm](https://developer.skao.int/projects/skampi/en/latest/helm.html) while you are doing this. There are also links to the documentation on Container Orchestration which you should also follow.
 
 ### Kubernetes and Kubectl
 

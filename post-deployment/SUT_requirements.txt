@@ -1,2 +1,2 @@
-oet-scripts==1.5.0
---extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple
+ska-oso-scripting==1.7.0
+--extra-index-url https://artefact.skao.int/repository/pypi-internal

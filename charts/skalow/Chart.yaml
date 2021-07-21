@@ -23,7 +23,7 @@ dependencies:
   version: 0.8.2
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: webjive
-  version: 1.0.21
+  version: 1.0.24
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
 - name: skuid
   version: 0.1.0

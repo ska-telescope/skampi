@@ -1,2 +1,2 @@
 ska-oso-scripting==1.7.0
---extra-index-url https://artefact.skao.int/repository/pypi-internal
+--extra-index-url https://artefact.skao.int/repository/pypi-internal/simple

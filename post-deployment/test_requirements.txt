@@ -20,7 +20,7 @@ pytest-asyncio
 aiohttp_cors
 flake8
 tango-simlib>=0.9.0
-lmcbaseclasses
+ska-tango-base
 ska-log-transactions
 tabulate
 skallop==1.0.1-dev

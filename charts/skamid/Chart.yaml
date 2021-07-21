@@ -13,7 +13,7 @@ dependencies:
   version: 0.2.14
   repository: https://artefact.skao.int/repository/helm-internal
 - name: ska-mid-cbf # CIPA team
-  version: 0.2.2
+  version: 0.2.3
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-mid-cbf.enabled
 - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
@@ -25,7 +25,7 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
 - name: ska-tmc-mid
-  version: 0.3.9
+  version: 0.4.0
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-tmc-mid.enabled
 - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
@@ -33,7 +33,7 @@ dependencies:
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-oso-scripting
 - name: ska-webjive
-  version: 1.0.23
+  version: 1.0.24
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-webjive.enabled
 - name: ska-ser-skuid

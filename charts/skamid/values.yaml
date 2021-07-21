@@ -31,7 +31,7 @@ landingpage:
   enabled: true
   MVPInstance: ska-skampi-mid
 
-skuid:
+ska-ser-skuid:
   enabled: true
   skuid:
     use_pv: false
@@ -49,7 +49,7 @@ ska-tango-base:
   tangodb:
     use_pv: false
 
-webjive:
+ska-webjive:
   enabled: true
   minikube: false
   ingress:

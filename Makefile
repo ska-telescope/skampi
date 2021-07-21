@@ -37,9 +37,9 @@ CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that
 CI_ENVIRONMENT_SLUG?=skampi##The simplified version of the environment name, suitable for inclusion in DNS, URLs, Kubernetes labels, and so on. Available if environment:name is set.
 $(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gitlab_values.yaml)
 
-CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
+CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-oso-scripting.ingress.nginx=$(USE_NGINX) \
-	--set skuid.ingress.nginx=$(USE_NGINX) \
+	--set ska-ser-skuid.ingress.nginx=$(USE_NGINX) \
 	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
 	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
 	--set global.minikube=$(MINIKUBE) \

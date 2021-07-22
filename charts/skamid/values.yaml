@@ -91,7 +91,7 @@ ska-csp-lmc-mid:
   enabled: true
 
 ## sdp
-sdp:
+ska-sdp:
   enabled: true
   lmc:
     prefix: mid

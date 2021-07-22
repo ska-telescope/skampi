@@ -70,7 +70,7 @@ non_default_states_to_check = {
 def fixture():
     return {}
 
-
+@pytest.mark.trial
 @pytest.mark.ncra
 @pytest.mark.select
 @pytest.mark.skamid

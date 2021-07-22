@@ -3,7 +3,7 @@ xauthority: "~/.Xauthority"
 minikube: true
 
 global:
-  retry: 
+  retry:
   - "--sleep=1"
   - "--tries=100"
   sub-system:
@@ -104,7 +104,7 @@ oet-scripts:
     featureFlags:
       readViaPubSub: true
 
-sdp:
+ska-sdp:
   enabled: true
   lmc:
     prefix: low

@@ -28,10 +28,6 @@ dependencies:
   version: 0.4.1
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-tmc-mid.enabled
-- name: oet-scripts
-  version: 0.4.1
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: oet-scripts.enabled
 - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
   version: 0.4.1
   repository: https://artefact.skao.int/repository/helm-internal

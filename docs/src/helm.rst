@@ -18,8 +18,8 @@ All the charts are included in the folder "charts". Every chart has the followin
    apiVersion: v1
    appVersion: "1.0"
    description: A Helm chart for deploying the Tango-Base on Kubernetes
-   name: tango-base
-   version: 0.1.0
+   name: ska-tango-base
+   version: 0.2.23
 
 .. code-block:: console
 
@@ -27,7 +27,7 @@ All the charts are included in the folder "charts". Every chart has the followin
    tmcprototype:
     enabled: true
     image:
-       registry: nexus.engageska-portugal.pt/tango-example
+       registry: artefact.skao.int
        image: tmcprototype
        tag: latest
        pullPolicy: Always

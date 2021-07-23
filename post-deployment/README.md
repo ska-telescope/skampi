@@ -29,7 +29,7 @@ The host path storage is basically a means of working inside the testing pods (e
 In the git repository, cloned on your kubernetes enabled machine, navigate to the root directory:
 
 ```bash
-cd ~/skampi/
+cd ~/ska-skampi/
 ```
 
 To deploy the acceptance tester in interactive mode run:

@@ -12,16 +12,16 @@ dependencies:
 - name: tango-util
   version: 0.2.13
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: mid-cbf
-  version: 0.1.1
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: mid-cbf.enabled
-- name: mid-csp
-  version: 0.1.5
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: mid-csp.enabled
+- name: ska-mid-cbf
+  version: 0.2.2
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-mid-cbf.enabled,ska-tango-base.enabled
+- name: ska-csp-lmc-mid
+  version: 0.1.9
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-csp-lmc-mid.enabled,ska-tango-base.enabled
 - name: sdp
-  version: 0.4.0
+  version: 0.6.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
 - name: ska-tmc-mid

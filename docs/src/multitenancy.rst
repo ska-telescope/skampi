@@ -61,9 +61,9 @@ Next check the logs on Gitlab for that job. You'll see a ``curl`` in the job out
  Example:
  
  You can get the kubeconfig file from the url: 
- "https://nexus.engageska-portugal.pt/repository/k8s-ci-creds/ci-skampi-st-559-publish-credentials-low" 
+ "https://artefact.skao.int/repository/k8s-ci-creds-internal/ci-skampi-st-559-publish-credentials-low" 
  with the following command into your current directory in a file called KUBECONFIG:
-	curl https://nexus.engageska-portugal.pt/repository/k8s-ci-creds/ci-skampi-st-559-publish-credentials-low --output KUBECONFIG
+	curl https://artefact.skao.int/repository/k8s-ci-creds-internal/ci-skampi-st-559-publish-credentials-low --output KUBECONFIG
 
 Once this file is copied to your local machine, and the adequate enviroment variables are set you should be able to access the namespace within the kubernetes cluster. 
 

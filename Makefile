@@ -44,7 +44,7 @@ CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
 	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
 	--set global.minikube=$(MINIKUBE) \
-	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 	--set ska-archiver.hostname=$(ARCHIVER_HOST_NAME) \
 	--set ska-archiver.dbname=$(ARCHIVER_DBNAME) \

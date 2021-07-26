@@ -55,7 +55,7 @@ You can enter the branch name, and then click on the image of the pipeline for t
 
 Now, you need to click on a Play button to deploy the telescope configuration you want. Click on the play next to the `low_on_demand` job to deploy the Low telescope:
 
-![low_on_demand](docs/src/_static/img/low_on_demand.png)
+![low_on_demand](docs/src/_static/img/hit_play.png)
 
 ### Minikube
 For a local installation of a Minikube cluster, we recommend you use the SKA Deploy Minikube repository.

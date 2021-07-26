@@ -46,6 +46,7 @@ You can now create your Merge Request by following the link that is provided by 
 We recommend creating a Merge Request and marking it Draft as soon as possible. Stale branches will be removed eventually.
 
 If you know your way around Gitlab, find the pipeline that just executed on your branch. If not, go to the [Pipelines](https://gitlab.com/ska-telescope/ska-skampi/-/pipelines) page and click in the Filter pipelines box:
+
 ![https://gitlab.com/ska-telescope/ska-skampi/-/pipelines](docs/src/_static/img/pipelines.png)
 
 If you just navigated to your branch, you should click on 

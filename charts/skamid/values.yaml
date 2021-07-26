@@ -39,7 +39,7 @@ ska-ser-skuid:
       generator_id: mvp01
 
 ska-tango-base:
-  enabled: true
+  enabled: false
   vnc:
     replicas: 1
     enabled: true
@@ -85,10 +85,16 @@ ska-oso-scripting.enabled:
 ## mid-cbf
 ska-mid-cbf:
   enabled: true
+  ska-tango-base:
+    enabled: false
+
 
 ## mid-csp
 ska-csp-lmc-mid:
   enabled: true
+  ska-tango-base:
+    enabled: false
+
 
 ## sdp
 ska-sdp:
@@ -96,12 +102,14 @@ ska-sdp:
   lmc:
     prefix: mid
     nsubarray: 3
-  tango-base:
+  ska-tango-base:
     enabled: false
 
 ## tm
 ska-tmc-mid:
   enabled: true
+  ska-tango-base:
+    enabled: false
 
 ska-archiver:
   enabled: false

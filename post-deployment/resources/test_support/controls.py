@@ -3,7 +3,7 @@ import pytest
 from datetime import date,datetime
 import os
 import logging
-from tango import DeviceProxy
+
 ##SUT imports
 from ska.scripting.domain import Telescope, SubArray
 from ska.cdm.schemas import CODEC as cdm_CODEC

@@ -1,5 +1,5 @@
 apiVersion: v2
-name: ska-skampi-mid
+name: mvp-mid
 description: A Helm chart for Kubernetes MVP Mid
 type: application
 version: 0.7.0
@@ -9,37 +9,34 @@ dependencies:
 - name: ska-tango-base
   version: 0.2.23
   repository: https://artefact.skao.int/repository/helm-internal
-- name: ska-tango-util
-  version: 0.2.14
+- name: ska-mid-cbf
+  version: 0.2.2
+  condition: ska-mid-cbf.enabled,ska-tango-base.enabled
   repository: https://artefact.skao.int/repository/helm-internal
-- name: ska-mid-cbf # CIPA team
-  version: 0.2.3
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-mid-cbf.enabled
-- name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
+- name: ska-csp-lmc-mid
   version: 0.1.9
+  condition: ska-csp-lmc-mid.enabled,ska-tango-base.enabled
   repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-csp-lmc-mid.enabled
-- name: ska-sdp
-  version: 0.7.0
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-sdp.enabled
+- name: sdp
+  version: 0.6.1
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: sdp.enabled
 - name: ska-tmc-mid
   version: 0.4.1
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-tmc-mid.enabled
-- name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
+- name: oet-scripts
   version: 0.4.1
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-oso-scripting
-- name: ska-webjive
-  version: 1.0.24
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-webjive.enabled
-- name: ska-ser-skuid
-  version: 0.2.1
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-ser-skuid.enabled
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: oet-scripts.enabled
+- name: webjive
+  version: 1.0.21
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: webjive.enabled
+- name: skuid
+  version: 0.2.0
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: skuid.enabled
 - name: landingpage
   version: 0.1.0
   repository: file://../landingpage
@@ -48,7 +45,7 @@ dependencies:
   version: 0.1.8
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-archiver.enabled
-## DISH LMC Prototype was disabled in the old version of skampi
+## it was disabled in the old version of skampi
 # - name: dsh-lmc-prototype
 #   version: 0.0.1
 #   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

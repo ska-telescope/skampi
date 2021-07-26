@@ -1,16 +1,15 @@
 import enum
 import logging
-from os import environ
+import threading
 import time
-from multiprocessing import Process, Manager, Queue
-
-#SUT
-from ska.cdm.schemas import CODEC as cdm_CODEC
-from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
-from ska.scripting.domain import Telescope, SubArray, ResourceAllocation, Dish
+from os import environ
 
 from oet.procedure.application.restclient import RestClientUI
-from resources.test_support.helpers import resource
+from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
+from ska.cdm.schemas import CODEC as cdm_CODEC
+from ska.scripting.domain import SubArray
+from tango import DeviceProxy, EventType
+
 from resources.test_support.persistance_helping import update_resource_config_file
 
 # OET task completion can occur before TMC has completed its activity - so allow time for the
@@ -32,28 +31,6 @@ def oet_compose_sub():
     subarray = SubArray(1)
     LOGGER.info("Allocated Subarray is :" + str(subarray))
     return subarray.allocate_from_cdm(cdm_request_object)
-
-
-class Subarray:
-
-    resource = None
-
-    def __init__(self, device):
-        self.resource = resource(device)
-
-    def get_obsstate(self):
-        return self.resource.get('obsState')
-
-    def get_state(self):
-        return self.resource.get('State')
-
-    def state_is(self, state):
-        current_state = self.get_state()
-        return current_state == state
-
-    def obsstate_is(self, state):
-        current_state = self.get_obsstate()
-        return current_state == state
 
 
 class ObsState(enum.Enum):
@@ -80,64 +57,124 @@ class ObsState(enum.Enum):
         return str(self.name)
 
 
-class Poller:
-    proc = None
-    device = None
-    exit_q = None
-    results = []
+class ObsStateRecorder:
+    """
+    ObsStateRecorder is an OET test helper that helps compare SubArrayNode
+    obsState transitions to those expected to occur when a script is run.
 
-    def __init__(self, device):
-        self.device = device
+    This class subscribes to SubArrayNode change events, making a memo of each
+    obsState transition that occurs between when state recording starts and
+    when state recording stops. This list of recorded obsStates is compared to
+    the expected list of obsStates in state_transitions_match. A successful
+    test occurs when the expected obsState transitions matches the observed
+    obsState transitions, otherwise the test is considered failed.
 
-    def start_polling(self):
-        manager = Manager()
-        self.exit_q = Queue()
-        self.results = manager.list()
-        self.proc = Process(target=self.track_obsstates,
-                            args=(self.device, self.results, self.exit_q))
-        self.proc.start()
+    ObsStateRecorders are intended to be activated once and cannot be reused
+    to record multiple streams of obsState transitions. A RuntimeError will be
+    raised if an attempt is made to resume obsState recording.
+    """
 
-    def stop_polling(self):
-        if self.proc is not None:
-            self.exit_q.put(True)
-            self.proc.join()
-
-    def get_results(self):
-        return self.results
-
-    def track_obsstates(self, device, recorded_states, exit_q):
-        LOGGER.info("STATE MONITORING: Started Tracking")
-        while exit_q.empty():
-            current_state = device.get_obsstate()
-            if len(recorded_states) == 0 or current_state != recorded_states[-1]:
-                LOGGER.info(
-                    "STATE MONITORING: State has changed to %s", current_state)
-                recorded_states.append(current_state)
-
-    def state_transitions_match(self, expected_states):
-        """Check that the device passed through the expected
-            obsState transitions. This has been being monitored
-            on a separate thread in the background.
-
-            The method deliberately pauses at the start to allow TMC time
-            to complete any operation still in progress.
+    def __init__(self, device_url: str):
         """
+        Create a new ObsStateRecorder tracking the referenced SubArrayNode.
+
+        :param device_url: Tango FQDN of SubArrayNode to monitor
+        """
+        # event that is set when recording should start
+        self._recording_enabled = threading.Event()
+        # shared queue onto which obsState transitions are added
+        self.results = []
+
+        # connect to the target device and subscribe to obsState change events
+        self.dp = DeviceProxy(device_url)
+        self.subscription_id = self.dp.subscribe_event(
+            'obsState',
+            EventType.CHANGE_EVENT,
+            self._cb
+        )
+
+    def start_recording(self):
+        """
+        Start recording obsState transitions.
+
+        This method can be called exactly once. Calling this method after
+        stop_recording has been called will raise a RuntimeError.
+
+        :raises RuntimeError: if the caller attempts to resume recording
+        """
+        if self.subscription_id is None:
+            raise RuntimeError(
+                'Cannot restart obsState recording on a stopped ObsStateRecorder'
+            )
+
+        # the subscription is already established, so just set the event to
+        # start recording obstates
+        self._recording_enabled.set()
+        LOGGER.info("STATE MONITORING: Started tracking")
+
+    def stop_recording(self):
+        """
+        Stop recording obsState change events, unsubscribing the active callback.
+        """
+        self._recording_enabled.clear()
+        LOGGER.info("STATE MONITORING: Stopped tracking")
+
+        # unsubscribe and delete subscription ID to prevent this instance from
+        # being reused
+        self.dp.unsubscribe_event(self.subscription_id)
+        self.subscription_id = None
+
+    def _cb(self, event):
+        """
+        Function called by pytango when obsState change event is received
+        """
+        # discard any events received while recording is disabled
+        if not self._recording_enabled:
+            return
+
+        # obsstate Enum returned as a numeric ID which we need to translate to name
+        enum_id = event.attr_value.value
+        enum_name = ObsState(enum_id).name
+
+        LOGGER.info(
+            f"STATE MONITORING: State changed: {enum_name}"
+        )
+        self.results.append(enum_name)
+
+    def state_transitions_match(self, expected_states) -> bool:
+        """
+        Check that the device passed through the expected
+        obsState transitions. This has been being monitored
+        on a separate process in the background.
+
+        The method deliberately pauses at the start to allow TMC time
+        to complete any operation still in progress.
+
+        stop_recording must be called before calling this method.
+
+        :raises RuntimeError: if called while still recording
+        """
+        if self._recording_enabled.is_set():
+            raise RuntimeError('Cannot compare states while still recording')
         time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
 
-        self.stop_polling()
-        LOGGER.info("STATE MONITORING: Stopped Tracking")
-        recorded_states = list(self.get_results())
+        recorded_states = self.results
 
         # ignore 'READY' as it can be a transitory state so we don't rely
         # on it being present in the list to be matched
         recorded_states = [i for i in recorded_states if i != 'READY']
 
+        n_expected = len(expected_states)
+        n_recorded = len(recorded_states)
+
         LOGGER.info("STATE MONITORING: Comparing the list of states observed with the expected states")
         LOGGER.debug("STATE MONITORING: Expected states: %s", ','.join(expected_states))
         LOGGER.debug("STATE MONITORING: Recorded states: %s", ','.join(recorded_states))
-        if len(expected_states) != len(recorded_states):
-            LOGGER.warning("STATE MONITORING: Expected %d states but recorded %d states",
-                           len(expected_states), len(recorded_states))
+
+        if n_expected != n_recorded:
+            LOGGER.warning(
+                f"STATE MONITORING: Expected {n_expected} states, got {n_recorded}"
+            )
             return False
 
         if expected_states != recorded_states:
@@ -149,7 +186,6 @@ class Poller:
 
 
 class Task:
-
     def __init__(self, task_id, script, creation_time, state):
         self.task_id = task_id
         self.script = script

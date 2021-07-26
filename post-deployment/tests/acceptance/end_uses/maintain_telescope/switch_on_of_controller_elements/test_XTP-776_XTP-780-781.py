@@ -7,13 +7,15 @@ test_XTP-780-781
 Telescope startup and standby using OET scripts
 """
 import logging
+
 import pytest
 from pytest_bdd import given, parsers, scenario, then, when
+
 from resources.test_support.controls import (set_telescope_to_running,
                                              set_telescope_to_standby,
                                              telescope_is_in_standby)
-
-from resources.test_support.oet_helpers import ScriptExecutor, resource
+from resources.test_support.helpers import resource
+from resources.test_support.oet_helpers import ScriptExecutor
 
 # used as labels within the oet_result fixture
 # this should be refactored at some point to something more elegant

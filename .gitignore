@@ -1,3 +1,5 @@
+gitlab_values.yaml
+/ska-cicd-deploy-minikube/
 docs/venv
 /.vagrant
 /.vscode

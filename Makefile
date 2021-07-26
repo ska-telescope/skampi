@@ -216,3 +216,9 @@ get_pods: ##lists the pods deployed for a particular namespace. @param: KUBE_NAM
 
 get_versions: ## lists the container images used for particular pods
 	kubectl get pods -l release=$(HELM_RELEASE) -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{range .spec.containers[*]}{.name}{'\t'}{.image}{'\n\n'}{end}{'\n'}{end}{'\n'}"
+
+links: ## attempt to create the URLs with which to access
+	@echo "############################################################################"
+	@echo "#            Access the landing page here:"
+	@echo "#            https://$(INGRESS_HOST)/$(KUBE_NAMESPACE)/start/"
+	@echo "############################################################################"

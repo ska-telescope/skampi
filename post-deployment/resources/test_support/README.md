@@ -28,7 +28,7 @@ The git storage allows the skampi repository to be mounted as a volume onto the 
 In the git repository, cloned on your kubernetes enabled machine, navigate to the root directory:
 
 ```bash
-cd ~/skampi/test-harness/tests/acceptance_tests/
+cd ~/ska-skampi/test-harness/tests/acceptance_tests/
 ```
 
 To deploy the acceptance tester in interactive mode run:

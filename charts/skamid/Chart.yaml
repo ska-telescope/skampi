@@ -24,7 +24,7 @@ dependencies:
 - name: ska-tmc-mid
   version: 0.4.1
   repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-tmc-mid.enabled
+  condition: ska-tmc-mid.enabled, ska-tango-base.enabled
 - name: oet-scripts
   version: 0.4.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

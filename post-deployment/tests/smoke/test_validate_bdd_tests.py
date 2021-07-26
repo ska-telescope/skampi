@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
-from ska-ser-skallop.scripts.bdd_helper_scripts.xtp_compare import (
+from ska_ser_skallop.scripts.bdd_helper_scripts.xtp_compare import (
     check_local_file,
     parse_local_feature_files,
 )

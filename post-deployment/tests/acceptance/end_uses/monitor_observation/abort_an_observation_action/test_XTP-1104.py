@@ -15,7 +15,7 @@ from concurrent import futures
 
 # SUT
 from ska.scripting.domain import Telescope, SubArray
-from ska-ser-skallop.bdd_test_data_manager.data_manager import download_test_data
+from ska_ser_skallop.bdd_test_data_manager.data_manager import download_test_data
 
 # SUT infrastructure
 from tango import DeviceProxy, DevState

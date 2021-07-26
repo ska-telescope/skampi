@@ -3,13 +3,13 @@ import pytest
 from types import SimpleNamespace
 import logging
 
-from ska-ser-skallop.event_handling import builders
-from ska-ser-skallop.event_handling.occurences import Occurrences
-from ska-ser-skallop.subscribing.base import MessageBoardBase
-from ska-ser-skallop.mvp_control.describing import mvp_names
-from ska-ser-skallop.mvp_fixtures.context_management import TelescopeContext
-from ska-ser-skallop.mvp_control.entry_points.base import EntryPoint
-from ska-ser-skallop.mvp_control.event_waiting import wait
+from ska_ser_skallop.event_handling import builders
+from ska_ser_skallop.event_handling.occurences import Occurrences
+from ska_ser_skallop.subscribing.base import MessageBoardBase
+from ska_ser_skallop.mvp_control.describing import mvp_names
+from ska_ser_skallop.mvp_fixtures.context_management import TelescopeContext
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_control.event_waiting import wait
 
 logger = logging.getLogger(__name__)
 

@@ -16,7 +16,7 @@ from pytest_bdd import (
     when,
 )
 
-from ska.log_transactions import transaction
+from ska_ser_log_transactions import transaction
 
 # Configure SKA logging immediately when tests start
 ska_ser_logging.configure_logging()

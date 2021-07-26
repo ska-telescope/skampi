@@ -12,7 +12,6 @@ from datetime import date,datetime
 from random import choice
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-from  time  import sleep
 import logging
 import os
 import json

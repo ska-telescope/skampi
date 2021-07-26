@@ -9,7 +9,6 @@ Acceptance tests for MVP.
 import sys, os
 import pytest
 import logging
-from time import sleep
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 

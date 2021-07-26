@@ -1,9 +1,8 @@
 .PHONY: check-archiver-dbname get-service configure-archiver archiver_k8s_test download
 
-HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
-ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archiver attribute configure json file for MVP-mid to work with
+ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archiver attribute configure json file for ska-skampi-mid to work with
 
 # Checks if the Database name is provided by user while deploying the archiver and notifies the user
 check-archiver-dbname:
@@ -35,7 +34,7 @@ configure-archiver:  get-service ##configure attributes to archive
 		kubectl run $(CONFIGURE_ARCHIVER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
-		--image="nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0.3" -- \
+		--image="artefact.skao.int/ska-tango-images-tango-dsconfig:1.5.1" -- \
 		/bin/bash -c "sudo tar xv && \
 		sudo curl --retry 4 --retry-delay 1 https://gitlab.com/ska-telescope/ska-archiver/-/raw/master/charts/ska-archiver/data/configure_hdbpp.py -o /resources/archiver/configure_hdbpp.py && \
 		cd /resources/archiver && \

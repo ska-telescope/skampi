@@ -5,8 +5,8 @@ import time
 from os import environ
 
 from oet.procedure.application.restclient import RestClientUI
-from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
-from ska.cdm.schemas import CODEC as cdm_CODEC
+from ska_tmc_cdm.messages.central_node.assign_resources import AssignResourcesRequest
+from ska_tmc_cdm.schemas import CODEC as cdm_CODEC
 from ska.scripting.domain import SubArray
 from tango import DeviceProxy, EventType
 

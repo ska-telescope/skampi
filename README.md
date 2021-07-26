@@ -49,7 +49,14 @@ If you know your way around Gitlab, find the pipeline that just executed on your
 
 ![https://gitlab.com/ska-telescope/ska-skampi/-/pipelines](docs/src/_static/img/pipelines.png)
 
-If you just navigated to your branch, you should click on 
+You can enter the branch name, and then click on the image of the pipeline for the top entry of the search results:
+
+![Pipeline filter](docs/src/_static/img/pipeline_nav.png)
+
+Now, you need to click on a Play button to deploy the telescope configuration you want. Click on the play next to the `low_on_demand` job to deploy the Low telescope:
+
+![low_on_demand](docs/src/_static/img/low_on_demand.png)
+
 ### Minikube
 For a local installation of a Minikube cluster, we recommend you use the SKA Deploy Minikube repository.
 #### Docker

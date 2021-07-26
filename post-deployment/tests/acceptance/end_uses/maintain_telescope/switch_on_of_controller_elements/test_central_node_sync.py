@@ -5,12 +5,12 @@ from contextlib import ExitStack, contextmanager
 
 import pytest
 
-from skallop.subscribing.base import CHANGE_EVENT
-from skallop.connectors.configuration import get_device_proxy
-from skallop.transactions.atomic import atomic
-from skallop.event_handling import builders
-from skallop.mvp_control.event_waiting import wait
-from skallop.mvp_fixtures.context_management import StackableContext
+from ska-ser-skallop.subscribing.base import CHANGE_EVENT
+from ska-ser-skallop.connectors.configuration import get_device_proxy
+from ska-ser-skallop.transactions.atomic import atomic
+from ska-ser-skallop.event_handling import builders
+from ska-ser-skallop.mvp_control.event_waiting import wait
+from ska-ser-skallop.mvp_fixtures.context_management import StackableContext
 
 logger = logging.getLogger(__name__)
 

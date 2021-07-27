@@ -61,7 +61,7 @@ class pilot():
         return self, sdp_block
 
 
-    def and_configure_scan_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/configure2.json'):
+    def and_configure_scan_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/example_configure.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A2-Test.py
         @sync_configure_oet
         @time_it(120)

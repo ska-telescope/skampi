@@ -124,7 +124,7 @@ def configure_again(result):
     LOGGER.info("Invoking second configure command on the Subarray.")
     time.sleep(5)
     result[SUBARRAY_USED].and_configure_scan_by_file(
-        result['sdp_block'],file='resources/test_data/OET_integration/configure2.json')
+        result['sdp_block'],file='resources/test_data/OET_integration/example_configure.json')
     LOGGER.info("Configuration for second time is completed on Subarray.")
     LOGGER.info("SDP_block for second configure command is " + str(result['sdp_block']))
 

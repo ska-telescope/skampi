@@ -56,6 +56,7 @@ non_default_states_to_check = {
     'mid_d0003/elt/master' : 'pointingState',
     'mid_d0004/elt/master' : 'pointingState'}
 
+@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.quarantine
 @pytest.mark.skamid

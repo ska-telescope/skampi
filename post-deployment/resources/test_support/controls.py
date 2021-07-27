@@ -88,7 +88,9 @@ class pilot():
     def and_release_all_resources(self):
         @sync_release_resources
         def de_allocate():
-            self.SubArray.deallocate()
+            CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
+            CentralNode.ReleaseResources('{"interface":"https://schema.skao.int/ska-tmc-releaseresources/2.0","transaction_id":"txn-....-00001","subarray_id":1,"release_all":true,"receptor_ids":[]}')
+            # self.SubArray.deallocate()
         de_allocate()
         self.state = "Empty"
         return self

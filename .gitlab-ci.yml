@@ -67,6 +67,8 @@ stages:
     reports:
       junit: build/report.xml
     when: always
+  after_script:
+  - make links
 
 .psi_test_template: &psi_test_definition
   script:
@@ -320,6 +322,8 @@ mid_on_demand_test:
   before_script:
     - *create_k8s_creds
   <<: *test_definition
+  # after_script:
+  #   - make links
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"

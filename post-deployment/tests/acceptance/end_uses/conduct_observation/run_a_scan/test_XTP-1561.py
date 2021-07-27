@@ -10,7 +10,7 @@ import tango
 
 from pytest_bdd import scenario, given, when, then
 from assertpy import assert_that
-from ska.skuid.client import SkuidClient
+from ska_ser_skuid.client import SkuidClient
 from ska.scripting.domain import SubArray
 from oet.command import RemoteScanIdGenerator
 from ska.scripting import observingtasks

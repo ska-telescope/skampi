@@ -77,7 +77,7 @@ def update_scan_config_file(file, sdp_block,disable_logging=False):
         data = json.load(f)
     if not disable_logging:
         LOGGER.info("________Configure string before update function _______" + str(file))
-    sdp_sbi_id = sdp_block['id']
+    sdp_sbi_id = sdp_block['eb_id']
     if not disable_logging:
         LOGGER.info("________Updated sdp_sbi_id from configure string _______" + str(sdp_sbi_id))
     data['csp']['common']['id'] = sdp_sbi_id + '-' + data['sdp']['scan_type']

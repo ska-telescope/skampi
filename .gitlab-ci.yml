@@ -100,8 +100,10 @@ stages:
 .xray_upload: &xray_upload
   after_script:
   - &xray_upload_scripts |
+    if [ -f build/cucumber.json ]; then
     pip3 install -U "ska-ser-skallop>=2.1.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
     /usr/local/bin/xtp-xray-upload -f build/cucumber.json -v
+    fi
 
 .tags_default: &tags_default
 - k8srunner

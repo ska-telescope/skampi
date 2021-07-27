@@ -182,7 +182,7 @@ def set_telescope_to_running(disable_waiting = False):
 
 def telescope_is_in_standby():
     the_waiter = waiter()
-    the_waiter.wait(3000)
+    the_waiter.wait(5000)
     LOGGER.info(
         'resource("ska_mid/tm_central/central_node").get("State")'
         + str(resource("ska_mid/tm_central/central_node").get("State"))

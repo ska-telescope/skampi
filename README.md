@@ -47,49 +47,15 @@ To gitlab.com:ska-telescope/ska-skampi.git
  * [new branch]        at-42 -> at-42
  ```
 
-You can now create your Merge Request by following the link that is provided by Git - in most terminals you can follow that link by Ctrl+Clicking on the link (Cmd+click on a Mac). Alternatively, you can just go to your branch: https://gitlab.com/ska-telescope/ska-skampi/-/tree/at-42. (note that your branch is named different from at-42)
+You can now create your Merge Request by following the link that is provided by Git - in most terminals you can follow that link by Ctrl+Clicking on the link (Cmd+click on a Mac). We recommend creating a Merge Request and marking it Draft as soon as possible. Stale branches will be removed eventually.
 
-We recommend creating a Merge Request and marking it Draft as soon as possible. Stale branches will be removed eventually.
-
-If you know your way around Gitlab, find the pipeline that just executed on your branch. If not, go to the [Pipelines](https://gitlab.com/ska-telescope/ska-skampi/-/pipelines) page and click in the Filter pipelines box:
-
-![https://gitlab.com/ska-telescope/ska-skampi/-/pipelines](docs/src/_static/img/pipelines.png)
-
-You can enter the branch name, and then click on the image of the pipeline for the top entry of the search results:
-
-![Pipeline filter](docs/src/_static/img/pipeline_nav.png)
-
-Now, you need to click on a Play button to deploy the telescope configuration you want. Click on the play next to the `low_on_demand` job to deploy the Low telescope:
-
-![low_on_demand](docs/src/_static/img/hit_play.png)
-
-After hitting play, you can click on the job name again to follow the output of the CI job while SKAMPI is deploying. Find the credentials by searching for "All done!" on the page. You'll find instructions just below it:
-
-~[All done!](docs/src/_static/img/all_done.png)
-
-Follow the instructions to download and use the KUBECONFIG file. This file is the key to accessing the namespace in the cluster where your branch has just been deployed.
-
-If you can find the words "Kubernetes resources dump" in the job output, it means that the SKAMPI deployment has finished and all the pods are running. You now can interact with the deployment, for instance by calling commands such as
-```
-kubectl --kubeconfig=KUBECONFIG get pods
-```
-to show all the deployed pods.
-
-You should set your KUBECONFIG file as the environment variable:
-```
-export KUBECONFIG=KUBECONFIG
-```
-which reduces the kubectl command above to simply
-```
-kubectl get pods
-```
+Follow the [Documentation on Multitenancy](https://developer.skao.int/projects/skampi/en/latest/multitenancy.html#retrieving-the-kubectl-file) for downloading and using the KUBECONFIG file. This file is your key to accessing the namespace in the cluster where your branch has just been deployed.
 
 ### VSCode Kubernetes
-There are multiple ways to access your cluster. With the Kubernetes plugin installed in VSCode, you can set your VSCode to access the namespaced deployment.
-
+There are multiple ways to access your cluster. With the Kubernetes plugin installed in VSCode, you can set your VSCode to access the namespaced deployment. Follow the above-mentioned documentation and set your cluster to the KUBECONFIG file provided.
 
 ### Minikube
-For a local installation of a Minikube cluster, we recommend you use the SKA Deploy Minikube repository.
+For a local installation of a Minikube cluster, we recommend you use the [SKA Deploy Minikube](https://gitlab.com/ska-telescope/sdi/ska-cicd-deploy-minikube) repository.
 #### Docker
 
 First install Docker - follow [these instructions](https://docs.docker.com/get-docker/)
@@ -105,9 +71,9 @@ eval $(minikube docker-env)
 
 *Please note that the command `eval $(minikube docker-env)` will point your local docker client at the docker-in-docker for minikube. Use this only for building the docker image and another shell for other work.*
 
-Once your minikube cluster is running, you can deploy SKAMPI using the make target. Check that your Minikube is running:
+Once your minikube cluster is running, you can deploy SKAMPI using the `make` commands (see below). First check that your Minikube is running:
 ```
-✗ minikube status
+$ minikube status
 minikube
 type: Control Plane
 host: Running
@@ -117,13 +83,12 @@ kubeconfig: Configured
 ```
 Now install SKAMPI (remember, all default values of variables will be used if none are set, or if no PrivateRules.mak is used for overrides):
 ```
-cd .. # this is to go back to the root of the SKAMPI repo after the above commands
-make install-or-upgrade
-make wait
-make links
+$ cd .. # this is to go back to the root of the SKAMPI repo after the above commands
+$ make install-or-upgrade
+$ make wait
+$ make links
 ```
 Once `make wait` finishes, you can run `make links` and follow the URL given to check if you can access the deployed software.
-
 
 ### Helm Charts
 Installation of Helm should be done as part of familiarising with SKA Tango Examples. This will also help you getting familiar with what a Helm Chart is.

@@ -244,19 +244,29 @@ def telescope_is_in_standby():
         'resource("mid_d0004/elt/master").get("State")'
         + str(resource("mid_d0004/elt/master").get("State"))
     )
+    #     return [
+    #        resource("ska_mid/tm_central/central_node").get("telescopeState"),
+    #        resource("ska_mid/tm_subarray_node/1").get("State"),
+    #        resource("mid_csp/elt/subarray_01").get("State"),
+    #        resource("mid_sdp/elt/subarray_1").get("State"),
+    #        resource("mid_csp/elt/master").get("State"),
+    #        resource("mid_sdp/elt/master").get("State"),
+    #        resource("mid_d0001/elt/master").get("State"),
+    #        resource("mid_d0002/elt/master").get("State"),
+    #        resource("mid_d0003/elt/master").get("State"),
+    #        resource("mid_d0004/elt/master").get("State")
+    #    ] == ["STANDBY", "ON", "OFF", "OFF", "STANDBY", ["OFF" or "STANDBY"], "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
     return [
-       resource("ska_mid/tm_central/central_node").get("telescopeState"),
-       resource("ska_mid/tm_subarray_node/1").get("State"),
-       resource("mid_csp/elt/subarray_01").get("State"),
-       resource("mid_sdp/elt/subarray_1").get("State"),
-       resource("mid_csp/elt/master").get("State"),
-       resource("mid_sdp/elt/master").get("State"),
-       resource("mid_d0001/elt/master").get("State"),
-       resource("mid_d0002/elt/master").get("State"),
-       resource("mid_d0003/elt/master").get("State"),
-       resource("mid_d0004/elt/master").get("State")
-   ] == ["STANDBY", "ON", "OFF", "OFF", "STANDBY", "STANDBY", "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
-
+        resource("ska_mid/tm_central/central_node").get("telescopeState"),
+        resource("ska_mid/tm_subarray_node/1").get("State"),
+        resource("mid_csp/elt/subarray_01").get("State"),
+        resource("mid_sdp/elt/subarray_1").get("State"),
+        resource("mid_csp/elt/master").get("State"),
+        resource("mid_d0001/elt/master").get("State"),
+        resource("mid_d0002/elt/master").get("State"),
+        resource("mid_d0003/elt/master").get("State"),
+        resource("mid_d0004/elt/master").get("State")
+    ] == ["STANDBY", "ON", "OFF", "OFF", "STANDBY", "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
 
 ## currently this function is not used in any testcase
 def run_a_config_test():

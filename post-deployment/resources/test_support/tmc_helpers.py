@@ -49,7 +49,7 @@ def end_sb():
 def release_resources():
     resource('ska_mid/tm_subarray_node/1').assert_attribute('obsState').equals('IDLE')
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
-    CentralNode.ReleaseResources('{"subarrayID":1,"releaseALL":true,"receptorIDList":[]}')
+    CentralNode.ReleaseResources('{"interface":"https://schema.skao.int/ska-tmc-releaseresources/2.0","transaction_id":"txn-....-00001","subarray_id":1,"release_all":true,"receptor_ids":[]}')
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
     LOGGER.info('After Release Resource SubarrayNode State and ObsState:' + str(SubarrayNode.State()) + str(SubarrayNode.ObsState))
     LOGGER.info('Invoked ReleaseResources on Subarray')

@@ -31,9 +31,9 @@ It is also very important to follow strict **RFC 1123 naming conventions** since
 ::
 
  remote: GitLab: Branch name does not follow the pattern '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
- To https://gitlab.com/ska-telescope/skampi.git
+ To https://gitlab.com/ska-telescope/ska-skampi.git
  ! [remote rejected]   AT-51_ test -> AT-51_ test (pre-receive hook declined)
- error: failed to push some refs to 'https://gitlab.com/ska-telescope/skampi.git'
+ error: failed to push some refs to 'https://gitlab.com/ska-telescope/ska-skampi.git'
 
 There are two issues with this branch name: upper case letters and the underscore character. The branch should be renamed *at-51-test*.
 

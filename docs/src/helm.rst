@@ -25,7 +25,7 @@ All the charts are included in the folder "charts". Every chart has the followin
    appVersion: "1.0"
    description: A Helm chart for deploying the Tango-Base on Kubernetes
    name: ska-tango-base
-   version: 0.1.0
+   version: 0.2.23
 
 .. code-block:: console
 
@@ -33,7 +33,7 @@ All the charts are included in the folder "charts". Every chart has the followin
    tmcprototype:
     enabled: true
     image:
-       registry: nexus.engageska-portugal.pt/tango-example
+       registry: artefact.skao.int
        image: tmcprototype
        tag: latest
        pullPolicy: Always
@@ -43,7 +43,7 @@ Update chart settings.
 ----------------------
 
 In some cases you may want to alter the settings applied in the chart.
-E.g To set the Elastic index lifetime management policy to keep logs for 2 days, update `values.yaml` to the following:
+E.g To set the webjive chart to have 3 replicas of tangogql, update `values.yaml` to the following:
 
 .. code-block:: console
 
@@ -60,6 +60,9 @@ E.g To set the Elastic index lifetime management policy to keep logs for 2 days,
       max_age: "2d" # Update here
       delete:
       min_age: "1d"
+   webjive:
+    tangogql:
+     replicas: 3
 
 More information available at |link_helm_docs|, and also at the |link_helm_glossary|. 
 
@@ -74,3 +77,4 @@ More information available at |link_helm_docs|, and also at the |link_helm_gloss
 .. |link_helm_glossary| raw:: html
 
    <a href="https://helm.sh/docs/">Helm Glossary</a>
+    

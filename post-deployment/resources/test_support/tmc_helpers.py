@@ -15,8 +15,8 @@ LOGGER = logging.getLogger(__name__)
 @sync_start_up_telescope
 def start_up():
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
-    LOGGER.info("Before Sending StartupTelescope command on CentralNode state :" + str(CentralNode.State()))   
-    CentralNode.StartUpTelescope()
+    LOGGER.info("Before Sending TelescopeOn command on CentralNode state :" + str(CentralNode.telescopeState))
+    CentralNode.TelescopeOn()
 
 @sync_assign_resources(2,300)
 def compose_sub():
@@ -58,10 +58,10 @@ def release_resources():
 @sync_set_to_standby
 def set_to_standby():
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
-    CentralNode.StandByTelescope()
+    CentralNode.TelescopeOff()
     SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
     LOGGER.info('After Standby SubarrayNode State and ObsState:' + str(SubarrayNode.State()) + str(SubarrayNode.ObsState))
-    LOGGER.info('After Standby CentralNode State:' + str(CentralNode.State()))
+    LOGGER.info('After Standby CentralNode State:' + str(CentralNode.telescopeState))
     LOGGER.info('Standby the Telescope')
 
 @sync_configure

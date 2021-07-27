@@ -55,6 +55,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
+# @pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.quarantine
 @pytest.mark.skamid
@@ -67,11 +68,11 @@ def test_configure_subarray():
 @given("I am accessing the console interface for the OET")
 def start_up():
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
-    assert(telescope_is_in_standby())
+    # assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    LOGGER.info("Telescope is in ON state")
+    LOGGER.info("Telescope is in ON telescopeState")
 
 
 @given("sub-array is in IDLE state")

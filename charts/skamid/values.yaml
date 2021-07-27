@@ -38,8 +38,8 @@ skuid:
     config:
       generator_id: mvp01
 
-tango-base:
-  enabled: true
+ska-tango-base:
+  enabled: false
   vnc:
     replicas: 1
     enabled: true
@@ -83,12 +83,15 @@ oet-scripts:
 
 #telescope control
 ## mid-cbf
-mid-cbf:
+ska-mid-cbf:
   enabled: true
+  ska-tango-base: 
+    enabled: false
 
-## mid-csp
-mid-csp:
+ska-csp-lmc-mid:
   enabled: true
+  ska-tango-base: 
+    enabled: false
 
 ## sdp
 sdp:
@@ -96,12 +99,15 @@ sdp:
   lmc:
     prefix: mid
     nsubarray: 3
-  tango-base:
+  ska-tango-base:
     enabled: false
 
 ## tm
-tmc-mid:
+ska-tmc-mid:
   enabled: true
+  ska-tango-base: 
+    enabled: false
+
 
 ska-archiver:
   dbname: default_mvp_archiver_db

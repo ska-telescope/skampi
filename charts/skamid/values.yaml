@@ -31,7 +31,7 @@ landingpage:
   enabled: true
   MVPInstance: ska-skampi-mid
 
-ska-ser-skuid:
+skuid:
   enabled: true
   skuid:
     use_pv: false

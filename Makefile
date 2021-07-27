@@ -39,7 +39,7 @@ $(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PA
 
 CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-oso-scripting.ingress.nginx=$(USE_NGINX) \
-	--set ska-ser-skuid.ingress.nginx=$(USE_NGINX) \
+	--set skuid.ingress.nginx=$(USE_NGINX) \
 	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
 	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
 	--set global.minikube=$(MINIKUBE) \

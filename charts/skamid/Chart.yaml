@@ -6,36 +6,36 @@ version: 0.7.0
 appVersion: 0.7.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
-- name: tango-base
-  version: 0.2.22
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: tango-util
-  version: 0.2.13
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: mid-cbf
-  version: 0.1.1
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: mid-cbf.enabled
-- name: mid-csp
-  version: 0.1.5
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: mid-csp.enabled
+- name: ska-tango-base
+  version: 0.2.23
+  repository: https://artefact.skao.int/repository/helm-internal
+- name: ska-tango-util
+  version: 0.2.14
+  repository: https://artefact.skao.int/repository/helm-internal
+- name: ska-mid-cbf
+  version: 0.2.2
+  condition: ska-mid-cbf.enabled,ska-tango-base.enabled
+  repository: https://artefact.skao.int/repository/helm-internal
+- name: ska-csp-lmc-mid
+  version: 0.1.9
+  condition: ska-csp-lmc-mid.enabled,ska-tango-base.enabled
+  repository: https://artefact.skao.int/repository/helm-internal
 - name: sdp
-  version: 0.4.0
+  version: 0.6.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: sdp.enabled
 - name: ska-tmc-mid
-  version: 0.3.9
+  version: 0.4.1
   repository: https://artefact.skao.int/repository/helm-internal
   condition: tmc-mid.enabled
-- name: oet-scripts
+- name: ska-oso-scripting
   version: 0.4.1
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: oet-scripts.enabled
-- name: webjive
-  version: 1.0.21
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: webjive.enabled
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-oso-scripting.enabled
+- name: ska-webjive
+  version: 1.0.24
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-webjive.enabled
 - name: skuid
   version: 0.2.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

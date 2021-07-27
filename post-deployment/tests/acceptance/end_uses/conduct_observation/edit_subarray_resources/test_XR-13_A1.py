@@ -67,7 +67,6 @@ def test_allocate_resources():
 @given("A running telescope for executing observations on a subarray")
 def set_to_running():
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
-    wait_before_test(timeout=10)
     assert telescope_is_in_standby()
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Invoking Startup Telescope command on the telescope.")

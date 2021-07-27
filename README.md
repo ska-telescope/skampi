@@ -125,7 +125,12 @@ make links
 Once `make wait` finishes, you can run `make links` and follow the URL given to check if you can access the deployed software.
 
 
-### Helm
+### Helm Charts
+Installation of Helm should be done as part of familiarising with SKA Tango Examples. This will also help you getting familiar with what a Helm Chart is.
+
+Helm Charts are basically a templating solution that enables a large project such as the SKA to configure a set of standard kubernetes resources using configuration parameters. A Chart is essentially a folder with a general structure, which can be packaged in a .tar.gz file and published to a Helm Repository, or used locally for deployment. 
+
+For an understanding of how Helm Charts are used in the SKAMPI project, please go to the section on [Templating the Application](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html#templating-the-application) under the [Container Orchestration Guidelines](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html) of the [Developer Portal](https://developer.skao.int/en/latest/).
 
 ## Development
 The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.

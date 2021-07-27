@@ -85,7 +85,7 @@ def set_to_ready():
 
 @given("duration of scan is 10 seconds")
 def scan_duration(fixture):
-    fixture['scans'] = '{"id":1}'
+    fixture['scans'] = '{"interface":"https://schema.skao.intg/ska-tmc-scan/2.0","transaction_id":"txn-....-00001","scan_id":1}'
     return fixture
 
 @when("I call the execution of the scan instruction")

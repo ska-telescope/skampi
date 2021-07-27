@@ -255,7 +255,7 @@ def telescope_is_in_standby():
     #        resource("mid_d0002/elt/master").get("State"),
     #        resource("mid_d0003/elt/master").get("State"),
     #        resource("mid_d0004/elt/master").get("State")
-    #    ] == ["STANDBY", "ON", "OFF", "OFF", "STANDBY", ["OFF" or "STANDBY"], "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
+    #    ] == ["STANDBY", "ON", "OFF", "OFF", "STANDBY", "STANDBY", "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
     return [
         resource("ska_mid/tm_central/central_node").get("telescopeState"),
         resource("ska_mid/tm_subarray_node/1").get("State"),

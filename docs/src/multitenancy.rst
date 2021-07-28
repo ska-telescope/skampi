@@ -31,9 +31,9 @@ It is also very important to follow strict **RFC 1123 naming conventions** since
 ::
 
  remote: GitLab: Branch name does not follow the pattern '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'
- To https://gitlab.com/ska-telescope/skampi.git
+ To https://gitlab.com/ska-telescope/ska-skampi.git
  ! [remote rejected]   AT-51_ test -> AT-51_ test (pre-receive hook declined)
- error: failed to push some refs to 'https://gitlab.com/ska-telescope/skampi.git'
+ error: failed to push some refs to 'https://gitlab.com/ska-telescope/ska-skampi.git'
 
 There are two issues with this branch name: upper case letters and the underscore character. The branch should be renamed *at-51-test*.
 
@@ -61,9 +61,9 @@ Next check the logs on Gitlab for that job. You'll see a ``curl`` in the job out
  Example:
  
  You can get the kubeconfig file from the url: 
- "https://nexus.engageska-portugal.pt/repository/k8s-ci-creds/ci-skampi-st-559-publish-credentials-low" 
+ "https://artefact.skao.int/repository/k8s-ci-creds-internal/ci-skampi-st-559-publish-credentials-low" 
  with the following command into your current directory in a file called KUBECONFIG:
-	curl https://nexus.engageska-portugal.pt/repository/k8s-ci-creds/ci-skampi-st-559-publish-credentials-low --output KUBECONFIG
+	curl https://artefact.skao.int/repository/k8s-ci-creds-internal/ci-skampi-st-559-publish-credentials-low --output KUBECONFIG
 
 Once this file is copied to your local machine, and the adequate enviroment variables are set you should be able to access the namespace within the kubernetes cluster. 
 

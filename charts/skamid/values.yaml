@@ -16,20 +16,20 @@ global:
   dsconfig:
     timeout: 300s
     image:
-      registry: nexus.engageska-portugal.pt/ska-tango-images
-      image: tango-dsconfig
-      tag: 1.5.0.6
+      registry: artefact.skao.int
+      image: ska-tango-images-tango-dsconfig
+      tag: 1.5.1
       pullPolicy: IfNotPresent
   itango:
     image:
-      registry: nexus.engageska-portugal.pt/ska-tango-images
-      image: tango-itango
-      tag: 9.3.3.7
+      registry: artefact.skao.int
+      image: ska-tango-images-tango-itango
+      tag: 9.3.5
       pullPolicy: IfNotPresent
 
 landingpage:
   enabled: true
-  MVPInstance: mvp-mid
+  MVPInstance: ska-skampi-mid
 
 skuid:
   enabled: true
@@ -38,8 +38,8 @@ skuid:
     config:
       generator_id: mvp01
 
-tango-base:
-  enabled: true
+ska-tango-base:
+  enabled: false
   vnc:
     replicas: 1
     enabled: true
@@ -49,7 +49,7 @@ tango-base:
   tangodb:
     use_pv: false
 
-webjive:
+ska-webjive:
   enabled: true
   minikube: false
   ingress:
@@ -66,7 +66,7 @@ webjive:
         cpu: 1000m # 1000m = 1 CPU
         memory: 1024Mi # 1024Mi = 1 GB mem
 
-oet-scripts:
+ska-oso-scripting:
   enabled: true
   ingress:
     hostname: k8s.stfc.skao.int
@@ -83,12 +83,18 @@ oet-scripts:
 
 #telescope control
 ## mid-cbf
-mid-cbf:
+ska-mid-cbf:
   enabled: true
+  ska-tango-base:
+    enabled: false
+
 
 ## mid-csp
-mid-csp:
+ska-csp-lmc-mid:
   enabled: true
+  ska-tango-base:
+    enabled: false
+
 
 ## sdp
 sdp:
@@ -96,12 +102,15 @@ sdp:
   lmc:
     prefix: mid
     nsubarray: 3
-  tango-base:
+  ska-tango-base:
     enabled: false
 
 ## tm
-tmc-mid:
+ska-tmc-mid:
   enabled: true
+  ska-tango-base:
+    enabled: false
 
 ska-archiver:
+  enabled: false
   dbname: default_mvp_archiver_db

@@ -56,7 +56,7 @@ non_default_states_to_check = {
     'mid_d0003/elt/master' : 'pointingState',
     'mid_d0004/elt/master' : 'pointingState'}
 
-@pytest.mark.trial
+# @pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.quarantine
 @pytest.mark.skamid
@@ -94,7 +94,10 @@ def invoke_scan_command(fixture):
     @sync_scan_oet
     def scan():
         def send_scan(duration):
+            # TODO: Update the api when new tmc-mid chart is published
             SubArray(1).scan()
+            # SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+            # SubarrayNode.Scan('{"interface":"https://schema.skao.intg/ska-tmc-scan/2.0","transaction_id":"txn-....-00001","scan_id":1}')
         LOGGER.info("Scan command is invoked on Subarray 1")
         executor = futures.ThreadPoolExecutor(max_workers=1)
         return executor.submit(send_scan,fixture['scans'])

@@ -52,6 +52,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
+# @pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.quarantine

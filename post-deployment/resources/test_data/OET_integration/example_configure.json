@@ -98,6 +98,6 @@
     "scan_type": "science_A"
   },
   "tmc": {
-    "scan_duration": 10.0
+    "scan_duration": 6.0
   }
 }

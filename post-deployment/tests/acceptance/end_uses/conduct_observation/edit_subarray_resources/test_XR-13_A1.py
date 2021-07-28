@@ -92,7 +92,7 @@ def allocate_four_dishes(result):
 def check_subarray_composition(result):
     #check that there was no error in response
     # TODO: To uncomment once latest tmc-mid chart is published
-    # assert_that(result['response']).is_equal_to(ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)]))
+    assert_that(result['response']).is_equal_to(ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)]))
     #check that this is reflected correctly on TMC side
     assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
     #check that this is reflected correctly on CSP side

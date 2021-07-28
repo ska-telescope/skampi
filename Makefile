@@ -12,7 +12,6 @@ TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the T
 USE_NGINX ?= true##Traefik or Nginx
 HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
-HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
 
@@ -38,11 +37,11 @@ CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that
 CI_ENVIRONMENT_SLUG?=skampi##The simplified version of the environment name, suitable for inclusion in DNS, URLs, Kubernetes labels, and so on. Available if environment:name is set.
 $(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gitlab_values.yaml)
 
-CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
-	--set oet-scripts.ingress.nginx=$(USE_NGINX) \
-	--set skuid.ingress.nginx=$(USE_NGINX) \
-	--set tango-base.ingress.nginx=$(USE_NGINX) \
-	--set webjive.ingress.nginx=$(USE_NGINX) \
+CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
+	--set ska-oso-scripting.ingress.nginx=$(USE_NGINX) \
+	--set ska-ser-skuid.ingress.nginx=$(USE_NGINX) \
+	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
+	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
 	--set global.minikube=$(MINIKUBE) \
 	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
@@ -67,6 +66,7 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets that EDA deployment
 -include .make/archiver.mk
 
+# include private variables for custom deployment configuration
 -include PrivateRules.mak
 
 vars: ## Display variables
@@ -155,7 +155,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
 	else \
 		echo "Deploying from artefact repository..."; \
-		helm repo add $(HELM_REPO_NAME) $(HELM_HOST)/repository/helm-chart; \
+		helm repo add $(HELM_REPO_NAME) $(CAR_HELM_REPOSITORY_URL); \
 		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
 		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
 	fi
@@ -216,9 +216,3 @@ get_pods: ##lists the pods deployed for a particular namespace. @param: KUBE_NAM
 
 get_versions: ## lists the container images used for particular pods
 	kubectl get pods -l release=$(HELM_RELEASE) -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{range .spec.containers[*]}{.name}{'\t'}{.image}{'\n\n'}{end}{'\n'}{end}{'\n'}"
-
-links: ## attempt to create the URLs with which to access
-	@echo "############################################################################"
-	@echo "#            Access the landing page here:"
-	@echo "#            https://$(INGRESS_HOST)/$(KUBE_NAMESPACE)/start/"
-	@echo "############################################################################"

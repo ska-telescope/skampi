@@ -1,5 +1,5 @@
 const CHARTINFO = {
-    name: 'mvp-mid',
+    name: 'ska-skampi-mid',
     version: '0.4.0',
     dependencies: [
     { name: 'tango-base' , version: '0.2.12' },

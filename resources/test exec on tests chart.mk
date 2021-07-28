@@ -1,7 +1,7 @@
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 #
-IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-itango
+IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images-tango-itango
 # Test runner - pod always running for testing purposes
 TEST_RUNNER = $(shell kubectl get pod -n $(KUBE_NAMESPACE) | grep test-runner | cut -d\  -f1)
 #

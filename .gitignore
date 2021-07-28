@@ -1,5 +1,4 @@
-gitlab_values.yaml
-/ska-cicd-deploy-minikube/
+.DS_Store
 docs/venv
 /.vagrant
 /.vscode
@@ -16,6 +15,7 @@ docs/venv
 /docs/analysis/overview.rst
 /docs/analysis/log*
 /PrivateRules.mak
+/PrivateRules.mak_bu
 /tmp
 /build
 /builds
@@ -62,6 +62,7 @@ docs/src/_build/
 post-deployment/venv
 .vscode/settings.json
 gilab_values.yaml
+gitlab_values.yaml
 .devcontainer/
 KUBECONFIG
 /venv/

@@ -3,7 +3,7 @@ xauthority: "~/.Xauthority"
 minikube: true
 
 global:
-  retry: 
+  retry:
   - "--sleep=1"
   - "--tries=100"
   sub-system:
@@ -16,15 +16,15 @@ global:
   dsconfig:
     timeout: 300s
     image:
-      registry: nexus.engageska-portugal.pt/ska-tango-images
-      image: tango-dsconfig
-      tag: 1.5.0.6
+      registry: artefact.skao.int
+      image: ska-tango-images-tango-dsconfig
+      tag: 1.5.1
       pullPolicy: IfNotPresent
   itango:
     image:
-      registry: nexus.engageska-portugal.pt/ska-tango-images
-      image: tango-itango
-      tag: 9.3.3.7
+      registry: artefact.skao.int
+      image: ska-tango-images-tango-itango
+      tag: 9.3.5
       pullPolicy: IfNotPresent
 
 landingpage:
@@ -104,7 +104,7 @@ ska-oso-scripting:
     featureFlags:
       readViaPubSub: true
 
-sdp:
+ska-sdp:
   enabled: true
   lmc:
     prefix: low

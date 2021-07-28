@@ -1,0 +1,2028 @@
+{
+  "id": "60fa80bff4c3c900181e0cfc",
+  "name": "1623-DEMO-LATEST",
+  "version": "1.1.0",
+  "user": "user1",
+  "insertTime": "2021-07-23T08:41:36.087Z",
+  "updateTime": "2021-07-27T13:12:32.486Z",
+  "group": null,
+  "groupWriteAccess": false,
+  "lastUpdatedBy": "user1",
+  "widget": [
+    {
+      "id": "1",
+      "x": 36,
+      "y": 28,
+      "canvas": "0",
+      "width": 24,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "TMC Subarray 1",
+        "backgroundColor": "#b6e3f5",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 46
+    },
+    {
+      "id": "3",
+      "x": 108,
+      "y": 46,
+      "canvas": "0",
+      "width": 22,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Dish Master 3",
+        "backgroundColor": "#f2b3b7",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 45
+    },
+    {
+      "id": "4",
+      "x": 134,
+      "y": 46,
+      "canvas": "0",
+      "width": 21,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Dish Master 4",
+        "backgroundColor": "#f2b3b7",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 44
+    },
+    {
+      "id": "7",
+      "x": 86,
+      "y": 28,
+      "canvas": "0",
+      "width": 20,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "CSP Subarray 1",
+        "backgroundColor": "#b5d7ae",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#010101",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 43
+    },
+    {
+      "id": "9",
+      "x": 64,
+      "y": 28,
+      "canvas": "0",
+      "width": 20,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "SDP Subarray 1",
+        "backgroundColor": "#f5ce74",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 42
+    },
+    {
+      "id": "10",
+      "x": 36,
+      "y": 36,
+      "canvas": "0",
+      "width": 24,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "ska_mid/tm_subarray_node/1",
+          "attribute": "obsstate",
+          "label": "obsState"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 41
+    },
+    {
+      "id": "11",
+      "x": 86,
+      "y": 36,
+      "canvas": "0",
+      "width": 20,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_csp/elt/subarray_01",
+          "attribute": "obsstate",
+          "label": "obsState"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 40
+    },
+    {
+      "id": "12",
+      "x": 64,
+      "y": 36,
+      "canvas": "0",
+      "width": 20,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_sdp/elt/subarray_1",
+          "attribute": "obsstate",
+          "label": "Obs State"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 39
+    },
+    {
+      "id": "13",
+      "x": 108,
+      "y": 54,
+      "canvas": "0",
+      "width": 22,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_d0003/elt/master",
+          "attribute": "pointingstate",
+          "label": "pointingState"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 38
+    },
+    {
+      "id": "14",
+      "x": 134,
+      "y": 54,
+      "canvas": "0",
+      "width": 21,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_d0004/elt/master",
+          "attribute": "pointingstate",
+          "label": "pointingState"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 37
+    },
+    {
+      "id": "15",
+      "x": 28,
+      "y": 5,
+      "canvas": "0",
+      "width": 23,
+      "height": 4,
+      "type": "COMMAND_EXECUTOR",
+      "inputs": {
+        "command": {
+          "device": "ska_mid/tm_central/central_node",
+          "command": "TelescopeOn",
+          "acceptedType": "DevVoid"
+        },
+        "title": "",
+        "requireConfirmation": false,
+        "displayOutput": false,
+        "cooldown": 0,
+        "textColor": "#090a0a",
+        "backgroundColor": "#fffefe",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 36
+    },
+    {
+      "id": "16",
+      "x": 51,
+      "y": 5,
+      "canvas": "0",
+      "width": 27,
+      "height": 4,
+      "type": "COMMAND_EXECUTOR",
+      "inputs": {
+        "command": {
+          "device": "ska_mid/tm_central/central_node",
+          "command": "TelescopeOff",
+          "acceptedType": "DevVoid"
+        },
+        "title": "",
+        "requireConfirmation": false,
+        "displayOutput": false,
+        "cooldown": 0,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 35
+    },
+    {
+      "id": "21",
+      "x": 120,
+      "y": 5,
+      "canvas": "0",
+      "width": 9,
+      "height": 4,
+      "type": "COMMAND_EXECUTOR",
+      "inputs": {
+        "command": {
+          "device": "ska_mid/tm_subarray_node/1",
+          "command": "Abort",
+          "acceptedType": "DevVoid"
+        },
+        "title": "",
+        "requireConfirmation": false,
+        "displayOutput": false,
+        "cooldown": 0,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 34
+    },
+    {
+      "id": "22",
+      "x": 2,
+      "y": 28,
+      "canvas": "0",
+      "width": 30,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Central Node",
+        "textColor": "#000",
+        "backgroundColor": "#b6e3f5",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 33
+    },
+    {
+      "id": "23",
+      "x": 84,
+      "y": 5,
+      "canvas": "0",
+      "width": 23,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "TMC Subarray 1",
+        "textColor": "#000",
+        "backgroundColor": "#b6e3f5",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 32
+    },
+    {
+      "id": "24",
+      "x": 2,
+      "y": 0,
+      "canvas": "0",
+      "width": 153,
+      "height": 5,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Observation Control",
+        "textColor": "#000",
+        "backgroundColor": "#f7f2ba",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 31
+    },
+    {
+      "id": "25",
+      "x": 2,
+      "y": 24,
+      "canvas": "0",
+      "width": 153,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Observation Monitoring",
+        "textColor": "#11110f",
+        "backgroundColor": "#f7f2ba",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 30
+    },
+    {
+      "id": "27",
+      "x": 36,
+      "y": 40,
+      "canvas": "0",
+      "width": 24,
+      "height": 8,
+      "type": "SPECTRUM_TABLE",
+      "inputs": {
+        "attribute": {
+          "device": "ska_mid/tm_subarray_node/1",
+          "attribute": "receptoridlist"
+        },
+        "layout": "horizontal",
+        "showDevice": false,
+        "showAttribute": "Name",
+        "showIndex": false,
+        "showLabel": false,
+        "fontSize": 16,
+        "precision": 3
+      },
+      "order": 29
+    },
+    {
+      "id": "28",
+      "x": 64,
+      "y": 40,
+      "canvas": "0",
+      "width": 20,
+      "height": 10,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_sdp/elt/subarray_1",
+          "attribute": "receiveaddresses",
+          "label": "Receive Addresses"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Label",
+        "scientificNotation": false,
+        "showEnumLabels": false,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 28
+    },
+    {
+      "id": "29",
+      "x": 48,
+      "y": 32,
+      "canvas": "0",
+      "width": 12,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "ska_mid/tm_subarray_node/1",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 27
+    },
+    {
+      "id": "30",
+      "x": 36,
+      "y": 32,
+      "canvas": "0",
+      "width": 12,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 26
+    },
+    {
+      "id": "35",
+      "x": 64,
+      "y": 32,
+      "canvas": "0",
+      "width": 7,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 25
+    },
+    {
+      "id": "36",
+      "x": 108,
+      "y": 50,
+      "canvas": "0",
+      "width": 10,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 24
+    },
+    {
+      "id": "37",
+      "x": 134,
+      "y": 50,
+      "canvas": "0",
+      "width": 9,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 23
+    },
+    {
+      "id": "38",
+      "x": 86,
+      "y": 32,
+      "canvas": "0",
+      "width": 7,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 22
+    },
+    {
+      "id": "39",
+      "x": 93,
+      "y": 32,
+      "canvas": "0",
+      "width": 13,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "mid_csp/elt/subarray_01",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 21
+    },
+    {
+      "id": "40",
+      "x": 71,
+      "y": 32,
+      "canvas": "0",
+      "width": 13,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "mid_sdp/elt/subarray_1",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 20
+    },
+    {
+      "id": "42",
+      "x": 118,
+      "y": 50,
+      "canvas": "0",
+      "width": 12,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "mid_d0003/elt/master",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 19
+    },
+    {
+      "id": "43",
+      "x": 143,
+      "y": 50,
+      "canvas": "0",
+      "width": 12,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "mid_d0004/elt/master",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 18
+    },
+    {
+      "id": "54",
+      "x": 108,
+      "y": 28,
+      "canvas": "0",
+      "width": 22,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Dish Master 1",
+        "backgroundColor": "#f2b3b7",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 17
+    },
+    {
+      "id": "55",
+      "x": 134,
+      "y": 28,
+      "canvas": "0",
+      "width": 21,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Dish Master 2",
+        "backgroundColor": "#f2b3b7",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 16
+    },
+    {
+      "id": "56",
+      "x": 108,
+      "y": 36,
+      "canvas": "0",
+      "width": 22,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_d0001/elt/master",
+          "attribute": "pointingstate",
+          "label": "pointingState"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 15
+    },
+    {
+      "id": "57",
+      "x": 134,
+      "y": 36,
+      "canvas": "0",
+      "width": 21,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_d0002/elt/master",
+          "attribute": "pointingstate",
+          "label": "pointingState"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 14
+    },
+    {
+      "id": "58",
+      "x": 108,
+      "y": 32,
+      "canvas": "0",
+      "width": 10,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 13
+    },
+    {
+      "id": "59",
+      "x": 134,
+      "y": 32,
+      "canvas": "0",
+      "width": 9,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 12
+    },
+    {
+      "id": "60",
+      "x": 118,
+      "y": 32,
+      "canvas": "0",
+      "width": 12,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "mid_d0001/elt/master",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 11
+    },
+    {
+      "id": "61",
+      "x": 143,
+      "y": 32,
+      "canvas": "0",
+      "width": 12,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "mid_d0002/elt/master",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 10
+    },
+    {
+      "id": "62",
+      "x": 2,
+      "y": 32,
+      "canvas": "0",
+      "width": 11,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 9
+    },
+    {
+      "id": "63",
+      "x": 13,
+      "y": 32,
+      "canvas": "0",
+      "width": 19,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "ska_mid/tm_central/central_node",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 8
+    },
+    {
+      "id": "64",
+      "x": 109,
+      "y": 5,
+      "canvas": "0",
+      "width": 8,
+      "height": 4,
+      "type": "COMMAND_EXECUTOR",
+      "inputs": {
+        "command": {
+          "device": "ska_mid/tm_subarray_node/1",
+          "command": "End"
+        },
+        "title": "",
+        "requireConfirmation": false,
+        "displayOutput": false,
+        "cooldown": 0,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 7
+    },
+    {
+      "id": "65",
+      "x": 130,
+      "y": 5,
+      "canvas": "0",
+      "width": 10,
+      "height": 4,
+      "type": "COMMAND_EXECUTOR",
+      "inputs": {
+        "command": {
+          "device": "ska_mid/tm_subarray_node/1",
+          "command": "Restart",
+          "acceptedType": "DevVoid"
+        },
+        "title": "",
+        "requireConfirmation": false,
+        "displayOutput": false,
+        "cooldown": 0,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 6
+    },
+    {
+      "id": "66",
+      "x": 108,
+      "y": 40,
+      "canvas": "0",
+      "width": 22,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_d0001/elt/master",
+          "attribute": "dishmode",
+          "label": "dishMode"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 5
+    },
+    {
+      "id": "67",
+      "x": 134,
+      "y": 40,
+      "canvas": "0",
+      "width": 21,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_d0002/elt/master",
+          "attribute": "dishmode",
+          "label": "dishMode"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 4
+    },
+    {
+      "id": "68",
+      "x": 108,
+      "y": 58,
+      "canvas": "0",
+      "width": 22,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_d0003/elt/master",
+          "attribute": "dishmode",
+          "label": "dishMode"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 3
+    },
+    {
+      "id": "69",
+      "x": 134,
+      "y": 58,
+      "canvas": "0",
+      "width": 21,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_d0004/elt/master",
+          "attribute": "dishmode",
+          "label": "dishMode"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Name",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 2
+    },
+    {
+      "id": "70",
+      "x": 141,
+      "y": 5,
+      "canvas": "0",
+      "width": 14,
+      "height": 4,
+      "type": "COMMAND_EXECUTOR",
+      "inputs": {
+        "command": {
+          "device": "ska_mid/tm_subarray_node/1",
+          "command": "ObsReset",
+          "acceptedType": "DevVoid"
+        },
+        "title": "",
+        "requireConfirmation": false,
+        "displayOutput": false,
+        "cooldown": 0,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 1
+    },
+    {
+      "id": "71",
+      "x": 86,
+      "y": 40,
+      "canvas": "0",
+      "width": 20,
+      "height": 10,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "mid_d0001/elt/master",
+          "attribute": "rxcapturingdata",
+          "label": "capturingData"
+        },
+        "precision": 2,
+        "showDevice": true,
+        "showAttribute": "Label",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 0
+    },
+    {
+      "id": "73",
+      "x": 2,
+      "y": 5,
+      "canvas": "0",
+      "width": 23,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Central Node",
+        "textColor": "#000",
+        "backgroundColor": "#b6e3f5",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 47
+    },
+    {
+      "id": "75",
+      "x": 2,
+      "y": 36,
+      "canvas": "0",
+      "width": 30,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "ska_mid/tm_central/central_node",
+          "attribute": "telescopestate",
+          "label": "telescopeState"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Label",
+        "scientificNotation": false,
+        "showEnumLabels": false,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 48
+    },
+    {
+      "id": "76",
+      "x": 64,
+      "y": 64,
+      "canvas": "0",
+      "width": 20,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "SDP Subarray Leaf Node",
+        "backgroundColor": "#f5ce74",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 49
+    },
+    {
+      "id": "78",
+      "x": 64,
+      "y": 74,
+      "canvas": "0",
+      "width": 20,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "SDP Master Leaf Node",
+        "backgroundColor": "#f5ce74",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 50
+    },
+    {
+      "id": "80",
+      "x": 64,
+      "y": 68,
+      "canvas": "0",
+      "width": 7,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 51
+    },
+    {
+      "id": "81",
+      "x": 71,
+      "y": 68,
+      "canvas": "0",
+      "width": 13,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "ska_mid/tm_leaf_node/sdp_subarray01",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 52
+    },
+    {
+      "id": "83",
+      "x": 64,
+      "y": 78,
+      "canvas": "0",
+      "width": 7,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 53
+    },
+    {
+      "id": "84",
+      "x": 71,
+      "y": 78,
+      "canvas": "0",
+      "width": 13,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "ska_mid/tm_leaf_node/sdp_master",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 54
+    },
+    {
+      "id": "86",
+      "x": 86,
+      "y": 64,
+      "canvas": "0",
+      "width": 20,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "CSP Subarray Leaf Node",
+        "backgroundColor": "#b5d7ae",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#010101",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 55
+    },
+    {
+      "id": "87",
+      "x": 86,
+      "y": 68,
+      "canvas": "0",
+      "width": 8,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 56
+    },
+    {
+      "id": "88",
+      "x": 94,
+      "y": 68,
+      "canvas": "0",
+      "width": 12,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "ska_mid/tm_leaf_node/csp_master",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 57
+    },
+    {
+      "id": "90",
+      "x": 86,
+      "y": 74,
+      "canvas": "0",
+      "width": 20,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "CSP Master Leaf Node",
+        "backgroundColor": "#b5d7ae",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#010101",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 58
+    },
+    {
+      "id": "91",
+      "x": 86,
+      "y": 78,
+      "canvas": "0",
+      "width": 8,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 59
+    },
+    {
+      "id": "92",
+      "x": 94,
+      "y": 78,
+      "canvas": "0",
+      "width": 12,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "ska_mid/tm_leaf_node/csp_master",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 60
+    },
+    {
+      "id": "93",
+      "x": 2,
+      "y": 48,
+      "canvas": "0",
+      "width": 30,
+      "height": 5,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "ska_mid/tm_central/central_node",
+          "attribute": "pss",
+          "label": "pss"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Label",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 61
+    },
+    {
+      "id": "94",
+      "x": 2,
+      "y": 53,
+      "canvas": "0",
+      "width": 30,
+      "height": 5,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "ska_mid/tm_central/central_node",
+          "attribute": "pst",
+          "label": "pst"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Label",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 62
+    },
+    {
+      "id": "95",
+      "x": 2,
+      "y": 57,
+      "canvas": "0",
+      "width": 30,
+      "height": 5,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "ska_mid/tm_central/central_node",
+          "attribute": "vlbi",
+          "label": "vlbi"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Label",
+        "scientificNotation": false,
+        "showEnumLabels": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 63
+    },
+    {
+      "id": "96",
+      "x": 2,
+      "y": 40,
+      "canvas": "0",
+      "width": 30,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "ska_mid/tm_central/central_node",
+          "attribute": "commandinprogress",
+          "label": "commandInProgress"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Label",
+        "scientificNotation": false,
+        "showEnumLabels": false,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 64
+    },
+    {
+      "id": "97",
+      "x": 134,
+      "y": 64,
+      "canvas": "0",
+      "width": 21,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Dish Leaf Node 2",
+        "backgroundColor": "#f2b3b7",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 65
+    },
+    {
+      "id": "98",
+      "x": 108,
+      "y": 74,
+      "canvas": "0",
+      "width": 22,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Dish Leaf Node 3",
+        "backgroundColor": "#f2b3b7",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 66
+    },
+    {
+      "id": "99",
+      "x": 134,
+      "y": 74,
+      "canvas": "0",
+      "width": 21,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Dish Leaf Node 4",
+        "backgroundColor": "#f2b3b7",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 67
+    },
+    {
+      "id": "100",
+      "x": 108,
+      "y": 64,
+      "canvas": "0",
+      "width": 22,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "Dish Leaf Node 1",
+        "backgroundColor": "#f2b3b7",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 68
+    },
+    {
+      "id": "101",
+      "x": 108,
+      "y": 68,
+      "canvas": "0",
+      "width": 10,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 69
+    },
+    {
+      "id": "102",
+      "x": 134,
+      "y": 78,
+      "canvas": "0",
+      "width": 9,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 70
+    },
+    {
+      "id": "103",
+      "x": 108,
+      "y": 78,
+      "canvas": "0",
+      "width": 8,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 71
+    },
+    {
+      "id": "104",
+      "x": 134,
+      "y": 68,
+      "canvas": "0",
+      "width": 7,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 72
+    },
+    {
+      "id": "105",
+      "x": 141,
+      "y": 68,
+      "canvas": "0",
+      "width": 14,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "ska_mid/tm_leaf_node/d0002",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 73
+    },
+    {
+      "id": "106",
+      "x": 116,
+      "y": 78,
+      "canvas": "0",
+      "width": 14,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "ska_mid/tm_leaf_node/d0003",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 74
+    },
+    {
+      "id": "107",
+      "x": 143,
+      "y": 78,
+      "canvas": "0",
+      "width": 12,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "ska_mid/tm_leaf_node/d0004",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 75
+    },
+    {
+      "id": "108",
+      "x": 116,
+      "y": 68,
+      "canvas": "0",
+      "width": 14,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "ska_mid/tm_leaf_node/d0004",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 76
+    },
+    {
+      "id": "109",
+      "x": 2,
+      "y": 44,
+      "canvas": "0",
+      "width": 30,
+      "height": 4,
+      "type": "ATTRIBUTE_DISPLAY",
+      "inputs": {
+        "attribute": {
+          "device": "ska_mid/tm_central/central_node",
+          "attribute": "desiredtelescopestate",
+          "label": "desiredTelescopeState"
+        },
+        "precision": 2,
+        "showDevice": false,
+        "showAttribute": "Label",
+        "scientificNotation": false,
+        "showEnumLabels": false,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "font": "Helvetica"
+      },
+      "order": 77
+    },
+    {
+      "id": "110",
+      "x": 2,
+      "y": 10,
+      "canvas": "0",
+      "width": 76,
+      "height": 5,
+      "type": "command_file",
+      "inputs": {
+        "title": "",
+        "uploadBtnLabel": "Upload File",
+        "buttonLabel": "Assign Resources",
+        "command": {
+          "device": "ska_mid/tm_central/central_node",
+          "command": "AssignResources",
+          "acceptedType": "DevString"
+        },
+        "showDevice": false,
+        "showCommand": false,
+        "requireConfirmation": true,
+        "displayOutput": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 14,
+        "font": "Helvetica"
+      },
+      "order": 78
+    },
+    {
+      "id": "111",
+      "x": 2,
+      "y": 16,
+      "canvas": "0",
+      "width": 76,
+      "height": 5,
+      "type": "command_file",
+      "inputs": {
+        "title": "",
+        "uploadBtnLabel": "Upload File",
+        "buttonLabel": "Release Resources",
+        "command": {
+          "device": "ska_mid/tm_central/central_node",
+          "command": "ReleaseResources",
+          "acceptedType": "DevString"
+        },
+        "showDevice": false,
+        "showCommand": false,
+        "requireConfirmation": true,
+        "displayOutput": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 14,
+        "font": "Helvetica"
+      },
+      "order": 79
+    },
+    {
+      "id": "112",
+      "x": 84,
+      "y": 10,
+      "canvas": "0",
+      "width": 71,
+      "height": 5,
+      "type": "command_file",
+      "inputs": {
+        "title": "",
+        "uploadBtnLabel": "Upload File",
+        "buttonLabel": "Configure",
+        "command": {
+          "device": "ska_mid/tm_subarray_node/1",
+          "command": "Configure",
+          "acceptedType": "DevString"
+        },
+        "showDevice": false,
+        "showCommand": false,
+        "requireConfirmation": true,
+        "displayOutput": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 14,
+        "font": "Helvetica"
+      },
+      "order": 80
+    },
+    {
+      "id": "113",
+      "x": 84,
+      "y": 16,
+      "canvas": "0",
+      "width": 71,
+      "height": 5,
+      "type": "command_file",
+      "inputs": {
+        "title": "",
+        "uploadBtnLabel": "Upload File",
+        "buttonLabel": "Scan",
+        "command": {
+          "device": "ska_mid/tm_subarray_node/1",
+          "command": "Scan",
+          "acceptedType": "DevString"
+        },
+        "showDevice": false,
+        "showCommand": false,
+        "requireConfirmation": true,
+        "displayOutput": true,
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 14,
+        "font": "Helvetica"
+      },
+      "order": 81
+    },
+    {
+      "id": "114",
+      "x": 64,
+      "y": 54,
+      "canvas": "0",
+      "width": 20,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "SDP Master",
+        "backgroundColor": "#f5ce74",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 82
+    },
+    {
+      "id": "115",
+      "x": 64,
+      "y": 58,
+      "canvas": "0",
+      "width": 7,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 83
+    },
+    {
+      "id": "116",
+      "x": 71,
+      "y": 58,
+      "canvas": "0",
+      "width": 13,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "mid_sdp/elt/master",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 84
+    },
+    {
+      "id": "117",
+      "x": 86,
+      "y": 54,
+      "canvas": "0",
+      "width": 20,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "CSP Master",
+        "backgroundColor": "#b5d7ae",
+        "textColor": "#000",
+        "size": 1,
+        "borderWidth": 0.001,
+        "borderColor": "#010101",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 85
+    },
+    {
+      "id": "118",
+      "x": 86,
+      "y": 58,
+      "canvas": "0",
+      "width": 8,
+      "height": 4,
+      "type": "LABEL",
+      "inputs": {
+        "text": "state:",
+        "textColor": "#000000",
+        "backgroundColor": "#ffffff",
+        "size": 1,
+        "borderWidth": 0,
+        "borderColor": "#000000",
+        "font": "Helvetica",
+        "linkTo": "",
+        "customCss": ""
+      },
+      "order": 86
+    },
+    {
+      "id": "119",
+      "x": 93,
+      "y": 58,
+      "canvas": "0",
+      "width": 13,
+      "height": 4,
+      "type": "DEVICE_STATUS",
+      "inputs": {
+        "device": "mid_csp/elt/master",
+        "state": {
+          "device": null,
+          "attribute": null
+        },
+        "showDeviceName": false,
+        "showStateString": true,
+        "showStateLED": true,
+        "LEDSize": 1,
+        "textSize": 1
+      },
+      "order": 87
+    }
+  ],
+  "variables": []
+}

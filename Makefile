@@ -28,9 +28,9 @@ PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
 				--env=https_proxy=${PSI_LOW_PROXY} \
 				--env=no_proxy=${PSI_LOW_NO_PROXY}
 
-PSI_LOW_SDP_PROXY_VARS= --set sdp.proxy.server=${PSI_LOW_PROXY} \
+PSI_LOW_SDP_PROXY_VARS= --set ska-sdp.proxy.server=${PSI_LOW_PROXY} \
 					--set ska-archiver.enabled=false \
-					--set "sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
+					--set "ska-sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
 endif
 
 CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that are not a-z or 0-9 replaced with -. Use in URLs and domain names.
@@ -43,7 +43,7 @@ CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
 	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
 	--set global.minikube=$(MINIKUBE) \
-	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 	--set ska-archiver.hostname=$(ARCHIVER_HOST_NAME) \
 	--set ska-archiver.dbname=$(ARCHIVER_DBNAME) \

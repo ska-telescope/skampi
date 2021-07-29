@@ -37,6 +37,7 @@ from resources.test_support.controls import (
     telescope_is_in_standby,
     take_subarray,
     restart_subarray,
+    tmc_is_on,
 )
 from resources.test_support.tmc_helpers import sub_resetting, obsreset, configuring_sub
 
@@ -71,6 +72,7 @@ def fixture():
     return {}
 
 
+@pytest.mark.trial
 @pytest.mark.ncra
 @pytest.mark.select
 @pytest.mark.skamid
@@ -85,6 +87,8 @@ def test_subarray_abort():
 
 
 def assign():
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info(
         "Before starting the telescope checking if the telescope is in StandBy."
     )

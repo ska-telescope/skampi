@@ -22,7 +22,7 @@ from ska.scripting.domain import Telescope, SubArray
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers import  obsState, resource, watch, waiter, map_dish_nr_to_device_name
 import logging
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray, tmc_is_on
 from resources.test_support.sync_decorators import  sync_scan_oet,sync_configure_oet,time_it
 
 LOGGER = logging.getLogger(__name__)
@@ -56,7 +56,7 @@ non_default_states_to_check = {
     'mid_d0003/elt/master' : 'pointingState',
     'mid_d0004/elt/master' : 'pointingState'}
 
-# @pytest.mark.trial
+@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.quarantine
 @pytest.mark.skamid
@@ -67,6 +67,8 @@ def test_subarray_scan():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
@@ -152,4 +154,5 @@ def teardown_function(function):
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
+    assert(telescope_is_in_standby())
 

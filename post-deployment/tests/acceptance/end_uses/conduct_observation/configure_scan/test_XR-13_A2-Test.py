@@ -21,7 +21,7 @@ from resources.test_support.helpers import obsState, resource, watch, waiter, \
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.persistance_helping import update_scan_config_file
 from resources.test_support.sync_decorators import sync_configure_oet,time_it
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray, tmc_is_on
 import pytest
 #SUT dependencies
 from ska.scripting.domain import Telescope, SubArray
@@ -54,7 +54,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
-# @pytest.mark.trial
+@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.quarantine
 @pytest.mark.skamid
@@ -66,6 +66,8 @@ def test_configure_subarray():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     assert telescope_is_in_standby()
     LOGGER.info("Telescope is in StandBy.")
@@ -134,4 +136,5 @@ def teardown_function(function):
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
     LOGGER.info("Telescope is in standby")
+    assert(telescope_is_in_standby())
 

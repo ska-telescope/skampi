@@ -23,7 +23,7 @@ from tango import DeviceProxy, DevState # type: ignore
 from resources.test_support.helpers import resource
 from resources.test_support.sync_decorators import sync_assign_resources
 from resources.test_support.persistance_helping import update_resource_config_file
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray, tmc_is_on
 from resources.test_support.helpers_low import wait_before_test
 from resources.test_support.oet_helpers import oet_compose_sub
 
@@ -66,6 +66,8 @@ def test_allocate_resources():
 
 @given("A running telescope for executing observations on a subarray")
 def set_to_running():
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     assert telescope_is_in_standby()
     LOGGER.info("Telescope is in StandBy.")
@@ -126,6 +128,7 @@ def teardown_function(function):
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
     LOGGER.info("Telescope is in standby")
+    assert(telescope_is_in_standby())
 
  
     

@@ -109,7 +109,7 @@ ska-sdp:
   lmc:
     prefix: low
     nsubarray: 3
-  tango-base:
+  ska-tango-base:
     enabled: false
 
 ska-archiver:

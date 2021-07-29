@@ -5,8 +5,8 @@ import logging
 
 ##SUT imports
 from ska.scripting.domain import Telescope, SubArray
-from ska.cdm.schemas import CODEC as cdm_CODEC
-from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
+from ska_tmc_cdm.schemas import CODEC as cdm_CODEC
+from ska_tmc_cdm.messages.central_node.assign_resources import AssignResourcesRequest
 
 ##local depencies
 from resources.test_support.helpers import subarray_devices,resource,ResourceGroup,waiter,watch

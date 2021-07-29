@@ -16,8 +16,8 @@ from pytest_bdd import scenario, given, when, then
 
 #SUT
 from ska.scripting.domain import Telescope, SubArray, ResourceAllocation, Dish
-from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
-from ska.cdm.schemas import CODEC as cdm_CODEC
+from ska_tmc_cdm.messages.central_node.assign_resources import AssignResourcesRequest
+from ska_tmc_cdm.schemas import CODEC as cdm_CODEC
 #SUT infrastructure
 from tango import DeviceProxy, DevState # type: ignore
 ## local imports

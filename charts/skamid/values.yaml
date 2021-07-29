@@ -96,7 +96,7 @@ ska-sdp:
   lmc:
     prefix: mid
     nsubarray: 3
-  tango-base:
+  ska-tango-base:
     enabled: false
 
 ## tm

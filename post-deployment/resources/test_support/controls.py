@@ -161,7 +161,7 @@ def set_telescope_to_standby():
 
     #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
     #therefore timeout is given as 12 sec
-    the_waiter.wait(5000)
+    the_waiter.wait(35000)
     if the_waiter.timed_out:
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
@@ -268,6 +268,68 @@ def telescope_is_in_standby():
         resource("mid_d0003/elt/master").get("State"),
         resource("mid_d0004/elt/master").get("State")
     ] == ["STANDBY", "ON", "OFF", "OFF", "STANDBY", "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
+
+
+def tmc_is_on():
+    the_waiter = waiter()
+    the_waiter.wait(5000)
+    LOGGER.info(
+        'resource("ska_mid/tm_central/central_node").get("State")'
+        + str(resource("ska_mid/tm_central/central_node").get("State"))
+    )
+
+    LOGGER.info(
+        'resource("ska_mid/tm_subarray_node/1").get("State")'
+        + str(resource("ska_mid/tm_subarray_node/1").get("State"))
+    )
+
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/sdp_master").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/sdp_master").get("State"))
+    )
+
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/sdp_subarray01").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/sdp_subarray01").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/csp_master").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/csp_master").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/csp_subarray01").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/csp_subarray01").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0001").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0001").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0002").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0002").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0003").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0003").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0004").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0004").get("State"))
+    )
+   
+    return [
+        resource("ska_mid/tm_central/central_node").get("State"),
+        resource("ska_mid/tm_subarray_node/1").get("State"),
+        resource("ska_mid/tm_leaf_node/sdp_master").get("State"),
+        resource("ska_mid/tm_leaf_node/sdp_subarray01").get("State"),
+        resource("ska_mid/tm_leaf_node/csp_master").get("State"),
+        resource("ska_mid/tm_leaf_node/csp_subarray01").get("State"),
+        resource("ska_mid/tm_leaf_node/d0001").get("State"),
+        resource("ska_mid/tm_leaf_node/d0002").get("State"),
+        resource("ska_mid/tm_leaf_node/d0003").get("State"),
+        resource("ska_mid/tm_leaf_node/d0004").get("State")
+    ] == ["ON", "ON", "ON", "ON", "ON", "ON", "ON", "ON", "ON", "ON"]
+
 
 ## currently this function is not used in any testcase
 def run_a_config_test():

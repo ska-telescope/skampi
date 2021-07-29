@@ -70,12 +70,20 @@ CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 -include PrivateRules.mak
 
 vars: ## Display variables
+	@echo "SKA_K8S_TOOLS_DEPLOY_IMAGE: $(SKA_K8S_TOOLS_DEPLOY_IMAGE)"
+	@echo ""
 	@echo "Namespace: $(KUBE_NAMESPACE)"
 	@echo "SDP Namespace: $(KUBE_NAMESPACE_SDP)"
+	@echo "INGRESS_HOST: $(INGRESS_HOST)"
+	@echo ""
 	@echo "HELM_RELEASE: $(HELM_RELEASE)"
-	@echo "VALUES: $(VALUES)"
-	@echo "TANGO_DATABASE_DS: $(TANGO_DATABASE_DS)"
 	@echo "HELM_REPO_NAME: $(HELM_REPO_NAME)"
+	@echo "VALUES: $(VALUES)"
+	@echo ""
+	@echo "TANGO_DATABASE_DS: $(TANGO_DATABASE_DS)"
+	@echo "ARCHIVER_DBNAME: $(ARCHIVER_DBNAME)"
+	@echo ""
+	@echo "MARK: $(MARK)"
 
 
 # CONFIG=mid
@@ -84,8 +92,6 @@ vars: ## Display variables
 # HELM_RELEASE=staging-$(CONFIG)
 # DEPLOYMENT_CONFIGURATION=ska$(CONFIG)
 # KEEP_NAMESPACE=true
-# VALUES=pipeline.yaml
-# INGRESS_HOST=k8s.stfc.skao.int
 # SKA_K8S_TOOLS_DEPLOY_IMAGE=nexus.engageska-portugal.pt/ska-k8s-tools/deploy:0.4.13
 
 k8s: ## Which kubernetes are we connected to

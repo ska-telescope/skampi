@@ -14,9 +14,9 @@ from ska.skuid.client import SkuidClient
 from ska.scripting.domain import SubArray
 from oet.command import RemoteScanIdGenerator
 from ska.scripting import observingtasks
-from skallop.mvp_fixtures.env_handling import ExecEnv
-from skallop.mvp_fixtures.context_management import SubarrayContext
-from skallop.mvp_control.event_waiting import set_to_wait, wait
+from ska_ser_skallop.mvp_fixtures.env_handling import ExecEnv
+from ska_ser_skallop.mvp_fixtures.context_management import SubarrayContext
+from ska_ser_skallop.mvp_control.event_waiting import set_to_wait, wait
 
 
 

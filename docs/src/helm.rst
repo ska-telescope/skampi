@@ -45,5 +45,5 @@ E.g To set the webjive chart to have 3 replicas of tangogql, update `values.yaml
     tangogql:
      replicas: 3
     
-More information available `here <https://helm.sh/docs/>`_. 
-Helm Glossary here <https://helm.sh/docs/glossary/>`_. 
+More information available `here <https://helm.sh/docs/>`_.
+Helm Glossary here <https://helm.sh/docs/glossary/>`_.

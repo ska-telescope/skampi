@@ -9,8 +9,8 @@ from pytest_bdd import (
 )
 import logging
 import time  # used to sleep between measurements
-from skallop.transactions.atomic import atomic
-from skallop.connectors.configuration import get_device_proxy
+from ska_ser_skallop.transactions.atomic import atomic
+from ska_ser_skallop.connectors.configuration import get_device_proxy
 
 
 logger = logging.getLogger(__name__)

@@ -7,7 +7,7 @@ from tango import DeviceProxy
 from resources.test_support.helpers import waiter,watch,resource
 from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby
 from resources.test_support.persistance_helping import load_config_from_file,update_scan_config_file,update_resource_config_file
-from skallop.bdd_test_data_manager.data_manager import download_test_data
+from ska_ser_skallop.bdd_test_data_manager.data_manager import download_test_data
 
 LOGGER = logging.getLogger(__name__)
 

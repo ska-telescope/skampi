@@ -271,3 +271,4 @@ def teardown_function(function):
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
     LOGGER.info("Telescope is in StandBy.")
+    assert telescope_is_in_standby()

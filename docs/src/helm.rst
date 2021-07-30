@@ -47,19 +47,6 @@ E.g To set the webjive chart to have 3 replicas of tangogql, update `values.yaml
 
 .. code-block:: console
 
-   elastic:
-    enabled: true
-    image:
-     registry: docker.elastic.co
-     image: elasticsearch/elasticsearch
-     tag: 7.4.2
-     pullPolicy: IfNotPresent
-    ilm:
-     rollover:
-      max_size: "1gb"
-      max_age: "2d" # Update here
-      delete:
-      min_age: "1d"
    webjive:
     tangogql:
      replicas: 3

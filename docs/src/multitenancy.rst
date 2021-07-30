@@ -18,7 +18,7 @@ Developers may not be able to simulate the targeted deployment environment by us
 
 .. warning::
 
-   Branch-based deployments are complete deployments of MID or LOW, and therefore require the same resources as any other deployment of SKAMPI - developers should be mindful of the impact of deployments. As such *branch-based namespaces are short lived: they are deleted 2 hours after their deployment*, and only manually deployed for persistence - automatic deployments will be deleted immediately.
+    Branch-based deployments are complete deployments of MID or LOW, and therefore require the same resources as any other deployment of SKAMPI - developers should be mindful of the impact of deployments. As such *branch-based namespaces are short lived: they are deleted 2 hours after their deployment*, and only manually deployed for persistence - automatic test deployments will be deleted immediately.
 
 
 Pipeline Namespaces
@@ -73,7 +73,7 @@ If you can find the words "Kubernetes resources dump" in the job output, it mean
 
  kubectl --kubeconfig=KUBECONFIG get pods
 
-To make the above command (and subsequent ones) less cumbersome, set your ``KUBECONFIG`` file as the environment variable called ``$KUBECONFIG``:
+Pro tip: to make the above command (and subsequent ones) less cumbersome, you can override your current kubeconfig by setting your ``KUBECONFIG`` enviroment variable as the downloaded file called ``$KUBECONFIG``:
 ::
 
  export KUBECONFIG=KUBECONFIG
@@ -92,7 +92,6 @@ The above command now reduces to simply
 At the end of the deployment, something like this will guide you to the landing page related to the configuration that was just deployed, for instance:
 ::
 
- $ make links
  ############################################################################
  #            Access the landing page here:
  #            https://k8s.stfc.skao.int/ci-quarantine-low/start/

@@ -161,7 +161,7 @@ def set_telescope_to_standby():
 
     #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
     #therefore timeout is given as 12 sec
-    the_waiter.wait(35000)
+    the_waiter.wait(5000)
     if the_waiter.timed_out:
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 

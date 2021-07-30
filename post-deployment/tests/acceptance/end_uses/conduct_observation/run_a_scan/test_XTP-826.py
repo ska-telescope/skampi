@@ -18,7 +18,7 @@ from ska.scripting.domain import SubArray
 # local imports
 from resources.test_support.helpers import resource
 from resources.test_support.controls import set_telescope_to_standby, set_telescope_to_running
-from resources.test_support.controls import telescope_is_in_standby, take_subarray
+from resources.test_support.controls import telescope_is_in_standby, take_subarray, tmc_is_on
 
 DEVICES_TO_LOG = [
     'ska_mid/tm_subarray_node/1',
@@ -80,6 +80,7 @@ def check_resource_ready(resource_name):
 
 LOGGER = logging.getLogger(__name__)
 
+@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.quarantine

@@ -72,7 +72,7 @@ def fixture():
     return {}
 
 
-@pytest.mark.trial
+# @pytest.mark.trial
 @pytest.mark.ncra
 @pytest.mark.select
 @pytest.mark.skamid

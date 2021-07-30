@@ -13,7 +13,8 @@ from pytest_bdd import given, parsers, scenario, then, when
 
 from resources.test_support.controls import (set_telescope_to_running,
                                              set_telescope_to_standby,
-                                             telescope_is_in_standby)
+                                             telescope_is_in_standby,
+                                             tmc_is_on)
 from resources.test_support.helpers import resource
 from resources.test_support.oet_helpers import ScriptExecutor
 
@@ -70,7 +71,7 @@ def set_telescope_in_off_state(result):
     if not telescope_is_in_standby():
         set_telescope_to_standby()
     telescope_state = resource(result[CENTRAL_NODE_USED]).get('telescopeState')
-    assert telescope_state == 'OFF', \
+    assert telescope_state == 'STANDBY', \
         f"Expected telescope to be OFF but instead was {telescope_state}"
     LOGGER.info("Telescope is in OFF state")
 
@@ -80,6 +81,8 @@ def set_telescope_in_on_state(result):
     """
     Set telescope to ON state (startup) if it's not yet ON.
     """
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info("Starting up telescope")
     if telescope_is_in_standby():
         set_telescope_to_running()

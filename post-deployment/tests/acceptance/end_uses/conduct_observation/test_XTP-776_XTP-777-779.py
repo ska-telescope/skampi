@@ -18,7 +18,8 @@ from resources.test_support.controls import (set_telescope_to_running,
                                              set_telescope_to_standby,
                                              take_subarray,
                                              restart_subarray,
-                                             telescope_is_in_standby)
+                                             telescope_is_in_standby,
+                                             tmc_is_on)
 from resources.test_support.helpers import resource
 from resources.test_support.oet_helpers import ScriptExecutor, ObsStateRecorder
 
@@ -126,6 +127,8 @@ def check_skuid_service_is_running(result):
 
 @given('sub-array is in ObsState EMPTY')
 def start_up_telescope(result):
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     if telescope_is_in_standby():
         LOGGER.info("PROCESS: Starting up telescope")
         set_telescope_to_running()
@@ -163,6 +166,8 @@ def allocate_resources_from_sbi(script, sb_json):
         script (str): file path to an observing script
         sb_json (str): file path to a scheduling block
     """
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     if telescope_is_in_standby():
         set_telescope_to_running()
 

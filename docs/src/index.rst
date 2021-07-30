@@ -23,3 +23,4 @@ You can also see a `deployment diagram for skampi <https://confluence.skatelesco
    multitenancy
    kubernetes
    helm
+   subsystems

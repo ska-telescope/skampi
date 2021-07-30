@@ -6,7 +6,7 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	Scenario: Starting up telescope
 		Given telescope is in OFF State
 		When I tell the OET to run file:///app/scripts/startup.py
-		Then the central node goes to state ON
+		Then the central node goes to telescopeState ON
 
 	#Scenario: Creating a new SBI
 	@XTP-779 @XTP-776
@@ -43,4 +43,4 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	Scenario: Setting telescope to stand-by
 		Given telescope is in ON State
 		When I tell the OET to run file:///app/scripts/standby.py
-		Then the central node goes to state OFF
+		Then the central node goes to telescopeState STANDBY

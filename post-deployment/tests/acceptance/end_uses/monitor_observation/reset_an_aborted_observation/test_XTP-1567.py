@@ -13,7 +13,7 @@ from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 
 # SUT
-from skallop.bdd_test_data_manager.data_manager import download_test_data
+from ska_ser_skallop.bdd_test_data_manager.data_manager import download_test_data
 #SUT infrastructure
 from tango import DeviceProxy, DevState # type: ignore
 ## local imports

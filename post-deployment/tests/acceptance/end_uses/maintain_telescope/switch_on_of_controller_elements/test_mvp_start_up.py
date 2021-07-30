@@ -3,13 +3,13 @@ import pytest
 from types import SimpleNamespace
 import logging
 
-from skallop.event_handling import builders
-from skallop.event_handling.occurences import Occurrences
-from skallop.subscribing.base import MessageBoardBase
-from skallop.mvp_control.describing import mvp_names
-from skallop.mvp_fixtures.context_management import TelescopeContext
-from skallop.mvp_control.entry_points.base import EntryPoint
-from skallop.mvp_control.event_waiting import wait
+from ska_ser_skallop.event_handling import builders
+from ska_ser_skallop.event_handling.occurences import Occurrences
+from ska_ser_skallop.subscribing.base import MessageBoardBase
+from ska_ser_skallop.mvp_control.describing import mvp_names
+from ska_ser_skallop.mvp_fixtures.context_management import TelescopeContext
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_control.event_waiting import wait
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ def fxt_transit_checker(devices, standby_telescope: TelescopeContext)-> Tuple[Oc
     checker = (
         builder.check_that(central_node)
         .transits_according_to(["ON"])
-        .on_attr("state")
+        .on_attr("telescopeState")
         .when_transit_occur_on(devices,ignore_first=True)
     )
     board  = standby_telescope.push_context_onto_test(wait.waiting_context(builder))
@@ -54,7 +54,7 @@ def test_start_up(
 
     checker, board = transit_checking
     entry_point.set_telescope_to_running()
-    standby_telescope.state = "ON"
+    standby_telescope.telescopeState = "ON"
     try:
         wait.wait(board, 60, live_logging=False)
     except wait.EWhilstWaiting as exception:

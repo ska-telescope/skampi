@@ -9,22 +9,21 @@ Acceptance tests for MVP.
 import sys, os
 import pytest
 import logging
-from time import sleep
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 
 
 #SUT
 from ska.scripting.domain import Telescope, SubArray, ResourceAllocation, Dish
-from ska.cdm.messages.central_node.assign_resources import AssignResourcesRequest
-from ska.cdm.schemas import CODEC as cdm_CODEC
+from ska_tmc_cdm.messages.central_node.assign_resources import AssignResourcesRequest
+from ska_tmc_cdm.schemas import CODEC as cdm_CODEC
 #SUT infrastructure
 from tango import DeviceProxy, DevState # type: ignore
 ## local imports
 from resources.test_support.helpers import resource
 from resources.test_support.sync_decorators import sync_assign_resources
 from resources.test_support.persistance_helping import update_resource_config_file
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray, tmc_is_on
 from resources.test_support.helpers_low import wait_before_test
 from resources.test_support.oet_helpers import oet_compose_sub
 
@@ -56,6 +55,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
+@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -66,9 +66,10 @@ def test_allocate_resources():
 
 @given("A running telescope for executing observations on a subarray")
 def set_to_running():
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
-    wait_before_test(timeout=10)
-    assert(telescope_is_in_standby())
+    assert telescope_is_in_standby()
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Invoking Startup Telescope command on the telescope.")
     set_telescope_to_running()
@@ -78,7 +79,7 @@ def set_to_running():
 def allocate_four_dishes(result):
     LOGGER.info("Allocating 4 dishes to subarray 1")
     ##############################
-    @sync_assign_resources(4, 150)
+    @sync_assign_resources(4, 600)
     def test_SUT():
         res = oet_compose_sub()
         return res     
@@ -92,6 +93,7 @@ def allocate_four_dishes(result):
 @then("I have a subarray composed of 4 dishes")
 def check_subarray_composition(result):
     #check that there was no error in response
+    # TODO: To uncomment once latest tmc-mid chart is published
     assert_that(result['response']).is_equal_to(ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)]))
     #check that this is reflected correctly on TMC side
     assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
@@ -126,6 +128,7 @@ def teardown_function(function):
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
     LOGGER.info("Telescope is in standby")
+    assert(telescope_is_in_standby())
 
  
     

@@ -15,7 +15,7 @@ from concurrent import futures
 
 # SUT
 from ska.scripting.domain import Telescope, SubArray
-from skallop.bdd_test_data_manager.data_manager import download_test_data
+from ska_ser_skallop.bdd_test_data_manager.data_manager import download_test_data
 
 # SUT infrastructure
 from tango import DeviceProxy, DevState
@@ -37,6 +37,7 @@ from resources.test_support.controls import (
     telescope_is_in_standby,
     take_subarray,
     restart_subarray,
+    tmc_is_on,
 )
 from resources.test_support.tmc_helpers import sub_resetting, obsreset, configuring_sub
 
@@ -71,6 +72,7 @@ def fixture():
     return {}
 
 
+# @pytest.mark.trial
 @pytest.mark.ncra
 @pytest.mark.select
 @pytest.mark.skamid
@@ -85,6 +87,8 @@ def test_subarray_abort():
 
 
 def assign():
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info(
         "Before starting the telescope checking if the telescope is in StandBy."
     )
@@ -267,3 +271,4 @@ def teardown_function(function):
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
     LOGGER.info("Telescope is in StandBy.")
+    assert telescope_is_in_standby()

@@ -12,13 +12,13 @@ dependencies:
 - name: ska-tango-util
   version: 0.2.14
   repository: https://artefact.skao.int/repository/helm-internal
-- name: ska-sdp
-  version: 0.7.0
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-sdp.enabled
-- name: tmc-low
-  version: 0.3.3
+- name: sdp
+  version: 0.4.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: sdp.enabled
+- name: ska-tmc-low
+  version: 0.3.6
+  repository: https://artefact.skao.int/repository/helm-internal
 - name: ska-low-mccs
   version: 0.8.2
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
@@ -29,10 +29,10 @@ dependencies:
   version: 0.1.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: skuid.enabled
-- name: oet-scripts
+- name: ska-oso-scripting
   version: 0.4.1
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  condition: oet-scripts.enabled
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-oso-scripting.enabled
 - name: landingpage
   version: 0.1.0
   repository: file://../landingpage

@@ -1,4 +1,4 @@
-ska-oso-scripting==1.7.0
+ska-oso-scripting==2.1.5
 --extra-index-url https://artefact.skao.int/repository/pypi/simple
 # TODO can be removed once test_requirements are also updated to ADR-25 and CAR
 --extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple

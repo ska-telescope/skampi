@@ -7,11 +7,12 @@ global:
   - "--sleep=1"
   - "--tries=100"
   sub-system:
+    tango-util:
+      enabled: false
     tango-base:
       enabled: false
     webjive:
       enabled: false
-  minikube: false
   tango_host: databaseds-tango-base-test:10000
   dsconfig:
     timeout: 300s
@@ -31,7 +32,8 @@ landingpage:
   enabled: true
   MVPInstance: mvp-low
 
-tango-base:
+ska-tango-base:
+  enabled: false
   vnc:
     replicas: 1
     enabled: true
@@ -56,7 +58,8 @@ tango-base:
     use_pv: false
 
 ska-low-mccs:
-  tango-base:
+  enabled: true
+  ska-tango-base:
     enabled: false
 # mccs:
 #   tango-base:
@@ -73,7 +76,8 @@ ska-low-mccs:
 #       tag: latest
 #       pullPolicy: IfNotPresent
 
-webjive:
+ska-webjive:
+  enabled: true
   minikube: false
   ingress:
     enabled: true
@@ -89,7 +93,7 @@ webjive:
         cpu: 1000m     # 1000m = 1 CPU
         memory: 1024Mi # 1024Mi = 1 GB mem
 
-oet-scripts:
+ska-oso-scripting:
   enabled: true
   ingress:
     hostname: low.k8s.stfc.skao.int
@@ -104,12 +108,18 @@ oet-scripts:
     featureFlags:
       readViaPubSub: true
 
-ska-sdp:
+sdp:
   enabled: true
   lmc:
     prefix: low
     nsubarray: 3
-  tango-base:
+  ska-tango-base:
+    enabled: false
+
+## tm
+ska-tmc-mid:
+  enabled: true
+  ska-tango-base:
     enabled: false
 
 ska-archiver:

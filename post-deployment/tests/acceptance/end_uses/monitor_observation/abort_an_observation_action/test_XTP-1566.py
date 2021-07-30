@@ -48,7 +48,7 @@ non_default_states_to_check = {}
 
 subarray=SubArray(1)
 
-# @pytest.mark.skalow1643
+@pytest.mark.skalow1643
 @pytest.mark.skalow
 @pytest.mark.quarantine
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then Abort brings them in ABORTED observation state in MVP Low")

@@ -23,7 +23,7 @@ from tango import DeviceProxy, DevState # type: ignore
 from resources.test_support.helpers import resource
 from resources.test_support.sync_decorators import sync_assign_resources, sync_obsreset,sync_abort, sync_scan_oet
 from resources.test_support.persistance_helping import update_resource_config_file
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray,tmc_is_on
 
 
 DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
@@ -54,7 +54,7 @@ non_default_states_to_check = {
 def result():
     return {}
 
-# @pytest.mark.trial
+@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -64,6 +64,8 @@ def test_subarray_obsreset():
     """reset subarray"""
 
 def assign():
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
@@ -179,4 +181,6 @@ def teardown_function(function):
             raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to StandBy")
     set_telescope_to_standby()
-    LOGGER.info("Telescope is in StandBy.")
+    LOGGER.info("Telescope StandBy command invoked.")
+    assert telescope_is_in_standby()
+    LOGGER.info("Telescope is in Standby")

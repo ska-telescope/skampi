@@ -1,12 +1,14 @@
 Helm 
 ====
-Helm is the Kubernetes tool for managing the deployment of k8s resources and dependencies. 
+Helm is the Kubernetes tool for managing the deployment of k8s resources and dependencies. Charts are packages of pre-configured Kubernetes resources, and before packaged, are nothing more than a collection of directories and yaml files containing all the information required to to create kubernetes resources using a templating language.
 
-To familiarise with the use of Helm charts, please clone and play around with the |link_tango_examples| repository. There are a few examples of how to develop Tango applications, and for deploying them in any kubernetes cluster, from a local Minikube cluster (for local testing) to a cloud-based cluster. While you're looking around in Tango Examples, take note of the two directories under the `/charts/` folder: `testparent` and `ska-tango-examples`. Make a note of the difference between an umbrella chart and the chart you're developing. The `testparent` chart is an umbrella chart, and installs the necessary dependencies for deploying your new application. It is different from the SKAMPI Mid and SKAMPI Low charts only because it installs an application directly from the repository. In the SKAMPI repository, all your charts are installed from the centrally hosted Helm repository (in the Central Artifact Repository).
+For more information on how templating works, please consult the `orchestration guidelines <https://developer.skatelescope.org/en/latest/tools/containers/orchestration-guidelines.html#templating-the-application>`_. References on the templating language used are also available there.
 
-For a more detailed explanation of the Umbrella / subcharts architecture used at SKA, see the section on Helm in the `orchestration guidelines <https://developer.skatelescope.org/en/latest/tools/containers/orchestration-guidelines.html#helm-sub-chart-architecture>`_.
+A general tutorial on Kubernetes and Helm in the SKA context was given during the `2021-07 Tango Training sessions <https://confluence.skatelescope.org/display/SE/2021-07-05+Tango+Training>`_, day 3. Feel free to simply go to the `containerisation and orchestration training repository <https://gitlab.com/ska-telescope/sdi/ska-cicd-training-containerisation-and-orchestration>`_.
 
-Helm is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources.
+To familiarise further with the use of Helm charts in the SKA projects, please clone and play around with the |link_tango_examples| repository. There are a few examples of how to develop Tango applications, and for deploying them in any kubernetes cluster, from a local Minikube cluster (for local testing) to a cloud-based cluster. While you're looking around in Tango Examples, take note of the two directories under the `/charts/` folder: `testparent` and `ska-tango-examples`. Make a note of the difference between an umbrella chart and the chart you're developing. The `testparent` chart is an umbrella chart, and installs the necessary dependencies for deploying your new application. It is different from the SKAMPI Mid and SKAMPI Low charts only because it installs an application directly from the repository. In the SKAMPI repository, all your charts are installed from the centrally hosted Helm repository (in the Central Artifact Repository).
+
+For a more detailed explanation of the Umbrella / subcharts architecture used at SKA, see the section on Helm subcharts in the `orchestration guidelines <https://developer.skatelescope.org/en/latest/tools/containers/orchestration-guidelines.html#helm-sub-chart-architecture>`_.
 
 All the charts are included in the folder "charts". Every chart has the following structure: 
 

@@ -2,7 +2,7 @@ Helm
 ====
 Helm is the Kubernetes tool for managing the deployment of k8s resources and dependencies. Charts are packages of pre-configured Kubernetes resources, and before packaged, are nothing more than a collection of directories and yaml files containing all the information required to to create kubernetes resources using a templating language.
 
-For more information on how templating works, please consult the `orchestration guidelines <https://developer.skatelescope.org/en/latest/tools/containers/orchestration-guidelines.html#templating-the-application>`_. References on the templating language used are also available there.
+For more information on how templating works, please consult the Developer Portal on `templating an application <https://developer.skatelescope.org/en/latest/tools/containers/orchestration-guidelines.html#templating-the-application>`_.
 
 A general tutorial on Kubernetes and Helm in the SKA context was given during the `2021-07 Tango Training sessions <https://confluence.skatelescope.org/display/SE/2021-07-05+Tango+Training>`_, day 3. Feel free to simply go to the `containerisation and orchestration training repository <https://gitlab.com/ska-telescope/sdi/ska-cicd-training-containerisation-and-orchestration>`_.
 

@@ -154,5 +154,5 @@ def teardown_function(function):
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
-    assert(telescope_is_in_standby())
+    
 

@@ -3,37 +3,35 @@ xauthority: "~/.Xauthority"
 minikube: true
 
 global:
-  retry:
+  retry: 
   - "--sleep=1"
   - "--tries=100"
   sub-system:
-    tango-util:
-      enabled: false
     tango-base:
       enabled: false
     webjive:
       enabled: false
+  minikube: false
   tango_host: databaseds-tango-base-test:10000
   dsconfig:
     timeout: 300s
     image:
-      registry: artefact.skao.int
-      image: ska-tango-images-tango-dsconfig
-      tag: 1.5.1
+      registry: nexus.engageska-portugal.pt/ska-tango-images
+      image: tango-dsconfig
+      tag: 1.5.0.6
       pullPolicy: IfNotPresent
   itango:
     image:
-      registry: artefact.skao.int
-      image: ska-tango-images-tango-itango
-      tag: 9.3.5
+      registry: nexus.engageska-portugal.pt/ska-tango-images
+      image: tango-itango
+      tag: 9.3.3.7
       pullPolicy: IfNotPresent
 
 landingpage:
   enabled: true
   MVPInstance: mvp-low
 
-ska-tango-base:
-  enabled: false
+tango-base:
   vnc:
     replicas: 1
     enabled: true
@@ -58,8 +56,7 @@ ska-tango-base:
     use_pv: false
 
 ska-low-mccs:
-  enabled: true
-  ska-tango-base:
+  tango-base:
     enabled: false
 # mccs:
 #   tango-base:
@@ -76,8 +73,7 @@ ska-low-mccs:
 #       tag: latest
 #       pullPolicy: IfNotPresent
 
-ska-webjive:
-  enabled: true
+webjive:
   minikube: false
   ingress:
     enabled: true
@@ -93,7 +89,7 @@ ska-webjive:
         cpu: 1000m     # 1000m = 1 CPU
         memory: 1024Mi # 1024Mi = 1 GB mem
 
-ska-oso-scripting:
+oet-scripts:
   enabled: true
   ingress:
     hostname: low.k8s.stfc.skao.int
@@ -113,13 +109,7 @@ sdp:
   lmc:
     prefix: low
     nsubarray: 3
-  ska-tango-base:
-    enabled: false
-
-## tm
-ska-tmc-mid:
-  enabled: true
-  ska-tango-base:
+  tango-base:
     enabled: false
 
 ska-archiver:

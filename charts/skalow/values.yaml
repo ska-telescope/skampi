@@ -127,3 +127,5 @@ ska-archiver:
 
 ska-tmc-low:
   enabled: true
+  ska-tango-base:
+    enabled: false

@@ -22,7 +22,7 @@ dependencies:
 - name: ska-low-mccs
   version: 0.8.2
   repository: https://artefact.skao.int/repository/helm-internal
-- name: webjive
+- name: ska-webjive
   version: 1.0.24
   repository: https://artefact.skao.int/repository/helm-internal
 - name: ska-ser-skuid

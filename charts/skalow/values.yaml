@@ -83,6 +83,7 @@ ska-low-mccs:
 #       pullPolicy: IfNotPresent
 
 ska-webjive:
+  enabled: true
   minikube: false
   ingress:
     enabled: true

@@ -14,11 +14,11 @@ Developers may not be able to simulate the targeted deployment environment by us
 
 * Standard naming conventions allowing for a Namespace per development branch.
 * The same Resource Quotas and Limit Ranges as those that are applied to Staging and Integration environments.
-* Access to the temporary branch-based Namespace within the Kubernetes Cluster provided through a customized ``kubectl`` file.
+* Access to the temporary branch-based Namespace within the Kubernetes Cluster provided through a customized ``KUBECONFIG`` file.
 
 .. warning::
 
-   Branch-based deployments are complete deployments of MID or LOW, and therefore require the same resources as any other deployment of SKAMPI - developers should be mindful of the impact of deployments. As such branch-based namespaces are short lived: they are deleted 2 hours after their deployment, and only manually deployed for persistence - automatic deployments will be deleted immediately.
+    Branch-based deployments are complete deployments of MID or LOW, and therefore require the same resources as any other deployment of SKAMPI - developers should be mindful of the impact of deployments. As such *branch-based namespaces are short lived: they are deleted 2 hours after their deployment*, and only manually deployed for persistence - automatic test deployments will be deleted immediately.
 
 
 Pipeline Namespaces
@@ -54,18 +54,34 @@ Retrieving the kubeconfig file is easy. Deployment and testing of SKAMPI in the 
 .. image:: _static/img/selectjobmltnt.png
 
 
-Next check the logs on Gitlab for that job. You'll see a ``curl`` in the job output towards the end:
-
+Next check the logs on Gitlab for that job. Just after the creation of the namespace, your credentials are set up and the following section shows how you can download the KUBECONFIG file to your local machine for accessing the cluster resources:
 ::
 
- Example:
- 
- You can get the kubeconfig file from the url: 
- "https://artefact.skao.int/repository/k8s-ci-creds-internal/ci-skampi-st-559-publish-credentials-low" 
- with the following command into your current directory in a file called KUBECONFIG:
-	curl https://artefact.skao.int/repository/k8s-ci-creds-internal/ci-skampi-st-559-publish-credentials-low --output KUBECONFIG
+ ########################All done!########################
+ You have the following permissions(Expand this section):
+ You can get the kubeconfig file from the url: "https://artefact.skao.int/repository/k8s-ci-creds-internal/k8s-ci-svc-ska-skampi-at1-959-ci-ska-skampi-at1-959-mid-conf" with the following command into your current directory in a file called KUBECONFIG: 
+        curl https://artefact.skao.int/repository/k8s-ci-creds-internal/k8s-ci-svc-ska-skampi-at1-959-ci-ska-skampi-at1-959-mid-conf --output KUBECONFIG
+ Example usage: 
+        kubectl --kubeconfig=KUBECONFIG get pods
+ Note: The current context is set to first namespace passed, you need to provide other namespaces explicitly (with "-n namespace" option)
 
-Once this file is copied to your local machine, and the adequate enviroment variables are set you should be able to access the namespace within the kubernetes cluster. 
+
+The output seems to stand still for a while, which means that the kubernetes deployment is still spinning up.
+
+If you can find the words "Kubernetes resources dump" in the job output, it means that the SKAMPI deployment has finished and all the pods are running. You now can interact with the deployment, for instance by calling commands such as the one below to show all the deployed pods:
+::
+
+ kubectl --kubeconfig=KUBECONFIG get pods
+
+Pro tip: to make the above command (and subsequent ones) less cumbersome, you can override your current kubeconfig by setting your ``KUBECONFIG`` enviroment variable as the downloaded file called ``$KUBECONFIG``:
+::
+
+ export KUBECONFIG=KUBECONFIG
+
+The above command now reduces to simply
+::
+
+ kubectl get pods
 
 .. note::
 
@@ -73,6 +89,13 @@ Once this file is copied to your local machine, and the adequate enviroment vari
 
   The namespaces are also deleted 2 hours after they are created hence the kubeconfig is only valid for 2 hours.
 
+At the end of the deployment, something like this will guide you to the landing page related to the configuration that was just deployed, for instance:
+::
+
+ ############################################################################
+ #            Access the landing page here:
+ #            https://k8s.stfc.skao.int/ci-quarantine-low/start/
+ ############################################################################
 
 Branch names and access patterns
 ================================

@@ -66,6 +66,8 @@ stages:
     reports:
       junit: build/report.xml
     when: always
+  after_script:
+  - make links
 
 .psi_test_template: &psi_test_definition
   script:
@@ -93,18 +95,22 @@ stages:
     paths:
       - logs.tar.xz
     when: always
-    
+
 .xray_upload: &xray_upload
   after_script:
   - &xray_upload_scripts |
-    curl -X POST -H "Content-type: application/json" --fail -H "Authorization: Basic $JIRA_AUTH" --data @build/cucumber.json https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber
+    if [ -f build/cucumber.json ]; then
+    pip3 install -U "ska-ser-skallop>=2.1.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+    /usr/local/bin/xtp-xray-upload -f build/cucumber.json -v
+    fi
+  - make links
 
 .tags_default: &tags_default
 - k8srunner
 
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low
- 
+
 mid_uninstall:
   stage: clean
   tags: *tags_default
@@ -319,6 +325,8 @@ mid_on_demand_test:
   before_script:
     - *create_k8s_creds
   <<: *test_definition
+  # after_script:
+  #   - make links
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
@@ -413,7 +421,7 @@ low_test_quarantine:
     variables:
       - $STRESS_TEST_DURATION
   allow_failure: true
-      
+
 psi_low_test:
   stage: test
   tags: *tags_psi_low
@@ -472,7 +480,7 @@ low_on_demand_test:
   except:
     refs:
       - master
-      
+
 psi_low_on_demand_test:
   stage: test
   tags: *tags_psi_low
@@ -653,7 +661,7 @@ low_deploy_staging:
       - tags
   # needs:
   #   - job: low_clean_staging
-      
+
 psi_low_deploy_staging:
   stage: deploy_staging
   tags: *tags_psi_low

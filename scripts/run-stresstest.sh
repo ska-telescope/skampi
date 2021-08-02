@@ -16,8 +16,7 @@ while (( `date +%s` < $END_TIME )); do
     kubectl delete namespace $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP
     kubectl create namespace $KUBE_NAMESPACE &&
         kubectl create namespace $KUBE_NAMESPACE_SDP && \
-        timeout 1m make install && \
-        timeout 5m make smoketest && \
+        timeout 5m make install && \
         (timeout 10m make k8s_test | grep --line-buffered -E "xfailed|PASSED|FAILED|XFAIL|XPASS|ERROR|\.py::")
 
     # Move logs

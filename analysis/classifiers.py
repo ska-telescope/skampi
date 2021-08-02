@@ -342,6 +342,11 @@ add_classifier(
     "SKBX-014", "Devices transition to OFF behind central node"
 )
 add_classifier(
+    [("tests/acceptance/end_uses/maintain_telescope/switch_on_of_controller_elements/test_mvp_start_up.py", "test_start_up")],
+    [match_msg(r".*devices behind:\s*$", after_msg_r=r"transition: ON.*")],
+    "SKBX-014b", "Devices transition to ON behind central node"
+)
+add_classifier(
     [("tests/acceptance/end_uses/conduct_observation/edit_subarray_resources/test_XR-13_A1.py", "test_allocate_resources"),
      ("tests/acceptance/end_uses/conduct_observation/edit_subarray_resources/test_XR-13_A4-Test.py", "test_deallocate_resources"),
      ("tests/acceptance/end_uses/maintain_subarray/restart_aborted_subarray/test_XTP-1106.py", "test_subarray_restart"),
@@ -350,7 +355,7 @@ add_classifier(
     [match_msg(r".*where False = telescope_is_in_standby\(\).*",
                after_msg_r=".*assert[ \(]telescope_is_in_standby\(.*",
                section='detail/main')],
-    "SKBX-015", "Telescope not in standby at start of test"
+    "SKBX-015", "Telescope not in standby at start of test", taints=True
 )
 add_classifier(
     [("tests/acceptance/end_uses/conduct_observation/run_a_scan/test_XTP-1561.py", "test_scan_id")],
@@ -699,7 +704,22 @@ add_classifier(
 add_classifier(
     [(None, None)],
     [match_msg(r"E.*KeyError: 'StartUpTelescope'", section='detail/main')],
-    "SKBX-051", "KeyError in TM central node base class"
+    "SKBX-051", "KeyError on StartUpTelescope in TM central node base class"
+)
+add_classifier(
+    [(None, None)],
+    [match_msg(r"KeyError: 'On'", pod='centralnode-01-0')],
+    "SKBX-052", "KeyError on 'On' in TM central node", taints=True
+)
+add_classifier(
+    [(None, None)],
+    [match_msg(r"KeyError: 'Off'", pod='centralnode-01-0')],
+    "SKBX-052b", "KeyError on 'Off' in TM central node", taints=True
+)
+add_classifier(
+    [('tests/smoke/test_mvp_clean.py', 'test_is_running')],
+    [match_msg(r"It seems some elements are in fault, will attempt to clear them")],
+    "SKBX-053", "Telescope starts up with elements in a FAULT state", taints=True
 )
 
 # Special pseudo-classifiers
@@ -766,15 +786,31 @@ def classify_test_results(test_results):
 
         if not found_classifier:
             if test.get('status') not in ['PASSED', 'SKIPPED', 'XPASS'] and not found_classifier:
+
+                # Speculatively point to the last line (which is
+                # generally the pytest summary line) as well as all
+                # messages with level ERROR or CRITICAL
+                msgs = test.get('msgs', [])
+                matched = [ msg for msg in msgs if msg.get('level') in
+                            { 'ERROR', 'CRITICAL' } ]
+                matched = matched + test.get('msgs', [])[-1:]
+
                 if tainted:
-                    matches.append({ 'test': test, 'cfr': TAINT, 'matched': [] })
+                    matches.append({ 'test': test, 'cfr': TAINT, 'matched': matched })
                 else:
-                    matches.append({ 'test': test, 'cfr': UNKNOWN, 'matched': [] })
+                    matches.append({ 'test': test, 'cfr': UNKNOWN, 'matched': matched })
             if test.get('teardown_status') in ['ERROR']:
+
+                # See above
+                msgs = test.get('teardown', [])
+                matched = [ msg for msg in msgs if msg.get('level') in
+                            { 'ERROR', 'CRITICAL' } ]
+                matched = matched + test.get('msgs', [])[-1:]
+
                 if tainted:
-                    matches.append({ 'test': test, 'cfr': TAINT_TD, 'matched': [] })
+                    matches.append({ 'test': test, 'cfr': TAINT_TD, 'matched': matched })
                 else:
-                    matches.append({ 'test': test, 'cfr': UNKNOWN_TD, 'matched': [] })
+                    matches.append({ 'test': test, 'cfr': UNKNOWN_TD, 'matched': matched })
 
     # Show some timing statistics
     cfr_times = ", ".join( f"{skb}: {t:.2f}s"

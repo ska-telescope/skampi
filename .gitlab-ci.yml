@@ -41,7 +41,6 @@ stages:
 .deploy_template: &deploy_definition
   script:
   - make install-or-upgrade
-  - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
@@ -56,9 +55,10 @@ stages:
   - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
   - echo $ARCHIVER_DBNAME
   - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
-  - make smoketest
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make configure-archiver
+  - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
+    kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  - bash scripts/gitlab_section.sh archiver "Archiver configuration"
+    make configure-archiver
   - make k8s_test
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
@@ -67,11 +67,12 @@ stages:
     reports:
       junit: build/report.xml
     when: always
+  after_script:
+  - make links
 
 .psi_test_template: &psi_test_definition
   script:
   - make install-or-upgrade || true
-  - make smoketest
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   - make k8s_test
   artifacts:
@@ -95,18 +96,22 @@ stages:
     paths:
       - logs.tar.xz
     when: always
-    
+
 .xray_upload: &xray_upload
   after_script:
   - &xray_upload_scripts |
-    curl -X POST -H "Content-type: application/json" --fail -H "Authorization: Basic $JIRA_AUTH" --data @build/cucumber.json https://jira.skatelescope.org/rest/raven/1.0/import/execution/cucumber
+    if [ -f build/cucumber.json ]; then
+    pip3 install -U "ska-ser-skallop>=2.1.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+    /usr/local/bin/xtp-xray-upload -f build/cucumber.json -v
+    fi
+  - make links
 
 .tags_default: &tags_default
 - k8srunner
 
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low
- 
+
 mid_uninstall:
   stage: clean
   tags: *tags_default
@@ -321,6 +326,8 @@ mid_on_demand_test:
   before_script:
     - *create_k8s_creds
   <<: *test_definition
+  # after_script:
+  #   - make links
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
@@ -415,7 +422,7 @@ low_test_quarantine:
     variables:
       - $STRESS_TEST_DURATION
   allow_failure: true
-      
+
 psi_low_test:
   stage: test
   tags: *tags_psi_low
@@ -474,7 +481,7 @@ low_on_demand_test:
   except:
     refs:
       - master
-      
+
 psi_low_on_demand_test:
   stage: test
   tags: *tags_psi_low
@@ -655,7 +662,7 @@ low_deploy_staging:
       - tags
   # needs:
   #   - job: low_clean_staging
-      
+
 psi_low_deploy_staging:
   stage: deploy_staging
   tags: *tags_psi_low

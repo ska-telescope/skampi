@@ -22,9 +22,9 @@ dependencies:
 - name: ska-low-mccs
   version: 0.8.2
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-- name: webjive
-  version: 1.0.21
-  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+- name: ska-webjive
+  version: 1.0.24
+  repository: https://artefact.skao.int/repository/helm-internal
 - name: skuid
   version: 0.2.0
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart

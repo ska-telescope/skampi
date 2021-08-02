@@ -65,7 +65,7 @@ ska-tango-base:
     use_pv: false
 
 ska-low-mccs:
-  tango-base:
+  ska-tango-base:
     enabled: false
 # mccs:
 #   ska-tango-base:

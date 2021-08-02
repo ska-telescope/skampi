@@ -21,8 +21,13 @@ Overview: https://kubernetes.io/docs/reference/kubectl/overview/
 
 Cheat Sheet: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
+Hands-on training material: `SKA Training on containerisation and orchestration <https://gitlab.com/ska-telescope/sdi/ska-cicd-training-containerisation-and-orchestration>`_.
+
 K8s Templates
 -------------
+
+.. warning::
+  The below names and specifics for the charts are not necessarily up to date and were compiled as reference material while developing the structure of standard Helm charts for SKA. The information is still mostly relevant though.
 
 Template files follow the standard conventions for writing Go templates (see the `documentation <https://golang.org/pkg/text/template/>`_ for details). 
 For example, in the tango-base chart, the following files composes the templates for the generation of valid kubernetes manifest files: 
@@ -53,7 +58,7 @@ Every yaml file has a metadata tag which specify some important information like
 
 Spec
 ^^^^
-Every yaml file has a spec tag which is used to set all the parameters for a specific object. For instance, in `databaseds.yaml <https://github.com/ska-telescope/k8s-integration/blob/master/chart/templates/databaseds.yaml>`_ the StatefulSet object specifies that the label 'app' should match with a specific value and that the related service is the one specified in the tag 'serviceName'. 
+Every yaml file has a spec tag which is used to set all the parameters for a specific object. For instance, in `databaseds.yaml <https://gitlab.com/ska-telescope/k8s-integration/blob/master/chart/templates/databaseds.yaml>`_ the StatefulSet object specifies that the label 'app' should match with a specific value and that the related service is the one specified in the tag 'serviceName'. 
 
 .. code-block:: console
 

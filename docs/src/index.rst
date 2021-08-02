@@ -8,7 +8,7 @@ SKAMPI consists of a set of helm charts that each deploy a software component or
 
 SKAMPI and its components are being actively developed, and can change rapidly. As components are updated, the SKAMPI helm charts will also be updated to allow use of the updated component. 
 
-To see a list of the GitLab projects used to develop SKAMPI components, and find the associated documentation, `SKAMPI projects are listed on the developer portal </projects/area.html#SKAMPI>`_.
+To see a list of the GitLab projects used to develop SKAMPI components, and find the associated documentation, `SKAMPI projects are listed on the developer portal </projects/area.html#skampi>`_.
 You can also see a `deployment diagram for SKAMPI <https://confluence.skatelescope.org/pages/viewpage.action?pageId=105415493>`_.
 
 .. toctree::

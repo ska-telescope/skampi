@@ -1,4 +1,4 @@
-# README
+# Getting Started
 [![Documentation Status](https://readthedocs.org/projects/ska-telescope-skampi/badge/?version=latest)](https://developer.skatelescope.org/projects/skampi/en/latest/?badge=latest)
 
 ## Before you begin
@@ -25,7 +25,10 @@ make
 ```
 
 ### Local Minikube / Dedicated Server Deployment
-The full deployment of SKAMPI is currently very resource intensive and therefore we recommend that you rather use the [CI Pipeline Deployment](#ci-pipeline-deployment) methods provided. If you want to deploy SKAMPI locally or on a dedicated server, first install Minikube, Docker and Helm (see #minikube etc). A Minikube cluster is a kubernetes cluster with only one node (your laptop is called a node), which acts as the master and worker node. The SKA Minikube repository also provides an ingress to expose your cluster's deployment to the outside world if needed, and other settings (see the documentation in the repo for more details). Once these prerequisites are installed, you can follow the guidelines on [Deployment](https://developer.skao.int/projects/ska-skampi/en/latest/deployment.html).
+The full deployment of SKAMPI is currently very resource intensive and therefore we recommend that you rather use the [CI Pipeline Deployment](#ci-pipeline-deployment) methods provided. If you want to deploy SKAMPI locally or on a dedicated server, first install [Docker](#docker), [Minikube](#minikube) and [Helm](#helm-charts) (note that Helm is installed alongside with Kubectl when you use the [SKA Minikube Deployment](https://gitlab.com/ska-telescope/sdi/ska-cicd-deploy-minikube/) repository).
+
+
+A Minikube cluster is a kubernetes cluster with only one node (your laptop is called a node), which acts as the master and worker node. The SKA Minikube repository also provides an ingress to expose your cluster's deployment to the outside world if needed, and other settings (see the documentation in the repo for more details). Once these prerequisites are installed, you can follow the guidelines on [Deployment](https://developer.skao.int/projects/ska-skampi/en/latest/deployment.html). Note that a partial deployment of SKAMPI is made possible by setting the `<subchartname>.enabled` value to `false` in the `values.yaml` file of the repository, for any component (represented by a subchart) that can be switched off to save resources. Details can be found in the Deployment guidelines.
 
 ### CI Pipeline Deployment
 Installation/Deployment of SKAMPI is much simpler using the Gitlab CI Pipelines, as everything required to set up the environment is included in the CI infrastructure. As all branches should be named after a Jira ticket, you need a Jira ticket before checking out your branch. 
@@ -47,7 +50,7 @@ To gitlab.com:ska-telescope/ska-skampi.git
  * [new branch]        at-42 -> at-42
  ```
 
-You can now create your Merge Request by following the link that is provided by Git - in most terminals you can follow that link by Ctrl+Clicking on the link (Cmd+click on a Mac). We recommend creating a Merge Request and marking it Draft as soon as possible. Stale branches will be removed eventually.
+You can now create your Merge Request by following the link that is provided by Git - in most terminals you can follow that link by Ctrl+Clicking on the link (Cmd+click on a Mac). We recommend creating a Merge Request, and marking it Draft if it is not ready to merge immediately, as soon as possible. Stale branches will be removed eventually.
 
 Follow the [Documentation on Multitenancy](https://developer.skao.int/projects/skampi/en/latest/multitenancy.html#retrieving-the-kubectl-file) for downloading and using the KUBECONFIG file. This file is your key to accessing the namespace in the cluster where your branch has just been deployed.
 
@@ -55,13 +58,14 @@ Follow the [Documentation on Multitenancy](https://developer.skao.int/projects/s
 There are multiple ways to access your cluster. With the Kubernetes plugin installed in VSCode, you can set your VSCode to access the namespaced deployment. Follow the above-mentioned documentation and set your cluster to the KUBECONFIG file provided.
 
 ### Minikube
-For a local installation of a Minikube cluster, we recommend you use the [SKA Deploy Minikube](https://gitlab.com/ska-telescope/sdi/ska-cicd-deploy-minikube) repository.
+For a local installation of a Minikube cluster, we recommend you use the SKA Minikube Deployment repository - see link below.
+
 #### Docker
 
-First install Docker - follow [these instructions](https://docs.docker.com/get-docker/)
+First install Docker - follow [these instructions](https://docs.docker.com/get-docker/).
 
 #### Minikube setup
-To set up your Minikube cluster for local SKAMPI deployment, follow [these instructions](https://gitlab.com/ska-telescope/sdi/ska-cicd-deploy-minikube/). For first-time setup, do the following:
+To set up your Minikube cluster for local SKAMPI deployment, follow the instructions provided in the [SKA Minikube Deployment](https://gitlab.com/ska-telescope/sdi/ska-cicd-deploy-minikube/) repository. For first-time setup, do the following:
 ```
 git clone git@gitlab.com:ska-telescope/sdi/ska-cicd-deploy-minikube.git
 cd ska-cicd-deploy-minikube

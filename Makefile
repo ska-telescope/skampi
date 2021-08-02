@@ -77,7 +77,7 @@ vars: ## Display variables
 	@echo "INGRESS_HOST: $(INGRESS_HOST)"
 	@echo ""
 	@echo "HELM_RELEASE: $(HELM_RELEASE)"
-	@echo "HELM_REPO_NAME: $(HELM_REPO_NAME)"
+	@echo "HELM_REPO_NAME (should be empty except on Staging & Production): $(HELM_REPO_NAME)"
 	@echo "VALUES: $(VALUES)"
 	@echo ""
 	@echo "TANGO_DATABASE_DS: $(TANGO_DATABASE_DS)"

@@ -12,7 +12,7 @@ elasticsearch
 kubernetes
 assertpy
 mock
-# importlib
+importlib
 elasticsearch-dsl
 aiohttp
 aiojobs

@@ -6,9 +6,9 @@ global:
     - "--sleep=1"
     - "--tries=100"
   sub-system:
-    tango-util:
+    ska-tango-util:
       enabled: false
-    tango-base:
+    ska-tango-base:
       enabled: false
     webjive:
       enabled: false
@@ -31,7 +31,7 @@ landingpage:
   enabled: true
   MVPInstance: ska-skampi-mid
 
-skuid:
+ska-ser-skuid:
   enabled: true
   skuid:
     use_pv: false
@@ -39,7 +39,7 @@ skuid:
       generator_id: mvp01
 
 ska-tango-base:
-  enabled: false
+  enabled: true
   vnc:
     replicas: 1
     enabled: true
@@ -97,12 +97,12 @@ ska-csp-lmc-mid:
 
 
 ## sdp
-sdp:
+ska-sdp:
   enabled: true
   lmc:
     prefix: mid
     nsubarray: 3
-  ska-tango-base:
+  tango-base:
     enabled: false
 
 ## tm

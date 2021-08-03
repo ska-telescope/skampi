@@ -57,10 +57,9 @@ stages:
   - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
   - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
     kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  - bash scripts/gitlab_section.sh archiver "Archiver configuration"
+    make configure-archiver
   - make k8s_test
-  #- bash scripts/gitlab_section.sh archiver "Archiver configuration"
-  #  make configure-archiver
-  # - make k8s_test MARK='trial'
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -691,7 +690,7 @@ mid_deploy_staging:
   tags: *tags_default
   variables:
     HELM_REPO_NAME: "skatelescope"
-    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-skampi-mid"
+    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-mid"
     HELM_RELEASE: "staging-mid"
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"

@@ -117,7 +117,12 @@ delete_namespace: ## delete the kubernetes namespace
 	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
 	exit 1; \
 	else \
-	kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
+		if [ -n "$$(kubectl get ns | grep "$(KUBE_NAMESPACE)")" ]; then \
+			echo "Deleting namespace $(KUBE_NAMESPACE)" \
+			kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
+		else \
+			echo "Namespace $(KUBE_NAMESPACE) doesn't exist"; \
+		fi \
 	fi
 
 delete_sdp_namespace: ## delete the kubernetes SDP namespace
@@ -125,7 +130,12 @@ delete_sdp_namespace: ## delete the kubernetes SDP namespace
 	echo "You cannot delete Namespace: $(KUBE_NAMESPACE_SDP)"; \
 	exit 1; \
 	else \
-	kubectl describe namespace $(KUBE_NAMESPACE_SDP) && kubectl delete namespace $(KUBE_NAMESPACE_SDP); \
+		if [ -n "$$(kubectl get ns | grep "$(KUBE_NAMESPACE_SDP)")" ]; then \
+			echo "Deleting namespace $(KUBE_NAMESPACE_SDP)" \
+			kubectl describe namespace $(KUBE_NAMESPACE_SDP) && kubectl delete namespace $(KUBE_NAMESPACE_SDP); \
+		else \
+			echo "Namespace $(KUBE_NAMESPACE_SDP) doesn't exist"; \
+		fi \
 	fi
 
 lint_all:  lint## lint ALL of the helm chart

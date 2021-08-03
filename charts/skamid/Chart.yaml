@@ -2,28 +2,28 @@ apiVersion: v2
 name: ska-skampi-mid
 description: A Helm chart for Kubernetes MVP Mid
 type: application
-version: 0.9.0-dev
-appVersion: 0.9.0-dev
+version: 0.7.0
+appVersion: 0.7.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: ska-tango-base
-  version: 0.2.24
+  version: 0.2.23
   repository: https://artefact.skao.int/repository/helm-internal
 - name: ska-tango-util
   version: 0.2.14
   repository: https://artefact.skao.int/repository/helm-internal
 - name: ska-mid-cbf # CIPA team
-  version: 0.2.4
+  version: 0.2.2
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-mid-cbf.enabled, ska-tango-base.enabled
 - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
   version: 0.1.9
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-csp-lmc-mid.enabled, ska-tango-base.enabled
-- name: ska-sdp
-  version: 0.7.0
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-sdp.enabled
+- name: sdp
+  version: 0.6.1
+  repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  condition: sdp.enabled
 - name: ska-tmc-mid
   version: 0.4.6
   repository: https://artefact.skao.int/repository/helm-internal

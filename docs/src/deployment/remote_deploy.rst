@@ -79,7 +79,7 @@ First, clone the SKAMPI git repository and enter its directory:
     cd skampi
 
 Some of the SKAMPI components require persistent storage when they start. If your remote host
-doesn't support such claims, edit the values in ``pipeline.yaml`` to disable anything that needs
+doesn't support such claims, edit the values in ``values.yaml`` to disable anything that needs
 persistent storage:
 
 .. code-block:: yaml
@@ -117,7 +117,6 @@ won't collide with someone else's, e.g.:
 
     export KUBE_NAMESPACE=skampi-<myname>
     export KUBE_NAMESPACE_SDP=skampi-<myname>-sdp
-    export VALUES=pipeline.yaml
 
 Then install SKAMPI (this ``make`` command will also create the namespaces if they don't already exist):
 

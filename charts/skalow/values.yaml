@@ -7,7 +7,7 @@ global:
   - "--sleep=1"
   - "--tries=100"
   sub-system:
-    ska-tango-util:
+    tango-base:
       enabled: false
     ska-tango-base:
       enabled: false
@@ -64,9 +64,6 @@ ska-tango-base:
   tangodb:
     use_pv: false
 
-ska-low-mccs:
-  ska-tango-base:
-    enabled: false
 # mccs:
 #   ska-tango-base:
 #     enabled: false
@@ -127,5 +124,3 @@ ska-archiver:
 
 ska-tmc-low:
   enabled: true
-  ska-tango-base:
-    enabled: false

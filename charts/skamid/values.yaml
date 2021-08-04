@@ -6,9 +6,9 @@ global:
     - "--sleep=1"
     - "--tries=100"
   sub-system:
-    tango-util:
+    ska-tango-util:
       enabled: false
-    tango-base:
+    ska-tango-base:
       enabled: false
     webjive:
       enabled: false
@@ -97,7 +97,7 @@ ska-csp-lmc-mid:
 
 
 ## sdp
-sdp:
+ska-sdp:
   enabled: true
   lmc:
     prefix: mid

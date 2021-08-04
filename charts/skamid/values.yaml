@@ -103,6 +103,6 @@ ska-sdp:
 ska-tmc-mid:
   enabled: true
 
-ska-archiver:
+ska-tango-archiver:
   enabled: false
   dbname: default_mvp_archiver_db

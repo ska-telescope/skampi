@@ -235,6 +235,7 @@ def telescope_is_in_standby():
 
 def tmc_is_on():
     the_waiter = waiter()
+    the_waiter.set_wait_for_tmc_starting_up()
     the_waiter.wait(5000)
     LOGGER.info(
         'resource("ska_mid/tm_central/central_node").get("State")'

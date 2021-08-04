@@ -50,7 +50,7 @@ def get_job_token_header():
 
 
 @pytest.mark.xfail(reason="Not all SKA devices complies to spec at present")
-@pytest.mark.skamid
+# @pytest.mark.skamid
 def test_ska_devices():
     """Check SKA devices against the Tango developers guide."""
     devices = Database().get_device_exported("*")
@@ -83,7 +83,7 @@ def test_ska_devices():
     assert not test_result.keys()
 
 
-@pytest.mark.skamid
+# @pytest.mark.skamid
 @pytest.mark.quarantine
 def test_dishmaster_conforms_to_tango_wide():
     """Check that dishmaster conforms to tango developers guide"""
@@ -100,7 +100,7 @@ def test_dishmaster_conforms_to_tango_wide():
     assert not result
 
 
-@pytest.mark.skamid
+# @pytest.mark.skamid
 def test_dishmaster_conforms_to_dishmaster_spec():
     """Check that dishmaster device conforms to dishmaster specification"""
     request_headers = get_job_token_header()

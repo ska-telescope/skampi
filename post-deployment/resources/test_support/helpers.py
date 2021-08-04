@@ -415,6 +415,13 @@ class waiter():
         # self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='ON'))
         # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("State",changed_to='ON'))
 
+    def set_wait_for_tmc_starting_up(self):
+        # self.waits.append(watch(resource('mid_csp/elt/master')).to_become("State",changed_to='ON'))
+        self.waits.append(watch(resource('ska_mid/tm_central/central_node')).to_become("State",changed_to='ON'))
+        # self.waits.append(watch(resource('mid_csp/elt/subarray_01')).to_become("State",changed_to='ON'))
+        # self.waits.append(watch(resource('mid_csp_cbf/sub_elt/subarray_01')).to_become("State",changed_to='ON'))
+        # self.waits.append(watch(resource('mid_sdp/elt/subarray_1')).to_become("State",changed_to='ON'))
+
     def wait(self, timeout=30,resolution=0.1):
         self.logs = ""
         while self.waits:

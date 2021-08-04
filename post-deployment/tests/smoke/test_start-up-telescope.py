@@ -19,7 +19,7 @@ LOGGER = logging.getLogger(__name__)
 def test_init():    
   print("Init start-up-telescope")
 
-@pytest.mark.skip
+@pytest.mark.skip()
 @pytest.mark.fast
 @pytest.mark.skamid
 def test_start_up_telescope(run_context):

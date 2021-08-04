@@ -48,14 +48,14 @@ def test_devices():
   assert count > 25
 
 @pytest.mark.fast
-@pytest.mark.skamid
+# @pytest.mark.skamid
 def test_subscribe_to_attribute():
   sdp_subarray = DeviceProxy('mid_sdp/elt/subarray_1')
   id =  sdp_subarray.subscribe_event('State',EventType.CHANGE_EVENT,lambda event:print(event))
   sdp_subarray.unsubscribe_event(id)
 
 @pytest.mark.fast
-@pytest.mark.skamid
+# @pytest.mark.skamid
 @pytest.mark.xfail
 def test_dish_subscribe():
     dish_001 = DeviceProxy('mid_d0001/elt/master')
@@ -63,13 +63,13 @@ def test_dish_subscribe():
     dish_001.unsubscribe_event(sub_id)
 
 @pytest.mark.fast
-@pytest.mark.skamid
+# @pytest.mark.skamid
 @pytest.mark.xfail
 def test_dish_not_on_at_start():
     assert_that(DeviceProxy('mid_d0001/elt/master').State().name).is_in('STANDBY','OFF')
 
 @pytest.mark.fast
-@pytest.mark.skamid
+# @pytest.mark.skamid
 @pytest.mark.xfail
 def test_dish_in_idle():
     assert_that(DeviceProxy('mid_d0001/elt/master').observingState().name).is_in('IDLE')

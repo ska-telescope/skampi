@@ -46,6 +46,7 @@ non_default_states_to_check = {}
 def result():
     return {}
 
+@pytest.mark.skalow1643
 @pytest.mark.skalow
 @pytest.mark.quarantine
 # @pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="deployment is not ready for SKALow")
@@ -61,7 +62,7 @@ def start_up():
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
     wait_before_test(timeout=10)
-    LOGGER.info("Telescope is in ON state")
+    LOGGER.info("Telescope is in ON State")
 
 @given("Subarray is in IDLE state")
 def assign(result):

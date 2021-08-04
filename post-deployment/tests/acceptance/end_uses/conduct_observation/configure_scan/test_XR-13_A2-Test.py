@@ -12,7 +12,6 @@ from datetime import date,datetime
 from random import choice
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
-from  time  import sleep
 import logging
 import os
 import json
@@ -22,7 +21,7 @@ from resources.test_support.helpers import obsState, resource, watch, waiter, \
 from resources.test_support.log_helping import DeviceLogging
 from resources.test_support.persistance_helping import update_scan_config_file
 from resources.test_support.sync_decorators import sync_configure_oet,time_it
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray, tmc_is_on
 import pytest
 #SUT dependencies
 from ska.scripting.domain import Telescope, SubArray
@@ -66,12 +65,14 @@ def test_configure_subarray():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
-    assert(telescope_is_in_standby())
+    assert telescope_is_in_standby()
     LOGGER.info("Telescope is in StandBy.")
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    LOGGER.info("Telescope is in ON state")
+    LOGGER.info("Telescope is in ON telescopeState")
 
 
 @given("sub-array is in IDLE state")
@@ -134,4 +135,3 @@ def teardown_function(function):
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
     LOGGER.info("Telescope is in standby")
-

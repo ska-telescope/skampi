@@ -47,18 +47,18 @@ def update_resource_config_file(file,disable_logging=False):
     client = SkuidClient(os.environ['SKUID_URL'])
     # New type of id "eb_id" is used to distinguish between real SB and id used during testing
     eb_id = client.fetch_skuid("eb")
-    data["sdp"]["id"] = eb_id
+    data["sdp"]["eb_id"] = eb_id
     if "processing_blocks" in data["sdp"]:
         for i in range(len(data["sdp"]["processing_blocks"])):
             pb_id = client.fetch_skuid("pb")
-            data["sdp"]["processing_blocks"][i]["id"] = pb_id
+            data["sdp"]["processing_blocks"][i]["pb_id"] = pb_id
             if "dependencies" in data["sdp"]["processing_blocks"][i]:
                 if i == 0:
                     data["sdp"]["processing_blocks"][i]["dependencies"][0]["pb_id"] = \
-                        data["sdp"]["processing_blocks"][i]["id"]
+                        data["sdp"]["processing_blocks"][i]["pb_id"]
                 else:
                     data["sdp"]["processing_blocks"][i]["dependencies"][0]["pb_id"] = \
-                    data["sdp"]["processing_blocks"][i - 1]["id"]
+                    data["sdp"]["processing_blocks"][i - 1]["pb_id"]
     LOGGER.info(data)
     with open(file, 'w') as f:
         json.dump(data, f)
@@ -77,7 +77,7 @@ def update_scan_config_file(file, sdp_block,disable_logging=False):
         data = json.load(f)
     if not disable_logging:
         LOGGER.info("________Configure string before update function _______" + str(file))
-    sdp_sbi_id = sdp_block['id']
+    sdp_sbi_id = sdp_block['eb_id']
     if not disable_logging:
         LOGGER.info("________Updated sdp_sbi_id from configure string _______" + str(sdp_sbi_id))
     data['csp']['common']['id'] = sdp_sbi_id + '-' + data['sdp']['scan_type']

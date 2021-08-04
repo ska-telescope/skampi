@@ -1,5 +1,1 @@
-{
-  "interface": "https://schema.skatelescope.org/ska-tmc-releaseresources/1.0",
-  "subarray_id": 1,
-  "release_all": true
-}
+{"interface":"https://schema.skao.int/ska-low-tmc-releaseresources/2.0","transaction_id":"txn-....-00001","subarray_id":1,"release_all":true}

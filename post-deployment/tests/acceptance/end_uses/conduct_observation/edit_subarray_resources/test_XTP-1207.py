@@ -45,6 +45,7 @@ non_default_states_to_check = {}
 def result():
     return {}
 
+@pytest.mark.skalow1643
 @pytest.mark.quarantine
 @pytest.mark.skalow
 @pytest.mark.assignr

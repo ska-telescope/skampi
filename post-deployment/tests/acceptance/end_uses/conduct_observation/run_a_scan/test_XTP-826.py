@@ -80,7 +80,6 @@ def check_resource_ready(resource_name):
 
 LOGGER = logging.getLogger(__name__)
 
-@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -168,9 +167,6 @@ def end(result):
     call.
     """
     LOGGER.info("End of test: Resetting Telescope")
-    # if result[SUBARRAY_USED] is not None:
-    #     LOGGER.info("Resetting subarray")
-    #     result[SUBARRAY_USED].reset()
     if resource('ska_mid/tm_subarray_node/1').get("obsState") == "IDLE":
         LOGGER.info("Release all resources assigned to subarray")
         take_subarray(1).and_release_all_resources()

@@ -19,7 +19,6 @@ LOGGER = logging.getLogger(__name__)
 def test_init():    
   print("Init start-up-telescope")
 
-# @pytest.mark.skip()
 @pytest.mark.fast
 @pytest.mark.skamid
 def test_start_up_telescope(run_context):
@@ -53,8 +52,8 @@ def test_start_up_telescope(run_context):
   try:
     assert parsed['data']['executeCommand']['ok'] == True
   finally:
-    #tear down command is ignored if it is already in standby
+    # tear down command is ignored if it is already in standby
     if not telescope_is_in_standby():
-      #wait first for telescope to completely go to standby before switchig it off again    
+      # wait first for telescope to completely go to standby before switchig it off again    
       set_telescope_to_standby()
     LOGGER.info("Telescope is in STANDBY")

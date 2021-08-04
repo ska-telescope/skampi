@@ -6,7 +6,6 @@ from tango import DeviceProxy
 import logging
 LOGGER = logging.getLogger(__name__)
 
-# @pytest.mark.skip()
 @pytest.mark.skamid
 def test_tm_subarray_inconsistent_at_start_up():
     try:
@@ -20,18 +19,6 @@ def test_tm_subarray_inconsistent_at_start_up():
         LOGGER.info("Invoking Startup Telescope command on the telescope.")
         set_telescope_to_running()
         LOGGER.info("Telescope is started successfully.")
-
-        # the_waiter = waiter()
-        # the_waiter.set_wait_for_starting_up()
-        # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('DISABLE')
-        # #when I Startup the telescope and the TM subbarray reports its state as being OFF
-        # CentralNode = DeviceProxy('ska_mid/tm_central/central_node')  
-        # # the_watch = watch(resource('ska_mid/tm_subarray_node/1')).for_a_change_on('State')
-        # CentralNode.TelescopeOn()
-        # # CentralNode.StartUpTelescope()
-        # the_waiter.wait()
-        # the_watch.wait_until_value_changed_to('OFF')
-        #then the children subarray devices should also be in state OFF
         
         resource('ska_mid/tm_central/central_node').assert_attribute('telescopeState').equals('ON')
         #teardown

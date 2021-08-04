@@ -6,7 +6,7 @@ from tango import DeviceProxy
 import logging
 LOGGER = logging.getLogger(__name__)
 
-@pytest.mark.skip()
+# @pytest.mark.skip()
 @pytest.mark.skamid
 def test_tm_subarray_inconsistent_at_start_up():
     try:

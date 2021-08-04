@@ -72,7 +72,7 @@ def end(result):
 
 
 @pytest.mark.oetlow
-@pytest.mark.skalow
+# @pytest.mark.skalow
 @scenario("XTP-2413.feature", "Creating a new SBI with updated SB IDs and PB IDs")
 def test_sbi_creation():
     """
@@ -83,7 +83,7 @@ def test_sbi_creation():
 
 
 @pytest.mark.oetlow
-@pytest.mark.skalow
+# @pytest.mark.skalow
 @pytest.mark.quarantine
 @scenario("XTP-2413.feature", "Allocating resources with a SBI")
 def test_resource_allocation():
@@ -98,7 +98,7 @@ def test_resource_allocation():
 
 
 @pytest.mark.oetlow
-@pytest.mark.skalow
+# @pytest.mark.skalow
 @pytest.mark.quarantine
 @scenario("XTP-2413.feature", "Observing a Scheduling Block")
 def test_observing_sbi():

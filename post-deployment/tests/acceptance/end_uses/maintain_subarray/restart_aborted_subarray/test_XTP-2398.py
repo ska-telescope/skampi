@@ -42,7 +42,6 @@ subarray=SubArray(1)
 def result():
     return {}
 
-@pytest.mark.skalow1643
 @pytest.mark.skalow
 @pytest.mark.quarantine 
 @scenario("XTP-2398.feature", "BDD Test case for subarray Restart functionality")

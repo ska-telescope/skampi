@@ -29,7 +29,7 @@ def start_up_telescope(tmc_central_node):
 
 
 @pytest.mark.quarantine
-# @pytest.mark.skalow
+@pytest.mark.skalow
 def test_central_node_sync(context: StackableContext):
     tmc_central_node = get_device_proxy('ska_low/tm_central/central_node')
     def callback(event):

@@ -1,8 +1,9 @@
+import time
 import pytest
 from datetime import date,datetime
 import os
 import logging
-
+from tango import DeviceProxy
 ##SUT imports
 from ska.scripting.domain import Telescope, SubArray
 from ska_tmc_cdm.schemas import CODEC as cdm_CODEC
@@ -47,7 +48,7 @@ class pilot():
     
     def to_be_composed_out_of(self, dishes, file = 'resources/test_data/OET_integration/example_allocate.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A1.py
-        @sync_assign_resources(dishes,200)
+        @sync_assign_resources(dishes,600)
         def assign():
             sdp_block = update_resource_config_file(file)
             resource_request: AssignResourcesRequest = cdm_CODEC.load_from_file(AssignResourcesRequest, file)
@@ -60,7 +61,7 @@ class pilot():
         return self, sdp_block
 
 
-    def and_configure_scan_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/configure2.json'):
+    def and_configure_scan_by_file(self, sdp_block, file = 'resources/test_data/OET_integration/example_configure.json'):
         ##Reference tests/acceptance/mvp/test_XR-13_A2-Test.py
         @sync_configure_oet
         @time_it(120)
@@ -144,37 +145,150 @@ def restart_subarray(id):
     the_waiter.wait()
 
 def set_telescope_to_standby():
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
-    Telescope().standby()
+    #TODO: Using TMC API for TelescopeOff command.
+    # Telescope().standby()
+
+    CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
+    CentralNode.TelescopeOff()
+    LOGGER.info('After Standby CentralNode State:' + str(CentralNode.telescopeState))
+    LOGGER.info('Standby the Telescope')
+
     #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
     #therefore timeout is given as 12 sec
-    the_waiter.wait(120)
+    the_waiter.wait(5000)
     if the_waiter.timed_out:
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
 def set_telescope_to_running(disable_waiting = False):
-    resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('OFF')
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
-    Telescope().start_up()
+    #TODO: Using TMC API for TelescopeOn command.
+    # Telescope().start_up()
+
+    CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
+    LOGGER.info("Before Sending TelescopeOn command on CentralNode state :" + str(CentralNode.telescopeState))
+    CentralNode.TelescopeOn()
+    the_waiter.wait(5000)
     if not disable_waiting:
-        the_waiter.wait(100)
+        the_waiter.wait(8000)
         if the_waiter.timed_out:
             pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 
 def telescope_is_in_standby():
-    LOGGER.info('resource("ska_mid/tm_subarray_node/1").get("State")'+ str(resource('ska_mid/tm_subarray_node/1').get("State")))
-    LOGGER.info('resource("mid_csp/elt/subarray_01").get("State")' +
-                str(resource('mid_csp/elt/subarray_01').get("State")))
-    LOGGER.info('resource("mid_csp_cbf/sub_elt/subarray_01").get("State")' +
-                str(resource('mid_csp_cbf/sub_elt/subarray_01').get("State")))
+    the_waiter = waiter()
+    the_waiter.wait(5000)
+    LOGGER.info(
+        'resource("ska_mid/tm_central/central_node").get("telescopeState")'
+        + str(resource("ska_mid/tm_central/central_node").get("telescopeState"))
+    )
+    LOGGER.info(
+        'resource("mid_csp/elt/subarray_01").get("State")'
+        + str(resource("mid_csp/elt/subarray_01").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_sdp/elt/subarray_1").get("State")'
+        + str(resource("mid_sdp/elt/subarray_1").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_csp/elt/master").get("State")'
+        + str(resource("mid_csp/elt/master").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_sdp/elt/master").get("State")'
+        + str(resource("mid_sdp/elt/master").get("State"))
+    )
+    
+    LOGGER.info(
+        'resource("mid_d0001/elt/master").get("State")'
+        + str(resource("mid_d0001/elt/master").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_d0002/elt/master").get("State")'
+        + str(resource("mid_d0002/elt/master").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_d0003/elt/master").get("State")'
+        + str(resource("mid_d0003/elt/master").get("State"))
+    )
+    LOGGER.info(
+        'resource("mid_d0004/elt/master").get("State")'
+        + str(resource("mid_d0004/elt/master").get("State"))
+    )
+    return [
+        resource("ska_mid/tm_central/central_node").get("telescopeState"),
+        resource("mid_csp/elt/subarray_01").get("State"),
+        resource("mid_sdp/elt/subarray_1").get("State"),
+        resource("mid_csp/elt/master").get("State"),
+        resource("mid_d0001/elt/master").get("State"),
+        resource("mid_d0002/elt/master").get("State"),
+        resource("mid_d0003/elt/master").get("State"),
+        resource("mid_d0004/elt/master").get("State")
+    ] == ["STANDBY", "OFF", "OFF", "STANDBY", "STANDBY", "STANDBY", "STANDBY", "STANDBY"]
 
-    return  [resource('ska_mid/tm_subarray_node/1').get("State"),
-            resource('mid_csp/elt/subarray_01').get("State"),
-            resource('mid_csp_cbf/sub_elt/subarray_01').get("State")] == \
-            ['OFF','OFF','OFF']
+
+def tmc_is_on():
+    the_waiter = waiter()
+    the_waiter.set_wait_for_tmc_starting_up()
+    the_waiter.wait(5000)
+    LOGGER.info(
+        'resource("ska_mid/tm_central/central_node").get("State")'
+        + str(resource("ska_mid/tm_central/central_node").get("State"))
+    )
+
+    LOGGER.info(
+        'resource("ska_mid/tm_subarray_node/1").get("State")'
+        + str(resource("ska_mid/tm_subarray_node/1").get("State"))
+    )
+
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/sdp_master").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/sdp_master").get("State"))
+    )
+
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/sdp_subarray01").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/sdp_subarray01").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/csp_master").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/csp_master").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/csp_subarray01").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/csp_subarray01").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0001").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0001").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0002").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0002").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0003").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0003").get("State"))
+    )
+    LOGGER.info(
+        'resource("ska_mid/tm_leaf_node/d0004").get("State")'
+        + str(resource("ska_mid/tm_leaf_node/d0004").get("State"))
+    )
+   
+    return [
+        resource("ska_mid/tm_central/central_node").get("State"),
+        resource("ska_mid/tm_subarray_node/1").get("State"),
+        resource("ska_mid/tm_leaf_node/sdp_master").get("State"),
+        resource("ska_mid/tm_leaf_node/sdp_subarray01").get("State"),
+        resource("ska_mid/tm_leaf_node/csp_master").get("State"),
+        resource("ska_mid/tm_leaf_node/csp_subarray01").get("State"),
+        resource("ska_mid/tm_leaf_node/d0001").get("State"),
+        resource("ska_mid/tm_leaf_node/d0002").get("State"),
+        resource("ska_mid/tm_leaf_node/d0003").get("State"),
+        resource("ska_mid/tm_leaf_node/d0004").get("State")
+    ] == ["ON", "ON", "ON", "ON", "ON", "ON", "ON", "ON", "ON", "ON"]
+
 
 ## currently this function is not used in any testcase
 def run_a_config_test():

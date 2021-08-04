@@ -3,7 +3,7 @@ xauthority: "~/.Xauthority"
 minikube: true
 
 global:
-  retry:
+  retry: 
   - "--sleep=1"
   - "--tries=100"
   sub-system:
@@ -28,7 +28,7 @@ global:
       image: ska-tango-images-tango-itango
       tag: 9.3.5
       pullPolicy: IfNotPresent
-
+      
 landingpage:
   enabled: true
   MVPInstance: mvp-low
@@ -110,7 +110,7 @@ ska-oso-scripting:
     featureFlags:
       readViaPubSub: true
 
-ska-sdp:
+sdp:
   enabled: true
   lmc:
     prefix: low

@@ -119,7 +119,3 @@ def the_state_and_the_temperature_of_the_tpm_hw_can_be_monitored(devices):
     logger.info(mccs_time)
     with atomic(devices.all_device_names,'State','OFF',5):
         devices.tmc_central_node.StandByTelescope()
-
-
-
-

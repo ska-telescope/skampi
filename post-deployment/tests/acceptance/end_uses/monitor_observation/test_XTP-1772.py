@@ -21,7 +21,8 @@ from resources.test_support.controls import (restart_subarray,
                                              set_telescope_to_running,
                                              set_telescope_to_standby,
                                              take_subarray,
-                                             telescope_is_in_standby)
+                                             telescope_is_in_standby,
+                                             tmc_is_on)
 from resources.test_support.helpers import resource
 from resources.test_support.oet_helpers import ScriptExecutor, REST_CLIENT
 
@@ -67,7 +68,6 @@ def end(result):
         raise Exception("Unable to tear down test setup")
     set_telescope_to_standby()
 
-
 @pytest.mark.oetmid
 @pytest.mark.quarantine
 @pytest.mark.skamid
@@ -91,6 +91,8 @@ def set_subarray_to_aborted(result):
     Set sub-array to ABORTED state by sending Abort command after resources
     are allocated.
     """
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     if telescope_is_in_standby():
         set_telescope_to_running()
     take_subarray(1).to_be_composed_out_of(2)
@@ -103,7 +105,6 @@ def set_subarray_to_aborted(result):
         f"Expected sub-array to be in ABORTED but instead was in {subarray_state}"
 
     LOGGER.info("Sub-array has been set to ABORTED")
-
 
 @pytest.mark.oetmid
 @pytest.mark.skamid
@@ -128,6 +129,8 @@ def set_subarray_to_fault(result):
     Set sub-array to FAULT state by sending incomplete JSON in the Configure
     command.
     """
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     if telescope_is_in_standby():
         set_telescope_to_running()
     take_subarray(1).to_be_composed_out_of(2)
@@ -183,7 +186,6 @@ def check_final_subarray_state(obsstate, result):
 
     LOGGER.info("Sub-array is in ObsState %s", obsstate)
 
-
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -196,7 +198,6 @@ def test_stop_script_and_abort_subarray():
     And abort.py script is run
     And the sub-array goes to ObsState ABORTED
     """
-
 
 @pytest.mark.oetmid
 @pytest.mark.skamid
@@ -215,6 +216,8 @@ def test_stop_script():
 def start_script_execution(script, sb_json, result):
     """
     """
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     if telescope_is_in_standby():
         set_telescope_to_running()
     take_subarray(1).to_be_composed_out_of(2)

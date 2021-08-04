@@ -37,14 +37,14 @@ def fxt_transit_checker(devices, standby_telescope: TelescopeContext)-> Tuple[Oc
     checker = (
         builder.check_that(central_node)
         .transits_according_to(["ON"])
-        .on_attr("state")
+        .on_attr("telescopeState")
         .when_transit_occur_on(devices,ignore_first=True)
     )
     board  = standby_telescope.push_context_onto_test(wait.waiting_context(builder))
     return checker, board
 
-
-@pytest.mark.xfail
+@pytest.mark.skip("TelescopeContext is not updated in skallop as per SP-1623 and SP-1643")
+# @pytest.mark.xfail
 @pytest.mark.skamid
 def test_start_up(
         transit_checking: Tuple[Occurrences, MessageBoardBase],
@@ -54,7 +54,7 @@ def test_start_up(
 
     checker, board = transit_checking
     entry_point.set_telescope_to_running()
-    standby_telescope.state = "ON"
+    standby_telescope.telescopeState = "ON"
     try:
         wait.wait(board, 60, live_logging=False)
     except wait.EWhilstWaiting as exception:

@@ -22,7 +22,7 @@ from ska.scripting.domain import Telescope, SubArray
 from tango import DeviceProxy, DevState
 from resources.test_support.helpers import  obsState, resource, watch, waiter, map_dish_nr_to_device_name
 import logging
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray
+from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray,restart_subarray, tmc_is_on
 from resources.test_support.sync_decorators import  sync_scan_oet,sync_configure_oet,time_it
 
 LOGGER = logging.getLogger(__name__)
@@ -66,6 +66,8 @@ def test_subarray_scan():
 
 @given("I am accessing the console interface for the OET")
 def start_up():
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")
@@ -84,7 +86,7 @@ def set_to_ready():
 
 @given("duration of scan is 10 seconds")
 def scan_duration(fixture):
-    fixture['scans'] = '{"id":1}'
+    fixture['scans'] = '{"interface":"https://schema.skao.intg/ska-tmc-scan/2.0","transaction_id":"txn-....-00001","scan_id":1}'
     return fixture
 
 @when("I call the execution of the scan instruction")
@@ -93,7 +95,10 @@ def invoke_scan_command(fixture):
     @sync_scan_oet
     def scan():
         def send_scan(duration):
+            # TODO: Update the api when new tmc-mid chart is published
             SubArray(1).scan()
+            # SubarrayNode = DeviceProxy('ska_mid/tm_subarray_node/1')
+            # SubarrayNode.Scan('{"interface":"https://schema.skao.intg/ska-tmc-scan/2.0","transaction_id":"txn-....-00001","scan_id":1}')
         LOGGER.info("Scan command is invoked on Subarray 1")
         executor = futures.ThreadPoolExecutor(max_workers=1)
         return executor.submit(send_scan,fixture['scans'])
@@ -148,4 +153,5 @@ def teardown_function(function):
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")
     set_telescope_to_standby()
+    
 

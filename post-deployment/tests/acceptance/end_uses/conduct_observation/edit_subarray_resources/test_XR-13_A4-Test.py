@@ -22,7 +22,7 @@ from tango import DeviceProxy, DevState
 #local dependencies
 from resources.test_support.helpers import  obsState, resource, watch
 from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,\
-    telescope_is_in_standby,take_subarray,restart_subarray
+    telescope_is_in_standby,take_subarray,restart_subarray, tmc_is_on
 from resources.test_support.sync_decorators import sync_release_resources
 
 LOGGER = logging.getLogger(__name__)
@@ -63,6 +63,8 @@ def test_deallocate_resources():
 
 @given('A running telescope with "4" dishes are allocated to "subarray 1"')
 def set_to_running(result):
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy")
     assert(telescope_is_in_standby())
     LOGGER.info("Telescope is in StandBy.")

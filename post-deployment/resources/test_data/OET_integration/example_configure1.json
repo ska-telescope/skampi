@@ -18,7 +18,7 @@
       "subarray_name": "science period 23"
     },
     "common": {
-      "config_id": "eb-mvp01-20200325-09059-science_A",
+      "config_id": "eb-mvp01-20200325-09059-calibration_B",
       "frequency_band": "1",
       "subarray_id": 1
     },
@@ -95,7 +95,7 @@
   },
   "sdp": {
     "interface": "https://schema.skao.int/ska-sdp-configure/0.3",
-    "scan_type": "science_A"
+    "scan_type": "calibration_B"
   },
   "tmc": {
     "scan_duration": 6.0

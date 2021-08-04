@@ -71,9 +71,9 @@ def test_central_node_sync(context: StackableContext):
     logger.info(f"Results of checking:\n{checking_logs}")
     checker.assert_that('ska_low/tm_central/central_node').is_behind_all_on_transit("ON")
 
-    
 
-        
+
+
 
 
 

@@ -71,7 +71,7 @@ def end(result):
 @pytest.mark.xfail
 @pytest.mark.oetmid
 @pytest.mark.quarantine
-# @pytest.mark.skamid
+@pytest.mark.skamid
 @scenario("XTP-1772.feature", "Recovering sub-array from ABORTED")
 def test_recovery_from_aborted():
     """Test recovering (resetting/restarting) sub-array from ABORTED state
@@ -109,7 +109,7 @@ def set_subarray_to_aborted(result):
 
 @pytest.mark.xfail
 @pytest.mark.oetmid
-# @pytest.mark.skamid
+@pytest.mark.skamid
 @pytest.mark.skip(reason="Partial Fault scenario is not yet handled in MVP")
 @scenario("XTP-1772.feature", "Recovering sub-array from FAULT")
 def test_recovery_from_fault():
@@ -190,7 +190,7 @@ def check_final_subarray_state(obsstate, result):
 
 @pytest.mark.xfail
 @pytest.mark.oetmid
-# @pytest.mark.skamid
+@pytest.mark.skamid
 @pytest.mark.quarantine
 @scenario("XTP-1772.feature", "Stopping script execution and sending Abort command to sub-array")
 def test_stop_script_and_abort_subarray():
@@ -204,7 +204,7 @@ def test_stop_script_and_abort_subarray():
 
 @pytest.mark.xfail
 @pytest.mark.oetmid
-# @pytest.mark.skamid
+@pytest.mark.skamid
 @pytest.mark.quarantine
 @scenario("XTP-1772.feature", "Stopping script execution without aborting sub-array")
 def test_stop_script():

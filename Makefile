@@ -77,7 +77,7 @@ vars: ## Display variables
 	@echo "INGRESS_HOST=$(INGRESS_HOST)"
 	@echo ""
 	@echo "CONFIG=$(CONFIG)"
-	@echo "DEPLOYMENT_CONFIGURATION=ska$(CONFIG)"
+	@echo "DEPLOYMENT_CONFIGURATION=$(DEPLOYMENT_CONFIGURATION)"
 	@echo "HELM_RELEASE=$(HELM_RELEASE)"
 	@echo "HELM_REPO_NAME=$(HELM_REPO_NAME) ## (should be empty except on Staging & Production)"
 	@echo "VALUES=$(VALUES)"

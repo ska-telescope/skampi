@@ -1,5 +1,5 @@
 from resources.test_support.helpers import resource,watch,waiter
-from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby
+from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby, tmc_is_on, set_telescope_to_running
 import pytest
 from tango import DeviceProxy
 

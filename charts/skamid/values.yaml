@@ -111,5 +111,5 @@ ska-tmc-mid:
   ska-tango-base:
     enabled: false
 
-ska-archiver:
+ska-tango-archiver:
   dbname: default_mvp_archiver_db

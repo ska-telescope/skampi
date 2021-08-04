@@ -88,9 +88,6 @@ class pilot():
     def and_release_all_resources(self):
         @sync_release_resources
         def de_allocate():
-            # TODO: Update this method when latest tmc-mid chart is published
-            # CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
-            # CentralNode.ReleaseResources('{"interface":"https://schema.skao.int/ska-tmc-releaseresources/2.0","transaction_id":"txn-....-00001","subarray_id":1,"release_all":true,"receptor_ids":[]}')
             self.SubArray.deallocate()
         de_allocate()
         self.state = "Empty"
@@ -148,7 +145,6 @@ def restart_subarray(id):
     the_waiter.wait()
 
 def set_telescope_to_standby():
-    # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     the_waiter = waiter()
     the_waiter.set_wait_for_going_to_standby()
     #TODO: Using TMC API for TelescopeOff command.
@@ -166,7 +162,6 @@ def set_telescope_to_standby():
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
 def set_telescope_to_running(disable_waiting = False):
-    # resource('ska_mid/tm_subarray_node/1').assert_attribute('State').equals('ON')
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
     #TODO: Using TMC API for TelescopeOn command.
@@ -175,7 +170,7 @@ def set_telescope_to_running(disable_waiting = False):
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
     LOGGER.info("Before Sending TelescopeOn command on CentralNode state :" + str(CentralNode.telescopeState))
     CentralNode.TelescopeOn()
-
+    the_waiter.wait(5000)
     if not disable_waiting:
         the_waiter.wait(8000)
         if the_waiter.timed_out:

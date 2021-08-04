@@ -22,7 +22,6 @@ LOGGER = logging.getLogger(__name__)
 def test_is_running(running_telescope):
     pass
 
-@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.first
@@ -57,64 +56,6 @@ def test_smell_mvp(pre_or_post="#PRE"):
     assert_that(resource('mid_d0002/elt/master').get('State')).is_equal_to('STANDBY')
     assert_that(resource('mid_d0003/elt/master').get('State')).is_equal_to('STANDBY')
     assert_that(resource('mid_d0004/elt/master').get('State')).is_equal_to('STANDBY')
-    # LOGGER.info(
-    #     'resource("ska_mid/tm_central/central_node").get("telescopeState")'
-    #     + str(resource("ska_mid/tm_central/central_node").get("telescopeState"))
-    # )
-    # LOGGER.info(
-    #     'resource("ska_mid/tm_subarray_node/1").get("State")'
-    #     + str(resource("ska_mid/tm_subarray_node/1").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("mid_csp/elt/subarray_01").get("State")'
-    #     + str(resource("mid_csp/elt/subarray_01").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("mid_sdp/elt/subarray_1").get("State")'
-    #     + str(resource("mid_sdp/elt/subarray_1").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("mid_csp/elt/master").get("State")'
-    #     + str(resource("mid_csp/elt/master").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("mid_sdp/elt/master").get("State")'
-    #     + str(resource("mid_sdp/elt/master").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("ska_mid/tm_leaf_node/d0001").get("State")'
-    #     + str(resource("ska_mid/tm_leaf_node/d0001").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("ska_mid/tm_leaf_node/d0002").get("State")'
-    #     + str(resource("ska_mid/tm_leaf_node/d0002").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("ska_mid/tm_leaf_node/d0003").get("State")'
-    #     + str(resource("ska_mid/tm_leaf_node/d0003").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("ska_mid/tm_leaf_node/d0004").get("State")'
-    #     + str(resource("ska_mid/tm_leaf_node/d0004").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("mid_d0001/elt/master").get("State")'
-    #     + str(resource("mid_d0001/elt/master").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("mid_d0002/elt/master").get("State")'
-    #     + str(resource("mid_d0002/elt/master").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("mid_d0003/elt/master").get("State")'
-    #     + str(resource("mid_d0003/elt/master").get("State"))
-    # )
-    # LOGGER.info(
-    #     'resource("mid_d0004/elt/master").get("State")'
-    #     + str(resource("mid_d0004/elt/master").get("State"))
-    # )
-
-    assert 0
 
 @pytest.mark.select   
 @pytest.mark.last

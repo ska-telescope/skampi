@@ -13,7 +13,8 @@ from pytest_bdd import given, parsers, scenario, then, when
 from resources.test_support.controls import (set_telescope_to_running,
                                              set_telescope_to_standby,
                                              take_subarray,
-                                             telescope_is_in_standby)
+                                             telescope_is_in_standby,
+                                             tmc_is_on)
 from resources.test_support.helpers import resource
 from resources.test_support.oet_helpers import ScriptExecutor
 
@@ -60,6 +61,8 @@ def set_subarray_to_idle(result):
     """
     Set sub-array to idle state after resources are allocated.
     """
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     if telescope_is_in_standby():
         LOGGER.info("Starting up telescope")
         set_telescope_to_running()

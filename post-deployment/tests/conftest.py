@@ -8,7 +8,7 @@ from kubernetes import config, client
 
 ## shared fixtures
 from resources.test_support.fixtures import run_context
-from skallop.mvp_fixtures.fixtures import (
+from ska_ser_skallop.mvp_fixtures.fixtures import (
     fxt_telescope_context,
     fxt_exec_settings,
     fxt_allocated_subarray,

@@ -15,7 +15,7 @@ from concurrent import futures
 
 # SUT
 from ska.scripting.domain import Telescope, SubArray
-from skallop.bdd_test_data_manager.data_manager import download_test_data
+from ska_ser_skallop.bdd_test_data_manager.data_manager import download_test_data
 
 # SUT infrastructure
 from tango import DeviceProxy, DevState
@@ -37,6 +37,7 @@ from resources.test_support.controls import (
     telescope_is_in_standby,
     take_subarray,
     restart_subarray,
+    tmc_is_on,
 )
 from resources.test_support.tmc_helpers import sub_resetting, obsreset, configuring_sub
 
@@ -70,7 +71,6 @@ non_default_states_to_check = {
 def fixture():
     return {}
 
-
 @pytest.mark.ncra
 @pytest.mark.select
 @pytest.mark.skamid
@@ -85,6 +85,8 @@ def test_subarray_abort():
 
 
 def assign():
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info(
         "Before starting the telescope checking if the telescope is in StandBy."
     )
@@ -120,7 +122,9 @@ def reset_subarray():
 def configuring_sub(sdp_block):
     @sync_configuring
     def test_SUT(sdp_block):
-        file = download_test_data("mid_configure_v1.json", "skampi-test-data/tmc-integration/configure")
+        # TODO: Will be uncommented when Data folder is available on CAR. 
+        # file = download_test_data("mid_configure_v1.json", "skampi-test-data/tmc-integration/configure")
+        file = 'resources/test_data/OET_integration/example_configure.json'
         update_scan_config_file(file, sdp_block)
         LOGGER.info("Invoking Configure command on Subarray 1")
         config = load_config_from_file(file)

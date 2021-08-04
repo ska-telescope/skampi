@@ -18,7 +18,7 @@ from ska.scripting.domain import SubArray
 # local imports
 from resources.test_support.helpers import resource
 from resources.test_support.controls import set_telescope_to_standby, set_telescope_to_running
-from resources.test_support.controls import telescope_is_in_standby, take_subarray
+from resources.test_support.controls import telescope_is_in_standby, take_subarray, tmc_is_on
 
 DEVICES_TO_LOG = [
     'ska_mid/tm_subarray_node/1',
@@ -95,9 +95,12 @@ def setup_telescope_and_scan(result):
     confirm the telescope is ready, and then to be sure we are testing a multiscan scenario
     perform one scan
     """
+    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+    assert(tmc_is_on())
     LOGGER.info("Before starting the telescope checking if the telescope is in StandBy")
-    assert telescope_is_in_standby(
-    ), f"Test failed as telescope state is {get_subarray_state().value}"
+    assert telescope_is_in_standby()
+    LOGGER.info("Telescope is in StandBy.")
+    LOGGER.info("Starting up telescope")
     set_telescope_to_running()
     LOGGER.info("Telescope is in running state.")
     LOGGER.info("Ensuring resources are assigned")
@@ -105,7 +108,7 @@ def setup_telescope_and_scan(result):
     LOGGER.info("Result of Subarray command is :" + str(result[SUBARRAY_USED]) + str(result['sdp_block']))
     LOGGER.info("Resources are assigned successfully on Subarray Node.")
     LOGGER.info("Invoking configure command on the Subarray for first Scan.")
-    result[SUBARRAY_USED].and_configure_scan_by_file(result['sdp_block'], file='resources/test_data/OET_integration/configure1.json',)
+    result[SUBARRAY_USED].and_configure_scan_by_file(result['sdp_block'], file='resources/test_data/OET_integration/example_configure.json',)
     LOGGER.info("Configure is successful on Subarray.")
     LOGGER.info("Invoking first scan on Subarray.")
     result[SUBARRAY_USED].and_run_a_scan()
@@ -124,7 +127,7 @@ def configure_again(result):
     LOGGER.info("Invoking second configure command on the Subarray.")
     time.sleep(5)
     result[SUBARRAY_USED].and_configure_scan_by_file(
-        result['sdp_block'],file='resources/test_data/OET_integration/configure2.json')
+        result['sdp_block'],file='resources/test_data/OET_integration/example_configure1.json')
     LOGGER.info("Configuration for second time is completed on Subarray.")
     LOGGER.info("SDP_block for second configure command is " + str(result['sdp_block']))
 
@@ -164,15 +167,21 @@ def end(result):
     call.
     """
     LOGGER.info("End of test: Resetting Telescope")
-    if result[SUBARRAY_USED] is not None:
-        LOGGER.info("Resetting subarray")
-        result[SUBARRAY_USED].reset()
     if resource('ska_mid/tm_subarray_node/1').get("obsState") == "IDLE":
         LOGGER.info("Release all resources assigned to subarray")
         take_subarray(1).and_release_all_resources()
-    if telescope_is_in_standby():
-        LOGGER.info("Telescope is in STANDBY")
-    else:
-        LOGGER.info("Resetting telescope to STANDBY")
-        set_telescope_to_standby()
-        LOGGER.info("Telescope is in StandBy.")
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "READY"):
+        LOGGER.info("tearing down configured subarray (READY)")
+        take_subarray(1).and_end_sb_when_ready().and_release_all_resources()
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "CONFIGURING"):
+        LOGGER.warn("Subarray is still in CONFIFURING! Please restart MVP manually to complete tear down")
+        restart_subarray(1)
+        #raise exception since we are unable to continue with tear down
+        raise Exception("Unable to tear down test setup")
+    if (resource('ska_mid/tm_subarray_node/1').get('obsState') == "SCANNING"):
+        LOGGER.warn("Subarray is still in SCANNING! Please restart MVP manually to complete tear down")
+        restart_subarray(1)
+        #raise exception since we are unable to continue with tear down
+        raise Exception("Unable to tear down test setup")
+    LOGGER.info("Put Telescope back to standby")
+    set_telescope_to_standby()

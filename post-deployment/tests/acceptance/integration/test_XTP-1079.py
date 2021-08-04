@@ -7,7 +7,7 @@ import string
 import logging
 import json
 
-import ska.logging
+import ska_ser_logging
 
 from pytest_bdd import (
     given,
@@ -16,10 +16,10 @@ from pytest_bdd import (
     when,
 )
 
-from ska.log_transactions import transaction
+from ska_ser_log_transactions import transaction
 
 # Configure SKA logging immediately when tests start
-ska.logging.configure_logging()
+ska_ser_logging.configure_logging()
 logger = logging.getLogger("ska.test.XTP-1079")
 
 

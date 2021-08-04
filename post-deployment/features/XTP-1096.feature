@@ -8,9 +8,7 @@ Feature:
 		Then the subarray should transition to obsState IDLE
 
 		Examples:
-		| subarray_obsstate  | 
-		| IDLE               | 
-		| READY              | 
+		| subarray_obsstate  |
+		| IDLE               |
+		| READY              |
 		| SCANNING           | 
-		
-

@@ -15,11 +15,11 @@ dependencies:
 - name: ska-mid-cbf # CIPA team
   version: 0.2.2
   repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-mid-cbf.enabled, ska-tango-base.enabled
+  condition: ska-mid-cbf.enabled
 - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
   version: 0.1.9
   repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-csp-lmc-mid.enabled, ska-tango-base.enabled
+  condition: ska-csp-lmc-mid.enabled
 - name: sdp
   version: 0.6.1
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
@@ -27,7 +27,7 @@ dependencies:
 - name: ska-tmc-mid
   version: 0.4.6
   repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-tmc-mid.enabled, ska-tango-base.enabled
+  condition: ska-tmc-mid.enabled
 - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
   version: 0.5.1
   repository: https://artefact.skao.int/repository/helm-internal

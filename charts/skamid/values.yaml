@@ -112,5 +112,4 @@ ska-tmc-mid:
     enabled: false
 
 ska-archiver:
-  enabled: false
   dbname: default_mvp_archiver_db

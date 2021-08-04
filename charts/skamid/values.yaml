@@ -31,7 +31,7 @@ landingpage:
   enabled: true
   MVPInstance: ska-skampi-mid
 
-skuid:
+ska-ser-skuid:
   enabled: true
   skuid:
     use_pv: false
@@ -97,7 +97,7 @@ ska-csp-lmc-mid:
 
 
 ## sdp
-sdp:
+ska-sdp:
   enabled: true
   lmc:
     prefix: mid

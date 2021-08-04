@@ -80,7 +80,6 @@ ska-tango-base:
 #       pullPolicy: IfNotPresent
 
 ska-webjive:
-  enabled: true
   minikube: false
   ingress:
     enabled: true

@@ -81,6 +81,7 @@ vars: ## Display variables
 	@echo "HELM_RELEASE=$(HELM_RELEASE)"
 	@echo "HELM_REPO_NAME=$(HELM_REPO_NAME) ## (should be empty except on Staging & Production)"
 	@echo "VALUES=$(VALUES)"
+	@echo "UMBRELLA_CHART_PATH=$(UMBRELLA_CHART_PATH)"
 	@echo ""
 	@echo "TANGO_DATABASE_DS=$(TANGO_DATABASE_DS)"
 	@echo "ARCHIVER_DBNAME=$(ARCHIVER_DBNAME)"

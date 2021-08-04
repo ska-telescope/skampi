@@ -30,7 +30,7 @@ dependencies:
   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   condition: skuid.enabled
 - name: ska-oso-scripting
-  version: 0.5.1
+  version: 0.4.1
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-oso-scripting.enabled
 - name: landingpage

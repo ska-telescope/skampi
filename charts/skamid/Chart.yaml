@@ -36,10 +36,11 @@ dependencies:
   version: 1.0.24
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-webjive.enabled
-- name: skuid
-  version: 0.2.0
+- name: ska-ser-skuid
+  version: 0.2.1
   repository: https://artefact.skao.int/repository/helm-internal
-name: landingpage
+  condition: ska-ser-skuid.enabled
+- name: landingpage
   version: 0.1.0
   repository: file://../landingpage
   condition: landingpage.enabled

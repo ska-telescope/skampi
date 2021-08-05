@@ -119,7 +119,7 @@ ska-sdp:
   ska-tango-base:
     enabled: false
 
-ska-tango-archiver:
+ska-archiver:
   dbname: default_mvp_archiver_db
 
 ska-tmc-low:

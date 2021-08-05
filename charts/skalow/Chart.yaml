@@ -38,8 +38,8 @@ dependencies:
   version: 0.1.0
   repository: file://../landingpage
   condition: landingpage.enabled
-- name: ska-tango-archiver
+- name: ska-archiver
   version: 0.1.8
   repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-tango-archiver.enabled
+  condition: ska-archiver.enabled
 

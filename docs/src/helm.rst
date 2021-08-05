@@ -27,7 +27,7 @@ All the charts are included in the folder "charts". Every chart has the followin
    appVersion: "1.0"
    description: A Helm chart for deploying the Tango-Base on Kubernetes
    name: ska-tango-base
-   version: 0.2.23
+   version: 0.2.24
 
 .. code-block:: console
 

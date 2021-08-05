@@ -106,7 +106,7 @@ persistent storage:
 
 Note, that you need to set ``minikube: true`` even though you are not using Minikube.
 This is because otherwise you are implying that persistent volume claims are going to get satisfied.
-If your host can satisfies persistent storage claims, skip the above step.
+If your host can satisfy persistent storage claims, skip the above step.
 
 Next, you need to set the environment variables to configure the deployment.
 In particular you need to choose the namespaces to be used for the control system (```KUBE_NAMESPACE``)

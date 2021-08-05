@@ -138,7 +138,7 @@ Accessing a web-server running in a pod
 Forwarding the Kubernetes cluster connection
 --------------------------------------------
 
-If the remot host does not have a browser installed, you will have to forward ports to your local machine,
+If the remote host does not have a browser installed, you will have to forward ports to your local machine,
 in order to access web servers, which run in pods of the remote Kubernetes cluster.
 
 Once you deployed SKAMPI on the remote host, make note of the Kubernetes cluster's IP address and port number listed

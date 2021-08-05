@@ -19,10 +19,19 @@ The SKA Tango Base and Tango Util Helm charts are required by most of the deploy
 For information on Kubernetes and Kubectl, a quick list of references is available [here](https://developer.skao.int/projects/ska-skampi/en/latest/kubernetes.html). Follow the links provided and ensure that you have Kubectl installed before moving on.
 
 ## Deployment
+
+### Makefile Targets
 Deployment of SKAMPI is supported by Make targets, exactly as is the case with [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/). To check which targets are available and what default values are set for variables used by Make, run
 ```
 make
 ```
+
+### Environment Settings
+To check what some of the most commonly used variables are that your Makefile will use when you run any commands (defaults or environment specific), you can run 
+```
+make vars
+```
+This should give you all the basic environment variables needed to run the `make` commands as they are called in CI jobs, in case you want to debug deployment issues. For more information see the section on [CI Pipeline Deployment](#ci-pipeline-deployment).
 
 ### Local Minikube / Dedicated Server Deployment
 The full deployment of SKAMPI is currently very resource intensive and therefore we recommend that you rather use the [CI Pipeline Deployment](#ci-pipeline-deployment) methods provided. If you want to deploy SKAMPI locally or on a dedicated server, first install [Docker](#docker), [Minikube](#minikube) and [Helm](#helm-charts) (note that Helm is installed alongside with Kubectl when you use the [SKA Minikube Deployment](https://gitlab.com/ska-telescope/sdi/ska-cicd-deploy-minikube/) repository).

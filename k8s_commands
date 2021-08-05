@@ -1,0 +1,40 @@
+Kubernetes Handy commands
+ - To deploy K8s charts in the name space "integration"
+     make deploy_all KUBE_NAMESPACE=integration
+ - To delete K8s charts in the name space "integration"
+     make delete_all KUBE_NAMESPACE=integration
+ - Monitor namespace "integration"
+     watch kubectl get all,pv,pvc,ingress -n integration
+ - Get logs of a container
+     kubectl logs -n <<namespace>> <<podname>> <<container-name>>
+     eg: kubectl logs -n integration tmcprototype-tmc-proto-test centralnode
+ - Get the status of a pod - Which container are failing or passing
+     kubectl describe pod <<podname>> -n <<namespace>>
+     eg: kubectl describe pod tmcprototype-tmc-proto-test -n integration
+ - Verify if the pods on the local system are running. All must be running for successful deployment
+     kubectl get pods -n kube-system
+ - Enter into a kubernetes pod
+     kubectl exec -it pod/tmcprototype-tmc-proto-test -n integration -- /bin/bash
+
+SKAMPI Deployment: For Low deployment DEPLOYMENT_CONFIGURATION=skalow
+sudo make install DEPLOYMENT_CONFIGURATION=skamid
+sudo make uninstall DEPLOYMENT_CONFIGURATION=skamid
+make k8s_test MARK=skamid
+With local archiver db connection details:
+sudo make install DEPLOYMENT_CONFIGURATION=skalow ARCHIVER_HOST_NAME=xxx.xxx.xx.xx ARCHIVER_PORT=xxxx ARCHIVER_DB_USER=xxxx ARCHIVER_DB_PWD=xxxx ARCHIVER_DBNAME=test_db
+
+For accessing Kibana in STFC environment, use URL:
+https://k8s.stfc.skao.int/kibana/app/home#/
+
+Webjive URLs:
+Engageska cluster
+http://192.168.93.80/tmcmid/taranta/devices
+http://192.168.93.36/integration/taranta/devices
+For accessing Webjive in STFC environment, use URL: 
+https://k8s.stfc.skao.int/<<namespace>>/taranta/devices
+
+Webjive dashboard restore and dump commands:
+kubectl exec -i pod/mongodb-webjive-test-0 -n <namespace> -- mongorestore --archive < dashboard.dump
+kubectl exec -i pod/mongodb-webjive-test-0 -n <namespace> -- mongodump --archive > dashboard.dump
+
+

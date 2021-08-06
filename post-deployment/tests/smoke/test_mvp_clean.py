@@ -19,6 +19,7 @@ LOGGER = logging.getLogger(__name__)
 @pytest.mark.skip
 @pytest.mark.first
 @pytest.mark.xfail 
+@pytest.mark.running_telescope
 def test_is_running(running_telescope):
     pass
 

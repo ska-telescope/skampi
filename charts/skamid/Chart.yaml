@@ -25,8 +25,9 @@ dependencies:
   repository: https://artefact.skao.int/repository/helm-internal
   condition: sdp.enabled
 - name: ska-tmc-mid
-  version: 0.4.7
+  version: 0.4.8
   repository: https://artefact.skao.int/repository/helm-internal
+  # repository: file://../../../ska-tmc/charts/ska-tmc-mid
   condition: ska-tmc-mid.enabled
 - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
   version: 0.5.1

@@ -22,6 +22,7 @@ LOGGER = logging.getLogger(__name__)
 def test_is_running(running_telescope):
     pass
 
+@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.first
@@ -46,7 +47,6 @@ def test_smell_mvp(pre_or_post="#PRE"):
     assert_that(resource('mid_csp/elt/subarray_03').get('State')).is_equal_to('OFF')
 
     LOGGER.info("Check the States of the SDP devices")
-    assert_that(resource('mid_sdp/elt/master').get('State')).is_equal_to('STANDBY')
     assert_that(resource('mid_sdp/elt/subarray_1').get('State')).is_equal_to('OFF')
     assert_that(resource('mid_sdp/elt/subarray_2').get('State')).is_equal_to('OFF')
     assert_that(resource('mid_sdp/elt/subarray_3').get('State')).is_equal_to('OFF')
@@ -56,6 +56,8 @@ def test_smell_mvp(pre_or_post="#PRE"):
     assert_that(resource('mid_d0002/elt/master').get('State')).is_equal_to('STANDBY')
     assert_that(resource('mid_d0003/elt/master').get('State')).is_equal_to('STANDBY')
     assert_that(resource('mid_d0004/elt/master').get('State')).is_equal_to('STANDBY')
+
+    assert 0
 
 @pytest.mark.select   
 @pytest.mark.last

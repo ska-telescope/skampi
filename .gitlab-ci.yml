@@ -52,6 +52,7 @@ stages:
 
 .test_template: &test_definition
   script:
+  - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
   - bash scripts/gitlab_section.sh vars "Make config dump" make vars
   - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
   - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
@@ -354,7 +355,7 @@ mid_stress_test:
     KUBE_NAMESPACE_PREFIX: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
     SERVICE_ACCOUNT: "stress-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_NAMESPACE: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
-    DBNAME: "$CI_COMMIT_BRANCH_mid_archiver_db"
+    DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
   <<: *stress_test_definition
   environment:
     name: "stress-test"
@@ -458,7 +459,7 @@ low_on_demand_test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH_low_archiver_db"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
   before_script:
     - *create_k8s_creds
   <<: *test_definition
@@ -492,7 +493,7 @@ psi_low_on_demand_test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH_low_archiver_db"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
   before_script:
     - *create_k8s_creds

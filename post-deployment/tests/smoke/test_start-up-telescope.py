@@ -20,7 +20,7 @@ def test_init():
   print("Init start-up-telescope")
 
 @pytest.mark.fast
-@pytest.mark.common
+@pytest.mark.skamid
 def test_start_up_telescope(run_context):
   LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
   assert(tmc_is_on())

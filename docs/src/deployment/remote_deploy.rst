@@ -128,7 +128,7 @@ The above command will add all the environment variables used by the Makefile, s
 to do is remove the ones you don't need (or leave them as default), and update the ones you do.
 After this, all ``make`` commands will automatically use this file no matter whether any of
 these variables have previously been exported or not. Hence, in this case, you don't need to
-export the variables. Now, install SKAMPI (this ``make`` command will also create
+export the variables. Now, deploy SKAMPI (this ``make`` command will also create
 the namespaces if they don't already exist):
 
 .. code-block:: console
@@ -142,6 +142,12 @@ Once you are done with your work, you can uninstall SKAMPI and clean up with:
     make uninstall
     make delete_namespace
     make delete_sdp_namespace
+
+If you want to see how ``make`` will use the variables (in other words, what commands will actually be run), append the parameter ``--dry`` for a dry-run, for example:
+
+.. code-block:: console
+
+    make install --dry
 
 Accessing a web-server running in a pod
 =======================================

@@ -19,22 +19,21 @@ LOGGER = logging.getLogger(__name__)
 def test_init():    
   print("Init start-up-telescope")
 
-@pytest.mark.at-59
 @pytest.mark.fast
-@pytest.mark.skamid
+@pytest.mark.common
 def test_start_up_telescope(run_context):
   LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
   assert(tmc_is_on())
   LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
   assert(telescope_is_in_standby)
   jsonLogin={"username":"user1","password":"abc123"}
-  url = 'http://webjive-webjive-{}:8080/login'.format(run_context.HELM_RELEASE)
+  url = 'http://webjive-auth-ska-webjive-auth-auth0.webjive-auth:8080/login'
   r = requests.post(url=url, json=jsonLogin)
   webjive_jwt = r.cookies.get_dict()['webjive_jwt']
     
   cookies = {'webjive_jwt': webjive_jwt}
 
-  url = 'http://webjive-webjive-{}:5004/db'.format(run_context.HELM_RELEASE)
+  url = 'http://tangogql-ska-webjive-{}:5004/db'.format(run_context.HELM_RELEASE)
   # with open('test-harness/files/mutation.json', 'r') as file:
   #   mutation = file.read().replace('\n', '')
   mutation = '{"query":"mutation {\\n  executeCommand(device: \\"ska_mid/tm_central/central_node\\", command: \\"TelescopeOn\\") {\\n    ok\\n    output\\n    message\\n  }\\n}\\n","variables":"null"}'

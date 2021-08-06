@@ -118,7 +118,10 @@ won't collide with someone else's, e.g.:
     export KUBE_NAMESPACE=skampi-<myname>
     export KUBE_NAMESPACE_SDP=skampi-<myname>-sdp
 
-Then install SKAMPI (this ``make`` command will also create the namespaces if they don't already exist):
+You may also specify these in a ``PrivateRules.mak`` file created at the project root.
+Just add the environment variables to it, and all ``make`` commands will automatically use them,
+when run. In this case, you don't need to export the variables. Now,
+install SKAMPI (this ``make`` command will also create the namespaces if they don't already exist):
 
 .. code-block:: console
 

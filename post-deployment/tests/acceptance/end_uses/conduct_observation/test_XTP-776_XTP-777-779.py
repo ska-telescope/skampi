@@ -73,7 +73,6 @@ def end(result):
                 subarray.get('obsState'))
 
 
-
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Creating a new SBI with updated SB IDs and PB IDs")
@@ -98,7 +97,11 @@ def test_resource_allocation():
     Then the sub-array goes to ObsState IDLE
     """
 
+<<<<<<< HEAD
 
+=======
+@pytest.mark.skip
+>>>>>>> master
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine

@@ -13,7 +13,6 @@ from concurrent import futures
 from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 # SUT
-
 #SUT infrastructure
 from tango import DeviceProxy # type: ignore
 from ska.scripting.domain import SubArray
@@ -48,7 +47,6 @@ non_default_states_to_check = {}
 
 subarray=SubArray(1)
 
-@pytest.mark.skalow1643
 @pytest.mark.skalow
 @pytest.mark.quarantine
 @scenario("XTP-1566.feature", "when the telescope subarrays can be aborted then Abort brings them in ABORTED observation state in MVP Low")

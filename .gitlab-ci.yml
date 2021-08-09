@@ -53,7 +53,7 @@ stages:
 .test_template: &test_definition
   script:
   - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
-  - echo $ARCHIVER_DBNAME
+  - bash scripts/gitlab_section.sh vars "Make config dump" make vars
   - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
   - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
     kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
@@ -668,7 +668,7 @@ psi_low_deploy_staging:
   tags: *tags_psi_low
   variables:
     HELM_REPO_NAME: "skatelescope"
-    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-low"
+    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-skampi-low" ## The name of the chart as published to CAR
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
@@ -690,7 +690,7 @@ mid_deploy_staging:
   tags: *tags_default
   variables:
     HELM_REPO_NAME: "skatelescope"
-    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-mid"
+    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-skampi-mid" ## The name of the chart as published to CAR
     HELM_RELEASE: "staging-mid"
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"

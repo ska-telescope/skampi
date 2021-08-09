@@ -157,21 +157,20 @@ def set_telescope_to_standby():
 
     #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
     #therefore timeout is given as 12 sec
-    the_waiter.wait(8000)
+    the_waiter.wait(5000)
     if the_waiter.timed_out:
         pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
 def set_telescope_to_running(disable_waiting = False):
     the_waiter = waiter()
     the_waiter.set_wait_for_starting_up()
-    the_waiter.wait(8000)
     #TODO: Using TMC API for TelescopeOn command.
     # Telescope().start_up()
 
     CentralNode = DeviceProxy('ska_mid/tm_central/central_node')
     LOGGER.info("Before Sending TelescopeOn command on CentralNode state :" + str(CentralNode.telescopeState))
     CentralNode.TelescopeOn()
-
+    the_waiter.wait(5000)
     if not disable_waiting:
         the_waiter.wait(8000)
         if the_waiter.timed_out:
@@ -179,7 +178,7 @@ def set_telescope_to_running(disable_waiting = False):
 
 def telescope_is_in_standby():
     the_waiter = waiter()
-    the_waiter.wait(8000)
+    the_waiter.wait(5000)
     LOGGER.info(
         'resource("ska_mid/tm_central/central_node").get("telescopeState")'
         + str(resource("ska_mid/tm_central/central_node").get("telescopeState"))
@@ -232,7 +231,7 @@ def telescope_is_in_standby():
 def tmc_is_on():
     the_waiter = waiter()
     the_waiter.set_wait_for_tmc_starting_up()
-    the_waiter.wait(8000)
+    the_waiter.wait(5000)
     LOGGER.info(
         'resource("ska_mid/tm_central/central_node").get("State")'
         + str(resource("ska_mid/tm_central/central_node").get("State"))

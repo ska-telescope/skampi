@@ -115,6 +115,7 @@ def teardown_function(function):
         try:
             set_telescope_to_standby()
         except Exception as ex:
+            LOGGER.error(str(ex))
             sleep(1)
     LOGGER.info("Telescope is in standby")
 

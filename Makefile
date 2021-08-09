@@ -12,7 +12,6 @@ TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the T
 USE_NGINX ?= true##Traefik or Nginx
 HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
-HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
 
@@ -29,28 +28,28 @@ PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
 				--env=https_proxy=${PSI_LOW_PROXY} \
 				--env=no_proxy=${PSI_LOW_NO_PROXY}
 
-PSI_LOW_SDP_PROXY_VARS= --set sdp.proxy.server=${PSI_LOW_PROXY} \
-					--set ska-archiver.enabled=false \
-					--set "sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
+PSI_LOW_SDP_PROXY_VARS= --set ska-sdp.proxy.server=${PSI_LOW_PROXY} \
+					--set ska-tango-archiver.enabled=false \
+					--set "ska-sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
 endif
 
 CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that are not a-z or 0-9 replaced with -. Use in URLs and domain names.
 CI_ENVIRONMENT_SLUG?=skampi##The simplified version of the environment name, suitable for inclusion in DNS, URLs, Kubernetes labels, and so on. Available if environment:name is set.
 $(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gitlab_values.yaml)
 
-CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
-	--set oet-scripts.ingress.nginx=$(USE_NGINX) \
-	--set skuid.ingress.nginx=$(USE_NGINX) \
-	--set tango-base.ingress.nginx=$(USE_NGINX) \
-	--set webjive.ingress.nginx=$(USE_NGINX) \
+CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
+	--set ska-oso-scripting.ingress.nginx=$(USE_NGINX) \
+	--set ska-ser-skuid.ingress.nginx=$(USE_NGINX) \
+	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
+	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
 	--set global.minikube=$(MINIKUBE) \
-	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
-	--set ska-archiver.hostname=$(ARCHIVER_HOST_NAME) \
-	--set ska-archiver.dbname=$(ARCHIVER_DBNAME) \
-	--set ska-archiver.port=$(ARCHIVER_PORT) \
-	--set ska-archiver.dbuser=$(ARCHIVER_DB_USER) \
-	--set ska-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	--set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) \
+	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
+	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
+	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
+	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
 	--values gitlab_values.yaml \
 	$(PSI_LOW_SDP_PROXY_VARS)
 
@@ -67,13 +66,26 @@ CHART_PARAMS = --set tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets that EDA deployment
 -include .make/archiver.mk
 
+# include private variables for custom deployment configuration
 -include PrivateRules.mak
 
 vars: ## Display variables
-	@echo "Namespace: $(KUBE_NAMESPACE)"
-	@echo "HELM_RELEASE: $(HELM_RELEASE)"
-	@echo "VALUES: $(VALUES)"
-	@echo "TANGO_DATABASE_DS: $(TANGO_DATABASE_DS)"
+	@echo "SKA_K8S_TOOLS_DEPLOY_IMAGE=$(SKA_K8S_TOOLS_DEPLOY_IMAGE)"
+	@echo ""
+	@echo "KUBE_NAMESPACE=$(KUBE_NAMESPACE)"
+	@echo "KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP)"
+	@echo "INGRESS_HOST=$(INGRESS_HOST)"
+	@echo ""
+	@echo "CONFIG=$(CONFIG)"
+	@echo "DEPLOYMENT_CONFIGURATION=$(DEPLOYMENT_CONFIGURATION)"
+	@echo "HELM_RELEASE=$(HELM_RELEASE)"
+	@echo "HELM_REPO_NAME=$(HELM_REPO_NAME) ## (should be empty except on Staging & Production)"
+	@echo "VALUES=$(VALUES)"
+	@echo ""
+	@echo "TANGO_DATABASE_DS=$(TANGO_DATABASE_DS)"
+	@echo "ARCHIVER_DBNAME=$(ARCHIVER_DBNAME)"
+	@echo ""
+	@echo "MARK=$(MARK)"
 
 k8s: ## Which kubernetes are we connected to
 	@echo "Kubernetes cluster-info:"
@@ -117,7 +129,12 @@ delete_namespace: ## delete the kubernetes namespace
 	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
 	exit 1; \
 	else \
-	kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
+		if [ -n "$$(kubectl get ns | grep "$(KUBE_NAMESPACE)")" ]; then \
+			echo "Deleting namespace $(KUBE_NAMESPACE)" \
+			kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
+		else \
+			echo "Namespace $(KUBE_NAMESPACE) doesn't exist"; \
+		fi \
 	fi
 
 delete_sdp_namespace: ## delete the kubernetes SDP namespace
@@ -125,7 +142,12 @@ delete_sdp_namespace: ## delete the kubernetes SDP namespace
 	echo "You cannot delete Namespace: $(KUBE_NAMESPACE_SDP)"; \
 	exit 1; \
 	else \
-	kubectl describe namespace $(KUBE_NAMESPACE_SDP) && kubectl delete namespace $(KUBE_NAMESPACE_SDP); \
+		if [ -n "$$(kubectl get ns | grep "$(KUBE_NAMESPACE_SDP)")" ]; then \
+			echo "Deleting namespace $(KUBE_NAMESPACE_SDP)" \
+			kubectl describe namespace $(KUBE_NAMESPACE_SDP) && kubectl delete namespace $(KUBE_NAMESPACE_SDP); \
+		else \
+			echo "Namespace $(KUBE_NAMESPACE_SDP) doesn't exist"; \
+		fi \
 	fi
 
 lint_all:  lint## lint ALL of the helm chart
@@ -155,7 +177,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
 	else \
 		echo "Deploying from artefact repository..."; \
-		helm repo add $(HELM_REPO_NAME) $(HELM_HOST)/repository/helm-chart; \
+		helm repo add $(HELM_REPO_NAME) $(CAR_HELM_REPOSITORY_URL); \
 		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
 		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
 	fi

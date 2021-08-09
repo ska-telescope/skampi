@@ -17,13 +17,12 @@ elasticsearch-dsl
 aiohttp
 aiojobs
 pytest-asyncio
-ska_logging
 aiohttp_cors
 flake8
 tango-simlib>=0.9.0
-lmcbaseclasses
-ska-log-transactions
+ska-tango-base
+ska-ser-log-transactions
 tabulate
-skallop==1.0.1-dev
+ska-ser-skallop==2.0.0
 ska-ser-skuid
 ska-ser-logging

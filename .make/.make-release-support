@@ -128,7 +128,7 @@ function gitPush() {
   if [ $result -ne 0 ];
   then
     echo "DID NOT WORK"
-    # deleteImageFromNexus
+    # deleteImageFromCAR
   fi
 }
 

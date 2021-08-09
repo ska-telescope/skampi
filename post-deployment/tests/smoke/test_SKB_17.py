@@ -41,7 +41,6 @@ def startup_command_dispatched_with_running_subscription(central_node,csp_master
         csp_master.unsubscribe_event(id)
         central_node.StandbyTelescope()
 
-
 @pytest.mark.xfail
 def test_SKB_17_atomic_switch_on(startup_command_dispatched_with_running_subscription,csp_master:DeviceProxy):
     # given a telescope that has been commanded to startup

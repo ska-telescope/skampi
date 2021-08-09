@@ -9,7 +9,7 @@ import sys
 from time import sleep
 import pytest
 from resources.test_support.helpers import waiter
-from resources.test_support.controls import set_telescope_to_standby,telescope_is_in_standby
+from resources.test_support.controls import set_telescope_to_standby, telescope_is_in_standby, tmc_is_on
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -23,6 +23,9 @@ def test_init():
 @pytest.mark.fast
 @pytest.mark.skamid
 def test_start_up_telescope(run_context):
+  LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
+  assert(tmc_is_on())
+  LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
   assert(telescope_is_in_standby)
   jsonLogin={"username":"user1","password":"abc123"}
   url = 'http://webjive-webjive-{}:8080/login'.format(run_context.HELM_RELEASE)
@@ -34,7 +37,7 @@ def test_start_up_telescope(run_context):
   url = 'http://webjive-webjive-{}:5004/db'.format(run_context.HELM_RELEASE)
   # with open('test-harness/files/mutation.json', 'r') as file:
   #   mutation = file.read().replace('\n', '')
-  mutation = '{"query":"mutation {\\n  executeCommand(device: \\"ska_mid/tm_central/central_node\\", command: \\"StartUpTelescope\\") {\\n    ok\\n    output\\n    message\\n  }\\n}\\n","variables":"null"}'
+  mutation = '{"query":"mutation {\\n  executeCommand(device: \\"ska_mid/tm_central/central_node\\", command: \\"TelescopeOn\\") {\\n    ok\\n    output\\n    message\\n  }\\n}\\n","variables":"null"}'
   LOGGER.info("Mutation " + str(mutation))
   jsonMutation = json.loads(mutation)
   LOGGER.info("jsonMutation "+ str(jsonMutation))
@@ -50,8 +53,8 @@ def test_start_up_telescope(run_context):
   try:
     assert parsed['data']['executeCommand']['ok'] == True
   finally:
-    #tear down command is ignored if it is already in standby
+    # tear down command is ignored if it is already in standby
     if not telescope_is_in_standby():
-          #wait first for telescope to completely go to standby before switchig it off again    
-          set_telescope_to_standby()
+      # wait first for telescope to completely go to standby before switchig it off again    
+      set_telescope_to_standby()
     LOGGER.info("Telescope is in STANDBY")

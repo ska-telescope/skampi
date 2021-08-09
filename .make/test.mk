@@ -3,8 +3,6 @@
 CI_JOB_ID?=local
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
-#
-#nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.6-dirty
 IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images-tango-itango:9.3.4## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
@@ -39,7 +37,8 @@ PUBSUB = true
 # 3. Invoke post-deployment/Makefile
 # 4. Pipe results back through the FIFO (including make's return code)
 k8s_test_command = /bin/bash -c "\
-	mkfifo results-pipe && tar x --warning=all && cd post-deployment && \
+	mkfifo results-pipe && tar zx --warning=all && cd post-deployment && \
+        pip install -qUr test_requirements.txt && \
 	make -s SKUID_URL=skuid-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 \
 		KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
 		HELM_RELEASE=$(HELM_RELEASE) \
@@ -57,7 +56,8 @@ k8s_test_command = /bin/bash -c "\
 		CAR_RAW_PASSWORD=$(RAW_PASS) \
 		CAR_RAW_REPOSITORY_URL=$(RAW_HOST) \
 		$1; \
-	echo \$$? > build/status; tar cf ../results-pipe build"
+	echo \$$? > build/status; pip list > build/pip_list.txt; \
+	tar zcf ../results-pipe build"
 
 k8s_test_runner = $(TEST_RUNNER) -n $(KUBE_NAMESPACE)
 k8s_test_kubectl_run_args = \
@@ -75,12 +75,12 @@ k8s_test_kubectl_run_args = \
 k8s_test: ## test the application on K8s
 	rm -fr build; mkdir build
 
-	@( tar -c post-deployment/ \
+	@( tar -cz post-deployment/ \
 	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
 	sleep 1; \
 	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=1m && \
-		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar x); \
+		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar xz); \
 	\
 	(kubectl get all -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
 	python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \

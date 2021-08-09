@@ -124,12 +124,11 @@ You may also specify these in a ``PrivateRules.mak`` file created at the project
 
     make vars > PrivateRules.mak
 
-The above command will add all the environment variables used by the Makefile, so all you need
-to do is remove the ones you don't need (or leave them as default), and update the ones you do.
-After this, all ``make`` commands will automatically use this file no matter whether any of
-these variables have previously been exported or not. Hence, in this case, you don't need to
-export the variables. Now, deploy SKAMPI (this ``make`` command will also create
-the namespaces if they don't already exist):
+The above command will add the most commonly used environment variables that appear in the Makefile.
+You will need to update the relevant ones, and add more if needed. ``PrivateRules.mak``
+takes precedence over exported environment variables when a ``make`` command is run, hence,
+if you use this file, you don't need to export the variables. Now, deploy SKAMPI
+(this ``make`` command will also create the namespaces if they don't already exist):
 
 .. code-block:: console
 

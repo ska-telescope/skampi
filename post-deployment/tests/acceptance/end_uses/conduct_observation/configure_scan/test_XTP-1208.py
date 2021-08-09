@@ -111,11 +111,15 @@ def teardown_function(function):
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")
+    standby=False
     for _ in range(10):
         try:
             set_telescope_to_standby()
+            LOGGER.info("Telescope is in standby")
+            standby=True
         except Exception as ex:
             LOGGER.error(str(ex))
             sleep(1)
-    LOGGER.info("Telescope is in standby")
+    assert standby
+    
 

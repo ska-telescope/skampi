@@ -12,7 +12,6 @@ from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, De
 
 @pytest.mark.archiver
 @pytest.mark.skamid
-@pytest.mark.quarantine
 #@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")
 def test_mid_archiver():
   logging.info("Init test archiver")
@@ -44,7 +43,6 @@ def test_mid_archiver():
   # Teardown
   archiver_helper.stop_archiving(attribute)
 
-@pytest.mark.quarantine
 @pytest.mark.archiver
 @pytest.mark.skalow
 #@pytest.mark.skip(reason="Archiver deployment is disabled from pipeline")

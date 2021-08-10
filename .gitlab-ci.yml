@@ -328,7 +328,6 @@ mid_on_demand_test:
   before_script:
     - *create_k8s_creds
   <<: *test_definition
-  <<: *xray_upload
   # after_script:
   #   - make links
   environment:

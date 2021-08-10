@@ -34,8 +34,7 @@ stages:
 
 .create_k8s_creds: &create_k8s_creds
 - bash scripts/gitlab_section.sh creds "Create K8s Credentials"
-  apt-get -y update
-  apt-get install -y curl ca-certificates jq --no-install-recommends
+  apt-get -y update && apt-get install -y curl ca-certificates jq --no-install-recommends
 - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
 
 

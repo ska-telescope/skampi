@@ -22,7 +22,6 @@ LOGGER = logging.getLogger(__name__)
 def test_is_running(running_telescope):
     pass
 
-@pytest.mark.trial
 @pytest.mark.select
 @pytest.mark.skamid
 @pytest.mark.first
@@ -56,8 +55,6 @@ def test_smell_mvp(pre_or_post="#PRE"):
     assert_that(resource('mid_d0002/elt/master').get('State')).is_equal_to('STANDBY')
     assert_that(resource('mid_d0003/elt/master').get('State')).is_equal_to('STANDBY')
     assert_that(resource('mid_d0004/elt/master').get('State')).is_equal_to('STANDBY')
-
-    assert 0
 
 @pytest.mark.select   
 @pytest.mark.last

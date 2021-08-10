@@ -63,7 +63,7 @@ archiver_k8s_test = tar -c post-deployment/ | \
 		$(PSI_LOW_PROXY_VALUES) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
 		make \
-			SKUID_URL=skuid-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 \
+			SKUID_URL=ska-ser-skuid-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
 			KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
 			HELM_RELEASE=$(HELM_RELEASE) \
 			TANGO_HOST=$(TANGO_HOST) \

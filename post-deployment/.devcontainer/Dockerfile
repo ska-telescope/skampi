@@ -5,7 +5,7 @@
 # to a kubernetes cluster to perform end to end tests.
 #
 
-FROM nexus.engageska-portugal.pt/test-alpine-tango-images/builder:0.1.1
+FROM artefact.skao.int/ska-tango-images-pytango-builder:9.3.12
 
 COPY --from=bitnami/kubectl:latest /opt/bitnami/kubectl/bin/kubectl /usr/local/bin/kubectl
 

@@ -33,9 +33,10 @@ stages:
       - $DELETE == "true"
 
 .create_k8s_creds: &create_k8s_creds
-- apt-get -y update
-- apt-get install -y curl ca-certificates jq --no-install-recommends
-- curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
+- bash scripts/gitlab_section.sh creds "Create K8s Credentials"
+  apt-get -y update
+  apt-get install -y curl ca-certificates jq --no-install-recommends
+  curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
 
 
 .deploy_template: &deploy_definition
@@ -72,8 +73,10 @@ stages:
 
 .psi_test_template: &psi_test_definition
   script:
+  - bash scripts/gitlab_section.sh vars "Make config dump" make vars
   - make install-or-upgrade || true
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
+    kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   - make k8s_test
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"

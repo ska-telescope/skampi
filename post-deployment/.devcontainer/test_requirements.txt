@@ -9,3 +9,4 @@ pytest-pycodestyle
 pytest-pydocstyle
 pytest-pylint
 pytest-runner
+assertpy

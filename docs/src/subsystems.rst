@@ -4,7 +4,13 @@ SKAMPI Sub-systems
 ******************
 
 This page briefly describes the various sub-systems integrated within SKAMPI, and
-provides useful links to the projects.
+provides useful links to the projects. You can also read more about the various
+Helm modules and their dependencies, which make up SKAMPI at |helm_modules|.
+
+.. |helm_modules| raw:: html
+
+    <a href="https://confluence.skatelescope.org/display/SWSI/SKAMPI%3A+Helm+modules+and+dependencies+view" target="_blank">this Confluence page</a>
+
 
 SDP (Science Data Processor)
 ============================

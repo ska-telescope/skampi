@@ -3,13 +3,15 @@ xauthority: "~/.Xauthority"
 minikube: true
 
 global:
-  retry: 
+  retry:
   - "--sleep=1"
   - "--tries=100"
   sub-system:
     tango-base:
       enabled: false
-    webjive:
+    ska-tango-base:
+      enabled: false
+    ska-webjive:
       enabled: false
   minikube: false
   tango_host: databaseds-tango-base-test:10000
@@ -26,12 +28,19 @@ global:
       image: ska-tango-images-tango-itango
       tag: 9.3.5
       pullPolicy: IfNotPresent
-      
+
 landingpage:
   enabled: true
   MVPInstance: mvp-low
 
-tango-base:
+# ska-ser-skuid:
+#   enabled: true
+#   skuid:
+#     use_pv: false
+#     config:
+#       generator_id: mvp01
+
+ska-tango-base:
   vnc:
     replicas: 1
     enabled: true
@@ -55,15 +64,12 @@ tango-base:
   tangodb:
     use_pv: false
 
-ska-low-mccs:
-  tango-base:
-    enabled: false
 # mccs:
-#   tango-base:
+#   ska-tango-base:
 #     enabled: false
 #   cli:
 #     enabled: false
-#   mccs:
+#   ska-mccs:
 #     enabled: true
 #   project:
 #     name: mccs
@@ -72,6 +78,7 @@ ska-low-mccs:
 #       image: ska-low-mccs
 #       tag: latest
 #       pullPolicy: IfNotPresent
+
 
 ska-webjive:
   minikube: false
@@ -104,13 +111,16 @@ ska-oso-scripting:
     featureFlags:
       readViaPubSub: true
 
-sdp:
+ska-sdp:
   enabled: true
   lmc:
     prefix: low
     nsubarray: 3
-  tango-base:
+  ska-tango-base:
     enabled: false
 
-ska-archiver:
+ska-tango-archiver:
   dbname: default_mvp_archiver_db
+
+ska-tmc-low:
+  enabled: true

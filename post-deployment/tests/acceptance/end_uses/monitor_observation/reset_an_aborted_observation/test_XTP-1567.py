@@ -13,7 +13,6 @@ from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
 
 # SUT
-
 #SUT infrastructure
 from tango import DeviceProxy, DevState # type: ignore
 ## local imports

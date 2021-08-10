@@ -28,9 +28,9 @@ PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
 				--env=https_proxy=${PSI_LOW_PROXY} \
 				--env=no_proxy=${PSI_LOW_NO_PROXY}
 
-PSI_LOW_SDP_PROXY_VARS= --set sdp.proxy.server=${PSI_LOW_PROXY} \
-					--set ska-archiver.enabled=false \
-					--set "sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
+PSI_LOW_SDP_PROXY_VARS= --set ska-sdp.proxy.server=${PSI_LOW_PROXY} \
+					--set ska-tango-archiver.enabled=false \
+					--set "ska-sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
 endif
 
 CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that are not a-z or 0-9 replaced with -. Use in URLs and domain names.
@@ -39,17 +39,17 @@ $(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PA
 
 CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-oso-scripting.ingress.nginx=$(USE_NGINX) \
-	--set skuid.ingress.nginx=$(USE_NGINX) \
+	--set ska-ser-skuid.ingress.nginx=$(USE_NGINX) \
 	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
 	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
 	--set global.minikube=$(MINIKUBE) \
-	--set sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
-	--set ska-archiver.hostname=$(ARCHIVER_HOST_NAME) \
-	--set ska-archiver.dbname=$(ARCHIVER_DBNAME) \
-	--set ska-archiver.port=$(ARCHIVER_PORT) \
-	--set ska-archiver.dbuser=$(ARCHIVER_DB_USER) \
-	--set ska-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	--set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) \
+	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
+	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
+	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
+	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
 	--values gitlab_values.yaml \
 	$(PSI_LOW_SDP_PROXY_VARS)
 
@@ -70,10 +70,22 @@ CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 -include PrivateRules.mak
 
 vars: ## Display variables
-	@echo "Namespace: $(KUBE_NAMESPACE)"
-	@echo "HELM_RELEASE: $(HELM_RELEASE)"
-	@echo "VALUES: $(VALUES)"
-	@echo "TANGO_DATABASE_DS: $(TANGO_DATABASE_DS)"
+	@echo "SKA_K8S_TOOLS_DEPLOY_IMAGE=$(SKA_K8S_TOOLS_DEPLOY_IMAGE)"
+	@echo ""
+	@echo "KUBE_NAMESPACE=$(KUBE_NAMESPACE)"
+	@echo "KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP)"
+	@echo "INGRESS_HOST=$(INGRESS_HOST)"
+	@echo ""
+	@echo "CONFIG=$(CONFIG)"
+	@echo "DEPLOYMENT_CONFIGURATION=$(DEPLOYMENT_CONFIGURATION)"
+	@echo "HELM_RELEASE=$(HELM_RELEASE)"
+	@echo "HELM_REPO_NAME=$(HELM_REPO_NAME) ## (should be empty except on Staging & Production)"
+	@echo "VALUES=$(VALUES)"
+	@echo ""
+	@echo "TANGO_DATABASE_DS=$(TANGO_DATABASE_DS)"
+	@echo "ARCHIVER_DBNAME=$(ARCHIVER_DBNAME)"
+	@echo ""
+	@echo "MARK=$(MARK)"
 
 k8s: ## Which kubernetes are we connected to
 	@echo "Kubernetes cluster-info:"

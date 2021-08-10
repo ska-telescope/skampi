@@ -97,11 +97,7 @@ def test_resource_allocation():
     Then the sub-array goes to ObsState IDLE
     """
 
-<<<<<<< HEAD
 
-=======
-@pytest.mark.skip
->>>>>>> master
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine

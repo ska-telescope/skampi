@@ -11,18 +11,27 @@ If you're developing (or planning to develop or contribute to) a component or su
 ### SKA Tango Examples and Tango Images
 If your component or product is ready for integration, skip the following sections and go to [Development](#development).
 
-A basic understanding of the [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/) repository is required before attempting to integrate a component on SKAMPI. Please clone the repository and base your development on the examples given there. Pay particular attention to how deployment and partial integration is demonstrated using Helm. It will be helpful to follow the SKAMPI [Documentation on Helm](https://developer.skao.int/projects/skampi/en/latest/helm.html) while you are doing this. There are also links to the documentation on Container Orchestration which you should also follow.
+A basic understanding of the [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/) repository is required before attempting to integrate a component on SKAMPI. Please clone the repository and base your development on the examples given there. Pay particular attention to how deployment and partial integration is demonstrated using Helm. It will be helpful to follow the SKAMPI [Documentation on Helm](https://developer.skao.int/projects/skampi/en/latest/deployment/helm.html) while you are doing this. There are also links to the documentation on Container Orchestration which you should also follow.
 
 The SKA Tango Base and Tango Util Helm charts are required by most of the deployments that are integrated in SKAMPI. It is therefore also worth your while to look at the [SKA Tango Images](https://gitlab.com/ska-telescope/ska-tango-images/) repository. The deployment workflow is very similar to SKAMPI.
 
 ### Kubernetes and Kubectl
-For information on Kubernetes and Kubectl, a quick list of references is available [here](https://developer.skao.int/projects/ska-skampi/en/latest/kubernetes.html). Follow the links provided and ensure that you have Kubectl installed before moving on.
+For information on Kubernetes and Kubectl, a quick list of references is available [here](https://developer.skao.int/projects/ska-skampi/en/latest/deployment/kubernetes.html). Follow the links provided and ensure that you have Kubectl installed before moving on.
 
 ## Deployment
+
+### Makefile Targets
 Deployment of SKAMPI is supported by Make targets, exactly as is the case with [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/). To check which targets are available and what default values are set for variables used by Make, run
 ```
 make
 ```
+
+### Environment Settings
+To check what some of the most commonly used variables are that your Makefile will use when you run any commands (defaults or environment specific), you can run 
+```
+make vars
+```
+This should give you all the basic environment variables needed to run the `make` commands as they are called in CI jobs, in case you want to debug deployment issues. For more information see the section on [CI Pipeline Deployment](#ci-pipeline-deployment).
 
 ### Local Minikube / Dedicated Server Deployment
 The full deployment of SKAMPI is currently very resource intensive and therefore we recommend that you rather use the [CI Pipeline Deployment](#ci-pipeline-deployment) methods provided. If you want to deploy SKAMPI locally or on a dedicated server, first install [Docker](#docker), [Minikube](#minikube) and [Helm](#helm-charts) (note that Helm is installed alongside with Kubectl when you use the [SKA Minikube Deployment](https://gitlab.com/ska-telescope/sdi/ska-cicd-deploy-minikube/) repository).
@@ -62,7 +71,7 @@ For a local installation of a Minikube cluster, we recommend you use the SKA Min
 
 #### Docker
 
-First install Docker - follow [these instructions](https://docs.docker.com/get-docker/).
+For installing Minikube, you first need to install Docker - follow [these instructions](https://docs.docker.com/get-docker/).
 
 #### Minikube setup
 To set up your Minikube cluster for local SKAMPI deployment, follow the instructions provided in the [SKA Minikube Deployment](https://gitlab.com/ska-telescope/sdi/ska-cicd-deploy-minikube/) repository. For first-time setup, do the following:

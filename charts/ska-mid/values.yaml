@@ -29,7 +29,7 @@ global:
 
 landingpage:
   enabled: true
-  MVPInstance: ska-skampi-mid
+  MVPInstance: ska-mid
 
 ska-ser-skuid:
   enabled: true

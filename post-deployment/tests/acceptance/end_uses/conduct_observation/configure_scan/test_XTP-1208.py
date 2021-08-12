@@ -8,6 +8,7 @@ Acceptance tests for MVP.
 """
 import random
 import signal
+import tango
 from datetime import date,datetime
 from random import choice
 from assertpy import assert_that
@@ -18,7 +19,7 @@ import os
 import json
 #local dependencies
 from resources.test_support.helpers_low import resource, watch, waiter, wait_before_test
-from resources.test_support.persistance_helping import update_scan_config_file
+from resources.test_support.persistance_helping import update_scan_config_file, load_config_from_file
 from resources.test_support.sync_decorators_low import sync_configure
 from resources.test_support.controls_low import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,restart_subarray, to_be_composed_out_of, configure_by_file, take_subarray, restart_subarray_low
 import pytest
@@ -60,7 +61,7 @@ def start_up():
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    wait_before_test(timeout=50)
+    wait_before_test(timeout=10)
     LOGGER.info("Telescope is in ON State")
 
 @given("Subarray is in IDLE state")
@@ -72,7 +73,13 @@ def assign(result):
 @when("I call the configure scan execution instruction")
 def config(result):
     def test_SUT():
-        configure_by_file()
+        # configure_by_file()
+        configure1_file = "resources/test_data/TMC_integration/mccs_configure.json"
+        config = load_config_from_file(configure1_file)
+        LOGGER.info("Configuring a scan for subarray 1")
+        SubarrayNode = tango.DeviceProxy("ska_low/tm_subarray_node/1")
+        SubarrayNode.Configure(config)
+        LOGGER.info("Invoked Configure on Subarray")
     test_SUT()
     LOGGER.info("Configure command on Subarray 1 is successful")
 
@@ -111,15 +118,6 @@ def teardown_function(function):
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")
-    standby=False
-    for _ in range(10):
-        try:
-            set_telescope_to_standby()
-            LOGGER.info("Telescope is in standby")
-            standby=True
-        except Exception as ex:
-            LOGGER.error(str(ex))
-            sleep(1)
-    assert standby
-    
+    set_telescope_to_standby()
+    LOGGER.info("Telescope is in standby")
 

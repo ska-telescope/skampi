@@ -76,16 +76,25 @@ def set_telescope_to_running(disable_waiting = False):
             pytest.fail("timed out whilst starting up telescope:\n {}".format(the_waiter.logs))
 
 def set_telescope_to_standby():
-    resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
-    the_waiter = waiter()
-    the_waiter.set_wait_for_going_to_standby()
-    Telescope().standby()
-    #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
-    #therefore timeout is given as 12 sec
-    the_waiter.wait(100)
-    if the_waiter.timed_out:
-        pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
-
+    CentralNodeLow = DeviceProxy("ska_low/tm_central/central_node")
+    CentralNodeLow.StandByTelescope()
+    SubarrayNodeLow = DeviceProxy("ska_low/tm_subarray_node/1")
+    LOGGER.info(
+        "After Standby SubarrayNodeLow State and ObsState:"
+        + str(SubarrayNodeLow.State())
+        + str(SubarrayNodeLow.ObsState)
+    )
+    LOGGER.info("After Standby CentralNodeLow State:" + str(CentralNodeLow.State()))
+    LOGGER.info("Telescope is in standby")
+    # resource('ska_low/tm_subarray_node/1').assert_attribute('State').equals('ON')
+    # the_waiter = waiter()
+    # the_waiter.set_wait_for_going_to_standby()
+    # Telescope().standby()
+    # #It is observed that CSP and CBF subarrays sometimes take more than 8 sec to change the State to DISABLE
+    # #therefore timeout is given as 12 sec
+    # the_waiter.wait(100)
+    # if the_waiter.timed_out:
+    #     pytest.fail("timed out whilst setting telescope to standby:\n {}".format(the_waiter.logs))
 
 @sync_assign_resources(100)
 def to_be_composed_out_of():

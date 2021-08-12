@@ -78,8 +78,7 @@ def assign(result):
     config = load_config_from_file(assign_resources_file)
     CentralNodeLow = tango.DeviceProxy("ska_low/tm_central/central_node")
     CentralNodeLow.AssignResources(config)
-    the_waiter = waiter()
-    the_waiter.wait()
+    wait_before_test(timeout=50)
     LOGGER.info("Invoked AssignResources on CentralNodeLow")
     LOGGER.info("Subarray 1 is ready")
 
@@ -92,6 +91,7 @@ def config(result):
         LOGGER.info("Configuring a scan for subarray 1")
         SubarrayNode = tango.DeviceProxy("ska_low/tm_subarray_node/1")
         SubarrayNode.Configure(config)
+        wait_before_test(timeout=90)
         LOGGER.info("Invoked Configure on Subarray")
     test_SUT()
     LOGGER.info("Configure command on Subarray 1 is successful")
@@ -131,6 +131,7 @@ def teardown_function(function):
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")
+    sleep(50)
     set_telescope_to_standby()
     LOGGER.info("Telescope is in standby")
 

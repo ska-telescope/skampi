@@ -64,12 +64,10 @@ def test_dish_subscribe():
 
 @pytest.mark.fast
 @pytest.mark.skamid
-@pytest.mark.xfail
 def test_dish_not_on_at_start():
     assert_that(DeviceProxy('mid_d0001/elt/master').State().name).is_in('STANDBY','OFF')
 
 @pytest.mark.fast
 @pytest.mark.skamid
-@pytest.mark.xfail
 def test_dish_in_idle():
-    assert_that(DeviceProxy('mid_d0001/elt/master').observingState().name).is_in('IDLE')
+    assert_that(DeviceProxy('mid_d0001/elt/master').observingState.name).is_in('IDLE')

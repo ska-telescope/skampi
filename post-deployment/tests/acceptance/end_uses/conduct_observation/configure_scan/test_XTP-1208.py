@@ -58,16 +58,29 @@ def test_configure_subarray():
 def start_up():
     LOGGER.info("Given A running telescope for executing observations on a subarray")
     LOGGER.info("Check whether telescope is in StandBy")
+    if not telescope_is_in_standby():
+        set_telescope_to_standby()
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
     set_telescope_to_running()
-    wait_before_test(timeout=10)
+    wait_before_test(timeout=50)
     LOGGER.info("Telescope is in ON State")
 
 @given("Subarray is in IDLE state")
 def assign(result):
     LOGGER.info("Allocating resources to Low Subarray 1")
-    to_be_composed_out_of()
+    # to_be_composed_out_of()
+    resource("ska_low/tm_subarray_node/1").assert_attribute("State").equals("ON")
+    resource("ska_low/tm_subarray_node/1").assert_attribute("obsState").equals("EMPTY")
+    assign_resources_file = (
+        "resources/test_data/TMC_integration/mccs_assign_resources.json"
+    )
+    config = load_config_from_file(assign_resources_file)
+    CentralNodeLow = tango.DeviceProxy("ska_low/tm_central/central_node")
+    CentralNodeLow.AssignResources(config)
+    the_waiter = waiter()
+    the_waiter.wait()
+    LOGGER.info("Invoked AssignResources on CentralNodeLow")
     LOGGER.info("Subarray 1 is ready")
 
 @when("I call the configure scan execution instruction")

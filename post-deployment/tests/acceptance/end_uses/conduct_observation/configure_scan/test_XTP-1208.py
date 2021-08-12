@@ -58,12 +58,18 @@ def test_configure_subarray():
 def start_up():
     LOGGER.info("Given A running telescope for executing observations on a subarray")
     LOGGER.info("Check whether telescope is in StandBy")
-    if not telescope_is_in_standby():
-        set_telescope_to_standby()
+    # if not telescope_is_in_standby():
+    set_telescope_to_standby()
     assert(telescope_is_in_standby())
     LOGGER.info("Starting up telescope")
-    set_telescope_to_running()
-    wait_before_test(timeout=50)
+    CentralNodeLow = tango.DeviceProxy("ska_low/tm_central/central_node")
+    LOGGER.info(
+        "Before Sending StartupTelescope command on CentralNodeLow state :"
+        + str(CentralNodeLow.State())
+    )
+    CentralNodeLow.set_timeout_millis(10000)
+    CentralNodeLow.StartUpTelescope()
+    wait_before_test(timeout=5)
     LOGGER.info("Telescope is in ON State")
 
 @given("Subarray is in IDLE state")
@@ -78,7 +84,7 @@ def assign(result):
     config = load_config_from_file(assign_resources_file)
     CentralNodeLow = tango.DeviceProxy("ska_low/tm_central/central_node")
     CentralNodeLow.AssignResources(config)
-    wait_before_test(timeout=50)
+    wait_before_test(timeout=5)
     LOGGER.info("Invoked AssignResources on CentralNodeLow")
     LOGGER.info("Subarray 1 is ready")
 
@@ -91,7 +97,7 @@ def config(result):
         LOGGER.info("Configuring a scan for subarray 1")
         SubarrayNode = tango.DeviceProxy("ska_low/tm_subarray_node/1")
         SubarrayNode.Configure(config)
-        wait_before_test(timeout=90)
+        wait_before_test(timeout=15)
         LOGGER.info("Invoked Configure on Subarray")
     test_SUT()
     LOGGER.info("Configure command on Subarray 1 is successful")
@@ -131,7 +137,6 @@ def teardown_function(function):
         #raise exception since we are unable to continue with tear down
         raise Exception("Unable to tear down test setup")
     LOGGER.info("Put Telescope back to standby")
-    sleep(50)
     set_telescope_to_standby()
     LOGGER.info("Telescope is in standby")
 

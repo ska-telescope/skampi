@@ -2,7 +2,8 @@ import pytest
 from datetime import date,datetime
 import os
 import logging
-from tango import DeviceProxy   
+import time
+from tango import DeviceProxy, DevState
 from ska.scripting.domain import Telescope, SubArray
 
 ##SUT imports
@@ -77,8 +78,40 @@ def set_telescope_to_running(disable_waiting = False):
 
 def set_telescope_to_standby():
     CentralNodeLow = DeviceProxy("ska_low/tm_central/central_node")
-    CentralNodeLow.StandByTelescope()
+    CentralNodeLow.set_timeout_millis(10000)
     SubarrayNodeLow = DeviceProxy("ska_low/tm_subarray_node/1")
+    SubarrayNodeLow.set_timeout_millis(10000)
+    mccs_master_low = DeviceProxy("ska_low/tm_leaf_node/mccs_master")
+    mccs_master_low.set_timeout_millis(10000)
+    mccs_subarray01_low = DeviceProxy("ska_low/tm_leaf_node/mccs_subarray01")
+    mccs_subarray01_low.set_timeout_millis(10000)
+    
+    start_time = time.time()
+    while CentralNodeLow.State() == DevState.FAULT:
+        try:
+            LOGGER.info("Calling reset")
+            CentralNodeLow.Reset()
+        except: 
+            LOGGER.info("Reset problem")
+        time.sleep(1)
+        if((time.time() - start_time) > 10):
+            break
+
+    start_time = time.time()
+    while not CentralNodeLow.State() == DevState.OFF:
+        try:
+            CentralNodeLow.StandByTelescope()
+        except: 
+            LOGGER.info("stanby problem")
+        time.sleep(1)
+        if((time.time() - start_time) > 10):
+            break
+
+    SubarrayNodeLow.Off()
+    mccs_master_low.Off()
+    mccs_subarray01_low.Off()
+
+    time.sleep(5)
     LOGGER.info(
         "After Standby SubarrayNodeLow State and ObsState:"
         + str(SubarrayNodeLow.State())

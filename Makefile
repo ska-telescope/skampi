@@ -11,7 +11,7 @@ DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
 TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the Tango DB
 USE_NGINX ?= true##Traefik or Nginx
 HELM_RELEASE ?= test## release name of the chart
-DEPLOYMENT_CONFIGURATION ?= skamid## umbrella chart to work with
+DEPLOYMENT_CONFIGURATION ?= ska-mid## umbrella chart to work with
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
 

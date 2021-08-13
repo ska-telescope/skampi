@@ -9,7 +9,7 @@ const skaLow = {
   'image': 'https://res.cloudinary.com/dmwc3xvv8/image/upload/v1612505143/ska_low_dzquiv.svg'
 }
 
-const MVPInstance = (MVP === 'ska-skampi-mid') ? skaMid : (MVP === 'mvp-low' ? skaLow : null)
+const MVPInstance = (MVP === 'ska-mid') ? skaMid : (MVP === 'ska-low' ? skaLow : null)
 
 
 

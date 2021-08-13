@@ -9,6 +9,7 @@ Acceptance tests for MVP.
 import random
 import signal
 import tango
+import time
 from datetime import date,datetime
 from random import choice
 from assertpy import assert_that
@@ -68,9 +69,27 @@ def start_up():
         + str(CentralNodeLow.State())
     )
     CentralNodeLow.set_timeout_millis(10000)
-    CentralNodeLow.StartUpTelescope()
+
+    start_time = time.time()
+    while not CentralNodeLow.State() == tango.DevState.ON:
+        if CentralNodeLow.State() == tango.DevState.FAULT:
+            try:
+                CentralNodeLow.Reset()
+            except: 
+                LOGGER.info("reset problem")
+
+        try:
+            LOGGER.info("CentralNodeLow State:" + str(CentralNodeLow.State()))
+            CentralNodeLow.StartUpTelescope()
+        except: 
+            LOGGER.info("startup problem")
+            
+        time.sleep(1)
+        if((time.time() - start_time) > 10):
+            break
+
     wait_before_test(timeout=5)
-    LOGGER.info("Telescope is in ON State")
+    LOGGER.info("CentralNodeLow State:" + str(CentralNodeLow.State()))
 
 @given("Subarray is in IDLE state")
 def assign(result):
@@ -84,7 +103,7 @@ def assign(result):
     config = load_config_from_file(assign_resources_file)
     CentralNodeLow = tango.DeviceProxy("ska_low/tm_central/central_node")
     CentralNodeLow.AssignResources(config)
-    wait_before_test(timeout=5)
+    wait_before_test(timeout=10)
     LOGGER.info("Invoked AssignResources on CentralNodeLow")
     LOGGER.info("Subarray 1 is ready")
 

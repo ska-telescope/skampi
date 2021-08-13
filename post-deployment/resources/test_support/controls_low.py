@@ -85,24 +85,23 @@ def set_telescope_to_standby():
     mccs_master_low.set_timeout_millis(10000)
     mccs_subarray01_low = DeviceProxy("ska_low/tm_leaf_node/mccs_subarray01")
     mccs_subarray01_low.set_timeout_millis(10000)
+
+    try:
+        LOGGER.info("Calling standby")
+        LOGGER.info("CentralNodeLow State:" + str(CentralNodeLow.State()))
+        CentralNodeLow.StandByTelescope()
+    except: 
+        LOGGER.info("stanby problem")
+
     
     start_time = time.time()
     while CentralNodeLow.State() == DevState.FAULT:
         try:
             LOGGER.info("Calling reset")
+            LOGGER.info("CentralNodeLow State:" + str(CentralNodeLow.State()))
             CentralNodeLow.Reset()
         except: 
             LOGGER.info("Reset problem")
-        time.sleep(1)
-        if((time.time() - start_time) > 10):
-            break
-
-    start_time = time.time()
-    while not CentralNodeLow.State() == DevState.OFF:
-        try:
-            CentralNodeLow.StandByTelescope()
-        except: 
-            LOGGER.info("stanby problem")
         time.sleep(1)
         if((time.time() - start_time) > 10):
             break

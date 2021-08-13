@@ -73,33 +73,34 @@ def start_up():
     CentralNodeLow.set_timeout_millis(10000)
 
     start_time = time.time()
+    sleep_time = 5
     while True:
-        try:
-            if CentralNodeLow.State() == tango.DevState.FAULT:
-                CentralNodeLow.Reset()
-        except: 
-            LOGGER.info("reset problem")
-
-        time.sleep(10)
-
-        try:
-            LOGGER.info("CentralNodeLow State:" + str(CentralNodeLow.State()))
-        except: 
-            LOGGER.info("Not able to get state from central node low")
-
-        try:
-            LOGGER.info("CentralNodeLow State:" + str(CentralNodeLow.State()))
-            CentralNodeLow.StartUpTelescope()
-        except: 
-            LOGGER.info("startup problem")
-            
-        time.sleep(5)
-
         try:
             if CentralNodeLow.State() == tango.DevState.ON:
                 break
-        except: 
-            LOGGER.info("Not able to get state from central node low")
+        except Exception as ex: 
+            LOGGER.error("CentralNodeLow State problem")
+
+        try:
+            LOGGER.info("CentralNodeLow State:" + str(CentralNodeLow.State()))
+        except Exception as ex: 
+            LOGGER.error("CentralNodeLow State problem")
+        
+        try:
+            if CentralNodeLow.State() == tango.DevState.FAULT:
+                CentralNodeLow.Reset()
+                time.sleep(sleep_time)
+                continue
+        except Exception as ex: 
+            LOGGER.error("CentralNodeLow Reset problem")
+            time.sleep(sleep_time)
+            continue
+
+        try:
+            CentralNodeLow.StartUpTelescope()
+            time.sleep(sleep_time)
+        except Exception as ex: 
+             LOGGER.error("CentralNodeLow StartUpTelescope problem")
 
         if((time.time() - start_time) > TIMEOUT):
             break
@@ -118,9 +119,11 @@ def assign(result):
     )
     config = load_config_from_file(assign_resources_file)
     CentralNodeLow = tango.DeviceProxy("ska_low/tm_central/central_node")
+    CentralNodeLow.set_timeout_millis(10000)
     CentralNodeLow.AssignResources(config)
     wait_before_test(timeout=15)
     LOGGER.info("Invoked AssignResources on CentralNodeLow")
+    LOGGER.info("CentralNodeLow State:" + str(CentralNodeLow.State()))
     LOGGER.info("Subarray 1 is ready")
 
 @when("I call the configure scan execution instruction")
@@ -131,11 +134,17 @@ def config(result):
         config = load_config_from_file(configure1_file)
         LOGGER.info("Configuring a scan for subarray 1")
         SubarrayNode = tango.DeviceProxy("ska_low/tm_subarray_node/1")
-        SubarrayNode.Configure(config)
-        wait_before_test(timeout=15)
-        LOGGER.info("Invoked Configure on Subarray")
+        SubarrayNode.set_timeout_millis(10000)
+        for _ in range(10):
+            try:
+                SubarrayNode.Configure(config)
+                LOGGER.info("Configure command on Subarray 1 is successful")
+                break
+            except:
+                LOGGER.error("SubarrayNode.Configure problem")
+            wait_before_test(timeout=15)
     test_SUT()
-    LOGGER.info("Configure command on Subarray 1 is successful")
+    
 
 @then("Subarray is in READY state for which subsequent scan commands can be directed to deliver a basic imaging outcome")
 def check_state():
@@ -161,7 +170,10 @@ def teardown_function(function):
     if (resource('ska_low/tm_subarray_node/1').get('obsState') == "READY"):
         #this means test must have passed
         LOGGER.info("tearing down configured subarray (READY)")
-        take_subarray(1).and_end_sb_when_ready()
+        # take_subarray(1).and_end_sb_when_ready()
+        SubarrayNodeLow = tango.DeviceProxy("ska_low/tm_subarray_node/1")
+        SubarrayNodeLow.set_timeout_millis(10000)
+        SubarrayNodeLow.End()
         LOGGER.info("End is invoked on Subarray 1")
         # subarray.deallocate() #TODO: Once the OET latest charts are available this can be reverted
         tmc.release_resources()

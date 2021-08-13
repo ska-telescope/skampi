@@ -28,11 +28,6 @@ global:
       image: ska-tango-images-tango-itango
       tag: 9.3.5
       pullPolicy: IfNotPresent
-  skatmc:
-    registry: artefact.skao.int/ska-telescope
-    image: ska-tmc
-    tag: 0.8.5
-    pullPolicy: IfNotPresent
 
 landingpage:
   enabled: true

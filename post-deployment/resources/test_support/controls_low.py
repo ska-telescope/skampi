@@ -103,7 +103,7 @@ def set_telescope_to_standby():
         except: 
             LOGGER.info("Reset problem")
         time.sleep(1)
-        if((time.time() - start_time) > 10):
+        if((time.time() - start_time) > 100):
             break
 
     SubarrayNodeLow.Off()

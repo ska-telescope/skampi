@@ -36,6 +36,8 @@ else:
     DISABLE_TESTS_UNDER_DEVELOPMENT = True
 
 LOGGER = logging.getLogger(__name__)
+TIMEOUT = 10000
+
 
 devices_to_log = [
     'ska_low/tm_subarray_node/1',
@@ -71,12 +73,19 @@ def start_up():
     CentralNodeLow.set_timeout_millis(10000)
 
     start_time = time.time()
-    while not CentralNodeLow.State() == tango.DevState.ON:
-        if CentralNodeLow.State() == tango.DevState.FAULT:
-            try:
+    while True:
+        try:
+            if CentralNodeLow.State() == tango.DevState.FAULT:
                 CentralNodeLow.Reset()
-            except: 
-                LOGGER.info("reset problem")
+        except: 
+            LOGGER.info("reset problem")
+
+        time.sleep(10)
+
+        try:
+            LOGGER.info("CentralNodeLow State:" + str(CentralNodeLow.State()))
+        except: 
+            LOGGER.info("Not able to get state from central node low")
 
         try:
             LOGGER.info("CentralNodeLow State:" + str(CentralNodeLow.State()))
@@ -84,8 +93,15 @@ def start_up():
         except: 
             LOGGER.info("startup problem")
             
-        time.sleep(1)
-        if((time.time() - start_time) > 10):
+        time.sleep(5)
+
+        try:
+            if CentralNodeLow.State() == tango.DevState.ON:
+                break
+        except: 
+            LOGGER.info("Not able to get state from central node low")
+
+        if((time.time() - start_time) > TIMEOUT):
             break
 
     wait_before_test(timeout=5)
@@ -103,7 +119,7 @@ def assign(result):
     config = load_config_from_file(assign_resources_file)
     CentralNodeLow = tango.DeviceProxy("ska_low/tm_central/central_node")
     CentralNodeLow.AssignResources(config)
-    wait_before_test(timeout=10)
+    wait_before_test(timeout=15)
     LOGGER.info("Invoked AssignResources on CentralNodeLow")
     LOGGER.info("Subarray 1 is ready")
 

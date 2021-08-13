@@ -46,7 +46,6 @@ def test_smell_mvp(pre_or_post="#PRE"):
     assert_that(resource('mid_csp/elt/subarray_03').get('State')).is_equal_to('OFF')
 
     LOGGER.info("Check the States of the SDP devices")
-    assert_that(resource('mid_sdp/elt/master').get('State')).is_equal_to('STANDBY')
     assert_that(resource('mid_sdp/elt/subarray_1').get('State')).is_equal_to('OFF')
     assert_that(resource('mid_sdp/elt/subarray_2').get('State')).is_equal_to('OFF')
     assert_that(resource('mid_sdp/elt/subarray_3').get('State')).is_equal_to('OFF')

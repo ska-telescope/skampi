@@ -7,9 +7,10 @@
 		"context": "..",
 	},
 
-	"mounts": [
-		"source=${localEnv:AUX},target=/workspaces/aux,type=bind,consistency=cached",
-	],
+	// if you want to set a local mount, uncomment this and set an aux variable to desired variable: export AUX=
+	//"mounts": [
+	//	"source=${localEnv:AUX},target=/workspaces/aux,type=bind,consistency=cached",
+	//],
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 

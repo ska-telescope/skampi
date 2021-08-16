@@ -11,7 +11,7 @@ COPY --from=bitnami/kubectl:latest /opt/bitnami/kubectl/bin/kubectl /usr/local/b
 
 COPY --from=alpine/helm:latest /usr/bin/helm /usr/local/bin/helm
 
-RUN apk add --update --no-cache bash openssh
+RUN apk add --update --no-cache bash openssh iputils
 
 COPY --chown=tango:tango .devcontainer/.bashrc /home/tango/.bashrc
 

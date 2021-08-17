@@ -137,16 +137,15 @@ export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null):0
 export LIBGL_ALWAYS_INDIRECT=1
 export CHROME_BIN='/usr/bin/google-chrome'
-export KUBE_BRANCH='low-49'
 export TEL='mid'
 export WEBJIVE_PASSPORT='abc123'
 export WEBJIVE_USER='user1'
 export DOMAIN='integration'
-export TANGO_HOST="databaseds-tango-base-test-${KUBE_BRANCH}:10000" 
+
 
 
 function getkube() {
-    curl https://nexus.engageska-portugal.pt/repository/k8s-ci-creds/k8s-ci-svc-skampi-$1-ci-skampi-$1-$2-conf --output ~/.kube/config
+    curl https://artefact.skao.int/repository/k8s-ci-creds-internal/k8s-ci-svc-ska-skampi-41-ci-ska-skampi-$1-$2-conf --output ~/.kube/config
     kubectl config use-context ci-svc-skampi-$1-ci-skampi-$1-$2-gitlab-deploy
     kubectl version
 }

@@ -145,8 +145,8 @@ export DOMAIN='integration'
 
 
 function getkube() {
-    curl https://artefact.skao.int/repository/k8s-ci-creds-internal/k8s-ci-svc-ska-skampi-41-ci-ska-skampi-$1-$2-conf --output ~/.kube/config
-    kubectl config use-context ci-svc-skampi-$1-ci-skampi-$1-$2-gitlab-deploy
+    curl https://artefact.skao.int/repository/k8s-ci-creds-internal/k8s-ci-svc-ska-skampi-$1-ci-ska-skampi-$1-$2-conf --output ~/.kube/config
+    kubectl config use-context ci-svc-ska-skampi-$1-ci-ska-skampi-$1-$2-gitlab-deploy
     kubectl version
 }
 

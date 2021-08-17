@@ -43,7 +43,7 @@ def end():
     if not telescope_is_in_standby():
         set_telescope_to_standby()
 
-@pytest.mark.skip
+
 @pytest.mark.fast
 @pytest.mark.oetmid
 @pytest.mark.skamid
@@ -52,7 +52,7 @@ def end():
 def test_telescope_startup():
     """Telescope startup test."""
 
-@pytest.mark.skip
+
 @pytest.mark.fast
 @pytest.mark.oetmid
 @pytest.mark.skamid
@@ -109,7 +109,7 @@ def run_startup_standby_script(script):
         f"Expected script to be COMPLETED, instead was {script_completion_state}"
 
 
-@then(parsers.parse('the central node goes to state {state}'))
+@then(parsers.parse('the central node goes to telescopeState {state}'))
 def check_final_state(state, result):
     """
     Check that the central node device is in the expected state.

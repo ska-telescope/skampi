@@ -70,7 +70,7 @@ def end(result):
     LOGGER.info("CLEANUP: Sub-array is in %s ",
                 subarray.get('obsState'))
 
-@pytest.mark.skip
+
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -83,7 +83,7 @@ def test_resource_allocation():
     Then the sub-array goes to ObsState IDLE
     """
 
-@pytest.mark.skip
+
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine

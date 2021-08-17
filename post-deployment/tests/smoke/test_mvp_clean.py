@@ -16,9 +16,15 @@ LOGGER = logging.getLogger(__name__)
 #         'mid_csp_cbf/sub_elt/subarray_01',
 #         'mid_sdp/elt/subarray_1']
 
+@pytest.mark.ping
+def test_empty_ping():
+    # this test is to just check testing framework can run a test
+    pass
+
 @pytest.mark.skip
 @pytest.mark.first
 @pytest.mark.xfail 
+@pytest.mark.running_telescope
 def test_is_running(running_telescope):
     pass
 

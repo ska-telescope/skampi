@@ -2,7 +2,7 @@ Feature: Default
 
 	
 	@XTP-3090 @XTP-3085 @PI11
-	Scenario: Test dish master simulator stow request
+	Scenario: Test dish stow request
 		Given dish master reports any allowed dish mode
 		When I execute a stow command
 		Then the dish mode should report STOW

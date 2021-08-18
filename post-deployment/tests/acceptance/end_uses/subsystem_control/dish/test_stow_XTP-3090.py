@@ -34,7 +34,7 @@ def restore_dish_state(request):
     request.addfinalizer(put_dish_in_standby_fp_mode)
 
 
-@scenario("XTP-3090.feature", "Test dish master simulator stow request")
+@scenario("XTP-3090.feature", "Test dish stow request")
 def test_stow_command():
     pass
 
@@ -80,9 +80,13 @@ def check_dish_mode():
 
 @then("the elevation should be almost equal to the stow position")
 def check_dish_master_elevation():
-    future = time.time() + 5  # 5 seconds from now
+    # dish elevation moves at 1 deg/s. Timeout will be set to 120s to account for:
+    # - dish moving from min elevation (15 deg) to stow position (85 deg)
+    # - any probable delays
+    # see https://gitlab.com/ska-telescope/ska-tmc/-/blob/master/ska-tmc/ska-dish-master-mid/src/ska_dish_master_mid/dish_master_behaviour.py#L29-36
+    future = time.time() + 120  # 120 seconds from now
     current_el = resource(DISH_MASTER).get("achievedPointing")[2]
-    dish_far_from_stow_position = not (STOW_POSITION - current_el == pytest.approx(1, abs=1))
+    dish_far_from_stow_position = True
 
     while dish_far_from_stow_position:
         now = time.time()

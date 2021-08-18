@@ -56,7 +56,6 @@ def test_subscribe_to_attribute():
 
 @pytest.mark.fast
 @pytest.mark.skamid
-@pytest.mark.xfail
 def test_dish_subscribe():
     dish_001 = DeviceProxy('mid_d0001/elt/master')
     sub_id = dish_001.subscribe_event('State', EventType.CHANGE_EVENT, lambda event:print(event))

@@ -10,7 +10,11 @@ from assertpy import assert_that
 
 from resources.test_support.helpers import resource, watch
 
+
+# values for stow position and elevation drive rate are
+# from the dish dish_master behaviour in ska-tmc
 STOW_POSITION = 85.0
+ELEV_DRIVE_MAX_RATE = 1.0
 DISH_MASTER = "mid_d0001/elt/master"
 LOGGER = logging.getLogger(__name__)
 
@@ -80,19 +84,18 @@ def check_dish_mode():
 
 @then("the elevation should be almost equal to the stow position")
 def check_dish_master_elevation():
-    # dish elevation moves at 1 deg/s. Timeout will be set to 120s to account for:
-    # - dish moving from min elevation (15 deg) to stow position (85 deg)
-    # - any probable delays
-    # see https://gitlab.com/ska-telescope/ska-tmc/-/blob/master/ska-tmc/ska-dish-master-mid/src/ska_dish_master_mid/dish_master_behaviour.py#L29-36
-    future = time.time() + 120  # 120 seconds from now
     current_el = resource(DISH_MASTER).get("achievedPointing")[2]
+    el_delta = abs(STOW_POSITION - current_el)
+    expected_time_to_move = el_delta / ELEV_DRIVE_MAX_RATE
+    stow_time_tolerance = 10 # arbitrary value but should be more than enough
+    future = time.time() + expected_time_to_move + stow_time_tolerance
     dish_far_from_stow_position = True
 
     while dish_far_from_stow_position:
         now = time.time()
         current_el = resource(DISH_MASTER).get("achievedPointing")[2]
         dish_far_from_stow_position = not (STOW_POSITION - current_el == pytest.approx(1, abs=1))
-        time.sleep(1)  # sleep to avoid using full CPU resources while we wait to get on target
+        time.sleep(1)  # sleep to avoid using full CPU resources while waiting to arrive on target
         if future < now:
             raise Exception("Timeout occurred")
 

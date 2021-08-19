@@ -1,5 +1,5 @@
 apiVersion: v2
-name: ska-skampi-low
+name: ska-low
 description: A Helm chart for Kubernetes MVP Low
 type: application
 version: 0.6.0-dev
@@ -17,17 +17,17 @@ dependencies:
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-sdp.enabled
 - name: ska-tmc-low
-  version: 0.3.7
+  version: 0.3.8
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-tmc-low.enabled
 - name: ska-low-mccs
   version: 0.8.3
   repository: https://artefact.skao.int/repository/helm-internal
 - name: ska-webjive
-  version: 1.0.24
+  version: 1.0.25
   repository: https://artefact.skao.int/repository/helm-internal
 - name: ska-ser-skuid
-  version: 0.2.1
+  version: 0.3.0
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-ser-skuid.enabled
 - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs

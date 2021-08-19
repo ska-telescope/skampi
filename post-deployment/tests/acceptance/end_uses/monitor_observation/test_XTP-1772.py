@@ -68,6 +68,7 @@ def end(result):
         raise Exception("Unable to tear down test setup")
     set_telescope_to_standby()
 
+
 @pytest.mark.oetmid
 @pytest.mark.quarantine
 @pytest.mark.skamid
@@ -105,6 +106,7 @@ def set_subarray_to_aborted(result):
         f"Expected sub-array to be in ABORTED but instead was in {subarray_state}"
 
     LOGGER.info("Sub-array has been set to ABORTED")
+
 
 @pytest.mark.oetmid
 @pytest.mark.skamid

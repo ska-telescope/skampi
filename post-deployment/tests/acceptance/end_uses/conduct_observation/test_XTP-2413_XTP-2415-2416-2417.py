@@ -4,7 +4,7 @@
 """
 test_XTP-2413
 ----------------------------------
-Tests for creating SBI (XTP-2415), allocating resources from LOW SBI (XTP-2416)
+SKA-Low tests for creating SBI (XTP-2415), allocating resources from LOW SBI (XTP-2416)
 and observing LOW SBI (XTP-2417)
 """
 import logging

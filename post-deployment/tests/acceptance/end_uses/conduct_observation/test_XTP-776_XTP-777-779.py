@@ -4,7 +4,7 @@
 """
 test_XTP-776
 ----------------------------------
-Tests for creating SBI (XTP-779), allocating resources from SBI (XTP-777)
+SKA-Mid tests for creating SBI (XTP-779), allocating resources from SBI (XTP-777)
 and observing SBI (XTP-778)
 """
 import logging

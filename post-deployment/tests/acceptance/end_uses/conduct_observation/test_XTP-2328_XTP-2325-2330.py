@@ -75,7 +75,7 @@ def end(result):
 @pytest.mark.skamid
 @pytest.mark.quarantine
 @scenario("XTP-2328.feature", "Allocating resources without an SBI")
-def test_resource_allocation():
+def test_resource_allocation_without_sbi():
     """
     Given sub-array is in ObsState EMPTY
     When I tell the OET to allocate resources using script file:///app/scripts/allocate_from_file.py

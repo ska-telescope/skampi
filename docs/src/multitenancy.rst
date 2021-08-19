@@ -1,7 +1,7 @@
 .. _`Multitenancy`:
 
-Cloud deployments for testing in isolated namespaces
-****************************************************
+Cloud deployments in isolated namespaces
+****************************************
 
 Multiple deployments of SKAMPI can be deployed on the Kubernetes clusters at the same time without affecting their individual performance. Separation is achieved by kubernetes namespaces and ensures that each CI job runs isolated from others.
 
@@ -95,7 +95,6 @@ Next check the logs on Gitlab for that job. Just after the creation of the names
         kubectl --kubeconfig=KUBECONFIG get pods
  Note: The current context is set to first namespace passed, you need to provide other namespaces explicitly (with "-n namespace" option)
 
-
 The output seems to stand still for a while, which means that the kubernetes deployment is still spinning up.
 
 If you can find the words "Kubernetes resources dump" in the job output, it means that the SKAMPI deployment has finished and all the pods are running. You now can interact with the deployment, for instance by calling commands such as the one below to show all the deployed pods:
@@ -118,6 +117,15 @@ The above command now reduces to simply
   The namespaces are deleted if there is a more recent commit on the branch. To recreate the namespace you then need to launch a test on the pipeline associated with that commit. 
 
   The namespaces are also deleted 2 hours after they are created hence the kubeconfig is only valid for 2 hours.
+
+Retrieving the Makefile variables used for the deployment
+---------------------------------------------------------
+
+If you run the ``make vars`` command, you will see a selection of the environment variables as they are fed into any ``make`` target. If you wanted to replicate the behaviour when deployment was made from a Gitlab deployment job, you should search the CI job logs for the drop-down section "Make vars dump", and click on the ">" next to it to see output of ``make vars``:
+
+.. image:: _static/img/get_make_vars.png
+
+Copy and paste these into a ``PrivateRules.mak`` file in your root folder. This file is "gitignored" already and should not be checked into the repo. You can also add any other variables as you want to control your environment.
 
 At the end of the deployment, something like this will guide you to the landing page related to the configuration that was just deployed, for instance:
 ::

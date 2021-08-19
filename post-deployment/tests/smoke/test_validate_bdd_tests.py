@@ -5,8 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from ska_ser_skallop.scripts.bdd_helper_scripts.xtp_compare import (
-    check_local_file,
-    parse_local_feature_files,
+    output_file_diff as is_file_different,
 )
 
 
@@ -29,13 +28,6 @@ def test_validate_bdd_features():
     mocked_args.password = ""
     mocked_args.verbose = False
 
-    parsed_local_files = parse_local_feature_files(mocked_args)
-    assert parsed_local_files, "No parsed feature files."
-    found_issues = []
-    for local_file in parsed_local_files:
-        logging.info("Checking file %s", local_file.file_path)
-        issues = check_local_file(mocked_args, local_file)
-        for issue in issues:
-            logging.warn(issue)
-        found_issues.extend(issues)
-    assert not found_issues, "Some BDD files not valid"
+    assert not is_file_different(
+        mocked_args, mocked_args.directory
+    ), "Some BBD file(s) is not valid"

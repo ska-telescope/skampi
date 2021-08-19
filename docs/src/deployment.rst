@@ -11,6 +11,4 @@ You can find instructions to deploy and interact with SKAMPI in different enviro
    deployment/kubernetes
    deployment/helm
    deployment/remote_deploy
-
-Read about the automatic deployment of SKAMPI in the CI/CD environment and how
-you can test it there at :ref:`Multitenancy`.
+   multitenancy

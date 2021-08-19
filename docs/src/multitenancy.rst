@@ -1,12 +1,14 @@
 .. _`Multitenancy`:
 
-Testing in a shared environment
-*******************************
+Cloud deployments for testing in isolated namespaces
+****************************************************
 
 Multiple deployments of SKAMPI can be deployed on the Kubernetes clusters at the same time without affecting their individual performance. Separation is achieved by kubernetes namespaces and ensures that each CI job runs isolated from others.
 
 This "multitenancy" is implemented not only in the *permanent* Integration and Staging environments of SKAMPI, but also on the temporary Pipeline environments and this has important implications for feature branch development. 
  
+Multitenancy of the branch pipelines allows for the owners of a given CI Pipline run to access logs, investigate problems, test things, without worrying that the performance of other jobs running in the cluster is affected. In order to achieve this users need to be able to retrieve a kubeconfig file giving access to the cluster. Such a file is generated automatically by the pipelines running on SKAMPI  providing access only to the namespace specific for that pipeline, thus assuring that users will not interfere with other jobs running in the cluster.
+
 Kubernetes access to feature branch development namespaces
 ==========================================================
 
@@ -44,15 +46,43 @@ There are two issues with this branch name: upper case letters and the underscor
     ``url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME/taranta"`` is not multitenant, all namespaces     would share the same url.
     ``url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"`` insures multitenancy.
 
+Deploying in a namespace linked to a development branch 
+-------------------------------------------------------
+
+Scroll up to the top of this page if you need more information on multitenancy.
+
+Navigate to https://gitlab.com/ska-telescope/ska-skampi/-/pipelines: 
+
+.. image:: _static/img/search_pipelines_0.png
+        :width: 400
+
+If the list of pipelines is overwhelming, you can search for your specific pipeline:
+
+.. image:: _static/img/search_pipelines_1.png
+        :width: 400
+
+For instance, if you are looking for all pipelines associated with branch at-16, tell Gitlab so:
+
+.. image:: _static/img/search_pipelines_2.png
+        :width: 800
+
+Under stages, look for the manual deployment jobs, and click on the gear icon of the telescope you want to deploy (mid / low / psi-low / psi-mid):
+
+.. image:: _static/img/search_pipelines_3.png
+        :width: 300
+
+You can control various aspects of your deployment by declaring the environment variables. These are the same variables used by the Makefile. For instance, if you want to control which tests to run during the deployment, use the ``MARK`` variable. To deploy without running any tests, set ``MARK`` to ``ping``.
+
+.. image:: _static/img/set_mark_var_for_pipeline.png
+
+This variable is passed to ``pytest``. See comments, in the `.make/test.mk <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/.make/test.mk#L15>`_ file, or by running ``make`` from the terminal.
+
+Follow the next steps to gain access to this branch-based deployment.
+
 Retrieving the kubectl file
 ---------------------------
 
-Multitenancy of the branch pipelines allows for the owners of a given CI Pipline run to access logs, investigate problems, test things, without worrying that the performance of other jobs running in the cluster is affected. In order to achieve this users need to be able to retrieve a kubeconfig file giving access to the cluster. Such a file is generated automatically by the pipelines running on SKAMPI  providing access only to the namespace specific for that pipeline, thus assuring that users will not interfere with other jobs running in the cluster.
-
-Retrieving the kubeconfig file is easy. Deployment and testing of SKAMPI in the pipeline Namespace are done manually, so the first step is to start a test. Go to pipeline output screen on Gitlab and select a test on the telescope of your choice. 
-
-.. image:: _static/img/selectjobmltnt.png
-
+Retrieving the kubeconfig file is easy. The kubeconfig file gives you access to the namespace and all k8s resources deployed there. Ensure that the deployment has started as per the previous section.
 
 Next check the logs on Gitlab for that job. Just after the creation of the namespace, your credentials are set up and the following section shows how you can download the KUBECONFIG file to your local machine for accessing the cluster resources:
 ::

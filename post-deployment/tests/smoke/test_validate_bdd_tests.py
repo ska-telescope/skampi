@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 import pytest
 from ska_ser_skallop.scripts.bdd_helper_scripts.xtp_compare import (
     output_file_diff as is_file_different,
+    get_file_paths,
 )
 
 
@@ -22,12 +23,15 @@ def test_validate_bdd_features():
 
     mocked_args = MagicMock()
     mocked_args.directory = features_path
-    mocked_args.basic_auth_token = os.environ.get("JIRA_AUTH", "")
+    mocked_args.jira_auth_token = os.environ.get("JIRA_AUTH")
     mocked_args.feature_file = ""
     mocked_args.username = ""
     mocked_args.password = ""
     mocked_args.verbose = False
 
-    assert not is_file_different(
-        mocked_args, mocked_args.directory
-    ), "Some BBD file(s) is not valid"
+    try:
+        assert not is_file_different(mocked_args, get_file_paths(mocked_args.directory))
+    except SystemExit:
+        assert (
+            0
+        ), "The information in some of the local XTP files does not match with what is in Jira"

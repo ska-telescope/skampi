@@ -9,7 +9,7 @@ from ska_ser_skallop.scripts.bdd_helper_scripts.xtp_compare import (
     parse_local_feature_files,
 )
 
-
+@pytest.mark.xfail
 @pytest.mark.common
 @pytest.mark.quarantine
 def test_validate_bdd_features():

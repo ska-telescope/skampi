@@ -2,8 +2,10 @@ Feature: Default
 
 	
 	@XTP-3090 @XTP-3085 @PI11
+	# allowed modes include ["OFF", "STARTUP", "SHUTDOWN", "STANDBY_LP",
+	# "STANDBY_FP", "MAINTENANCE", "CONFIG", "OPERATE"]
 	Scenario: Test dish stow request
-		Given dish master reports any allowed dish mode
+		Given dish reports any allowed dish mode
 		When I execute a stow command
 		Then the dish mode should report STOW
 		Then the elevation should be almost equal to the stow position

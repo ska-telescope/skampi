@@ -3,7 +3,7 @@ image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
 variables:
   MINIKUBE: "false"
   VALUES: "pipeline.yaml"
-  CHARTS_TO_PUBLISH: skalow skamid
+  CHARTS_TO_PUBLISH: ska-low ska-mid
   INGRESS_HOST: "k8s.stfc.skao.int"
 
 stages:
@@ -121,7 +121,7 @@ mid_uninstall:
     HELM_RELEASE: "test-mid"
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
@@ -135,7 +135,7 @@ mid_quarantine_uninstall:
     HELM_RELEASE: "test-mid-q"
     KUBE_NAMESPACE: "ci-quarantine-mid"
     KUBE_NAMESPACE_SDP: "ci-quarantine-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
@@ -150,7 +150,7 @@ low_uninstall:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
@@ -164,7 +164,7 @@ low_quarantine_uninstall:
     HELM_RELEASE: "test-low-q"
     KUBE_NAMESPACE: "ci-quarantine-low"
     KUBE_NAMESPACE_SDP: "ci-quarantine-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
@@ -179,7 +179,7 @@ psi_low_uninstall:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
@@ -193,7 +193,7 @@ mid_on_demand_uninstall:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
   script:
   - *uninstall_scripts
@@ -218,7 +218,7 @@ low_on_demand_uninstall:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
   script:
   - *uninstall_scripts
@@ -243,7 +243,7 @@ psi_low_on_demand_uninstall:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
   script:
   - *uninstall_scripts
@@ -267,7 +267,7 @@ mid_test:
     HELM_RELEASE: "test-mid"
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
   <<: *test_definition
@@ -295,7 +295,7 @@ mid_test_quarantine:
     KUBE_NAMESPACE_SDP: "ci-quarantine-mid-sdp"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
     DELETE: "true"
-    DEPLOYMENT_CONFIGURATION: "skamid"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true"
   <<: *test_definition
   <<: *xray_upload
@@ -317,7 +317,7 @@ mid_on_demand_test:
   stage: test
   tags: *tags_default
   variables:
-    DEPLOYMENT_CONFIGURATION: "skamid"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
     MARK: "skamid or common"
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
@@ -350,7 +350,7 @@ mid_stress_test:
   stage: test
   tags: *tags_default
   variables:
-    DEPLOYMENT_CONFIGURATION: "skamid"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
     MARK: "skamid or common"
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
@@ -377,7 +377,7 @@ low_test:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
   <<: *test_definition
@@ -406,7 +406,7 @@ low_test_quarantine:
     KUBE_NAMESPACE_SDP: "ci-quarantine-low-sdp"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     DELETE: "true"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
   <<: *test_definition
   <<: *xray_upload
@@ -432,7 +432,7 @@ psi_low_test:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     MARK: "(skalow or common) and not archiver and not quarantine"
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
@@ -454,7 +454,7 @@ low_on_demand_test:
   stage: test
   tags: *tags_default
   variables:
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     MARK: "skalow or common"
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
@@ -488,7 +488,7 @@ psi_low_on_demand_test:
   stage: test
   tags: *tags_psi_low
   variables:
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     MARK: "(skalow or common) and not archiver"
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
@@ -588,7 +588,7 @@ low_clean_staging:
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
   only:
     refs:
@@ -608,7 +608,7 @@ psi_low_clean_staging:
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
   only:
     refs:
       - tags
@@ -627,7 +627,7 @@ mid_clean_staging:
     HELM_RELEASE: "staging-mid"
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true"
   only:
     refs:
@@ -649,7 +649,7 @@ low_deploy_staging:
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
   <<: *deploy_definition
   environment:
@@ -670,11 +670,11 @@ psi_low_deploy_staging:
   tags: *tags_psi_low
   variables:
     HELM_REPO_NAME: "skatelescope"
-    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-skampi-low" ## The name of the chart as published to CAR
+    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-low" ## The name of the chart as published to CAR
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "skalow"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
   <<: *deploy_definition
   environment:
@@ -692,11 +692,11 @@ mid_deploy_staging:
   tags: *tags_default
   variables:
     HELM_REPO_NAME: "skatelescope"
-    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-skampi-mid" ## The name of the chart as published to CAR
+    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-mid" ## The name of the chart as published to CAR
     HELM_RELEASE: "staging-mid"
     KUBE_NAMESPACE: "staging-mid"
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "skamid"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true"
   <<: *deploy_definition
   environment:

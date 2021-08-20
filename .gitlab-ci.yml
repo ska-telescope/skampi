@@ -318,7 +318,7 @@ mid_on_demand_test:
   tags: *tags_default
   variables:
     DEPLOYMENT_CONFIGURATION: "skamid"
-    MARK: "XTP"
+    MARK: "skamid or common"
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"

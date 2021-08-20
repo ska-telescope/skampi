@@ -17,8 +17,7 @@ from ska.scripting.domain import SubArray
 from ska_tmc_cdm.messages.subarray_node.configure import ConfigureRequest, DishConfiguration
 from ska_tmc_cdm.messages.subarray_node.configure.core import ReceiverBand
 
-from resources.test_support.controls import (restart_subarray,
-                                             set_telescope_to_running,
+from resources.test_support.controls import (set_telescope_to_running,
                                              set_telescope_to_standby,
                                              take_subarray,
                                              telescope_is_in_standby,
@@ -54,6 +53,7 @@ def end(result):
     call.
     """
     obsstate = resource(result[SUBARRAY_USED]).get('obsState')
+    LOGGER.info("CLEANUP: Sub-array in obsState %s ", obsstate)
     if obsstate == "IDLE":
         LOGGER.info("CLEANUP: tearing down composed sub-array (IDLE)")
         take_subarray(1).and_release_all_resources()
@@ -61,7 +61,7 @@ def end(result):
         LOGGER.info("CLEANUP: restarting aborted sub-array")
         sub = SubArray(1)
         sub.restart()
-    if obsstate in ["RESTARTING", "RESETTING", "ABORTING"]:
+    if obsstate in ["RESOURCING", "RESTARTING", "RESETTING", "ABORTING"]:
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)

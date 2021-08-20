@@ -53,6 +53,7 @@ def end(result):
     """
     subarray = resource(result[SUBARRAY_USED])
     obsstate = subarray.get('obsState')
+    LOGGER.info("CLEANUP: Sub-array in obsState %s ", obsstate)
     if obsstate == "IDLE":
         LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
         take_subarray(1).and_release_all_resources()
@@ -60,7 +61,7 @@ def end(result):
         LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
         take_subarray(1).and_end_sb_when_ready(
         ).and_release_all_resources()
-    if obsstate in ["CONFIGURING", "SCANNING"]:
+    if obsstate in ["RESOURCING", "CONFIGURING", "SCANNING"]:
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)

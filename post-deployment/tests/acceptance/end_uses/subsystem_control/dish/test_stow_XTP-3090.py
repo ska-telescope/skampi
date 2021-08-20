@@ -43,7 +43,7 @@ def test_stow_command():
     pass
 
 
-@given("dish master reports any allowed dish mode")
+@given("dish reports any allowed dish mode")
 def dish_reports_any_dish_mode():
     allowed_dish_modes = [
         "OFF",

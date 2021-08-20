@@ -37,7 +37,7 @@ def restore_dish_state(request):
 
     request.addfinalizer(put_dish_in_standby_fp_mode)
 
-@pytest.mark.XTP
+
 @scenario("XTP-3090.feature", "Test dish stow request")
 def test_stow_command():
     pass

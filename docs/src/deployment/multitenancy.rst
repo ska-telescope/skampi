@@ -1,7 +1,7 @@
 .. _`Multitenancy`:
 
-Cloud deployments in isolated namespaces
-****************************************
+Cloud deployments in branch-named namespaces
+********************************************
 
 Multiple deployments of SKAMPI can be deployed on the Kubernetes clusters at the same time without affecting their individual performance. Separation is achieved by kubernetes namespaces and ensures that each CI job runs isolated from others.
 
@@ -23,8 +23,8 @@ Developers may not be able to simulate the targeted deployment environment by us
     Branch-based deployments are complete deployments of MID or LOW, and therefore require the same resources as any other deployment of SKAMPI - developers should be mindful of the impact of deployments. As such *branch-based namespaces are short lived: they are deleted 2 hours after their deployment*, and only manually deployed for persistence - automatic test deployments will be deleted immediately.
 
 
-Pipeline Namespaces
--------------------
+How feature branch namespaces are created in the CI pipelines
+-------------------------------------------------------------
 
 For SKAMPI Gitlab CI pipeline testing Kubernetes Namespaces are named automatically and as such users must be aware of the naming scheme. The name for the pipeline Namespace is of the form ``ci-<project name>-<branch name>``. For SKAMPI a ``-low`` or a ``-mid`` is appended at the end of the name depending on the telescope. For example, for a SKAMPI project branch named *at-51* and for a deployment involving  the MID telescope the corresponding Namespace name would be ``ci-skampi-at-51-mid``. We note that it is important to keep branch names reasonably short since Kubernetes truncates Resource names at 63 characters. 
 
@@ -46,34 +46,34 @@ There are two issues with this branch name: upper case letters and the underscor
     ``url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME/taranta"`` is not multitenant, all namespaces     would share the same url.
     ``url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"`` insures multitenancy.
 
-Deploying in a namespace linked to a development branch 
+Deploying to a namespace linked to a development branch 
 -------------------------------------------------------
 
 Scroll up to the top of this page if you need more information on multitenancy.
 
 Navigate to https://gitlab.com/ska-telescope/ska-skampi/-/pipelines: 
 
-.. image:: _static/img/search_pipelines_0.png
+.. image:: ../_static/img/search_pipelines_0.png
         :width: 400
 
 If the list of pipelines is overwhelming, you can search for your specific pipeline:
 
-.. image:: _static/img/search_pipelines_1.png
+.. image:: ../_static/img/search_pipelines_1.png
         :width: 400
 
 For instance, if you are looking for all pipelines associated with branch at-16, tell Gitlab so:
 
-.. image:: _static/img/search_pipelines_2.png
+.. image:: ../_static/img/search_pipelines_2.png
         :width: 800
 
 Under stages, look for the manual deployment jobs, and click on the gear icon of the telescope you want to deploy (mid / low / psi-low / psi-mid):
 
-.. image:: _static/img/search_pipelines_3.png
+.. image:: ../_static/img/search_pipelines_3.png
         :width: 300
 
 You can control various aspects of your deployment by declaring the environment variables. These are the same variables used by the Makefile. For instance, if you want to control which tests to run during the deployment, use the ``MARK`` variable. To deploy without running any tests, set ``MARK`` to ``ping``.
 
-.. image:: _static/img/set_mark_var_for_pipeline.png
+.. image:: ../_static/img/set_mark_var_for_pipeline.png
 
 This variable is passed to ``pytest``. See comments, in the `.make/test.mk <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/.make/test.mk#L15>`_ file, or by running ``make`` from the terminal.
 
@@ -123,7 +123,7 @@ Retrieving the Makefile variables used for the deployment
 
 If you run the ``make vars`` command, you will see a selection of the environment variables as they are fed into any ``make`` target. If you wanted to replicate the behaviour when deployment was made from a Gitlab deployment job, you should search the CI job logs for the drop-down section "Make vars dump", and click on the ">" next to it to see output of ``make vars``:
 
-.. image:: _static/img/get_make_vars.png
+.. image:: ../_static/img/get_make_vars.png
 
 Copy and paste these into a ``PrivateRules.mak`` file in your root folder. This file is "gitignored" already and should not be checked into the repo. You can also add any other variables as you want to control your environment.
 

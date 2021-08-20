@@ -1,9 +1,7 @@
 Feature: Default
 
-	
+	#allowed modes include ["OFF", "STARTUP", "SHUTDOWN", "STANDBY_LP", "STANDBY_FP", "MAINTENANCE", "CONFIG", "OPERATE"]
 	@XTP-3090 @XTP-3085 @PI11
-	# allowed modes include ["OFF", "STARTUP", "SHUTDOWN", "STANDBY_LP",
-	# "STANDBY_FP", "MAINTENANCE", "CONFIG", "OPERATE"]
 	Scenario: Test dish stow request
 		Given dish reports any allowed dish mode
 		When I execute a stow command

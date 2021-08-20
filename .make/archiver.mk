@@ -2,7 +2,7 @@
 
 CONFIGURE_ARCHIVER = test-configure-archiver # Test runner - run to completion the configuration job in K8s
 ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
-ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archiver attribute configure json file for ska-skampi-mid to work with
+ARCHIVER_CONFIG_FILE ?= $(DEPLOYMENT_CONFIGURATION)/configuration.json## archiver attribute configure json file for ska-mid to work with
 
 # Checks if the Database name is provided by user while deploying the archiver and notifies the user
 check-archiver-dbname:
@@ -27,7 +27,7 @@ get-service:
 	$(eval DBMVPSERVICE := $(shell kubectl get svc -n $(KUBE_NAMESPACE) | grep 10000 |  cut -d " " -f 1)) \
 	echo $(DBMVPSERVICE);
 
-# Runs a pod to execute a script. 
+# Runs a pod to execute a script.
 # This script configures the archiver for attribute archival defined in json file. Once script is executed, pod is deleted.
 configure-archiver:  get-service ##configure attributes to archive
 		tar -c resources/archiver/ | \
@@ -62,7 +62,14 @@ archiver_k8s_test = tar -c post-deployment/ | \
 		--env=INGRESS_HOST=$(INGRESS_HOST) \
 		$(PSI_LOW_PROXY_VALUES) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
-		make SKUID_URL=skuid-ska-ser-skuid-$(KUBE_NAMESPACE)-$(HELM_RELEASE).$(KUBE_NAMESPACE).svc.cluster.local:9870 KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) MARK='$(MARK)' FILE='$(FILE)' $1 && \
+		make \
+			SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
+			KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
+			HELM_RELEASE=$(HELM_RELEASE) \
+			TANGO_HOST=$(TANGO_HOST) \
+			MARK='$(MARK)' \
+			FILE='$(FILE)' \
+		$1 && \
 		tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
 		cat /tmp/build.tgz | base64 && \

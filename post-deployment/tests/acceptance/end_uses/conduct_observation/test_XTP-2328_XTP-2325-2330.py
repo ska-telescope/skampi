@@ -72,6 +72,7 @@ def end(result):
                 subarray.get('obsState'))
 
 
+@pytest.mark.skip
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -85,6 +86,7 @@ def test_resource_allocation_without_sbi():
     """
 
 
+@pytest.mark.skip
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine

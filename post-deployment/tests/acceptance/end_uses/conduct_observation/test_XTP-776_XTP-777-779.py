@@ -85,6 +85,7 @@ def test_sbi_creation():
     """
 
 
+@pytest.mark.skip
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
@@ -99,6 +100,7 @@ def test_resource_allocation():
     """
 
 
+@pytest.mark.skip
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine

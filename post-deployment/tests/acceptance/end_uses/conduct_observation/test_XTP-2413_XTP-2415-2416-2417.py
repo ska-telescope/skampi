@@ -58,7 +58,7 @@ def end(result):
         LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
         subarray.end()
         subarray.deallocate()
-    if obsstate in ["CONFIGURING", "SCANNING"]:
+    if subarray.get('obsState') != "EMPTY":
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)

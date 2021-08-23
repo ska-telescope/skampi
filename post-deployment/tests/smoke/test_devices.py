@@ -56,7 +56,6 @@ def test_subscribe_to_attribute():
 
 @pytest.mark.fast
 @pytest.mark.skamid
-@pytest.mark.xfail
 def test_dish_subscribe():
     dish_001 = DeviceProxy('mid_d0001/elt/master')
     sub_id = dish_001.subscribe_event('State', EventType.CHANGE_EVENT, lambda event:print(event))
@@ -64,12 +63,10 @@ def test_dish_subscribe():
 
 @pytest.mark.fast
 @pytest.mark.skamid
-@pytest.mark.xfail
 def test_dish_not_on_at_start():
     assert_that(DeviceProxy('mid_d0001/elt/master').State().name).is_in('STANDBY','OFF')
 
 @pytest.mark.fast
 @pytest.mark.skamid
-@pytest.mark.xfail
 def test_dish_in_idle():
-    assert_that(DeviceProxy('mid_d0001/elt/master').observingState().name).is_in('IDLE')
+    assert_that(DeviceProxy('mid_d0001/elt/master').observingState.name).is_in('IDLE')

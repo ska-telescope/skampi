@@ -3,14 +3,12 @@
 Deployment
 **********
 
-You can find instructions to deploy and interact with SKAMPI in different environments.
+Here you can find instructions to deploy and interact with SKAMPI in different environments.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    deployment/kubernetes
    deployment/helm
+   deployment/multitenancy
    deployment/remote_deploy
-
-Read about the automatic deployment of SKAMPI in the CI/CD environment and how
-you can test it there at :ref:`Multitenancy`.

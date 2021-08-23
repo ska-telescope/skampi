@@ -29,7 +29,7 @@ def test_validate_bdd_features():
     mocked_args.password = ""
     mocked_args.verbose = False
 
-    feature_files_paths = get_file_paths(mocked_args.directory)
+    feature_file_paths = get_file_paths(mocked_args.directory)
     assert not file_differences(
-        mocked_args, file_paths
+        mocked_args, feature_file_paths
     ), "The information in some of the local XTP files does not match with what is in Jira"

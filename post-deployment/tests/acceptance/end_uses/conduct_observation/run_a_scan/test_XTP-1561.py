@@ -5,7 +5,6 @@ import time
 
 import pytest
 
-
 import tango
 
 from pytest_bdd import scenario, given, when, then
@@ -17,7 +16,6 @@ from ska.scripting import observingtasks
 from ska_ser_skallop.mvp_fixtures.env_handling import ExecEnv
 from ska_ser_skallop.mvp_fixtures.context_management import SubarrayContext
 from ska_ser_skallop.mvp_control.event_waiting import set_to_wait, wait
-
 
 
 logger = logging.getLogger(__name__)
@@ -41,7 +39,8 @@ class ScanIDStore:
 def set_entry_point(exec_env: ExecEnv):
     exec_env.entrypoint = "tmc"
 
-@pytest.mark.skip(reason="SubarrayContext from skallop needs to be updated as per SP-1623")
+#@pytest.mark.skip(reason="SubarrayContext from skallop needs to be updated as per SP-1623")
+@pytest.mark.jayant
 @pytest.mark.skamid
 @pytest.mark.quarantine
 @scenario(

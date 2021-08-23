@@ -6,127 +6,95 @@ test_calc
 ----------------------------------
 Acceptance tests for MVP.
 """
-import sys, os
-import pytest
+from types import SimpleNamespace
 import logging
-from assertpy import assert_that
 from pytest_bdd import scenario, given, when, then
+import pytest
+
+from ska_ser_skallop.mvp_fixtures.env_handling import ExecEnv
+from ska_ser_skallop.mvp_fixtures.base import ExecSettings
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_control.subarray.compose import SBConfig
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.event_waiting import wait
+from ska_ser_skallop.mvp_control.describing import mvp_names
+from ska_ser_skallop.event_handling import builders
+from ska_ser_skallop.mvp_fixtures.context_management import TelescopeContext
+
+logger = logging.getLogger(__name__)
 
 
-#SUT
-from ska.scripting.domain import Telescope, SubArray, ResourceAllocation, Dish
-from ska_tmc_cdm.messages.central_node.assign_resources import AssignResourcesRequest
-from ska_tmc_cdm.schemas import CODEC as cdm_CODEC
-#SUT infrastructure
-from tango import DeviceProxy, DevState # type: ignore
-## local imports
-from resources.test_support.helpers import resource
-from resources.test_support.sync_decorators import sync_assign_resources
-from resources.test_support.persistance_helping import update_resource_config_file
-from resources.test_support.controls import set_telescope_to_standby,set_telescope_to_running,telescope_is_in_standby,take_subarray, tmc_is_on
-from resources.test_support.helpers_low import wait_before_test
-from resources.test_support.oet_helpers import oet_compose_sub
-
-DEV_TEST_TOGGLE = os.environ.get('DISABLE_DEV_TESTS')
-if DEV_TEST_TOGGLE == "False":
-    DISABLE_TESTS_UNDER_DEVELOPMENT = False
-else:
-    DISABLE_TESTS_UNDER_DEVELOPMENT = True
-
-LOGGER = logging.getLogger(__name__)
-
-devices_to_log = [
-    'ska_mid/tm_subarray_node/1',
-    'mid_csp/elt/subarray_01',
-    'mid_csp_cbf/sub_elt/subarray_01',
-    'mid_sdp/elt/subarray_1',
-    'mid_d0001/elt/master',
-    'mid_d0002/elt/master',
-    'mid_d0003/elt/master',
-    'mid_d0004/elt/master']
-non_default_states_to_check = {
-    'mid_d0001/elt/master' : 'pointingState',
-    'mid_d0002/elt/master' : 'pointingState',
-    'mid_d0003/elt/master' : 'pointingState',
-    'mid_d0004/elt/master' : 'pointingState'}
+class Context(SimpleNamespace):
+    pass
 
 
-@pytest.fixture
-def result():
-    return {}
+@pytest.fixture(name="context")
+def fxt_context():
+    return Context()
 
-@pytest.mark.select
-@pytest.mark.skamid
-@pytest.mark.quarantine
-#@pytest.mark.skipif(DISABLE_TESTS_UNDER_DEVELOPMENT, reason="disabaled by local env")
+@pytest.mark.jayant
 @scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
-def test_allocate_resources():
+def test_allocate_resources(exec_env: ExecEnv):
     """Assign Resources."""
+    exec_env.entrypoint = "tmc"
 
 @given("A running telescope for executing observations on a subarray")
-def set_to_running():
-    LOGGER.info("Before starting the telescope checking if the TMC is in ON state")
-    assert(tmc_is_on())
-    LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
-    assert telescope_is_in_standby()
-    LOGGER.info("Telescope is in StandBy.")
-    LOGGER.info("Invoking Startup Telescope command on the telescope.")
-    set_telescope_to_running()
-    LOGGER.info("Telescope is started successfully.")
+def set_to_running(running_telescope: TelescopeContext):
+    pass
 
 @when("I allocate 4 dishes to subarray 1")
-def allocate_four_dishes(result):
-    LOGGER.info("Allocating 4 dishes to subarray 1")
-    ##############################
-    @sync_assign_resources(4, 600)
-    def test_SUT():
-        res = oet_compose_sub()
-        return res     
-    result['response'] = test_SUT()
-    LOGGER.info("Result of test_SUT : " + str(result))
-    LOGGER.info("Result response of test_SUT : " + str(result['response']))
-    ##############################
-    LOGGER.info("AssignResource command is executed successfully.")
-    return result
+def allocate(
+    tmp_path,
+    context,
+    sb_config: SBConfig,
+    exec_settings: ExecSettings,
+    running_telescope: TelescopeContext,
+    entry_point: EntryPoint,
+):
+
+    subarray_id = 1
+    nr_of_dishes = 4
+    receptors = list(range(1, int(nr_of_dishes) + 1))
+
+    composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
+
+    builder = builders.get_message_board_builder()
+    checker = (
+        builder.check_that(str(mvp_names.Mid.tm.subarray(subarray_id)))
+        .transits_according_to(["EMPTY", ("RESOURCING", "ahead"), "IDLE"])
+        .on_attr("obsState")
+        .when_transit_occur_on(
+            mvp_names.SubArrays(subarray_id).subtract("tm").subtract("cbf domain").list
+        )
+    )
+
+    running_telescope.release_subarray_when_finished(subarray_id, receptors, exec_settings)
+    board = running_telescope.push_context_onto_test(wait.waiting_context(builder))
+    context.board = board
+    context.checker = checker
+    exec_settings.touched = True
+    entry_point.compose_subarray(
+        subarray_id,
+        receptors,
+        composition,
+        sb_config.sbid,
+    )
 
 @then("I have a subarray composed of 4 dishes")
-def check_subarray_composition(result):
-    #check that there was no error in response
-    # TODO: To uncomment once latest tmc-mid chart is published
-    assert_that(result['response']).is_equal_to(ResourceAllocation(dishes=[Dish(1), Dish(2), Dish(3), Dish(4)]))
-    #check that this is reflected correctly on TMC side
-    assert_that(resource('ska_mid/tm_subarray_node/1').get("receptorIDList")).is_equal_to((1, 2, 3, 4))
-    #check that this is reflected correctly on CSP side
-    assert_that(resource('mid_csp/elt/subarray_01').get('assignedReceptors')).is_equal_to((1, 2, 3, 4))
-    #assert_that(resource('mid_csp/elt/master').get('receptorMembership')).is_equal_to((1, 1,))
-    #TODO need to find a better way of testing sets with sets
-    #assert_that(set(resource('mid_csp/elt/master').get('availableReceptorIDs'))).is_subset_of(set((4,3)))
-    #check that this is reflected correctly on SDP side - no code at the current implementation
-    LOGGER.info("Then I have a subarray composed of 4 dishes: PASSED")
+def check_subarray_composition(context):
+    board: wait.MessageBoardBase = context.board
+    try:
+        wait.wait(context.board, 30, live_logging=False)
+    except wait.EWhilstWaiting as exception:
+        logs = board.play_log_book()
+        logger.info(f"Log messages during waiting:\n{logs}")
+        raise exception
 
 
 @then("the subarray is in the condition that allows scan configurations to take place")
-def check_subarry_state():
-    # check that the obsState of SDP-Subarray is IDEL
-    assert_that(resource('mid_sdp/elt/subarray_1').get('obsState')).is_equal_to('IDLE')
-    # check that the obsState of CSP-Subarray is IDEL
-    assert_that(resource('ska_mid/tm_subarray_node/1').get('obsState')).is_equal_to('IDLE')
-    # check that the obsState of TMC-Subarray is IDEL
-    assert_that(resource('mid_csp/elt/subarray_01').get('obsState')).is_equal_to('IDLE')
-    LOGGER.info("Then the subarray is in the condition that allows scan configurations to take place: PASSED")
-
-
-def teardown_function(function):
-    """ teardown any state that was previously setup with a setup_function
-    call.
-    """
-    if (resource('ska_mid/tm_subarray_node/1').get("obsState") == "IDLE"):
-        LOGGER.info("Release all resources assigned to subarray")
-        take_subarray(1).and_release_all_resources()
-        LOGGER.info("ResourceIdList is empty for Subarray 1 ")
-    LOGGER.info("Put Telescope back to standby")
-    set_telescope_to_standby()
-    LOGGER.info("Telescope is in standby")
-
- 
-    
+def check_subarry_state(context):
+    checker: builders.Occurrences = context.checker
+    checking_logs = checker.print_outcome_for(checker.subject_device)
+    logger.info(f"Results of checking:\n{checking_logs}")
+    checker.assert_that(checker.subject_device).is_ahead_of_all_on_transit("RESOURCING")
+    checker.assert_that(checker.subject_device).is_behind_all_on_transit("IDLE")

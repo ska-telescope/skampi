@@ -5,6 +5,7 @@ import pytest
 from assertpy import assert_that
 from  functools import reduce
 from resources.test_support.helpers import resource, subarray_devices
+from ska_ser_skallop.utils import env
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,7 +20,8 @@ LOGGER = logging.getLogger(__name__)
 @pytest.mark.ping
 def test_empty_ping():
     # this test is to just check testing framework can run a test
-    pass
+    foo = env.telescope_type_is_low()
+    foo
 
 @pytest.mark.skip
 @pytest.mark.first

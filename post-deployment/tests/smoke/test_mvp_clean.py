@@ -20,8 +20,7 @@ LOGGER = logging.getLogger(__name__)
 @pytest.mark.ping
 def test_empty_ping():
     # this test is to just check testing framework can run a test
-    foo = env.telescope_type_is_low()
-    foo
+    pass
 
 @pytest.mark.skip
 @pytest.mark.first

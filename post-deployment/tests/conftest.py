@@ -29,7 +29,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import (
 # in between tests, change to True for it to remain on
 @pytest.fixture(name='maintain_on', scope="session",autouse=True)
 def fxt_override_maintain_on():
-    return False
+    return True
 
 """
 RunContext is a metadata object to access values from the environment, 

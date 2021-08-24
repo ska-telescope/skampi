@@ -55,7 +55,8 @@ def test_start_up(
     entry_point.set_telescope_to_running()
     standby_telescope.state = "ON"
     try:
-        wait.wait(board, 60, live_logging=False)
+        logger.info("Inside try block---------------------")
+        wait.wait(board, 200, live_logging=False)
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book()
         logger.info(f"Log messages during waiting:\n{logs}")

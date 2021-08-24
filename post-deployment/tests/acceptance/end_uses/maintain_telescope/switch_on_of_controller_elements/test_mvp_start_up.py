@@ -82,8 +82,9 @@ def test_start_up_mid(
         entry_point
     )
 
-@pytest.mark.xfail
-@pytest.mark.skalow
+# @pytest.mark.xfail
+# @pytest.mark.skalow
+@pytest.mark.ncra
 def test_start_up_low(
         transit_checking: Tuple[Occurrences, MessageBoardBase],
         standby_telescope: TelescopeContext,
@@ -95,3 +96,4 @@ def test_start_up_low(
         standby_telescope,
         entry_point
     )
+

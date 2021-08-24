@@ -32,11 +32,16 @@ class Context(SimpleNamespace):
 def fxt_context():
     return Context()
 
+@pytest.fixture(name="init")
+def fxt_init(exec_env: ExecEnv, exec_settings: ExecSettings):
+    exec_env.entrypoint = "tmc"
+    #exec_settings.log_enabled = True
+
 
 @scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
-def test_allocate_resources(exec_env: ExecEnv):
+def test_allocate_resources(init):
     """Assign Resources."""
-    exec_env.entrypoint = "tmc"
+    
 
 @given("A running telescope for executing observations on a subarray")
 def set_to_running(running_telescope: TelescopeContext):
@@ -84,7 +89,7 @@ def allocate(
 def check_subarray_composition(context):
     board: wait.MessageBoardBase = context.board
     try:
-        wait.wait(context.board, 30, live_logging=False)
+        wait.wait(context.board, 8*60, live_logging=True)
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book()
         logger.info(f"Log messages during waiting:\n{logs}")

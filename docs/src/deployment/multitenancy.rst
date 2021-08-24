@@ -46,6 +46,8 @@ There are two issues with this branch name: upper case letters and the underscor
     ``url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME/taranta"`` is not multitenant, all namespaces     would share the same url.
     ``url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"`` insures multitenancy.
 
+.. _`branch_deployment`:
+
 Deploying to a namespace linked to a development branch 
 -------------------------------------------------------
 

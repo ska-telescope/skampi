@@ -4,6 +4,7 @@ from types import SimpleNamespace
 import logging
 
 from ska_ser_skallop.event_handling import builders
+from ska_ser_skallop.event_handling import occurences
 from ska_ser_skallop.event_handling.occurences import Occurrences
 from ska_ser_skallop.subscribing.base import MessageBoardBase
 from ska_ser_skallop.mvp_control.describing import mvp_names
@@ -65,7 +66,12 @@ def check_startup(
         raise exception
     checking_logs = checker.print_outcome_for(checker.subject_device)
     logger.info(f"Results of checking:\n{checking_logs}")
-    checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")
+    try:
+        checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")
+    except AssertionError as error:
+        logs = board.play_log_book()
+        logger.info(f"Error in occurrences test: Log messages during waiting:\n{logs}")
+        raise error
 
 #@pytest.mark.skip("TelescopeContext is not updated in skallop as per SP-1623 and SP-1643")
 # @pytest.mark.xfail

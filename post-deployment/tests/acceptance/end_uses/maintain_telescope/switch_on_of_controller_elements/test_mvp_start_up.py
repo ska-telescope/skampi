@@ -1,4 +1,4 @@
-from typing import Any, Iterator, List,Tuple, Union
+from typing import List,Tuple
 import pytest
 from types import SimpleNamespace
 import logging
@@ -11,6 +11,7 @@ from ska_ser_skallop.mvp_fixtures.context_management import TelescopeContext
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.event_waiting import wait
 
+
 logger = logging.getLogger(__name__)
 
 class Context(SimpleNamespace):
@@ -22,22 +23,26 @@ def fxt_context():
 
 @pytest.fixture(name='devices')
 def fxt_devices()->List[str]:
-    devices = mvp_names.Masters().subtract('tm')
-    for index in range(1,2):
-        devices = devices + mvp_names.SubArrays(index).subtract('tm')
-    for index in range(1,5):
-        devices = devices + mvp_names.Sensors(index).subtract('vcc').subtract('tm')
+    tel = mvp_names.TEL()
+    devices = tel.masters().subtract('tm')
+    if tel.skamid:
+        for index in range(1,2):
+            devices = devices + tel.subarrays(index).subtract('tm')
+        for index in range(1,5):
+            devices = devices + tel.sensors(index).subtract('vcc').subtract('tm')
     return devices.list
     
 
 @pytest.fixture(name='transit_checking')
-def fxt_transit_checker(devices, standby_telescope: TelescopeContext)-> Tuple[Occurrences, MessageBoardBase]:
+def fxt_transit_checker(devices, standby_telescope: TelescopeContext, )-> Tuple[Occurrences, MessageBoardBase]:
     builder = builders.get_message_board_builder()
-    central_node = mvp_names.Mid.tm.central_node
+    tel = mvp_names.TEL()
+    central_node = tel.tm.central_node
+    att = "telescopeState" if tel.skalow else 'state'
     checker = (
         builder.check_that(central_node)
         .transits_according_to(["ON"])
-        .on_attr("telescopeState")
+        .on_attr(att)
         .when_transit_occur_on(devices,ignore_first=True, devices_to_follow_attr='state')
     )
     board  = standby_telescope.push_context_onto_test(wait.waiting_context(builder))
@@ -46,6 +51,7 @@ def fxt_transit_checker(devices, standby_telescope: TelescopeContext)-> Tuple[Oc
 #@pytest.mark.skip("TelescopeContext is not updated in skallop as per SP-1623 and SP-1643")
 # @pytest.mark.xfail
 @pytest.mark.skamid
+@pytest.mark.skalow
 def test_start_up(
         transit_checking: Tuple[Occurrences, MessageBoardBase],
         standby_telescope: TelescopeContext,

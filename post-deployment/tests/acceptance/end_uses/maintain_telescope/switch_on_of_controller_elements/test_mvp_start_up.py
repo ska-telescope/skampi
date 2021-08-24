@@ -38,7 +38,7 @@ def fxt_transit_checker(devices, standby_telescope: TelescopeContext, )-> Tuple[
     builder = builders.get_message_board_builder()
     tel = mvp_names.TEL()
     central_node = tel.tm.central_node
-    att = "telescopeState" if tel.skalow else 'state'
+    att = "telescopeState" if tel.skamid else 'state'
     checker = (
         builder.check_that(central_node)
         .transits_according_to(["ON"])

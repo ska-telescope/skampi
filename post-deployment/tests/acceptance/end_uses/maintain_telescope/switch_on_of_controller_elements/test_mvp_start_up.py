@@ -44,7 +44,6 @@ def fxt_transit_checker(devices, standby_telescope: TelescopeContext)-> Tuple[Oc
     return checker, board
 
 @pytest.mark.skamid
-@pytest.mark.jayant
 def test_start_up(
         transit_checking: Tuple[Occurrences, MessageBoardBase],
         standby_telescope: TelescopeContext,

@@ -34,6 +34,7 @@ def fxt_context():
 
 
 @scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
+@pytest.mark.jayant
 def test_allocate_resources(exec_env: ExecEnv):
     """Assign Resources."""
     exec_env.entrypoint = "tmc"

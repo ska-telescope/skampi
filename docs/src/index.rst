@@ -20,5 +20,5 @@ You can also see a `deployment diagram for SKAMPI <https://confluence.skatelesco
    :maxdepth: 1
 
    deployment
-   multitenancy
    subsystems
+   testing

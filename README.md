@@ -1,17 +1,17 @@
 # Getting Started
-[![Documentation Status](https://readthedocs.org/projects/ska-telescope-skampi/badge/?version=latest)](https://developer.skatelescope.org/projects/skampi/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/ska-telescope-ska-skampi/badge/?version=latest)](https://developer.skatelescope.org/projects/ska-skampi/en/latest/?badge=latest)
 
 ## Before you begin
-The documentation for SKAMPI is currently being reworked. To look at the documentation that was available before this rework started, please go to [this temporary build on ReadtheDocs](https://developer.skao.int/projects/skampi/en/sp-1747-docs-old/).
+The documentation for SKAMPI is currently being reworked. To look at the documentation that was available before this rework started, please go to [this temporary build on ReadtheDocs](https://developer.skao.int/projects/ska-skampi/en/sp-1747-docs-old/).
 
-For information on how to use the subsystems / components that are deployed using SKAMPI, please first look at the documentation on [SKAMPI Subsystems](https://developer.skao.int/projects/skampi/en/latest/subsystems.html)
+For information on how to use the subsystems / components that are deployed using SKAMPI, please first look at the documentation on [SKAMPI Subsystems](https://developer.skao.int/projects/ska-skampi/en/latest/subsystems.html)
 
 If you're developing (or planning to develop or contribute to) a component or subsystem that is to be integrated in a Kubernetes cluster, read on. If you are a tester, it is also recommended that you gain at least a basic understanding of the concepts before jumping to the section on [Testing](#testing).
 
 ### SKA Tango Examples and Tango Images
 If your component or product is ready for integration, skip the following sections and go to [Development](#development).
 
-A basic understanding of the [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/) repository is required before attempting to integrate a component on SKAMPI. Please clone the repository and base your development on the examples given there. Pay particular attention to how deployment and partial integration is demonstrated using Helm. It will be helpful to follow the SKAMPI [Documentation on Helm](https://developer.skao.int/projects/skampi/en/latest/deployment/helm.html) while you are doing this. There are also links to the documentation on Container Orchestration which you should also follow.
+A basic understanding of the [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/) repository is required before attempting to integrate a component on SKAMPI. Please clone the repository and base your development on the examples given there. Pay particular attention to how deployment and partial integration is demonstrated using Helm. It will be helpful to follow the SKAMPI [Documentation on Helm](https://developer.skao.int/projects/ska-skampi/en/latest/deployment/helm.html) while you are doing this. There are also links to the documentation on Container Orchestration which you should also follow.
 
 The SKA Tango Base and Tango Util Helm charts are required by most of the deployments that are integrated in SKAMPI. It is therefore also worth your while to look at the [SKA Tango Images](https://gitlab.com/ska-telescope/ska-tango-images/) repository. The deployment workflow is very similar to SKAMPI.
 
@@ -59,9 +59,7 @@ To gitlab.com:ska-telescope/ska-skampi.git
  * [new branch]        at-42 -> at-42
  ```
 
-You can now create your Merge Request by following the link that is provided by Git - in most terminals you can follow that link by Ctrl+Clicking on the link (Cmd+click on a Mac). We recommend creating a Merge Request, and marking it Draft if it is not ready to merge immediately, as soon as possible. Stale branches will be removed eventually.
-
-Follow the [Documentation on Multitenancy](https://developer.skao.int/projects/skampi/en/latest/multitenancy.html#retrieving-the-kubectl-file) for downloading and using the KUBECONFIG file. This file is your key to accessing the namespace in the cluster where your branch has just been deployed.
+Follow the [Documentation](https://developer.skao.int/projects/ska-skampi/en/latest/deployment/multitenancy.html#deploying-in-a-namespace-linked-to-a-development-branch) for deploying in a namespace, and then downloading and using the KUBECONFIG file. This file is your key to accessing the namespace in the cluster where your branch has just been deployed.
 
 ### VSCode Kubernetes
 There are multiple ways to access your cluster. With the Kubernetes plugin installed in VSCode, you can set your VSCode to access the namespaced deployment. Follow the above-mentioned documentation and set your cluster to the KUBECONFIG file provided.

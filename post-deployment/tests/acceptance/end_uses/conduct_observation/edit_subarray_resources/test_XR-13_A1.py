@@ -85,7 +85,7 @@ def allocate(
 def check_subarray_composition(context):
     board: wait.MessageBoardBase = context.board
     try:
-        wait.wait(context.board, 100, live_logging=False)
+        wait.wait(context.board, 200, live_logging=False)
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book()
         logger.info(f"Log messages during waiting:\n{logs}")

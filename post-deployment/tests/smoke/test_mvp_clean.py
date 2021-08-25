@@ -5,6 +5,7 @@ import pytest
 from assertpy import assert_that
 from  functools import reduce
 from resources.test_support.helpers import resource, subarray_devices
+from ska_ser_skallop.utils import env
 
 LOGGER = logging.getLogger(__name__)
 

@@ -10,6 +10,9 @@ from types import SimpleNamespace
 import logging
 from pytest_bdd import scenario, given, when, then
 import pytest
+from time import sleep
+
+from tango import DeviceProxy
 
 from ska_ser_skallop.mvp_fixtures.env_handling import ExecEnv
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
@@ -32,11 +35,17 @@ class Context(SimpleNamespace):
 def fxt_context():
     return Context()
 
-
-@scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
-def test_allocate_resources(exec_env: ExecEnv):
-    """Assign Resources."""
+@pytest.fixture(name="init")
+def fxt_init(exec_env: ExecEnv, exec_settings: ExecSettings):
     exec_env.entrypoint = "tmc"
+    #exec_settings.log_enabled = True
+
+@pytest.mark.skamid
+@pytest.mark.trial
+@scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
+def test_allocate_resources(init):
+    """Assign Resources."""
+    
 
 @given("A running telescope for executing observations on a subarray")
 def set_to_running(running_telescope: TelescopeContext):
@@ -55,6 +64,11 @@ def allocate(
     subarray_id = 1
     nr_of_dishes = 4
     receptors = list(range(1, int(nr_of_dishes) + 1))
+    # check sdp subarray has polling set up
+    sdp_subarray = mvp_names.Mid.sdp.subarray(subarray_id).__str__()
+    sdp_proxy = DeviceProxy(sdp_subarray)
+    polling = sdp_proxy.get_attribute_poll_period('obsState')
+    logger.info(f'Note {sdp_subarray} is polled with {polling}ms')
 
     composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
 
@@ -83,12 +97,16 @@ def allocate(
 @then("I have a subarray composed of 4 dishes")
 def check_subarray_composition(context):
     board: wait.MessageBoardBase = context.board
+    
     try:
-        wait.wait(context.board, 30, live_logging=False)
+        wait.wait(context.board, 8*60, live_logging=True)
+        sleep(1) # hack to circumvent possible synchronization fault in event generated data vs queried data
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book()
         logger.info(f"Log messages during waiting:\n{logs}")
         raise exception
+    logs = board.play_log_book()
+    logger.info(f"Log messages during waiting:\n{logs}")
 
 
 @then("the subarray is in the condition that allows scan configurations to take place")

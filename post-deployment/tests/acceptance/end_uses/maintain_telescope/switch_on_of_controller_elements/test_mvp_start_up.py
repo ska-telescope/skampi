@@ -76,7 +76,7 @@ def check_startup(
 #@pytest.mark.skip("TelescopeContext is not updated in skallop as per SP-1623 and SP-1643")
 # @pytest.mark.xfail
 @pytest.mark.skamid
-def test_start_up_mid(
+def test_start_up(
         transit_checking: Tuple[Occurrences, MessageBoardBase],
         standby_telescope: TelescopeContext,
         entry_point: EntryPoint

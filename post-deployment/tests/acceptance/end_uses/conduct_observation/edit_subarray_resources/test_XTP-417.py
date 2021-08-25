@@ -12,6 +12,8 @@ from pytest_bdd import scenario, given, when, then
 import pytest
 from time import sleep
 
+from tango import DeviceProxy
+
 from ska_ser_skallop.mvp_fixtures.env_handling import ExecEnv
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
@@ -62,6 +64,11 @@ def allocate(
     subarray_id = 1
     nr_of_dishes = 4
     receptors = list(range(1, int(nr_of_dishes) + 1))
+    # check sdp subarray has polling set up
+    sdp_subarray = mvp_names.Mid.sdp.subarray(subarray_id).__str__()
+    sdp_proxy = DeviceProxy(sdp_subarray)
+    polling = sdp_proxy.get_attribute_poll_period()
+    logger.info(f'Note {sdp_subarray} is polled with {polling}ms')
 
     composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
 
@@ -90,9 +97,10 @@ def allocate(
 @then("I have a subarray composed of 4 dishes")
 def check_subarray_composition(context):
     board: wait.MessageBoardBase = context.board
+    
     try:
         wait.wait(context.board, 8*60, live_logging=True)
-        sleep(0.2) # hack to circumvent possible synchronization fault in event generated data vs queried data
+        sleep(1) # hack to circumvent possible synchronization fault in event generated data vs queried data
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book()
         logger.info(f"Log messages during waiting:\n{logs}")

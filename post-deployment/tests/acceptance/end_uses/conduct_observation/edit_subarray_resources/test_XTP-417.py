@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import logging
 from pytest_bdd import scenario, given, when, then
 import pytest
+from time import sleep
 
 from ska_ser_skallop.mvp_fixtures.env_handling import ExecEnv
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
@@ -91,6 +92,7 @@ def check_subarray_composition(context):
     board: wait.MessageBoardBase = context.board
     try:
         wait.wait(context.board, 8*60, live_logging=True)
+        sleep(0.2) # hack to circumvent possible synchronization fault in event generated data vs queried data
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book()
         logger.info(f"Log messages during waiting:\n{logs}")

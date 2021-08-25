@@ -106,3 +106,6 @@ ska-tmc-mid:
 ska-tango-archiver:
   # enabled: false
   dbname: default_mvp_archiver_db
+
+ska-log-consumer.enabled:
+  enabled: true

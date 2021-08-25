@@ -48,6 +48,12 @@ dependencies:
   version: 0.1.8
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-tango-archiver.enabled
+## log consumer is for testing and diagnostic purposes only
+# is disabled by default
+- name: ska-log-consumer
+  version: 0.1.2
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-log-consumer.enabled
 ## DISH LMC Prototype was disabled in the old version of skampi
 # - name: dsh-lmc-prototype
 #   version: 0.0.1

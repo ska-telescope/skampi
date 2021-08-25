@@ -37,7 +37,7 @@ def fxt_init(exec_env: ExecEnv, exec_settings: ExecSettings):
     exec_env.entrypoint = "tmc"
     #exec_settings.log_enabled = True
 
-
+@pytest.mark.skamid
 @scenario("1_XR-13_XTP-494.feature", "A1-Test, Sub-array resource allocation")
 def test_allocate_resources(init):
     """Assign Resources."""

@@ -25,6 +25,6 @@ tango-simlib>=0.9.0
 ska-tango-base
 ska-ser-log-transactions
 tabulate
-ska-ser-skallop[bit]==2.5.0
+ska-ser-skallop[bit]==2.3.0
 ska-ser-skuid
 ska-ser-logging

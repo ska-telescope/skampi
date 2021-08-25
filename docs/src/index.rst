@@ -1,7 +1,8 @@
 SKAMPI - SKA Mvp Prototype Integration
 ======================================
 
-SKAMPI is a software product for integration of the software components needed to run an SKA telescope.
+SKAMPI is the SKA repository containing the software products and related integration tools for releasing these products developed by the SKA Software development teams and which are required to run the SKA telescope.
+
 The Makefiles, scripts, test infrastructure and other resources allow for the deployment of a suite of software products for testing and integration, including hardware integration.
 
 SKAMPI consists of a set of helm charts that each deploy a software component or set of components in a kubernetes environment. SKAMPI can thus be deployed in a variety of ways, and the best way to deploy or interact with SKAMPI will depend on what you need to do with it.  For advice on running SKAMPI, ask on the `#proj-mvp Slack channel <https://skao.slack.com/archives/CKBDRGCKB>`_.

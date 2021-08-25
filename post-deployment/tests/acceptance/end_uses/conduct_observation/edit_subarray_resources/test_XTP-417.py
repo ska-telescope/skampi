@@ -67,7 +67,7 @@ def allocate(
     # check sdp subarray has polling set up
     sdp_subarray = mvp_names.Mid.sdp.subarray(subarray_id).__str__()
     sdp_proxy = DeviceProxy(sdp_subarray)
-    polling = sdp_proxy.get_attribute_poll_period()
+    polling = sdp_proxy.get_attribute_poll_period('obsState')
     logger.info(f'Note {sdp_subarray} is polled with {polling}ms')
 
     composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
@@ -105,6 +105,8 @@ def check_subarray_composition(context):
         logs = board.play_log_book()
         logger.info(f"Log messages during waiting:\n{logs}")
         raise exception
+    logs = board.play_log_book()
+    logger.info(f"Log messages during waiting:\n{logs}")
 
 
 @then("the subarray is in the condition that allows scan configurations to take place")

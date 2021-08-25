@@ -59,7 +59,7 @@ def check_startup(
     entry_point.set_telescope_to_running()
     standby_telescope.state = "ON"
     try:
-        wait.wait(board, 60, live_logging=False)
+        wait.wait(board, 100, live_logging=False)
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book()
         logger.info(f"Log messages during waiting:\n{logs}")
@@ -75,6 +75,7 @@ def check_startup(
 
 #@pytest.mark.skip("TelescopeContext is not updated in skallop as per SP-1623 and SP-1643")
 # @pytest.mark.xfail
+@pytest.mark.skallop_test
 @pytest.mark.skamid
 def test_start_up(
         transit_checking: Tuple[Occurrences, MessageBoardBase],

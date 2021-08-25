@@ -100,7 +100,7 @@ def check_subarray_composition(context):
     
     try:
         wait.wait(context.board, 8*60, live_logging=True)
-        sleep(4) # hack to circumvent possible synchronization fault in event generated data vs queried data
+        sleep(1) # hack to circumvent possible synchronization fault in event generated data vs queried data
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book()
         logger.info(f"Log messages during waiting:\n{logs}")

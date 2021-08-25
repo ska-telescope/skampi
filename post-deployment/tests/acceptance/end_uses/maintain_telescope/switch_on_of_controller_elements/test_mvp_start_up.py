@@ -73,9 +73,7 @@ def check_startup(
         logger.info(f"Error in occurrences test: Log messages during waiting:\n{logs}")
         raise error
 
-#@pytest.mark.skip("TelescopeContext is not updated in skallop as per SP-1623 and SP-1643")
-# @pytest.mark.xfail
-@pytest.mark.trial
+
 @pytest.mark.skamid
 def test_start_up(
         transit_checking: Tuple[Occurrences, MessageBoardBase],

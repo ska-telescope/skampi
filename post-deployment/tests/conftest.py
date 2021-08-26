@@ -81,6 +81,10 @@ def create_sdpsubarray1_proxy():
     sdpsubarray1_proxy = DeviceProxy("mid_sdp/elt/subarray_1")
     return sdpsubarray1_proxy
 
+# uncomment this if you want to override the default timeout settings in case your environment entails very long delays
+@pytest.fixture(autouse=True)
+def override_timeouts(exec_settings):
+    exec_settings.time_out = 100
 
 """
 Client that provides access to the Kubernetes API from the namespace the test 

@@ -41,7 +41,6 @@ class ScanIDStore:
 def set_entry_point(exec_env: ExecEnv):
     exec_env.entrypoint = "tmc"
 
-@pytest.mark.skip(reason="SubarrayContext from skallop needs to be updated as per SP-1623")
 @pytest.mark.skamid
 @pytest.mark.quarantine
 @scenario(

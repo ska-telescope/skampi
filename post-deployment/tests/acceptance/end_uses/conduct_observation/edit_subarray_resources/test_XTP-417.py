@@ -87,7 +87,7 @@ def allocate(
     running_telescope.release_subarray_when_finished(subarray_id, receptors, exec_settings)
     # logging sdp_subarry as it is suspect
     devices_to_log = LogSpec().add_log(
-        device_name=mvp_names.Mid.sdp.subarray(subarray_id).__str__()
+        device_name=mvp_names.Mid.tm.subarray(subarray_id).__str__()
     )
     running_telescope.push_context_onto_test(device_logging_context(builder, devices_to_log))
     board = running_telescope.push_context_onto_test(wait.waiting_context(builder))

@@ -108,4 +108,4 @@ ska-tango-archiver:
   dbname: default_mvp_archiver_db
 
 ska-log-consumer.enabled:
-  enabled: false
+  enabled: true

@@ -51,7 +51,7 @@ dependencies:
 ## log consumer is for testing and diagnostic purposes only
 # is disabled by default
 - name: ska-log-consumer
-  version: 0.1.4
+  version: 0.1.5
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-log-consumer.enabled
 ## DISH LMC Prototype was disabled in the old version of skampi

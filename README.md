@@ -121,18 +121,18 @@ The following sections are aimed at developers who want to integrate their produ
 :info: The below section could be modified to show the actual deployment structure in the current version of the repository:
 
 ```{mermaid}
-flowchart TB
+flowchart TD
     subgraph "Namespace integration-mid"
-      c1-->a2
-      subgraph "Application one"
-        a1[chart a1]-->a2(container a2)
+      subgraph "Tango Util Library Chart"
+        a1[chart ska-tango-util]--> |uses| a2(container ska-tango-util)
       end
-      subgraph "Application two"
-        b1[chart b1]-->b2(container b2)
-        b1-->a2
+      subgraph "SKA Tango Base application"
+        b1[chart ska-tango-base]-->b2(container ska-tango-base)
+        b1--> |uses| a2
       end
       subgraph "Application three"
         c1[chart c1]-->c2(container c2)
+        c1--> |uses| a2
       end
     end
 

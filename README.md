@@ -118,21 +118,25 @@ For an understanding of how Helm Charts are used in the SKAMPI project, please g
 The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.
 
 ### Adding a new product/component
-:info: The below section could be modified to show the actual deployment structure in the current version of the repository:
-
+This is an example of how the deployment would look, if a new application ("Application three"), were to be added to the minimal deployment described in the section on [Modifying deployment configuration](#modifying-deployment-configuration):
 ```{mermaid}
-flowchart TD
+flowchart TB
     subgraph "Namespace integration-mid"
-      subgraph "Tango Util Library Chart"
-        a1[chart ska-tango-util]--> |uses| a2(container ska-tango-util)
+      subgraph "SKAMPI Landing Page"
+        d1[chart landingpage] --> d2(container landingpage)
       end
-      subgraph "SKA Tango Base application"
-        b1[chart ska-tango-base]-->b2(container ska-tango-base)
-        b1--> |uses| a2
-      end
-      subgraph "Application three"
-        c1[chart c1]-->c2(container c2)
-        c1--> |uses| a2
+      subgraph SKA Mid Chart
+        subgraph "Tango Util Library Chart"
+          a1[chart ska-tango-util]--> |uses| a2(container ska-tango-util)
+        end
+        subgraph "SKA Tango Base application"
+          b1[chart ska-tango-base]-->b2(container databaseds)
+          b1--> |uses| a2
+        end
+        subgraph "Application three"
+          c1[chart c1]-->c2(container c2)
+          c1--> |uses| a2
+        end
       end
     end
 
@@ -234,7 +238,6 @@ The values.yaml file controls all the variables that are used by Helm when inter
     am_i_awesome: true
 
     ska-tango-base:
-      enabled: true
       vnc:
         enabled: false
     ska-mid-cbf:

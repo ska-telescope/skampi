@@ -22,6 +22,8 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.event_waiting import wait
 from ska_ser_skallop.mvp_control.describing import mvp_names
 from ska_ser_skallop.event_handling import builders
+from ska_ser_skallop.connectors.configuration import get_device_proxy
+from ska_ser_skallop.subscribing.helpers import get_attr_value_as_str
 from ska_ser_skallop.mvp_fixtures.context_management import TelescopeContext
 from ska_ser_skallop.event_handling.logging import device_logging_context, LogSpec
 
@@ -30,6 +32,25 @@ logger = logging.getLogger(__name__)
 
 class Context(SimpleNamespace):
     pass
+
+
+def wait_for_read_attr(attr: str, required_value: str, device_name: str, poll_period = 0.5, timeout = 3):
+    proxy = get_device_proxy(device_name)
+    current = get_attr_value_as_str(proxy.read_attribute(attr))
+    iterations = int(timeout/poll_period)
+    if current != required_value:
+        for count in range(iterations):
+            sleep(poll_period)
+            current = get_attr_value_as_str(proxy.read_attribute(attr))
+            if current == required_value:
+                logger.exception(
+                    f"got an event for {device_name} on {attr} == {required_value}, but reading the attr only gave the same results after {count*poll_period}s"
+                )
+                break
+        if current != required_value:
+            raise Exception(
+                f"got an event for {device_name}  on {attr} == {required_value} but reading the attr still gives {current} after {timeout}"
+            )
 
 
 @pytest.fixture(name="context")
@@ -111,7 +132,11 @@ def check_subarray_composition(context):
     
     try:
         wait.wait(context.board, 3*60, live_logging=False)
-        sleep(1) # hack to circumvent possible synchronization fault in event generated data vs queried data
+        wait_for_read_attr(
+            attr = 'obsState',
+            required_value = 'IDLE',
+            device_name = mvp_names.Mid.sdp.subarray(1).__str__()
+        ) # hack to circumvent possible synchronization fault in event generated data vs queried data
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book(filter_log=False,log_filter_pattern="txn")
         logger.info(f"Log messages during waiting:\n{logs}")

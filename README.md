@@ -118,19 +118,22 @@ For an understanding of how Helm Charts are used in the SKAMPI project, please g
 The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.
 
 ### Adding a new product/component
-:warning: The below section could be modified to show the actual deployment structure in the current version of the repository:
+:info: The below section could be modified to show the actual deployment structure in the current version of the repository:
 
 ```{mermaid}
 flowchart TB
-    c1-->a2
-    subgraph one
-      a1-->a2
-    end
-    subgraph two
-      b1-->b2
-    end
-    subgraph three
-      c1-->c2
+    subgraph "Namespace integration-mid"
+      c1-->a2
+      subgraph "Application one"
+        a1[chart a1]-->a2(container a2)
+      end
+      subgraph "Application two"
+        b1[chart b1]-->b2(container b2)
+        b1-->a2
+      end
+      subgraph "Application three"
+        c1[chart c1]-->c2(container c2)
+      end
     end
 
 ```

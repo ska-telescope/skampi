@@ -1,0 +1,12 @@
+pytest
+pytest-bdd
+pytest-cov
+pytest-forked
+pytest-json-report
+pytest-metadata
+pytest-mock
+pytest-pycodestyle
+pytest-pydocstyle
+pytest-pylint
+pytest-runner
+assertpy

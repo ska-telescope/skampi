@@ -185,6 +185,7 @@ psi_low_uninstall:
   environment:
     name: "psi-low-integration"
     action: stop
+  allow_failure: true
 
 mid_on_demand_uninstall:
   stage: cleanup

@@ -123,7 +123,6 @@ The following sections are aimed at developers who want to integrate their produ
 ```{mermaid}
 flowchart TB
     c1-->a2
-    b1--a2
     subgraph one
       a1-->a2
     end

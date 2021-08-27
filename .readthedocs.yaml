@@ -8,6 +8,6 @@ sphinx:
    configuration: docs/src/conf.py
 
 python:
-   version: "3.8.5"
+   version: "3.8"
    install:
    - requirements: docs/requirements.txt

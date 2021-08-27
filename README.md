@@ -23,13 +23,13 @@ For information on Kubernetes and Kubectl, a quick list of references is availab
 ### Makefile Targets
 Deployment of SKAMPI is supported by Make targets, exactly as is the case with [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/). To check which targets are available and what default values are set for variables used by Make, run
 ```
-make
+$ make
 ```
 
 ### Environment Settings
 To check what some of the most commonly used variables are that your Makefile will use when you run any commands (defaults or environment specific), you can run 
 ```
-make vars
+$ make vars
 ```
 This should give you all the basic environment variables needed to run the `make` commands as they are called in CI jobs, in case you want to debug deployment issues. For more information see the section on [CI Pipeline Deployment](#ci-pipeline-deployment).
 
@@ -42,14 +42,20 @@ A Minikube cluster is a kubernetes cluster with only one node (your laptop is ca
 ### CI Pipeline Deployment
 Installation/Deployment of SKAMPI is much simpler using the Gitlab CI Pipelines, as everything required to set up the environment is included in the CI infrastructure. As all branches should be named after a Jira ticket, you need a Jira ticket before checking out your branch. 
 
+Start by cloning the SKAMPI repository to your local machine. If you don't use SSH (or don't know what that even means), use the following command:
+```
+$ git clone https://gitlab.com/ska-telescope/ska-skampi.git
+$ cd ska-skampi
+```
+
 Let's say your ticket is AT-42. Check out your branch (do this from the root directory of the SKAMPI project)
 ```
-➜  skampi git:(master) git checkout -b at-42
+$ git checkout -b at-42
 Switched to a new branch 'at-42'
 ```
 Now push this new branch to Gitlab:
 ```
-➜  skampi git:(at-42) git push --set-upstream origin at-42
+$ git push --set-upstream origin at-42
 Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
 remote: 
 remote: To create a merge request for at-42, visit:
@@ -74,10 +80,10 @@ For installing Minikube, you first need to install Docker - follow [these instru
 #### Minikube setup
 To set up your Minikube cluster for local SKAMPI deployment, follow the instructions provided in the [SKA Minikube Deployment](https://gitlab.com/ska-telescope/sdi/ska-cicd-deploy-minikube/) repository. For first-time setup, do the following:
 ```
-git clone git@gitlab.com:ska-telescope/sdi/ska-cicd-deploy-minikube.git
-cd ska-cicd-deploy-minikube
-make all
-eval $(minikube docker-env)
+$ git clone git@gitlab.com:ska-telescope/sdi/ska-cicd-deploy-minikube.git
+$ cd ska-cicd-deploy-minikube
+$ make all
+$ eval $(minikube docker-env)
 ```
 
 *Please note that the command `eval $(minikube docker-env)` will point your local docker client at the docker-in-docker for minikube. Use this only for building the docker image and another shell for other work.*
@@ -114,7 +120,7 @@ The following sections are aimed at developers who want to integrate their produ
 ### Adding a new product/component
 :warning: The below section must be modified to show the actual deployment structure in the current version of the repository, and must be kept up to date:
 
-```mermaid
+```{mermaid}
 graph TB
 
   SubGraph1 --> SubGraph1Flow

@@ -46,7 +46,9 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'recommonmark',
+    'sphinxcontrib.mermaid',
+    'myst_parser',
+    # 'recommonmark',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

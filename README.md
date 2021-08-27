@@ -118,23 +118,21 @@ For an understanding of how Helm Charts are used in the SKAMPI project, please g
 The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.
 
 ### Adding a new product/component
-:warning: The below section must be modified to show the actual deployment structure in the current version of the repository, and must be kept up to date:
+:warning: The below section could be modified to show the actual deployment structure in the current version of the repository:
 
 ```{mermaid}
-graph TB
+flowchart TB
+    c1-->a2
+    subgraph one
+      a1-->a2
+    end
+    subgraph two
+      b1-->b2
+    end
+    subgraph three
+      c1-->c2
+    end
 
-  SubGraph1 --> SubGraph1Flow
-  subgraph "SubGraph 1 Flow"
-  SubGraph1Flow(SubNode 1)
-  SubGraph1Flow -- Choice1 --> DoChoice1
-  SubGraph1Flow -- Choice2 --> DoChoice2
-  end
-
-  subgraph "Main Graph"
-  Node1[Node 1] --> Node2[Node 2]
-  Node2 --> SubGraph1[Jump to SubGraph1]
-  SubGraph1 --> FinalThing[Final Thing]
-end
 ```
 
 ### Modifying deployment configuration

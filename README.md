@@ -142,6 +142,9 @@ flowchart TB
 
 ```
 
+Using the example repositories and SKAMPI as a guide should prove useful. More information to follow here.
+..todo
+
 ### Modifying deployment configuration
 To override local environment variables used by the Makefile, you can either export them (they will only persist for the current shell session), or create a file in the root of the project called PrivateRules.mak.
 
@@ -334,14 +337,19 @@ For the above deployment, when you click on `About >> Version`, you'll see only 
 This means that the Taranta link should result in a 404 error, even though it is available.
 ### Testing
 
-## Troubleshooting
-### Deployment getting stuck
-If your deployment got stuck (sometimes something can go wrong), you can stop the process quickly by telling Helm to uninstall everything:
-```
-$ make uninstall
-```
-Watch the progress of this on a separate screen:
-```
-$ 
+## Troubleshooting / FAQ
 
 ## Getting Help
+If you get stuck, the SKA Slack channels related to the technology that you are working on, are good places to go. These are a few useful channels:
+
+### [#help-kubernetes](https://skao.slack.com/archives/C016W494EHZ)
+For help with Kubernetes related issues.
+### [#help-gitlab](https://skao.slack.com/archives/C016F65FBB9)
+Struggling with CI or other Gitlab related things? Go here.
+
+### [#proj-mvp](https://skao.slack.com/archives/CKBDRGCKB)
+This is the channel where (in general) the current progress of the MVP is discussed, as well as integration issues on SKAMPI.
+
+### [#team-system-support](https://skao.slack.com/archives/CEMF9HXUZ)
+The System Team help out whenever there are CI related problems that seem to be out of developers' control.
+

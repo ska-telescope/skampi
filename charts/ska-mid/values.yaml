@@ -109,3 +109,4 @@ ska-tango-archiver:
 
 ska-log-consumer.enabled:
   enabled: true
+  devMode: false

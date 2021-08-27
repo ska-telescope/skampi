@@ -92,7 +92,7 @@ kubelet: Running
 apiserver: Running
 kubeconfig: Configured
 ```
-Now install SKAMPI (remember, all default values of variables will be used if none are set, or if no PrivateRules.mak is used for overrides):
+Now install SKAMPI. Take note: all default values of variables will be used if none are set. Read more about this under [Modifying deployment configuration](#modifying-deployment-configuration).
 ```
 $ cd .. # this is to go back to the root of the SKAMPI repo after the above commands
 $ make install-or-upgrade
@@ -112,11 +112,226 @@ For an understanding of how Helm Charts are used in the SKAMPI project, please g
 The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.
 
 ### Adding a new product/component
+:warning: The below section must be modified to show the actual deployment structure in the current version of the repository, and must be kept up to date:
+
+```mermaid
+graph TB
+
+  SubGraph1 --> SubGraph1Flow
+  subgraph "SubGraph 1 Flow"
+  SubGraph1Flow(SubNode 1)
+  SubGraph1Flow -- Choice1 --> DoChoice1
+  SubGraph1Flow -- Choice2 --> DoChoice2
+  end
+
+  subgraph "Main Graph"
+  Node1[Node 1] --> Node2[Node 2]
+  Node2 --> SubGraph1[Jump to SubGraph1]
+  SubGraph1 --> FinalThing[Final Thing]
+end
+```
 
 ### Modifying deployment configuration
+To override local environment variables used by the Makefile, you can either export them (they will only persist for the current shell session), or create a file in the root of the project called PrivateRules.mak.
 
+:warning: In this section, the assumption is made that you have deployed Minikube as described above, and are deploying for local development and testing purposes.
+
+#### Local overrides for Make and Helm variables
+Test the effect of changes to the environment / `Make` variables by following these steps:
+
+1. First check the current value (according to `Make`), of the `MARK` variable (the variables listed below, and their defaults, may change over time):
+    ```
+    $ make vars
+    SKA_K8S_TOOLS_DEPLOY_IMAGE=
+
+    KUBE_NAMESPACE=integration
+
+    ...snip...
+
+    MARK=
+    ```
+
+    In the above example, `MARK` is empty. If this is your first time using the repo, that's to be expected.
+
+2. Now set it for the current shell and check the value of `MARK` again:
+    ```
+    $ export MARK=ping
+    $ make vars | grep MARK
+    MARK=ping
+    ```
+3. Next, reset the `MARK` variable, create a `PrivateRules.mak` file and set the value for `MARK`:
+    ```
+    $ export MARK=
+    $ make vars | grep MARK
+    MARK=
+    $ echo MARK=ping >> PrivateRules.mak
+    $ make vars | grep MARK
+    MARK=ping
+    ```
+#### Set the host to point to your local machine
+If you deployed Minikube as per the above, your HAProxy frontend will expose your Nginx to your browser at the IP address given in the output near the end of the `make all` or `make minikube` command:
+```
+...snip...
+# Now setup the Proxy to the NGINX Ingress and APIServer, and any NodePort services
+# need to know the device and IP as this must go in the proxy config
+Installing HAProxy frontend to make Minikube externally addressable
+MINIKUBE_IP: 192.168.64.12
+Adding proxy for NodePort 80
+Adding proxy for NodePort 443
+```
+The `MINIKUBE_IP` variable should be given to your Makefile. Copy that IP address and set the value of the `INGRESS_HOST` in `PrivateRules.mak` to this variable. For instance, if the IP address was output as `192.168.64.12` (above example), you can do this:
+```
+$ echo INGRESS_HOST=192.168.64.12 >> PrivateRules.mak
+```
+This will help reaching the NodePort services (see reaching the landingpage further on).
+
+#### Control the deployment with VALUES and values.yaml
+Check the rest of the PrivateRules.mak variables. Notice that there is a `VALUES` parameter, by default set to `values.yaml`:
+```
+$ make vars | grep VALUES
+VALUES=values.yaml
+```
+
+The values.yaml file controls all the variables that are used by Helm when interpreting the templates written for each of the Charts. In other words, if you want to modify the deployment of `SKAMPI` in any way, the simplest method would be to modify the appropriate variables in your own `yaml` file, and tell `Make` about this file. As a convenience, there is already a `yaml` file specified in `.gitignore`, so that you won't unnecessarily commit your local file. 
+
+1. Set your `VALUES` to this file and populate this file with a harmless default and check that Helm doesn't complain:
+    ```
+    $ echo VALUES=my_local_values.yaml >> PrivateRules.mak
+    $ echo am_i_awesome: true >> my_local_values.yaml
+    $ make template-chart
+    helm dependency update ./charts/ska-mid/; \
+    helm template test \
+            --set ska-tango-base.xauthority="" --set ska-oso-scripting.ingress.nginx=true --set ska-ser-skuid.ingress.nginx=true --set ska-tango-base.ingress.nginx=true --set ska-webjive.ingress.nginx=true --set global.minikube=true --set ska-sdp.helmdeploy.namespace=integration-sdp --set global.tango_host=databaseds-tango-base-test:10000 --set ska-tango-archiver.hostname= --set ska-tango-archiver.dbname=default_mvp_archiver_db  --set ska-tango-archiver.port= --set ska-tango-archiver.dbuser= --set ska-tango-archiver.dbpassword= --values gitlab_values.yaml  \
+            --values my_local_values.yaml \
+            ./charts/ska-mid/ --namespace integration;
+    Hang tight while we grab the latest from your chart repositories...
+    ...Successfully got an update from the "skao" chart repository
+    ...Successfully got an update from the "skatelescope" chart repository
+    Update Complete. ⎈Happy Helming!⎈
+    Saving 11 charts
+    Downloading ska-tango-base from repo https://artefact.skao.int/repository/helm-internal
+    Downloading ska-tango-util from repo https://artefact.skao.int/repository/helm-internal
+    Downloading ska-mid-cbf from repo https://artefact.skao.int/repository/helm-internal
+    ... snip ...
+    Deleting outdated charts
+
+    # after a bit of waiting, suddenly lots of output appears.
+    ```
+
+    You now have a values file that overrides the local deployment without affecting the repository. If you want to create a minimal deployment, you can now switch off all the components deployed by SKAMPI. 
+    
+2. Copy all the settings below into `my_local_values.yaml` 
+    ```
+    minikube: true
+
+    am_i_awesome: true
+
+    ska-tango-base:
+      enabled: true
+      vnc:
+        enabled: false
+    ska-mid-cbf:
+      enabled: false
+    ska-csp-lmc-mid:
+      enabled: false
+    ska-sdp:
+      enabled: false
+    ska-tmc-mid:
+      enabled: false
+    ska-oso-scripting:
+      enabled: false
+    ska-webjive:
+      enabled: false
+    ska-ser-skuid:
+      enabled: false
+    landingpage:
+      enabled: false
+    ska-tango-archiver:
+      enabled: false
+    ```
+
+3. In a new terminal, watch the deployment settle with `kubectl` (the below snapshot of statuses should change as the deployment settles down. Prepending `watch ` to the `kubectl` creates the watcher - exit it by hitting Ctrl+C.). Assuming you didn't modify the name of the namespace in `PrivateRules.mak`:
+    ```
+    $ watch kubectl get all -n integration
+    NAME                                            READY   STATUS              RESTARTS   AGE
+    pod/databaseds-tango-base-test-0                0/1     ContainerCreating   0          18s
+    pod/ska-tango-base-tango-rest-86646c966-5svhr   0/1     Init:0/5            0          18s
+    pod/ska-tango-base-tangodb-0                    0/1     ContainerCreating   0          18s
+    pod/tangotest-config-cbkxj                      0/1     Init:0/1            0          18s
+    pod/tangotest-test-0                            0/1     Init:0/2            0          18s
+
+    NAME                                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)           AGE
+    service/databaseds-tango-base-test   NodePort    10.99.68.66    <none>        10000:30397/TCP   19s
+    service/ska-tango-base-tango-rest    NodePort    10.106.95.48   <none>        8080:31500/TCP    19s
+    service/ska-tango-base-tangodb       NodePort    10.108.17.5    <none>        3306:31278/TCP    19s
+    service/tangotest-test               ClusterIP   None           <none>        <none>            19s
+
+    NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/landingpage                 0/1     1            0           19s
+    deployment.apps/ska-tango-base-tango-rest   0/1     1            0           19s
+
+    NAME                                                  DESIRED   CURRENT   READY   AGE
+    replicaset.apps/ska-tango-base-tango-rest-86646c966   1         1         0       18s
+
+    NAME                                          READY   AGE
+    statefulset.apps/databaseds-tango-base-test   0/1     18s
+    statefulset.apps/ska-tango-base-tangodb       0/1     18s
+    statefulset.apps/tangotest-test               0/1     18s
+
+    ```
+    Above deployment is an absolute minimum deployment of SKAMPI, and should be familiar to you if you have worked with the [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/). The Tango REST API and a minimal Tango deployment are the only parts of SKAMPI that are running. You now have the ability to switch on additional components, by modifying their `enabled` variables. Let's test that out, and just re-introduce the Landing Page:
+
+4. Enable the Landing Page by setting `landingpage.enabled` to `true` in the `my_local_values.yaml` file:
+    ```
+    landingpage:
+      enabled: true
+    ```
+5. Now update the deployment:
+  ```
+  $ make install-or-upgrade
+  ```
+6. You should now see the landing page being added to the cluster:
+  ```
+  $ kubectl get all -n integration -l app=landingpage
+  NAME                             READY   STATUS    RESTARTS   AGE
+  pod/landingpage-5f95cdff-26mqc   1/1     Running   0          27m
+
+  NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+  service/landingpage   ClusterIP   10.106.182.252   <none>        80/TCP    27m
+
+  NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
+  deployment.apps/landingpage   1/1     1            1           27m
+
+  NAME                                   DESIRED   CURRENT   READY   AGE
+  replicaset.apps/landingpage-5f95cdff   1         1         1       27m
+  ```
+7. You should now be able to get an output of the landingpage by running `make links`:
+  ```
+  $ make links
+  ############################################################################
+  #            Access the landing page here:
+  #            https://192.168.64.12/integration/start/
+  ############################################################################
+  ```
+  Clicking on this link should open the landing page.
+
+#### Verifying Chart versions
+The landing page holds a list of versions of the Charts that are deployed. This list is generated at deploy-time, taking into account the enabled and disabled items. This should give an indication of what should be deployed. :warning: NOTE: This is not a list of successfully deployed items, but merely a list of items that should be expected to run. Further investigation is required if subsystems are unexpectedly not functioning.
+
+For the above deployment, when you click on `About >> Version`, you'll see only the three sub-charts that were deployed, the umbrella chart (in SKAMPI we only have Mid and Low umbrella charts), and their versions, for example:
+![](_static/img/about_version.png)
+
+This means that the Taranta link should result in a 404 error, even though it is available.
 ### Testing
 
-## FAQ
+## Troubleshooting
+### Deployment getting stuck
+If your deployment got stuck (sometimes something can go wrong), you can stop the process quickly by telling Helm to uninstall everything:
+```
+$ make uninstall
+```
+Watch the progress of this on a separate screen:
+```
+$ 
 
 ## Getting Help

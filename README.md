@@ -113,10 +113,25 @@ The following sections are aimed at developers who want to integrate their produ
 
 ### Adding a new product/component
 
+Using the example repositories and SKAMPI as a guide should prove useful. More information to follow here.
+..todo
+
 ### Modifying deployment configuration
 
+.. todo
 ### Testing
 
-## FAQ
-
 ## Getting Help
+If you get stuck, the SKA Slack channels related to the technology that you are working on, are good places to go. These are a few useful channels:
+
+### [#help-kubernetes](https://skao.slack.com/archives/C016W494EHZ)
+For help with Kubernetes related issues.
+### [#help-gitlab](https://skao.slack.com/archives/C016F65FBB9)
+Struggling with CI or other Gitlab related things? Go here.
+
+### [#proj-mvp](https://skao.slack.com/archives/CKBDRGCKB)
+This is the channel where (in general) the current progress of the MVP is discussed, as well as integration issues on SKAMPI.
+
+### [#team-system-support](https://skao.slack.com/archives/CEMF9HXUZ)
+The System Team help out whenever there are CI related problems that seem to be out of developers' control.
+

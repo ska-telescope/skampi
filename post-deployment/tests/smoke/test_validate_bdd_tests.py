@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 
 import pytest
 from ska_ser_skallop.scripts.bdd_helper_scripts.xtp_compare import (
-    check_local_file,
-    parse_local_feature_files,
+    file_differences,
+    get_file_paths,
 )
 
 @pytest.mark.xfail
@@ -23,19 +23,13 @@ def test_validate_bdd_features():
 
     mocked_args = MagicMock()
     mocked_args.directory = features_path
-    mocked_args.basic_auth_token = os.environ.get("JIRA_AUTH", "")
+    mocked_args.jira_auth_token = os.environ.get("JIRA_AUTH")
     mocked_args.feature_file = ""
     mocked_args.username = ""
     mocked_args.password = ""
     mocked_args.verbose = False
 
-    parsed_local_files = parse_local_feature_files(mocked_args)
-    assert parsed_local_files, "No parsed feature files."
-    found_issues = []
-    for local_file in parsed_local_files:
-        logging.info("Checking file %s", local_file.file_path)
-        issues = check_local_file(mocked_args, local_file)
-        for issue in issues:
-            logging.warn(issue)
-        found_issues.extend(issues)
-    assert not found_issues, "Some BDD files not valid"
+    feature_file_paths = get_file_paths(mocked_args.directory)
+    assert not file_differences(
+        mocked_args, feature_file_paths
+    ), "The information in some of the local XTP files does not match with what is in Jira"

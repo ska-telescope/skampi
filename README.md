@@ -232,7 +232,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
     # after a bit of waiting, suddenly lots of output appears.
     ```
 
-    You now have a values file that overrides the local deployment without affecting the repository. If you want to create a minimal deployment, you can now switch off all the components deployed by SKAMPI. 
+    You now have a values file that overrides the local deployment without affecting the repository. If you want to create a minimal deployment, you can now switch off all the components deployed by Helm.
     
 2. Copy all the settings below into `my_local_values.yaml` 
     ```
@@ -262,8 +262,9 @@ The values.yaml file controls all the variables that are used by Helm when inter
     ska-tango-archiver:
       enabled: false
     ```
+    NOTE: this can hardly be called a deployment of SKAMPI, as no component is deployed at all. This example is only intended to show how the deployment can be controlled using Helm chart values. The entire SKAMPI cannot be deployed at present due to overspecified requests & limits for the kubernetes resources. Developers of components must follow the [guidelines](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html#resource-reservations-and-constraints) for setting resource limits & requests for components.
 
-3. In a new terminal, watch the deployment settle with `kubectl` (the below snapshot of statuses should change as the deployment settles down. Prepending `watch ` to the `kubectl` creates the watcher - exit it by hitting Ctrl+C.). Assuming you didn't modify the name of the namespace in `PrivateRules.mak`:
+3. In a new terminal, watch the deployment settle with `kubectl` (the below snapshot of statuses should change as the deployment settles down. Prepending `watch ` to the `kubectl` creates the watcher - exit it by hitting Ctrl+C.). Assuming you didn't modify the name of the namespace (from `integration` to something else) in `PrivateRules.mak`:
     ```
     $ watch kubectl get all -n integration
     NAME                                            READY   STATUS              RESTARTS   AGE
@@ -300,35 +301,35 @@ The values.yaml file controls all the variables that are used by Helm when inter
       enabled: true
     ```
 5. Now update the deployment:
-  ```
-  $ make install-or-upgrade
-  ```
+    ```
+    $ make install-or-upgrade
+    ```
 6. You should now see the landing page being added to the cluster:
-  ```
-  $ kubectl get all -n integration -l app=landingpage
-  NAME                             READY   STATUS    RESTARTS   AGE
-  pod/landingpage-5f95cdff-26mqc   1/1     Running   0          27m
+    ```
+    $ kubectl get all -n integration -l app=landingpage    # the -l app=landingpage is to filter for anything that is labelled app=landingpage
+    NAME                             READY   STATUS    RESTARTS   AGE
+    pod/landingpage-5f95cdff-26mqc   1/1     Running   0          27m
 
-  NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
-  service/landingpage   ClusterIP   10.106.182.252   <none>        80/TCP    27m
+    NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+    service/landingpage   ClusterIP   10.106.182.252   <none>        80/TCP    27m
 
-  NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
-  deployment.apps/landingpage   1/1     1            1           27m
+    NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/landingpage   1/1     1            1           27m
 
-  NAME                                   DESIRED   CURRENT   READY   AGE
-  replicaset.apps/landingpage-5f95cdff   1         1         1       27m
-  ```
+    NAME                                   DESIRED   CURRENT   READY   AGE
+    replicaset.apps/landingpage-5f95cdff   1         1         1       27m
+    ```
 7. You should now be able to get an output of the landingpage by running `make links`:
-  ```
-  $ make links
-  ############################################################################
-  #            Access the landing page here:
-  #            https://192.168.64.12/integration/start/
-  ############################################################################
-  ```
-  Clicking on this link should open the landing page.
+    ```
+    $ make links
+    ############################################################################
+    #            Access the landing page here:
+    #            https://192.168.64.12/integration/start/
+    ############################################################################
+    ```
+    Clicking on this link should open the landing page.
 
-#### Verifying Chart versions
+#### Verifying Chart versions deployed by Helm
 The landing page holds a list of versions of the Charts that are deployed. This list is generated at deploy-time, taking into account the enabled and disabled items. This should give an indication of what should be deployed. :warning: NOTE: This is not a list of successfully deployed items, but merely a list of items that should be expected to run. Further investigation is required if subsystems are unexpectedly not functioning.
 
 For the above deployment, when you click on `About >> Version`, you'll see only the three sub-charts that were deployed, the umbrella chart (in SKAMPI we only have Mid and Low umbrella charts), and their versions, for example:
@@ -336,8 +337,21 @@ For the above deployment, when you click on `About >> Version`, you'll see only 
 
 This means that the Taranta link should result in a 404 error, even though it is available.
 ### Testing
+While running SKAMPI on a local Minikube, the following steps can be carried out to see if your setup can test SKAMPI.
+
+1. Install the Python `kubernetes` package in your virtual environment
+```
+python3 -m venv venv && . venv/bin/activate && pip3 install --upgrade pip
+python3 -m pip install kubernetes
+```
+2. Run the test suite from a pod deployed in the cluster (using `MARK=ping` will limit your test to only one).
+```
+make k8s_test MARK=ping
+```
+Use the `MARK` parameter to run specific tests. All tests are marked with a `@pytest.mark.<some-test-marker>`, and by specifying the `MARK` variable by `<some-test-marker>`, you tell `pytest` to only run those tests. Note that this test will fail for the deployment described above, as there is no central node deployed.
 
 ## Troubleshooting / FAQ
+Finding issues with SKAMPI deployments can sometimes be difficult, and knowledge of Kubernetes and Tango are essential. Some excellent troubleshooting tips for Kubernetes can be found at https://kubernetes.io/docs/tasks/debug-application-cluster/troubleshooting.
 
 ## Getting Help
 If you get stuck, the SKA Slack channels related to the technology that you are working on, are good places to go. These are a few useful channels:

@@ -77,7 +77,19 @@ You can control various aspects of your deployment by declaring the environment 
 
 This variable is passed to ``pytest``. See comments, in the `.make/test.mk <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/.make/test.mk#L15>`_ file, or by running ``make`` from the terminal.
 
-Follow the next steps to gain access to this branch-based deployment.
+Once the deployment is done, output that looks something like this in the CI job output will guide you to the landing page related to the configuration that was just deployed, for instance:
+::
+
+ ############################################################################
+ #            Access the landing page here:
+ #            https://k8s.stfc.skao.int/ci-quarantine-low/start/
+ ############################################################################
+
+For information on whic versions of the charts were set to deploy, go to the ``About >> Versions`` section:
+
+.. image:: ../_static/img/about_version.png
+
+Follow the next steps to gain kubectl access to this branch-based deployment.
 
 Retrieving the kubectl file
 ---------------------------
@@ -126,14 +138,6 @@ If you run the ``make vars`` command, you will see a selection of the environmen
 .. image:: ../_static/img/get_make_vars.png
 
 Copy and paste these into a ``PrivateRules.mak`` file in your root folder. This file is "gitignored" already and should not be checked into the repo. You can also add any other variables as you want to control your environment.
-
-At the end of the deployment, something like this will guide you to the landing page related to the configuration that was just deployed, for instance:
-::
-
- ############################################################################
- #            Access the landing page here:
- #            https://k8s.stfc.skao.int/ci-quarantine-low/start/
- ############################################################################
 
 Branch names and access patterns
 ================================

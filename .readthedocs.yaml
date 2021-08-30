@@ -6,3 +6,8 @@ version: 2
 # ignore docs/analysis!)
 sphinx:
    configuration: docs/src/conf.py
+
+python:
+   version: "3.8"
+   install:
+   - requirements: docs/requirements.txt

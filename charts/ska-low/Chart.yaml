@@ -32,7 +32,7 @@ dependencies:
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-ser-skuid.enabled
 - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
-  version: 0.5.1
+  version: 0.5.3
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-oso-scripting.enabled
 - name: landingpage

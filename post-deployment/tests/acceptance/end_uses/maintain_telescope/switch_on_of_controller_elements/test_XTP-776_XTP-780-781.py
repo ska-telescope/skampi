@@ -4,7 +4,8 @@
 """
 test_XTP-780-781
 ----------------------------------
-Telescope startup and standby using OET scripts
+SKA-Mid telescope startup (XTP-780) and standby (XTP-781)
+using OET scripts
 """
 import logging
 
@@ -33,33 +34,41 @@ def fixture_result():
     fixture = {CENTRAL_NODE_USED: 'ska_mid/tm_central/central_node'}
     yield fixture
     # teardown
-    end()
+    end(fixture)
 
 
-def end():
+def end(result):
     """ teardown any state that was previously setup with a setup_function
     call.
     """
-    if not telescope_is_in_standby():
+    if resource(result[CENTRAL_NODE_USED]).get('telescopeState') != 'STANDBY':
         set_telescope_to_standby()
 
-@pytest.mark.skip
+
 @pytest.mark.fast
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
 @scenario("XTP-776.feature", "Starting up telescope")
 def test_telescope_startup():
-    """Telescope startup test."""
+    """
+    Given telescope is in OFF State
+    When I tell the OET to run file:///app/scripts/startup.py
+    Then the central node goes to telescopeState ON
+    """
 
-@pytest.mark.skip
+
 @pytest.mark.fast
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
 @scenario("XTP-776.feature", "Setting telescope to stand-by")
 def test_telescope_in_standby():
-    """Set telescope to standby test."""
+    """
+    Given telescope is in ON State
+    When I tell the OET to run file:///app/scripts/standby.py
+    Then the central node goes to telescopeState STANDBY
+    """
 
 
 @given('telescope is in OFF State')
@@ -68,12 +77,12 @@ def set_telescope_in_off_state(result):
     Set telescope to OFF state (stand-by) if it is not yet OFF.
     """
     LOGGER.info("Set telescope to stand-by")
-    if not telescope_is_in_standby():
+    if resource(result[CENTRAL_NODE_USED]).get('telescopeState') != 'STANDBY':
         set_telescope_to_standby()
-    telescope_state = resource(result[CENTRAL_NODE_USED]).get('telescopeState')
-    assert telescope_state == 'STANDBY', \
-        f"Expected telescope to be OFF but instead was {telescope_state}"
-    LOGGER.info("Telescope is in OFF state")
+
+    assert telescope_is_in_standby(), \
+        f"Telescope is not in STANDBY"
+    LOGGER.info("Telescope is in STANDBY")
 
 
 @given('telescope is in ON State')
@@ -109,17 +118,26 @@ def run_startup_standby_script(script):
         f"Expected script to be COMPLETED, instead was {script_completion_state}"
 
 
-@then(parsers.parse('the central node goes to state {state}'))
-def check_final_state(state, result):
+@then(parsers.parse('the central node goes to telescopeState STANDBY'))
+def check_standby_state():
+    """
+    Check that the telescope is in stand-by.
+    """
+    assert telescope_is_in_standby(), \
+        f"Telescope not in STANDBY"
+    LOGGER.info("Telescope is in stand-by")
+
+
+@then(parsers.parse('the central node goes to telescopeState ON'))
+def check_final_state(result):
     """
     Check that the central node device is in the expected state.
 
     Args:
-        state (str): State central node is expected to be in
         result (dict): fixture used to track test progress
     """
     final_state = resource(result[CENTRAL_NODE_USED]).get('telescopeState')
-    assert final_state == state, \
-        f"Expected telescope to be {state} but instead was {final_state}"
-    LOGGER.info("Central node is in %s state", state)
+    assert final_state == 'ON', \
+        f"Expected telescope to be ON but instead was {final_state}"
+    LOGGER.info("Telescope is on")
 

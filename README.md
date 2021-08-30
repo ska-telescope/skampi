@@ -262,7 +262,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
     ska-tango-archiver:
       enabled: false
     ```
-    NOTE: this can hardly be called a deployment of SKAMPI, as no component is deployed at all. This example is only intended to show how the deployment can be controlled using Helm chart values. The entire SKAMPI cannot be deployed at present due to overspecified requests & limits for the kubernetes resources. Developers of components must follow the [guidelines](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html#resource-reservations-and-constraints) for setting resource limits & requests for components.
+    NOTE: this can hardly be called a deployment of SKAMPI, as no component is deployed at all. This example is only intended to show how the deployment can be controlled using Helm chart values. The entire SKAMPI cannot be easily deployed on a laptop at the time of writing. Updates to requests & limits for the components of SKAMPI are needed, in order to make the deployment less bloated. Developers of components must follow the [Documentation](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html#resource-reservations-and-constraints) for setting resource limits & requests for their charts. Use the [Monitoring dashboards](https://developer.skao.int/en/latest/tools/monitoring-dashboards/monitoring-dashboards.html) available for properly gauging the resource usage of components.
 
 3. In a new terminal, watch the deployment settle with `kubectl` (the below snapshot of statuses should change as the deployment settles down. Prepending `watch ` to the `kubectl` creates the watcher - exit it by hitting Ctrl+C.). Assuming you didn't modify the name of the namespace (from `integration` to something else) in `PrivateRules.mak`:
     ```
@@ -293,7 +293,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
     statefulset.apps/tangotest-test               0/1     18s
 
     ```
-    Above deployment is an absolute minimum deployment of SKAMPI, and should be familiar to you if you have worked with the [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/). The Tango REST API and a minimal Tango deployment are the only parts of SKAMPI that are running. You now have the ability to switch on additional components, by modifying their `enabled` variables. Let's test that out, and just re-introduce the Landing Page:
+    Above deployment is pretty useless and will not pass any tests, but illustrates how a small deployment can be made. You now have the ability to add components to the deployment, by modifying their `enabled` variables. Let's test that out, and just re-introduce the Landing Page:
 
 4. Enable the Landing Page by setting `landingpage.enabled` to `true` in the `my_local_values.yaml` file:
     ```

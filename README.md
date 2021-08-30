@@ -40,7 +40,7 @@ The full deployment of SKAMPI is currently very resource intensive and therefore
 A Minikube cluster is a kubernetes cluster with only one node (your laptop is called a node), which acts as the master and worker node. The SKA Minikube repository also provides an ingress to expose your cluster's deployment to the outside world if needed, and other settings (see the documentation in the repo for more details). Once these prerequisites are installed, you can follow the guidelines on [Deployment](https://developer.skao.int/projects/ska-skampi/en/latest/deployment.html). Note that a partial deployment of SKAMPI is made possible by setting the `<subchartname>.enabled` value to `false` in the `values.yaml` file of the repository, for any component (represented by a subchart) that can be switched off to save resources. Details can be found in the Deployment guidelines.
 
 ### CI Pipeline Deployment
-Installation/Deployment of SKAMPI is much simpler using the Gitlab CI Pipelines, as everything required to set up the environment is included in the CI infrastructure. As all branches should be named after a Jira ticket, you need a Jira ticket before checking out your branch. 
+Installation/Deployment of SKAMPI is much simpler using the Gitlab CI Pipelines (and this is the recommended method), as everything required to set up the environment is included in the CI infrastructure. As all branches should be named after a Jira ticket, you need a Jira ticket before checking out your branch. 
 
 Start by cloning the SKAMPI repository to your local machine. If you don't use SSH (or don't know what that even means), use the following command:
 ```
@@ -350,6 +350,7 @@ make k8s_test MARK=ping
 ```
 Use the `MARK` parameter to run specific tests. All tests are marked with a `@pytest.mark.<some-test-marker>`, and by specifying the `MARK` variable by `<some-test-marker>`, you tell `pytest` to only run those tests. Note that this test will fail for the deployment described above, as there is no central node deployed.
 
+More information should be available in the [Documentation](https://developer.skao.int/projects/ska-skampi/en/latest/testing.html).
 ## Troubleshooting / FAQ
 Finding issues with SKAMPI deployments can sometimes be difficult, and knowledge of Kubernetes and Tango are essential. Some excellent troubleshooting tips for Kubernetes can be found at https://kubernetes.io/docs/tasks/debug-application-cluster/troubleshooting.
 

@@ -4,7 +4,7 @@
 """
 test_XTP-2413
 ----------------------------------
-Tests for creating SBI (XTP-2415), allocating resources from LOW SBI (XTP-2416)
+SKA-Low tests for creating SBI (XTP-2415), allocating resources from LOW SBI (XTP-2416)
 and observing LOW SBI (XTP-2417)
 """
 import logging
@@ -58,7 +58,7 @@ def end(result):
         LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
         subarray.end()
         subarray.deallocate()
-    if obsstate in ["CONFIGURING", "SCANNING"]:
+    if obsstate in ["RESOURCING", "CONFIGURING", "SCANNING"]:
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)
@@ -71,7 +71,6 @@ def end(result):
                 resource(result[SUBARRAY_USED]).get('obsState'))
 
 
-@pytest.mark.skip
 @pytest.mark.oetlow
 @pytest.mark.skalow
 @scenario("XTP-2413.feature", "Creating a new SBI with updated SB IDs and PB IDs")
@@ -83,7 +82,6 @@ def test_sbi_creation():
     """
 
 
-@pytest.mark.skip
 @pytest.mark.oetlow
 @pytest.mark.skalow
 @pytest.mark.quarantine
@@ -99,7 +97,6 @@ def test_resource_allocation():
     pass
 
 
-@pytest.mark.skip
 @pytest.mark.oetlow
 @pytest.mark.skalow
 @pytest.mark.quarantine

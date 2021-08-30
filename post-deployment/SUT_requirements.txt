@@ -1,2 +1,2 @@
 --extra-index-url https://artefact.skao.int/repository/pypi-internal
-ska-oso-scripting==2.1.5
+ska-oso-scripting==2.1.7

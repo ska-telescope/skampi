@@ -4,7 +4,7 @@
 """
 test_XTP-776
 ----------------------------------
-Tests for creating SBI (XTP-779), allocating resources from SBI (XTP-777)
+SKA-Mid tests for creating SBI (XTP-779), allocating resources from SBI (XTP-777)
 and observing SBI (XTP-778)
 """
 import logging
@@ -53,6 +53,7 @@ def end(result):
     """
     subarray = resource(result[SUBARRAY_USED])
     obsstate = subarray.get('obsState')
+    LOGGER.info("CLEANUP: Sub-array in obsState %s ", obsstate)
     if obsstate == "IDLE":
         LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
         take_subarray(1).and_release_all_resources()
@@ -60,7 +61,7 @@ def end(result):
         LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
         take_subarray(1).and_end_sb_when_ready(
         ).and_release_all_resources()
-    if obsstate in ["CONFIGURING", "SCANNING"]:
+    if subarray.get('obsState') != "EMPTY":
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)
@@ -73,7 +74,6 @@ def end(result):
                 subarray.get('obsState'))
 
 
-@pytest.mark.skip
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @scenario("XTP-776.feature", "Creating a new SBI with updated SB IDs and PB IDs")
@@ -83,6 +83,7 @@ def test_sbi_creation():
     When I tell the OET to run file:///app/scripts/create_sbi.py using scripts/data/example_sb.json
     Then the script completes successfully
     """
+
 
 @pytest.mark.skip
 @pytest.mark.oetmid
@@ -97,6 +98,7 @@ def test_resource_allocation():
       and SBI scripts/data/example_sb.json
     Then the sub-array goes to ObsState IDLE
     """
+
 
 @pytest.mark.skip
 @pytest.mark.oetmid
@@ -175,7 +177,7 @@ def allocate_resources_from_sbi(script, sb_json):
     script_completion_state = EXECUTOR.execute_script(
         script,
         sb_json,
-        timeout=60
+        timeout=300
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
@@ -211,7 +213,7 @@ def when_allocate_resources_from_sbi(script, sb_json):
     script_completion_state = EXECUTOR.execute_script(
         script,
         sb_json,
-        timeout=60
+        timeout=300
     )
     assert script_completion_state == 'COMPLETED', \
         f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"

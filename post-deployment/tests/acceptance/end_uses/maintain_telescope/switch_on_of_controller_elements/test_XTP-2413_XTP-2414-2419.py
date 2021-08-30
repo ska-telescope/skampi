@@ -4,7 +4,8 @@
 """
 test_XTP-2414-2419
 ----------------------------------
-Telescope startup and standby using OET scripts
+SKA-Low telescope startup (XTP-2414) and standby (XTP-2419)
+using OET scripts.
 """
 import logging
 import pytest
@@ -48,7 +49,11 @@ def end():
 @pytest.mark.quarantine
 @scenario("XTP-2413.feature", "Starting up telescope")
 def test_telescope_startup():
-    """Telescope startup test."""
+    """
+    Given telescope is in OFF State
+    When I tell the OET to run file:///app/scripts/startup.py
+    Then the central node goes to state ON
+    """
     pass
 
 
@@ -58,7 +63,11 @@ def test_telescope_startup():
 @pytest.mark.quarantine
 @scenario("XTP-2413.feature", "Setting telescope to stand-by")
 def test_telescope_in_standby():
-    """Set telescope to standby test."""
+    """
+    Given telescope is in ON State
+    When I tell the OET to run file:///app/scripts/standby.py
+    Then the central node goes to state OFF
+    """
     pass
 
 

@@ -51,6 +51,7 @@ def end(result):
     """
     subarray = resource(result[SUBARRAY_USED])
     obsstate = subarray.get('obsState')
+    LOGGER.info("CLEANUP: Sub-array in obsState %s ", obsstate)
     if obsstate == "IDLE":
         LOGGER.info("CLEANUP: tearing down composed subarray (IDLE)")
         take_subarray(1).and_release_all_resources()
@@ -58,7 +59,7 @@ def end(result):
         LOGGER.info("CLEANUP: tearing down configured subarray (READY)")
         take_subarray(1).and_end_sb_when_ready(
         ).and_release_all_resources()
-    if obsstate in ["CONFIGURING", "SCANNING"]:
+    if subarray.get('obsState') != "EMPTY":
         LOGGER.warning(
             "Subarray is still in %s Please restart MVP manually to complete tear down",
             obsstate)
@@ -70,18 +71,20 @@ def end(result):
     LOGGER.info("CLEANUP: Sub-array is in %s ",
                 subarray.get('obsState'))
 
+
 @pytest.mark.skip
 @pytest.mark.oetmid
 @pytest.mark.skamid
 @pytest.mark.quarantine
 @scenario("XTP-2328.feature", "Allocating resources without an SBI")
-def test_resource_allocation():
+def test_resource_allocation_without_sbi():
     """
     Given sub-array is in ObsState EMPTY
     When I tell the OET to allocate resources using script file:///app/scripts/allocate_from_file.py
      and scripts/data/example_allocate.json
     Then the sub-array goes to ObsState IDLE
     """
+
 
 @pytest.mark.skip
 @pytest.mark.oetmid

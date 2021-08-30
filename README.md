@@ -293,7 +293,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
     statefulset.apps/tangotest-test               0/1     18s
 
     ```
-    Above deployment is an absolute minimum deployment of SKAMPI, and should be familiar to you if you have worked with the [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/). The Tango REST API and a minimal Tango deployment are the only parts of SKAMPI that are running. You now have the ability to switch on additional components, by modifying their `enabled` variables. Let's test that out, and just re-introduce the Landing Page:
+    Above deployment is pretty useless and will not pass any tests, but illustrates how a small deployment can be made. You now have the ability to add components to the deployment, by modifying their `enabled` variables. Let's test that out, and just re-introduce the Landing Page:
 
 4. Enable the Landing Page by setting `landingpage.enabled` to `true` in the `my_local_values.yaml` file:
     ```

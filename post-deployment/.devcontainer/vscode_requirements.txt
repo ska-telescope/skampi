@@ -1,4 +1,3 @@
-pylint
 black
 rope
 pip-tools

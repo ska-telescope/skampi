@@ -21,7 +21,8 @@ from ska_ser_skallop.mvp_fixtures.fixtures import (
     fxt_exec_env,
     pytest_runtest_makereport,
     fxt_sb_config,
-    fxt_maintain_on
+    fxt_maintain_on,
+    fxt_inject_entry_point
 )
 
 

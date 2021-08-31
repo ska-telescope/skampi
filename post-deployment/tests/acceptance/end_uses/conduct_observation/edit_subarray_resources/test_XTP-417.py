@@ -27,6 +27,8 @@ from ska_ser_skallop.subscribing.helpers import get_attr_value_as_str
 from ska_ser_skallop.mvp_fixtures.context_management import TelescopeContext
 from ska_ser_skallop.event_handling.logging import device_logging_context, LogSpec
 
+from resources.skallop_plugins import tmc_entry_point
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,9 +59,13 @@ def wait_for_read_attr(attr: str, required_value: str, device_name: str, poll_pe
 def fxt_context():
     return Context()
 
+@pytest.fixture(name='inject_entry_point')
+def fxt_inject_entry_point():
+    return tmc_entry_point.EntryPoint
+
 @pytest.fixture(name="init")
-def fxt_init(exec_env: ExecEnv, exec_settings: ExecSettings):
-    exec_env.entrypoint = "tmc"
+def fxt_init(exec_env: ExecEnv, exec_settings: ExecSettings,inject_entry_point):
+    pass
     #exec_settings.log_enabled = True
 
 @pytest.mark.skamid

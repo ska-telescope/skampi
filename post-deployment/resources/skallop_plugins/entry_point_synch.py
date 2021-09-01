@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import List
 
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_control.event_waiting import set_to_wait
+from . import set_to_wait
 
 
 class SynchedEntryPoint(EntryPoint):

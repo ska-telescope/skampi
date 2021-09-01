@@ -27,6 +27,7 @@ def set_wating_for_start_up(board: MessageBoardBuilder = None) -> MessageBoardBu
                 tel.sensors(i).subtract("tm").subtract("vcc")
             ):  # ignore tm leafnodes and vcc
                 brd.set_waiting_on(device).for_attribute("state").to_become_equal_to("ON")
+                brd.set_waiting_on(tel.skamid.dish(i)).for_attribute("dishmode").to_become_equal_to("OPERATE")
         # subarrays
         for i in range(1, nr_of_subarrays + 1):
             for device in (
@@ -46,7 +47,7 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
     brd = get_message_board_builder()
 
     nr_of_dishes = 4
-    nr_of_subarrays = 1
+    nr_of_subarrays = 2
 
     tel = get_tel()
 
@@ -58,6 +59,7 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
                 tel.sensors(i).subtract("tm").subtract("vcc")
             ):  # ignore tm leafnodes and vcc
                 brd.set_waiting_on(device).for_attribute("state").to_become_equal_to("STANDBY")
+            brd.set_waiting_on(tel.skamid.dish(i)).for_attribute("dishmode").to_become_equal_to("STANDBY_LP")
         for i in range(1, nr_of_subarrays + 1):
             for device in (
                 tel.subarrays(i).subtract("tm").subtract("fsp")

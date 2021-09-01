@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import logging
 from pytest_bdd import scenario, given, when, then
 import pytest
+import os
 from time import sleep
 
 #from tango import DeviceProxy
@@ -35,25 +36,10 @@ logger = logging.getLogger(__name__)
 class Context(SimpleNamespace):
     pass
 
-
-def wait_for_read_attr(attr: str, required_value: str, device_name: str, poll_period = 0.5, timeout = 3):
-    proxy = get_device_proxy(device_name)
-    current = get_attr_value_as_str(proxy.read_attribute(attr))
-    iterations = int(timeout/poll_period)
-    if current != required_value:
-        for count in range(iterations):
-            sleep(poll_period)
-            current = get_attr_value_as_str(proxy.read_attribute(attr))
-            if current == required_value:
-                logger.exception(
-                    f"got an event for {device_name} on {attr} == {required_value}, but reading the attr only gave the same results after {count*poll_period}s"
-                )
-                break
-        if current != required_value:
-            raise Exception(
-                f"got an event for {device_name}  on {attr} == {required_value} but reading the attr still gives {current} after {timeout}"
-            )
-
+@pytest.fixture(name='capture_logs')
+def fxt_catpure_logs()->bool:
+    #return os.getenv('CAPTURE_LOGS') == 'True'
+    return True
 
 @pytest.fixture(name="context")
 def fxt_context():
@@ -88,6 +74,7 @@ def allocate(
     exec_settings: ExecSettings,
     running_telescope: TelescopeContext,
     entry_point: EntryPoint,
+    capture_logs: bool
 ):
 
     subarray_id = 1
@@ -112,15 +99,15 @@ def allocate(
     )
 
     running_telescope.release_subarray_when_finished(subarray_id, receptors, exec_settings)
-    # logging sdp_subarry as it is suspect
-    devices_to_log = LogSpec().add_log(
-        device_name=mvp_names.Mid.sdp.subarray(subarray_id).__str__()
-    ).add_log(
-        device_name=mvp_names.Mid.tm.subarray(subarray_id).__str__()
-    ).add_log(
-        device_name=mvp_names.Mid.csp.subarray(subarray_id).__str__()
-    )
-    running_telescope.push_context_onto_test(device_logging_context(builder, devices_to_log))
+    if capture_logs:
+        devices_to_log = LogSpec().add_log(
+            device_name=mvp_names.Mid.sdp.subarray(subarray_id).__str__()
+        ).add_log(
+            device_name=mvp_names.Mid.tm.subarray(subarray_id).__str__()
+        ).add_log(
+            device_name=mvp_names.Mid.csp.subarray(subarray_id).__str__()
+        )
+        running_telescope.push_context_onto_test(device_logging_context(builder, devices_to_log))
     board = running_telescope.push_context_onto_test(wait.waiting_context(builder))
     context.board = board
     context.checker = checker
@@ -137,12 +124,7 @@ def check_subarray_composition(context):
     board: wait.MessageBoardBase = context.board
     
     try:
-        wait.wait(context.board, 3*60, live_logging=False)
-        wait_for_read_attr(
-            attr = 'obsState',
-            required_value = 'IDLE',
-            device_name = mvp_names.Mid.sdp.subarray(1).__str__()
-        ) # hack to circumvent possible synchronization fault in event generated data vs queried data
+        wait.wait(context.board, 45, live_logging=False)
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book(filter_log=False,log_filter_pattern="txn")
         logger.info(f"Log messages during waiting:\n{logs}")

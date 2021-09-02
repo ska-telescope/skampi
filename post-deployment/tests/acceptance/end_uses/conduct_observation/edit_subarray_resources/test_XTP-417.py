@@ -124,7 +124,7 @@ def check_subarray_composition(context):
     board: wait.MessageBoardBase = context.board
     
     try:
-        wait.wait(context.board, 45, live_logging=False)
+        wait.wait(context.board, 60*3, live_logging=False)
     except wait.EWhilstWaiting as exception:
         logs = board.play_log_book(filter_log=False,log_filter_pattern="txn")
         logger.info(f"Log messages during waiting:\n{logs}")

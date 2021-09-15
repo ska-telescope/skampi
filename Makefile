@@ -153,7 +153,9 @@ delete_sdp_namespace: ## delete the kubernetes SDP namespace
 lint_all:  lint## lint ALL of the helm chart
 
 lint:  ## lint the HELM_CHART of the helm chart
-	cd $(UMBRELLA_CHART_PATH); pwd; helm lint;
+	cd charts; \
+	for i in *; do helm dependency update ./$${i}; done; \
+	helm lint *
 
 help:  ## show this help.
 	@echo "make targets:"

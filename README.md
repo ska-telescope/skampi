@@ -1,6 +1,13 @@
 # Getting Started
 [![Documentation Status](https://readthedocs.org/projects/ska-telescope-ska-skampi/badge/?version=latest)](https://developer.skatelescope.org/projects/ska-skampi/en/latest/?badge=latest)
 
+## Cloning the repository
+Checkout the repository and ensure that submodules (including `.make`) are cloned with:
+```
+$ git clone --recurse-submodules git@gitlab.com:ska-telescope/ska-skampi.git
+$ cd ska-skampi
+```
+
 ## Before you begin
 The documentation for SKAMPI is currently being reworked. To look at the documentation that was available before this rework started, please go to [this temporary build on ReadtheDocs](https://developer.skao.int/projects/ska-skampi/en/sp-1747-docs-old/).
 
@@ -27,7 +34,7 @@ $ make
 ```
 
 ### Environment Settings
-To check what some of the most commonly used variables are that your Makefile will use when you run any commands (defaults or environment specific), you can run 
+To check what some of the most commonly used variables are that your Makefile will use when you run any commands (defaults or environment specific), you can run
 ```
 $ make vars
 ```
@@ -40,7 +47,7 @@ The full deployment of SKAMPI is currently very resource intensive and therefore
 A Minikube cluster is a kubernetes cluster with only one node (your laptop is called a node), which acts as the master and worker node. The SKA Minikube repository also provides an ingress to expose your cluster's deployment to the outside world if needed, and other settings (see the documentation in the repo for more details). Once these prerequisites are installed, you can follow the guidelines on [Deployment](https://developer.skao.int/projects/ska-skampi/en/latest/deployment.html). Note that a partial deployment of SKAMPI is made possible by setting the `<subchartname>.enabled` value to `false` in the `values.yaml` file of the repository, for any component (represented by a subchart) that can be switched off to save resources. Details can be found in the Deployment guidelines.
 
 ### CI Pipeline Deployment
-Installation/Deployment of SKAMPI is much simpler using the Gitlab CI Pipelines (and this is the recommended method), as everything required to set up the environment is included in the CI infrastructure. As all branches should be named after a Jira ticket, you need a Jira ticket before checking out your branch. 
+Installation/Deployment of SKAMPI is much simpler using the Gitlab CI Pipelines (and this is the recommended method), as everything required to set up the environment is included in the CI infrastructure. As all branches should be named after a Jira ticket, you need a Jira ticket before checking out your branch.
 
 Start by cloning the SKAMPI repository to your local machine. If you don't use SSH (or don't know what that even means), use the following command:
 ```
@@ -57,10 +64,10 @@ Now push this new branch to Gitlab:
 ```
 $ git push --set-upstream origin at-42
 Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
-remote: 
+remote:
 remote: To create a merge request for at-42, visit:
 remote:   https://gitlab.com/ska-telescope/ska-skampi/-/merge_requests/new?merge_request%5Bsource_branch%5D=at-42
-remote: 
+remote:
 To gitlab.com:ska-telescope/ska-skampi.git
  * [new branch]        at-42 -> at-42
  ```
@@ -110,7 +117,7 @@ Once `make wait` finishes, you can run `make links` and follow the URL given to 
 ### Helm Charts
 Installation of Helm should be done as part of familiarising with SKA Tango Examples. This will also help you getting familiar with what a Helm Chart is.
 
-Helm Charts are basically a templating solution that enables a large project such as the SKA to configure a set of standard kubernetes resources using configuration parameters. A Chart is essentially a folder with a general structure, which can be packaged in a .tar.gz file and published to a Helm Repository, or used locally for deployment. 
+Helm Charts are basically a templating solution that enables a large project such as the SKA to configure a set of standard kubernetes resources using configuration parameters. A Chart is essentially a folder with a general structure, which can be packaged in a .tar.gz file and published to a Helm Repository, or used locally for deployment.
 
 For an understanding of how Helm Charts are used in the SKAMPI project, please go to the section on [Templating the Application](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html#templating-the-application) under the [Container Orchestration Guidelines](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html) of the [Developer Portal](https://developer.skao.int/en/latest/).
 
@@ -206,7 +213,7 @@ $ make vars | grep VALUES
 VALUES=values.yaml
 ```
 
-The values.yaml file controls all the variables that are used by Helm when interpreting the templates written for each of the Charts. In other words, if you want to modify the deployment of `SKAMPI` in any way, the simplest method would be to modify the appropriate variables in your own `yaml` file, and tell `Make` about this file. As a convenience, there is already a `yaml` file specified in `.gitignore`, so that you won't unnecessarily commit your local file. 
+The values.yaml file controls all the variables that are used by Helm when interpreting the templates written for each of the Charts. In other words, if you want to modify the deployment of `SKAMPI` in any way, the simplest method would be to modify the appropriate variables in your own `yaml` file, and tell `Make` about this file. As a convenience, there is already a `yaml` file specified in `.gitignore`, so that you won't unnecessarily commit your local file.
 
 1. Set your `VALUES` to this file and populate this file with a harmless default and check that Helm doesn't complain:
     ```
@@ -233,8 +240,8 @@ The values.yaml file controls all the variables that are used by Helm when inter
     ```
 
     You now have a values file that overrides the local deployment without affecting the repository. If you want to create a minimal deployment, you can now switch off all the components deployed by Helm.
-    
-2. Copy all the settings below into `my_local_values.yaml` 
+
+2. Copy all the settings below into `my_local_values.yaml`
     ```
     minikube: true
 

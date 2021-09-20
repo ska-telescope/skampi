@@ -2,55 +2,9 @@
 # # SKA Low CI Stages
 # ################################################
 
-.tags_default: &tags_default
-- k8srunner
-
+# Local Anchors
 .tags_psi_low: &tags_psi_low
 - k8srunner-psi-low
-
-.test_template: &test_definition
-  script:
-  - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
-  - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-  - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
-  - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
-    kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - bash scripts/gitlab_section.sh archiver "Archiver configuration"
-    make configure-archiver
-  - make k8s_test
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
-  after_script:
-  - make links
-
-.xray_upload: &xray_upload
-  after_script:
-  - &xray_upload_scripts |
-    if [ -f build/cucumber.json ]; then
-    bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=2.1.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
-    /usr/local/bin/xtp-xray-upload -f build/cucumber.json -v
-    fi
-  - make links
-
-.uninstall_template: &uninstall_definition
-  script:
-  - &uninstall_scripts |
-    make uninstall
-    kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-    kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-    make delete_namespace
-    make delete_sdp_namespace
-  only:
-    refs:
-      - master
-    variables:
-      - $DELETE == "true"
-
 
 .psi_test_template: &psi_test_definition
   script:
@@ -67,49 +21,33 @@
       junit: build/report.xml
     when: always
 
-.create_k8s_creds: &create_k8s_creds
-- bash scripts/gitlab_section.sh creds "Create K8s Credentials"
-  apt-get -y update && apt-get install -y curl ca-certificates jq --no-install-recommends
-- curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
-
-
-.deploy_template: &deploy_definition
-  script:
-  - make install-or-upgrade
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
-
-
+# Low specific job steps
 low_uninstall:
   stage: clean
-  tags: *tags_default
+  extends:
+  - .tags_default
+  - .uninstall_definition
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
-  <<: *uninstall_definition
   environment:
     name: "test-low"
     action: stop
 
 low_quarantine_uninstall:
   stage: cleanup
-  tags: *tags_default
+  extends:
+  - .tags_default
+  - .uninstall_definition
   variables:
     HELM_RELEASE: "test-low-q"
     KUBE_NAMESPACE: "ci-quarantine-low"
     KUBE_NAMESPACE_SDP: "ci-quarantine-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
-  <<: *uninstall_definition
   environment:
     name: "low-quarantine"
     action: stop
@@ -117,6 +55,8 @@ low_quarantine_uninstall:
 
 psi_low_uninstall:
   stage: clean
+  extends:
+  - .uninstall_definition
   tags: *tags_psi_low
   variables:
     HELM_RELEASE: "test-low"
@@ -124,7 +64,6 @@ psi_low_uninstall:
     KUBE_NAMESPACE_SDP: "integration-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
-  <<: *uninstall_definition
   environment:
     name: "psi-low-integration"
     action: stop
@@ -132,15 +71,15 @@ psi_low_uninstall:
 
 low_on_demand_uninstall:
   stage: cleanup
-  tags: *tags_default
+  extends:
+  - .tags_default
+  - .uninstall_scripts
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-  script:
-  - *uninstall_scripts
   environment:
     name: "test-low/$CI_COMMIT_REF_NAME"
     kubernetes:
@@ -157,6 +96,8 @@ low_on_demand_uninstall:
 
 psi_low_on_demand_uninstall:
   stage: cleanup
+  extends:
+  - .uninstall_scripts
   tags: *tags_psi_low
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
@@ -164,8 +105,6 @@ psi_low_on_demand_uninstall:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-  script:
-  - *uninstall_scripts
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     action: stop
@@ -180,7 +119,10 @@ psi_low_on_demand_uninstall:
 low_test:
   retry: 2
   stage: test
-  tags: *tags_default
+  extends:
+  - .tags_default
+  - .test_definition
+  - .xray_upload
   variables:
     MARK: "(skalow or common) and not quarantine"
     HELM_RELEASE: "test-low"
@@ -189,8 +131,6 @@ low_test:
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
-  <<: *test_definition
-  <<: *xray_upload
   environment:
     name: "test-low"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -207,7 +147,10 @@ low_test:
 
 low_test_quarantine:
   stage: test
-  tags: *tags_default
+  extends:
+  - .tags_default
+  - .test_definition
+  - .xray_upload
   variables:
     MARK: "(skalow or common) and quarantine"
     HELM_RELEASE: "test-low-q"
@@ -217,8 +160,6 @@ low_test_quarantine:
     DELETE: "true"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
-  <<: *test_definition
-  <<: *xray_upload
   environment:
     name: "low-quarantine"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -236,6 +177,8 @@ low_test_quarantine:
 
 psi_low_test:
   stage: test
+  extends:
+  - .xray_upload
   tags: *tags_psi_low
   variables:
     HELM_RELEASE: "test-low"
@@ -247,7 +190,6 @@ psi_low_test:
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
   <<: *psi_test_definition
-  <<: *xray_upload
   environment:
     name: "psi-low-integration"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -261,7 +203,9 @@ psi_low_test:
 
 low_on_demand_test:
   stage: test
-  tags: *tags_default
+  extends:
+  - .tags_default
+  - .test_definition
   variables:
     DEPLOYMENT_CONFIGURATION: "ska-low"
     MARK: "skalow or common"
@@ -272,8 +216,8 @@ low_on_demand_test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
   before_script:
-    - *create_k8s_creds
-  <<: *test_definition
+  # using reference as there seems to be a problem with extends
+    - !reference [.create_k8s_creds, before_script]
   environment:
     name: "test-low/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
@@ -307,7 +251,8 @@ psi_low_on_demand_test:
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
   before_script:
-    - *create_k8s_creds
+  # using reference as there seems to be a problem with extends
+    - !reference [.create_k8s_creds, before_script]
   <<: *psi_test_definition
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
@@ -324,7 +269,8 @@ psi_low_on_demand_test:
 
 get_sizes_low:
   stage: debug
-  tags: *tags_default
+  extends:
+  - .tags_default
   variables:
     KUBE_NAMESPACE: "integration-low"
     KEEP_NAMESPACE: "true"
@@ -338,7 +284,9 @@ get_sizes_low:
 
 low_clean_staging:
   stage: clean_staging
-  tags: *tags_default
+  extends:
+  - .tags_default
+  - .uninstall_scripts
   variables:
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
@@ -350,14 +298,14 @@ low_clean_staging:
       - tags
     variables:
       - $DELETE == "true"
-  script:
-  - *uninstall_scripts
   environment:
     name: "staging-low"
     action: stop
 
 psi_low_clean_staging:
   stage: clean_staging
+  extends:
+  - .uninstall_scripts
   tags: *tags_psi_low
   variables:
     HELM_RELEASE: "staging-low"
@@ -369,15 +317,15 @@ psi_low_clean_staging:
       - tags
     variables:
       - $DELETE == "true"
-  script:
-  - *uninstall_scripts
   environment:
     name: "psi-low-staging"
     action: stop
 
 low_deploy_staging:
   stage: deploy_staging
-  tags: *tags_default
+  extends:
+  - .tags_default
+  - .deploy_definition
   variables:
     HELM_REPO_NAME: "skatelescope"
     UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-low"
@@ -386,7 +334,6 @@ low_deploy_staging:
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
-  <<: *deploy_definition
   environment:
     name: "staging-low"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -402,6 +349,8 @@ low_deploy_staging:
 
 psi_low_deploy_staging:
   stage: deploy_staging
+  extends:
+  - .deploy_definition
   tags: *tags_psi_low
   variables:
     HELM_REPO_NAME: "skatelescope"
@@ -411,7 +360,6 @@ psi_low_deploy_staging:
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
-  <<: *deploy_definition
   environment:
     name: "psi-low-staging"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"

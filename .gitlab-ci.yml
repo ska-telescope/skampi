@@ -23,6 +23,11 @@ stages:
   - cleanup
 
 
+# Globally reused
+.tags_default: &tags_default
+  tags:
+  - k8srunner
+
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
 # Common template components
@@ -41,12 +46,8 @@ include:
   ref: master
   file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 
-
-.tags_default: &tags_default
-- k8srunner
-
-lint:
-  tags: *tags_default
+# lint:
+# << *tags_default
 
 publish-chart:
   when: on_success

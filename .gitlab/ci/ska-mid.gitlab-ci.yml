@@ -33,45 +33,45 @@ mid_uninstall:
     name: "test"
     action: stop
 
-# mid_quarantine_uninstall:
-#   stage: cleanup
-#   tags: *tags_default
-#   variables:
-#     HELM_RELEASE: "test-mid-q"
-#     KUBE_NAMESPACE: "ci-quarantine-mid"
-#     KUBE_NAMESPACE_SDP: "ci-quarantine-mid-sdp"
-#     DEPLOYMENT_CONFIGURATION: "ska-mid"
-#     KEEP_NAMESPACE: "true"
-#   <<: *uninstall_definition
-#   environment:
-#     name: "mid-quarantine"
-#     action: stop
-#   when: manual
+mid_quarantine_uninstall:
+  stage: cleanup
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-mid-q"
+    KUBE_NAMESPACE: "ci-quarantine-mid"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
+    KEEP_NAMESPACE: "true"
+  <<: *uninstall_definition
+  environment:
+    name: "mid-quarantine"
+    action: stop
+  when: manual
 
-# mid_on_demand_uninstall:
-#   stage: cleanup
-#   tags: *tags_default
-#   variables:
-#     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-#     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-#     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
-#     DEPLOYMENT_CONFIGURATION: "ska-mid"
-#     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-#   script:
-#   - *uninstall_scripts
-#   environment:
-#     name: "test/$CI_COMMIT_REF_NAME"
-#     kubernetes:
-#       # This repetition is needed for gitlab to parse the namespace correctly
-#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-#     action: stop
-#   when: manual
-#   only:
-#     refs:
-#       - branches
-#   except:
-#     refs:
-#       - master
+mid_on_demand_uninstall:
+  stage: cleanup
+  tags: *tags_default
+  variables:
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+  script:
+  - *uninstall_scripts
+  environment:
+    name: "test/$CI_COMMIT_REF_NAME"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+    action: stop
+  when: manual
+  only:
+    refs:
+      - branches
+  except:
+    refs:
+      - master
 
 # mid_test:
 #   retry: 2

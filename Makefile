@@ -59,16 +59,23 @@ CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 
 # include makefile targets for release management
 -include .make/release.mk
+# include makefile targets for Kubernetes management
+-include .make/k8s.mk
 
+## local custom includes
 # include makefile targets for testing
--include .make/test.mk
+-include resources/test.mk
 
 # include makefile targets that EDA deployment
--include .make/archiver.mk
+-include resources/archiver.mk
 
-# include private variables for custom deployment configuration
+## The following should be standard includes
+# include makefile targets for make submodule
+-include .make/make.mk
+# include makefile targets for Makefile help
+-include .make/help.mk
+# include your own private variables for custom deployment configuration
 -include PrivateRules.mak
-
 vars: ## Display variables
 	@echo "SKA_K8S_TOOLS_DEPLOY_IMAGE=$(SKA_K8S_TOOLS_DEPLOY_IMAGE)"
 	@echo ""
@@ -153,7 +160,9 @@ delete_sdp_namespace: ## delete the kubernetes SDP namespace
 lint_all:  lint## lint ALL of the helm chart
 
 lint:  ## lint the HELM_CHART of the helm chart
-	cd $(UMBRELLA_CHART_PATH); pwd; helm lint;
+	cd charts; \
+	for i in *; do helm dependency update ./$${i}; done; \
+	helm lint *
 
 help:  ## show this help.
 	@echo "make targets:"

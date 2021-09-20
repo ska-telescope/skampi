@@ -87,12 +87,9 @@ low_on_demand_uninstall:
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     action: stop
   when: manual
-  only:
-    refs:
-      - branches
-  except:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+
 
 psi_low_on_demand_uninstall:
   stage: cleanup
@@ -114,7 +111,8 @@ psi_low_on_demand_uninstall:
       - branches
   except:
     refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
 
 low_test:
   retry: 2
@@ -143,7 +141,8 @@ low_test:
       - master
   except:
     variables:
-      - $STRESS_TEST_DURATION
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION'
 
 low_test_quarantine:
   stage: test
@@ -172,7 +171,8 @@ low_test_quarantine:
       - master
   except:
     variables:
-      - $STRESS_TEST_DURATION
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION'
   allow_failure: true
 
 psi_low_test:
@@ -199,7 +199,8 @@ psi_low_test:
       - master
   except:
     variables:
-      - $STRESS_TEST_DURATION
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION'
 
 low_on_demand_test:
   stage: test
@@ -235,7 +236,8 @@ low_on_demand_test:
       - $STRESS_TEST_DURATION
   except:
     refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION'
 
 psi_low_on_demand_test:
   stage: test

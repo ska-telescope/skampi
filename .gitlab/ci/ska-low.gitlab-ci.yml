@@ -86,9 +86,9 @@ low_on_demand_uninstall:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     action: stop
-  when: manual
   rules:
-    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      when: manual
 
 
 psi_low_on_demand_uninstall:
@@ -105,14 +105,9 @@ psi_low_on_demand_uninstall:
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     action: stop
-  when: manual
-  only:
-    refs:
-      - branches
-  except:
-    refs:
   rules:
-    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      when: manual
 
 low_test:
   retry: 2
@@ -136,13 +131,8 @@ low_test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     on_stop: low_uninstall
-  only:
-    refs:
-      - master
-  except:
-    variables:
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION && $STRESS_TEST_DURATION != ""'
 
 low_test_quarantine:
   stage: test
@@ -166,14 +156,9 @@ low_test_quarantine:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     on_stop: low_quarantine_uninstall
-  only:
-    refs:
-      - master
-  except:
-    variables:
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION'
-  allow_failure: true
+    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION != ""'
+      allow_failure: true
 
 psi_low_test:
   stage: test
@@ -194,13 +179,8 @@ psi_low_test:
     name: "psi-low-integration"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     on_stop: psi_low_uninstall
-  only:
-    refs:
-      - master
-  except:
-    variables:
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION != ""'
 
 low_on_demand_test:
   stage: test
@@ -227,17 +207,9 @@ low_on_demand_test:
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     on_stop: low_on_demand_uninstall
     auto_stop_in: 2 hours
-  when: manual
-  only:
-    refs:
-      - branches
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
-  except:
-    refs:
   rules:
-    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION'
+    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION'
+      when: manual
 
 psi_low_on_demand_test:
   stage: test
@@ -261,13 +233,9 @@ psi_low_on_demand_test:
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
     on_stop: psi_low_on_demand_uninstall
     auto_stop_in: 2 hours
-  when: manual
-  only:
-    refs:
-      - branches
-  except:
-    refs:
-      - master
+  rules:
+    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      when: manual
 
 get_sizes_low:
   stage: debug
@@ -295,11 +263,8 @@ low_clean_staging:
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
-  only:
-    refs:
-      - tags
-    variables:
-      - $DELETE == "true"
+  rules:
+    - if: '$CI_COMMIT_TAG && $DELETE == "true"'
   environment:
     name: "staging-low"
     action: stop
@@ -314,11 +279,8 @@ psi_low_clean_staging:
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
-  only:
-    refs:
-      - tags
-    variables:
-      - $DELETE == "true"
+  rules:
+    - if: '$CI_COMMIT_TAG && $DELETE == "true"'
   environment:
     name: "psi-low-staging"
     action: stop
@@ -343,9 +305,8 @@ low_deploy_staging:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     on_stop: low_clean_staging
-  only:
-    refs:
-      - tags
+  rules:
+    - if: '$CI_COMMIT_TAG'
   # needs:
   #   - job: low_clean_staging
 
@@ -366,9 +327,8 @@ psi_low_deploy_staging:
     name: "psi-low-staging"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     on_stop: psi_low_clean_staging
-  only:
-    refs:
-      - tags
+  rules:
+    - if: '$CI_COMMIT_TAG'
   # needs:
   #   - job: psi_low_clean_staging
 

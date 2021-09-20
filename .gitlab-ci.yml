@@ -32,78 +32,23 @@ include:
 # All SKA Mid stages
 - local:  '/.gitlab/ci/ska-mid.gitlab-ci.yml'
 
-# # Helm Charts
-# - project: 'ska-telescope/templates-repository'
-#   ref: master
-#   file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
+# Helm Charts
+- project: 'ska-telescope/templates-repository'
+  ref: master
+  file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
 # .post steps
-# - project: 'ska-telescope/templates-repository'
-#   ref: master
-#   file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
+- project: 'ska-telescope/templates-repository'
+  ref: master
+  file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 
 
 .tags_default: &tags_default
 - k8srunner
 
-tag_commit:
-  stage: release
-  variables:
-    USERNAME: "$GITLAB_USER_NAME"
-    EMAILID: $GITLAB_USER_EMAIL
-    PRIVATE_TOKEN: $SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
-  tags:
-    - k8srunner
-  when: manual
-  # needs:
-  #   - job: publish-chart
-  only:
-    refs:
-      - master
-  script:
-    - make release-skampi
+lint:
+  tags: *tags_default
 
-version_bump_charts:
-  stage: update_versions
-  variables:
-    USERNAME: "project_11448712_bot"
-    EMAILID: $MARVIN_EMAIL
-    PRIVATE_TOKEN: $MARVIN_PRIVATE_TOKEN
-  tags:
-    - k8srunner
-  only:
-    refs:
-      - tags
-  script:
-    - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
-    - make commit-and-push-to-master
-
-pages:
-  tags:
-  - k8srunner
-  stage: test
-  cache: {}
-  script:
-  - pip3 install python-gitlab rstgen urllib3 sphinx sphinx-autobuild sphinx_rtd_theme
-  - cd docs/analysis
-  - python3 ../../scripts/make_analysis.py --gitlab $CI_SERVER_URL
-        --gitlab-header job_token=$CI_JOB_TOKEN
-        --gitlab-project $CI_PROJECT_PATH
-        --gitlab-search $STRESS_TEST_ANALYSIS_PIPELINES
-        --gitlab-job $STRESS_TEST_ANALYSIS_JOBS
-        --gitlab-artifact logs.tar.xz
-  - make html
-  - mv _build/html ../../public
-  rules:
-    - if: $STRESS_TEST_ANALYSIS_PIPELINES && $STRESS_TEST_ANALYSIS_JOBS
-  artifacts:
-    paths: [public/]
-    expire_in: 1 week
-
-
-# lint:
-#   tags: *tags_default
-
-# publish-chart:
-#   when: on_success
-#   except:
-#     - master
+publish-chart:
+  when: on_success
+  except:
+    - master

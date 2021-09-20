@@ -35,10 +35,14 @@ include:
 - project: 'ska-telescope/templates-repository'
   ref: master
   file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
-# .post steps
+.post steps
 - project: 'ska-telescope/templates-repository'
   ref: master
   file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
+
+
+.tags_default: &tags_default
+- k8srunner
 
 tag_commit:
   stage: release
@@ -95,10 +99,10 @@ pages:
     expire_in: 1 week
 
 
-lint:
-  tags: *tags_default
+# lint:
+#   tags: *tags_default
 
-publish-chart:
-  when: on_success
-  except:
-    - master
+# publish-chart:
+#   when: on_success
+#   except:
+#     - master

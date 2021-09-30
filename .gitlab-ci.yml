@@ -5,6 +5,7 @@ variables:
   VALUES: "pipeline.yaml"
   CHARTS_TO_PUBLISH: ska-low ska-mid
   INGRESS_HOST: "k8s.stfc.skao.int"
+  GIT_SUBMODULE_STRATEGY: recursive
 
 # TODO!!! add chart linting
 

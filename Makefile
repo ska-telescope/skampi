@@ -94,35 +94,6 @@ vars: ## Display variables
 	@echo ""
 	@echo "MARK=$(MARK)"
 
-k8s: ## Which kubernetes are we connected to
-	@echo "Kubernetes cluster-info:"
-	@kubectl cluster-info
-	@echo ""
-	@echo "kubectl version:"
-	@kubectl version
-	@echo ""
-	@echo "Helm version:"
-	@$(helm_tiller_prefix) helm version
-
-logs: ## POD logs for descriptor
-	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l group=example -o=name`; \
-	do echo "-------------------"; \
-	echo "Logs for $$i"; \
-	kubectl -n $(KUBE_NAMESPACE) logs $$i; \
-	done
-
-
-clean: ## clean out references to chart tgz's
-	@rm -f ./charts/*/charts/*.tgz ./charts/*/Chart.lock ./charts/*/requirements.lock
-
-namespace: ## create the kubernetes namespace
-	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
-		K_DESC=$$? ; \
-		if [ $$K_DESC -eq 0 ] ; \
-		then kubectl describe namespace $(KUBE_NAMESPACE); \
-		else kubectl create namespace $(KUBE_NAMESPACE); \
-		fi
-
 namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	@kubectl describe namespace $(KUBE_NAMESPACE_SDP) > /dev/null 2>&1 ; \
 	K_DESC=$$? ; \
@@ -164,11 +135,11 @@ lint:  ## lint the HELM_CHART of the helm chart
 	for i in *; do helm dependency update ./$${i}; done; \
 	helm lint *
 
-help:  ## show this help.
-	@echo "make targets:"
-	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ": .*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-	@echo ""; echo "make vars (+defaults):"
-	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+# help:  ## show this help.
+# 	@echo "make targets:"
+# 	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ": .*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+# 	@echo ""; echo "make vars (+defaults):"
+# 	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 install: clean namespace namespace_sdp check-archiver-dbname upgrade-chart## install the helm chart on the namespace KUBE_NAMESPACE
 

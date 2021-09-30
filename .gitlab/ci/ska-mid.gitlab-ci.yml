@@ -6,8 +6,9 @@
 mid_uninstall:
   stage: clean
   extends:
-  - .tags_default
-  - .uninstall_definition
+    - .dry_run
+  #- .tags_default
+  # - .uninstall_definition
   variables:
     HELM_RELEASE: "test-mid"
     KUBE_NAMESPACE: "integration-mid"
@@ -21,8 +22,9 @@ mid_uninstall:
 mid_quarantine_uninstall:
   stage: cleanup
   extends:
-  - .tags_default
-  - .uninstall_definition
+    - .dry_run
+  #  - .tags_default
+  #  - .uninstall_definition
   variables:
     HELM_RELEASE: "test-mid-q"
     KUBE_NAMESPACE: "ci-quarantine-mid"
@@ -37,8 +39,9 @@ mid_quarantine_uninstall:
 mid_on_demand_uninstall:
   stage: cleanup
   extends:
-  - .tags_default
-  - .uninstall_scripts
+    - .dry_run
+  #  - .tags_default
+  #  - .uninstall_scripts
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
@@ -63,9 +66,10 @@ mid_test:
   retry: 2
   stage: test
   extends:
-  - .tags_default
-  - .uninstall_definition
-  - .xray_upload
+    - .dry_run
+  #  - .tags_default
+  #  - .uninstall_definition
+  #  - .xray_upload
   variables:
     MARK: "(skamid or common) and not quarantine"
     HELM_RELEASE: "test-mid"
@@ -90,9 +94,10 @@ mid_test:
 mid_test_quarantine:
   stage: test
   extends:
-  - .tags_default
-  - .uninstall_definition
-  - .xray_upload
+    - .dry_run
+  #  - .tags_default
+  #  - .uninstall_definition
+  #  - .xray_upload
   variables:
     MARK: "(skamid or common) and quarantine"
     HELM_RELEASE: "test-mid-q"
@@ -119,8 +124,9 @@ mid_test_quarantine:
 mid_on_demand_test:
   stage: test
   extends:
-  - .tags_default
-  - .uninstall_definition
+    - .dry_run
+  #  - .tags_default
+  #  - .uninstall_definition
   variables:
     DEPLOYMENT_CONFIGURATION: "ska-mid"
     MARK: "skamid or common"
@@ -132,9 +138,9 @@ mid_on_demand_test:
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
   # after_script:
   #   - make links
-  before_script:
+  #before_script:
   # using reference as there seems to be a problem with extends
-    - !reference [.create_k8s_creds, before_script]
+  #- !reference [.create_k8s_creds, before_script]
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
@@ -146,7 +152,7 @@ mid_on_demand_test:
   when: manual
   only:
     refs:
-    - branches
+      - branches
   except:
     refs:
       - master
@@ -154,8 +160,9 @@ mid_on_demand_test:
 mid_stress_test:
   stage: test
   extends:
-  - .tags_default
-  - .stress_test_definition
+    - .dry_run
+  #  - .tags_default
+  #  - .stress_test_definition
   variables:
     DEPLOYMENT_CONFIGURATION: "ska-mid"
     MARK: "skamid or common"
@@ -177,7 +184,8 @@ mid_stress_test:
 get_sizes_mid:
   stage: debug
   extends:
-  - .tags_default
+    - .dry_run
+  #  - .tags_default
   variables:
     KUBE_NAMESPACE: "integration-mid"
     KEEP_NAMESPACE: "true"
@@ -192,16 +200,17 @@ get_sizes_mid:
 mid_sdp_config_dump:
   stage: debug
   extends:
-  - .tags_default
+    - .dry_run
+  #  - .tags_default
   variables:
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
     KEEP_NAMESPACE: "true"
   script:
-  - kubectl exec -n $KUBE_NAMESPACE sdp-console-0 -- sdpcfg ls values -R / > sdp.config.json
+    - kubectl exec -n $KUBE_NAMESPACE sdp-console-0 -- sdpcfg ls values -R / > sdp.config.json
   artifacts:
     paths:
-    - sdp.config.json
+      - sdp.config.json
   environment:
     name: "test"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -216,8 +225,9 @@ mid_sdp_config_dump:
 mid_clean_staging:
   stage: clean_staging
   extends:
-  - .tags_default
-  - .uninstall_scripts
+    - .dry_run
+  #  - .tags_default
+  #  - .uninstall_scripts
   variables:
     HELM_RELEASE: "staging-mid"
     KUBE_NAMESPACE: "staging-mid"
@@ -236,8 +246,9 @@ mid_clean_staging:
 mid_deploy_staging:
   stage: deploy_staging
   extends:
-  - .tags_default
-  - .deploy_definition
+    - .dry_run
+  #  - .tags_default
+  #  - .deploy_definition
   variables:
     HELM_REPO_NAME: "skatelescope"
     UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-mid" ## The name of the chart as published to CAR

@@ -4,15 +4,15 @@
 
 # Local Anchors
 .tags_psi_low: &tags_psi_low
-- k8srunner-psi-low
+  - k8srunner-psi-low
 
 .psi_test_template: &psi_test_definition
   script:
-  - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-  - make install-or-upgrade || true
-  - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
-    kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make k8s_test
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - make install-or-upgrade || true
+    - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
+      kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+    - make k8s_test
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -25,8 +25,9 @@
 low_uninstall:
   stage: clean
   extends:
-  - .tags_default
-  - .uninstall_definition
+    - .dry_run
+  #- .tags_default
+  #- .uninstall_definition
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
@@ -40,8 +41,9 @@ low_uninstall:
 low_quarantine_uninstall:
   stage: cleanup
   extends:
-  - .tags_default
-  - .uninstall_definition
+    - .dry_run
+  #  - .tags_default
+  #  - .uninstall_definition
   variables:
     HELM_RELEASE: "test-low-q"
     KUBE_NAMESPACE: "ci-quarantine-low"
@@ -56,7 +58,8 @@ low_quarantine_uninstall:
 psi_low_uninstall:
   stage: clean
   extends:
-  - .uninstall_definition
+    - .dry_run
+  #  - .uninstall_definition
   tags: *tags_psi_low
   variables:
     HELM_RELEASE: "test-low"
@@ -72,8 +75,9 @@ psi_low_uninstall:
 low_on_demand_uninstall:
   stage: cleanup
   extends:
-  - .tags_default
-  - .uninstall_scripts
+    - .dry_run
+  #  - .tags_default
+  #  - .uninstall_scripts
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
@@ -87,14 +91,14 @@ low_on_demand_uninstall:
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     action: stop
   rules:
-    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: manual
-
 
 psi_low_on_demand_uninstall:
   stage: cleanup
   extends:
-  - .uninstall_scripts
+    - .dry_run
+  #  - .uninstall_scripts
   tags: *tags_psi_low
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
@@ -106,16 +110,17 @@ psi_low_on_demand_uninstall:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     action: stop
   rules:
-    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: manual
 
 low_test:
   retry: 2
   stage: test
   extends:
-  - .tags_default
-  - .test_definition
-  - .xray_upload
+    - .dry_run
+  #  - .tags_default
+  #  - .test_definition
+  #  - .xray_upload
   variables:
     MARK: "(skalow or common) and not quarantine"
     HELM_RELEASE: "test-low"
@@ -137,9 +142,10 @@ low_test:
 low_test_quarantine:
   stage: test
   extends:
-  - .tags_default
-  - .test_definition
-  - .xray_upload
+    - .dry_run
+  #  - .tags_default
+  #  - .test_definition
+  #  - .xray_upload
   variables:
     MARK: "(skalow or common) and quarantine"
     HELM_RELEASE: "test-low-q"
@@ -163,7 +169,8 @@ low_test_quarantine:
 psi_low_test:
   stage: test
   extends:
-  - .xray_upload
+    - .dry_run
+  #  - .xray_upload
   tags: *tags_psi_low
   variables:
     HELM_RELEASE: "test-low"
@@ -185,8 +192,9 @@ psi_low_test:
 low_on_demand_test:
   stage: test
   extends:
-  - .tags_default
-  - .test_definition
+    - .dry_run
+  #  - .tags_default
+  #  - .test_definition
   variables:
     DEPLOYMENT_CONFIGURATION: "ska-low"
     MARK: "skalow or common"
@@ -196,9 +204,9 @@ low_on_demand_test:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
-  before_script:
+  #before_script:
   # using reference as there seems to be a problem with extends
-    - !reference [.create_k8s_creds, before_script]
+  #- !reference [.create_k8s_creds, before_script]
   environment:
     name: "test-low/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
@@ -208,12 +216,14 @@ low_on_demand_test:
     on_stop: low_on_demand_uninstall
     auto_stop_in: 2 hours
   rules:
-    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION'
+    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION"
       when: manual
 
 psi_low_on_demand_test:
   stage: test
   tags: *tags_psi_low
+  extends:
+    - .dry_run
   variables:
     DEPLOYMENT_CONFIGURATION: "ska-low"
     MARK: "(skalow or common) and not archiver"
@@ -224,23 +234,24 @@ psi_low_on_demand_test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
-  before_script:
+  #before_script:
   # using reference as there seems to be a problem with extends
-    - !reference [.create_k8s_creds, before_script]
-  <<: *psi_test_definition
+  #- !reference [.create_k8s_creds, before_script]
+  #<<: *psi_test_definition
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
     on_stop: psi_low_on_demand_uninstall
     auto_stop_in: 2 hours
   rules:
-    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: manual
 
 get_sizes_low:
   stage: debug
   extends:
-  - .tags_default
+    - .dry_run
+  # - .tags_default
   variables:
     KUBE_NAMESPACE: "integration-low"
     KEEP_NAMESPACE: "true"
@@ -255,8 +266,9 @@ get_sizes_low:
 low_clean_staging:
   stage: clean_staging
   extends:
-  - .tags_default
-  - .uninstall_scripts
+    - .dry_run
+  #  - .tags_default
+  #  - .uninstall_scripts
   variables:
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"
@@ -272,7 +284,8 @@ low_clean_staging:
 psi_low_clean_staging:
   stage: clean_staging
   extends:
-  - .uninstall_scripts
+    - .dry_run
+  #  - .uninstall_scripts
   tags: *tags_psi_low
   variables:
     HELM_RELEASE: "staging-low"
@@ -288,8 +301,9 @@ psi_low_clean_staging:
 low_deploy_staging:
   stage: deploy_staging
   extends:
-  - .tags_default
-  - .deploy_definition
+    - .dry_run
+  #  - .tags_default
+  #  - .deploy_definition
   variables:
     HELM_REPO_NAME: "skatelescope"
     UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/mvp-low"
@@ -306,14 +320,15 @@ low_deploy_staging:
       namespace: $KUBE_NAMESPACE
     on_stop: low_clean_staging
   rules:
-    - if: '$CI_COMMIT_TAG'
+    - if: "$CI_COMMIT_TAG"
   # needs:
   #   - job: low_clean_staging
 
 psi_low_deploy_staging:
   stage: deploy_staging
   extends:
-  - .deploy_definition
+    - .dry_run
+  #  - .deploy_definition
   tags: *tags_psi_low
   variables:
     HELM_REPO_NAME: "skatelescope"
@@ -328,7 +343,6 @@ psi_low_deploy_staging:
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     on_stop: psi_low_clean_staging
   rules:
-    - if: '$CI_COMMIT_TAG'
+    - if: "$CI_COMMIT_TAG"
   # needs:
   #   - job: psi_low_clean_staging
-

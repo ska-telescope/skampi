@@ -130,7 +130,7 @@ mid_on_demand_test:
       - master
 
 mid_on_demand_uninstall:
-  stage: clean
+  stage: cleanup
   needs:
     - mid_on_demand_deploy
   extends:

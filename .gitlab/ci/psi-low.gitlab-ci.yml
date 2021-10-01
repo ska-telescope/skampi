@@ -45,7 +45,7 @@ psi_low_test:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION != ""'
 
 psi_low_uninstall:
-  stage: clean
+  stage: cleanup
   needs:
     - psi_low_deploy
   extends:

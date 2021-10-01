@@ -130,7 +130,7 @@ low_on_demand_test:
       - master
 
 low_on_demand_uninstall:
-  stage: clean
+  stage: cleanup
   needs:
     - low_on_demand_deploy
   extends:

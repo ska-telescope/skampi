@@ -199,7 +199,11 @@ low_on_demand_deploy:
   extends:
     - .dry_run
     - .on_demand_definition
+<<<<<<< HEAD
     - .tags_default
+=======
+  #  - .tags_default
+>>>>>>> 9bb16ced67227807ae09e9e9f40d47ad12854c76
   #  - .deploy_scripts
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"

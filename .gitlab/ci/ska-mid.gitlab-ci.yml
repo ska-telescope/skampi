@@ -58,7 +58,7 @@ mid_quarantine_uninstall:
   stage: cleanup
   extends:
     - .uninstall_definition
-  #  - .tags_default
+    - .tags_default
   #  - .uninstall_definition
   variables:
     HELM_RELEASE: "test-mid-q"
@@ -75,7 +75,7 @@ mid_quarantine_deploy:
   stage: cleanup
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .deploy_definition
   variables:
     HELM_RELEASE: "test-mid-q"
@@ -92,7 +92,7 @@ mid_quarantine_cleanup:
   stage: cleanup
   extends:
     - .uninstall_definition
-  #  - .tags_default
+    - .tags_default
   #  - .uninstall_definition
   variables:
     HELM_RELEASE: "test-mid-q"
@@ -112,7 +112,7 @@ mid_on_demand_clean:
   extends:
     - .dry_run
     - .on_demand_definition
-  #  - .tags_default
+    - .tags_default
   #  - .uninstall_scripts
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
@@ -132,7 +132,7 @@ mid_on_demand_deploy:
   extends:
     - .dry_run
     - .on_demand_definition
-  #  - .tags_default
+    - .tags_default
   #  - .deploy_scripts
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
@@ -152,7 +152,7 @@ mid_test:
   stage: test
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .uninstall_definition
   #  - .xray_upload
   variables:
@@ -180,7 +180,7 @@ mid_test_quarantine:
   stage: test
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .uninstall_definition
   #  - .xray_upload
   variables:
@@ -210,7 +210,7 @@ mid_on_demand_test:
   stage: test
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .uninstall_definition
   variables:
     DEPLOYMENT_CONFIGURATION: "ska-mid"
@@ -246,7 +246,7 @@ mid_stress_test:
   stage: test
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .stress_test_definition
   variables:
     DEPLOYMENT_CONFIGURATION: "ska-mid"
@@ -270,7 +270,7 @@ get_sizes_mid:
   stage: debug
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   variables:
     KUBE_NAMESPACE: "integration-mid"
     KEEP_NAMESPACE: "true"
@@ -286,7 +286,7 @@ mid_sdp_config_dump:
   stage: debug
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   variables:
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
@@ -311,7 +311,7 @@ mid_clean_staging:
   stage: clean_staging
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .uninstall_scripts
   variables:
     HELM_RELEASE: "staging-mid"
@@ -332,7 +332,7 @@ mid_deploy_staging:
   stage: deploy_staging
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .deploy_definition
   variables:
     HELM_REPO_NAME: "skatelescope"

@@ -14,6 +14,7 @@ HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= ska-mid## umbrella chart to work with
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
+TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
@@ -37,7 +38,7 @@ CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that
 CI_ENVIRONMENT_SLUG?=skampi##The simplified version of the environment name, suitable for inclusion in DNS, URLs, Kubernetes labels, and so on. Available if environment:name is set.
 $(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gitlab_values.yaml)
 
-CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
+CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-oso-scripting.ingress.nginx=$(USE_NGINX) \
 	--set ska-ser-skuid.ingress.nginx=$(USE_NGINX) \
 	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \

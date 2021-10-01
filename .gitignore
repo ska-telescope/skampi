@@ -1,3 +1,4 @@
+*.out
 my_local_values.yaml
 **/.DS_Store
 gitlab_values.yaml

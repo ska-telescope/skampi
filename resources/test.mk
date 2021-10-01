@@ -11,7 +11,6 @@ TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s
 # and then runs the requested make target in the container.
 # capture the output of the test in a build folder inside the container
 #
-TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 MARK ?= fast## this variable allow the mark parameter in the pytest
 FILE ?= ##this variable allow to execution of a single file in the pytest
 SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target

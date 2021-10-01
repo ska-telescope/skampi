@@ -74,7 +74,7 @@ low_cleanup:
 low_quarantine_uninstall:
   stage: clean
   extends:
-    #  - .tags_default
+      - .tags_default
     - .uninstall_definition
   variables:
     HELM_RELEASE: "test-low-q"
@@ -90,7 +90,7 @@ low_quarantine_deploy:
   stage: deploy
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .deploy_definition
   variables:
     HELM_RELEASE: "test-low-q"
@@ -106,7 +106,7 @@ low_quarantine_cleanup:
   stage: cleanup
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .deploy_definition
   variables:
     HELM_RELEASE: "test-low-q"
@@ -179,7 +179,7 @@ low_on_demand_clean:
   extends:
     - .dry_run
     - .on_demand_definition
-  #  - .tags_default
+    - .tags_default
   #  - .uninstall_scripts
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
@@ -198,8 +198,8 @@ low_on_demand_deploy:
   stage: cleanup
   extends:
     - .dry_run
-    - on_demand_definition
-  #  - .tags_default
+    - .on_demand_definition
+    - .tags_default
   #  - .deploy_scripts
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
@@ -252,7 +252,7 @@ low_test:
   stage: test
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .test_definition
   #  - .xray_upload
   variables:
@@ -277,7 +277,7 @@ low_test_quarantine:
   stage: test
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .test_definition
   #  - .xray_upload
   variables:
@@ -327,7 +327,7 @@ low_on_demand_test:
   stage: test
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .test_definition
   variables:
     DEPLOYMENT_CONFIGURATION: "ska-low"
@@ -403,7 +403,7 @@ low_clean_staging:
   stage: clean_staging
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .uninstall_scripts
   variables:
     HELM_RELEASE: "staging-low"
@@ -438,7 +438,7 @@ low_deploy_staging:
   stage: deploy_staging
   extends:
     - .dry_run
-  #  - .tags_default
+    - .tags_default
   #  - .deploy_definition
   variables:
     HELM_REPO_NAME: "skatelescope"

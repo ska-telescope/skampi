@@ -102,19 +102,6 @@ namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
 	fi
 
-delete_namespace: ## delete the kubernetes namespace
-	@if [ "default" = "$(KUBE_NAMESPACE)" ] || [ "kube-system" = "$(KUBE_NAMESPACE)" ] ; then \
-	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
-	exit 1; \
-	else \
-		if [ -n "$$(kubectl get ns | grep "$(KUBE_NAMESPACE)")" ]; then \
-			echo "Deleting namespace $(KUBE_NAMESPACE)" \
-			kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
-		else \
-			echo "Namespace $(KUBE_NAMESPACE) doesn't exist"; \
-		fi \
-	fi
-
 delete_sdp_namespace: ## delete the kubernetes SDP namespace
 	@if [ "default" = "$(KUBE_NAMESPACE_SDP)" ] || [ "kube-system" = "$(KUBE_NAMESPACE_SDP)" ] ; then \
 	echo "You cannot delete Namespace: $(KUBE_NAMESPACE_SDP)"; \

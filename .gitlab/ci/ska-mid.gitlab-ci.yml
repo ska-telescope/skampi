@@ -76,6 +76,7 @@ mid_quarantine_uninstall:
   stage: cleanup
   extends:
   #  - .uninstall_definition
+    - .dry_run
     - .tags_default
   #  - .uninstall_definition
   variables:

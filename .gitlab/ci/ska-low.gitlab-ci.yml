@@ -198,7 +198,7 @@ low_on_demand_deploy:
   stage: cleanup
   extends:
     - .dry_run
-    - on_demand_definition
+    - .on_demand_definition
   #  - .tags_default
   #  - .deploy_scripts
   variables:

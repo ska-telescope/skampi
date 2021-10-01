@@ -217,7 +217,6 @@ psi_low_on_demand_clean:
   stage: cleanup
   extends:
     - .dry_run
-    - on_demand_definition
   #  - .uninstall_scripts
   # tags: *tags_psi_low
   variables:
@@ -234,7 +233,7 @@ psi_low_on_demand_deploy:
   stage: deploy
   extends:
     - .dry_run
-    - on_demand_definition
+    - .on_demand_definition
   #  - .deploy_scripts
   # tags: *tags_psi_low
   variables:

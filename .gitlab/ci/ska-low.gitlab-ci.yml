@@ -38,12 +38,27 @@ low_uninstall:
     name: "test-low"
     action: stop
 
+low_deploy:
+  stage: deploy
+  extends:
+    - .dry_run
+  #- .tags_default
+  #- .uninstall_definition
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+  environment:
+    name: "test-low"
+    action: stop
+
 low_quarantine_uninstall:
   stage: cleanup
   extends:
     - .dry_run
   #  - .tags_default
-  #  - .uninstall_definition
+  #  - .deploy_definition
   variables:
     HELM_RELEASE: "test-low-q"
     KUBE_NAMESPACE: "ci-quarantine-low"
@@ -55,11 +70,44 @@ low_quarantine_uninstall:
     action: stop
   when: manual
 
+low_quarantine_deploy:
+  stage: deploy
+  extends:
+    - .dry_run
+  #  - .tags_default
+  #  - .deploy_definition
+  variables:
+    HELM_RELEASE: "test-low-q"
+    KUBE_NAMESPACE: "ci-quarantine-low"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+  environment:
+    name: "low-quarantine"
+    action: stop
+  when: manual
+
 psi_low_uninstall:
   stage: clean
   extends:
     - .dry_run
   #  - .uninstall_definition
+  #tags: *tags_psi_low
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+    KEEP_NAMESPACE: "true"
+  environment:
+    name: "psi-low-integration"
+    action: stop
+  allow_failure: true
+
+psi_low_deploy:
+  stage: deploy
+  extends:
+    - .dry_run
+  #  - .deploy_definition
   #tags: *tags_psi_low
   variables:
     HELM_RELEASE: "test-low"
@@ -94,11 +142,51 @@ low_on_demand_uninstall:
     - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: manual
 
+low_on_demand_deploy:
+  stage: cleanup
+  extends:
+    - .dry_run
+  #  - .tags_default
+  #  - .deploy_scripts
+  variables:
+    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+  environment:
+    name: "test-low/$CI_COMMIT_REF_NAME"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
+    action: stop
+  rules:
+    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
+      when: manual
+
 psi_low_on_demand_uninstall:
   stage: cleanup
   extends:
     - .dry_run
   #  - .uninstall_scripts
+  # tags: *tags_psi_low
+  variables:
+    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+  environment:
+    name: "psi-low-test/$CI_COMMIT_REF_NAME"
+    action: stop
+  rules:
+    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
+      when: manual
+
+psi_low_on_demand_deploy:
+  stage: deploy
+  extends:
+    - .dry_run
+  #  - .deploy_scripts
   # tags: *tags_psi_low
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"

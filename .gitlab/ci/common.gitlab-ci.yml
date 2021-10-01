@@ -5,6 +5,7 @@
 .dry_run:
   script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
 
 .create_k8s_creds: &create_k8s_creds
   before_script:

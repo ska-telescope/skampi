@@ -22,12 +22,12 @@
     when: always
 
 # Low specific job steps
+# testing environment (low_)
 low_uninstall:
   stage: clean
   extends:
-    - .dry_run
-  #- .tags_default
-  #- .uninstall_definition
+    #- .tags_default
+    - .uninstall_definition
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
@@ -43,7 +43,7 @@ low_deploy:
   extends:
     - .dry_run
   #- .tags_default
-  #- .uninstall_definition
+  #- .deploy_definition
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
@@ -53,12 +53,29 @@ low_deploy:
     name: "test-low"
     action: stop
 
-low_quarantine_uninstall:
+low_cleanup:
   stage: cleanup
   extends:
     - .dry_run
-  #  - .tags_default
-  #  - .deploy_definition
+  #- .tags_default
+  #- .deploy_definition
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+    KEEP_NAMESPACE: "true"
+  environment:
+    name: "test-low"
+    action: stop
+
+# quarantine testing environment (low_quarantine)
+
+low_quarantine_uninstall:
+  stage: clean
+  extends:
+    #  - .tags_default
+    - .uninstall_definition
   variables:
     HELM_RELEASE: "test-low-q"
     KUBE_NAMESPACE: "ci-quarantine-low"
@@ -68,7 +85,6 @@ low_quarantine_uninstall:
   environment:
     name: "low-quarantine"
     action: stop
-  when: manual
 
 low_quarantine_deploy:
   stage: deploy
@@ -85,6 +101,25 @@ low_quarantine_deploy:
     name: "low-quarantine"
     action: stop
   when: manual
+
+low_quarantine_cleanup:
+  stage: cleanup
+  extends:
+    - .dry_run
+  #  - .tags_default
+  #  - .deploy_definition
+  variables:
+    HELM_RELEASE: "test-low-q"
+    KUBE_NAMESPACE: "ci-quarantine-low"
+    KUBE_NAMESPACE_SDP: "ci-quarantine-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+    KEEP_NAMESPACE: "true"
+  environment:
+    name: "low-quarantine"
+    action: stop
+  when: manual
+
+# psi-low-integration environment
 
 psi_low_uninstall:
   stage: clean
@@ -120,10 +155,30 @@ psi_low_deploy:
     action: stop
   allow_failure: true
 
-low_on_demand_uninstall:
+psi_low_cleanup:
   stage: cleanup
   extends:
     - .dry_run
+  #  - .uninstall_definition
+  #tags: *tags_psi_low
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+    KEEP_NAMESPACE: "true"
+  environment:
+    name: "psi-low-integration"
+    action: stop
+  allow_failure: true
+
+# low on demand environment
+
+low_on_demand_clean:
+  stage: clean
+  extends:
+    - .dry_run
+    - .on_demand_definition
   #  - .tags_default
   #  - .uninstall_scripts
   variables:
@@ -138,14 +193,12 @@ low_on_demand_uninstall:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     action: stop
-  rules:
-    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
-      when: manual
 
 low_on_demand_deploy:
   stage: cleanup
   extends:
     - .dry_run
+    - on_demand_definition
   #  - .tags_default
   #  - .deploy_scripts
   variables:
@@ -159,14 +212,12 @@ low_on_demand_deploy:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     action: stop
-  rules:
-    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
-      when: manual
 
-psi_low_on_demand_uninstall:
+psi_low_on_demand_clean:
   stage: cleanup
   extends:
     - .dry_run
+    - on_demand_definition
   #  - .uninstall_scripts
   # tags: *tags_psi_low
   variables:
@@ -178,14 +229,12 @@ psi_low_on_demand_uninstall:
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     action: stop
-  rules:
-    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
-      when: manual
 
 psi_low_on_demand_deploy:
   stage: deploy
   extends:
     - .dry_run
+    - on_demand_definition
   #  - .deploy_scripts
   # tags: *tags_psi_low
   variables:
@@ -197,9 +246,6 @@ psi_low_on_demand_deploy:
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     action: stop
-  rules:
-    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
-      when: manual
 
 low_test:
   retry: 2
@@ -350,6 +396,8 @@ get_sizes_low:
   only:
     refs:
       - master
+
+# staging environments
 
 low_clean_staging:
   stage: clean_staging

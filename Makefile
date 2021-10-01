@@ -160,13 +160,6 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
-template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
-	helm dependency update $(UMBRELLA_CHART_PATH); \
-	helm template $(HELM_RELEASE) \
-        $(CHART_PARAMS) \
-		--values $(VALUES) \
-		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
-
 install-or-upgrade: upgrade-chart## install or upgrade the release
 
 quotas: namespace## delete and create the kubernetes namespace with quotas

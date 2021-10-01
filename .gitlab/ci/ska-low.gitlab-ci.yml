@@ -60,7 +60,7 @@ psi_low_uninstall:
   extends:
     - .dry_run
   #  - .uninstall_definition
-  tags: *tags_psi_low
+  #tags: *tags_psi_low
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"

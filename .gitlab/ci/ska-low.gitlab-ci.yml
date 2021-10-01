@@ -184,8 +184,6 @@ low_deploy_staging:
 
 low_uninstall_staging:
   stage: clean_staging
-  needs:
-    - low_deploy_staging
   extends:
     - .dry_run
     - .tags_default

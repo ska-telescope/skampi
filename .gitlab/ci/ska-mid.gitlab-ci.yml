@@ -9,6 +9,7 @@ mid_deploy:
   extends:
     - .dry_run
     - .tags_default
+    - .only_on_master
   # - .deploy_definition
   variables:
     HELM_RELEASE: "test-mid"
@@ -26,6 +27,7 @@ mid_test:
   extends:
     - .dry_run
     - .tags_default
+    - .only_on_master
   #  - .test_definition
   #  - .xray_upload
   variables:
@@ -59,6 +61,7 @@ mid_uninstall:
   extends:
     - .dry_run
     - .tags_default
+    - .only_on_master
   # - .uninstall_definition
   variables:
     HELM_RELEASE: "test-mid"

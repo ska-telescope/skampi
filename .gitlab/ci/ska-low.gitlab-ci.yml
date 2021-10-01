@@ -221,7 +221,7 @@ low_on_demand_test:
 
 psi_low_on_demand_test:
   stage: test
-  tags: *tags_psi_low
+  #tags: *tags_psi_low
   extends:
     - .dry_run
   variables:

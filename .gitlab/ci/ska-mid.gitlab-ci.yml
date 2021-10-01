@@ -7,8 +7,8 @@
 mid_uninstall:
   stage: clean
   extends:
-    - .uninstall_definition
-  #- .tags_default
+  #  - .uninstall_definition
+    - .tags_default
   # - .uninstall_definition
   variables:
     HELM_RELEASE: "test-mid"
@@ -24,7 +24,7 @@ mid_deploy:
   stage: deploy
   extends:
     - .dry_run
-  #- .tags_default
+    - .tags_default
   # - .deploy_definition
   variables:
     HELM_RELEASE: "test-mid"
@@ -40,7 +40,7 @@ mid_cleanup:
   stage: cleanup
   extends:
     - .dry_run
-  #- .tags_default
+    - .tags_default
   # - .uninstall_definition
   variables:
     HELM_RELEASE: "test-mid"
@@ -57,7 +57,6 @@ mid_cleanup:
 mid_quarantine_uninstall:
   stage: cleanup
   extends:
-    - .uninstall_definition
     - .tags_default
   #  - .uninstall_definition
   variables:
@@ -91,7 +90,7 @@ mid_quarantine_deploy:
 mid_quarantine_cleanup:
   stage: cleanup
   extends:
-    - .uninstall_definition
+  #  - .uninstall_definition
     - .tags_default
   #  - .uninstall_definition
   variables:

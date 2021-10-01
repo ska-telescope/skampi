@@ -26,8 +26,8 @@
 low_uninstall:
   stage: clean
   extends:
-    #- .tags_default
-    - .uninstall_definition
+      - .tags_default
+  #  - .uninstall_definition
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
@@ -42,7 +42,7 @@ low_deploy:
   stage: deploy
   extends:
     - .dry_run
-  #- .tags_default
+    - .tags_default
   #- .deploy_definition
   variables:
     HELM_RELEASE: "test-low"
@@ -57,7 +57,7 @@ low_cleanup:
   stage: cleanup
   extends:
     - .dry_run
-  #- .tags_default
+    - .tags_default
   #- .deploy_definition
   variables:
     HELM_RELEASE: "test-low"
@@ -75,7 +75,7 @@ low_quarantine_uninstall:
   stage: clean
   extends:
       - .tags_default
-    - .uninstall_definition
+  #  - .uninstall_definition
   variables:
     HELM_RELEASE: "test-low-q"
     KUBE_NAMESPACE: "ci-quarantine-low"

@@ -62,6 +62,9 @@ CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets for Kubernetes management
 -include .make/k8s.mk
 
+# include makefile targets for helm linting
+-include .make/helm.mk
+
 ## local custom includes
 # include makefile targets for testing
 -include resources/test.mk

@@ -1,0 +1,28 @@
+# This is a minimal deployment that is required to test the 
+# tango infrastructure and basic deployment of resources only
+# Use by running
+# make install-chart VALUES=resources/deployment_configurations/mid_tango_infrastructure.yaml
+
+minikube: true
+
+ska-tango-base:
+  vnc:
+    enabled: false
+ska-mid-cbf:
+  enabled: false
+ska-csp-lmc-mid:
+  enabled: false
+ska-sdp:
+  enabled: false
+ska-tmc-mid:
+  enabled: false
+ska-oso-scripting:
+  enabled: false
+ska-webjive:
+  enabled: false
+ska-ser-skuid:
+  enabled: false
+landingpage:
+  enabled: false
+ska-tango-archiver:
+  enabled: false

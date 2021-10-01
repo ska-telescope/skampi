@@ -5,6 +5,7 @@
 .dry_run:
   script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
 
 .on_demand_definition:
   when: manual

@@ -1,5 +1,7 @@
 # This is a minimal deployment that is required to test the 
 # tango infrastructure and basic deployment of resources only
+# Use by running
+# make install-chart VALUES=resources/deployment_configurations/mid_tango_infrastructure.yaml
 
 minikube: true
 

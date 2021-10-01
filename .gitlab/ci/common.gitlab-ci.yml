@@ -36,6 +36,17 @@
       junit: build/report.xml
     when: always
 
+.only_on_master:
+  # rules:
+  #   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION && $STRESS_TEST_DURATION != ""'
+  only:
+    refs:
+      - master
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
+
+
 .stress_test_definition: &stress_test_definition
   cache: {}
   needs: []

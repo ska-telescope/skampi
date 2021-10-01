@@ -9,7 +9,8 @@ low_deploy:
   extends:
     - .dry_run
     - .tags_default
-  #- .deploy_definition
+    - .only_on_master
+    # - .deploy_definition
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
@@ -26,8 +27,9 @@ low_test:
   extends:
     - .dry_run
     - .tags_default
-  #  - .test_definition
-  #  - .xray_upload
+    - .only_on_master
+    # - .test_definition
+    # - .xray_upload
   variables:
     MARK: "(skalow or common) and not quarantine"
     HELM_RELEASE: "test-low"
@@ -43,23 +45,16 @@ low_test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     on_stop: low_uninstall
-  # rules:
-  #   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION && $STRESS_TEST_DURATION != ""'
-  only:
-    refs:
-      - master
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
 
 low_uninstall:
   stage: cleanup
   needs:
     - low_deploy
   extends:
-      - .dry_run
-      - .tags_default
-  #  - .uninstall_definition
+    - .dry_run
+    - .tags_default
+    - .only_on_master
+    # - .uninstall_definition
   variables:
     HELM_RELEASE: "test-low"
     KUBE_NAMESPACE: "integration-low"
@@ -153,6 +148,29 @@ low_on_demand_uninstall:
 
 # staging environments
 
+low_uninstall_staging:
+  stage: clean_staging
+  extends:
+    - .dry_run
+    - .tags_default
+  #  - .uninstall_scripts
+  variables:
+    HELM_RELEASE: "staging-low"
+    KUBE_NAMESPACE: "staging-low"
+    KUBE_NAMESPACE_SDP: "staging-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+    KEEP_NAMESPACE: "true"
+  # rules:
+  #   - if: '$CI_COMMIT_TAG && $DELETE == "true"'
+  only:
+    refs:
+      - tags
+    variables:
+      - $DELETE == "true"
+  environment:
+    name: "staging-low"
+    action: stop
+
 low_deploy_staging:
   stage: deploy_staging
   extends:
@@ -181,29 +199,6 @@ low_deploy_staging:
       - tags
   # needs:
   #   - job: low_uninstall_staging
-
-low_uninstall_staging:
-  stage: clean_staging
-  extends:
-    - .dry_run
-    - .tags_default
-  #  - .uninstall_scripts
-  variables:
-    HELM_RELEASE: "staging-low"
-    KUBE_NAMESPACE: "staging-low"
-    KUBE_NAMESPACE_SDP: "staging-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    KEEP_NAMESPACE: "true"
-  # rules:
-  #   - if: '$CI_COMMIT_TAG && $DELETE == "true"'
-  only:
-    refs:
-      - tags
-    variables:
-      - $DELETE == "true"
-  environment:
-    name: "staging-low"
-    action: stop
 
 # Other
 

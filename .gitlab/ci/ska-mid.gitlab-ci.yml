@@ -9,6 +9,7 @@ mid_uninstall:
   extends:
   #  - .uninstall_definition
     - .tags_default
+    - .dry_run
   # - .uninstall_definition
   variables:
     HELM_RELEASE: "test-mid"
@@ -36,7 +37,7 @@ mid_deploy:
     name: "test"
     action: stop
 
-mid_cleanup:
+mid_uninstall:
   stage: cleanup
   extends:
     - .dry_run
@@ -53,22 +54,6 @@ mid_cleanup:
     action: stop
 
 # quarantine testing environment (mid_quarantine)
-
-mid_quarantine_uninstall:
-  stage: cleanup
-  extends:
-    - .tags_default
-  #  - .uninstall_definition
-  variables:
-    HELM_RELEASE: "test-mid-q"
-    KUBE_NAMESPACE: "ci-quarantine-mid"
-    KUBE_NAMESPACE_SDP: "ci-quarantine-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
-    KEEP_NAMESPACE: "true"
-  environment:
-    name: "mid-quarantine"
-    action: stop
-  when: manual
 
 mid_quarantine_deploy:
   stage: cleanup
@@ -87,7 +72,7 @@ mid_quarantine_deploy:
     action: stop
   when: manual
 
-mid_quarantine_cleanup:
+mid_quarantine_uninstall:
   stage: cleanup
   extends:
   #  - .uninstall_definition
@@ -106,7 +91,7 @@ mid_quarantine_cleanup:
 
 # mid on demand environment
 
-mid_on_demand_clean:
+mid_on_demand_uninstall:
   stage: clean
   extends:
     - .dry_run
@@ -306,7 +291,7 @@ mid_sdp_config_dump:
     refs:
       - master
 
-mid_clean_staging:
+mid_uninstall_staging:
   stage: clean_staging
   extends:
     - .dry_run
@@ -347,7 +332,7 @@ mid_deploy_staging:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-    on_stop: mid_clean_staging
+    on_stop: mid_uninstall_staging
   only:
     refs:
       - tags

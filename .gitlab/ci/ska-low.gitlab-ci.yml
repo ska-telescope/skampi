@@ -99,7 +99,7 @@ psi_low_on_demand_uninstall:
   extends:
     - .dry_run
   #  - .uninstall_scripts
-  tags: *tags_psi_low
+  # tags: *tags_psi_low
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"

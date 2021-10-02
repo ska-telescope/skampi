@@ -6,8 +6,8 @@
 # # testing environment (mid_)
 mid_uninstall:
   stage: clean
-  needs:
-    - mid_deploy
+  # needs:
+  #   - mid_deploy
   extends:
     - .dry_run
     - .tags_default

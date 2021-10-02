@@ -23,9 +23,11 @@
     - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
 
 .deploy_definition:
-  script:
-    - make install-or-upgrade
-    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  extends:
+    - .dry_run
+  # script:
+  #   - make install-or-upgrade
+  #   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   after_script:
     - make links
   artifacts:

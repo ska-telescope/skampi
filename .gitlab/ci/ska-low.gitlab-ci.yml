@@ -33,10 +33,10 @@ low_uninstall:
 low_deploy:
   stage: deploy
   extends:
-    - .dry_run
+    # - .dry_run
     - .low_vars
     - .only_on_master
-    # - .deploy_definition
+    - .deploy_definition
   environment:
     name: "test-low"
     on_stop: low_uninstall
@@ -79,6 +79,17 @@ low_test:
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
+
+.low_deploy_test_destroy:
+# JOB THAT CREATES
+  stage: test
+  extends:
+    - .low_on_demand_vars
+  variables:
+    KUBE_NAMESPACE: "ci-skampi-$CI_JOB_ID-low"
+    KUBE_NAMESPACE_SDP: "ci-skampi-$CI_JOB_ID-low-sdp"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
+    
 
 low_on_demand_deploy:
   stage: deploy

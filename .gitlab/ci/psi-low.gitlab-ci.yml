@@ -36,7 +36,10 @@ psi_low_test:
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
-  <<: *psi_test_definition
+  #before_script:
+  # using reference as there seems to be a problem with extends
+  #- !reference [.create_k8s_creds, before_script]
+  #- !reference [.psi_test_definition,script] # This needs checking!!!!
   environment:
     name: "psi-low-integration"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -121,7 +124,7 @@ psi_low_on_demand_test:
   #before_script:
   # using reference as there seems to be a problem with extends
   #- !reference [.create_k8s_creds, before_script]
-  #<<: *psi_test_definition
+  #- !reference [.psi_test_definition,script] # This needs checking!!!!
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"

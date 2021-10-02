@@ -91,9 +91,10 @@ low_deploy_test_destroy:
   after_script:
     - !reference [.uninstall_definition, script]
   variables:
-    KUBE_NAMESPACE: "ci-skampi-$CI_JOB_ID-low"
-    KUBE_NAMESPACE_SDP: "ci-skampi-$CI_JOB_ID-low-sdp"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-low-sdp"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     
 low_on_demand_deploy:
   stage: deploy

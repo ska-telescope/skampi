@@ -80,13 +80,22 @@ mid_test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
 
+.mid_deploy_test_destroy:
+# JOB THAT CREATES
+  stage: test
+  extends:
+    - .mid_on_demand_vars
+  variables:
+    KUBE_NAMESPACE: "ci-skampi-$CI_JOB_ID-mid"
+    KUBE_NAMESPACE_SDP: "ci-skampi-$CI_JOB_ID-mid-sdp"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
+    
 mid_on_demand_deploy:
   stage: deploy
   extends:
-    - .dry_run
     - .on_demand_definition
     - .mid_on_demand_vars
-  #  - .deploy_scripts
+    - .deploy_definition
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
     kubernetes:

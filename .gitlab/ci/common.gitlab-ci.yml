@@ -96,24 +96,15 @@
       junit: build/report.xml
     when: always
 
-.uninstall_scripts:
-  script:
-    - |
-      make uninstall
-      kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-      kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-      make delete_namespace
-      make delete_sdp_namespace
-
 .uninstall_definition:
   script:
-    - echo $CI_JOB_NAME - $CI_JOB_STAGE
-  #- &uninstall_scripts |
-  #  make uninstall
-  #  kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-  #  kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-  #  make delete_namespace
-  #  make delete_sdp_namespace
+    !reference [.dry_run, script]
+  # - |
+  #   make uninstall
+  #   kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+  #   kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+  #   make delete_namespace
+  #   make delete_sdp_namespace
   only:
     refs:
       - master

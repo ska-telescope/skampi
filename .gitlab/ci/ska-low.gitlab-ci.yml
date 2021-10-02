@@ -80,13 +80,16 @@ low_test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
 
-.low_deploy_test_destroy:
+low_deploy_test_destroy:
 # JOB THAT CREATES
   stage: test
   extends:
     - .low_on_demand_vars
+    - .test_definition
   before_script:
     !reference [.deploy_definition, script]
+  after_script:
+    - !reference [.uninstall_definition, script]
   variables:
     KUBE_NAMESPACE: "ci-skampi-$CI_JOB_ID-low"
     KUBE_NAMESPACE_SDP: "ci-skampi-$CI_JOB_ID-low-sdp"

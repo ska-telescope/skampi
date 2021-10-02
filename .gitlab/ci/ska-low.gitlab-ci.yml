@@ -24,7 +24,7 @@ low_uninstall:
     action: stop
   only:
     variables: 
-      - $DELETE == true"
+      - $DELETE == "true"
   when: manual
 
 low_deploy:

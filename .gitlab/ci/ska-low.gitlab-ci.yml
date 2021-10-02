@@ -17,13 +17,10 @@
 
 low_uninstall:
   stage: clean
-  # needs:
-  #   - low_deploy
   extends:
     - .dry_run
-    - .tags_default
-    - .only_on_master
     - .low_vars
+    - .only_on_master
     # - .uninstall_definition
   environment:
     name: "test-low"
@@ -37,16 +34,9 @@ low_deploy:
   stage: deploy
   extends:
     - .dry_run
-    - .tags_default
-    - .only_on_master
     - .low_vars
+    - .only_on_master
     # - .deploy_definition
-  variables:
-    HELM_RELEASE: "test-low"
-    KUBE_NAMESPACE: "integration-low"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    KEEP_NAMESPACE: "true"
   environment:
     name: "test-low"
     on_stop: low_uninstall
@@ -56,13 +46,12 @@ low_test:
   stage: test
   extends:
     - .dry_run
-    - .tags_default
-    - .only_on_master
     - .low_vars
+    - .only_on_master
     # - .test_definition
     # - .xray_upload
   variables:
-    MARK: "(skalow or common) and not quarantine"
+    MARK: "skalow or common"
   environment:
     name: "test-low"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -70,15 +59,24 @@ low_test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     on_stop: low_uninstall
+  # rules:
+  #   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION && $STRESS_TEST_DURATION != ""'
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
 
 # low on demand environment
+
 .low_on_demand_vars:
+  extends:
+    - .tags_default
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
 
@@ -87,7 +85,6 @@ low_on_demand_deploy:
   extends:
     - .dry_run
     - .on_demand_definition
-    - .tags_default
     - .low_on_demand_vars
   #  - .deploy_scripts
   environment:
@@ -101,12 +98,10 @@ low_on_demand_test:
   stage: test
   extends:
     - .dry_run
-    - .tags_default
     - .low_on_demand_vars
   #  - .test_definition
   variables:
     MARK: "skalow or common"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
   #before_script:
   # using reference as there seems to be a problem with extends
   #- !reference [.create_k8s_creds, before_script]
@@ -136,7 +131,6 @@ low_on_demand_uninstall:
   extends:
     - .dry_run
     - .on_demand_definition
-    - .tags_default
     - .low_on_demand_vars
   #  - .uninstall_scripts
   variables:

@@ -4,21 +4,24 @@
 
 # Mid specific job steps
 # # testing environment (mid_)
-mid_uninstall:
-  stage: clean
-  # needs:
-  #   - mid_deploy
+.mid_vars:
   extends:
-    - .dry_run
     - .tags_default
-    - .only_on_master
-  # - .uninstall_definition
   variables:
     HELM_RELEASE: "test-mid"
     KUBE_NAMESPACE: "integration-mid"
     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true"
+    ARCHIVER_DBNAME: "integration_mid_archiver_db"
+
+mid_uninstall:
+  stage: clean
+  extends:
+    - .dry_run
+    - .only_on_master
+    - .mid_vars
+  # - .uninstall_definition
   environment:
     name: "test-mid"
     action: stop
@@ -31,15 +34,9 @@ mid_deploy:
   stage: deploy
   extends:
     - .dry_run
-    - .tags_default
+    - .mid_vars
     - .only_on_master
   # - .deploy_definition
-  variables:
-    HELM_RELEASE: "test-mid"
-    KUBE_NAMESPACE: "integration-mid"
-    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
-    KEEP_NAMESPACE: "true"
   environment:
     name: "test-mid"
     on_stop: mid_uninstall
@@ -49,18 +46,12 @@ mid_test:
   stage: test
   extends:
     - .dry_run
-    - .tags_default
+    - .mid_vars
     - .only_on_master
   #  - .test_definition
   #  - .xray_upload
   variables:
-    MARK: "(skamid or common) and not quarantine"
-    HELM_RELEASE: "test-mid"
-    KUBE_NAMESPACE: "integration-mid"
-    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
-    KEEP_NAMESPACE: "true"
-    ARCHIVER_DBNAME: "integration_mid_archiver_db"
+    MARK: "skamid or common"
   environment:
     name: "test-mid"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -70,28 +61,32 @@ mid_test:
     on_stop: mid_uninstall
   # rules:
   #   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION && $STRESS_TEST_DURATION != ""'
-  only:
-    refs:
-      - master
   except:
     variables:
       - $STRESS_TEST_DURATION
 
 # mid on demand environment
 
-mid_on_demand_deploy:
-  stage: deploy
+.mid_on_demand_vars:
   extends:
-    - .dry_run
-    - .on_demand_definition
     - .tags_default
-  #  - .deploy_scripts
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+
+mid_on_demand_deploy:
+  stage: deploy
+  extends:
+    - .dry_run
+    - .on_demand_definition
+    - .mid_on_demand_vars
+  #  - .deploy_scripts
   environment:
     name: "test/$CI_COMMIT_REF_NAME"
     kubernetes:
@@ -103,17 +98,10 @@ mid_on_demand_test:
   stage: test
   extends:
     - .dry_run
-    - .tags_default
+    - .mid_on_demand_vars
   #  - .test_definition
   variables:
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
     MARK: "skamid or common"
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
   #before_script:
   # using reference as there seems to be a problem with extends
   #- !reference [.create_k8s_creds, before_script]

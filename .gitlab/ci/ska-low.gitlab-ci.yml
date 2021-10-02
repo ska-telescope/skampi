@@ -4,6 +4,15 @@
 
 # Low specific job steps
 # testing environment (low_)
+.low_vars:
+  variables:
+    HELM_RELEASE: "test-low"
+    KUBE_NAMESPACE: "integration-low"
+    KUBE_NAMESPACE_SDP: "integration-low-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+    KEEP_NAMESPACE: "true"
+    ARCHIVER_DBNAME: "integration_low_archiver_db"
+
 low_uninstall:
   stage: clean
   # needs:
@@ -12,13 +21,8 @@ low_uninstall:
     - .dry_run
     - .tags_default
     - .only_on_master
+    - .low_vars
     # - .uninstall_definition
-  variables:
-    HELM_RELEASE: "test-low"
-    KUBE_NAMESPACE: "integration-low"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    KEEP_NAMESPACE: "true"
   environment:
     name: "test-low"
     action: stop
@@ -33,6 +37,7 @@ low_deploy:
     - .dry_run
     - .tags_default
     - .only_on_master
+    - .low_vars
     # - .deploy_definition
   variables:
     HELM_RELEASE: "test-low"
@@ -51,16 +56,11 @@ low_test:
     - .dry_run
     - .tags_default
     - .only_on_master
+    - .low_vars
     # - .test_definition
     # - .xray_upload
   variables:
     MARK: "(skalow or common) and not quarantine"
-    HELM_RELEASE: "test-low"
-    KUBE_NAMESPACE: "integration-low"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    KEEP_NAMESPACE: "true"
-    ARCHIVER_DBNAME: "integration_low_archiver_db"
   environment:
     name: "test-low"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"

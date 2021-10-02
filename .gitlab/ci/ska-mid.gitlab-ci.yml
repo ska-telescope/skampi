@@ -20,7 +20,7 @@ mid_uninstall:
     DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true"
   environment:
-    name: "test"
+    name: "test-mid"
     action: stop
   only:
     variables: 
@@ -41,7 +41,7 @@ mid_deploy:
     DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true"
   environment:
-    name: "test"
+    name: "test-mid"
     on_stop: mid_uninstall
 
 mid_test:
@@ -62,7 +62,7 @@ mid_test:
     KEEP_NAMESPACE: "true"
     ARCHIVER_DBNAME: "integration_mid_archiver_db"
   environment:
-    name: "test"
+    name: "test-mid"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
@@ -225,7 +225,7 @@ get_sizes_mid:
   script:
     - make get_size_images
   environment:
-    name: "test"
+    name: "test-mid"
   only:
     refs:
       - master
@@ -269,7 +269,7 @@ mid_sdp_config_dump:
     paths:
       - sdp.config.json
   environment:
-    name: "test"
+    name: "test-mid"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly

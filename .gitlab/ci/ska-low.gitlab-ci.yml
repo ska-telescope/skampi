@@ -94,10 +94,9 @@ low_test:
 low_on_demand_deploy:
   stage: deploy
   extends:
-    - .dry_run
     - .on_demand_definition
     - .low_on_demand_vars
-  #  - .deploy_scripts
+    - .deploy_definition
   environment:
     name: "test-low/$CI_COMMIT_REF_NAME"
     kubernetes:

@@ -39,9 +39,9 @@ include:
 - local:  '/.gitlab/ci/ska-mid.gitlab-ci.yml'
 
 # Helm Charts
-- project: 'ska-telescope/templates-repository'
-  ref: master
-  file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
+# - project: 'ska-telescope/templates-repository'
+#   ref: master
+#   file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
 # .post steps
 - project: 'ska-telescope/templates-repository'
   ref: master

@@ -89,7 +89,7 @@ low_deploy_test_destroy:
   before_script:
     !reference [.deploy_definition, script]
   after_script:
-    - !reference [.uninstall_definition, script]
+    !reference [.uninstall_definition, script]
   variables:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-low"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-low-sdp"

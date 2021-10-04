@@ -64,9 +64,9 @@
 
 .test_definition:
   script:
-    !reference [.output_step_info, script]
+    - !reference [.output_step_info, script]
     # - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
-    # - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
     # - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
     # - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
     #   kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE

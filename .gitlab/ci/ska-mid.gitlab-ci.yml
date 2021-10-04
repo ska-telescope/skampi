@@ -77,7 +77,7 @@ mid_test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
 
-low_deploy_test_destroy:
+mid_deploy_test_destroy:
   stage: test
   variables:
     CONFIG: mid
@@ -86,7 +86,7 @@ low_deploy_test_destroy:
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
   extends:
-    - .low_on_demand_vars
+    - .mid_on_demand_vars
     - .deploy_test_destroy_definition
   environment:
     name: "test-$CONFIG-branch"

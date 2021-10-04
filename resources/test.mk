@@ -3,7 +3,7 @@
 CI_JOB_ID?=local
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
-IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images-tango-itango:9.3.4## docker image that will be run for testing purpose
+IMAGE_TO_TEST = artefact.skao.int/ska-tango-images-tango-itango:9.3.4## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #
@@ -36,7 +36,7 @@ PUBSUB = true
 # 3. Invoke post-deployment/Makefile
 # 4. Pipe results back through the FIFO (including make's return code)
 k8s_test_command = /bin/bash -c "\
-	mkfifo results-pipe && tar zx --warning=all && cd post-deployment && \
+	mkfifo results-pipe && tar zx --warning=all && cd tests\
         pip install -qUr test_requirements.txt && \
 	make -s SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
 		KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
@@ -56,7 +56,7 @@ k8s_test_command = /bin/bash -c "\
 		CAR_RAW_REPOSITORY_URL=$(RAW_HOST) \
 		$1; \
 	echo \$$? > build/status; pip list > build/pip_list.txt; \
-	tar zcf ../results-pipe build"
+	tar zcf results-pipe build"
 
 k8s_test_runner = $(TEST_RUNNER) -n $(KUBE_NAMESPACE)
 k8s_test_kubectl_run_args = \
@@ -72,9 +72,11 @@ k8s_test_kubectl_run_args = \
 # 3. Once it is there, we attempt to pull the results from the FIFO queue.
 #    This blocks until the testing pod script writes it (see above).
 k8s_test: ## test the application on K8s
-	rm -fr build; mkdir build
+	@rm -fr build; mkdir build
 
-	@( tar -cz post-deployment/ \
+	@echo "TESTING THE DEPLOYMENT"
+	@echo "$(k8s_test_kubectl_run_args)"
+	@( tar -cz ./ \
 	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
 	sleep 1; \

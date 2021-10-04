@@ -83,6 +83,15 @@
   after_script:
     - make links
 
+.deploy_test_destroy_definition:
+  stage: test
+  before_script:
+    !reference [.deploy_definition, script]
+  extends:
+    - .test_definition
+  after_script:
+    !reference [.uninstall_definition, script]
+
 .psi_test_template:
   script:
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars

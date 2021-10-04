@@ -81,22 +81,18 @@ low_test:
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
 
 low_deploy_test_destroy:
-# JOB THAT CREATES
   stage: test
-  extends:
-    - .low_on_demand_vars
-    - .test_definition
-  before_script:
-    !reference [.deploy_definition, script]
-  after_script:
-    !reference [.uninstall_definition, script]
   variables:
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-low-sdp"
+    CONFIG: low
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
+  extends:
+    - .low_on_demand_vars
+    - .deploy_test_destroy_definition
   environment:
-    name: "test-low-branch"
+    name: "test-$CONFIG-branch"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE

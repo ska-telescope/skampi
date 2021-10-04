@@ -136,6 +136,7 @@ uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
 upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
+	@echo "THIS IS A SKAMPI SPECIFIC MAKE TARGET"
 	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
 		echo "Installing Helm charts from current ref of git repository..."; \
 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \

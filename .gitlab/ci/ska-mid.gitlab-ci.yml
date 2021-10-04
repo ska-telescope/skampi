@@ -34,7 +34,7 @@ mid_deploy:
   extends:
     - .mid_vars
     - .only_on_master
-  # - .deploy_definition
+    - .deploy_definition
   environment:
     name: "test-mid"
     on_stop: mid_uninstall

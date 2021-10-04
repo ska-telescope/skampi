@@ -69,7 +69,7 @@
 .test_definition:
   script:
     - !reference [.output_step_info, script]
-    # - make k8s_test
+    - make k8s_test
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -88,7 +88,15 @@
     - .test_definition
   after_script:
     !reference [.uninstall_definition, script]
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+    when: always
   only:
+    - branches
     - merge_requests
 
 .psi_test_template:

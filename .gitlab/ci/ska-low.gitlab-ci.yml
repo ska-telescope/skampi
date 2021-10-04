@@ -62,32 +62,20 @@ low_test:
     variables:
       - $STRESS_TEST_DURATION
 
-# low on demand environment
-
-.low_on_demand_vars:
-  extends:
-    - .tags_default
-  variables:
-    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
-
+# low merge blocking job - must pass for pipeline success
 low_deploy_test_destroy:
   stage: test
   variables:
     CONFIG: low
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-low_archiver_db"
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
   extends:
-    - .low_on_demand_vars
+    - .tags_default
     - .deploy_test_destroy_definition
   environment:
     name: "test-$CONFIG-branch"
@@ -95,6 +83,21 @@ low_deploy_test_destroy:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     
+# low on demand environment
+
+.low_on_demand_vars:
+  extends:
+    - .tags_default
+  variables:
+    DEPLOYMENT_CONFIGURATION: "ska-low"
+    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
+
 low_on_demand_deploy:
   stage: deploy
   extends:

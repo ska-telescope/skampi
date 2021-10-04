@@ -30,8 +30,8 @@
     - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
     - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
       kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-    - bash scripts/gitlab_section.sh archiver "Archiver configuration"
-      make configure-archiver
+    # - bash scripts/gitlab_section.sh archiver "Archiver configuration"
+    #   make configure-archiver
   after_script:
     - make links
   artifacts:

@@ -18,10 +18,9 @@
 low_uninstall:
   stage: clean
   extends:
-    - .output_step_info
     - .low_vars
     - .only_on_master
-    # - .uninstall_definition
+    - .uninstall_definition
   environment:
     name: "test-low"
     action: stop
@@ -33,7 +32,6 @@ low_uninstall:
 low_deploy:
   stage: deploy
   extends:
-    # - .output_step_info
     - .low_vars
     - .only_on_master
     - .deploy_definition
@@ -45,10 +43,9 @@ low_test:
   retry: 2
   stage: test
   extends:
-    - .output_step_info
     - .low_vars
     - .only_on_master
-    # - .test_definition
+    - .test_definition
     # - .xray_upload
   variables:
     MARK: "skalow or common"

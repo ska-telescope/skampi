@@ -88,6 +88,9 @@
     - .test_definition
   after_script:
     !reference [.uninstall_definition, script]
+  only:
+    - branches
+    - merge_requests
 
 .psi_test_template:
   script:

@@ -2,7 +2,7 @@ THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/
 DISPLAY := $(THIS_HOST):0##for GUI applications
 XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
-SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-chart
+SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-skampi-chart
 
 INGRESS_HOST ?= k8s.stfc.skao.int## default ingress host
 KUBE_NAMESPACE ?= integration#namespace to be used
@@ -15,6 +15,7 @@ DEPLOYMENT_CONFIGURATION ?= ska-mid## umbrella chart to work with
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
+CHARTS ?= ska-mid
 
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
@@ -126,7 +127,7 @@ lint:  ## lint the HELM_CHART of the helm chart
 	for i in *; do helm dependency update ./$${i}; done; \
 	helm lint *
 
-install: clean namespace namespace_sdp check-archiver-dbname upgrade-chart## install the helm chart on the namespace KUBE_NAMESPACE
+install: clean namespace namespace_sdp check-archiver-dbname upgrade-skampi-chart## install the helm chart on the namespace KUBE_NAMESPACE
 
 uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 	K_DESC=$$? ; \
@@ -136,7 +137,7 @@ uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
-upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
+upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
 		echo "Installing Helm charts from current ref of git repository..."; \
 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
@@ -151,7 +152,7 @@ upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
-install-or-upgrade: upgrade-chart## install or upgrade the release
+install-or-upgrade: upgrade-skampi-chart## install or upgrade the release
 
 quotas: namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml

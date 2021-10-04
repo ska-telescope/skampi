@@ -26,8 +26,12 @@
 .deploy_definition:
   script:
     - !reference [.output_step_info, script]
-    - make install-or-upgrade
-    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+    - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
+    - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
+    - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
+      kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+    - bash scripts/gitlab_section.sh archiver "Archiver configuration"
+      make configure-archiver
   after_script:
     - make links
   artifacts:
@@ -65,12 +69,6 @@
 .test_definition:
   script:
     - !reference [.output_step_info, script]
-    # - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
-    # - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
-    - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
-      kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-    # - bash scripts/gitlab_section.sh archiver "Archiver configuration"
-    #   make configure-archiver
     # - make k8s_test
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"

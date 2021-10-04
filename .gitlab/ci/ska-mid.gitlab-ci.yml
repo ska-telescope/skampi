@@ -149,7 +149,7 @@ mid_on_demand_uninstall:
     - .output_step_info
     - .on_demand_definition
     - .tags_default
-  #  - .uninstall_scripts
+    - .uninstall_definition
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
@@ -170,7 +170,7 @@ mid_uninstall_staging:
   extends:
     - .output_step_info
     - .tags_default
-  #  - .uninstall_scripts
+    - .uninstall_definition
   variables:
     HELM_RELEASE: "staging-mid"
     KUBE_NAMESPACE: "staging-mid"

@@ -89,7 +89,6 @@
   after_script:
     !reference [.uninstall_definition, script]
   only:
-    - branches
     - merge_requests
 
 .psi_test_template:
@@ -109,13 +108,13 @@
 
 .uninstall_definition:
   script:
-    !reference [.output_step_info, script]
-  # - |
-  #   make uninstall
-  #   kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-  #   kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-  #   make delete_namespace
-  #   make delete_sdp_namespace
+    - !reference [.output_step_info, script]
+    - |
+      make uninstall
+      kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+      kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+      make delete_namespace
+      make delete_sdp_namespace
   only:
     refs:
       - master

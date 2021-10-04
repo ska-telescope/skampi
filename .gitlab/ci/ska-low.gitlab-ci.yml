@@ -149,7 +149,7 @@ low_on_demand_uninstall:
     - .output_step_info
     - .on_demand_definition
     - .low_on_demand_vars
-  #  - .uninstall_scripts
+    - .uninstall_definition
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
@@ -170,7 +170,7 @@ low_uninstall_staging:
   extends:
     - .output_step_info
     - .tags_default
-  #  - .uninstall_scripts
+    - .uninstall_definition
   variables:
     HELM_RELEASE: "staging-low"
     KUBE_NAMESPACE: "staging-low"

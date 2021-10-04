@@ -18,7 +18,7 @@
 mid_uninstall:
   stage: clean
   extends:
-    - .dry_run
+    - .output_step_info
     - .only_on_master
     - .mid_vars
   # - .uninstall_definition
@@ -33,7 +33,7 @@ mid_uninstall:
 mid_deploy:
   stage: deploy
   extends:
-    - .dry_run
+    - .output_step_info
     - .mid_vars
     - .only_on_master
   # - .deploy_definition
@@ -45,7 +45,7 @@ mid_test:
   retry: 2
   stage: test
   extends:
-    - .dry_run
+    - .output_step_info
     - .mid_vars
     - .only_on_master
   #  - .test_definition
@@ -106,7 +106,7 @@ mid_on_demand_deploy:
 mid_on_demand_test:
   stage: test
   extends:
-    - .dry_run
+    - .output_step_info
     - .mid_on_demand_vars
   #  - .test_definition
   variables:
@@ -138,7 +138,7 @@ mid_on_demand_uninstall:
   needs:
     - mid_on_demand_deploy
   extends:
-    - .dry_run
+    - .output_step_info
     - .on_demand_definition
     - .tags_default
   #  - .uninstall_scripts
@@ -160,7 +160,7 @@ mid_on_demand_uninstall:
 mid_uninstall_staging:
   stage: clean_staging
   extends:
-    - .dry_run
+    - .output_step_info
     - .tags_default
   #  - .uninstall_scripts
   variables:
@@ -183,7 +183,7 @@ mid_uninstall_staging:
 mid_deploy_staging:
   stage: deploy_staging
   extends:
-    - .dry_run
+    - .output_step_info
     - .tags_default
   #  - .deploy_definition
   variables:
@@ -214,7 +214,7 @@ mid_deploy_staging:
 get_sizes_mid:
   stage: debug
   extends:
-    - .dry_run
+    - .output_step_info
     - .tags_default
   variables:
     KUBE_NAMESPACE: "integration-mid"
@@ -230,7 +230,7 @@ get_sizes_mid:
 mid_stress_test:
   stage: test
   extends:
-    - .dry_run
+    - .output_step_info
     - .tags_default
   #  - .stress_test_definition
   variables:
@@ -254,7 +254,7 @@ mid_stress_test:
 mid_sdp_config_dump:
   stage: debug
   extends:
-    - .dry_run
+    - .output_step_info
     - .tags_default
   variables:
     KUBE_NAMESPACE: "integration-mid"

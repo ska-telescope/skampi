@@ -7,7 +7,7 @@
 psi_low_deploy:
   stage: deploy
   extends:
-    - .dry_run
+    - .output_step_info
   #  - .deploy_definition
   #tags: *tags_psi_low
   variables:
@@ -24,7 +24,7 @@ psi_low_deploy:
 psi_low_test:
   stage: test
   extends:
-    - .dry_run
+    - .output_step_info
   #  - .xray_upload
   tags: *tags_psi_low
   variables:
@@ -52,7 +52,7 @@ psi_low_uninstall:
   needs:
     - psi_low_deploy
   extends:
-    - .dry_run
+    - .output_step_info
   #  - .uninstall_definition
   #tags: *tags_psi_low
   variables:
@@ -73,7 +73,7 @@ psi_low_on_demand_uninstall:
   needs:
     - low_on_demand_deploy
   extends:
-    - .dry_run
+    - .output_step_info
   #  - .uninstall_scripts
   tags: *tags_psi_low
   variables:
@@ -89,7 +89,7 @@ psi_low_on_demand_uninstall:
 psi_low_on_demand_deploy:
   stage: deploy
   extends:
-    - .dry_run
+    - .output_step_info
     - .on_demand_definition
   #  - .deploy_scripts
   # tags: *tags_psi_low
@@ -110,7 +110,7 @@ psi_low_on_demand_test:
   stage: test
   #tags: *tags_psi_low
   extends:
-    - .dry_run
+    - .output_step_info
   variables:
     DEPLOYMENT_CONFIGURATION: "ska-low"
     MARK: "(skalow or common) and not archiver"
@@ -139,7 +139,7 @@ psi_low_on_demand_test:
 psi_low_deploy_staging:
   stage: deploy_staging
   extends:
-    - .dry_run
+    - .output_step_info
   #  - .deploy_definition
   tags: *tags_psi_low
   variables:
@@ -162,7 +162,7 @@ psi_low_deploy_staging:
 psi_low_uninstall_staging:
   stage: clean_staging
   extends:
-    - .dry_run
+    - .output_step_info
   #  - .uninstall_scripts
   tags: *tags_psi_low
   variables:

@@ -18,7 +18,7 @@
 low_uninstall:
   stage: clean
   extends:
-    - .dry_run
+    - .output_step_info
     - .low_vars
     - .only_on_master
     # - .uninstall_definition
@@ -33,7 +33,7 @@ low_uninstall:
 low_deploy:
   stage: deploy
   extends:
-    # - .dry_run
+    # - .output_step_info
     - .low_vars
     - .only_on_master
     - .deploy_definition
@@ -45,7 +45,7 @@ low_test:
   retry: 2
   stage: test
   extends:
-    - .dry_run
+    - .output_step_info
     - .low_vars
     - .only_on_master
     # - .test_definition
@@ -97,7 +97,6 @@ low_deploy_test_destroy:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
   environment:
     name: "test-low-branch"
-    # url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
@@ -118,7 +117,7 @@ low_on_demand_deploy:
 low_on_demand_test:
   stage: test
   extends:
-    - .dry_run
+    - .output_step_info
     - .low_on_demand_vars
   #  - .test_definition
   variables:
@@ -150,7 +149,7 @@ low_on_demand_uninstall:
   needs:
     - low_on_demand_deploy
   extends:
-    - .dry_run
+    - .output_step_info
     - .on_demand_definition
     - .low_on_demand_vars
   #  - .uninstall_scripts
@@ -172,7 +171,7 @@ low_on_demand_uninstall:
 low_uninstall_staging:
   stage: clean_staging
   extends:
-    - .dry_run
+    - .output_step_info
     - .tags_default
   #  - .uninstall_scripts
   variables:
@@ -195,7 +194,7 @@ low_uninstall_staging:
 low_deploy_staging:
   stage: deploy_staging
   extends:
-    - .dry_run
+    - .output_step_info
     - .tags_default
   #  - .deploy_definition
   variables:
@@ -226,7 +225,7 @@ low_deploy_staging:
 get_sizes_low:
   stage: debug
   extends:
-    - .dry_run
+    - .output_step_info
   # - .tags_default
   variables:
     KUBE_NAMESPACE: "integration-low"

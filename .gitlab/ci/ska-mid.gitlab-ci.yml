@@ -147,9 +147,9 @@ mid_on_demand_uninstall:
     - mid_on_demand_deploy
   extends:
     - .output_step_info
-    - .on_demand_definition
     - .tags_default
     - .uninstall_definition
+    - .on_demand_definition # DEFINITION MUST BE ADDED LAST
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"

@@ -116,7 +116,7 @@ low_on_demand_test:
   extends:
     - .output_step_info
     - .low_on_demand_vars
-  #  - .test_definition
+    - .test_definition
   variables:
     MARK: "skalow or common"
   #before_script:
@@ -147,9 +147,9 @@ low_on_demand_uninstall:
     - low_on_demand_deploy
   extends:
     - .output_step_info
-    - .on_demand_definition
     - .low_on_demand_vars
     - .uninstall_definition
+    - .on_demand_definition # DEFINITION MUST BE ADDED LAST
   variables:
     HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"

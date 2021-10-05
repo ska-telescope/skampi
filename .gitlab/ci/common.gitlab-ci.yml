@@ -69,7 +69,7 @@
 .test_definition:
   script:
     - !reference [.output_step_info, script]
-    - make k8s_test
+    - make test-deployment
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -96,7 +96,7 @@
       junit: build/report.xml
     when: always
   only:
-    - branches
+    # - branches
     - merge_requests
 
 .psi_test_template:

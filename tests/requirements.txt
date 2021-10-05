@@ -1,6 +1,7 @@
 -r SUT_requirements.txt
 # uncomment this if you want to install a dev skallop package from gitlab
 # --extra-index-url https://deployskallopdev:rsaigjomsv-XyU2gNji7@gitlab.com/api/v4/projects/21173098/packages/pypi/simple
+--extra-index-url https://artefact.skao.int/repository/pypi-internal/
 pytest
 pyyaml
 pytest-cov
@@ -25,6 +26,11 @@ tango-simlib>=0.9.0
 ska-tango-base
 ska-ser-log-transactions
 tabulate
-ska-ser-skallop[bit]==2.5.0
+ska-ser-skallop[bit]==2.7.3
 ska-ser-skuid
 ska-ser-logging
+
+pytest-mock
+pytest-forked
+pytest-xdist
+coverage

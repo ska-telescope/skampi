@@ -13,5 +13,5 @@
     "yaml.customTags": [
     "!reference sequence"
     ],
-    "python.pythonPath": "/usr/bin/python3"
+    "python.pythonPath": "venv/bin/python"
 }

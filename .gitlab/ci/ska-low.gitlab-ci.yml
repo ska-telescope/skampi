@@ -25,9 +25,10 @@ low_uninstall:
     name: "test-low"
     action: stop
   only:
-    variables: 
+    refs:
+      - master
+    variables:
       - $DELETE == "true"
-  when: manual
 
 low_deploy:
   stage: deploy
@@ -162,6 +163,8 @@ low_on_demand_uninstall:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     action: stop
+  only:
+    - branches
 
 # staging environments
 

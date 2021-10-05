@@ -25,9 +25,10 @@ mid_uninstall:
     name: "test-mid"
     action: stop
   only:
-    variables: 
+    refs:
+      - master
+    variables:
       - $DELETE == "true"
-  when: manual
 
 mid_deploy:
   stage: deploy

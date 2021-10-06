@@ -51,6 +51,8 @@
   except:
     variables:
       - $STRESS_TEST_DURATION
+  extends:
+    - .xray_upload
 
 .stress_test_definition:
   cache: {}
@@ -86,6 +88,7 @@
     !reference [.deploy_definition, script]
   extends:
     - .test_definition
+    - .xray_upload
   after_script:
     !reference [.uninstall_definition, script]
   artifacts:
@@ -133,7 +136,6 @@
       bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=2.1.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
       /usr/local/bin/xtp-xray-upload -f build/cucumber.json -v
       fi
-    - make links
 
 tag_commit:
   stage: release

@@ -47,7 +47,7 @@ low_test:
     - .low_vars
     - .only_on_master
     - .test_definition
-    # - .xray_upload
+    - .xray_upload
   variables:
     MARK: "skalow or common"
   environment:
@@ -78,6 +78,7 @@ low_deploy_test_destroy:
   extends:
     - .tags_default
     - .deploy_test_destroy_definition
+    - .xray_upload
   environment:
     name: "test-$CONFIG-branch"
     kubernetes:

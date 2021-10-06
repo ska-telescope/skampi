@@ -51,8 +51,6 @@
   except:
     variables:
       - $STRESS_TEST_DURATION
-  extends:
-    - .xray_upload
 
 .stress_test_definition:
   cache: {}
@@ -79,15 +77,17 @@
     reports:
       junit: build/report.xml
     when: always
-  after_script:
-    - make links
+  # after_script:
+  #   - make links
 
 .deploy_test_destroy_definition:
   stage: test
   before_script: !reference [.deploy_definition, script]
   extends:
     - .test_definition
-  after_script: !reference [.uninstall_definition, script]
+  after_script:
+    - !reference [.uninstall_definition, after_script]
+    - !reference [.xray_upload, after_script]
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -123,6 +123,13 @@
       kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
       make delete_namespace
       make delete_sdp_namespace
+  after_script:
+    - |
+      make uninstall
+      kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+      kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+      make delete_namespace
+      make delete_sdp_namespace
   # rules:
   #   - if: '$DELETE == "true" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'
 
@@ -133,7 +140,6 @@
       bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=2.1.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
       /usr/local/bin/xtp-xray-upload -f build/cucumber.json -i test-exec.json -v
       fi
-    - make links
 
 tag_commit:
   stage: release

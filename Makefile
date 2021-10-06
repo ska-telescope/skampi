@@ -59,6 +59,9 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 
 .PHONY: help
 
+# include makefile targets for interrim image building
+-include .make/oci.mk
+
 # include makefile targets for release management
 -include .make/release.mk
 # include makefile targets for Kubernetes management

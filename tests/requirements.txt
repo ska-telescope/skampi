@@ -11,24 +11,24 @@ pytest-bdd
 pytest-ordering
 pytest-timeout
 pytest-repeat
-elasticsearch
+# elasticsearch
 kubernetes
 assertpy
-mock
-importlib
-elasticsearch-dsl
-aiohttp
-aiojobs
-pytest-asyncio
-aiohttp_cors
-flake8
-tango-simlib>=0.9.0
-ska-tango-base
-ska-ser-log-transactions
-tabulate
-ska-ser-skallop[bit]==2.7.3
-ska-ser-skuid
-ska-ser-logging
+# mock
+# importlib
+# elasticsearch-dsl
+# aiohttp
+# aiojobs
+# pytest-asyncio
+# aiohttp_cors
+# flake8
+# tango-simlib>=0.9.0
+# ska-tango-base
+# ska-ser-log-transactions
+# tabulate
+# ska-ser-skallop[bit]==2.7.3
+# ska-ser-skuid
+# ska-ser-logging
 
 pytest-mock
 pytest-forked

@@ -12,10 +12,10 @@ ska-webjive:
   enabled: false
 ska-ser-skuid:
   enabled: false
-landingpage:
-  enabled: false
 ska-tango-archiver:
   enabled: false
+landingpage:
+  enabled: true
 
 # Mid specific products
 ska-mid-cbf:

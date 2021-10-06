@@ -88,7 +88,9 @@
   extends:
     - .test_definition
     - .xray_upload
-  after_script: !reference [.uninstall_definition, script]
+  after_script: 
+    - !reference [.uninstall_definition, script]
+    - !reference [.xray_upload, after_script]
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -134,6 +136,7 @@
       bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=2.1.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
       /usr/local/bin/xtp-xray-upload -f build/cucumber.json -i test-exec.json -v
       fi
+    - make links
 
 tag_commit:
   stage: release

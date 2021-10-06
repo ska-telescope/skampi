@@ -118,7 +118,7 @@ mid_on_demand_test:
   extends:
     - .output_step_info
     - .mid_on_demand_vars
-  #  - .test_definition
+    - .test_definition
   variables:
     MARK: "skamid or common"
   #before_script:

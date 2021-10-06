@@ -10,7 +10,6 @@ variables:
 # TODO!!! add chart linting
 
 stages:
-  - lint
   - build
   - clean
   - deploy
@@ -47,7 +46,7 @@ include:
     file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
   # Publish Images for testing pod
   - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/oci-image.gitlab-ci.yml"
+    file: "gitlab-ci/includes/oci-image-build.gitlab-ci.yml"
 # lint:
 # << *tags_default
 

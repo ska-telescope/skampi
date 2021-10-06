@@ -87,9 +87,7 @@
   before_script: !reference [.deploy_definition, script]
   extends:
     - .test_definition
-  after_script: 
-    - !reference [.uninstall_definition, script]
-    - !reference [.xray_upload, after_script]
+  after_script: !reference [.uninstall_definition, script]
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

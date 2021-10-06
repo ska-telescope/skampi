@@ -87,7 +87,6 @@
   before_script: !reference [.deploy_definition, script]
   extends:
     - .test_definition
-    - .xray_upload
   after_script: 
     - !reference [.uninstall_definition, script]
     - !reference [.xray_upload, after_script]

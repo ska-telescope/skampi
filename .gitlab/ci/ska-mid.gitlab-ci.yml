@@ -134,6 +134,8 @@ mid_on_demand_test:
   # rules:
   #   - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION"
   #     when: manual
+  needs:
+    - mid_on_demand_deploy
   when: manual
   only:
     refs:

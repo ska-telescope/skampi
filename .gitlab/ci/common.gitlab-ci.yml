@@ -84,13 +84,11 @@
 
 .deploy_test_destroy_definition:
   stage: test
-  before_script: 
-    - !reference [.deploy_definition, script]
+  before_script: !reference [.deploy_definition, script]
   extends:
     - .test_definition
     - .xray_upload
-  after_script:
-    - !reference [.uninstall_definition, script]
+  after_script: !reference [.uninstall_definition, script]
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

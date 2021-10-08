@@ -69,7 +69,10 @@
 .test_definition:
   script:
     - !reference [.output_step_info, script]
-    - make test-deployment
+    - make test-deployment IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4
+    - echo "############## EXTRA MAKE VARS OUTPUT"
+    - make vars
+    - echo "#####################################"
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

@@ -6,6 +6,10 @@ variables:
   CHARTS_TO_PUBLISH: ska-low ska-mid
   INGRESS_HOST: "k8s.stfc.skao.int"
   GIT_SUBMODULE_STRATEGY: recursive
+  
+  # HOPING TO OVERRIDE DEFAULTS FROM .make INCLUDES HERE:
+  IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:2.7.4
+  
 
 # TODO!!! add chart linting
 

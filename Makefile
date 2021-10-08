@@ -16,7 +16,6 @@ MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 CHARTS ?= ska-mid
-IMAGE_TO_TEST = registry.gitlab.com/ska-telescope/ska-ser-skallop/ska-ser-skallop:2.7.3
 
 
 # PSI Low Environment need PROXY values to be set

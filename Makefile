@@ -16,6 +16,8 @@ MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 CHARTS ?= ska-mid
+IMAGE_TO_TEST = registry.gitlab.com/ska-telescope/ska-ser-skallop/ska-ser-skallop:2.7.3
+
 
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
@@ -99,6 +101,9 @@ vars: ## Display variables
 	@echo "ARCHIVER_DBNAME=$(ARCHIVER_DBNAME)"
 	@echo ""
 	@echo "MARK=$(MARK)"
+	@echo ""
+	@echo "IMAGE_TO_TEST=$(IMAGE_TO_TEST)"
+	@echo "TEST_RUNNER=$(TEST_RUNNER)"
 
 namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
 	@kubectl describe namespace $(KUBE_NAMESPACE_SDP) > /dev/null 2>&1 ; \

@@ -69,7 +69,7 @@
 .test_definition:
   script:
     - !reference [.output_step_info, script]
-    # - make test-deployment
+    - make test-deployment
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

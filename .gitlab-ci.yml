@@ -46,8 +46,8 @@ include:
     ref: master
     file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
   # Publish Images for testing pod
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/oci-image-build.gitlab-ci.yml"
+  # - project: "ska-telescope/templates-repository"
+  #   file: "gitlab-ci/includes/oci-image-build.gitlab-ci.yml"
 # lint:
 # << *tags_default
 

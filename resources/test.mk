@@ -36,8 +36,8 @@ PUBSUB = true
 # 3. Invoke post-deployment/Makefile
 # 4. Pipe results back through the FIFO (including make's return code)
 k8s_test_command = /bin/bash -c "\
-	mkfifo results-pipe && tar zx --warning=all && cd tests\
-        pip install -qUr test_requirements.txt && \
+	mkfifo results-pipe && tar zx --warning=all && cd tests && \
+        pip install -qUr requirements.txt && \
 	make -s SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
 		KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
 		HELM_RELEASE=$(HELM_RELEASE) \

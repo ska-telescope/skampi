@@ -129,7 +129,7 @@ mid_uninstall:
     KEEP_NAMESPACE: "true"
   <<: *uninstall_definition
   environment:
-    name: "test"
+    name: "test-mid"
     action: stop
 
 mid_quarantine_uninstall:
@@ -278,7 +278,7 @@ mid_test:
   <<: *test_definition
   <<: *xray_upload
   environment:
-    name: "test"
+    name: "test-mid"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       namespace: $KUBE_NAMESPACE
@@ -527,7 +527,7 @@ get_sizes_mid:
   script:
     - make get_size_images
   environment:
-    name: "test"
+    name: "test-mid"
   only:
     refs:
       - master
@@ -559,7 +559,7 @@ mid_sdp_config_dump:
     paths:
     - sdp.config.json
   environment:
-    name: "test"
+    name: "test-mid"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly

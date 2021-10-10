@@ -66,7 +66,7 @@ CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets for testing
 -include resources/test.mk
 
-# include makefile targets that EDA deployment
+# include makefile targets for EDA deployment
 -include resources/archiver.mk
 
 ## The following should be standard includes
@@ -75,6 +75,10 @@ CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets for Makefile help
 -include .make/help.mk
 # include your own private variables for custom deployment configuration
+
+SKAMPI_K8S_CHART ?= ska-mid
+SKAMPI_K8S_CHARTS ?= ska-mid ska-low
+
 -include PrivateRules.mak
 vars: ## Display variables
 	@echo "SKA_K8S_TOOLS_DEPLOY_IMAGE=$(SKA_K8S_TOOLS_DEPLOY_IMAGE)"
@@ -94,159 +98,60 @@ vars: ## Display variables
 	@echo ""
 	@echo "MARK=$(MARK)"
 
-k8s: ## Which kubernetes are we connected to
-	@echo "Kubernetes cluster-info:"
-	@kubectl cluster-info
-	@echo ""
-	@echo "kubectl version:"
-	@kubectl version
-	@echo ""
-	@echo "Helm version:"
-	@$(helm_tiller_prefix) helm version
+namespace_sdp: KUBE_NAMESPACE := $(KUBE_NAMESPACE_SDP)
+namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
+	@make namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE)
 
-logs: ## POD logs for descriptor
-	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l group=example -o=name`; \
-	do echo "-------------------"; \
-	echo "Logs for $$i"; \
-	kubectl -n $(KUBE_NAMESPACE) logs $$i; \
+delete-sdp-namespace: KUBE_NAMESPACE := $(KUBE_NAMESPACE_SDP)
+delete-sdp-namespace: ## delete the kubernetes SDP namespace
+	@make delete-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+
+update-chart-versions:
+	for chart in $(SKAMPI_K8S_CHARTS); do \
+		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
+		for upd in $$(yq -r '.dependencies[].name' charts/$$chart/Chart.yaml); do \
+			echo "update-chart-versions: finding latest version for $$upd"; \
+			upd_version=$$(. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sChartVersion $$upd); \
+			echo "update-chart-versions: updating $$upd to $$upd_version"; \
+			sed -i.x -e "N;s/\(name: $$upd.*version:\).*/\1 $${upd_version}/;P;D" charts/$$chart/Chart.yaml; \
+			rm -f charts/*/Chart.yaml.x; \
+		done; \
 	done
 
 
-clean: ## clean out references to chart tgz's
-	@rm -f ./charts/*/charts/*.tgz ./charts/*/Chart.lock ./charts/*/requirements.lock
 
-namespace: ## create the kubernetes namespace
-	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
-		K_DESC=$$? ; \
-		if [ $$K_DESC -eq 0 ] ; \
-		then kubectl describe namespace $(KUBE_NAMESPACE); \
-		else kubectl create namespace $(KUBE_NAMESPACE); \
-		fi
+install: clean namespace namespace_sdp check-archiver-dbname install-chart## install the helm chart on the namespace KUBE_NAMESPACE
 
-namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
-	@kubectl describe namespace $(KUBE_NAMESPACE_SDP) > /dev/null 2>&1 ; \
-	K_DESC=$$? ; \
-	if [ $$K_DESC -eq 0 ] ; \
-	then kubectl describe namespace $(KUBE_NAMESPACE_SDP) ; \
-	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
-	fi
-
-delete_namespace: ## delete the kubernetes namespace
-	@if [ "default" = "$(KUBE_NAMESPACE)" ] || [ "kube-system" = "$(KUBE_NAMESPACE)" ] ; then \
-	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
-	exit 1; \
-	else \
-		if [ -n "$$(kubectl get ns | grep "$(KUBE_NAMESPACE)")" ]; then \
-			echo "Deleting namespace $(KUBE_NAMESPACE)" \
-			kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
-		else \
-			echo "Namespace $(KUBE_NAMESPACE) doesn't exist"; \
-		fi \
-	fi
-
-delete_sdp_namespace: ## delete the kubernetes SDP namespace
-	@if [ "default" = "$(KUBE_NAMESPACE_SDP)" ] || [ "kube-system" = "$(KUBE_NAMESPACE_SDP)" ] ; then \
-	echo "You cannot delete Namespace: $(KUBE_NAMESPACE_SDP)"; \
-	exit 1; \
-	else \
-		if [ -n "$$(kubectl get ns | grep "$(KUBE_NAMESPACE_SDP)")" ]; then \
-			echo "Deleting namespace $(KUBE_NAMESPACE_SDP)" \
-			kubectl describe namespace $(KUBE_NAMESPACE_SDP) && kubectl delete namespace $(KUBE_NAMESPACE_SDP); \
-		else \
-			echo "Namespace $(KUBE_NAMESPACE_SDP) doesn't exist"; \
-		fi \
-	fi
-
-lint_all:  lint## lint ALL of the helm chart
-
-lint:  ## lint the HELM_CHART of the helm chart
-	cd charts; \
-	for i in *; do helm dependency update ./$${i}; done; \
-	helm lint *
-
-help:  ## show this help.
-	@echo "make targets:"
-	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ": .*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-	@echo ""; echo "make vars (+defaults):"
-	@grep -E '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \\?\\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-
-install: clean namespace namespace_sdp check-archiver-dbname upgrade-chart## install the helm chart on the namespace KUBE_NAMESPACE
-
-uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-	K_DESC=$$? ; \
-	if [ $$K_DESC -eq 0 ] ; \
-	then helm uninstall $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true; \
-	fi
+uninstall: uninstall-chart ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
-upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
-	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
-		echo "Installing Helm charts from current ref of git repository..."; \
-		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
-	else \
-		echo "Deploying from artefact repository..."; \
-		helm repo add $(HELM_REPO_NAME) $(CAR_HELM_REPOSITORY_URL); \
-		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
-		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
-	fi
-	helm upgrade $(HELM_RELEASE) --install --wait \
-		$(CHART_PARAMS) \
-		--values $(VALUES) \
-		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
+# upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
+# 	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
+# 		echo "Installing Helm charts from current ref of git repository..."; \
+# 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
+# 	else \
+# 		echo "Deploying from artefact repository..."; \
+# 		helm repo add $(HELM_REPO_NAME) $(CAR_HELM_REPOSITORY_URL); \
+# 		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
+# 		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
+# 	fi
+# 	helm upgrade $(HELM_RELEASE) --install --wait \
+# 		$(CHART_PARAMS) \
+# 		--values $(VALUES) \
+# 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
-template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
-	helm dependency update $(UMBRELLA_CHART_PATH); \
-	helm template $(HELM_RELEASE) \
-        $(CHART_PARAMS) \
-		--values $(VALUES) \
-		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
+# template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
+# 	helm dependency update $(UMBRELLA_CHART_PATH); \
+# 	helm template $(HELM_RELEASE) \
+#         $(CHART_PARAMS) \
+# 		--values $(VALUES) \
+# 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
-install-or-upgrade: upgrade-chart## install or upgrade the release
+install-or-upgrade: install-chart## install or upgrade the release
 
 quotas: namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
-
-poddescribe: ## describe Pods executed from Helm chart
-	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(HELM_RELEASE) -o=name`; \
-	do echo "---------------------------------------------------"; \
-	echo "Describe for $${i}"; \
-	echo kubectl -n $(KUBE_NAMESPACE) describe $${i}; \
-	echo "---------------------------------------------------"; \
-	kubectl -n $(KUBE_NAMESPACE) describe $${i}; \
-	echo "---------------------------------------------------"; \
-	echo ""; echo ""; echo ""; \
-	done
-
-podlogs: ## show Helm chart POD logs
-	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(HELM_RELEASE) -o=name`; \
-	do \
-	echo "---------------------------------------------------"; \
-	echo "Logs for $${i}"; \
-	echo kubectl -n $(KUBE_NAMESPACE) logs $${i}; \
-	echo kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"; \
-	echo "---------------------------------------------------"; \
-	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"`; do \
-	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
-	echo "initContainer: $${j}"; echo "$${RES}"; \
-	echo "---------------------------------------------------";\
-	done; \
-	echo "Main Pod logs for $${i}"; \
-	echo "---------------------------------------------------"; \
-	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.containers[*].name}"`; do \
-	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
-	echo "Container: $${j}"; echo "$${RES}"; \
-	echo "---------------------------------------------------";\
-	done; \
-	echo "---------------------------------------------------"; \
-	echo ""; echo ""; echo ""; \
-	done
-
-get_pods: ##lists the pods deployed for a particular namespace. @param: KUBE_NAMESPACE
-	kubectl get pods -n $(KUBE_NAMESPACE)
-
-get_versions: ## lists the container images used for particular pods
-	kubectl get pods -l release=$(HELM_RELEASE) -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{range .spec.containers[*]}{.name}{'\t'}{.image}{'\n\n'}{end}{'\n'}{end}{'\n'}"
 
 links: ## attempt to create the URLs with which to access
 	@echo "############################################################################"

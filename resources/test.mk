@@ -91,15 +91,15 @@ k8s_test: ## test the application on K8s
 
 smoketest: wait## wait for pods to be ready and jobs to be completed
 
-wait:## wait for pods to be ready
-	@echo "Waiting for pods to be ready and jobs to be completed. Timeout $(SLEEPTIME)"
-	@date
-	@kubectl -n $(KUBE_NAMESPACE) get pods
-	@date
-	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=$(SLEEPTIME) $$jobs -n $(KUBE_NAMESPACE)
-	@date
-	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$$(echo $$p | cut -d';' -f3); if [ ! -z "$$v_owner_name" ]; then v_pod_name=$$(echo $$p | cut -d';' -f1); pods="$$pods $$v_pod_name"; fi; done; kubectl wait pods --all --for=condition=ready --timeout=$(SLEEPTIME) $$pods -n $(KUBE_NAMESPACE)
-	@date
+# wait:## wait for pods to be ready
+# 	@echo "Waiting for pods to be ready and jobs to be completed. Timeout $(SLEEPTIME)"
+# 	@date
+# 	@kubectl -n $(KUBE_NAMESPACE) get pods
+# 	@date
+# 	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=$(SLEEPTIME) $$jobs -n $(KUBE_NAMESPACE)
+# 	@date
+# 	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{'Ready='}{.status.conditions[?(@.type == 'Ready')].status}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"`; do v_owner_name=$$(echo $$p | cut -d';' -f3); if [ ! -z "$$v_owner_name" ]; then v_pod_name=$$(echo $$p | cut -d';' -f1); pods="$$pods $$v_pod_name"; fi; done; kubectl wait pods --all --for=condition=ready --timeout=$(SLEEPTIME) $$pods -n $(KUBE_NAMESPACE)
+# 	@date
 
 get_size_images: ## get a list of images together with their size (both local and compressed) in the namespace KUBE_NAMESPACE
 	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{range .spec.containers[*]}{.image}{'\n'}{end}{range .spec.initContainers[*]}{.image}{'\n'}{end}{end}" | sort | uniq`; do \

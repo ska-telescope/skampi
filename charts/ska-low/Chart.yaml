@@ -7,40 +7,40 @@ appVersion: 0.6.0-dev
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: ska-tango-base
-  version: 0.2.24
+  version: 0.2.30
   repository: https://artefact.skao.int/repository/helm-internal
 - name: ska-tango-util
-  version: 0.2.14
+  version: 0.2.30
   repository: https://artefact.skao.int/repository/helm-internal
-- name: ska-sdp
-  version: 0.7.0
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-sdp.enabled
-- name: ska-tmc-low
-  version: 0.3.8
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-tmc-low.enabled
-- name: ska-low-mccs
-  version: 0.8.3
-  repository: https://artefact.skao.int/repository/helm-internal
-- name: ska-webjive
-  version: 1.0.26
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-webjive.enabled
-- name: ska-ser-skuid
-  version: 0.3.0
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-ser-skuid.enabled
-- name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
-  version: 0.5.3
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-oso-scripting.enabled
-- name: landingpage
-  version: 0.1.0
-  repository: file://../landingpage
-  condition: landingpage.enabled
-- name: ska-tango-archiver
-  version: 0.1.8
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-tango-archiver.enabled
+# - name: ska-sdp
+#   version: 0.7.0
+#   repository: https://artefact.skao.int/repository/helm-internal
+#   condition: ska-sdp.enabled
+# - name: ska-tmc-low
+#   version: 0.3.8
+#   repository: https://artefact.skao.int/repository/helm-internal
+#   condition: ska-tmc-low.enabled
+# - name: ska-low-mccs
+#   version: 0.8.3
+#   repository: https://artefact.skao.int/repository/helm-internal
+# - name: ska-webjive
+#   version: 1.0.26
+#   repository: https://artefact.skao.int/repository/helm-internal
+#   condition: ska-webjive.enabled
+# - name: ska-ser-skuid
+#   version: 0.3.0
+#   repository: https://artefact.skao.int/repository/helm-internal
+#   condition: ska-ser-skuid.enabled
+# - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
+#   version: 0.5.3
+#   repository: https://artefact.skao.int/repository/helm-internal
+#   condition: ska-oso-scripting.enabled
+# - name: landingpage
+#   version: 0.1.0
+#   repository: file://../landingpage
+#   condition: landingpage.enabled
+# - name: ska-tango-archiver
+#   version: 0.1.8
+#   repository: https://artefact.skao.int/repository/helm-internal
+#   condition: ska-tango-archiver.enabled
 

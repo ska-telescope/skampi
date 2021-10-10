@@ -1,0 +1,1761 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2021-10-04T07:25:43Z"
+    generateName: databaseds-tango-base-test-
+    labels:
+      app: ska-tango-images
+      component: databaseds
+      controller-revision-hash: databaseds-tango-base-test-5994d97cb
+      domain: tango-configuration
+      function: tangodb-interface
+      intent: production
+      statefulset.kubernetes.io/pod-name: databaseds-tango-base-test-0
+    name: databaseds-tango-base-test-0
+    namespace: integration
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: databaseds-tango-base-test
+      uid: e4f82be6-f325-4ab8-9505-c23b5a6fdc84
+    resourceVersion: "21740"
+    uid: 80d49fce-cd16-4b38-bc2d-60fc6032a48f
+  spec:
+    containers:
+    - command:
+      - retry
+      - --tries=10
+      - --sleep=5
+      - --
+      - /usr/local/bin/wait-for-it.sh
+      - ska-tango-base-tangodb:3306
+      - --timeout=60
+      - --strict
+      - --
+      - /usr/local/bin/DataBaseds
+      - "2"
+      - -ORBendPoint
+      - giop:tcp::10000
+      env:
+      - name: MYSQL_HOST
+        value: ska-tango-base-tangodb:3306
+      - name: MYSQL_DATABASE
+        value: tango
+      - name: MYSQL_USER
+        value: tango
+      - name: MYSQL_PASSWORD
+        value: tango
+      image: artefact.skao.int/ska-tango-images-tango-cpp:9.3.5
+      imagePullPolicy: IfNotPresent
+      name: databaseds
+      ports:
+      - containerPort: 10000
+        name: ds
+        protocol: TCP
+      resources:
+        limits:
+          cpu: 200m
+          ephemeral-storage: 1Gi
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          ephemeral-storage: 512Mi
+          memory: 128Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-pz5qr
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostname: databaseds-tango-base-test-0
+    nodeName: cluster1-worker2
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    subdomain: databaseds-tango-base-test
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-pz5qr
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:25:43Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:27:52Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:27:52Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:25:43Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://a6dd2050c4abe5ad55186717b76637dd6cd6ed03eab5fc6cfc67f49677482d5d
+      image: artefact.skao.int/ska-tango-images-tango-cpp:9.3.5
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-cpp@sha256:30fbf7a0e9fe8b82bae6d2193eec939f6875d46b79c6988021911799537d66ac
+      lastState: {}
+      name: databaseds
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2021-10-04T07:27:51Z"
+    hostIP: 192.168.101.202
+    phase: Running
+    podIP: 10.36.0.12
+    podIPs:
+    - ip: 10.36.0.12
+    qosClass: Burstable
+    startTime: "2021-10-04T07:25:43Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+    creationTimestamp: "2021-10-04T07:25:43Z"
+    generateName: ska-tango-base-tango-rest-86646c966-
+    labels:
+      app: ska-tango-images
+      component: tango-rest
+      domain: tango-configuration
+      function: tango-http-interface
+      intent: enabling
+      pod-template-hash: 86646c966
+    name: ska-tango-base-tango-rest-86646c966-5kf4q
+    namespace: integration
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: ska-tango-base-tango-rest-86646c966
+      uid: 05333acf-7f08-419a-80d5-d338f8e2a886
+    resourceVersion: "6579"
+    uid: 79db72c4-5e7f-4ccd-834c-6bf9fe0ce47d
+  spec:
+    containers:
+    - args:
+      - -c
+      - /usr/bin/java -jar $JAVA_OPTS /usr/local/lib/tango/mtangorest.jar $(hostname)
+      command:
+      - /bin/bash
+      env:
+      - name: TANGO_HOST
+        value: databaseds-tango-base-test:10000
+      - name: JAVA_OPTS
+        value: -Xmx4G -Xshare:off -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5009
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imagePullPolicy: IfNotPresent
+      name: tango-rest
+      ports:
+      - containerPort: 8080
+        name: rest
+        protocol: TCP
+      resources:
+        limits:
+          cpu: 200m
+          ephemeral-storage: 512Mi
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          ephemeral-storage: 256Mi
+          memory: 256Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-5gfms
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    initContainers:
+    - command:
+      - retry
+      - --tries=10
+      - --sleep=5
+      - --
+      - tango_admin
+      - --check-device
+      - sys/database/2
+      env:
+      - name: TANGO_HOST
+        value: databaseds-tango-base-test:10000
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imagePullPolicy: IfNotPresent
+      name: check-dependencies-0
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-5gfms
+        readOnly: true
+    - args:
+      - -c
+      - /usr/local/bin/tango_register_device.sh TangoRestServer/$(hostname) TangoRestServer
+        $(hostname)/rest/0
+      command:
+      - /bin/bash
+      env:
+      - name: TANGO_HOST
+        value: databaseds-tango-base-test:10000
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imagePullPolicy: IfNotPresent
+      name: init-0
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-5gfms
+        readOnly: true
+    - args:
+      - -c
+      - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TANGO_DB tango://databaseds-tango-base-test:10000/sys/database/2
+      command:
+      - /bin/bash
+      env:
+      - name: TANGO_HOST
+        value: databaseds-tango-base-test:10000
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imagePullPolicy: IfNotPresent
+      name: init-1
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-5gfms
+        readOnly: true
+    - args:
+      - -c
+      - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_PORT 8080
+      command:
+      - /bin/bash
+      env:
+      - name: TANGO_HOST
+        value: databaseds-tango-base-test:10000
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imagePullPolicy: IfNotPresent
+      name: init-2
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-5gfms
+        readOnly: true
+    - args:
+      - -c
+      - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_AUTH_METHOD
+        plain
+      command:
+      - /bin/bash
+      env:
+      - name: TANGO_HOST
+        value: databaseds-tango-base-test:10000
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imagePullPolicy: IfNotPresent
+      name: init-3
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-5gfms
+        readOnly: true
+    nodeName: cluster1-worker1
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-5gfms
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:31:11Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:31:13Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:31:13Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:25:43Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://d3b3e27275006dcd70a8d1d319afa63e28d0322b0d75e0b8774625fbca335435
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-rest@sha256:20919ac0cbe893183a5145e1f9815404f46aba6b0a5bbb7ae5d11cedae917202
+      lastState: {}
+      name: tango-rest
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2021-10-04T07:31:12Z"
+    hostIP: 192.168.101.201
+    initContainerStatuses:
+    - containerID: docker://d471194d5a9cb62326dd73c22059f153d644540f3a181e6d6e2ba88b1547e2c7
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-rest@sha256:20919ac0cbe893183a5145e1f9815404f46aba6b0a5bbb7ae5d11cedae917202
+      lastState: {}
+      name: check-dependencies-0
+      ready: true
+      restartCount: 2
+      state:
+        terminated:
+          containerID: docker://d471194d5a9cb62326dd73c22059f153d644540f3a181e6d6e2ba88b1547e2c7
+          exitCode: 0
+          finishedAt: "2021-10-04T07:31:07Z"
+          reason: Completed
+          startedAt: "2021-10-04T07:30:42Z"
+    - containerID: docker://167b2aa05494a7af208459da4725fcc62b2682aa962b86d3212d16a5467eb2ef
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-rest@sha256:20919ac0cbe893183a5145e1f9815404f46aba6b0a5bbb7ae5d11cedae917202
+      lastState: {}
+      name: init-0
+      ready: true
+      restartCount: 0
+      state:
+        terminated:
+          containerID: docker://167b2aa05494a7af208459da4725fcc62b2682aa962b86d3212d16a5467eb2ef
+          exitCode: 0
+          finishedAt: "2021-10-04T07:31:08Z"
+          reason: Completed
+          startedAt: "2021-10-04T07:31:08Z"
+    - containerID: docker://0d57876d1e2209d6a94064827d9b3bdf521d1b73b661362432012f9565b05f27
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-rest@sha256:20919ac0cbe893183a5145e1f9815404f46aba6b0a5bbb7ae5d11cedae917202
+      lastState: {}
+      name: init-1
+      ready: true
+      restartCount: 0
+      state:
+        terminated:
+          containerID: docker://0d57876d1e2209d6a94064827d9b3bdf521d1b73b661362432012f9565b05f27
+          exitCode: 0
+          finishedAt: "2021-10-04T07:31:09Z"
+          reason: Completed
+          startedAt: "2021-10-04T07:31:09Z"
+    - containerID: docker://bc0906b4d0011aa3e7dfee26e404abfdba4f5d523716840e5139256d45e4c9c0
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-rest@sha256:20919ac0cbe893183a5145e1f9815404f46aba6b0a5bbb7ae5d11cedae917202
+      lastState: {}
+      name: init-2
+      ready: true
+      restartCount: 0
+      state:
+        terminated:
+          containerID: docker://bc0906b4d0011aa3e7dfee26e404abfdba4f5d523716840e5139256d45e4c9c0
+          exitCode: 0
+          finishedAt: "2021-10-04T07:31:10Z"
+          reason: Completed
+          startedAt: "2021-10-04T07:31:10Z"
+    - containerID: docker://98d3a0f0a3e41643d0a8eac829c202d053822be80bb33d2697c707073413b3be
+      image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-rest@sha256:20919ac0cbe893183a5145e1f9815404f46aba6b0a5bbb7ae5d11cedae917202
+      lastState: {}
+      name: init-3
+      ready: true
+      restartCount: 0
+      state:
+        terminated:
+          containerID: docker://98d3a0f0a3e41643d0a8eac829c202d053822be80bb33d2697c707073413b3be
+          exitCode: 0
+          finishedAt: "2021-10-04T07:31:11Z"
+          reason: Completed
+          startedAt: "2021-10-04T07:31:11Z"
+    phase: Running
+    podIP: 10.44.0.10
+    podIPs:
+    - ip: 10.44.0.10
+    qosClass: Burstable
+    startTime: "2021-10-04T07:25:43Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+    creationTimestamp: "2021-10-04T07:25:43Z"
+    generateName: ska-tango-base-tangodb-
+    labels:
+      app: ska-tango-images
+      component: tangodb
+      controller-revision-hash: ska-tango-base-tangodb-cb65f4f96
+      domain: tango-configuration
+      function: tango-device-configuration
+      intent: production
+      statefulset.kubernetes.io/pod-name: ska-tango-base-tangodb-0
+    name: ska-tango-base-tangodb-0
+    namespace: integration
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: ska-tango-base-tangodb
+      uid: 853e6168-1d84-4804-8a8c-d3dadfd8fd90
+    resourceVersion: "21736"
+    uid: 734ed875-38d5-4f2f-8027-67e97239b15a
+  spec:
+    containers:
+    - env:
+      - name: MYSQL_ROOT_PASSWORD
+        value: secret
+      - name: MYSQL_DATABASE
+        value: tango
+      - name: MYSQL_USER
+        value: tango
+      - name: MYSQL_PASSWORD
+        value: tango
+      - name: MYSQL_ALLOW_EMPTY_PASSWORD
+        value: "1"
+      image: artefact.skao.int/ska-tango-images-tango-db:10.4.11
+      imagePullPolicy: IfNotPresent
+      name: tangodb
+      ports:
+      - containerPort: 3306
+        name: mysql
+        protocol: TCP
+      resources:
+        limits:
+          cpu: 200m
+          ephemeral-storage: 2Gi
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          ephemeral-storage: 1Gi
+          memory: 256Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-sn7rg
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostname: ska-tango-base-tangodb-0
+    nodeName: cluster1-worker2
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    subdomain: ska-tango-base-tangodb
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-sn7rg
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:25:43Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:30:26Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:30:26Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:25:43Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://dcb54753aadc872e902c9c9f137f5589fc55a1a5b9f6075ae4a4e5785e8dc205
+      image: artefact.skao.int/ska-tango-images-tango-db:10.4.11
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-db@sha256:e02751bb98ffd4e9d5cf39878a5c52da9cbe02255c3a7c48c1518c25d99fd7b8
+      lastState: {}
+      name: tangodb
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2021-10-04T07:30:25Z"
+    hostIP: 192.168.101.202
+    phase: Running
+    podIP: 10.36.0.14
+    podIPs:
+    - ip: 10.36.0.14
+    qosClass: Burstable
+    startTime: "2021-10-04T07:25:43Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+    creationTimestamp: "2021-10-04T07:25:43Z"
+    generateName: tangotest-test-
+    labels:
+      app: ska-tango-images
+      component: tangotest-test
+      controller-revision-hash: tangotest-test-775fb8bd4d
+      domain: tango-base
+      function: tango-test
+      statefulset.kubernetes.io/pod-name: tangotest-test-0
+      subsystem: ska-tango-base
+    name: tangotest-test-0
+    namespace: integration
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: tangotest-test
+      uid: 84fbe6d6-4e69-4b2e-bca5-73bd8e51d477
+    resourceVersion: "21722"
+    uid: 30c8765a-6456-476d-a245-4ecbe2fa2184
+  spec:
+    containers:
+    - command:
+      - retry
+      - --sleep=1
+      - --tries=100
+      - --
+      - /usr/local/bin/TangoTest
+      - test
+      env:
+      - name: TANGO_HOST
+        value: databaseds-tango-base-test:10000
+      image: artefact.skao.int/ska-tango-images-tango-java:9.3.4
+      imagePullPolicy: IfNotPresent
+      name: device-server
+      resources:
+        limits:
+          cpu: 500m
+          ephemeral-storage: 1Gi
+          memory: 512Mi
+        requests:
+          cpu: 200m
+          ephemeral-storage: 1Gi
+          memory: 256Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: data
+        name: configuration
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-c9bvc
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostname: tangotest-test-0
+    initContainers:
+    - args:
+      - kubectl wait job --for=condition=complete tangotest-config --timeout=300s
+      command:
+      - sh
+      - -c
+      image: bitnami/kubectl:latest
+      imagePullPolicy: IfNotPresent
+      name: wait-for-configuration
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-c9bvc
+        readOnly: true
+    - command:
+      - retry
+      - --sleep=1
+      - --tries=100
+      - --
+      - tango_admin
+      - --ping-device
+      - sys/database/2
+      env:
+      - name: TANGO_HOST
+        value: databaseds-tango-base-test:10000
+      image: artefact.skao.int/ska-tango-images-tango-dsconfig:1.5.1
+      imagePullPolicy: IfNotPresent
+      name: check-dependencies-0
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-c9bvc
+        readOnly: true
+    nodeName: cluster1-worker2
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: tangotest-sa-test
+    serviceAccountName: tangotest-sa-test
+    subdomain: tangotest-test
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: tangotest-dsconfig-json
+      name: configuration
+    - name: kube-api-access-c9bvc
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:32:43Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:35:41Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:35:41Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T07:25:43Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://3bdc6ae9fa1e70708e5319a62f0dbce582d0d13ed5353fdc3fb8d2986f4f58b3
+      image: artefact.skao.int/ska-tango-images-tango-java:9.3.4
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-java@sha256:7397ef72140ede0fcde4a18031714d1f285d1e981c20edccc86359797cc59147
+      lastState: {}
+      name: device-server
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2021-10-04T07:35:38Z"
+    hostIP: 192.168.101.202
+    initContainerStatuses:
+    - containerID: docker://a62b4f6e5be10743f2da7c3a4838447bd377076e49311d1bc0472a51aff165a6
+      image: bitnami/kubectl:latest
+      imageID: docker-pullable://bitnami/kubectl@sha256:9b896c014cfe6f01ce349db4237b64dc194857817584c109d70542dfe29a6b53
+      lastState: {}
+      name: wait-for-configuration
+      ready: true
+      restartCount: 0
+      state:
+        terminated:
+          containerID: docker://a62b4f6e5be10743f2da7c3a4838447bd377076e49311d1bc0472a51aff165a6
+          exitCode: 0
+          finishedAt: "2021-10-04T07:31:07Z"
+          reason: Completed
+          startedAt: "2021-10-04T07:28:19Z"
+    - containerID: docker://f1a49118d3e09b5fa8523084911e1fd4e5a643fb011b2c7ef563957f7689ad3a
+      image: artefact.skao.int/ska-tango-images-tango-dsconfig:1.5.1
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-dsconfig@sha256:fa747804d569e596c693a4d6b7a32cc9ad2d30e01676e948aa9200e19d4f3065
+      lastState: {}
+      name: check-dependencies-0
+      ready: true
+      restartCount: 0
+      state:
+        terminated:
+          containerID: docker://f1a49118d3e09b5fa8523084911e1fd4e5a643fb011b2c7ef563957f7689ad3a
+          exitCode: 0
+          finishedAt: "2021-10-04T07:32:42Z"
+          reason: Completed
+          startedAt: "2021-10-04T07:32:41Z"
+    phase: Running
+    podIP: 10.36.0.13
+    podIPs:
+    - ip: 10.36.0.13
+    qosClass: Burstable
+    startTime: "2021-10-04T07:25:43Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2021-10-04T20:16:03Z"
+    labels:
+      run: test-makefile-runner-local
+    name: test-makefile-runner-local
+    namespace: integration
+    resourceVersion: "46787"
+    uid: 14fc7e83-67af-4e26-a2e9-2c9841a490c1
+  spec:
+    containers:
+    - args:
+      - /bin/bash
+      - -c
+      - ' mkfifo results-pipe && tar zx --warning=all && pip install -qUr tests/test_requirements.txt
+        && make -s SKUID_URL=ska-ser-skuid-test-svc.integration.svc.cluster.local:9870
+        KUBE_NAMESPACE=integration HELM_RELEASE=test TANGO_HOST=databaseds-tango-base-test:10000
+        CI_JOB_TOKEN= MARK=''all'' COUNT=1 FILE='''' SKA_TELESCOPE=''SKA-Mid'' CENTRALNODE_FQDN=''ska_mid/tm_central/central_node''
+        SUBARRAYNODE_FQDN_PREFIX=''ska_mid/tm_subarray_node'' OET_READ_VIA_PUBSUB=true
+        JIRA_AUTH= CAR_RAW_USERNAME= CAR_RAW_PASSWORD= CAR_RAW_REPOSITORY_URL= ; echo
+        $? > build/status; pip list > build/pip_list.txt; tar zcf results-pipe build'
+      env:
+      - name: INGRESS_HOST
+        value: 192.168.64.16
+      image: artefact.skao.int/ska-tango-images-tango-itango:9.3.4
+      imagePullPolicy: IfNotPresent
+      name: test-makefile-runner-local
+      resources: {}
+      stdin: true
+      stdinOnce: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-bxl2h
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: cluster1-worker2
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Never
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-bxl2h
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T20:16:03Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T20:16:05Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T20:16:05Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-04T20:16:03Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://1231f0b6e9349ebfee0f208d5d2305d4da12e4fa37fc35818ad5f0dbe2fe8c60
+      image: artefact.skao.int/ska-tango-images-tango-itango:9.3.4
+      imageID: docker-pullable://artefact.skao.int/ska-tango-images-tango-itango@sha256:9bae196a702e3fc941367d93fda64c91590d38f7490fa0265c75dd4f1acea838
+      lastState: {}
+      name: test-makefile-runner-local
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2021-10-04T20:16:04Z"
+    hostIP: 192.168.101.202
+    phase: Running
+    podIP: 10.36.0.15
+    podIPs:
+    - ip: 10.36.0.15
+    qosClass: BestEffort
+    startTime: "2021-10-04T20:16:03Z"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+      meta.helm.sh/release-name: test
+      meta.helm.sh/release-namespace: integration
+    creationTimestamp: "2021-10-04T07:25:42Z"
+    labels:
+      app: ska-tango-images
+      app.kubernetes.io/managed-by: Helm
+      component: databaseds
+      domain: tango-configuration
+      function: tangodb-interface
+      intent: production
+    name: databaseds-tango-base-test
+    namespace: integration
+    resourceVersion: "5970"
+    uid: 1bbb98d5-cb75-481e-b7f0-848e58cf2aa5
+  spec:
+    clusterIP: 10.108.161.164
+    clusterIPs:
+    - 10.108.161.164
+    externalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: ds
+      nodePort: 31586
+      port: 10000
+      protocol: TCP
+      targetPort: 10000
+    selector:
+      app: ska-tango-images
+      component: databaseds
+      domain: tango-configuration
+      function: tangodb-interface
+      intent: production
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: test
+      meta.helm.sh/release-namespace: integration
+    creationTimestamp: "2021-10-04T07:25:42Z"
+    labels:
+      app: ska-tango-images
+      app.kubernetes.io/managed-by: Helm
+      component: tango-rest
+      domain: tango-configuration
+      function: tango-http-interface
+      intent: enabling
+    name: ska-tango-base-tango-rest
+    namespace: integration
+    resourceVersion: "5976"
+    uid: 69f68a02-f005-4214-888f-a2576b945d9b
+  spec:
+    clusterIP: 10.107.16.9
+    clusterIPs:
+    - 10.107.16.9
+    externalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: rest
+      nodePort: 32682
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: ska-tango-images
+      component: tango-rest
+      domain: tango-configuration
+      function: tango-http-interface
+      intent: enabling
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+      meta.helm.sh/release-name: test
+      meta.helm.sh/release-namespace: integration
+    creationTimestamp: "2021-10-04T07:25:42Z"
+    labels:
+      app: ska-tango-images
+      app.kubernetes.io/managed-by: Helm
+      component: tangodb
+      domain: tango-configuration
+      function: tango-device-configuration
+      intent: production
+    name: ska-tango-base-tangodb
+    namespace: integration
+    resourceVersion: "5980"
+    uid: 6ec457bf-0d27-41a8-bd73-b08e0b7f125e
+  spec:
+    clusterIP: 10.99.22.248
+    clusterIPs:
+    - 10.99.22.248
+    externalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: mysql
+      nodePort: 32178
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+    selector:
+      app: ska-tango-images
+      component: tangodb
+      domain: tango-configuration
+      function: tango-device-configuration
+      intent: production
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+      meta.helm.sh/release-name: test
+      meta.helm.sh/release-namespace: integration
+    creationTimestamp: "2021-10-04T07:25:42Z"
+    labels:
+      app: ska-tango-images
+      app.kubernetes.io/managed-by: Helm
+      component: tangotest-test
+      domain: tango-base
+      function: tango-test
+      subsystem: ska-tango-base
+    name: tangotest-test
+    namespace: integration
+    resourceVersion: "5964"
+    uid: a479dd53-dbe5-48a5-b7fa-651b9f8cf6aa
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    selector:
+      component: tangotest-test
+      subsystem: ska-tango-base
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+      deployment.kubernetes.io/revision: "1"
+      meta.helm.sh/release-name: test
+      meta.helm.sh/release-namespace: integration
+    creationTimestamp: "2021-10-04T07:25:42Z"
+    generation: 1
+    labels:
+      app: ska-tango-images
+      app.kubernetes.io/managed-by: Helm
+      component: tango-rest
+      domain: tango-configuration
+      function: tango-http-interface
+      intent: enabling
+    name: ska-tango-base-tango-rest
+    namespace: integration
+    resourceVersion: "6583"
+    uid: ffe88b20-3734-4b80-93aa-d46b6a9cd4b3
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: ska-tango-images
+        component: tango-rest
+        domain: tango-configuration
+        function: tango-http-interface
+        intent: enabling
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          app.gitlab.com/app: skampi
+          app.gitlab.com/env: skampi
+        creationTimestamp: null
+        labels:
+          app: ska-tango-images
+          component: tango-rest
+          domain: tango-configuration
+          function: tango-http-interface
+          intent: enabling
+      spec:
+        containers:
+        - args:
+          - -c
+          - /usr/bin/java -jar $JAVA_OPTS /usr/local/lib/tango/mtangorest.jar $(hostname)
+          command:
+          - /bin/bash
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          - name: JAVA_OPTS
+            value: -Xmx4G -Xshare:off -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5009
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: tango-rest
+          ports:
+          - containerPort: 8080
+            name: rest
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              ephemeral-storage: 512Mi
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 256Mi
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - command:
+          - retry
+          - --tries=10
+          - --sleep=5
+          - --
+          - tango_admin
+          - --check-device
+          - sys/database/2
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: check-dependencies-0
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - args:
+          - -c
+          - /usr/local/bin/tango_register_device.sh TangoRestServer/$(hostname) TangoRestServer
+            $(hostname)/rest/0
+          command:
+          - /bin/bash
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: init-0
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - args:
+          - -c
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TANGO_DB
+            tango://databaseds-tango-base-test:10000/sys/database/2
+          command:
+          - /bin/bash
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: init-1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - args:
+          - -c
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_PORT
+            8080
+          command:
+          - /bin/bash
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: init-2
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - args:
+          - -c
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_AUTH_METHOD
+            plain
+          command:
+          - /bin/bash
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: init-3
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2021-10-04T07:31:13Z"
+      lastUpdateTime: "2021-10-04T07:31:13Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2021-10-04T07:25:43Z"
+      lastUpdateTime: "2021-10-04T07:31:13Z"
+      message: ReplicaSet "ska-tango-base-tango-rest-86646c966" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+      meta.helm.sh/release-name: test
+      meta.helm.sh/release-namespace: integration
+    creationTimestamp: "2021-10-04T07:25:42Z"
+    generation: 1
+    labels:
+      app: ska-tango-images
+      component: tango-rest
+      domain: tango-configuration
+      function: tango-http-interface
+      intent: enabling
+      pod-template-hash: 86646c966
+    name: ska-tango-base-tango-rest-86646c966
+    namespace: integration
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: ska-tango-base-tango-rest
+      uid: ffe88b20-3734-4b80-93aa-d46b6a9cd4b3
+    resourceVersion: "6582"
+    uid: 05333acf-7f08-419a-80d5-d338f8e2a886
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: ska-tango-images
+        component: tango-rest
+        domain: tango-configuration
+        function: tango-http-interface
+        intent: enabling
+        pod-template-hash: 86646c966
+    template:
+      metadata:
+        annotations:
+          app.gitlab.com/app: skampi
+          app.gitlab.com/env: skampi
+        creationTimestamp: null
+        labels:
+          app: ska-tango-images
+          component: tango-rest
+          domain: tango-configuration
+          function: tango-http-interface
+          intent: enabling
+          pod-template-hash: 86646c966
+      spec:
+        containers:
+        - args:
+          - -c
+          - /usr/bin/java -jar $JAVA_OPTS /usr/local/lib/tango/mtangorest.jar $(hostname)
+          command:
+          - /bin/bash
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          - name: JAVA_OPTS
+            value: -Xmx4G -Xshare:off -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5009
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: tango-rest
+          ports:
+          - containerPort: 8080
+            name: rest
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              ephemeral-storage: 512Mi
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 256Mi
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - command:
+          - retry
+          - --tries=10
+          - --sleep=5
+          - --
+          - tango_admin
+          - --check-device
+          - sys/database/2
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: check-dependencies-0
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - args:
+          - -c
+          - /usr/local/bin/tango_register_device.sh TangoRestServer/$(hostname) TangoRestServer
+            $(hostname)/rest/0
+          command:
+          - /bin/bash
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: init-0
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - args:
+          - -c
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TANGO_DB
+            tango://databaseds-tango-base-test:10000/sys/database/2
+          command:
+          - /bin/bash
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: init-1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - args:
+          - -c
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_PORT
+            8080
+          command:
+          - /bin/bash
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: init-2
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - args:
+          - -c
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_AUTH_METHOD
+            plain
+          command:
+          - /bin/bash
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-rest:1.14.2
+          imagePullPolicy: IfNotPresent
+          name: init-3
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+      meta.helm.sh/release-name: test
+      meta.helm.sh/release-namespace: integration
+    creationTimestamp: "2021-10-04T07:25:42Z"
+    generation: 1
+    labels:
+      app: ska-tango-images
+      app.kubernetes.io/managed-by: Helm
+      component: databaseds
+      domain: tango-configuration
+      function: tangodb-interface
+      intent: production
+    name: databaseds-tango-base-test
+    namespace: integration
+    resourceVersion: "21742"
+    uid: e4f82be6-f325-4ab8-9505-c23b5a6fdc84
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: ska-tango-images
+        component: databaseds
+        domain: tango-configuration
+        function: tangodb-interface
+        intent: production
+    serviceName: databaseds-tango-base-test
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ska-tango-images
+          component: databaseds
+          domain: tango-configuration
+          function: tangodb-interface
+          intent: production
+      spec:
+        containers:
+        - command:
+          - retry
+          - --tries=10
+          - --sleep=5
+          - --
+          - /usr/local/bin/wait-for-it.sh
+          - ska-tango-base-tangodb:3306
+          - --timeout=60
+          - --strict
+          - --
+          - /usr/local/bin/DataBaseds
+          - "2"
+          - -ORBendPoint
+          - giop:tcp::10000
+          env:
+          - name: MYSQL_HOST
+            value: ska-tango-base-tangodb:3306
+          - name: MYSQL_DATABASE
+            value: tango
+          - name: MYSQL_USER
+            value: tango
+          - name: MYSQL_PASSWORD
+            value: tango
+          image: artefact.skao.int/ska-tango-images-tango-cpp:9.3.5
+          imagePullPolicy: IfNotPresent
+          name: databaseds
+          ports:
+          - containerPort: 10000
+            name: ds
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              ephemeral-storage: 1Gi
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 512Mi
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+  status:
+    collisionCount: 0
+    currentReplicas: 1
+    currentRevision: databaseds-tango-base-test-5994d97cb
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updateRevision: databaseds-tango-base-test-5994d97cb
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+      meta.helm.sh/release-name: test
+      meta.helm.sh/release-namespace: integration
+    creationTimestamp: "2021-10-04T07:25:42Z"
+    generation: 1
+    labels:
+      app: ska-tango-images
+      app.kubernetes.io/managed-by: Helm
+      component: tangodb
+      domain: tango-configuration
+      function: tango-device-configuration
+      intent: production
+    name: ska-tango-base-tangodb
+    namespace: integration
+    resourceVersion: "21738"
+    uid: 853e6168-1d84-4804-8a8c-d3dadfd8fd90
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: ska-tango-images
+        component: tangodb
+        domain: tango-configuration
+        function: tango-device-configuration
+        intent: production
+    serviceName: ska-tango-base-tangodb
+    template:
+      metadata:
+        annotations:
+          app.gitlab.com/app: skampi
+          app.gitlab.com/env: skampi
+        creationTimestamp: null
+        labels:
+          app: ska-tango-images
+          component: tangodb
+          domain: tango-configuration
+          function: tango-device-configuration
+          intent: production
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: secret
+          - name: MYSQL_DATABASE
+            value: tango
+          - name: MYSQL_USER
+            value: tango
+          - name: MYSQL_PASSWORD
+            value: tango
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "1"
+          image: artefact.skao.int/ska-tango-images-tango-db:10.4.11
+          imagePullPolicy: IfNotPresent
+          name: tangodb
+          ports:
+          - containerPort: 3306
+            name: mysql
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              ephemeral-storage: 2Gi
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 1Gi
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+  status:
+    collisionCount: 0
+    currentReplicas: 1
+    currentRevision: ska-tango-base-tangodb-cb65f4f96
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updateRevision: ska-tango-base-tangodb-cb65f4f96
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      app.gitlab.com/app: skampi
+      app.gitlab.com/env: skampi
+      meta.helm.sh/release-name: test
+      meta.helm.sh/release-namespace: integration
+    creationTimestamp: "2021-10-04T07:25:42Z"
+    generation: 1
+    labels:
+      app: ska-tango-images
+      app.kubernetes.io/managed-by: Helm
+      component: tangotest-test
+      domain: tango-base
+      function: tango-test
+      subsystem: ska-tango-base
+    name: tangotest-test
+    namespace: integration
+    resourceVersion: "21724"
+    uid: 84fbe6d6-4e69-4b2e-bca5-73bd8e51d477
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        component: tangotest-test
+        subsystem: ska-tango-base
+    serviceName: tangotest-test
+    template:
+      metadata:
+        annotations:
+          app.gitlab.com/app: skampi
+          app.gitlab.com/env: skampi
+        creationTimestamp: null
+        labels:
+          app: ska-tango-images
+          component: tangotest-test
+          domain: tango-base
+          function: tango-test
+          subsystem: ska-tango-base
+      spec:
+        containers:
+        - command:
+          - retry
+          - --sleep=1
+          - --tries=100
+          - --
+          - /usr/local/bin/TangoTest
+          - test
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-java:9.3.4
+          imagePullPolicy: IfNotPresent
+          name: device-server
+          resources:
+            limits:
+              cpu: 500m
+              ephemeral-storage: 1Gi
+              memory: 512Mi
+            requests:
+              cpu: 200m
+              ephemeral-storage: 1Gi
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: data
+            name: configuration
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - args:
+          - kubectl wait job --for=condition=complete tangotest-config --timeout=300s
+          command:
+          - sh
+          - -c
+          image: bitnami/kubectl:latest
+          imagePullPolicy: IfNotPresent
+          name: wait-for-configuration
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - command:
+          - retry
+          - --sleep=1
+          - --tries=100
+          - --
+          - tango_admin
+          - --ping-device
+          - sys/database/2
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+          image: artefact.skao.int/ska-tango-images-tango-dsconfig:1.5.1
+          imagePullPolicy: IfNotPresent
+          name: check-dependencies-0
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: tangotest-sa-test
+        serviceAccountName: tangotest-sa-test
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: tangotest-dsconfig-json
+          name: configuration
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+  status:
+    collisionCount: 0
+    currentReplicas: 1
+    currentRevision: tangotest-test-775fb8bd4d
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updateRevision: tangotest-test-775fb8bd4d
+    updatedReplicas: 1
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

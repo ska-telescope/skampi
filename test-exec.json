@@ -1,0 +1,43 @@
+{
+    "test_plans": [
+        "XTP-3348"
+    ],
+    "name": {
+        "env": "CI_JOB_NAME",
+        "maps_to": {
+            "test_cluster": "Test Cluster Execution",
+            "default": "Test Cluster Execution"
+        }
+    },
+    "chart_info": {
+        "env": "DEPLOYMENT_CONFIGURATION",
+        "maps_to": {
+            "ska-mid": "charts/ska-mid/Chart.yaml",
+            "ska-low": "charts/ska-low/Chart.yaml",
+            "default": "charts/ska-mid/Chart.yaml"
+        }
+    },
+    "test_report": "build/report.json",
+    "project_id": "XTP",
+    "test_environments": [
+        "STFC-CI"
+    ],
+    "labels": [
+        "STFC-CI"
+    ],
+    "description": "Test execution results as generated from https://gitlab.com/ska-telescope/ska-skampi\n",
+    "versions": [
+        {
+            "env": "DEPLOYMENT_CONFIGURATION",
+            "maps_to": {
+                "ska-mid": "ska-mid-0.9.1-dev",
+                "ska-low": "ska-low-0.6.0-dev"
+            }
+        }
+    ],
+    "environmental_variables": [
+        "CI_JOB_URL",
+        "CI_COMMIT_TITLE",
+        "CI_JOB_STARTED_AT"
+    ]
+}

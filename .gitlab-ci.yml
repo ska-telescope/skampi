@@ -5,12 +5,17 @@ variables:
   VALUES: "pipeline.yaml"
   CHARTS_TO_PUBLISH: ska-low ska-mid
   INGRESS_HOST: "k8s.stfc.skao.int"
+  GIT_SUBMODULE_STRATEGY: recursive
+
+  # HOPING TO OVERRIDE DEFAULTS FROM .make INCLUDES HERE:
+  IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:2.7.4
+
 
 # TODO!!! add chart linting
 
-
 stages:
   - lint
+  - build
   - clean
   - build
   - deploy
@@ -24,40 +29,42 @@ stages:
   - update_versions
   - cleanup
 
-
 # Globally reused
 .tags_default: &tags_default
   tags:
-  - k8srunner
+    - k8srunner
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
-# Common template components
-- local:  '/.gitlab/ci/common.gitlab-ci.yml'
-# All SKA Low stages
-- local:  '/.gitlab/ci/ska-low.gitlab-ci.yml'
-# All SKA Mid stages
-- local:  '/.gitlab/ci/ska-mid.gitlab-ci.yml'
+  # Common template components
+  - local: "/.gitlab/ci/common.gitlab-ci.yml"
+  # All SKA Low stages
+  - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
+  # All SKA Mid stages
+  - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
 
-# Helm Charts
-- project: 'ska-telescope/templates-repository'
-  ref: master
-  file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
+  # Helm Charts
+  - project: 'ska-telescope/templates-repository'
+    ref: master
+    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
 
-# Docs
-- project: 'ska-telescope/templates-repository'
-  ref: master
-  file: 'gitlab-ci/includes/docs.gitlab-ci.yml'
+  # Docs
+  - project: 'ska-telescope/templates-repository'
+    ref: master
+    file: 'gitlab-ci/includes/docs.gitlab-ci.yml'
 
-  # .post steps
-- project: 'ska-telescope/templates-repository'
-  ref: master
-  file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
+    # .post steps
+  - project: 'ska-telescope/templates-repository'
+    ref: master
+    file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 
+  # Publish Images for testing pod
+  # - project: "ska-telescope/templates-repository"
+  #   file: "gitlab-ci/includes/oci-image-build.gitlab-ci.yml"
 # lint:
 # << *tags_default
 
-# publish-chart:
-#   when: on_success
-#   except:
-#     - master
+#publish-chart:
+#  when: on_success
+#  except:
+#    - master

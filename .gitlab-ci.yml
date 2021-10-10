@@ -55,7 +55,7 @@ include:
 # lint:
 # << *tags_default
 
-publish-chart:
-  when: on_success
-  except:
-    - master
+# publish-chart:
+#   when: on_success
+#   except:
+#     - master

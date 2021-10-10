@@ -17,6 +17,7 @@ stages:
   - test
   - debug
   - publish
+  - pages
   - release
   - clean_staging
   - deploy_staging

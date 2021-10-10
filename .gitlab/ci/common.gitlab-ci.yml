@@ -113,9 +113,9 @@
     reports:
       junit: build/report.xml
     when: always
-  only:
-    # - branches
-    - merge_requests
+  # only:
+  #   # - branches
+  #   - merge_requests
 
 .psi_test_template:
   script:

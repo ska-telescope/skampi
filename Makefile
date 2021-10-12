@@ -63,32 +63,76 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets for interrim image building
 -include .make/oci.mk
 
-# include makefile targets for release management
--include .make/release.mk
 # include makefile targets for Kubernetes management
 -include .make/k8s.mk
 
 # include makefile targets for helm linting
 -include .make/helm.mk
 
-## local custom includes
-# include makefile targets for testing
--include resources/test.mk
+# ## local custom includes
+# # include makefile targets for testing
+# -include resources/test.mk
 
 # include makefile targets for EDA deployment
 -include resources/archiver.mk
 
-## The following should be standard includes
-# include makefile targets for make submodule
--include .make/make.mk
-# include makefile targets for Makefile help
--include .make/help.mk
-# include your own private variables for custom deployment configuration
+# include core makefile targets
+-include .make/base.mk
 
 SKAMPI_K8S_CHART ?= ska-mid
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low
 
+CI_JOB_ID?=local
+#
+# IMAGE_TO_TEST defines the tag of the Docker image to test
+IMAGE_TO_TEST = artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0## docker image that will be run for testing purpose
+# Test runner - run to completion job in K8s
+TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
+#
+# defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
+# and then runs the requested make target in the container.
+# capture the output of the test in a build folder inside the container
+#
+MARK ?= fast## this variable allow the mark parameter in the pytest
+FILE ?= ##this variable allow to execution of a single file in the pytest
+SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
+COUNT ?= 1## amount of repetition for pytest-repeat
+BIGGER_THAN ?= ## get_size_images parameter: if not empty check if images are bigger than this (in MB)
+
+TELESCOPE = 'SKA-Mid'
+CENTRALNODE = 'ska_mid/tm_central/central_node'
+SUBARRAY = 'ska_mid/tm_subarray_node'
+# Define environmenvariables required by OET
+ifneq (,$(findstring low,$(KUBE_NAMESPACE)))
+	TELESCOPE = 'SKA-Low'
+	CENTRALNODE = 'ska_low/tm_central/central_node'
+	SUBARRAY = 'ska_low/tm_subarray_node'
+endif
+
+PUBSUB = true
+
 -include PrivateRules.mak
+
+
+K8S_TEST_MAKE_PARAMS = \
+	SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
+	KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
+	HELM_RELEASE=$(HELM_RELEASE) \
+	TANGO_HOST=$(TANGO_HOST) \
+	CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
+	MARK='$(MARK)' \
+	COUNT=$(COUNT) \
+	FILE='$(FILE)' \
+	SKA_TELESCOPE=$(TELESCOPE) \
+	CENTRALNODE_FQDN=$(CENTRALNODE) \
+	SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
+	OET_READ_VIA_PUBSUB=$(PUBSUB) \
+	JIRA_AUTH=$(JIRA_AUTH) \
+	CAR_RAW_USERNAME=$(RAW_USER) \
+	CAR_RAW_PASSWORD=$(RAW_PASS) \
+	CAR_RAW_REPOSITORY_URL=$(RAW_HOST)
+
+
 vars: ## Display variables
 	@echo "SKA_K8S_TOOLS_DEPLOY_IMAGE=$(SKA_K8S_TOOLS_DEPLOY_IMAGE)"
 	@echo ""
@@ -114,6 +158,7 @@ delete-sdp-namespace: ## delete the kubernetes SDP namespace
 	@make delete-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
 update-chart-versions:
+	@which yq || (echo "yq not installed - you must 'pip3 install yq'"; exit 1;)
 	for chart in $(SKAMPI_K8S_CHARTS); do \
 		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
 		for upd in $$(yq -r '.dependencies[].name' charts/$$chart/Chart.yaml); do \

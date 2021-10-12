@@ -140,7 +140,7 @@ mid_branch_uninstall:
 mid_deploy_branch:
   stage: deploy
   extends:
-    - .mid_vars
+    - .mid_branch_vars
     - .output_step_info
     - .tags_default
     - .deploy_definition

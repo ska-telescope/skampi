@@ -104,6 +104,57 @@ mid_deploy_test_destroy:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
 
+
+.mid_branch_vars:
+  extends:
+    - .tags_default
+  variables:
+    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
+    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+
+
+mid_branch_uninstall:
+  stage: clean
+  extends:
+    - .mid_branch_vars
+    - .uninstall_definition
+  environment:
+    name: "test-mid"
+    action: stop
+  only:
+    refs:
+      - branches
+  except:
+    refs:
+      - master
+
+mid_deploy_branch:
+  stage: deploy
+  extends:
+    - .mid_vars
+    - .output_step_info
+    - .tags_default
+    - .deploy_definition
+  environment:
+    name: "test/$CI_COMMIT_REF_NAME"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+    on_stop: mid_branch_uninstall
+  only:
+    refs:
+      - branches
+  except:
+    refs:
+      - master
+
+
 mid_on_demand_deploy:
   stage: deploy
   extends:
@@ -201,7 +252,7 @@ mid_deploy_staging:
   extends:
     - .output_step_info
     - .tags_default
-  #  - .deploy_definition
+    - .deploy_definition
   variables:
     HELM_REPO_NAME: "skatelescope"
     UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-mid" ## The name of the chart as published to CAR

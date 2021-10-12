@@ -23,32 +23,10 @@
       apt-get -y update && apt-get install -y curl ca-certificates jq --no-install-recommends
     - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
 
-.deploy_definition:
+.deploy_definition: &deploy_definition
   script:
-  - |
-    make uninstall
-    kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-    kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-    make delete-namespace
-    make delete-sdp-namespace
-
-.uninstall_definition: &uninstall_definition
-  script:
-  - &uninstall_scripts |
-    make uninstall
-    kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-    kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-    make delete-namespace
-    make delete-sdp-namespace
-    - !reference [.output_step_info, script]
-    - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
-    - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
-    - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
-      kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-    # - bash scripts/gitlab_section.sh archiver "Archiver configuration"
-    #   make configure-archiver
-  after_script:
-    - make links
+  - make install-or-upgrade
+  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -56,6 +34,60 @@
     reports:
       junit: build/report.xml
     when: always
+
+
+# .deploy_definition:
+#   script:
+#   - |
+#     make uninstall-chart
+#     kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+#     kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+#     make delete-namespace
+#     make delete-sdp-namespace
+
+# .uninstall_definition: &uninstall_definition
+#   script:
+#   - &uninstall_scripts |
+#     make uninstall-chart
+#     kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+#     kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+#     make delete-namespace
+#     make delete-sdp-namespace
+#     - !reference [.output_step_info, script]
+#     - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
+#     - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
+#     - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
+#       kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+#     # - bash scripts/gitlab_section.sh archiver "Archiver configuration"
+#     #   make configure-archiver
+#   after_script:
+#     - make links
+#   artifacts:
+#     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+#     paths:
+#       - "build/"
+#     reports:
+#       junit: build/report.xml
+#     when: always
+
+.deploy_test_destroy_definition:
+  stage: test
+  before_script: !reference [.deploy_definition, script]
+  extends:
+    - .test_definition
+  after_script:
+    - !reference [.uninstall_definition, after_script]
+    - !reference [.xray_upload, after_script]
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+    when: always
+  # only:
+  #   # - branches
+  #   - merge_requests
 
 .only_on_master:
   # rules:
@@ -98,25 +130,6 @@
   # after_script:
   #   - make links
 
-.deploy_test_destroy_definition:
-  stage: test
-  before_script: !reference [.deploy_definition, script]
-  extends:
-    - .test_definition
-  after_script:
-    - !reference [.uninstall_definition, after_script]
-    - !reference [.xray_upload, after_script]
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
-  # only:
-  #   # - branches
-  #   - merge_requests
-
 .psi_test_template:
   script:
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
@@ -136,14 +149,14 @@
   script:
     - !reference [.output_step_info, script]
     - |
-      make uninstall
+      make uninstall-chart
       kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
       kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
       make delete_namespace
       make delete_sdp_namespace
   after_script:
     - |
-      make uninstall
+      make uninstall-chart
       kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
       kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
       make delete_namespace

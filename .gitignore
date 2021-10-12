@@ -1,3 +1,4 @@
+.python-version
 *.out
 my_local_values.yaml
 **/.DS_Store

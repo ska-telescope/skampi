@@ -107,3 +107,6 @@ get_size_images: ## get a list of images together with their size (both local an
 		cMB=$$(((cB)/1000000)); \
 		echo $$p: $$B B \($$MB MB\), $$cB \($$cMB MB\); \
 	done;
+
+cluster-k8s-test: ## Test the kubernetes cluster
+	pytest --mark=cluster

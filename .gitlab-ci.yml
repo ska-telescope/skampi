@@ -44,10 +44,11 @@ include:
   # All SKA Mid stages
   - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
 
-  # Helm Charts
-  - project: 'ska-telescope/templates-repository'
-    ref: st-908-add-helm-build
-    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
+  # temp comment out to speed up pipeline
+  # # Helm Charts
+  # - project: 'ska-telescope/templates-repository'
+  #   ref: st-908-add-helm-build
+  #   file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
 
   # temp comment out to speed up pipeline
   # # Docs

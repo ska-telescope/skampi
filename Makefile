@@ -222,7 +222,7 @@ upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
-install-or-upgrade: upgrade-skampi-chart## install or upgrade the release
+# install-or-upgrade: upgrade-skampi-chart## install or upgrade the release
 
 links: ## attempt to create the URLs with which to access
 	@echo "############################################################################"

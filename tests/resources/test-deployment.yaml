@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment2
+  labels:
+    app: nginx2
+    app.kubernetes.io/name: test
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx2
+  template:
+    metadata:
+      labels:
+        app: nginx2
+        app.kubernetes.io/name: test
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 80
+            protocol: TCP
+        volumeMounts:
+          - mountPath: /usr/share/nginx/html
+            name: www-data
+            readOnly: true
+          - name: test-config
+            mountPath: /etc/nginx/conf.d
+      volumes:
+      - name: www-data
+        persistentVolumeClaim:
+          claimName: pvc-test
+      - name: test-config
+        configMap:
+          name: test

@@ -1,6 +1,7 @@
 .PHONY: k8s_test smoketest template_tests tango_rest_ingress_check
 
 CI_JOB_ID?=local
+CLUSTER_TEST_NAMESPACE ?= ci-$(CI_JOB_ID)##Test namespace for cluster readiness tests
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 IMAGE_TO_TEST = artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0## docker image that will be run for testing purpose
@@ -107,3 +108,31 @@ get_size_images: ## get a list of images together with their size (both local an
 		cMB=$$(((cB)/1000000)); \
 		echo $$p: $$B B \($$MB MB\), $$cB \($$cMB MB\); \
 	done;
+
+# Make target based test of cluster setup. This is done so that the SKAMPI user can test the basic
+# functionality of the cluster by simply calling `make cluster-k8s-test`
+
+cluster-k8s-test-pre: ## Setup of kubernetes resources for testing cluster
+	python3 -m venv venv && source venv/bin/activate && \
+	which python && \
+	pip list && \
+	pip install -r tests/requirements.txt && \
+	kubectl create ns $(CLUSTER_TEST_NAMESPACE) --dry-run=client -o yaml | kubectl apply -f - && \
+	kubectl -n $(CLUSTER_TEST_NAMESPACE) apply -f tests/resources/cluster_integration_test_resources.yaml --wait
+	
+cluster-k8s-test-post: ## teardown step for testing cluster
+	kubectl -n $(CLUSTER_TEST_NAMESPACE) delete --grace-period=0 --ignore-not-found \
+	ingress.networking.k8s.io/test \
+	service/nginx1 \
+	deployment.apps/nginx-deployment1 \
+	service/nginx2 \
+	deployment.apps/nginx-deployment2 \
+	persistentvolumeclaim/pvc-test \
+	persistentvolume/pvtest \
+	configmap/test && kubectl delete ns $(CLUSTER_TEST_NAMESPACE) --ignore-not-found;
+
+cluster-k8s-test-pytest: ## Test the cluster using pytest
+	# kubectl -n $(CLUSTER_TEST_NAMESPACE) get deployment,pod,svc,ingress.networking.k8s.io,pvc -l app.kubernetes.io/name=test -o wide
+	venv/bin/pytest tests/unit/test_cluster_k8s.py
+
+cluster-k8s-test: cluster-k8s-test-pre cluster-k8s-test-pytest cluster-k8s-test-post ## Test the cluster using make setup and teardown

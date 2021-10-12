@@ -125,7 +125,10 @@ mid_branch_uninstall:
     - .mid_branch_vars
     - .uninstall_definition
   environment:
-    name: "test-mid"
+    name: "test/$CI_COMMIT_REF_NAME"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
     action: stop
   only:
     refs:

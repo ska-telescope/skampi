@@ -2,10 +2,11 @@
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.testing.pytestArgs": [
-        "./post-deployment", 
+        "tests", 
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.unittestArgs": ["-v", "-s", "post-deployment", "-p", "*test*.py"],
+
+    // "python.testing.unittestArgs": ["-v", "-s", "post-deployment", "-p", "*test*.py"],
     "python.testing.nosetestsEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.envFile": "${workspaceFolder}/.vscode/.env",
@@ -13,5 +14,8 @@
     "yaml.customTags": [
     "!reference sequence"
     ],
-    "python.pythonPath": "venv/bin/python"
+    "python.pythonPath": "venv/bin/python",
+    "python.analysis.extraPaths": [
+        "./tests"
+    ]
 }

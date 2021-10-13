@@ -2,6 +2,33 @@
 # # Common CI Stages
 # ################################################
 
+test_cluster_k8s:
+  stage: unit_test
+  retry: 2
+  variables:
+    - CLUSTER_TEST_NAMESPACE=ci-$CI_JOB_ID
+  tags:
+    - k8srunner
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+  before_script:
+    - make cluster-k8s-test-pre
+  script:
+    - make cluster-k8s-test-pytest
+  after_script:
+    - cd test-harness
+    - mv report.xml unit-tests.xml
+    - cp unit-tests.xml report.json cucumber.json ../build/reports/
+    - make cluster-k8s-test-post
+  environment:
+    name: test
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/reports/unit-tests.xml
+    when: always
+
 .output_step_info:
   script:
     - |

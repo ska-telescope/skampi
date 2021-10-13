@@ -1,200 +1,115 @@
-import os
+"""Basic cluster functionality tests."""
 import logging
 import pytest
-import time
-import json
+import os
 import requests
-from pytest_bdd import scenario, given, when, then, scenarios, parsers
-from kubernetes import client, config, watch
+import time
+from kubernetes import config, client
 from kubernetes.stream import stream
 
-@given(parsers.parse("a Kubernetes cluster with KUBECONFIG {kubeconfig}"))
-def k8s_cluster(kubeconfig):
-    logging.info("loading kubeconfig " + kubeconfig)
-    config.load_kube_config(kubeconfig)
 
-@when(parsers.parse("I create a pvc {name} with storage class {class_name}, accessModes {access_mode}, resources {resources}"))
-def create_pvc(name, class_name, access_mode, resources, test_namespace):
-    pvc_manifest = {
-            'apiVersion': 'v1',
-            'kind': 'PersistentVolumeClaim',
-            'metadata': {
-                'name': name
-            },
-            'spec':{
-                'accessModes': [access_mode],
-                'resources': {
-                    'requests' : {
-                        'storage' : resources
-                    }
-                },
-                'storageClassName': class_name
-            }
-        }
+@pytest.fixture(scope="module")
+def test_namespace():
+    _namespace = os.environ["CLUSTER_TEST_NAMESPACE"]
+    yield _namespace
     v1 = client.CoreV1Api()
-    logging.info("Creating pvc " + name)
-    v1.create_namespaced_persistent_volume_claim(test_namespace, pvc_manifest)
-    if not hasattr(pytest, 'pvc'):
-        pytest.pvc = []
-    pytest.pvc.append(name)
-
-@when(parsers.parse("I create a config map {name} from file {filename}"))
-def create_configmap(name, filename,test_namespace):
-    f = open(filename, 'r')
-    file_value = f.read()
-    configmap_manifest = {
-            'apiVersion': 'v1',
-            'kind': 'ConfigMap',
-            'metadata': {
-                'name': name
-            },
-            'data': {
-                os.path.basename(filename): file_value
-            }
-        }
-    f.close()
-    v1 = client.CoreV1Api()
-    logging.info("Creating config map " + name)
-    v1.create_namespaced_config_map(test_namespace, configmap_manifest)
-    if not hasattr(pytest, 'config_maps'):
-        pytest.config_maps = []
-    pytest.config_maps.append(name)
-
-@when(parsers.parse("I create a service {name} with image {image} (port {port}, replicas {replicas}) and volumes {vol0} (read-only {readonly}, mount path {path0}) and {vol1} (mount path {path1})"))
-def create_service(name, image, port, replicas, vol0, readonly, path0, vol1, path1,test_namespace):
-    service_manifest = {
-            'apiVersion': 'v1',
-            'kind': 'Service',
-            'metadata': {
-                'name': name,
-                'labels': {
-                    'app': name
-                }
-            },
-            'spec': {
-                'selector': {
-                    'app': name
-                },
-                'ports': [
-                    {
-                        'protocol': 'TCP',
-                        'port': int(port),
-                        'targetPort': int(port)
-                    }
-                ]
-            }
-        }
-    deployment_manifest = {
-            'apiVersion': 'apps/v1',
-            'kind': 'Deployment',
-            'metadata': {
-                'name': name + '-deployment',
-                'labels': {
-                    'app': name
-                }
-            },
-            'spec': {
-                'replicas': int(replicas),
-                'selector': {
-                    'matchLabels': {
-                        'app': name
-                    }
-                },
-                'template': {
-                    'metadata':{
-                        'labels':{
-                            'app': name
-                        }
-                    },
-                    'spec': {
-                        'containers': [{
-                            'name': image,
-                            'image': image,
-                            'imagePullPolicy': 'IfNotPresent',
-                            'ports': [{
-                                'containerPort': int(port),
-                                'protocol': 'TCP'
-                            }],
-                            'volumeMounts': [{
-                                'mountPath': path0,
-                                'name': vol0+ '-internal',
-                                'readonly': readonly
-                            },{
-                                'mountPath': path1,
-                                'name': vol1+ '-internal'
-                            }]
-                            }
-                        ],
-                        'volumes': [{
-                            'name': vol0 + '-internal',
-                            'persistentVolumeClaim':{
-                                'claimName': vol0
-                            }
-                        },{
-                            'name': vol1 + '-internal',
-                            'configMap': {
-                                'name': vol1
-                            }
-                        }]
-                    }
-                }
-            }
-        }
-    v1 = client.CoreV1Api()
-    appsv1 = client.AppsV1Api()
-    logging.info("Creating service " + name)
-    appsv1.create_namespaced_deployment(test_namespace, deployment_manifest)
-    v1.create_namespaced_service(test_namespace, service_manifest)
-    if not hasattr(pytest, 'services'):
-        pytest.services = []
-    pytest.services.append(name)
-    if not hasattr(pytest, 'deployments'):
-        pytest.deployments = []
-    pytest.deployments.append(name + '-deployment')
-
-@when(parsers.parse("I create an ingress {name} pointing to service {service_name}, service port {service_port}"))
-def create_ingress(name, service_name, service_port,test_namespace):
-    ingress_manifest = {
-        'apiVersion': 'extensions/v1beta1',
-        'kind': 'Ingress',
-        'metadata':{
-            'name': name,
-            'labels': {
-                'app.kubernetes.io/name': name
-            }
-        },
-        'spec':{
-            'rules': [{
-                'host': service_name,
-                'http': {
-                    'paths': [{
-                        'path': '/',
-                        'backend': {
-                            'serviceName': service_name,
-                            'servicePort': int(service_port)
-                        }
-                    }]
-                }
-            }]
-        }
-    }
     beta = client.ExtensionsV1beta1Api()
-    logging.info("Creating ingress " + name)
-    beta.create_namespaced_ingress(test_namespace, ingress_manifest)
-    if not hasattr(pytest, 'ingress'):
-        pytest.ingress = []
-    pytest.ingress.append(name)
+    appsv1 = client.AppsV1Api()
 
-@when(parsers.parse("the service {service_name} is ready"))
-def verify_svc_ready(test_namespace, service_name):
+    for ingress in beta.list_namespaced_ingress(_namespace).items:
+        beta.delete_namespaced_ingress(
+            ingress.metadata.name, _namespace, grace_period_seconds=0
+        )
+
+    for svc in v1.list_namespaced_service(_namespace).items:
+        v1.delete_namespaced_service(
+            svc.metadata.name, _namespace, grace_period_seconds=0
+        )
+
+    for cfgm in v1.list_namespaced_config_map(_namespace).items:
+        v1.delete_namespaced_config_map(
+            cfgm.metadata.name, _namespace, grace_period_seconds=0
+        )
+
+    for depl in appsv1.list_namespaced_deployment(_namespace).items:
+        appsv1.delete_namespaced_deployment(
+            depl.metadata.name, _namespace, grace_period_seconds=0
+        )
+
+    for pvc in v1.list_namespaced_persistent_volume_claim(_namespace).items:
+        v1.delete_namespaced_persistent_volume_claim(
+            pvc.metadata.name, _namespace, grace_period_seconds=0
+        )
+
+    v1.delete_persistent_volume("pvtest", grace_period_seconds=0)
+
+    v1.delete_namespace(_namespace)
+
+
+@pytest.fixture(autouse=True, scope="module")
+def k8s_cluster():
+    logging.info("loading kubeconfig")
+    config.load_kube_config()
+
+
+def write_to_volume(write_service_name, test_namespace):
+    command = "echo $(date) > /usr/share/nginx/html/index.html"
+    exec_command = ["/bin/sh", "-c", command]
     v1 = client.CoreV1Api()
-    ret = v1.list_namespaced_pod(test_namespace, label_selector='app=' + service_name)
+    ret = v1.list_namespaced_pod(
+        test_namespace, label_selector="app=" + write_service_name
+    )
+    logging.debug(
+        "Executing command " + command + " on pod " + ret.items[0].metadata.name
+    )
+    resp = stream(
+        v1.connect_get_namespaced_pod_exec,
+        ret.items[0].metadata.name,
+        test_namespace,
+        command=exec_command,
+        stderr=True,
+        stdin=False,
+        stdout=True,
+        tty=False,
+    )
+    logging.info(resp)
+
+
+def curl_service_with_shared_volume(host0, host1, test_namespace):
+    host = client.Configuration().get_default_copy().host
+    logging.debug(f"HOST: {host}")
+    logging.debug(f"Services: {host0}, {host1}; Namespace: {test_namespace}")
+    ip = host.split("//")[1].split(":")[0]
+    url = "http://" + ip + "/"
+    logging.debug(f"URL1: {url}")
+    result1 = requests.get(url, headers={"Host": host0})
+    result2 = requests.get(url, headers={"Host": host1})
+    assert (
+        result1.status_code == 200
+    ), f"Expected a 200 response, got {result1.status_code}"
+    assert (
+        result2.status_code == 200
+    ), f"Expected a 200 response, got {result2.status_code}"
+    assert result1.text == result2.text, f"{result1.text} ain't {result2.text}"
+
+
+def wait_for_pod(test_namespace, service_name):
+    v1 = client.CoreV1Api()
+    ret = v1.list_namespaced_pod(test_namespace, label_selector="app=" + service_name)
     logging.info("Checking Pod Readiness...")
+    wait_for_seconds = 1.0
     while True:
         all_running = True
         for item in ret.items:
-            if not item.status.phase == 'Running':
+            if not item.status.phase == "Running":
                 all_running = False
+                time.sleep(wait_for_seconds)
+                wait_for_seconds += wait_for_seconds / 3
+                if wait_for_seconds > 10:
+                    break
+                logging.info(
+                    f"{item.metadata.name} not yet ready, waiting for {wait_for_seconds}"
+                )
                 continue
 
             for status_container in item.status.container_statuses:
@@ -202,110 +117,19 @@ def verify_svc_ready(test_namespace, service_name):
                     all_running = False
                     break
 
-        if(all_running):
+        if all_running:
             break
         else:
-            ret = v1.list_namespaced_pod(test_namespace, label_selector='app=' + service_name)
+            ret = v1.list_namespaced_pod(
+                test_namespace, label_selector="app=" + service_name
+            )
     logging.info("Pod Ready")
 
-@when(parsers.parse("I execute the command {command} on service {service_name}"))
-def exec(command, service_name,test_namespace):
-    exec_command = ['/bin/sh','-c', command]
-    v1 = client.CoreV1Api()
-    ret = v1.list_namespaced_pod(test_namespace, label_selector='app=' + service_name)
-    logging.info("Executing command " + command + " on pod " + ret.items[0].metadata.name)
-    resp = stream(v1.connect_get_namespaced_pod_exec,
-                  ret.items[0].metadata.name,
-                  test_namespace,
-                  command=exec_command,
-                  stderr=True, stdin=False,
-                  stdout=True, tty=False)
-    # resp = v1.connect_get_namespaced_pod_exec( ret.items[0].metadata.name, test_namespace, command=exec_command, stderr=True, stdin=False, stdout=True, tty=False)
-    logging.info(resp)
 
-@then(parsers.parse("I can curl with hostname {host0}"))
-def check_res(host0,test_namespace):
-    try:
-        logging.info("Checking results...")
-        # Workaround from: https://github.com/kubernetes-client/python/issues/1284
-        host_from_kubeconfig = client.Configuration().get_default_copy().host
-        ip = host_from_kubeconfig.split("//")[1].split(':')[0]
-        url = 'http://' + ip + "/"
-        logging.info("URL1: {}".format(url))
-        time.sleep(3)
-        result1 = requests.get(url, headers={'Host': host0})
-        logging.info("Result1: {}".format(result1.text))
-        logging.info("Status1: {}".format(result1.status_code))
-        assert result1.status_code == 200
-    finally:
-        v1 = client.CoreV1Api()
-        beta = client.ExtensionsV1beta1Api()
-        appsv1 = client.AppsV1Api()
-        for pvc in pytest.pvc:
-            logging.info("deleting pvc " + pvc)
-            v1.delete_namespaced_persistent_volume_claim(pvc, test_namespace)
-        for config_maps in pytest.config_maps:
-            logging.info("deleting config map " + config_maps)
-            v1.delete_namespaced_config_map(config_maps, test_namespace)
-        for service in pytest.services:
-            logging.info("deleting service " + service)
-            v1.delete_namespaced_service(service, test_namespace)
-        for deployment in pytest.deployments:
-            logging.info("deleting deployment " + deployment)
-            appsv1.delete_namespaced_deployment(deployment, test_namespace)
-        for ing in pytest.ingress:
-            logging.info("deleting ingress " + ing)
-            beta.delete_namespaced_ingress(ing, test_namespace)
-
-        pytest.pvc = []
-        pytest.config_maps = []
-        pytest.services = []
-        pytest.deployments = []
-        pytest.ingress = []
-
-
-@then(parsers.parse("a curl with hostname {host0} and {host1} return the same result"))
-def check_res(host0, host1,test_namespace):
-    try:
-        logging.info("Checking results...")
-        # Workaround from: https://github.com/kubernetes-client/python/issues/1284
-        host_from_kubeconfig = client.Configuration().get_default_copy().host
-        ip = host_from_kubeconfig.split("//")[1].split(':')[0]
-        url = 'http://' + ip + "/"
-        logging.info("URL1: {}".format(url))
-        time.sleep(3)
-        result1 = requests.get(url, headers={'Host': host0})
-        result2 = requests.get(url, headers={'Host': host1})
-        logging.info("Result1: {}".format(result1.text))
-        logging.info("Status1: {}".format(result1.status_code))
-        logging.info("Result2: {}".format(result2.text))
-        logging.info("Status2: {}".format(result2.status_code))
-        assert result1.status_code == 200
-        assert result2.status_code == 200
-        assert result1.text == result2.text
-    finally:
-        v1 = client.CoreV1Api()
-        beta = client.ExtensionsV1beta1Api()
-        appsv1 = client.AppsV1Api()
-        for pvc in pytest.pvc:
-            logging.info("deleting pvc " + pvc)
-            v1.delete_namespaced_persistent_volume_claim(pvc, test_namespace)
-        for config_maps in pytest.config_maps:
-            logging.info("deleting config map " + config_maps)
-            v1.delete_namespaced_config_map(config_maps, test_namespace)
-        for service in pytest.services:
-            logging.info("deleting service " + service)
-            v1.delete_namespaced_service(service, test_namespace)
-        for deployment in pytest.deployments:
-            logging.info("deleting deployment " + deployment)
-            appsv1.delete_namespaced_deployment(deployment, test_namespace)
-        for ing in pytest.ingress:
-            logging.info("deleting ingress " + ing)
-            beta.delete_namespaced_ingress(ing, test_namespace)
-        pytest.pvc = []
-        pytest.config_maps = []
-        pytest.services = []
-        pytest.deployments = []
-        pytest.ingress = []
-
-scenarios('../features/cluster_k8s.feature')
+def test_cluster(test_namespace):
+    wait_for_pod(test_namespace, "nginx1")
+    wait_for_pod(test_namespace, "nginx2")
+    write_to_volume("nginx1", test_namespace)
+    curl_service_with_shared_volume(
+        "nginx1", "nginx2", test_namespace
+    )  # this is the actual test

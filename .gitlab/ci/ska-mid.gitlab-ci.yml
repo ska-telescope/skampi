@@ -63,32 +63,6 @@
 #     variables:
 #       - $STRESS_TEST_DURATION
 
-# mid merge blocking job - must pass for pipeline success
-mid_deploy_test_destroy:
-  stage: test
-  variables:
-    CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
-  extends:
-    - .tags_default
-    - .deploy_test_destroy_definition
-    - .xray_upload
-  environment:
-    name: "test-$CONFIG-branch"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH' # Run on push, not default
-
 # mid on demand environment
 
 .mid_on_demand_vars:
@@ -137,25 +111,51 @@ mid_branch_uninstall:
     refs:
       - master
 
-mid_deploy_branch:
-  stage: deploy
+# mid_deploy_branch:
+#   stage: deploy
+#   extends:
+#     - .mid_branch_vars
+#     - .output_step_info
+#     - .tags_default
+#     - .deploy_definition
+#   environment:
+#     name: "test/$CI_COMMIT_REF_NAME"
+#     kubernetes:
+#       # This repetition is needed for gitlab to parse the namespace correctly
+#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
+#     # on_stop: mid_branch_uninstall
+#   only:
+#     refs:
+#       - branches
+#   except:
+#     refs:
+#       - master
+
+# mid merge blocking job - must pass for pipeline success
+mid_deploy_test_destroy:
+  stage: test
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
   extends:
-    - .mid_branch_vars
-    - .output_step_info
     - .tags_default
-    - .deploy_definition
+    - .deploy_test_destroy_definition
+    - .xray_upload
   environment:
-    name: "test/$CI_COMMIT_REF_NAME"
+    name: "test-$CONFIG-branch"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
-    # on_stop: mid_branch_uninstall
-  only:
-    refs:
-      - branches
-  except:
-    refs:
-      - master
+      namespace: $KUBE_NAMESPACE
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH' # Run on push, not default
 
 mid_branch_test_uninstall:
   stage: cleanup
@@ -172,7 +172,12 @@ mid_branch_test_uninstall:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
-
+  only:
+    refs:
+      - branches
+  except:
+    refs:
+      - master
 
 
 # mid_on_demand_deploy:

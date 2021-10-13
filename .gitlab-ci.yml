@@ -15,7 +15,6 @@ variables:
 
 stages:
   # - lint
-  - unit_test
   - build
   - clean
   - deploy

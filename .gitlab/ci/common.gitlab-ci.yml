@@ -15,7 +15,6 @@ test_cluster_k8s:
   script:
     - make cluster-k8s-test-pytest
   after_script:
-    - cd test-harness
     - mv report.xml unit-tests.xml
     - cp unit-tests.xml report.json cucumber.json ../build/reports/
     - make cluster-k8s-test-post

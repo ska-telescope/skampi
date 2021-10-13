@@ -93,23 +93,23 @@
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid_archiver_db"
 
 
-mid_branch_uninstall:
-  stage: clean
-  extends:
-    - .mid_branch_vars
-    - .uninstall_definition
-  environment:
-    name: "test/$CI_COMMIT_REF_NAME"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
-    # action: stop
-  only:
-    refs:
-      - branches
-  except:
-    refs:
-      - master
+# mid_branch_uninstall:
+#   stage: clean
+#   extends:
+#     - .mid_branch_vars
+#     - .uninstall_definition
+#   environment:
+#     name: "test/$CI_COMMIT_REF_NAME"
+#     kubernetes:
+#       # This repetition is needed for gitlab to parse the namespace correctly
+#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
+#     # action: stop
+#   only:
+#     refs:
+#       - branches
+#   except:
+#     refs:
+#       - master
 
 # mid_deploy_branch:
 #   stage: deploy

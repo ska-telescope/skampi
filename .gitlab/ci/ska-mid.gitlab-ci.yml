@@ -4,64 +4,64 @@
 
 # Mid specific job steps
 # # testing environment (mid_)
-.mid_vars:
-  extends:
-    - .tags_default
-  variables:
-    HELM_RELEASE: "test-mid"
-    KUBE_NAMESPACE: "integration-mid"
-    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
-    KEEP_NAMESPACE: "true"
-    ARCHIVER_DBNAME: "integration_mid_archiver_db"
+# .mid_vars:
+#   extends:
+#     - .tags_default
+#   variables:
+#     HELM_RELEASE: "test-mid"
+#     KUBE_NAMESPACE: "integration-mid"
+#     KUBE_NAMESPACE_SDP: "integration-mid-sdp"
+#     DEPLOYMENT_CONFIGURATION: "ska-mid"
+#     KEEP_NAMESPACE: "true"
+#     ARCHIVER_DBNAME: "integration_mid_archiver_db"
 
-mid_uninstall:
-  stage: clean
-  extends:
-    - .only_on_master
-    - .mid_vars
-    - .uninstall_definition
-  environment:
-    name: "test-mid"
-    action: stop
-  only:
-    refs:
-      - master
-    variables:
-      - $DELETE == "true"
+# mid_uninstall:
+#   stage: clean
+#   extends:
+#     - .only_on_master
+#     - .mid_vars
+#     - .uninstall_definition
+#   environment:
+#     name: "test-mid"
+#     action: stop
+#   only:
+#     refs:
+#       - master
+#     variables:
+#       - $DELETE == "true"
 
-mid_deploy:
-  stage: deploy
-  extends:
-    - .mid_vars
-    - .only_on_master
-    - .deploy_definition
-  environment:
-    name: "test-mid"
-    on_stop: mid_uninstall
+# mid_deploy:
+#   stage: deploy
+#   extends:
+#     - .mid_vars
+#     - .only_on_master
+#     - .deploy_definition
+#   environment:
+#     name: "test-mid"
+#     on_stop: mid_uninstall
 
-mid_test:
-  retry: 2
-  stage: test
-  extends:
-    - .mid_vars
-    - .only_on_master
-    - .test_definition
-    - .xray_upload
-  variables:
-    MARK: "skamid or common"
-  environment:
-    name: "test-mid"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
-    on_stop: mid_uninstall
-  # rules:
-  #   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION && $STRESS_TEST_DURATION != ""'
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
+# mid_test:
+#   retry: 2
+#   stage: test
+#   extends:
+#     - .mid_vars
+#     - .only_on_master
+#     - .test_definition
+#     - .xray_upload
+#   variables:
+#     MARK: "skamid or common"
+#   environment:
+#     name: "test-mid"
+#     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+#     kubernetes:
+#       # This repetition is needed for gitlab to parse the namespace correctly
+#       namespace: $KUBE_NAMESPACE
+#     on_stop: mid_uninstall
+#   # rules:
+#   #   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION && $STRESS_TEST_DURATION != ""'
+#   except:
+#     variables:
+#       - $STRESS_TEST_DURATION
 
 # mid merge blocking job - must pass for pipeline success
 mid_deploy_test_destroy:

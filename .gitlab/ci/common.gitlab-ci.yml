@@ -94,7 +94,7 @@
   script:
     - !reference [.output_step_info, script]
     - make k8s_test IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4
-    - echo "############## Build Output #########"
+    - echo "############## Build Output"
     - find ./build
     - echo "############## EXTRA MAKE VARS OUTPUT"
     - make vars
@@ -171,7 +171,7 @@
   after_script:
     - |
       if [ -f build/cucumber.json ]; then
-      bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=2.1.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+      bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=2.7.4"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
       /usr/local/bin/xtp-xray-upload -f build/cucumber.json -i test-exec.json -v
       fi
 

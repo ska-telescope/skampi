@@ -117,7 +117,6 @@ PUBSUB = true
 
 -include PrivateRules.mak
 
-
 K8S_TEST_MAKE_PARAMS = \
 	SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
 	KUBE_NAMESPACE=$(KUBE_NAMESPACE) \

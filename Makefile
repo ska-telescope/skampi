@@ -82,6 +82,10 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 SKAMPI_K8S_CHART ?= ska-mid
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low
 
+# KUBE_APP is set to the ska-tango-images base chart value
+SKAMPI_KUBE_APP ?= ska-tango-images
+KUBE_APP = $(SKAMPI_KUBE_APP)
+
 CI_JOB_ID?=local
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test

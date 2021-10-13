@@ -94,10 +94,10 @@
 .test_definition:
   script:
     - !reference [.output_step_info, script]
-    - echo "What do we have in the test Namespace before: $KUBE_NAMESPACE"
+    - 'echo "What do we have in the test Namespace before: $KUBE_NAMESPACE"'
     - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
     - make test-deployment IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4
-    - echo "What do we have in the test Namespace after: $KUBE_NAMESPACE"
+    - 'echo "What do we have in the test Namespace after: $KUBE_NAMESPACE"'
     - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
     - echo "############## EXTRA MAKE VARS OUTPUT"
     - make vars

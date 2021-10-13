@@ -15,12 +15,14 @@ test: install
 	make start_log_consumer; \
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \
-	PYTHONPATH=/app:/app/skampi:/app/skampi/post-deployment pytest -v -r fEx \
+	PYTHONPATH=/app:/app/skampi:/app/skampi/test pytest -v -r fEx \
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
 		--disable-pytest-warnings --timeout=300 $(FILE) --count=$(COUNT) | tee pytest.stdout; \
 	status=$$?; \
 	make remove_log_consumer && \
 	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
+	echo "What are all the files now:"; ls -latr; find ./build; \
+	echo "test: status is ($$status)"; \
 	exit $$status
 
 install:

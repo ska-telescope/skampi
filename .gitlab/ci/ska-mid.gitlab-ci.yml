@@ -96,8 +96,8 @@ mid_deploy_test_destroy:
     - .tags_default
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
@@ -128,7 +128,7 @@ mid_branch_uninstall:
     name: "test/$CI_COMMIT_REF_NAME"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
     # action: stop
   only:
     refs:
@@ -148,7 +148,7 @@ mid_deploy_branch:
     name: "test/$CI_COMMIT_REF_NAME"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
     # on_stop: mid_branch_uninstall
   only:
     refs:
@@ -156,6 +156,23 @@ mid_deploy_branch:
   except:
     refs:
       - master
+
+mid_branch_test_uninstall:
+  stage: cleanup
+  # needs:
+  #   - mid_on_demand_deploy
+  extends:
+    - .mid_branch_vars
+    - .output_step_info
+    - .tags_default
+    - .uninstall_definition
+    # - .on_demand_definition # DEFINITION MUST BE ADDED LAST
+  environment:
+    name: "test/$CI_COMMIT_REF_NAME"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
+
 
 
 # mid_on_demand_deploy:
@@ -168,7 +185,7 @@ mid_deploy_branch:
 #     name: "test/$CI_COMMIT_REF_NAME"
 #     kubernetes:
 #       # This repetition is needed for gitlab to parse the namespace correctly
-#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
 #     on_stop: mid_on_demand_uninstall
 
 # mid_on_demand_test:
@@ -184,10 +201,10 @@ mid_deploy_branch:
 #   #- !reference [.create_k8s_creds, before_script]
 #   environment:
 #     name: "test/$CI_COMMIT_REF_NAME"
-#     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
+#     url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid/taranta"
 #     kubernetes:
 #       # This repetition is needed for gitlab to parse the namespace correctly
-#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
 #     on_stop: mid_on_demand_uninstall
 #     auto_stop_in: 2 hours
 #   # rules:
@@ -214,15 +231,15 @@ mid_deploy_branch:
 #     - .on_demand_definition # DEFINITION MUST BE ADDED LAST
 #   variables:
 #     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-#     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-#     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+#     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+#     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
 #     DEPLOYMENT_CONFIGURATION: "ska-mid"
 #     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
 #   environment:
 #     name: "test/$CI_COMMIT_REF_NAME"
 #     kubernetes:
 #       # This repetition is needed for gitlab to parse the namespace correctly
-#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
+#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
 #     action: stop
 
 # staging mid environment

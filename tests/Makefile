@@ -5,23 +5,22 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
-TEST_ARTIFACTS = pytest.stdout report.xml report.json cucumber.json pytest-logs.txt
-
 all: test
 
 .PHONY: all test install start_log_consumer remove_log_consumer setup_ipython config_git check_running get_mem_usage get_cpu_usage
 
 test: install
-	make start_log_consumer; \
+	# make start_log_consumer # does not start:
+	# omniORB: (0) 2021-10-13 14:29:20.153601: Error: cannot create directory: /tmp/omni-root
+	# omniORB: (0) 2021-10-13 14:29:20.153613: Error: Unable to create an endpoint of this description: giop:unix:
+	# make remove_log_consumer
+
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \
 	PYTHONPATH=/app:/app/skampi:/app/skampi/test pytest -v -r fEx \
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
 		--disable-pytest-warnings --timeout=300 $(FILE) --count=$(COUNT) | tee pytest.stdout; \
 	status=$$?; \
-	make remove_log_consumer && \
-	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
-	echo "What are all the files now:"; ls -latr; find ./build; \
 	echo "test: status is ($$status)"; \
 	exit $$status
 

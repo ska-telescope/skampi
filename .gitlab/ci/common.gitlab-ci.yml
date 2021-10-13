@@ -27,6 +27,7 @@
   script:
   - make install-or-upgrade K8S_CHARTS=$DEPLOYMENT_CONFIGURATION
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  - kubectl descibe pods -n $KUBE_NAMESPACE
   - make wait
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
   # artifacts:

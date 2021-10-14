@@ -80,7 +80,7 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 -include .make/base.mk
 
 SKAMPI_K8S_CHART ?= ska-mid
-SKAMPI_K8S_CHARTS ?= ska-mid ska-low
+SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
 
 HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 

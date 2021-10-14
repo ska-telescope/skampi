@@ -27,7 +27,7 @@
   script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-    - make k8s_test IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4
+    - make k8s-test IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4
     - echo "############## Build Output"
     - find ./build
     - echo "############## EXTRA MAKE VARS OUTPUT"

@@ -14,7 +14,7 @@ ska-ser-skuid:
   enabled: false
 ska-tango-archiver:
   enabled: false
-landingpage:
+ska-landingpage:
   enabled: true
 
 # Mid specific products

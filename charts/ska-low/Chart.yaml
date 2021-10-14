@@ -35,10 +35,10 @@ dependencies:
 #   version: 0.5.3
 #   repository: https://artefact.skao.int/repository/helm-internal
 #   condition: ska-oso-scripting.enabled
-# - name: landingpage
-#   version: 0.1.0
-#   repository: file://../landingpage
-#   condition: landingpage.enabled
+- name: ska-landingpage
+  version: 0.1.0
+  repository: file://../ska-landingpage
+  condition: ska-landingpage.enabled
 # - name: ska-tango-archiver
 #   version: 0.1.8
 #   repository: https://artefact.skao.int/repository/helm-internal

@@ -1,0 +1,36 @@
+# Note: All the assigned reviewers are placeholders
+
+# CI/CD Mandatory Reviewers
+[CI/CD]
+.gitlab-ci.yml @limonkufu @piers
+.gitlab/ @limonkufu @piers
+Makefile @limonkufu @piers
+values.yaml @limonkufu @piers
+
+# Charts Mandatory Reviewers
+[Integration]
+charts/ @limonkufu @piers
+
+# Docs Mandatory Reviewers
+[Documentation]
+docs/ @limonkufu @piers
+README.md @limonkufu @piers
+*.md @limonkufu @piers
+*.rst @limonkufu @piers
+.readthedocs.yaml @limonkufu @piers
+
+# Tests Mandatory Reviewers
+[Tests]
+tests/ @limonkufu @piers
+*.py @limonkufu @piers
+
+# Release Mandatory Reviewers
+.release @limonkufu @piers
+## TODO: Chart.yaml files?
+
+
+# Overall Mandatory Reviewers
+* @limonkufu @piers
+
+# License
+LICENSE @limonkufu @piers

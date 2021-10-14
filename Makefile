@@ -82,6 +82,8 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 SKAMPI_K8S_CHART ?= ska-mid
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low
 
+HELM_CHARTS_TO_PUBLISH ?= $(SKAMPI_K8S_CHARTS)
+
 # KUBE_APP is set to the ska-tango-images base chart value
 SKAMPI_KUBE_APP ?= ska-tango-images
 KUBE_APP = $(SKAMPI_KUBE_APP)
@@ -161,47 +163,25 @@ delete-sdp-namespace: ## delete the kubernetes SDP namespace
 	@make delete-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
 update-chart-versions:
-	@which yq || (echo "yq not installed - you must 'pip3 install yq'"; exit 1;)
-	for chart in $(SKAMPI_K8S_CHARTS); do \
+	@which yq >/dev/null 2>&1 || (echo "yq not installed - you must 'pip3 install yq'"; exit 1;)
+	@ which jq >/dev/null 2>&1 || (echo "jq not installed - see https://stedolan.github.io/jq/"; exit 1;)
+	@for chart in $(SKAMPI_K8S_CHARTS); do \
 		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
 		for upd in $$(yq -r '.dependencies[].name' charts/$$chart/Chart.yaml); do \
-			echo "update-chart-versions: finding latest version for $$upd"; \
+			cur_version=$$(cat charts/$$chart/Chart.yaml | yq -r ".dependencies[] | select(.name == \"$$upd\") | .version"); \
+			echo "update-chart-versions: finding latest version for $$upd current version: $$cur_version"; \
 			upd_version=$$(. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sChartVersion $$upd); \
-			echo "update-chart-versions: updating $$upd to $$upd_version"; \
+			echo "update-chart-versions: updating $$upd from $$cur_version to $$upd_version"; \
 			sed -i.x -e "N;s/\(name: $$upd.*version:\).*/\1 $${upd_version}/;P;D" charts/$$chart/Chart.yaml; \
 			rm -f charts/*/Chart.yaml.x; \
 		done; \
 	done
-
-
 
 install: clean namespace namespace_sdp check-archiver-dbname install-chart## install the helm chart on the namespace KUBE_NAMESPACE
 
 uninstall: uninstall-chart ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
-
-# upgrade-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
-# 	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
-# 		echo "Installing Helm charts from current ref of git repository..."; \
-# 		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
-# 	else \
-# 		echo "Deploying from artefact repository..."; \
-# 		helm repo add $(HELM_REPO_NAME) $(CAR_HELM_REPOSITORY_URL); \
-# 		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
-# 		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
-# 	fi
-# 	helm upgrade $(HELM_RELEASE) --install --wait \
-# 		$(CHART_PARAMS) \
-# 		--values $(VALUES) \
-# 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
-
-# template-chart: clean ## template the helm chart on the namespace KUBE_NAMESPACE
-# 	helm dependency update $(UMBRELLA_CHART_PATH); \
-# 	helm template $(HELM_RELEASE) \
-#         $(CHART_PARAMS) \
-# 		--values $(VALUES) \
-# 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
 install-or-upgrade: install-chart## install or upgrade the release
 
@@ -224,8 +204,6 @@ upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		$(CHART_PARAMS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
-
-# install-or-upgrade: upgrade-skampi-chart## install or upgrade the release
 
 links: ## attempt to create the URLs with which to access
 	@echo "############################################################################"

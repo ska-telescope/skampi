@@ -45,14 +45,14 @@ include:
   - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
 
   # temp comment out to speed up pipeline
-  # # Helm Charts
-  # - project: 'ska-telescope/templates-repository'
-  #   file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
+  # Helm Charts
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
 
   # temp comment out to speed up pipeline
-  # # Docs
-  # - project: 'ska-telescope/templates-repository'
-  #   file: 'gitlab-ci/includes/docs.gitlab-ci.yml'
+  # Docs
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/docs.gitlab-ci.yml'
 
     # .post steps
   - project: 'ska-telescope/templates-repository'

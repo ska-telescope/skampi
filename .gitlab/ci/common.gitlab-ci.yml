@@ -93,21 +93,6 @@
       - logs.tar.xz
     when: always
 
-# .psi_test_template:
-#   script:
-#     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-#     - make install-or-upgrade || true
-#     - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
-#       kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-#     - make k8s_test
-#   artifacts:
-#     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-#     paths:
-#       - "build/"
-#     reports:
-#       junit: build/report.xml
-#     when: always
-
 tag_commit:
   stage: release
   variables:

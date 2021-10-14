@@ -91,22 +91,22 @@
       - logs.tar.xz
     when: always
 
-tag_commit:
-  stage: release
-  variables:
-    USERNAME: "$GITLAB_USER_NAME"
-    EMAILID: $GITLAB_USER_EMAIL
-    PRIVATE_TOKEN: $SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
-  tags:
-    - k8srunner
-  when: manual
-  # needs:
-  #   - job: publish-chart
-  only:
-    refs:
-      - master
-  # rules:
-  #   - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+# tag_commit:
+#   stage: release
+#   variables:
+#     USERNAME: "$GITLAB_USER_NAME"
+#     EMAILID: $GITLAB_USER_EMAIL
+#     PRIVATE_TOKEN: $SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
+#   tags:
+#     - k8srunner
+#   when: manual
+#   # needs:
+#   #   - job: publish-chart
+#   only:
+#     refs:
+#       - master
+#   # rules:
+#   #   - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
   script:
     - make release-skampi

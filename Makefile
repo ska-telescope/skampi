@@ -82,7 +82,7 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 SKAMPI_K8S_CHART ?= ska-mid
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low
 
-HELM_CHARTS_TO_PUBLISH ?= $(SKAMPI_K8S_CHARTS)
+HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 
 # KUBE_APP is set to the ska-tango-images base chart value
 SKAMPI_KUBE_APP ?= ska-tango-images

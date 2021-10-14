@@ -113,26 +113,15 @@ get_size_images: ## get a list of images together with their size (both local an
 # functionality of the cluster by simply calling `make cluster-k8s-test`
 
 cluster-k8s-test-pre: ## Setup of kubernetes resources for testing cluster
-	python3 -m venv venv && source venv/bin/activate && \
-	which python && \
-	pip list && \
-	pip install -r tests/requirements.txt && \
 	kubectl create ns $(CLUSTER_TEST_NAMESPACE) --dry-run=client -o yaml | kubectl apply -f - && \
-	kubectl -n $(CLUSTER_TEST_NAMESPACE) apply -f tests/resources/cluster_integration_test_resources.yaml --wait
+	kubectl -n $(CLUSTER_TEST_NAMESPACE) apply -f tests/resources/assets/cluster_integration_test_resources.yaml --wait
 	
 cluster-k8s-test-post: ## teardown step for testing cluster
-	kubectl -n $(CLUSTER_TEST_NAMESPACE) delete --grace-period=0 --ignore-not-found \
-	ingress.networking.k8s.io/test \
-	service/nginx1 \
-	deployment.apps/nginx-deployment1 \
-	service/nginx2 \
-	deployment.apps/nginx-deployment2 \
-	persistentvolumeclaim/pvc-test \
-	persistentvolume/pvtest \
-	configmap/test && kubectl delete ns $(CLUSTER_TEST_NAMESPACE) --ignore-not-found;
+	kubectl -n $(CLUSTER_TEST_NAMESPACE) delete --grace-period=0 --ignore-not-found --force -f tests/resources/assets/cluster_integration_test_resources.yaml && \
+	kubectl delete ns $(CLUSTER_TEST_NAMESPACE) --ignore-not-found --grace-period=0 --force;
 
 cluster-k8s-test-pytest: ## Test the cluster using pytest
 	# kubectl -n $(CLUSTER_TEST_NAMESPACE) get deployment,pod,svc,ingress.networking.k8s.io,pvc -l app.kubernetes.io/name=test -o wide
-	venv/bin/pytest tests/unit/test_cluster_k8s.py
+	pytest tests/unit/test_cluster_k8s.py
 
 cluster-k8s-test: cluster-k8s-test-pre cluster-k8s-test-pytest cluster-k8s-test-post ## Test the cluster using make setup and teardown

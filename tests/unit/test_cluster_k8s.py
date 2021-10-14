@@ -4,44 +4,65 @@ import pytest
 import os
 import requests
 import time
+import subprocess
 from kubernetes import config, client
 from kubernetes.stream import stream
 
+# @pytest_fixture(scope="module", name="genesis")
+# def fxt_create_all_the_things()
+    # creation = subprocess.run(k_cmd).returncode
 
-@pytest.fixture(scope="module")
-def test_namespace():
-    _namespace = os.environ["CLUSTER_TEST_NAMESPACE"]
+@pytest.fixture(name="manifest", scope="module")
+def fxt_manifest():
+    return os.path.realpath(os.path.join(os.getcwd(),'..','reources','assets','cluster_unit_test_resources.yaml'))
+
+@pytest.fixture(name="test_namespace", scope="module")
+def fxt_test_namespace(manifest):
+
+    logging.info(f"Current working directory: {os.getcwd()}")    
+    logging.info(f"Manifest returns: {manifest}")
+
+    if "CI_JOB_ID" in os.environ:
+        _namespace = 'ci-' + os.environ["CI_JOB_ID"]
+    else:
+        _namespace = "default"
     yield _namespace
-    v1 = client.CoreV1Api()
-    beta = client.ExtensionsV1beta1Api()
-    appsv1 = client.AppsV1Api()
 
-    for ingress in beta.list_namespaced_ingress(_namespace).items:
-        beta.delete_namespaced_ingress(
-            ingress.metadata.name, _namespace, grace_period_seconds=0
-        )
+    k_cmd = ["kubectl", "-n", _namespace, "delete", "--grace-period=0", "--ignore-not-found", "--force", "-f", "tests/resources/assets/cluster_integration_test_resources.yaml"]
+    destroyed_result = subprocess.run(k_cmd).returncode
 
-    for svc in v1.list_namespaced_service(_namespace).items:
-        v1.delete_namespaced_service(
-            svc.metadata.name, _namespace, grace_period_seconds=0
-        )
+    assert destroyed_result == 0
 
-    for cfgm in v1.list_namespaced_config_map(_namespace).items:
-        v1.delete_namespaced_config_map(
-            cfgm.metadata.name, _namespace, grace_period_seconds=0
-        )
+    # v1 = client.CoreV1Api()
+    # beta = client.ExtensionsV1beta1Api()
+    # appsv1 = client.AppsV1Api()
 
-    for depl in appsv1.list_namespaced_deployment(_namespace).items:
-        appsv1.delete_namespaced_deployment(
-            depl.metadata.name, _namespace, grace_period_seconds=0
-        )
+    # for ingress in beta.list_namespaced_ingress(_namespace).items:
+    #     beta.delete_namespaced_ingress(
+    #         ingress.metadata.name, _namespace, grace_period_seconds=0
+    #     )
 
-    for pvc in v1.list_namespaced_persistent_volume_claim(_namespace).items:
-        v1.delete_namespaced_persistent_volume_claim(
-            pvc.metadata.name, _namespace, grace_period_seconds=0
-        )
+    # for svc in v1.list_namespaced_service(_namespace).items:
+    #     v1.delete_namespaced_service(
+    #         svc.metadata.name, _namespace, grace_period_seconds=0
+    #     )
 
-    v1.delete_persistent_volume("pvtest", grace_period_seconds=0)
+    # for cfgm in v1.list_namespaced_config_map(_namespace).items:
+    #     v1.delete_namespaced_config_map(
+    #         cfgm.metadata.name, _namespace, grace_period_seconds=0
+    #     )
+
+    # for depl in appsv1.list_namespaced_deployment(_namespace).items:
+    #     appsv1.delete_namespaced_deployment(
+    #         depl.metadata.name, _namespace, grace_period_seconds=0
+    #     )
+
+    # for pvc in v1.list_namespaced_persistent_volume_claim(_namespace).items:
+    #     v1.delete_namespaced_persistent_volume_claim(
+    #         pvc.metadata.name, _namespace, grace_period_seconds=0
+    #     )
+
+    # v1.delete_persistent_volume("pvtest", grace_period_seconds=0)
 
     v1.delete_namespace(_namespace)
 
@@ -84,6 +105,10 @@ def curl_service_with_shared_volume(host0, host1, test_namespace):
     logging.debug(f"URL1: {url}")
     result1 = requests.get(url, headers={"Host": host0})
     result2 = requests.get(url, headers={"Host": host1})
+    logging.info("Result1: {}".format(result1.text))
+    logging.info("Status1: {}".format(result1.status_code))
+    logging.info("Result2: {}".format(result2.text))
+    logging.info("Status2: {}".format(result2.status_code))
     assert (
         result1.status_code == 200
     ), f"Expected a 200 response, got {result1.status_code}"

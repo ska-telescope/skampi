@@ -10,14 +10,14 @@ test_cluster_k8s:
   tags:
     - k8srunner
   before_script:
-    - apt-get update
-    - apt install python3.8-venv -y
+    - pip install -r tests/requirements.txt
     - make cluster-k8s-test-pre
   script:
-    - make cluster-k8s-test-pytest
+    - pytest tests/unit/test_cluster_k8s.py
   after_script:
+    - ls -latr
     - mv report.xml unit-tests.xml
-    - cp unit-tests.xml report.json cucumber.json ../build/reports/
+    - cp unit-tests.xml report.json cucumber.json build/reports/
     - make cluster-k8s-test-post
   environment:
     name: test

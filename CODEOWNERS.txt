@@ -2,35 +2,35 @@
 
 # CI/CD Mandatory Reviewers
 [CI/CD]
-.gitlab-ci.yml @limonkufu @piers
-.gitlab/ @limonkufu @piers
-Makefile @limonkufu @piers
-values.yaml @limonkufu @piers
+.gitlab-ci.yml @limonkufu @piersharding
+.gitlab/ @limonkufu @piersharding
+Makefile @limonkufu @piersharding
+values.yaml @limonkufu @piersharding
 
 # Charts Mandatory Reviewers
 [Integration]
-charts/ @limonkufu @piers
+charts/ @limonkufu @piersharding
 
 # Docs Mandatory Reviewers
 [Documentation]
-docs/ @limonkufu @piers
-README.md @limonkufu @piers
-*.md @limonkufu @piers
-*.rst @limonkufu @piers
-.readthedocs.yaml @limonkufu @piers
+docs/ @limonkufu @piersharding
+README.md @limonkufu @piersharding
+*.md @limonkufu @piersharding
+*.rst @limonkufu @piersharding
+.readthedocs.yaml @limonkufu @piersharding
 
 # Tests Mandatory Reviewers
 [Tests]
-tests/ @limonkufu @piers
-*.py @limonkufu @piers
+tests/ @limonkufu @piersharding
+*.py @limonkufu @piersharding
 
 # Release Mandatory Reviewers
-.release @limonkufu @piers
+.release @limonkufu @piersharding
 ## TODO: Chart.yaml files?
 
 
 # Overall Mandatory Reviewers
-* @limonkufu @piers
+* @limonkufu @piersharding
 
 # License
-LICENSE @limonkufu @piers
+LICENSE @limonkufu @piersharding

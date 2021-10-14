@@ -1,0 +1,6 @@
+apiVersion: v2
+name: testing-auth
+description: Service accounts enabling a testing pod to perform kubernetes operation within a particular namespace
+type: application
+version: 0.1.0
+appVersion: 0.1.0

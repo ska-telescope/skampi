@@ -63,28 +63,81 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets for interrim image building
 -include .make/oci.mk
 
-# include makefile targets for release management
--include .make/release.mk
 # include makefile targets for Kubernetes management
 -include .make/k8s.mk
 
 # include makefile targets for helm linting
 -include .make/helm.mk
 
-## local custom includes
-# include makefile targets for testing
--include resources/test.mk
+# ## local custom includes
+# # include makefile targets for testing
+# -include resources/test.mk
 
-# include makefile targets that EDA deployment
+# include makefile targets for EDA deployment
 -include resources/archiver.mk
 
-## The following should be standard includes
-# include makefile targets for make submodule
--include .make/make.mk
-# include makefile targets for Makefile help
--include .make/help.mk
-# include your own private variables for custom deployment configuration
+# include core makefile targets
+-include .make/base.mk
+
+SKAMPI_K8S_CHART ?= ska-mid
+SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
+
+HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
+
+# KUBE_APP is set to the ska-tango-images base chart value
+SKAMPI_KUBE_APP ?= ska-tango-images
+KUBE_APP = $(SKAMPI_KUBE_APP)
+
+CI_JOB_ID?=local
+#
+# IMAGE_TO_TEST defines the tag of the Docker image to test
+IMAGE_TO_TEST = artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0## docker image that will be run for testing purpose
+# Test runner - run to completion job in K8s
+TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
+#
+# defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
+# and then runs the requested make target in the container.
+# capture the output of the test in a build folder inside the container
+#
+MARK ?= fast## this variable allow the mark parameter in the pytest
+FILE ?= ##this variable allow to execution of a single file in the pytest
+SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
+COUNT ?= 1## amount of repetition for pytest-repeat
+BIGGER_THAN ?= ## get_size_images parameter: if not empty check if images are bigger than this (in MB)
+
+TELESCOPE = 'SKA-Mid'
+CENTRALNODE = 'ska_mid/tm_central/central_node'
+SUBARRAY = 'ska_mid/tm_subarray_node'
+# Define environmenvariables required by OET
+ifneq (,$(findstring low,$(KUBE_NAMESPACE)))
+	TELESCOPE = 'SKA-Low'
+	CENTRALNODE = 'ska_low/tm_central/central_node'
+	SUBARRAY = 'ska_low/tm_subarray_node'
+endif
+
+PUBSUB = true
+
 -include PrivateRules.mak
+
+K8S_TEST_MAKE_PARAMS = \
+	SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
+	KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
+	HELM_RELEASE=$(HELM_RELEASE) \
+	TANGO_HOST=$(TANGO_HOST) \
+	CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
+	MARK='$(MARK)' \
+	COUNT=$(COUNT) \
+	FILE='$(FILE)' \
+	SKA_TELESCOPE=$(TELESCOPE) \
+	CENTRALNODE_FQDN=$(CENTRALNODE) \
+	SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
+	OET_READ_VIA_PUBSUB=$(PUBSUB) \
+	JIRA_AUTH=$(JIRA_AUTH) \
+	CAR_RAW_USERNAME=$(RAW_USER) \
+	CAR_RAW_PASSWORD=$(RAW_PASS) \
+	CAR_RAW_REPOSITORY_URL=$(RAW_HOST)
+
+
 vars: ## Display variables
 	@echo "SKA_K8S_TOOLS_DEPLOY_IMAGE=$(SKA_K8S_TOOLS_DEPLOY_IMAGE)"
 	@echo ""
@@ -100,47 +153,41 @@ vars: ## Display variables
 	@echo "ARCHIVER_DBNAME=$(ARCHIVER_DBNAME)"
 	@echo ""
 	@echo "MARK=$(MARK)"
-	@echo ""
-	@echo "IMAGE_TO_TEST=$(IMAGE_TO_TEST)"
-	@echo "TEST_RUNNER=$(TEST_RUNNER)"
 
+namespace_sdp: KUBE_NAMESPACE := $(KUBE_NAMESPACE_SDP)
 namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
-	@kubectl describe namespace $(KUBE_NAMESPACE_SDP) > /dev/null 2>&1 ; \
-	K_DESC=$$? ; \
-	if [ $$K_DESC -eq 0 ] ; \
-	then kubectl describe namespace $(KUBE_NAMESPACE_SDP) ; \
-	else kubectl create namespace $(KUBE_NAMESPACE_SDP); \
-	fi
+	@make namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE)
 
-delete_sdp_namespace: ## delete the kubernetes SDP namespace
-	@if [ "default" = "$(KUBE_NAMESPACE_SDP)" ] || [ "kube-system" = "$(KUBE_NAMESPACE_SDP)" ] ; then \
-	echo "You cannot delete Namespace: $(KUBE_NAMESPACE_SDP)"; \
-	exit 1; \
-	else \
-		if [ -n "$$(kubectl get ns | grep "$(KUBE_NAMESPACE_SDP)")" ]; then \
-			echo "Deleting namespace $(KUBE_NAMESPACE_SDP)" \
-			kubectl describe namespace $(KUBE_NAMESPACE_SDP) && kubectl delete namespace $(KUBE_NAMESPACE_SDP); \
-		else \
-			echo "Namespace $(KUBE_NAMESPACE_SDP) doesn't exist"; \
-		fi \
-	fi
+delete-sdp-namespace: KUBE_NAMESPACE := $(KUBE_NAMESPACE_SDP)
+delete-sdp-namespace: ## delete the kubernetes SDP namespace
+	@make delete-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
-lint_all:  lint## lint ALL of the helm chart
+update-chart-versions:
+	@which yq >/dev/null 2>&1 || (echo "yq not installed - you must 'pip3 install yq'"; exit 1;)
+	@ which jq >/dev/null 2>&1 || (echo "jq not installed - see https://stedolan.github.io/jq/"; exit 1;)
+	@for chart in $(SKAMPI_K8S_CHARTS); do \
+		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
+		for upd in $$(yq -r '.dependencies[].name' charts/$$chart/Chart.yaml); do \
+			cur_version=$$(cat charts/$$chart/Chart.yaml | yq -r ".dependencies[] | select(.name == \"$$upd\") | .version"); \
+			echo "update-chart-versions: finding latest version for $$upd current version: $$cur_version"; \
+			upd_version=$$(. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sChartVersion $$upd); \
+			echo "update-chart-versions: updating $$upd from $$cur_version to $$upd_version"; \
+			sed -i.x -e "N;s/\(name: $$upd.*version:\).*/\1 $${upd_version}/;P;D" charts/$$chart/Chart.yaml; \
+			rm -f charts/*/Chart.yaml.x; \
+		done; \
+	done
 
-lint:  ## lint the HELM_CHART of the helm chart
-	cd charts; \
-	for i in *; do helm dependency update ./$${i}; done; \
-	helm lint *
+install: clean namespace namespace_sdp check-archiver-dbname install-chart## install the helm chart on the namespace KUBE_NAMESPACE
 
-install: clean namespace namespace_sdp check-archiver-dbname upgrade-skampi-chart## install the helm chart on the namespace KUBE_NAMESPACE
-
-uninstall: ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-	K_DESC=$$? ; \
-	if [ $$K_DESC -eq 0 ] ; \
-	then helm uninstall $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true; \
-	fi
+uninstall: uninstall-chart ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
+
+install-or-upgrade: install-chart## install or upgrade the release
+
+quotas: namespace## delete and create the kubernetes namespace with quotas
+	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
+
 
 upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	@echo "THIS IS A SKAMPI SPECIFIC MAKE TARGET"
@@ -157,17 +204,6 @@ upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		$(CHART_PARAMS) \
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
-
-install-or-upgrade: upgrade-skampi-chart## install or upgrade the release
-
-quotas: namespace## delete and create the kubernetes namespace with quotas
-	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
-
-get_pods: ##lists the pods deployed for a particular namespace. @param: KUBE_NAMESPACE
-	kubectl get pods -n $(KUBE_NAMESPACE)
-
-get_versions: ## lists the container images used for particular pods
-	kubectl get pods -l release=$(HELM_RELEASE) -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{range .spec.containers[*]}{.name}{'\t'}{.image}{'\n\n'}{end}{'\n'}{end}{'\n'}"
 
 links: ## attempt to create the URLs with which to access
 	@echo "############################################################################"

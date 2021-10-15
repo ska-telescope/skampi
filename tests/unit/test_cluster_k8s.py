@@ -4,75 +4,128 @@ import pytest
 import os
 import requests
 import time
+import subprocess
 from kubernetes import config, client
 from kubernetes.stream import stream
 
+@pytest.fixture(name="assets_dir", scope="module")
+def fxt_assets_dir():
+    cur_path = os.path.dirname(os.path.realpath(__file__))
+    return os.path.realpath(os.path.join(cur_path, "..", "resources", "assets"))
 
-@pytest.fixture(scope="module")
-def test_namespace():
-    _namespace = os.environ["CLUSTER_TEST_NAMESPACE"]
-    yield _namespace
-    v1 = client.CoreV1Api()
-    beta = client.ExtensionsV1beta1Api()
-    appsv1 = client.AppsV1Api()
 
-    for ingress in beta.list_namespaced_ingress(_namespace).items:
-        beta.delete_namespaced_ingress(
-            ingress.metadata.name, _namespace, grace_period_seconds=0
-        )
-
-    for svc in v1.list_namespaced_service(_namespace).items:
-        v1.delete_namespaced_service(
-            svc.metadata.name, _namespace, grace_period_seconds=0
-        )
-
-    for cfgm in v1.list_namespaced_config_map(_namespace).items:
-        v1.delete_namespaced_config_map(
-            cfgm.metadata.name, _namespace, grace_period_seconds=0
-        )
-
-    for depl in appsv1.list_namespaced_deployment(_namespace).items:
-        appsv1.delete_namespaced_deployment(
-            depl.metadata.name, _namespace, grace_period_seconds=0
-        )
-
-    for pvc in v1.list_namespaced_persistent_volume_claim(_namespace).items:
-        v1.delete_namespaced_persistent_volume_claim(
-            pvc.metadata.name, _namespace, grace_period_seconds=0
-        )
-
-    v1.delete_persistent_volume("pvtest", grace_period_seconds=0)
-
-    v1.delete_namespace(_namespace)
+@pytest.fixture(name="manifest", scope="module")
+def fxt_manifest(assets_dir):
+    # Ensure manifest file exists
+    manifest_filepath = os.path.realpath(
+        os.path.join(assets_dir, "cluster_unit_test_resources.yaml")
+    )
+    logging.info(f"FILE PATH: {manifest_filepath}")
+    assert os.path.isfile(manifest_filepath)
+    return manifest_filepath
 
 
 @pytest.fixture(autouse=True, scope="module")
-def k8s_cluster():
-    logging.info("loading kubeconfig")
-    config.load_kube_config()
+def k8s_cluster(assets_dir):
+    kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
+    if not os.path.isfile(kubeconfig_filepath):
+        assert os.path.isfile(os.path.join(os.environ["HOME"],".kube","config"))
+        kubeconfig_filepath = os.path.join(os.environ["HOME"],".kube","config")
+
+    nodes = subprocess.run(
+        ["kubectl", "get", "nodes", "-o", "wide"],
+        check=True,
+        stdout=subprocess.PIPE,
+        universal_newlines=True,
+    )
+    for line in nodes.stdout.split("\n"):
+        logging.info(line)
+
+    logging.info(f"loading kubeconfig from {kubeconfig_filepath}.")
+    config.load_kube_config(kubeconfig_filepath)
+
+
+@pytest.fixture(name="test_namespace", scope="module")
+def fxt_test_namespace(manifest):
+    logging.info(f"Current working directory: {os.getcwd()}")
+    logging.info(f"Manifest returns: {manifest}")
+
+    # Run test in default ns on local cluster, specific namespace in CI job
+    if "CLUSTER_TEST_NAMESPACE" in os.environ:
+        _namespace = os.environ["CLUSTER_TEST_NAMESPACE"]
+        try:
+            namespaces = client.CoreV1Api().list_namespace()
+        except Exception as e:
+            pytest.skip(f"Kubernetes not found: {e}")
+        if not any(ns.metadata.name == _namespace for ns in namespaces.items):
+            namespace = client.V1Namespace(
+                kind="Namespace",
+                api_version="v1",
+                metadata=client.V1ObjectMeta(name=_namespace),
+            )
+            client.CoreV1Api().create_namespace(namespace)
+        
+        logging.info(f"Namespace {namespace.metadata.name} created")
+    else:
+        _namespace = "default"
+
+    logging.info(f"Creating resources in namespace: {_namespace}")
+    k_cmd_create = [
+        "kubectl",
+        "-n",
+        _namespace,
+        "-f",
+        manifest,
+        "apply",
+    ]
+
+    let_there_be_things = subprocess.run(
+        k_cmd_create, check=True, stdout=subprocess.PIPE, universal_newlines=True
+    )
+    for line in let_there_be_things.stdout.split("\n"):
+        logging.info(line)
+
+    yield _namespace
+
+    k_cmd = [
+        "kubectl",
+        "-n",
+        _namespace,
+        "delete",
+        "--grace-period=0",
+        "--ignore-not-found",
+        "-f",
+        manifest,
+    ]
+
+    destroy_the_things = subprocess.run(k_cmd, check=True)
+    assert destroy_the_things.returncode == 0
+
+    if _namespace != "default":
+        client.CoreV1Api().delete_namespace(name=_namespace, async_req=True)
 
 
 def write_to_volume(write_service_name, test_namespace):
-    command = "echo $(date) > /usr/share/nginx/html/index.html"
-    exec_command = ["/bin/sh", "-c", command]
+    command_to_run = "echo $(date) > /usr/share/nginx/html/index.html"
+    exec_command = ["/bin/sh", "-c", command_to_run]
+
     v1 = client.CoreV1Api()
-    ret = v1.list_namespaced_pod(
-        test_namespace, label_selector="app=" + write_service_name
+    podname = (
+        v1.list_namespaced_pod(
+            test_namespace, label_selector="app=" + write_service_name
+        )
+        .items[0]
+        .metadata.name
     )
-    logging.debug(
-        "Executing command " + command + " on pod " + ret.items[0].metadata.name
-    )
-    resp = stream(
-        v1.connect_get_namespaced_pod_exec,
-        ret.items[0].metadata.name,
-        test_namespace,
-        command=exec_command,
-        stderr=True,
-        stdin=False,
-        stdout=True,
-        tty=False,
-    )
-    logging.info(resp)
+
+    k_cmd = ["kubectl", "-n", test_namespace, "exec", "-i", podname, "--"]
+    command = k_cmd + exec_command
+    logging.info(f"Executing command {exec_command} on pod {podname}")
+    logging.info(f"Full array: {command}")
+
+    write_result = subprocess.run(command, check=True)
+    # resp = stream( v1.connect_get_namespaced_pod_exec, ret.items[0].metadata.name, test_namespace, command=exec_command, stderr=True, stdin=False, stdout=True, tty=False,)
+    assert write_result
 
 
 def curl_service_with_shared_volume(host0, host1, test_namespace):
@@ -84,6 +137,10 @@ def curl_service_with_shared_volume(host0, host1, test_namespace):
     logging.debug(f"URL1: {url}")
     result1 = requests.get(url, headers={"Host": host0})
     result2 = requests.get(url, headers={"Host": host1})
+    logging.info("Result1: {}".format(result1.text))
+    logging.info("Status1: {}".format(result1.status_code))
+    logging.info("Result2: {}".format(result2.text))
+    logging.info("Status2: {}".format(result2.status_code))
     assert (
         result1.status_code == 200
     ), f"Expected a 200 response, got {result1.status_code}"

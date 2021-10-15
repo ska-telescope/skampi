@@ -5,6 +5,7 @@
 test_cluster_k8s:
   stage: test
   retry: 2
+  image: artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0
   variables:
     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID
   tags:
@@ -13,7 +14,7 @@ test_cluster_k8s:
     - pip install -r tests/requirements.txt
     - make cluster-k8s-test-pre
   script:
-    - pytest tests/unit/test_cluster_k8s.py
+    - make cluster-k8s-test-do
   after_script:
     - ls -latr
     - mv report.xml unit-tests.xml

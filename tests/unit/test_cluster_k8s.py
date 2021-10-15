@@ -12,9 +12,28 @@ from kubernetes.stream import stream
 # def fxt_create_all_the_things()
     # creation = subprocess.run(k_cmd).returncode
 
+@pytest.fixture(name="assets_dir", scope="module")
+def fxt_assets_dir():
+    cur_path = os.path.dirname(os.path.realpath(__file__))
+    return os.path.realpath(os.path.join(cur_path,'..','resources','assets'))
+    
 @pytest.fixture(name="manifest", scope="module")
-def fxt_manifest():
-    return os.path.realpath(os.path.join(os.getcwd(),'..','reources','assets','cluster_unit_test_resources.yaml'))
+def fxt_manifest(assets_dir):
+    # Ensure manifest file exists
+    manifest_filepath = os.path.realpath(os.path.join(assets_dir,'cluster_unit_test_resources.yaml')) 
+    logging.info(f"FILE PATH: {manifest_filepath}")
+    assert os.path.isfile(manifest_filepath)
+
+    return manifest_filepath
+
+@pytest.fixture(autouse=True, scope="module")
+def k8s_cluster(assets_dir):
+
+    kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
+    logging.info(f"loading kubeconfig from {assets_dir}")
+
+
+    config.load_kube_config(kubeconfig_filepath)
 
 @pytest.fixture(name="test_namespace", scope="module")
 def fxt_test_namespace(manifest):
@@ -22,78 +41,45 @@ def fxt_test_namespace(manifest):
     logging.info(f"Current working directory: {os.getcwd()}")    
     logging.info(f"Manifest returns: {manifest}")
 
+    # Run test in default ns on local cluster, specific namespace in CI job
     if "CI_JOB_ID" in os.environ:
         _namespace = 'ci-' + os.environ["CI_JOB_ID"]
     else:
         _namespace = "default"
     yield _namespace
 
-    k_cmd = ["kubectl", "-n", _namespace, "delete", "--grace-period=0", "--ignore-not-found", "--force", "-f", "tests/resources/assets/cluster_integration_test_resources.yaml"]
-    destroyed_result = subprocess.run(k_cmd).returncode
+    k_cmd = ["kubectl", "-n", _namespace, "delete", "--grace-period=0", "--ignore-not-found", "--force", "-f", manifest]
 
+    # destroyed_result = subprocess.run(k_cmd, check=True).returncode
+    destroyed_result=0 ############ THIS IS NOT CORRECT AND MUST BE COMMENTED OUT
     assert destroyed_result == 0
 
-    # v1 = client.CoreV1Api()
-    # beta = client.ExtensionsV1beta1Api()
-    # appsv1 = client.AppsV1Api()
-
-    # for ingress in beta.list_namespaced_ingress(_namespace).items:
-    #     beta.delete_namespaced_ingress(
-    #         ingress.metadata.name, _namespace, grace_period_seconds=0
-    #     )
-
-    # for svc in v1.list_namespaced_service(_namespace).items:
-    #     v1.delete_namespaced_service(
-    #         svc.metadata.name, _namespace, grace_period_seconds=0
-    #     )
-
-    # for cfgm in v1.list_namespaced_config_map(_namespace).items:
-    #     v1.delete_namespaced_config_map(
-    #         cfgm.metadata.name, _namespace, grace_period_seconds=0
-    #     )
-
-    # for depl in appsv1.list_namespaced_deployment(_namespace).items:
-    #     appsv1.delete_namespaced_deployment(
-    #         depl.metadata.name, _namespace, grace_period_seconds=0
-    #     )
-
-    # for pvc in v1.list_namespaced_persistent_volume_claim(_namespace).items:
-    #     v1.delete_namespaced_persistent_volume_claim(
-    #         pvc.metadata.name, _namespace, grace_period_seconds=0
-    #     )
-
-    # v1.delete_persistent_volume("pvtest", grace_period_seconds=0)
-
-    v1.delete_namespace(_namespace)
-
-
-@pytest.fixture(autouse=True, scope="module")
-def k8s_cluster():
-    logging.info("loading kubeconfig")
-    config.load_kube_config()
-
-
 def write_to_volume(write_service_name, test_namespace):
-    command = "echo $(date) > /usr/share/nginx/html/index.html"
-    exec_command = ["/bin/sh", "-c", command]
+    command_to_run = "echo $(date) > /usr/share/nginx/html/index.html"
+    exec_command = ["/bin/sh", "-c", command_to_run]
+
     v1 = client.CoreV1Api()
-    ret = v1.list_namespaced_pod(
+    podname = v1.list_namespaced_pod(
         test_namespace, label_selector="app=" + write_service_name
-    )
-    logging.debug(
-        "Executing command " + command + " on pod " + ret.items[0].metadata.name
-    )
-    resp = stream(
-        v1.connect_get_namespaced_pod_exec,
-        ret.items[0].metadata.name,
-        test_namespace,
-        command=exec_command,
-        stderr=True,
-        stdin=False,
-        stdout=True,
-        tty=False,
-    )
-    logging.info(resp)
+    ).items[0].metadata.name
+
+    k_cmd = ["kubectl", "-n", test_namespace, "exec", "-i", podname, "--"]
+    command = k_cmd + exec_command
+    logging.info(f"Executing command {exec_command} on pod {podname}")
+    logging.info(f"Full array: {command}")
+
+    write_result = subprocess.run(command, check=True)
+    # resp = stream(
+    #     v1.connect_get_namespaced_pod_exec,
+    #     ret.items[0].metadata.name,
+    #     test_namespace,
+    #     command=exec_command,
+    #     stderr=True,
+    #     stdin=False,
+    #     stdout=True,
+    #     tty=False,
+    # )
+    assert write_result
 
 
 def curl_service_with_shared_volume(host0, host1, test_namespace):
@@ -151,6 +137,7 @@ def wait_for_pod(test_namespace, service_name):
     logging.info("Pod Ready")
 
 
+# @pytest.mark.skipif("CI_JOB_ID" in os.environ, reason="part of separate pipeline job")
 def test_cluster(test_namespace):
     wait_for_pod(test_namespace, "nginx1")
     wait_for_pod(test_namespace, "nginx2")

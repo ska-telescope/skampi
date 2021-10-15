@@ -113,15 +113,16 @@ get_size_images: ## get a list of images together with their size (both local an
 # functionality of the cluster by simply calling `make cluster-k8s-test`
 
 cluster-k8s-test-pre: ## Setup of kubernetes resources for testing cluster
+	kubectl config view --flatten --raw > tests/resources/assets/kubeconfig
 	kubectl create ns $(CLUSTER_TEST_NAMESPACE) --dry-run=client -o yaml | kubectl apply -f - && \
-	kubectl -n $(CLUSTER_TEST_NAMESPACE) apply -f tests/resources/assets/cluster_integration_test_resources.yaml --wait
+	kubectl -n $(CLUSTER_TEST_NAMESPACE) apply -f tests/resources/assets/cluster_unit_test_resources.yaml --wait
 	
 cluster-k8s-test-post: ## teardown step for testing cluster
-	kubectl -n $(CLUSTER_TEST_NAMESPACE) delete --grace-period=0 --ignore-not-found --force -f tests/resources/assets/cluster_integration_test_resources.yaml && \
 	kubectl delete ns $(CLUSTER_TEST_NAMESPACE) --ignore-not-found --grace-period=0 --force;
+	rm tests/resources/assets/kubeconfig
 
-cluster-k8s-test-pytest: ## Test the cluster using pytest
-	# kubectl -n $(CLUSTER_TEST_NAMESPACE) get deployment,pod,svc,ingress.networking.k8s.io,pvc -l app.kubernetes.io/name=test -o wide
+cluster-k8s-test-do: ## Test the cluster using pytest
+	export CLUSTER_TEST_NAMESPACE=$(CLUSTER_TEST_NAMESPACE)
 	pytest tests/unit/test_cluster_k8s.py
 
-cluster-k8s-test: cluster-k8s-test-pre cluster-k8s-test-pytest cluster-k8s-test-post ## Test the cluster using make setup and teardown
+cluster-k8s-test: cluster-k8s-test-pre cluster-k8s-test-do cluster-k8s-test-post ## Test the cluster using make setup and teardown

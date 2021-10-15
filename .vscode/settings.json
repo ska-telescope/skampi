@@ -14,7 +14,7 @@
     "yaml.customTags": [
     "!reference sequence"
     ],
-    "python.pythonPath": "venv/bin/python",
+    "python.pythonPath": "/Users/aragorn/.pyenv/versions/3.9.7/envs/397/bin/python",
     "python.analysis.extraPaths": [
         "./tests"
     ]

@@ -1,4 +1,4 @@
-FROM artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.2.6
+FROM artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0
 
 ARG POETRY_VERSION=1.2.0a2
 

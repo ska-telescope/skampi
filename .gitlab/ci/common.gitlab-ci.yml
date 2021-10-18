@@ -11,7 +11,7 @@ test_cluster_k8s:
   tags:
     - k8srunner
   before_script:
-    - bash scripts/gitlab_section.sh pip_install "Install Requirements" pip install -r tests/requirements.txt
+    - bash scripts/gitlab_section.sh pip_install "Install Requirements" pip install -r tests/requirements.txt && pip list
     - make cluster-k8s-test-pre
   script:
     - make cluster-k8s-test-do

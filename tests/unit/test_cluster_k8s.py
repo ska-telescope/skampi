@@ -194,8 +194,11 @@ def wait_for_pod(test_namespace, service_name):
 
 def test_cluster(test_namespace):
     wait_for_pod(test_namespace, "nginx1")
+    logging.info(f"Test: Deployment nginx1 Ready")
     wait_for_pod(test_namespace, "nginx2")
+    logging.info(f"Test: Deployment nginx2 Ready")
     write_to_volume("nginx1", test_namespace)
+    logging.info("Test: Successfully executed a write to a shared volume")
     curl_service_with_shared_volume(
         "nginx1", "nginx2", test_namespace
     )  # this is the actual test

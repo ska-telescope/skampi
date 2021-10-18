@@ -31,20 +31,14 @@ test_cluster_k8s:
       junit: build/reports/unit-tests.xml
     when: always
 
-.output_step_info:
-  script:
-    - |
-      echo $CI_JOB_NAME - $CI_JOB_STAGE
-      bash scripts/gitlab_section.sh vars "Make config dump" make vars
-
-.on_demand_definition:
-  when: manual
-  only:
-    refs:
-      - branches
-  except:
-    refs:
-      - master
+# .on_demand_definition:
+#   when: manual
+#   only:
+#     refs:
+#       - branches
+#   except:
+#     refs:
+#       - master
 
 .create_k8s_creds:
   before_script:
@@ -53,16 +47,46 @@ test_cluster_k8s:
     - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
 
 .deploy_definition:
+  before_script:
+  - make install-or-upgrade K8S_CHARTS=$DEPLOYMENT_CONFIGURATION
+  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+  - make wait
+
+.test_definition:
   script:
-    - !reference [.output_step_info, script]
-    - ARCHIVER_DBNAME=$(echo $ARCHIVER_DBNAME | tr '-' '_')
-    - make install-or-upgrade ARCHIVER_DBNAME=$ARCHIVER_DBNAME || true
-    - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
-      kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-    # - bash scripts/gitlab_section.sh archiver "Archiver configuration"
-    #   make configure-archiver
+    - echo $CI_JOB_NAME - $CI_JOB_STAGE
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - make k8s-test IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4
+    - echo "############## Build Output"
+    - find ./build
+    - echo "############## EXTRA MAKE VARS OUTPUT"
+    - make vars
+    - echo "#####################################"
+
+.uninstall_definition:
   after_script:
-    - make links
+    - echo $CI_JOB_NAME - $CI_JOB_STAGE
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - make uninstall-chart
+    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+    - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+    - make delete-namespace
+    - make delete-sdp-namespace
+    - |
+      if [ -f build/cucumber.json ]; then
+      bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=2.6.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+      /usr/local/bin/xtp-xray-upload -f build/cucumber.json -v
+      fi
+
+    # rules:
+  #   - if: '$DELETE == "true" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'
+
+.deploy_test_destroy_definition:
+  stage: test
+  extends:
+    - .deploy_definition
+    - .test_definition
+    - .uninstall_definition
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -70,6 +94,7 @@ test_cluster_k8s:
     reports:
       junit: build/report.xml
     when: always
+
 
 .only_on_master:
   # rules:
@@ -95,100 +120,22 @@ test_cluster_k8s:
       - logs.tar.xz
     when: always
 
-.test_definition:
-  script:
-    - !reference [.output_step_info, script]
-    - make test-deployment IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4
-    - echo "############## EXTRA MAKE VARS OUTPUT"
-    - make vars
-    - echo "#####################################"
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
-  # after_script:
-  #   - make links
-
-.deploy_test_destroy_definition:
-  stage: test
-  before_script: !reference [.deploy_definition, script]
-  extends:
-    - .test_definition
-  after_script:
-    - !reference [.uninstall_definition, after_script]
-    - !reference [.xray_upload, after_script]
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
-  only:
-    # - branches
-    - merge_requests
-
-.psi_test_template:
-  script:
-    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-    - make install-or-upgrade || true
-    - bash scripts/gitlab_section.sh kube_res "Kubernetes resources dump"
-      kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-    - make k8s_test
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
-
-.uninstall_definition:
-  script:
-    - !reference [.output_step_info, script]
-    - |
-      make uninstall
-      kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-      kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-      make delete_namespace
-      make delete_sdp_namespace
-  after_script:
-    - |
-      make uninstall
-      kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-      kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-      make delete_namespace
-      make delete_sdp_namespace
-  # rules:
-  #   - if: '$DELETE == "true" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'
-
-.xray_upload:
-  after_script:
-    - |
-      if [ -f build/cucumber.json ]; then
-      bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=2.1.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
-      /usr/local/bin/xtp-xray-upload -f build/cucumber.json -i test-exec.json -v
-      fi
-
-tag_commit:
-  stage: release
-  variables:
-    USERNAME: "$GITLAB_USER_NAME"
-    EMAILID: $GITLAB_USER_EMAIL
-    PRIVATE_TOKEN: $SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
-  tags:
-    - k8srunner
-  when: manual
-  # needs:
-  #   - job: publish-chart
-  only:
-    refs:
-      - master
-  # rules:
-  #   - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+# tag_commit:
+#   stage: release
+#   variables:
+#     USERNAME: "$GITLAB_USER_NAME"
+#     EMAILID: $GITLAB_USER_EMAIL
+#     PRIVATE_TOKEN: $SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
+#   tags:
+#     - k8srunner
+#   when: manual
+#   # needs:
+#   #   - job: publish-chart
+#   only:
+#     refs:
+#       - master
+#   # rules:
+#   #   - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
   script:
     - make release-skampi

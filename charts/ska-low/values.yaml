@@ -29,7 +29,7 @@ global:
       tag: 9.3.5
       pullPolicy: IfNotPresent
 
-landingpage:
+ska-landingpage:
   enabled: true
   MVPInstance: mvp-low
 

@@ -2,288 +2,118 @@
 # # SKA Mid CI Stages
 # ################################################
 
-# Mid specific job steps
-# # testing environment (mid_)
-.mid_vars:
-  extends:
-    - .tags_default
-  variables:
-    HELM_RELEASE: "test-mid"
-    KUBE_NAMESPACE: "integration-mid"
-    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
-    KEEP_NAMESPACE: "true"
-    ARCHIVER_DBNAME: "integration_mid_archiver_db"
-
-mid_uninstall:
-  stage: clean
-  extends:
-    - .only_on_master
-    - .mid_vars
-    - .uninstall_definition
-  environment:
-    name: "test-mid"
-    action: stop
-  only:
-    refs:
-      - master
-    variables:
-      - $DELETE == "true"
-
-mid_deploy:
-  stage: deploy
-  extends:
-    - .mid_vars
-    - .only_on_master
-    - .deploy_definition
-  environment:
-    name: "test-mid"
-    on_stop: mid_uninstall
-
-mid_test:
-  retry: 2
-  stage: test
-  extends:
-    - .mid_vars
-    - .only_on_master
-    - .test_definition
-    - .xray_upload
-  variables:
-    MARK: "skamid or common"
-  environment:
-    name: "test-mid"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
-    on_stop: mid_uninstall
-  # rules:
-  #   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION && $STRESS_TEST_DURATION != ""'
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
-
-# mid merge blocking job - must pass for pipeline success
-mid_deploy_test_destroy:
-  stage: test
-  variables:
-    CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
-  extends:
-    - .tags_default
-    - .deploy_test_destroy_definition
-    - .xray_upload
-  environment:
-    name: "test-$CONFIG-branch"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
-    
-# mid on demand environment
 
 .mid_on_demand_vars:
   extends:
     - .tags_default
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
 
-mid_on_demand_deploy:
-  stage: deploy
-  extends:
-    - .on_demand_definition
-    - .mid_on_demand_vars
-    - .deploy_definition
-  environment:
-    name: "test/$CI_COMMIT_REF_NAME"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-    on_stop: mid_on_demand_uninstall
 
-mid_on_demand_test:
-  stage: test
+.mid_branch_vars:
   extends:
-    - .output_step_info
-    - .mid_on_demand_vars
-    - .test_definition
-  variables:
-    MARK: "skamid or common"
-  #before_script:
-  # using reference as there seems to be a problem with extends
-  #- !reference [.create_k8s_creds, before_script]
-  environment:
-    name: "test/$CI_COMMIT_REF_NAME"
-    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-    on_stop: mid_on_demand_uninstall
-    auto_stop_in: 2 hours
-  # rules:
-  #   - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION"
-  #     when: manual
-  needs:
-    - mid_on_demand_deploy
-  when: manual
-  only:
-    refs:
-      - branches
-  except:
-    refs:
-      - master
-
-mid_on_demand_uninstall:
-  stage: cleanup
-  needs:
-    - mid_on_demand_deploy
-  extends:
-    - .output_step_info
     - .tags_default
-    - .uninstall_definition
-    - .on_demand_definition # DEFINITION MUST BE ADDED LAST
   variables:
     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-sdp"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-  environment:
-    name: "test/$CI_COMMIT_REF_NAME"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-    action: stop
-
-# staging mid environment
-
-mid_uninstall_staging:
-  stage: clean_staging
-  extends:
-    - .output_step_info
-    - .tags_default
-    - .uninstall_definition
-  variables:
-    HELM_RELEASE: "staging-mid"
-    KUBE_NAMESPACE: "staging-mid"
-    KUBE_NAMESPACE_SDP: "staging-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
-    KEEP_NAMESPACE: "true"
-  # rules:
-  #   - if: '$CI_COMMIT_TAG && $DELETE == "true"'
-  only:
-    refs:
-      - tags
-    variables:
-      - $DELETE == "true"
-  environment:
-    name: "staging-mid"
-    action: stop
-
-mid_deploy_staging:
-  stage: deploy_staging
-  extends:
-    - .output_step_info
-    - .tags_default
-  #  - .deploy_definition
-  variables:
-    HELM_REPO_NAME: "skatelescope"
-    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-mid" ## The name of the chart as published to CAR
-    HELM_RELEASE: "staging-mid"
-    KUBE_NAMESPACE: "staging-mid"
-    KUBE_NAMESPACE_SDP: "staging-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
-    KEEP_NAMESPACE: "true"
-  environment:
-    name: "staging-mid"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
-    on_stop: mid_uninstall_staging
-  # rules:
-  #   - if: "$CI_COMMIT_TAG"
-  only:
-    refs:
-      - tags
-  # needs:
-  #   - job: mid_clean_staging
-
-# Other
-
-get_sizes_mid:
-  stage: debug
-  extends:
-    - .output_step_info
-    - .tags_default
-  variables:
-    KUBE_NAMESPACE: "integration-mid"
-    KEEP_NAMESPACE: "true"
-  script:
-    - make get_size_images
-  environment:
-    name: "test-mid"
-  only:
-    refs:
-      - master
-
-mid_stress_test:
-  stage: test
-  extends:
-    - .output_step_info
-    - .tags_default
-  #  - .stress_test_definition
-  variables:
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
-    MARK: "skamid or common"
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE_PREFIX: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid"
-    SERVICE_ACCOUNT: "stress-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_NAMESPACE: "stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid-archiver"
-    DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
-  environment:
-    name: "stress-test"
-    url: "http://$INGRESS_HOST/stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: stress-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
-  rules:
-    - if: $STRESS_TEST_DURATION
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid_archiver_db"
 
-mid_sdp_config_dump:
-  stage: debug
-  extends:
-    - .output_step_info
-    - .tags_default
+
+# mid_branch_uninstall:
+#   stage: clean
+#   extends:
+#     - .mid_branch_vars
+#     - .uninstall_definition
+#   environment:
+#     name: "test/$CI_COMMIT_REF_NAME"
+#     kubernetes:
+#       # This repetition is needed for gitlab to parse the namespace correctly
+#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
+#     # action: stop
+#   only:
+#     refs:
+#       - branches
+#   except:
+#     refs:
+#       - master
+
+# mid_deploy_branch:
+#   stage: deploy
+#   extends:
+#     - .mid_branch_vars
+#     - .output_step_info
+#     - .tags_default
+#     - .deploy_definition
+#   environment:
+#     name: "test/$CI_COMMIT_REF_NAME"
+#     kubernetes:
+#       # This repetition is needed for gitlab to parse the namespace correctly
+#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
+#     # on_stop: mid_branch_uninstall
+#   only:
+#     refs:
+#       - branches
+#   except:
+#     refs:
+#       - master
+
+
+# mid merge blocking job - must pass for pipeline success
+mid_deploy_test_destroy:
+  stage: test
   variables:
-    KUBE_NAMESPACE: "integration-mid"
-    KUBE_NAMESPACE_SDP: "integration-mid-sdp"
-    KEEP_NAMESPACE: "true"
-  script:
-    - kubectl exec -n $KUBE_NAMESPACE sdp-console-0 -- sdpcfg ls values -R / > sdp.config.json
-  artifacts:
-    paths:
-      - sdp.config.json
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-mid"
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
+    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid_archiver_db"
+  extends:
+    - .tags_default
+    - .deploy_test_destroy_definition
   environment:
-    name: "test-mid"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    name: "test-$CONFIG-branch"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-  when: manual
-  only:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    # - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH' # Run on push, not default
+    - if: '$CI_PIPELINE_SOURCE == "push"' # Run on any branch
+
+# mid_branch_test_uninstall:
+#   stage: cleanup
+#   # needs:
+#   #   - mid_on_demand_deploy
+#   extends:
+#     - .mid_branch_vars
+#     - .output_step_info
+#     - .tags_default
+#     - .uninstall_definition
+#     # - .on_demand_definition # DEFINITION MUST BE ADDED LAST
+#   environment:
+#     name: "test/$CI_COMMIT_REF_NAME"
+#     kubernetes:
+#       # This repetition is needed for gitlab to parse the namespace correctly
+#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid
+#   only:
+#     refs:
+#       - branches
+#   except:
+#     refs:
+#       - master

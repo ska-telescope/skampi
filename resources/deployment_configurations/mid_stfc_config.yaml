@@ -1,4 +1,4 @@
-# This is a minimal deployment that is required to test the 
+# This is a minimal deployment that is required to test the
 # tango infrastructure and basic deployment of resources only
 # Use by running
 # make install-chart VALUES=resources/deployment_configurations/mid_tango_infrastructure.yaml
@@ -22,7 +22,7 @@ ska-webjive:
   enabled: false
 ska-ser-skuid:
   enabled: false
-landingpage:
+ska-landingpage:
   enabled: false
 ska-tango-archiver:
   enabled: false

@@ -130,7 +130,7 @@ This is an example of how the deployment would look, if a new application ("Appl
 flowchart TB
     subgraph "Namespace integration-mid"
       subgraph "SKAMPI Landing Page"
-        d1[chart landingpage] --> d2(container landingpage)
+        d1[chart ska-landingpage] --> d2(container ska-landingpage)
       end
       subgraph SKA Mid Chart
         subgraph "Tango Util Library Chart"
@@ -264,7 +264,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
       enabled: false
     ska-ser-skuid:
       enabled: false
-    landingpage:
+    ska-landingpage:
       enabled: false
     ska-tango-archiver:
       enabled: false
@@ -288,7 +288,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
     service/tangotest-test               ClusterIP   None           <none>        <none>            19s
 
     NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
-    deployment.apps/landingpage                 0/1     1            0           19s
+    deployment.apps/ska-landingpage                 0/1     1            0           19s
     deployment.apps/ska-tango-base-tango-rest   0/1     1            0           19s
 
     NAME                                                  DESIRED   CURRENT   READY   AGE
@@ -302,9 +302,9 @@ The values.yaml file controls all the variables that are used by Helm when inter
     ```
     Above deployment is pretty useless and will not pass any tests, but illustrates how a small deployment can be made. You now have the ability to add components to the deployment, by modifying their `enabled` variables. Let's test that out, and just re-introduce the Landing Page:
 
-4. Enable the Landing Page by setting `landingpage.enabled` to `true` in the `my_local_values.yaml` file:
+4. Enable the Landing Page by setting `ska-landingpage.enabled` to `true` in the `my_local_values.yaml` file:
     ```
-    landingpage:
+    ska-landingpage:
       enabled: true
     ```
 5. Now update the deployment:
@@ -313,20 +313,20 @@ The values.yaml file controls all the variables that are used by Helm when inter
     ```
 6. You should now see the landing page being added to the cluster:
     ```
-    $ kubectl get all -n integration -l app=landingpage    # the -l app=landingpage is to filter for anything that is labelled app=landingpage
+    $ kubectl get all -n integration -l app=ska-landingpage    # the -l app=ska-landingpage is to filter for anything that is labelled app=ska-landingpage
     NAME                             READY   STATUS    RESTARTS   AGE
-    pod/landingpage-5f95cdff-26mqc   1/1     Running   0          27m
+    pod/ska-landingpage-5f95cdff-26mqc   1/1     Running   0          27m
 
     NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
-    service/landingpage   ClusterIP   10.106.182.252   <none>        80/TCP    27m
+    service/ska-landingpage   ClusterIP   10.106.182.252   <none>        80/TCP    27m
 
     NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
-    deployment.apps/landingpage   1/1     1            1           27m
+    deployment.apps/ska-landingpage   1/1     1            1           27m
 
     NAME                                   DESIRED   CURRENT   READY   AGE
-    replicaset.apps/landingpage-5f95cdff   1         1         1       27m
+    replicaset.apps/ska-landingpage-5f95cdff   1         1         1       27m
     ```
-7. You should now be able to get an output of the landingpage by running `make links`:
+7. You should now be able to get an output of the ska-landingpage by running `make links`:
     ```
     $ make links
     ############################################################################

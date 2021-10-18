@@ -139,8 +139,8 @@ Once you are done with your work, you can uninstall SKAMPI and clean up with:
 .. code-block:: console
 
     make uninstall
-    make delete_namespace
-    make delete_sdp_namespace
+    make delete-namespace
+    make delete-sdp-namespace
 
 If you want to see how ``make`` will use the variables (in other words, what commands will actually be run), append the parameter ``--dry`` for a dry-run, for example:
 

@@ -100,11 +100,14 @@ def fxt_test_namespace(manifest):
         manifest,
     ]
 
-    destroy_the_things = subprocess.run(k_cmd, check=True)
-    assert destroy_the_things.returncode == 0
+    import time # VERY VERY BAD
+    time.sleep(1000) # JUST AS BAD
 
-    if _namespace != "default":
-        client.CoreV1Api().delete_namespace(name=_namespace, async_req=True)
+    # destroy_the_things = subprocess.run(k_cmd, check=True)
+    # assert destroy_the_things.returncode == 0
+
+    # if _namespace != "default":
+    #     client.CoreV1Api().delete_namespace(name=_namespace, async_req=True)
 
 
 def write_to_volume(write_service_name, test_namespace):

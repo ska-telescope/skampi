@@ -107,7 +107,7 @@ cluster-k8s-test-pre: ## Setup of kubernetes resources for testing cluster
 	
 cluster-k8s-test-post: ## teardown step for testing cluster
 	kubectl -f tests/resources/assets/test-pod.yaml -n default delete
-	rm tests/resources/assets/kubeconfig
+	# rm tests/resources/assets/kubeconfig
 
 cluster-k8s-test-do: ## Test the cluster using pytest
 	kubectl -n default wait --for=condition=ready pod nginx-test-pod

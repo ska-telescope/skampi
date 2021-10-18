@@ -6,6 +6,7 @@
 .gitlab/ @limonkufu @piersharding
 Makefile @limonkufu @piersharding
 values.yaml @limonkufu @piersharding
+.make/ @limonkufu @piersharding
 
 # Charts Mandatory Reviewers
 [Integration]
@@ -25,9 +26,9 @@ tests/ @limonkufu @piersharding
 *.py @limonkufu @piersharding
 
 # Release Mandatory Reviewers
+[Release]
 .release @limonkufu @piersharding
-## TODO: Chart.yaml files?
-
+charts/ @limonkufu @piersharding
 
 # Overall Mandatory Reviewers
 * @limonkufu @piersharding

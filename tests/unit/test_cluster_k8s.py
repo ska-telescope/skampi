@@ -125,7 +125,7 @@ def write_to_volume(write_service_name, test_namespace):
 
     write_result = subprocess.run(command, check=True)
     # resp = stream( v1.connect_get_namespaced_pod_exec, ret.items[0].metadata.name, test_namespace, command=exec_command, stderr=True, stdin=False, stdout=True, tty=False,)
-    assert write_result == 0, "Writing to test pod failed"
+    assert write_result.returncode == 0, "Writing to test pod failed"
 
 
 def curl_service_with_shared_volume(host0, host1, test_namespace):

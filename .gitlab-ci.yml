@@ -14,12 +14,13 @@ variables:
 # TODO!!! add chart linting
 
 stages:
-  # - lint
-  # - build
-  # - clean
-  # - build
-  # - deploy
   - test
+  - lint
+  - build
+  - clean
+  - build
+  - deploy
+  ######## THIS IS WHERE TEST JOB SHOULD BE
   - debug
   - publish
   - pages

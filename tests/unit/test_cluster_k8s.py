@@ -125,12 +125,12 @@ def write_to_volume(write_service_name, test_namespace):
     logging.info(f"Executing command {exec_command} on pod {podname}")
     logging.info(f"Full array: {command}")
 
-    # write_result = subprocess.run(command, check=True)
-    resp = stream( v1.connect_get_namespaced_pod_exec, podname, test_namespace, command=exec_command, stderr=True, stdin=False, stdout=True, tty=True,)
+    write_result = subprocess.run(command, check=True)
+    # resp = stream( v1.connect_get_namespaced_pod_exec, podname, test_namespace, command=exec_command, stderr=True, stdin=False, stdout=True, tty=True, )
 
-    logging.info(f"{resp}")
+    # logging.info(f"{resp}")
     # assert resp == 0 # This is not going to work
-    # assert write_result.returncode == 0, "Writing to test pod failed"
+    assert write_result.returncode == 0, "Writing to test pod failed"
 
 
 def curl_service_with_shared_volume(host0, host1, test_namespace):

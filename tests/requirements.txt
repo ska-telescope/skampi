@@ -12,7 +12,7 @@ pytest-ordering
 pytest-timeout
 pytest-repeat
 # elasticsearch
-kubernetes
+kubernetes>=18.20.0
 assertpy
 # mock
 # importlib

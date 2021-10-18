@@ -136,11 +136,11 @@ def write_to_volume(write_service_name, test_namespace):
 def curl_service_with_shared_volume(host0, host1, test_namespace):
     logging.info("Attempting to curl")
     host = client.Configuration().get_default_copy().host
-    logging.debug(f"HOST: {host}")
-    logging.debug(f"Services: {host0}, {host1}; Namespace: {test_namespace}")
+    logging.info(f"HOST: {host}")
+    logging.info(f"Services: {host0}, {host1}; Namespace: {test_namespace}")
     ip = host.split("//")[1].split(":")[0]
     url = "http://" + ip + "/"
-    logging.debug(f"URL1: {url}")
+    logging.info(f"URL1: {url}")
     result1 = requests.get(url, headers={"Host": host0})
     result2 = requests.get(url, headers={"Host": host1})
     logging.info("Result1: {}".format(result1.text))

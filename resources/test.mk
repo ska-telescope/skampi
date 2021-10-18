@@ -114,8 +114,9 @@ get_size_images: ## get a list of images together with their size (both local an
 
 cluster-k8s-test-pre: ## Setup of kubernetes resources for testing cluster
 	kubectl config view --flatten --raw > tests/resources/assets/kubeconfig
-	kubectl config view
-	kubectl get nodes -o wide
+	kubectl config view --kubeconfig=tests/resources/assets/kubeconfig
+	kubectl get nodes -o wide --kubeconfig=tests/resources/assets/kubeconfig
+	kubectl auth can-i execute pods
 	
 cluster-k8s-test-post: ## teardown step for testing cluster
 	rm tests/resources/assets/kubeconfig

@@ -11,12 +11,13 @@ test_cluster_k8s:
   tags:
     - k8srunner
   before_script:
-    - pip install -r tests/requirements.txt
-    - make cluster-k8s-test-pre
+    - bash scripts/gitlab_section.sh pip_install "Install Requirements" pip install -r tests/requirements.txt
+    - bash scripts/gitlab_section.sh "Pre test calls" make cluster-k8s-test-pre
   script:
     - make cluster-k8s-test-do
   after_script:
     - ls -latr
+    - mkdir build/reports
     - mv report.xml unit-tests.xml
     - cp unit-tests.xml report.json cucumber.json build/reports/
     - make cluster-k8s-test-post

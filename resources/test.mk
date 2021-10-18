@@ -112,6 +112,7 @@ cluster-k8s-test-post: ## teardown step for testing cluster
 cluster-k8s-test-do: ## Test the cluster using pytest
 	kubectl -n default wait --for=condition=ready pod nginx-test-pod
 	kubectl exec -n default -i nginx-test-pod -- "/bin/sh" "-c" "echo $(date) > /usr/share/nginx/html/index.html"
+	kubectl delete pod -n default nginx-test-pod
 	pytest tests/unit/test_cluster_k8s.py
 
 cluster-k8s-test: cluster-k8s-test-pre cluster-k8s-test-do cluster-k8s-test-post ## Test the cluster using make setup and teardown

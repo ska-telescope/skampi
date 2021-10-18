@@ -1,5 +1,6 @@
 """Basic cluster functionality tests."""
 import logging
+from kubernetes.client.exceptions import ApiException
 import pytest
 import os
 import requests
@@ -44,7 +45,6 @@ def k8s_cluster(assets_dir):
     logging.info(f"loading kubeconfig from {kubeconfig_filepath}.")
     config.load_kube_config(kubeconfig_filepath)
 
-
 @pytest.fixture(name="test_namespace", scope="module")
 def fxt_test_namespace(manifest):
     logging.info(f"Current working directory: {os.getcwd()}")
@@ -71,11 +71,73 @@ def fxt_test_namespace(manifest):
     else:
         _namespace = "default"
 
-    logging.info(f"Creating resources in namespace: {_namespace}")
+    yield _namespace
+
+    if _namespace != "default":
+        client.CoreV1Api().delete_namespace(name=_namespace, async_req=True)
+
+
+@pytest.fixture(name="all_the_things", scope="module")
+def fxt_create_resources(test_namespace, manifest):
+
+    api = client.CoreV1Api()
+
+    pv = client.V1PersistentVolume(
+            api_version='v1',
+            kind='PersistentVolume',
+            metadata=client.V1ObjectMeta(
+                name='pvtest-'+test_namespace,
+            ),
+            spec=client.V1PersistentVolumeSpec(
+                storage_class_name='standard',
+                persistent_volume_reclaim_policy='Delete',
+                capacity={'storage':'1Gi'},
+                access_modes=['ReadWriteOnce'],
+                host_path=client.V1HostPathVolumeSource(path='/mnt/pv-test')
+            )
+        )
+    try:
+        pv_result = api.create_persistent_volume(pv)
+    except ApiException as e:
+        logging.info(f"Error: %s" % e)
+    # pvs = api.list_persistent_volume()
+    
+    pvc_body = client.V1PersistentVolumeClaim(
+            api_version='v1',
+            kind='PersistentVolumeClaim',
+            metadata=client.V1ObjectMeta(
+                name='pvc-test',
+            ),
+            spec=client.V1PersistentVolumeClaimSpec(
+                access_modes=['ReadWriteOnce'],
+                resources=client.V1ResourceRequirements(
+                    requests={
+                        'storage': '1Gi'
+                    }
+                ),
+                volume_name='pvtest-'+test_namespace
+            )
+        )
+
+    try:
+        response = api.create_namespaced_persistent_volume_claim(
+            namespace=test_namespace, body=pvc_body
+            )
+        logging.info(f"Response: {response}")
+    except ApiException as e:
+        logging.info("That didn't work: %s" % e)
+
+    pvcs = api.list_namespaced_persistent_volume_claim(
+        namespace=test_namespace
+    )
+    logging.info(f"PVCs: {pvcs}")
+    assert pvcs
+
+    logging.info(f"Creating resources in namespace: {test_namespace}")
     k_cmd_create = [
         "kubectl",
         "-n",
-        _namespace,
+        test_namespace,
         "-f",
         manifest,
         "apply",
@@ -87,12 +149,12 @@ def fxt_test_namespace(manifest):
     for line in let_there_be_things.stdout.split("\n"):
         logging.info(line)
 
-    yield _namespace
+    yield let_there_be_things.returncode
 
     k_cmd = [
         "kubectl",
         "-n",
-        _namespace,
+        test_namespace,
         "delete",
         "--grace-period=0",
         "--ignore-not-found",
@@ -100,17 +162,11 @@ def fxt_test_namespace(manifest):
         manifest,
     ]
 
-    import time # VERY VERY BAD
-    time.sleep(1000) # JUST AS BAD
-
-    # destroy_the_things = subprocess.run(k_cmd, check=True)
-    # assert destroy_the_things.returncode == 0
-
-    # if _namespace != "default":
-    #     client.CoreV1Api().delete_namespace(name=_namespace, async_req=True)
+    destroy_the_things = subprocess.run(k_cmd, check=True)
+    assert destroy_the_things.returncode == 0
 
 
-def write_to_volume(write_service_name, test_namespace):
+def write_to_volume(write_service_name, test_namespace, all_the_things):
     command_to_run = "echo $(date) > /usr/share/nginx/html/index.html"
     exec_command = ["/bin/sh", "-c", command_to_run]
 
@@ -195,12 +251,12 @@ def wait_for_pod(test_namespace, service_name):
     logging.info("Pod Ready")
 
 
-def test_cluster(test_namespace):
+def test_cluster(test_namespace, all_the_things):
     wait_for_pod(test_namespace, "nginx1")
     logging.info(f"Test: Deployment nginx1 Ready")
     wait_for_pod(test_namespace, "nginx2")
     logging.info(f"Test: Deployment nginx2 Ready")
-    write_to_volume("nginx1", test_namespace)
+    write_to_volume("nginx1", test_namespace, all_the_things)
     logging.info("Test: Successfully executed a write to a shared volume")
     curl_service_with_shared_volume(
         "nginx1", "nginx2", test_namespace

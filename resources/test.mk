@@ -117,7 +117,7 @@ cluster-k8s-test-pre: ## Setup of kubernetes resources for testing cluster
 	kubectl config view --kubeconfig=tests/resources/assets/kubeconfig
 	kubectl get nodes -o wide --kubeconfig=tests/resources/assets/kubeconfig
 	kubectl version
-	kubectl auth can-i execute pods
+	kubectl auth can-i create pods/exec
 	kubectl -f tests/resources/assets/test-pod.yaml apply -n default
 	
 cluster-k8s-test-post: ## teardown step for testing cluster
@@ -125,6 +125,7 @@ cluster-k8s-test-post: ## teardown step for testing cluster
 	rm tests/resources/assets/kubeconfig
 
 cluster-k8s-test-do: ## Test the cluster using pytest
+	kubectl -n default wait --for=condition=ready pod nginx-test-pod
 	kubectl exec -n default -i nginx-test-pod -- "/bin/sh" "-c" "echo $(date) > /usr/share/nginx/html/index.html"
 	pytest tests/unit/test_cluster_k8s.py
 

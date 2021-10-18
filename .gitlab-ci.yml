@@ -14,11 +14,11 @@ variables:
 # TODO!!! add chart linting
 
 stages:
-  - lint
-  - build
-  - clean
-  - build
-  - deploy
+  # - lint
+  # - build
+  # - clean
+  # - build
+  # - deploy
   - test
   - debug
   - publish

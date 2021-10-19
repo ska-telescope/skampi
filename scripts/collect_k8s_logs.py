@@ -53,7 +53,8 @@ for namespace in arguments["<ns>"]:
     else:
         lines += logs.collect_pod_logs(v1, namespace)
         lines += logs.collect_events(v1, namespace)
-# lines = sorted(lines, key=lambda line: line["time"])
+
+lines = sorted(lines, key=lambda line: line["time"] if line["time"] else datetime.datetime(year=1970, month=1, day=1))
 
 # Default is pretty-print to stdout
 pp_target = arguments["--pp"]

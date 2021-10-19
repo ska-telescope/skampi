@@ -88,7 +88,7 @@ HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 SKAMPI_KUBE_APP ?= ska-tango-images
 KUBE_APP = $(SKAMPI_KUBE_APP)
 
-CI_JOB_ID?=local
+CI_JOB_ID ?= local
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
 K8S_TEST_IMAGE_TO_TEST = artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0## docker image that will be run for testing purpose
@@ -135,7 +135,7 @@ K8S_TEST_MAKE_PARAMS = \
 	CAR_RAW_PASSWORD=$(RAW_PASS) \
 	CAR_RAW_REPOSITORY_URL=$(RAW_HOST)
 
-K8S_TEST_TEST_COMMAND ?= make -s \
+K8S_TEST_TEST_COMMAND = make -s \
 			$(K8S_TEST_MAKE_PARAMS) \
 			$(K8S_TEST_TARGET)
 

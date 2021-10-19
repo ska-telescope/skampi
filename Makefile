@@ -88,7 +88,7 @@ HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 SKAMPI_KUBE_APP ?= ska-tango-images
 KUBE_APP = $(SKAMPI_KUBE_APP)
 
-CI_JOB_ID?=local
+CI_JOB_ID?=local##local default for ci job id
 #
 # IMAGE_TO_TEST defines the tag of the Docker image to test
 IMAGE_TO_TEST = artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0## docker image that will be run for testing purpose

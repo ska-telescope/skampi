@@ -45,6 +45,7 @@ def k8s_cluster(assets_dir):
     logging.info(f"loading kubeconfig from {kubeconfig_filepath}.")
     config.load_kube_config(kubeconfig_filepath)
 
+
 @pytest.fixture(name="test_namespace", scope="module")
 def fxt_test_namespace(manifest):
     logging.info(f"Current working directory: {os.getcwd()}")
@@ -89,11 +90,11 @@ def fxt_create_resources(test_namespace, manifest):
                 name='pvtest-'+test_namespace,
             ),
             spec=client.V1PersistentVolumeSpec(
-                storage_class_name='standard',
+                storage_class_name='nfs',
                 persistent_volume_reclaim_policy='Delete',
                 capacity={'storage':'1Gi'},
                 access_modes=['ReadWriteOnce'],
-                host_path=client.V1HostPathVolumeSource(path='/mnt/pv-test')
+                host_path=client.V1HostPathVolumeSource(path='/tmp/pv-test')
             )
         )
     try:
@@ -109,6 +110,7 @@ def fxt_create_resources(test_namespace, manifest):
                 name='pvc-test',
             ),
             spec=client.V1PersistentVolumeClaimSpec(
+                storage_class_name='nfs',
                 access_modes=['ReadWriteOnce'],
                 resources=client.V1ResourceRequirements(
                     requests={
@@ -197,7 +199,11 @@ def curl_service_with_shared_volume(host0, host1, test_namespace):
     host = client.Configuration().get_default_copy().host
     logging.info(f"HOST: {host}")
     logging.info(f"Services: {host0}, {host1}; Namespace: {test_namespace}")
-    ip = host.split("//")[1].split(":")[0]
+    if 'LOADBALANCER_IP' in os.environ:
+        ip = os.environ["LOADBALANCER_IP"]
+    else:
+        logging.info("No IP address for Loadbalancer set, using host")
+        ip = host.split("//")[1].split(":")[0]
     url = "http://" + ip + "/"
     headers1 = {"Host": host0}
     headers2 = {"Host": host1}

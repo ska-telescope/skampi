@@ -100,7 +100,6 @@ CLUSTER_TEST_NAMESPACE ?= ci-$(CI_JOB_ID)##Test namespace for cluster readiness 
 
 cluster-k8s-test-pre: ## Setup of kubernetes resources for testing cluster
 	kubectl config view --flatten --raw > tests/resources/assets/kubeconfig
-	kubectl config view --kubeconfig=tests/resources/assets/kubeconfig
 	kubectl get nodes -o wide --kubeconfig=tests/resources/assets/kubeconfig
 	kubectl version
 	kubectl auth can-i create pods/exec

@@ -156,15 +156,18 @@ test_cluster_k8s:
     - k8srunner
   before_script:
     - bash scripts/gitlab_section.sh pip_install "Install Requirements" pip install -r tests/requirements.txt
-    - make cluster-k8s-test-pre
+    - bash scripts/gitlab_section.sh pre_test_checks "Cluster configuration" make cluster-k8s-test-pre
   script:
     - make cluster-k8s-test-do
   after_script:
     - bash scripts/gitlab_section.sh list_contents "What's in the directory?" ls -latr
-    - mkdir build/reports
-    - mv build/report.xml unit-tests.xml
-    - cp unit-tests.xml report.json cucumber.json build/reports/
-    - make cluster-k8s-test-post
+    - | 
+      mkdir build/reports
+      cd build
+      mv report.xml unit-tests.xml
+      cp unit-tests.xml report.json cucumber.json reports/
+      cd ..
+      make cluster-k8s-test-post
   environment:
     name: test
   artifacts:

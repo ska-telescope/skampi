@@ -9,6 +9,7 @@ import subprocess
 from kubernetes import config, client
 from kubernetes.stream import stream
 
+
 @pytest.fixture(name="assets_dir", scope="module")
 def fxt_assets_dir():
     cur_path = os.path.dirname(os.path.realpath(__file__))
@@ -30,8 +31,8 @@ def fxt_manifest(assets_dir):
 def k8s_cluster(assets_dir):
     kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
     if not os.path.isfile(kubeconfig_filepath):
-        assert os.path.isfile(os.path.join(os.environ["HOME"],".kube","config"))
-        kubeconfig_filepath = os.path.join(os.environ["HOME"],".kube","config")
+        assert os.path.isfile(os.path.join(os.environ["HOME"], ".kube", "config"))
+        kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
 
     nodes = subprocess.run(
         ["kubectl", "get", "nodes", "-o", "wide"],
@@ -67,7 +68,9 @@ def fxt_test_namespace(manifest):
             client.CoreV1Api().create_namespace(namespace)
             logging.info(f"Namespace {namespace.metadata.name} created")
         else:
-            logging.info(f"Namespace {_namespace} already existed - bad sign for test setup")
+            logging.info(
+                f"Namespace {_namespace} already existed - bad sign for test setup"
+            )
 
     else:
         _namespace = "default"
@@ -84,54 +87,48 @@ def fxt_create_resources(test_namespace, manifest):
     api = client.CoreV1Api()
 
     pv = client.V1PersistentVolume(
-            api_version='v1',
-            kind='PersistentVolume',
-            metadata=client.V1ObjectMeta(
-                name='pvtest-'+test_namespace,
-            ),
-            spec=client.V1PersistentVolumeSpec(
-                storage_class_name='nfs',
-                persistent_volume_reclaim_policy='Delete',
-                capacity={'storage':'1Gi'},
-                access_modes=['ReadWriteOnce'],
-                host_path=client.V1HostPathVolumeSource(path='/tmp/pv-test')
-            )
-        )
+        api_version="v1",
+        kind="PersistentVolume",
+        metadata=client.V1ObjectMeta(
+            name="pvtest-" + test_namespace,
+        ),
+        spec=client.V1PersistentVolumeSpec(
+            storage_class_name="nfs",
+            persistent_volume_reclaim_policy="Delete",
+            capacity={"storage": "1Gi"},
+            access_modes=["ReadWriteOnce"],
+            host_path=client.V1HostPathVolumeSource(path="/tmp/pv-test"),
+        ),
+    )
     try:
         pv_result = api.create_persistent_volume(pv)
     except ApiException as e:
         logging.info(f"Error: %s" % e)
     # pvs = api.list_persistent_volume()
-    
+
     pvc_body = client.V1PersistentVolumeClaim(
-            api_version='v1',
-            kind='PersistentVolumeClaim',
-            metadata=client.V1ObjectMeta(
-                name='pvc-test',
-            ),
-            spec=client.V1PersistentVolumeClaimSpec(
-                storage_class_name='nfs',
-                access_modes=['ReadWriteOnce'],
-                resources=client.V1ResourceRequirements(
-                    requests={
-                        'storage': '1Gi'
-                    }
-                ),
-                volume_name='pvtest-'+test_namespace
-            )
-        )
+        api_version="v1",
+        kind="PersistentVolumeClaim",
+        metadata=client.V1ObjectMeta(
+            name="pvc-test",
+        ),
+        spec=client.V1PersistentVolumeClaimSpec(
+            storage_class_name="nfs",
+            access_modes=["ReadWriteOnce"],
+            resources=client.V1ResourceRequirements(requests={"storage": "1Gi"}),
+            volume_name="pvtest-" + test_namespace,
+        ),
+    )
 
     try:
         response = api.create_namespaced_persistent_volume_claim(
             namespace=test_namespace, body=pvc_body
-            )
+        )
         logging.info(f"Response: {response}")
     except ApiException as e:
         logging.info("That didn't work: %s" % e)
 
-    pvcs = api.list_namespaced_persistent_volume_claim(
-        namespace=test_namespace
-    )
+    pvcs = api.list_namespaced_persistent_volume_claim(namespace=test_namespace)
     logging.info(f"PVCs: {pvcs}")
     assert pvcs
 
@@ -199,7 +196,7 @@ def curl_service_with_shared_volume(host0, host1, test_namespace):
     host = client.Configuration().get_default_copy().host
     logging.info(f"HOST: {host}")
     logging.info(f"Services: {host0}, {host1}; Namespace: {test_namespace}")
-    if 'LOADBALANCER_IP' in os.environ:
+    if "LOADBALANCER_IP" in os.environ:
         ip = os.environ["LOADBALANCER_IP"]
     else:
         logging.info("No IP address for Loadbalancer set, using host")

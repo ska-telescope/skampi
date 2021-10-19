@@ -114,6 +114,7 @@ cluster-k8s-test-do: export LOADBALANCER_IP=$(shell kubectl cluster-info | grep 
 cluster-k8s-test-do: ## Test the cluster using pytest
 	echo $$CLUSTER_TEST_NAMESPACE
 	echo $$LOADBALANCER_IP
+	kubectl config view
 	pytest tests/unit/test_cluster_k8s.py
 
 cluster-k8s-test: cluster-k8s-test-pre cluster-k8s-test-do cluster-k8s-test-post ## Test the cluster using make setup and teardown

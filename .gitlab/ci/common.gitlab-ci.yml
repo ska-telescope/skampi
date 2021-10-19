@@ -162,7 +162,7 @@ test_cluster_k8s:
   after_script:
     - bash scripts/gitlab_section.sh list_contents "What's in the directory?" ls -latr
     - mkdir build/reports
-    - mv report.xml unit-tests.xml
+    - mv build/report.xml unit-tests.xml
     - cp unit-tests.xml report.json cucumber.json build/reports/
     - make cluster-k8s-test-post
   environment:

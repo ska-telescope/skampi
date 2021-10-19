@@ -178,7 +178,6 @@ update-chart-versions:
 		done; \
 	done
 
-
 k8s-post-test: # post test hook for processing received reports
 	@echo "k8s-post-test: Skampi post processing of test reports with scripts/collect_k8s_logs.py"
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
@@ -194,7 +193,6 @@ install-or-upgrade: k8s-install-chart## install or upgrade the release
 
 quotas: k8s-namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
-
 
 upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	@echo "THIS IS A SKAMPI SPECIFIC MAKE TARGET"

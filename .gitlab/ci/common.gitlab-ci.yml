@@ -21,13 +21,13 @@
   before_script:
   - make install-or-upgrade K8S_CHARTS=$DEPLOYMENT_CONFIGURATION
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make wait
+  - make k8s-wait
 
 .test_definition:
   script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-    - make k8s-test IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4
+    - make k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4
     - echo "############## Build Output"
     - find ./build
     - echo "############## EXTRA MAKE VARS OUTPUT"
@@ -38,10 +38,10 @@
   after_script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-    - make uninstall-chart
+    - make k8s-uninstall-chart
     - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
     - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-    - make delete-namespace
+    - make k8s-delete-namespace
     - make delete-sdp-namespace
     - |
       if [ -f build/cucumber.json ]; then
@@ -107,23 +107,22 @@
 #       - master
 #   # rules:
 #   #   - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+#   script:
+#     - make release-skampi
 
-  script:
-    - make release-skampi
-
-version_bump_charts:
-  stage: update_versions
-  variables:
-    USERNAME: "project_11448712_bot"
-    EMAILID: $MARVIN_EMAIL
-    PRIVATE_TOKEN: $MARVIN_PRIVATE_TOKEN
-  tags:
-    - k8srunner
-  rules:
-    - if: $CI_COMMIT_TAG
-  script:
-    - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
-    - make commit-and-push-to-master
+# version_bump_charts:
+#   stage: update_versions
+#   variables:
+#     USERNAME: "project_11448712_bot"
+#     EMAILID: $MARVIN_EMAIL
+#     PRIVATE_TOKEN: $MARVIN_PRIVATE_TOKEN
+#   tags:
+#     - k8srunner
+#   rules:
+#     - if: $CI_COMMIT_TAG
+#   script:
+#     - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
+#     - make commit-and-push-to-master
 
 pages:
   tags:

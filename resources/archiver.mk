@@ -47,16 +47,16 @@ configure-archiver:  get-service ##configure attributes to archive
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(CONFIGURE_ARCHIVER);
 
 #
-# defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
+# defines a function to copy the ./test-harness directory into the K8s K8S_TEST_RUNNER
 # and then runs the requested make target in the container.
 # capture the output of the test in a tar file
 # stream the tar file base64 encoded to the Pod logs
 #
 archiver_k8s_test = tar -c post-deployment/ | \
-		kubectl run $(TEST_RUNNER) \
+		kubectl run $(K8S_TEST_RUNNER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
-		--image=$(IMAGE_TO_TEST) \
+		--image=$(K8S_TEST_IMAGE_TO_TEST) \
 		--limits='cpu=1000m,memory=500Mi' \
 		--requests='cpu=900m,memory=400Mi' \
 		--env=INGRESS_HOST=$(INGRESS_HOST) \
@@ -80,10 +80,10 @@ archiver_k8s_test: smoketest## test the application on K8s
 	$(call archiver_k8s_test,test)); \
 		status=$$?; \
 		rm -fr build; \
-		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
+		kubectl --namespace $(KUBE_NAMESPACE) logs $(K8S_TEST_RUNNER) | \
 		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
 		base64 -d | tar -xzf -; mkdir -p build; \
 		python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
 			--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt; \
-		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
+		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(K8S_TEST_RUNNER); \
 		exit $$status

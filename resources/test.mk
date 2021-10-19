@@ -109,13 +109,13 @@ cluster-k8s-test-post: ## teardown step for testing cluster
 	kubectl -f tests/resources/assets/test-pod.yaml -n default delete
 	rm tests/resources/assets/kubeconfig
 
+LOADBALANCER_IP?=$(shell kubectl cluster-info | grep Kubernetes | cut -d/ -f3 | sed -e 's,:.*,,g')
+
 cluster-k8s-test-do: export CLUSTER_TEST_NAMESPACE=ci-$(CI_JOB_ID)
-cluster-k8s-test-do: export LOADBALANCER_IP=$(shell kubectl cluster-info | grep Kubernetes | cut -d/ -f3 | sed -e 's,:.*,,g')
 cluster-k8s-test-do: ## Test the cluster using pytest
 	echo $$CLUSTER_TEST_NAMESPACE
-	echo $$LOADBALANCER_IP
-	kubectl config view
-	pytest tests/unit/test_cluster_k8s.py
+	echo ${LOADBALANCER_IP}
+	LOADBALANCER_IP=${LOADBALANCER_IP} pytest tests/unit/test_cluster_k8s.py
 
 cluster-k8s-test: cluster-k8s-test-pre cluster-k8s-test-do cluster-k8s-test-post ## Test the cluster using make setup and teardown
 

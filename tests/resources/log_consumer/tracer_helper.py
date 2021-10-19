@@ -2,8 +2,16 @@ import sys
 import pytest
 import logging
 import threading
-from tango import Database, DeviceProxy, DeviceData, EventType, LogLevel, DevVarStringArray
+from tango import (
+    Database,
+    DeviceProxy,
+    DeviceData,
+    EventType,
+    LogLevel,
+    DevVarStringArray,
+)
 import time
+
 
 class TraceHelper:
     __instance = None
@@ -14,15 +22,22 @@ class TraceHelper:
         return TraceHelper.__instance
 
     def __init__(self):
-        if(not hasattr(TraceHelper.__instance, "lock")):
+        if not hasattr(TraceHelper.__instance, "lock"):
             TraceHelper.__instance.messages = []
             TraceHelper.__instance.wait_for_msg = ""
             TraceHelper.__instance.last_msg = ""
             TraceHelper.__instance.found = False
             TraceHelper.__instance.lock = threading.Lock()
             TraceHelper.__instance.log_consumer_name = "LogConsumer/log/log01"
-            TraceHelper.__instance.logger_dev = DeviceProxy(TraceHelper.__instance.log_consumer_name)
-            TraceHelper.__instance.logger_dev.subscribe_event("message", EventType.CHANGE_EVENT, TraceHelper.__instance.handle_event, stateless=True)
+            TraceHelper.__instance.logger_dev = DeviceProxy(
+                TraceHelper.__instance.log_consumer_name
+            )
+            TraceHelper.__instance.logger_dev.subscribe_event(
+                "message",
+                EventType.CHANGE_EVENT,
+                TraceHelper.__instance.handle_event,
+                stateless=True,
+            )
 
     def enable_logging(self, devName, logLevel):
         dev = DeviceProxy(devName)
@@ -35,14 +50,14 @@ class TraceHelper:
         dev.set_logging_level(0)
 
     def handle_event(self, args):
-        if (args.err):
+        if args.err:
             logging.error(str(args))
             return
 
         with self.lock:
             self.messages.append(args)
             self.last_msg = args.attr_value.value
-            if(self.wait_for_msg in str(args.attr_value.value)):
+            if self.wait_for_msg in str(args.attr_value.value):
                 self.found = True
             logging.info(str(args.attr_value.value))
 
@@ -51,21 +66,21 @@ class TraceHelper:
             self.messages = []
 
     def get_messages(self):
-        """"Return a copy of the current messages."""
+        """ "Return a copy of the current messages."""
         with self.lock:
             return list(self.messages)
 
     def wait_until_message_received(self, msg, timeout):
         startTime = time.time()
-        with self.lock: 
+        with self.lock:
             self.found = False
             self.wait_for_msg = msg
-        
+
         while True:
-            with self.lock: 
+            with self.lock:
                 if self.found:
                     return True
-            if(time.time() - startTime > timeout):
+            if time.time() - startTime > timeout:
                 raise Exception("Timeout occurred")
             time.sleep(0.1)
 
@@ -74,5 +89,5 @@ class TraceHelper:
             location = (address, int(port))
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             return sock.connect_ex(location)
-        except Exception as e1: 
+        except Exception as e1:
             return -1

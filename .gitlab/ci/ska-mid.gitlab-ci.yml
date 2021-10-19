@@ -90,11 +90,6 @@ mid_deploy_test_destroy:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    # - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH' # Run on push, not default
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # Run on any branch
 
 # mid_branch_test_uninstall:
 #   stage: cleanup

@@ -115,8 +115,10 @@ PUBSUB = true
 
 -include PrivateRules.mak
 
-K8S_TEST_TARGET = test ## Makefile target fore test in ./tests/Makefile
+# Makefile target for test in ./tests/Makefile
+K8S_TEST_TARGET = test
 
+# arguments to pass to make in the test runner container
 K8S_TEST_MAKE_PARAMS = \
 	SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
 	KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
@@ -135,6 +137,7 @@ K8S_TEST_MAKE_PARAMS = \
 	CAR_RAW_PASSWORD=$(RAW_PASS) \
 	CAR_RAW_REPOSITORY_URL=$(RAW_HOST)
 
+# runs inside the test runner container after cd ./tests
 K8S_TEST_TEST_COMMAND = make -s \
 			$(K8S_TEST_MAKE_PARAMS) \
 			$(K8S_TEST_TARGET)

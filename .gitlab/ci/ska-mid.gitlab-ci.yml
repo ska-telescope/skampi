@@ -3,32 +3,32 @@
 # ################################################
 
 
-.mid_on_demand_vars:
-  extends:
-    - .tags_default
-  variables:
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
-    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
+# .mid_on_demand_vars:
+#   extends:
+#     - .tags_default
+#   variables:
+#     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+#     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+#     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
+#     DEPLOYMENT_CONFIGURATION: "ska-mid"
+#     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+#     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+#     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+#     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-mid_archiver_db"
 
 
-.mid_branch_vars:
-  extends:
-    - .tags_default
-  variables:
-    HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
-    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid_archiver_db"
+# .mid_branch_vars:
+#   extends:
+#     - .tags_default
+#   variables:
+#     HELM_RELEASE: "test-mid-$CI_COMMIT_BRANCH"
+#     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
+#     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
+#     DEPLOYMENT_CONFIGURATION: "ska-mid"
+#     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
+#     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
+#     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
+#     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid_archiver_db"
 
 
 # mid_branch_uninstall:

@@ -26,7 +26,6 @@ import os
 import re
 import sys
 import time
-import pytz
 from datetime import timedelta, timezone
 
 from docopt import docopt
@@ -55,7 +54,7 @@ for namespace in arguments["<ns>"]:
         lines += logs.collect_pod_logs(v1, namespace)
         lines += logs.collect_events(v1, namespace)
 
-lines = sorted(lines, key=lambda line: line["time"] if line["time"] else datetime.datetime(year=1970, month=1, day=1, tzinfo=pytz.UTC))
+lines = sorted(lines, key=lambda line: line["time"] if line["time"] else datetime.datetime(year=1970, month=1, day=1, tzinfo=datetime.timezone.utc))
 
 # Default is pretty-print to stdout
 pp_target = arguments["--pp"]

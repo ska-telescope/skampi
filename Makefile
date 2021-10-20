@@ -91,7 +91,7 @@ KUBE_APP = $(SKAMPI_KUBE_APP)
 CI_JOB_ID ?= local
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
-K8S_TEST_IMAGE_TO_TEST = artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0## docker image that will be run for testing purpose
+K8S_TEST_IMAGE_TO_TEST = artefact.skao.int/ska-ser-skallop:2.7.4## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
 K8S_TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #
@@ -148,7 +148,7 @@ vars: k8s-vars ## Display variables
 	@echo "KUBE_NAMESPACE=$(KUBE_NAMESPACE)"
 	@echo "KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP)"
 	@echo "INGRESS_HOST=$(INGRESS_HOST)"
-	@echo "DEPLOYMENT_CONFIGURATION=$(DEPLOYMENT_CONFIGURATION)"
+	@echo "DEPLOYMENT_CONFIGURATION(translates to K8S_CHART)=$(DEPLOYMENT_CONFIGURATION)"
 	@echo "HELM_RELEASE=$(HELM_RELEASE)"
 	@echo "HELM_REPO_NAME=$(HELM_REPO_NAME) ## (should be empty except on Staging & Production)"
 	@echo "VALUES=$(VALUES)"

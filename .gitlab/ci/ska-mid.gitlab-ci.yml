@@ -22,3 +22,4 @@ mid_deploy_test_destroy:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
+  retry: 2

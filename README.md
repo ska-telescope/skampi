@@ -1,3 +1,14 @@
+# The current state of Skampi
+
+Skampi is currently undergoing major restructuring.  As a result, the current deployment consists of the ska-tango-base chart (containing MariaDB and the central DS) that is deployed in a single test pipeline simulating ska-mid.  The test deploys, runs tests and tears down the deployment on Kubernetes.  This can run both in cluster, and on Minikube.
+
+For a Minikube deployment, this can be emulated with:
+```
+make k8s-install-chart KUBE_NAMESPACE=default; make wait KUBE_NAMESPACE=default
+make k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4 KUBE_NAMESPACE=default
+make k8s-uninstall-chart KUBE_NAMESPACE=default
+```
+
 # Getting Started
 [![Documentation Status](https://readthedocs.org/projects/ska-telescope-ska-skampi/badge/?version=latest)](https://developer.skatelescope.org/projects/ska-skampi/en/latest/?badge=latest)
 

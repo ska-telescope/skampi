@@ -2,8 +2,8 @@
 
 # CI_JOB_ID?=local
 # #
-# # IMAGE_TO_TEST defines the tag of the Docker image to test
-# IMAGE_TO_TEST = artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0## docker image that will be run for testing purpose
+# # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
+# K8S_TEST_IMAGE_TO_TEST = artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0## docker image that will be run for testing purpose
 # # Test runner - run to completion job in K8s
 # TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 # #
@@ -61,7 +61,7 @@
 # k8s_test_runner = $(TEST_RUNNER) -n $(KUBE_NAMESPACE)
 # k8s_test_kubectl_run_args = \
 # 	$(k8s_test_runner) --restart=Never \
-# 	--image-pull-policy=IfNotPresent --image=$(IMAGE_TO_TEST) \
+# 	--image-pull-policy=IfNotPresent --image=$(K8S_TEST_IMAGE_TO_TEST) \
 # 	--env=INGRESS_HOST=$(INGRESS_HOST) $(PSI_LOW_PROXY_VALUES)
 
 # # Set up of the testing pod. This goes through the following steps:

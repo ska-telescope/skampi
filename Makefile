@@ -88,22 +88,18 @@ HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 SKAMPI_KUBE_APP ?= ska-tango-images
 KUBE_APP = $(SKAMPI_KUBE_APP)
 
-CI_JOB_ID?=local##local default for ci job id
+CI_JOB_ID ?= local##local default for ci job id
 #
-# IMAGE_TO_TEST defines the tag of the Docker image to test
-IMAGE_TO_TEST = artefact.skao.int/ska-tango-images-pytango-builder-alpine:0.3.0## docker image that will be run for testing purpose
+# K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
+K8S_TEST_IMAGE_TO_TEST = artefact.skao.int/ska-ser-skallop:2.7.4## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
-TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
+K8S_TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #
-# defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
+# defines a function to copy the ./test-harness directory into the K8s K8S_TEST_RUNNER
 # and then runs the requested make target in the container.
 # capture the output of the test in a build folder inside the container
 #
-MARK ?= fast## this variable allow the mark parameter in the pytest
-FILE ?= ##this variable allow to execution of a single file in the pytest
-SLEEPTIME ?= 1200s ##amount of sleep time for the smoketest target
-COUNT ?= 1## amount of repetition for pytest-repeat
-BIGGER_THAN ?= ## get_size_images parameter: if not empty check if images are bigger than this (in MB)
+BIGGER_THAN ?= ## k8s-get-size-images parameter: if not empty check if images are bigger than this (in MB)
 
 TELESCOPE = 'SKA-Mid'
 CENTRALNODE = 'ska_mid/tm_central/central_node'
@@ -119,6 +115,10 @@ PUBSUB = true
 
 -include PrivateRules.mak
 
+# Makefile target for test in ./tests/Makefile
+K8S_TEST_TARGET = test
+
+# arguments to pass to make in the test runner container
 K8S_TEST_MAKE_PARAMS = \
 	SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
 	KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
@@ -137,14 +137,18 @@ K8S_TEST_MAKE_PARAMS = \
 	CAR_RAW_PASSWORD=$(RAW_PASS) \
 	CAR_RAW_REPOSITORY_URL=$(RAW_HOST)
 
+# runs inside the test runner container after cd ./tests
+K8S_TEST_TEST_COMMAND = make -s \
+			$(K8S_TEST_MAKE_PARAMS) \
+			$(K8S_TEST_TARGET)
 
-vars: ## Display variables
+vars: k8s-vars ## Display variables
 	@echo "SKA_K8S_TOOLS_DEPLOY_IMAGE=$(SKA_K8S_TOOLS_DEPLOY_IMAGE)"
 	@echo ""
 	@echo "KUBE_NAMESPACE=$(KUBE_NAMESPACE)"
 	@echo "KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP)"
 	@echo "INGRESS_HOST=$(INGRESS_HOST)"
-	@echo "DEPLOYMENT_CONFIGURATION=$(DEPLOYMENT_CONFIGURATION)"
+	@echo "DEPLOYMENT_CONFIGURATION(translates to K8S_CHART)=$(DEPLOYMENT_CONFIGURATION)"
 	@echo "HELM_RELEASE=$(HELM_RELEASE)"
 	@echo "HELM_REPO_NAME=$(HELM_REPO_NAME) ## (should be empty except on Staging & Production)"
 	@echo "VALUES=$(VALUES)"
@@ -154,13 +158,13 @@ vars: ## Display variables
 	@echo ""
 	@echo "MARK=$(MARK)"
 
-namespace_sdp: KUBE_NAMESPACE := $(KUBE_NAMESPACE_SDP)
-namespace_sdp: ## create the kubernetes namespace for SDP dynamic deployments
-	@make namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE)
+namespace-sdp: KUBE_NAMESPACE := $(KUBE_NAMESPACE_SDP)
+namespace-sdp: ## create the kubernetes namespace for SDP dynamic deployments
+	@make k8s-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE)
 
 delete-sdp-namespace: KUBE_NAMESPACE := $(KUBE_NAMESPACE_SDP)
 delete-sdp-namespace: ## delete the kubernetes SDP namespace
-	@make delete-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+	@make k8s-delete-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
 update-chart-versions:
 	@which yq >/dev/null 2>&1 || (echo "yq not installed - you must 'pip3 install yq'"; exit 1;)
@@ -177,17 +181,21 @@ update-chart-versions:
 		done; \
 	done
 
-install: clean namespace namespace_sdp check-archiver-dbname install-chart## install the helm chart on the namespace KUBE_NAMESPACE
+k8s-post-test: # post test hook for processing received reports
+	@echo "k8s-post-test: Skampi post processing of test reports with scripts/collect_k8s_logs.py"
+	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
+		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
 
-uninstall: uninstall-chart ## uninstall the helm chart on the namespace KUBE_NAMESPACE
+install: k8s-clean k8s-namespace k8s-namespace-sdp check-archiver-dbname k8s-install-chart## install the helm chart on the namespace KUBE_NAMESPACE
+
+uninstall: k8s-uninstall-chart ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 
 reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
 
-install-or-upgrade: install-chart## install or upgrade the release
+install-or-upgrade: k8s-install-chart## install or upgrade the release
 
-quotas: namespace## delete and create the kubernetes namespace with quotas
+quotas: k8s-namespace## delete and create the kubernetes namespace with quotas
 	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
-
 
 upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	@echo "THIS IS A SKAMPI SPECIFIC MAKE TARGET"

@@ -27,11 +27,7 @@ assertpy
 # ska-ser-log-transactions
 # tabulate
 # ska-ser-skallop[bit]==2.7.3
-<<<<<<< HEAD
-# ska-ser-skallop==2.7.3
-=======
 ska-ser-skallop==2.7.4
->>>>>>> master
 # ska-ser-skuid
 # ska-ser-logging
 

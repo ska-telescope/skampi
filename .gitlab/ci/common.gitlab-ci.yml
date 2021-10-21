@@ -2,32 +2,17 @@
 # # Common CI Stages
 # ################################################
 
-# .on_demand_definition:
-#   when: manual
-#   only:
-#     refs:
-#       - branches
-#   except:
-#     refs:
-#       - master
-
-.create_k8s_creds:
-  before_script:
-    - bash scripts/gitlab_section.sh creds "Create K8s Credentials"
-      apt-get -y update && apt-get install -y curl ca-certificates jq --no-install-recommends
-    - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
-
 .deploy_definition:
   before_script:
-  - make install-or-upgrade K8S_CHARTS=$DEPLOYMENT_CONFIGURATION
+  - make k8s-install-chart K8S_CHART=$DEPLOYMENT_CONFIGURATION
   - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make wait
+  - make k8s-wait
 
 .test_definition:
   script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-    - make k8s-test IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4
+    - make k8s-test
     - echo "############## Build Output"
     - find ./build
     - echo "############## EXTRA MAKE VARS OUTPUT"
@@ -38,19 +23,16 @@
   after_script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-    - make uninstall-chart
+    - make k8s-uninstall-chart
     - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
     - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-    - make delete-namespace
+    - make k8s-delete-namespace
     - make delete-sdp-namespace
     - |
       if [ -f build/cucumber.json ]; then
-      bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=2.6.0"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+      bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
       /usr/local/bin/xtp-xray-upload -f build/cucumber.json -v
       fi
-
-    # rules:
-  #   - if: '$DELETE == "true" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'
 
 .deploy_test_destroy_definition:
   stage: test
@@ -65,84 +47,3 @@
     reports:
       junit: build/report.xml
     when: always
-
-
-.only_on_master:
-  # rules:
-  #   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION && $STRESS_TEST_DURATION != ""'
-  only:
-    refs:
-      - master
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
-
-.stress_test_definition:
-  cache: {}
-  needs: []
-  script:
-    # We specifically need Bash for $SECONDS
-    - bash scripts/run-stresstest.sh $STRESS_TEST_DURATION
-    - mv logs $CI_PROJECT_NAME-$CI_JOB_ID
-    - tar cJf logs.tar.xz $CI_PROJECT_NAME-$CI_JOB_ID/*/k8s_dump.txt
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - logs.tar.xz
-    when: always
-
-# tag_commit:
-#   stage: release
-#   variables:
-#     USERNAME: "$GITLAB_USER_NAME"
-#     EMAILID: $GITLAB_USER_EMAIL
-#     PRIVATE_TOKEN: $SKAMPI_RELEASE_MANAGER_GITLAB_PRIVATE_TOKEN
-#   tags:
-#     - k8srunner
-#   when: manual
-#   # needs:
-#   #   - job: publish-chart
-#   only:
-#     refs:
-#       - master
-#   # rules:
-#   #   - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-
-  script:
-    - make release-skampi
-
-version_bump_charts:
-  stage: update_versions
-  variables:
-    USERNAME: "project_11448712_bot"
-    EMAILID: $MARVIN_EMAIL
-    PRIVATE_TOKEN: $MARVIN_PRIVATE_TOKEN
-  tags:
-    - k8srunner
-  rules:
-    - if: $CI_COMMIT_TAG
-  script:
-    - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
-    - make commit-and-push-to-master
-
-pages:
-  tags:
-    - k8srunner
-  stage: test
-  cache: {}
-  script:
-    - pip3 install python-gitlab rstgen urllib3 sphinx sphinx-autobuild sphinx_rtd_theme
-    - cd docs/analysis
-    - python3 ../../scripts/make_analysis.py --gitlab $CI_SERVER_URL
-      --gitlab-header job_token=$CI_JOB_TOKEN
-      --gitlab-project $CI_PROJECT_PATH
-      --gitlab-search $STRESS_TEST_ANALYSIS_PIPELINES
-      --gitlab-job $STRESS_TEST_ANALYSIS_JOBS
-      --gitlab-artifact logs.tar.xz
-    - make html
-    - mv _build/html ../../public
-  rules:
-    - if: $STRESS_TEST_ANALYSIS_PIPELINES && $STRESS_TEST_ANALYSIS_JOBS
-  artifacts:
-    paths: [public/]
-    expire_in: 1 week

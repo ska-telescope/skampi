@@ -11,11 +11,11 @@ variables:
 
 
 stages:
+  - test
   - lint
   - build
   - clean
   - deploy
-  - test
   - debug
   - publish
   - pages

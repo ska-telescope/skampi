@@ -10,13 +10,13 @@ from kubernetes import config, client
 from kubernetes.stream import stream
 
 
-@pytest.fixture(name="assets_dir", scope="module")
+@pytest.fixture(name="assets_dir")
 def fxt_assets_dir():
     cur_path = os.path.dirname(os.path.realpath(__file__))
     return os.path.realpath(os.path.join(cur_path, "..", "resources", "assets"))
 
 
-@pytest.fixture(name="manifest", scope="module")
+@pytest.fixture(name="manifest")
 def fxt_manifest(assets_dir):
     # Ensure manifest file exists
     manifest_filepath = os.path.realpath(
@@ -27,7 +27,7 @@ def fxt_manifest(assets_dir):
     return manifest_filepath
 
 
-@pytest.fixture(autouse=True, scope="module")
+@pytest.fixture(autouse=True)
 def k8s_cluster(assets_dir):
     kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
     if not os.path.isfile(kubeconfig_filepath):
@@ -47,7 +47,7 @@ def k8s_cluster(assets_dir):
     config.load_kube_config(kubeconfig_filepath)
 
 
-@pytest.fixture(name="test_namespace", scope="module")
+@pytest.fixture(name="test_namespace")
 def fxt_test_namespace(manifest):
     logging.info(f"Current working directory: {os.getcwd()}")
     logging.info(f"Manifest returns: {manifest}")
@@ -80,9 +80,8 @@ def fxt_test_namespace(manifest):
     if _namespace != "default":
         client.CoreV1Api().delete_namespace(name=_namespace, async_req=True)
 
-
-@pytest.fixture(name="all_the_things", scope="module")
-def fxt_create_resources(test_namespace, manifest):
+@pytest.fixture(name="persistentvolume")
+def fxt_pv(test_namespace):
 
     api = client.CoreV1Api()
 
@@ -90,10 +89,10 @@ def fxt_create_resources(test_namespace, manifest):
         api_version="v1",
         kind="PersistentVolume",
         metadata=client.V1ObjectMeta(
-            name="pvtest-" + test_namespace,
+            name="pv-test-" + test_namespace,
         ),
         spec=client.V1PersistentVolumeSpec(
-            storage_class_name="nfs",
+            storage_class_name="nfss1",
             persistent_volume_reclaim_policy="Delete",
             capacity={"storage": "1Gi"},
             access_modes=["ReadWriteOnce"],
@@ -102,10 +101,21 @@ def fxt_create_resources(test_namespace, manifest):
     )
     try:
         pv_result = api.create_persistent_volume(pv)
+        assert pv_result, f"Result from creating PV: {pv_result}"
     except ApiException as e:
         logging.info(f"Error: %s" % e)
     # pvs = api.list_persistent_volume()
 
+    yield pv_result
+    logging.info("Destroying PersistentVolume")
+    delete_pv = api.delete_persistent_volume(
+        name="pv-test"+test_namespace
+    )
+    assert delete_pv, "Unable to delete pvc"
+
+@pytest.fixture(name="persistentvolumeclaim")
+def fxt_pvc(test_namespace):
+    api = client.CoreV1Api()
     pvc_body = client.V1PersistentVolumeClaim(
         api_version="v1",
         kind="PersistentVolumeClaim",
@@ -113,10 +123,10 @@ def fxt_create_resources(test_namespace, manifest):
             name="pvc-test",
         ),
         spec=client.V1PersistentVolumeClaimSpec(
-            storage_class_name="nfs",
+            storage_class_name="nfss1",
             access_modes=["ReadWriteOnce"],
             resources=client.V1ResourceRequirements(requests={"storage": "1Gi"}),
-            volume_name="pvtest-" + test_namespace,
+            volume_name="pv-test-" + test_namespace,
         ),
     )
 
@@ -130,7 +140,19 @@ def fxt_create_resources(test_namespace, manifest):
 
     pvcs = api.list_namespaced_persistent_volume_claim(namespace=test_namespace)
     logging.info(f"PVCs: {pvcs}")
-    assert pvcs
+    assert len(pvcs.items) == 1
+
+    yield response
+    logging.info("Destroying PersistentVolumeClaim")
+    delete_pvc = api.delete_namespaced_persistent_volume_claim(
+        name="pvc-test",
+        namespace=test_namespace
+    )
+    assert delete_pvc, "Unable to delete PV"
+
+
+@pytest.fixture(name="all_the_things")
+def fxt_deployments_and_services(test_namespace, manifest, persistentvolume, persistentvolumeclaim):
 
     logging.info(f"Creating resources in namespace: {test_namespace}")
     k_cmd_create = [
@@ -161,11 +183,14 @@ def fxt_create_resources(test_namespace, manifest):
         manifest,
     ]
 
+    logging.info("Destroying all the things")
     destroy_the_things = subprocess.run(k_cmd, check=True)
     assert destroy_the_things.returncode == 0
 
 
 def write_to_volume(write_service_name, test_namespace, all_the_things):
+    logging.info(f"Result of creating all the things: {all_the_things}")
+
     command_to_run = "echo $(date) > /usr/share/nginx/html/index.html"
     exec_command = ["/bin/sh", "-c", command_to_run]
 

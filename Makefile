@@ -182,6 +182,9 @@ update-chart-versions:
 		done; \
 	done
 
+k8s-pre-test: # must pass the current kubeconfig into the test container
+	kubectl config view --flatten --raw > tests/resources/assets/kubeconfig
+
 k8s-post-test: # post test hook for processing received reports
 	@echo "k8s-post-test: Skampi post processing of test reports with scripts/collect_k8s_logs.py"
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \

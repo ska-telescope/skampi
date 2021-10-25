@@ -184,6 +184,12 @@ update-chart-versions:
 	done
 
 python-pre-test: # must pass the current kubeconfig into the test container
+	if ! [[ `which kubectl` ]]; then \
+		curl -LO https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl && \
+		chmod +x ./kubectl && \
+		mv ./kubectl /usr/local/bin/kubectl && \
+		kubectl version --client; \
+	fi
 	kubectl config view --flatten --raw > tests/resources/assets/kubeconfig
 
 k8s-pre-test: python-pre-test

@@ -301,7 +301,7 @@ def wait_for_pod(test_namespace, service_name):
             )
     logging.info("Pod Ready")
 
-
+@pytest.mark.infra
 def test_cluster(test_namespace, all_the_things):
     wait_for_pod(test_namespace, "nginx1")
     logging.info(f"Test: Deployment nginx1 Ready")

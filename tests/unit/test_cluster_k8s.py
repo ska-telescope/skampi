@@ -90,13 +90,14 @@ def fxt_pv(test_namespace):
         kind="PersistentVolume",
         metadata=client.V1ObjectMeta(
             name="pv-test-" + test_namespace,
+            labels={"app":"test"}
         ),
         spec=client.V1PersistentVolumeSpec(
             storage_class_name="nfss1",
             persistent_volume_reclaim_policy="Delete",
             capacity={"storage": "1Gi"},
             access_modes=["ReadWriteOnce"],
-            host_path=client.V1HostPathVolumeSource(path="/tmp/pv-test"),
+            host_path={"path": "/tmp/pv-test"},
         ),
     )
     try:
@@ -107,14 +108,26 @@ def fxt_pv(test_namespace):
     # pvs = api.list_persistent_volume()
 
     yield pv_result
-    logging.info("Destroying PersistentVolume")
-    delete_pv = api.delete_persistent_volume(
-        name="pv-test"+test_namespace
+
+    list_pvs = api.list_persistent_volume(
+        label_selector="app=test"
     )
-    assert delete_pv, "Unable to delete pvc"
+    logging.info(f"No PVs exist: {list_pvs}")
+
+    if len(list_pvs.items) == 0:
+        logging.info("PV already destroyed")
+        return
+
+    logging.info("Destroying PersistentVolume")
+    try:
+        delete_pv = api.delete_persistent_volume(
+            name="pv-test-"+test_namespace
+        )
+    except:
+        logging.info("Unable to delete PV")
 
 @pytest.fixture(name="persistentvolumeclaim")
-def fxt_pvc(test_namespace):
+def fxt_pvc(test_namespace, persistentvolume):
     api = client.CoreV1Api()
     pvc_body = client.V1PersistentVolumeClaim(
         api_version="v1",
@@ -134,7 +147,7 @@ def fxt_pvc(test_namespace):
         response = api.create_namespaced_persistent_volume_claim(
             namespace=test_namespace, body=pvc_body
         )
-        logging.info(f"Response: {response}")
+        # logging.info(f"Response: {response}")
     except ApiException as e:
         logging.info("That didn't work: %s" % e)
 
@@ -148,11 +161,11 @@ def fxt_pvc(test_namespace):
         name="pvc-test",
         namespace=test_namespace
     )
-    assert delete_pvc, "Unable to delete PV"
+    assert delete_pvc, "Unable to delete PVC"
 
 
 @pytest.fixture(name="all_the_things")
-def fxt_deployments_and_services(test_namespace, manifest, persistentvolume, persistentvolumeclaim):
+def fxt_deployments_and_services(test_namespace, manifest, persistentvolumeclaim):
 
     logging.info(f"Creating resources in namespace: {test_namespace}")
     k_cmd_create = [

@@ -4,7 +4,7 @@ kind: PersistentVolume
 metadata:
   name: pvtest
   labels:
-    type: local
+    app: test
 spec:
   storageClassName: nfss1
   persistentVolumeReclaimPolicy: Delete

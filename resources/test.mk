@@ -107,9 +107,9 @@ cluster-k8s-test-pre: ## Setup of kubernetes resources for testing cluster
 	
 cluster-k8s-test-post: ## teardown step for testing cluster
 	kubectl -n $(CLUSTER_TEST_NAMESPACE) delete deployments,pods,svc,daemonsets,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps,pvc --all --ignore-not-found
-	kubectl delete pv pv-test-$(CLUSTER_TEST_NAMESPACE)
+	kubectl delete pv pv-test-$(CLUSTER_TEST_NAMESPACE) --ignore-not-found
 	kubectl delete ns $(CLUSTER_TEST_NAMESPACE) --ignore-not-found
-	rm tests/resources/assets/kubeconfig
+	rm tests/resources/assets/kubeconfig || true
 
 cluster-k8s-test-do: export CLUSTER_TEST_NAMESPACE=ci-$(CI_JOB_ID)
 cluster-k8s-test-do: ## Test the cluster using pytest

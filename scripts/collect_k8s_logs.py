@@ -108,6 +108,8 @@ if arguments["--pp-thread"]:
 else:
 
     def pp_line(line):
+        if not line['time']:
+            line['time'] = datetime.datetime(year=1970, month=1, day=1, tzinfo=datetime.timezone.utc)
         return f"{line['time'].strftime(pp_date_format)} {line.get('level', '---')}\t{line.get('pod', '---')}:{line.get('container', '---')}\t{escape_ansi(line['msg'])}"
 
 

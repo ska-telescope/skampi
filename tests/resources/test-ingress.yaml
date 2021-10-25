@@ -10,20 +10,18 @@ metadata:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-  - host: nginx1
-    http:
+  - http:
       paths:
-      - path: /
+      - path: /nginx1/
         pathType: Prefix
         backend:
           service:
             name: nginx1
             port:
               number: 80
-  - host: nginx2
-    http:
+  - http:
       paths:
-      - path: /
+      - path: /nginx2/
         pathType: Prefix
         backend:
           service:

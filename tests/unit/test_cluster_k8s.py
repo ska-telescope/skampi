@@ -240,13 +240,14 @@ def curl_service_with_shared_volume(host0, host1, test_namespace):
     else:
         logging.info("No IP address for Loadbalancer set, using host")
         ip = host.split("//")[1].split(":")[0]
-    url = "http://" + ip + "/"
+    url1 = "http://" + ip + "/" + host0 + "/"
+    url2 = "http://" + ip + "/" + host1 + "/"
     headers1 = {"Host": host0}
     headers2 = {"Host": host1}
-    logging.info(f"URL1: {url}, headers: {headers1}")
-    logging.info(f"URL2: {url}, headers: {headers2}")
-    result1 = requests.get(url, headers=headers1, timeout=5)
-    result2 = requests.get(url, headers=headers2, timeout=5)
+    logging.info(f"URL1: {url1}, headers: {headers1}")
+    logging.info(f"URL2: {url2}, headers: {headers2}")
+    result1 = requests.get(url1, headers=headers1, timeout=5)
+    result2 = requests.get(url2, headers=headers2, timeout=5)
     logging.info("Result1: {}".format(result1.text))
     logging.info("Status1: {}".format(result1.status_code))
     logging.info("Result2: {}".format(result2.text))

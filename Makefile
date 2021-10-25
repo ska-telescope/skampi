@@ -185,8 +185,8 @@ update-chart-versions:
 	done
 
 python-pre-test: # must pass the current kubeconfig into the test container
-	if ! [[ `which kubectl` ]]; then \
-		if [[ `which apt` ]]; then \
+	if ! [[ `which kubectl 2>/dev/null` ]]; then \
+		if [[ `which apt 2>/dev/null` ]]; then \
 			apt install -y ca-certificates; \
 		fi; \
 		curl -LO https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl && \

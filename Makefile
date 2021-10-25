@@ -69,6 +69,9 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets for helm linting
 -include .make/helm.mk
 
+# include makefile targets for python
+-include .make/python.mk
+
 ## local custom includes
 # include makefile targets for testing
 -include resources/test.mk

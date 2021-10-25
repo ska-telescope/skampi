@@ -94,13 +94,14 @@ def fxt_test_namespace(manifest):
 @pytest.fixture(name="persistentvolume")
 def fxt_pv(test_namespace):
 
+    pv_name = "pv-test-" + test_namespace
     api = client.CoreV1Api()
 
     pv = client.V1PersistentVolume(
         api_version="v1",
         kind="PersistentVolume",
         metadata=client.V1ObjectMeta(
-            name="pv-test-" + test_namespace,
+            name=pv_name,
             labels={"app":"test"}
         ),
         spec=client.V1PersistentVolumeSpec(
@@ -120,40 +121,33 @@ def fxt_pv(test_namespace):
         label_selector="app=test"
     )
 
-    yield pv_result
+    yield pv_name
 
-    if list_pvs.items[0].spec.persistent_volume_reclaim_policy == 'Delete':
+    if list_pvs.items[0].spec.persistent_volume_reclaim_policy == "Delete":
         logging.info("PV should be deleted because bound PVC is torn down")
         return
 
-    # logging.info(f"No PVs exist: {list_pvs}")
-
-    # if len(list_pvs.items) == 0:
-    #     logging.info("PV already destroyed")
-    #     return
-
     logging.info("Destroying PersistentVolume")
     try:
-        delete_pv = api.delete_persistent_volume(
-            name="pv-test-"+test_namespace
-        )
+        delete_pv = api.delete_persistent_volume(name=pv_name)
     except:
         logging.info("Unable to delete PV")
 
 @pytest.fixture(name="persistentvolumeclaim")
 def fxt_pvc(test_namespace, persistentvolume):
+    pvc_name = "pvc-test"
     api = client.CoreV1Api()
     pvc_body = client.V1PersistentVolumeClaim(
         api_version="v1",
         kind="PersistentVolumeClaim",
         metadata=client.V1ObjectMeta(
-            name="pvc-test",
+            name=pvc_name,
         ),
         spec=client.V1PersistentVolumeClaimSpec(
             storage_class_name="nfss1",
             access_modes=["ReadWriteOnce"],
             resources=client.V1ResourceRequirements(requests={"storage": "1Gi"}),
-            volume_name="pv-test-" + test_namespace,
+            volume_name=persistentvolume,
         ),
     )
 
@@ -165,10 +159,12 @@ def fxt_pvc(test_namespace, persistentvolume):
         logging.info("That didn't work: %s" % e)
 
     pvcs = api.list_namespaced_persistent_volume_claim(namespace=test_namespace)
-    logging.info(f"PVCs: {pvcs}")
+    logging.info(
+        f"PVC {pvcs.items[0].metadata.name} currently {pvcs.items[0].status.phase}"
+    )
     assert len(pvcs.items) == 1
 
-    yield response
+    yield pvc_name
     logging.info("Destroying PersistentVolumeClaim")
     delete_pvc = api.delete_namespaced_persistent_volume_claim(
         name="pvc-test",

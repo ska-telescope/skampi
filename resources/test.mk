@@ -106,7 +106,7 @@ cluster-k8s-test-pre: ## Setup of kubernetes resources for testing cluster
 	kubectl auth can-i create pods/exec
 	
 cluster-k8s-test-post: ## teardown step for testing cluster
-	kubectl -n $(CLUSTER_TEST_NAMESPACE) delete deployments,pods,svc,daemonsets,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps,pv --all --ignore-not-found
+	kubectl -n $(CLUSTER_TEST_NAMESPACE) delete deployments,pods,svc,daemonsets,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps,pvc --all --ignore-not-found
 	kubectl delete pv pv-test-$(CLUSTER_TEST_NAMESPACE)
 	kubectl delete ns $(CLUSTER_TEST_NAMESPACE) --ignore-not-found
 	rm tests/resources/assets/kubeconfig

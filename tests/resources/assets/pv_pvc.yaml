@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pvtest
+  labels:
+    type: local
+spec:
+  storageClassName: nfss1
+  persistentVolumeReclaimPolicy: Delete
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/pv-test"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-test
+spec:
+  storageClassName: nfss1
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: pvtest

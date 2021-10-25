@@ -184,7 +184,7 @@ update-chart-versions:
 		done; \
 	done
 
-python-pre-test: # must pass the current kubeconfig into the test container
+python-pre-test: # must pass the current kubeconfig into the test container for infra tests
 	if ! [[ `which kubectl 2>/dev/null` ]]; then \
 		if [[ `which apt 2>/dev/null` ]]; then \
 			apt install -y ca-certificates; \

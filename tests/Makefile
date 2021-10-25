@@ -16,12 +16,16 @@ test: install
 	# omniORB: (0) 2021-10-13 14:29:20.153613: Error: Unable to create an endpoint of this description: giop:unix:
 	# make remove_log_consumer
 	# Must install kubectl for cluster tests
-	if ! [[ `which kubectl` ]]; then \
+	if ! [[ `which kubectl 2>/dev/null` ]]; then \
+		if [[ `which apt 2>/dev/null` ]]; then \
+			apt install -y ca-certificates; \
+		fi; \
 		curl -LO https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl && \
 		chmod +x ./kubectl && \
 		mv ./kubectl /usr/local/bin/kubectl && \
 		kubectl version --client; \
 	fi
+	kubectl config view --flatten --raw > tests/resources/assets/kubeconfig
 
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \

@@ -33,10 +33,13 @@ def k8s_cluster(assets_dir):
     kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
     os.makedirs( os.path.join(os.environ["HOME"], ".kube"), exist_ok=True)
     if os.path.isfile(os.path.join(os.environ["HOME"], ".kube", "config")):
-        logging.info(f"kubeconfig already exists, skipping: " + os.path.join(os.environ["HOME"], ".kube", "config"))
+        logging.info("kubeconfig already exists, skipping: " + os.path.join(os.environ["HOME"], ".kube", "config"))
     else:
-        assert os.path.isfile(kubeconfig_filepath)
-        assert copyfile(kubeconfig_filepath, os.path.join(os.environ["HOME"], ".kube", "config"))
+        if "KUBECONFIG" in os.environ:
+            logging.info("kubeconfig already exists in ENV VAR, skipping: " + os.environ["KUBECONFIG"])
+        else:
+            assert os.path.isfile(kubeconfig_filepath)
+            assert copyfile(kubeconfig_filepath, os.path.join(os.environ["HOME"], ".kube", "config"))
 
     nodes = subprocess.run(
         ["kubectl", "get", "nodes", "-o", "wide"],

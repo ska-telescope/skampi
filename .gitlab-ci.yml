@@ -64,3 +64,4 @@ python-test:
   rules:
     - exists:
       - tests/**/*
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE

@@ -96,9 +96,7 @@
 CLUSTER_TEST_NAMESPACE ?= ci-$(CI_JOB_ID)##Test namespace for cluster readiness tests
 LOADBALANCER_IP?=$(shell kubectl cluster-info | grep Kubernetes | cut -d/ -f3 | sed -e 's,:.*,,g')
 
-# Make target based test of cluster setup. This is done so that the SKAMPI user can test the basic
-# functionality of the cluster by simply calling `make cluster-k8s-test`
-
+### THESE PRE and POST STEPS ARE USED ONLY FOR DEBUGGING THE CLUSTER TESTS
 cluster-k8s-test-pre: ## Setup of kubernetes resources for testing cluster
 	kubectl config view --flatten --raw > tests/resources/assets/kubeconfig
 	kubectl get nodes -o wide --kubeconfig=tests/resources/assets/kubeconfig

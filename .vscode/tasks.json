@@ -6,7 +6,7 @@
         {
             "label": "Install requirements",
             "type": "shell",
-            "command": "/usr/bin/python3 -m pip install -r post-deployment/test_requirements.txt"
+            "command": "/usr/bin/python3 -m pip install -r tests/requirements.txt"
         }
     ]
 }

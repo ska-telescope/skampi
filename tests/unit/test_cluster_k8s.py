@@ -106,13 +106,16 @@ def fxt_pv(test_namespace):
         assert pv_result, f"Result from creating PV: {pv_result}"
     except ApiException as e:
         logging.info(f"Error: %s" % e)
-    # pvs = api.list_persistent_volume()
-
-    yield pv_result
-
     list_pvs = api.list_persistent_volume(
         label_selector="app=test"
     )
+
+    yield pv_result
+
+    if list_pvs.items[0].spec.persistent_volume_reclaim_policy == 'Delete':
+        logging.info("PV should be deleted because bound PVC is torn down")
+        return
+
     logging.info(f"No PVs exist: {list_pvs}")
 
     if len(list_pvs.items) == 0:
@@ -153,7 +156,7 @@ def fxt_pvc(test_namespace, persistentvolume):
         logging.info("That didn't work: %s" % e)
 
     pvcs = api.list_namespaced_persistent_volume_claim(namespace=test_namespace)
-    logging.info(f"PVCs: {pvcs}")
+    # logging.info(f"PVCs: {pvcs}")
     assert len(pvcs.items) == 1
 
     yield response
@@ -292,6 +295,16 @@ def wait_for_pod(test_namespace, service_name):
                 test_namespace, label_selector="app=" + service_name
             )
     logging.info("Pod Ready")
+    pvcs = v1.list_namespaced_persistent_volume_claim(namespace=test_namespace)
+    logging.info(f"PVCs: {len(pvcs.items)} found:")
+    if len(pvcs.items) > 0:
+        logging.info(f"PVC {pvcs.items[0].metadata.name} is in {pvcs.items[0].status.phase} phase")
+    pvs = v1.list_persistent_volume(
+        label_selector="app=test"
+    )
+    logging.info(f"PVs: {len(pvcs.items)} found")
+    if len(pvs.items) > 0:
+        logging.info(f"PV {pvs.items[0].metadata.name} is in {pvs.items[0].status.phase} phase")
 
 
 def test_cluster(test_namespace, all_the_things):

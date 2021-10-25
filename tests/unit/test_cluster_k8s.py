@@ -30,16 +30,23 @@ def fxt_manifest(assets_dir):
 
 @pytest.fixture(autouse=True)
 def k8s_cluster(assets_dir):
-    kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
-    os.makedirs( os.path.join(os.environ["HOME"], ".kube"), exist_ok=True)
-    if os.path.isfile(os.path.join(os.environ["HOME"], ".kube", "config")):
-        logging.info("kubeconfig already exists, skipping: " + os.path.join(os.environ["HOME"], ".kube", "config"))
+    kubeconfig_filepath = None
+    if "KUBECONFIG" in os.environ:
+        logging.info("kubeconfig already exists in ENV VAR, skipping: " + os.environ["KUBECONFIG"])
+        kubeconfig_filepath = os.environ["KUBECONFIG"]
     else:
-        if "KUBECONFIG" in os.environ:
-            logging.info("kubeconfig already exists in ENV VAR, skipping: " + os.environ["KUBECONFIG"])
+        if os.path.isfile(os.path.join(os.environ["HOME"], ".kube", "config")):
+            logging.info("kubeconfig already exists, skipping: " + os.path.join(os.environ["HOME"], ".kube", "config"))
+            kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
         else:
-            assert os.path.isfile(kubeconfig_filepath)
-            assert copyfile(kubeconfig_filepath, os.path.join(os.environ["HOME"], ".kube", "config"))
+            logging.info(f"Defaulting to loading kubeconfig from {kubeconfig_filepath}.")
+            kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
+
+    assert os.path.isfile(kubeconfig_filepath)
+
+    logging.info(f"loading kubeconfig from {kubeconfig_filepath}.")
+    os.environ["KUBECONFIG"] = kubeconfig_filepath
+    config.load_kube_config(kubeconfig_filepath)
 
     nodes = subprocess.run(
         ["kubectl", "get", "nodes", "-o", "wide"],
@@ -49,9 +56,6 @@ def k8s_cluster(assets_dir):
     )
     for line in nodes.stdout.split("\n"):
         logging.info(line)
-
-    logging.info(f"loading kubeconfig from {kubeconfig_filepath}.")
-    config.load_kube_config(kubeconfig_filepath)
 
 
 @pytest.fixture(name="test_namespace")

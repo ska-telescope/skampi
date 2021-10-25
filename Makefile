@@ -15,6 +15,7 @@ UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrel
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 CHARTS ?= ska-mid
 
+KUBECTL_VERSION ?= v1.22.1
 
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
@@ -185,6 +186,9 @@ update-chart-versions:
 
 python-pre-test: # must pass the current kubeconfig into the test container
 	if ! [[ `which kubectl` ]]; then \
+		if [[ `which apt` ]]; then \
+			apt install -y ca-certificates; \
+		fi; \
 		curl -LO https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl && \
 		chmod +x ./kubectl && \
 		mv ./kubectl /usr/local/bin/kubectl && \

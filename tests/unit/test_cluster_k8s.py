@@ -5,6 +5,7 @@ import pytest
 import os
 import requests
 import time
+from shutil import copyfile
 import subprocess
 from kubernetes import config, client
 from kubernetes.stream import stream
@@ -30,9 +31,8 @@ def fxt_manifest(assets_dir):
 @pytest.fixture(autouse=True)
 def k8s_cluster(assets_dir):
     kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
-    if not os.path.isfile(kubeconfig_filepath):
-        assert os.path.isfile(os.path.join(os.environ["HOME"], ".kube", "config"))
-        kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
+    assert os.path.isfile(kubeconfig_filepath)
+    assert copyfile(kubeconfig_filepath, os.path.join(os.environ["HOME"], ".kube", "config"))
 
     nodes = subprocess.run(
         ["kubectl", "get", "nodes", "-o", "wide"],

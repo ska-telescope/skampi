@@ -4,6 +4,7 @@
 # failures.
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
+KUBECTL_VERSION ?= v1.22.1
 
 all: test
 
@@ -14,6 +15,13 @@ test: install
 	# omniORB: (0) 2021-10-13 14:29:20.153601: Error: cannot create directory: /tmp/omni-root
 	# omniORB: (0) 2021-10-13 14:29:20.153613: Error: Unable to create an endpoint of this description: giop:unix:
 	# make remove_log_consumer
+	# Must install kubectl for cluster tests
+	if ! [[ `which kubectl` ]]; then \
+	curl -LO https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl && \
+	chmod +x ./kubectl && \
+	mv ./kubectl /usr/local/bin/kubectl && \
+	kubectl version --client; \
+	fi
 
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \

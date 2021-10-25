@@ -60,5 +60,10 @@ include:
     ref: st-908-correct-help-names
     file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 
+# overide the image because we need Python 3.9+ and a unique Namespace
+# in the python-test
 python-test:
   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+  variables:
+    CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID
+

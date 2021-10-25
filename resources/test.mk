@@ -93,7 +93,7 @@
 # smoketest: wait## wait for pods to be ready and jobs to be completed
 
 # CI_JOB_ID ?= local
-CLUSTER_TEST_NAMESPACE ?= ci-$(CI_JOB_ID)##Test namespace for cluster readiness tests
+# CLUSTER_TEST_NAMESPACE ?= ci-$(CI_JOB_ID)##Test namespace for cluster readiness tests
 LOADBALANCER_IP?=$(shell kubectl cluster-info | grep Kubernetes | cut -d/ -f3 | sed -e 's,:.*,,g')
 
 # Make target based test of cluster setup. This is done so that the SKAMPI user can test the basic

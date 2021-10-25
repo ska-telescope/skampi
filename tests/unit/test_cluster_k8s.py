@@ -116,26 +116,29 @@ def fxt_pv(test_namespace):
         assert pv_result, f"Result from creating PV: {pv_result}"
     except ApiException as e:
         logging.info(f"Error: %s" % e)
-    # pvs = api.list_persistent_volume()
-
-    yield pv_result
-
     list_pvs = api.list_persistent_volume(
         label_selector="app=test"
     )
-    logging.info(f"No PVs exist: {list_pvs}")
 
-    if len(list_pvs.items) == 0:
-        logging.info("PV already destroyed")
+    yield pv_result
+
+    if list_pvs.items[0].spec.persistent_volume_reclaim_policy == 'Delete':
+        logging.info("PV should be deleted because bound PVC is torn down")
         return
 
+    # logging.info(f"No PVs exist: {list_pvs}")
+
+    # if len(list_pvs.items) == 0:
+    #     logging.info("PV already destroyed")
+    #     return
+
     logging.info("Destroying PersistentVolume")
-    # try:
-    #     delete_pv = api.delete_persistent_volume(
-    #         name="pv-test-"+test_namespace
-    #     )
-    # except:
-    #     logging.info("Unable to delete PV")
+    try:
+        delete_pv = api.delete_persistent_volume(
+            name="pv-test-"+test_namespace
+        )
+    except:
+        logging.info("Unable to delete PV")
 
 @pytest.fixture(name="persistentvolumeclaim")
 def fxt_pvc(test_namespace, persistentvolume):
@@ -158,7 +161,6 @@ def fxt_pvc(test_namespace, persistentvolume):
         response = api.create_namespaced_persistent_volume_claim(
             namespace=test_namespace, body=pvc_body
         )
-        # logging.info(f"Response: {response}")
     except ApiException as e:
         logging.info("That didn't work: %s" % e)
 
@@ -168,11 +170,11 @@ def fxt_pvc(test_namespace, persistentvolume):
 
     yield response
     logging.info("Destroying PersistentVolumeClaim")
-    # delete_pvc = api.delete_namespaced_persistent_volume_claim(
-    #     name="pvc-test",
-    #     namespace=test_namespace
-    # )
-    # assert delete_pvc, "Unable to delete PVC"
+    delete_pvc = api.delete_namespaced_persistent_volume_claim(
+        name="pvc-test",
+        namespace=test_namespace
+    )
+    assert delete_pvc, "Unable to delete PVC"
 
 
 @pytest.fixture(name="all_the_things")
@@ -208,8 +210,8 @@ def fxt_deployments_and_services(test_namespace, manifest, persistentvolumeclaim
     ]
 
     logging.info("Destroying all the things")
-    # destroy_the_things = subprocess.run(k_cmd, check=True)
-    # assert destroy_the_things.returncode == 0
+    destroy_the_things = subprocess.run(k_cmd, check=True)
+    assert destroy_the_things.returncode == 0
 
 
 def write_to_volume(write_service_name, test_namespace, all_the_things):
@@ -233,10 +235,6 @@ def write_to_volume(write_service_name, test_namespace, all_the_things):
     logging.info(f"Full array: {command}")
 
     write_result = subprocess.run(command, check=True)
-    # resp = stream( v1.connect_get_namespaced_pod_exec, podname, test_namespace, command=exec_command, stderr=True, stdin=False, stdout=True, tty=True, )
-
-    # logging.info(f"{resp}")
-    # assert resp == 0 # This is not going to work
     assert write_result.returncode == 0, "Writing to test pod failed"
 
 

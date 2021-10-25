@@ -185,16 +185,6 @@ update-chart-versions:
 	done
 
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
-	if ! [[ `which kubectl 2>/dev/null` ]]; then \
-		if [[ `which apt 2>/dev/null` ]]; then \
-			apt install -y ca-certificates; \
-		fi; \
-		curl -LO https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl && \
-		chmod +x ./kubectl && \
-		mv ./kubectl /usr/local/bin/kubectl && \
-		kubectl version --client; \
-	fi
-	kubectl config view --flatten --raw > tests/resources/assets/kubeconfig
 	pip3 install -r tests/requirements.txt
 
 k8s-pre-test: python-pre-test

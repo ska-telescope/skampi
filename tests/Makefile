@@ -25,7 +25,9 @@ test: install
 		mv ./kubectl /usr/local/bin/kubectl && \
 		kubectl version --client; \
 	fi
-	kubectl config view --flatten --raw > tests/resources/assets/kubeconfig
+	if ! [[ -f tests/resources/assets/kubeconfig ]]; then \
+		kubectl config view --flatten --raw > tests/resources/assets/kubeconfig; \
+	fi
 
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \

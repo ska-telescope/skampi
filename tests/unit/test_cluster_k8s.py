@@ -32,6 +32,7 @@ def fxt_manifest(assets_dir):
 def k8s_cluster(assets_dir):
     kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
     assert os.path.isfile(kubeconfig_filepath)
+    os.makedirs( os.path.join(os.environ["HOME"], ".kube"), exist_ok=True)
     assert copyfile(kubeconfig_filepath, os.path.join(os.environ["HOME"], ".kube", "config"))
 
     nodes = subprocess.run(

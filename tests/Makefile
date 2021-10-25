@@ -17,10 +17,10 @@ test: install
 	# make remove_log_consumer
 	# Must install kubectl for cluster tests
 	if ! [[ `which kubectl` ]]; then \
-	curl -LO https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl && \
-	chmod +x ./kubectl && \
-	mv ./kubectl /usr/local/bin/kubectl && \
-	kubectl version --client; \
+		curl -LO https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl && \
+		chmod +x ./kubectl && \
+		mv ./kubectl /usr/local/bin/kubectl && \
+		kubectl version --client; \
 	fi
 
 	mkdir -p build && \

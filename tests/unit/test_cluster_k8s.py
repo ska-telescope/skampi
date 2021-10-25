@@ -32,14 +32,22 @@ def fxt_manifest(assets_dir):
 def k8s_cluster(assets_dir):
     kubeconfig_filepath = None
     if "KUBECONFIG" in os.environ:
-        logging.info("kubeconfig already exists in ENV VAR, skipping: " + os.environ["KUBECONFIG"])
+        logging.info(
+            "kubeconfig already exists in ENV VAR, skipping: "
+            + os.environ["KUBECONFIG"]
+        )
         kubeconfig_filepath = os.environ["KUBECONFIG"]
     else:
         if os.path.isfile(os.path.join(os.environ["HOME"], ".kube", "config")):
-            logging.info("kubeconfig already exists, skipping: " + os.path.join(os.environ["HOME"], ".kube", "config"))
+            logging.info(
+                "kubeconfig already exists, skipping: "
+                + os.path.join(os.environ["HOME"], ".kube", "config")
+            )
             kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
         else:
-            logging.info(f"Defaulting to loading kubeconfig from {kubeconfig_filepath}.")
+            logging.info(
+                f"Defaulting to loading kubeconfig from {kubeconfig_filepath}."
+            )
             kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
 
     assert os.path.isfile(kubeconfig_filepath)
@@ -91,18 +99,17 @@ def fxt_test_namespace(manifest):
     if _namespace != "default":
         client.CoreV1Api().delete_namespace(name=_namespace, async_req=True)
 
+
 @pytest.fixture(name="persistentvolume")
 def fxt_pv(test_namespace):
 
+    pv_name = "pv-test-" + test_namespace
     api = client.CoreV1Api()
 
     pv = client.V1PersistentVolume(
         api_version="v1",
         kind="PersistentVolume",
-        metadata=client.V1ObjectMeta(
-            name="pv-test-" + test_namespace,
-            labels={"app":"test"}
-        ),
+        metadata=client.V1ObjectMeta(name=pv_name, labels={"app": "test"}),
         spec=client.V1PersistentVolumeSpec(
             storage_class_name="nfss1",
             persistent_volume_reclaim_policy="Delete",
@@ -116,13 +123,11 @@ def fxt_pv(test_namespace):
         assert pv_result, f"Result from creating PV: {pv_result}"
     except ApiException as e:
         logging.info(f"Error: %s" % e)
-    list_pvs = api.list_persistent_volume(
-        label_selector="app=test"
-    )
+    list_pvs = api.list_persistent_volume(label_selector="app=test")
 
-    yield pv_result
+    yield pv_name
 
-    if list_pvs.items[0].spec.persistent_volume_reclaim_policy == 'Delete':
+    if list_pvs.items[0].spec.persistent_volume_reclaim_policy == "Delete":
         logging.info("PV should be deleted because bound PVC is torn down")
         return
 
@@ -134,26 +139,26 @@ def fxt_pv(test_namespace):
 
     logging.info("Destroying PersistentVolume")
     try:
-        delete_pv = api.delete_persistent_volume(
-            name="pv-test-"+test_namespace
-        )
+        delete_pv = api.delete_persistent_volume(name=pv_name)
     except:
         logging.info("Unable to delete PV")
 
+
 @pytest.fixture(name="persistentvolumeclaim")
 def fxt_pvc(test_namespace, persistentvolume):
+    pvc_name = "pvc-test"
     api = client.CoreV1Api()
     pvc_body = client.V1PersistentVolumeClaim(
         api_version="v1",
         kind="PersistentVolumeClaim",
         metadata=client.V1ObjectMeta(
-            name="pvc-test",
+            name=pvc_name,
         ),
         spec=client.V1PersistentVolumeClaimSpec(
             storage_class_name="nfss1",
             access_modes=["ReadWriteOnce"],
             resources=client.V1ResourceRequirements(requests={"storage": "1Gi"}),
-            volume_name="pv-test-" + test_namespace,
+            volume_name=persistentvolume,
         ),
     )
 
@@ -165,14 +170,15 @@ def fxt_pvc(test_namespace, persistentvolume):
         logging.info("That didn't work: %s" % e)
 
     pvcs = api.list_namespaced_persistent_volume_claim(namespace=test_namespace)
-    logging.info(f"PVCs: {pvcs}")
+    logging.info(
+        f"PVC {pvcs.items[0].metadata.name} currently {pvcs.items[0].status.phase}"
+    )
     assert len(pvcs.items) == 1
 
-    yield response
+    yield pvc_name
     logging.info("Destroying PersistentVolumeClaim")
     delete_pvc = api.delete_namespaced_persistent_volume_claim(
-        name="pvc-test",
-        namespace=test_namespace
+        name=pvc_name, namespace=test_namespace
     )
     assert delete_pvc, "Unable to delete PVC"
 

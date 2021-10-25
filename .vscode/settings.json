@@ -17,5 +17,6 @@
     "python.pythonPath": "venv/bin/python",
     "python.analysis.extraPaths": [
         "./tests"
-    ]
+    ],
+    "python.formatting.provider": "black"
 }

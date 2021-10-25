@@ -184,7 +184,8 @@ update-chart-versions:
 		done; \
 	done
 
-PYTHON_VARS_BEFORE_PYTEST=LOADBALANCER_IP=${LOADBALANCER_IP} CLUSTER_TEST_NAMESPACE=ci-${CI_JOB_ID}
+PYTHON_VARS_BEFORE_PYTEST=LOADBALANCER_IP=${LOADBALANCER_IP} CLUSTER_TEST_NAMESPACE=ci-${CI_JOB_ID} 
+PYTHON_VARS_AFTER_PYTEST=-m infra
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
 	pip3 install -r tests/requirements.txt
 

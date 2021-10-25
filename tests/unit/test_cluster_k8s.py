@@ -130,12 +130,12 @@ def fxt_pv(test_namespace):
         return
 
     logging.info("Destroying PersistentVolume")
-    try:
-        delete_pv = api.delete_persistent_volume(
-            name="pv-test-"+test_namespace
-        )
-    except:
-        logging.info("Unable to delete PV")
+    # try:
+    #     delete_pv = api.delete_persistent_volume(
+    #         name="pv-test-"+test_namespace
+    #     )
+    # except:
+    #     logging.info("Unable to delete PV")
 
 @pytest.fixture(name="persistentvolumeclaim")
 def fxt_pvc(test_namespace, persistentvolume):
@@ -168,11 +168,11 @@ def fxt_pvc(test_namespace, persistentvolume):
 
     yield response
     logging.info("Destroying PersistentVolumeClaim")
-    delete_pvc = api.delete_namespaced_persistent_volume_claim(
-        name="pvc-test",
-        namespace=test_namespace
-    )
-    assert delete_pvc, "Unable to delete PVC"
+    # delete_pvc = api.delete_namespaced_persistent_volume_claim(
+    #     name="pvc-test",
+    #     namespace=test_namespace
+    # )
+    # assert delete_pvc, "Unable to delete PVC"
 
 
 @pytest.fixture(name="all_the_things")
@@ -208,8 +208,8 @@ def fxt_deployments_and_services(test_namespace, manifest, persistentvolumeclaim
     ]
 
     logging.info("Destroying all the things")
-    destroy_the_things = subprocess.run(k_cmd, check=True)
-    assert destroy_the_things.returncode == 0
+    # destroy_the_things = subprocess.run(k_cmd, check=True)
+    # assert destroy_the_things.returncode == 0
 
 
 def write_to_volume(write_service_name, test_namespace, all_the_things):

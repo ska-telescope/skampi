@@ -195,6 +195,7 @@ python-pre-test: # must pass the current kubeconfig into the test container
 		kubectl version --client; \
 	fi
 	kubectl config view --flatten --raw > tests/resources/assets/kubeconfig
+	pip3 install -r tests/requirements.txt
 
 k8s-pre-test: python-pre-test
 

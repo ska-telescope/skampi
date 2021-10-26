@@ -38,7 +38,7 @@ include:
   # # All SKA Low stages
   # - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
   # All SKA Mid stages
-  # - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
+  - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
 
   # Python tests, directly run
   - project: 'ska-telescope/templates-repository'

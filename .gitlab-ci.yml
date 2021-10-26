@@ -42,22 +42,18 @@ include:
 
   # Python tests, directly run
   - project: 'ska-telescope/templates-repository'
-    ref: st-908-correct-help-names
     file: 'gitlab-ci/includes/python-test.gitlab-ci.yml'
 
   # Helm Charts
   - project: 'ska-telescope/templates-repository'
-    ref: st-908-correct-help-names
     file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
 
   # Docs - only build as stress tests use 'public'
   - project: 'ska-telescope/templates-repository'
-    ref: st-908-correct-help-names
     file: 'gitlab-ci/includes/docs-build.gitlab-ci.yml'
 
     # .post steps
   - project: 'ska-telescope/templates-repository'
-    ref: st-908-correct-help-names
     file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 
 # overide the image because we need Python 3.9+ and a unique Namespace

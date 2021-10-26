@@ -108,7 +108,7 @@ def fxt_pv(test_namespace):
             storage_class_name="nfss1",
             persistent_volume_reclaim_policy="Delete",
             capacity={"storage": "1Gi"},
-            access_modes=["ReadWriteOnce"],
+            access_modes=["ReadWriteMany"],
             host_path={"path": "/tmp/pv-test"},
         ),
     )
@@ -145,7 +145,7 @@ def fxt_pvc(test_namespace, persistentvolume):
         ),
         spec=client.V1PersistentVolumeClaimSpec(
             storage_class_name="nfss1",
-            access_modes=["ReadWriteOnce"],
+            access_modes=["ReadWriteMany"],
             resources=client.V1ResourceRequirements(requests={"storage": "1Gi"}),
             volume_name=persistentvolume,
         ),
@@ -244,6 +244,7 @@ def curl_service_with_shared_volume(host0, host1, test_namespace):
     else:
         logging.info("No IP address for Loadbalancer set, using host")
         ip = host.split("//")[1].split(":")[0]
+    logging.info(f"LOADBALANCER_IP this is where we go to test: {ip}")
     url1 = "http://" + ip + "/" + host0 + "/"
     url2 = "http://" + ip + "/" + host1 + "/"
     headers1 = {"Host": host0}

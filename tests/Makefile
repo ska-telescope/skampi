@@ -17,9 +17,10 @@ test: install
 	# make remove_log_consumer
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \
+	cd .. && \
 	PYTHONPATH=/app:/app/skampi:/app/skampi/test pytest -v -r fEx \
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
-		--disable-pytest-warnings --timeout=300 $(FILE) --count=$(COUNT) | tee pytest.stdout; \
+		--disable-pytest-warnings --timeout=300 $(FILE) --count=$(COUNT) tests | tee pytest.stdout; \
 	status=$$?; \
 	echo "test: status is ($$status)"; \
 	exit $$status

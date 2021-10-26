@@ -16,7 +16,6 @@ TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 CHARTS ?= ska-mid
 
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
-KUBECTL_VERSION ?= v1.22.1
 
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables

@@ -4,7 +4,6 @@
 # failures.
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
-KUBECTL_VERSION ?= v1.22.1
 
 all: test
 

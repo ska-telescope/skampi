@@ -14,7 +14,7 @@ mid_deploy_test_destroy:
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
     ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid_archiver_db"
-    MARK: "no infra"
+    MARK: "not infra"
   extends:
     - .tags_default
     - .deploy_test_destroy_definition

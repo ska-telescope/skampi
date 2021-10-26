@@ -191,6 +191,9 @@ python-pre-test: # must pass the current kubeconfig into the test container for 
 
 k8s-pre-test: python-pre-test
 
+# make sure infra test do not run in k8s-test
+k8s-test: MARK := not infra
+
 k8s-post-test: # post test hook for processing received reports
 	@echo "k8s-post-test: Skampi post processing of test reports with scripts/collect_k8s_logs.py"
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \

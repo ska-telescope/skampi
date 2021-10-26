@@ -91,50 +91,7 @@ def fxt_test_namespace(manifest):
     if _namespace != "default":
         client.CoreV1Api().delete_namespace(name=_namespace, async_req=True)
 
-# @pytest.fixture(name="persistentvolume")
-# def fxt_pv(test_namespace):
-
-#     pv_name = "pv-test-" + test_namespace
-#     api = client.CoreV1Api()
-
-#     pv = client.V1PersistentVolume(
-#         api_version="v1",
-#         kind="PersistentVolume",
-#         metadata=client.V1ObjectMeta(
-#             name=pv_name,
-#             labels={"app":"test"}
-#         ),
-#         spec=client.V1PersistentVolumeSpec(
-#             storage_class_name="nfss1",
-#             persistent_volume_reclaim_policy="Delete",
-#             capacity={"storage": "1Gi"},
-#             access_modes=["ReadWriteMany"],
-#             # host_path={"path": "/tmp/pv-test"},
-#         ),
-#     )
-#     try:
-#         pv_result = api.create_persistent_volume(pv)
-#         assert pv_result, f"Result from creating PV: {pv_result}"
-#     except ApiException as e:
-#         logging.info(f"Error: %s" % e)
-#     list_pvs = api.list_persistent_volume(
-#         label_selector="app=test"
-#     )
-
-#     yield pv_name
-
-#     if list_pvs.items[0].spec.persistent_volume_reclaim_policy == "Delete":
-#         logging.info("PV should be deleted because bound PVC is torn down")
-#         return
-
-#     logging.info("Destroying PersistentVolume")
-#     try:
-#         delete_pv = api.delete_persistent_volume(name=pv_name)
-#     except:
-#         logging.info("Unable to delete PV")
-
 @pytest.fixture(name="persistentvolumeclaim")
-# def fxt_pvc(test_namespace, persistentvolume):
 def fxt_pvc(test_namespace):
     pvc_name = "pvc-test"
     api = client.CoreV1Api()
@@ -148,7 +105,6 @@ def fxt_pvc(test_namespace):
             storage_class_name="nfss1",
             access_modes=["ReadWriteMany"],
             resources=client.V1ResourceRequirements(requests={"storage": "1Gi"}),
-            # volume_name=persistentvolume,
         ),
     )
 

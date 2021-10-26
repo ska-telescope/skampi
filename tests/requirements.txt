@@ -31,6 +31,7 @@ assertpy
 ska-ser-skallop==2.7.4
 # ska-ser-skuid
 # ska-ser-logging
+docopts
 
 pytest-mock
 pytest-forked

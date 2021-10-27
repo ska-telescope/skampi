@@ -183,6 +183,10 @@ python-pre-test: # must pass the current kubeconfig into the test container for 
 
 k8s-pre-test: python-pre-test
 
+verify-minikube: # Run only infra tests on local minikube cluster as precursor
+	LOADBALANCER_IP=$(shell minikube ip)
+	make python-test
+
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra
 

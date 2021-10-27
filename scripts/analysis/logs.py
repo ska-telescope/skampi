@@ -35,7 +35,7 @@ def render_date(dt):
 
 
 SAME_ATTRS_THRESHOLD = datetime.timedelta(milliseconds=0.1)
-
+ERROR_TIMESTAMP = datetime.datetime(year=1970, month=1, day=1, tzinfo=datetime.timezone.utc)
 
 def parse_log_line(line: str, attrs: dict, previous: dict) -> dict:
 
@@ -53,7 +53,7 @@ def parse_log_line(line: str, attrs: dict, previous: dict) -> dict:
             out.update(previous)
         else:
             print("could not parse K8s timestamp: ", line)
-            out["time"] = None
+            out["time"] = ERROR_TIMESTAMP
     else:
         out["time"] = parse_date(m["kube_time"])
         line = m["rest"]
@@ -153,6 +153,7 @@ def collect_pod_logs(api, namespace):
 
                         # Add line to list
                         line_dict = parse_log_line(line, attrs, line_dict)
+                        assert(line_dict['time'] is not None)
                         lines.append(line_dict)
                         aggregate_status(line_dict, statuses)
 

@@ -64,7 +64,7 @@ python-test:
     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
     PYTHON_VARS_AFTER_PYTEST: -m infra
   environment:
-    name: test
+    name: test-cluster
     kubernetes:
-      namespace: ci-$CI_PROJECT_NAME-$CI_JOB
+      namespace: $CLUSTER_TEST_NAMESPACE
 

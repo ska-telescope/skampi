@@ -11,9 +11,10 @@ variables:
 
 
 stages:
+  - test
   - lint
   - build
-  - test
+  # - test
   - clean
   - deploy
   - debug

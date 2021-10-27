@@ -169,66 +169,32 @@ def fxt_deployments_and_services(test_namespace, manifest, persistentvolumeclaim
     assert destroy_the_things.returncode == 0
 
 @pytest.fixture(name="ingress")
-def fxt_create_ingress(test_namespace):
+def fxt_create_ingress(test_namespace,assets_dir):
     """
     Load the cluster_test_ingress.yaml file
     patch the host names with namespace
     create
     """
-    networking_v1_beta1_api = client.NetworkingV1beta1Api()
-    # networking_v1 = client.NetworkingV1Api()
-    # host1 = NetworkingV1beta1HTTPIngressPath.path_type
+    import yaml
+    manifest_filepath = os.path.realpath(
+        os.path.join(assets_dir, "cluster_test_ingress.yaml")
+    )
+    with open(manifest_filepath) as f:
+        ingress = yaml.safe_load(f)
 
-    host_nginx1 = client.NetworkingV1beta1IngressRule(
-                host="nginx1-" + test_namespace,
-                http=client.NetworkingV1beta1HTTPIngressRuleValue(
-                    paths=[client.NetworkingV1beta1HTTPIngressPath(
-                        # type="Prefix",
-                        path="/",
-                        backend=client.NetworkingV1beta1IngressBackend(
-                            service_port=80,
-                            service_name="nginx1")
-                        )
-                    ]
-                )
-            )
-    host_nginx2 = client.NetworkingV1beta1IngressRule(
-                host="nginx2-" + test_namespace,
-                http=client.NetworkingV1beta1HTTPIngressRuleValue(
-                    paths=[client.NetworkingV1beta1HTTPIngressPath(
-                        # type="Prefix",
-                        path="/",
-                        backend=client.NetworkingV1beta1IngressBackend(
-                            service_port=80,
-                            service_name="nginx2")
-                        )
-                    ]
-                )
-            )
-    body = client.NetworkingV1beta1Ingress(
-        api_version="networking.k8s.io/v1beta1",
-        kind="Ingress",
-        metadata=client.V1ObjectMeta(name="test",
-            labels={"app.kubernetes.io/name": "test"},
-            annotations={"kubernetes.io/ingress.class": "nginx"}
-        ),
-        spec=client.NetworkingV1beta1IngressSpec(
-            rules=[host_nginx1, host_nginx2]
+        networking_v1_beta1_api = client.NetworkingV1beta1Api()
+
+        networking_v1_beta1_api.create_namespaced_ingress(
+            namespace=test_namespace,
+            body=ingress
         )
-    )
-    # Creation of the Deployment in specified namespace
-    # (Can replace "default" with a namespace you may have created)
-    networking_v1_beta1_api.create_namespaced_ingress(
-        namespace=test_namespace,
-        body=body
-    )
 
     return "THIS IS NOT YET CORRECTLY ADDED AND SHOULD BE"
     
 
 #TODO: PATCH THE INGRESS RESOURCE SO THAT IT IS CREATED WITH NAMESPACED HOSTNAME
-# def write_to_volume(write_service_name, test_namespace, all_the_things, ingress):
-def write_to_volume(write_service_name, test_namespace, all_the_things):
+def write_to_volume(write_service_name, test_namespace, all_the_things, ingress):
+# def write_to_volume(write_service_name, test_namespace, all_the_things):
     logging.info(f"Result of creating all the things: {all_the_things}")
 
     command_to_run = "echo $(date) > /usr/share/nginx/html/index.html"

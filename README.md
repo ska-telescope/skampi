@@ -9,6 +9,11 @@ make k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4 KUB
 make k8s-uninstall-chart KUBE_NAMESPACE=default
 ```
 
+Also, verify your Minikube cluster beforehand:
+```
+make verify-minikube
+```
+
 # Getting Started
 [![Documentation Status](https://readthedocs.org/projects/ska-telescope-ska-skampi/badge/?version=latest)](https://developer.skatelescope.org/projects/ska-skampi/en/latest/?badge=latest)
 

@@ -272,8 +272,8 @@ def write_to_volume(write_service_name, test_namespace, all_the_things, ingress)
 
 def curl_service_with_shared_volume(host0, host1, test_namespace):
     # See patch applied to ingress
-    host0 = host0+'-'+test_namespace
-    host1 = host1+'-'+test_namespace
+    host0 = host0 + "-" + test_namespace
+    host1 = host1 + "-" + test_namespace
 
     logging.info("Attempting to curl")
     host = client.Configuration().get_default_copy().host

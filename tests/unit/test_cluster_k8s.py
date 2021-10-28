@@ -173,23 +173,55 @@ def fxt_create_ingress(test_namespace,assets_dir):
     """
     Load the cluster_test_ingress.yaml file
     patch the host names with namespace
-    create
+    create ingress with temp manifest
+    Teardown
+
+    TODO: This is needed because the currently used version of the python
+    kubernetes lib doesn't have the V1 ingress API implemented yet.
+    Therefore this method can be updated in future to use the API directly.
     """
     import yaml
     manifest_filepath = os.path.realpath(
         os.path.join(assets_dir, "cluster_test_ingress.yaml")
     )
+    patched_manifest_filepath = os.path.join(assets_dir,'tmp_ingress.yaml')
     with open(manifest_filepath) as f:
         ingress = yaml.safe_load(f)
+        if ingress['spec']['rules'][0]['host'] == 'ngnix1':
+            ingress['spec']['rules'][0]['host'] = 'nginx1-'+test_namespace
+        if ingress['spec']['rules'][1]['host'] == 'ngnix2':
+            ingress['spec']['rules'][1]['host'] = 'nginx2-'+test_namespace
+        with open(patched_manifest_filepath, 'w') as pf:
+            yaml.safe_dump(ingress, pf, default_flow_style=False)
 
-        networking_v1_beta1_api = client.NetworkingV1beta1Api()
+    k_cmd_ingress = [ "kubectl", "-n", test_namespace, "-f", patched_manifest_filepath, "apply"]
 
-        networking_v1_beta1_api.create_namespaced_ingress(
-            namespace=test_namespace,
-            body=ingress
-        )
+    ingress_result = subprocess.run(k_cmd_ingress, check=True, stdout=subprocess.PIPE, universal_newlines=True)
 
-    return "THIS IS NOT YET CORRECTLY ADDED AND SHOULD BE"
+    for line in ingress_result.stdout.split("\n"):
+        logging.info(line)
+
+    yield ingress_result.returncode
+
+    k_cmd = [
+        "kubectl",
+        "-n",
+        test_namespace,
+        "delete",
+        "--grace-period=0",
+        "--ignore-not-found",
+        "-f",
+        patched_manifest_filepath,
+    ]
+
+    logging.info("Destroying ingress")
+    destroy_ingress = subprocess.run(k_cmd, check=True)
+    os.remove(patched_manifest_filepath)
+
+    assert destroy_ingress.returncode == 0
+
+
+    
     
 
 #TODO: PATCH THE INGRESS RESOURCE SO THAT IT IS CREATED WITH NAMESPACED HOSTNAME
@@ -283,12 +315,12 @@ def wait_for_pod(test_namespace, service_name):
     logging.info("Pod Ready")
 
 @pytest.mark.infra
-def test_cluster(test_namespace, all_the_things):
+def test_cluster(test_namespace, all_the_things, ingress):
     wait_for_pod(test_namespace, "nginx1")
     logging.info(f"Test: Deployment nginx1 Ready")
     wait_for_pod(test_namespace, "nginx2")
     logging.info(f"Test: Deployment nginx2 Ready")
-    write_to_volume("nginx1", test_namespace, all_the_things)
+    write_to_volume("nginx1", test_namespace, all_the_things, ingress)
     logging.info("Test: Successfully executed a write to a shared volume")
     curl_service_with_shared_volume(
         "nginx1", "nginx2", test_namespace

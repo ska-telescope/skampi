@@ -2,7 +2,9 @@
 import logging
 from kubernetes.client.api.networking_v1_api import NetworkingV1Api
 from kubernetes.client.exceptions import ApiException
-from kubernetes.client.models.networking_v1beta1_http_ingress_path import NetworkingV1beta1HTTPIngressPath
+from kubernetes.client.models.networking_v1beta1_http_ingress_path import (
+    NetworkingV1beta1HTTPIngressPath,
+)
 import pytest
 import os
 import requests
@@ -34,14 +36,22 @@ def fxt_manifest(assets_dir):
 def k8s_cluster(assets_dir):
     kubeconfig_filepath = None
     if "KUBECONFIG" in os.environ:
-        logging.info("kubeconfig already exists in ENV VAR, skipping: " + os.environ["KUBECONFIG"])
+        logging.info(
+            "kubeconfig already exists in ENV VAR, skipping: "
+            + os.environ["KUBECONFIG"]
+        )
         kubeconfig_filepath = os.environ["KUBECONFIG"]
     else:
         if os.path.isfile(os.path.join(os.environ["HOME"], ".kube", "config")):
-            logging.info("kubeconfig already exists, skipping: " + os.path.join(os.environ["HOME"], ".kube", "config"))
+            logging.info(
+                "kubeconfig already exists, skipping: "
+                + os.path.join(os.environ["HOME"], ".kube", "config")
+            )
             kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
         else:
-            logging.info(f"Defaulting to loading kubeconfig from {kubeconfig_filepath}.")
+            logging.info(
+                f"Defaulting to loading kubeconfig from {kubeconfig_filepath}."
+            )
             kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
 
     assert os.path.isfile(kubeconfig_filepath)
@@ -93,6 +103,7 @@ def fxt_test_namespace(manifest):
     if _namespace != "default":
         client.CoreV1Api().delete_namespace(name=_namespace, async_req=True)
 
+
 @pytest.fixture(name="persistentvolumeclaim")
 def fxt_pvc(test_namespace):
     pvc_name = "pvc-test"
@@ -126,8 +137,7 @@ def fxt_pvc(test_namespace):
     yield pvc_name
     logging.info("Destroying PersistentVolumeClaim")
     delete_pvc = api.delete_namespaced_persistent_volume_claim(
-        name="pvc-test",
-        namespace=test_namespace
+        name="pvc-test", namespace=test_namespace
     )
     assert delete_pvc, "Unable to delete PVC"
 
@@ -168,8 +178,9 @@ def fxt_deployments_and_services(test_namespace, manifest, persistentvolumeclaim
     destroy_the_things = subprocess.run(k_cmd, check=True)
     assert destroy_the_things.returncode == 0
 
+
 @pytest.fixture(name="ingress")
-def fxt_create_ingress(test_namespace,assets_dir):
+def fxt_create_ingress(test_namespace, assets_dir):
     """
     Load the cluster_test_ingress.yaml file
     patch the host names with namespace
@@ -181,22 +192,34 @@ def fxt_create_ingress(test_namespace,assets_dir):
     Therefore this method can be updated in future to use the API directly.
     """
     import yaml
+
     manifest_filepath = os.path.realpath(
         os.path.join(assets_dir, "cluster_test_ingress.yaml")
     )
-    patched_manifest_filepath = os.path.join(assets_dir,'tmp_ingress.yaml')
+    patched_manifest_filepath = os.path.join(assets_dir, "tmp_ingress.yaml")
     with open(manifest_filepath) as f:
         ingress = yaml.safe_load(f)
-        if ingress['spec']['rules'][0]['host'] == 'ngnix1':
-            ingress['spec']['rules'][0]['host'] = 'nginx1-'+test_namespace
-        if ingress['spec']['rules'][1]['host'] == 'ngnix2':
-            ingress['spec']['rules'][1]['host'] = 'nginx2-'+test_namespace
-        with open(patched_manifest_filepath, 'w') as pf:
+        if ingress["spec"]["rules"][0]["host"] == "nginx1":
+            logging.info(f"Setting Host to nginx1-{test_namespace}")
+            ingress["spec"]["rules"][0]["host"] = "nginx1-" + test_namespace
+        if ingress["spec"]["rules"][1]["host"] == "nginx2":
+            logging.info(f"Setting Host nginx2 to nginx2-{test_namespace}")
+            ingress["spec"]["rules"][1]["host"] = "nginx2-" + test_namespace
+        with open(patched_manifest_filepath, "w") as pf:
             yaml.safe_dump(ingress, pf, default_flow_style=False)
 
-    k_cmd_ingress = [ "kubectl", "-n", test_namespace, "-f", patched_manifest_filepath, "apply"]
+    k_cmd_ingress = [
+        "kubectl",
+        "-n",
+        test_namespace,
+        "-f",
+        patched_manifest_filepath,
+        "apply",
+    ]
 
-    ingress_result = subprocess.run(k_cmd_ingress, check=True, stdout=subprocess.PIPE, universal_newlines=True)
+    ingress_result = subprocess.run(
+        k_cmd_ingress, check=True, stdout=subprocess.PIPE, universal_newlines=True
+    )
 
     for line in ingress_result.stdout.split("\n"):
         logging.info(line)
@@ -221,12 +244,9 @@ def fxt_create_ingress(test_namespace,assets_dir):
     assert destroy_ingress.returncode == 0
 
 
-    
-    
-
-#TODO: PATCH THE INGRESS RESOURCE SO THAT IT IS CREATED WITH NAMESPACED HOSTNAME
+# TODO: PATCH THE INGRESS RESOURCE SO THAT IT IS CREATED WITH NAMESPACED HOSTNAME
 def write_to_volume(write_service_name, test_namespace, all_the_things, ingress):
-# def write_to_volume(write_service_name, test_namespace, all_the_things):
+    # def write_to_volume(write_service_name, test_namespace, all_the_things):
     logging.info(f"Result of creating all the things: {all_the_things}")
 
     command_to_run = "echo $(date) > /usr/share/nginx/html/index.html"
@@ -251,6 +271,10 @@ def write_to_volume(write_service_name, test_namespace, all_the_things, ingress)
 
 
 def curl_service_with_shared_volume(host0, host1, test_namespace):
+    # See patch applied to ingress
+    host0 = host0+'-'+test_namespace
+    host1 = host1+'-'+test_namespace
+
     logging.info("Attempting to curl")
     host = client.Configuration().get_default_copy().host
     logging.info(f"HOST: {host}")
@@ -313,6 +337,7 @@ def wait_for_pod(test_namespace, service_name):
                 test_namespace, label_selector="app=" + service_name
             )
     logging.info("Pod Ready")
+
 
 @pytest.mark.infra
 def test_cluster(test_namespace, all_the_things, ingress):

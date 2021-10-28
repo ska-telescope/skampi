@@ -227,5 +227,3 @@ links: ## attempt to create the URLs with which to access
 	@echo "#            Access the landing page here:"
 	@echo "#            https://$(INGRESS_HOST)/$(KUBE_NAMESPACE)/start/"
 	@echo "############################################################################"
-
--include resources/test.mk

@@ -74,8 +74,7 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 # include core makefile targets
 -include .make/base.mk
 
-SKAMPI_K8S_CHART ?= ska-mid
-K8S_CHART = $(SKAMPI_K8S_CHART)##Default chat set to Mid for testing purposes
+K8S_CHART = ska-mid##Default chart set to Mid for testing purposes
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
 
 HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)

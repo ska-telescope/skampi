@@ -195,7 +195,8 @@ k8s-post-test: # post test hook for processing received reports
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
 
-install: k8s-clean k8s-namespace k8s-namespace-sdp check-archiver-dbname k8s-install-chart## install the helm chart on the namespace KUBE_NAMESPACE
+# install: k8s-clean k8s-namespace namespace-sdp check-archiver-dbname k8s-install-chart## install the helm chart on the namespace KUBE_NAMESPACE
+install: k8s-clean k8s-namespace namespace-sdp k8s-install-chart k8s-wait## install the helm chart on the namespace KUBE_NAMESPACE
 
 uninstall: k8s-uninstall-chart ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 

@@ -1,4 +1,4 @@
-XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
+# XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-skampi-chart
 

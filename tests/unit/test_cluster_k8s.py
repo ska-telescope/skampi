@@ -140,7 +140,7 @@ def fxt_pvc(test_namespace):
             namespace=test_namespace, body=pvc_body
         )
     except ApiException as e:
-        logging.info("That didn't work: %s" % e)
+        logging.error("That didn't work: %s" % e)
 
     pvcs = api.list_namespaced_persistent_volume_claim(namespace=test_namespace)
     logging.info(
@@ -160,7 +160,7 @@ def fxt_pvc(test_namespace):
 def fxt_deployments_and_services(test_namespace, manifest, persistentvolumeclaim):
 
     logging.info(f"Creating resources in namespace: {test_namespace}")
-    k_cmd_create = [
+    k_cmd = [
         "kubectl",
         "-n",
         test_namespace,
@@ -170,7 +170,7 @@ def fxt_deployments_and_services(test_namespace, manifest, persistentvolumeclaim
     ]
 
     let_there_be_things = subprocess.run(
-        k_cmd_create, check=True, stdout=subprocess.PIPE, universal_newlines=True
+        k_cmd, check=True, stdout=subprocess.PIPE, universal_newlines=True
     )
     for line in let_there_be_things.stdout.split("\n"):
         logging.info(line)

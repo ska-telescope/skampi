@@ -80,6 +80,12 @@ def fxt_k8s_cluster(assets_dir):
 
 @pytest.fixture(name="test_namespace")
 def fxt_test_namespace(manifest):
+    """
+    The tests run in a namespace that may vary given the setup.
+    When run locally, no CI job exists - thus the default namespace
+    is used. As a 'local default', in case users don't want to use their
+    default namespace, we provide the preset value `ci-local` in the makefiles
+    """
     logging.info(f"Current working directory: {os.getcwd()}")
     logging.info(f"Manifest returns: {manifest}")
 

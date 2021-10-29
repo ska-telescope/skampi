@@ -33,7 +33,15 @@ def fxt_manifest(assets_dir):
 
 
 @pytest.fixture(autouse=True)
-def k8s_cluster(assets_dir):
+def fxt_k8s_cluster(assets_dir):
+    """
+    Get the kubeconfig for a cluster that could potentially be:
+    1. a 'local' Minikube cluster
+    2. a Cloud deployment (Gitlab CI)
+    3. a PSI cluster
+
+    Getting the kubeconfig for these different scenarios is slightly different.
+    """
     kubeconfig_filepath = None
     if "KUBECONFIG" in os.environ:
         logging.info(

@@ -1,0 +1,125 @@
+# Further information on how the assignment are based
+# could be found here: 
+# https://confluence.skatelescope.org/display/SWSI/Skampi+Change+Management
+
+
+# Products (Helm charts) Reviewers, A1, and Product Organisation Reviewers, H1
+# Description: 
+# -- A1 --
+# Change to the SKA-Low or SKA-Mid chart, including:
+# - Changing the version number of a chart it depends on (aka a sub-chart), 
+#   one of the subsystem or support charts;
+# - Adding a new sub-chart;
+# - Removing a sub-chart;
+# - Changing the default values that significantly affects the deployment.
+# This typically occurs as a result of a new feature or fix on a subsystem
+# (or one of its components) that is part of SKA-Low or SKA-Mid. 
+# There should always be a reference to a specific capability/feature/story 
+# or bug that resulted in this change. The change may result in a change
+# in behaviour, in which case there should also be changes in acceptance 
+# tests that verify the new behaviour (see next type of change).
+# -- H1 --
+# Cosmetic changes to the way Helm charts
+# Members (POs/PMs, caretakers):
+# - AIV Low: Malte Marquarding
+# - AIV Mid: Adriaan De Beer
+# - Caretakers: Juande, Santander-Vela, Ben Mort, Gerhard LeRoux, Adam Avison
+[Integration]
+# A1
+charts/ @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+.release @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+# H1
+charts/ska-mid/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+
+
+# Tests Reviewers, A2, and Test Management Reviewers, H2
+# Description:
+# -- A2 --
+# Change in a test, or addition or removal of a test.
+# Tests are typically created alongside a specific change 
+# in the behaviour of SKA-Low or SKA-Mid. This should form part of the work 
+# done on a particular feature/story or bug that results in an update to 
+# a product (see above).
+# -- H2 --
+# Nonfunctional changes to the tests and test dependencies used 
+# to verify the products. For example, removing a test that has become 
+# obsolete or redundant, change the way tests are marked/tagged and 
+# reported to Jira, etc.
+# Members (POs/PMs, stewards):
+# - AIV Low: Malte Marquarding
+# - AIV Mid: Adriaan De Beer 
+# - Stewards: Peter Wortmann, Alan Bridger, Sonja Vrcic, Thomas Juerges, Gerhard LeRoux, Matteo Di Carlo
+[Tests]
+# A2
+tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
+*.py @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+*.feature @adb-42 @mmarquar  @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+# H2
+scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+
+
+# CI/CD Reviewers, A3, and Housekeeping CI Reviewers, H3
+# Description:
+# -- A3 --
+# Change in the way the continuous integration pipeline is 
+# run as a consequence of GitLab triggers (commits, merges, manual pipeline 
+# runs/deployments and staging releases). This change may result from 
+# improvements or fixing problems. This type of change is specialised and 
+# typically involves the System team or other people with 
+# the requisite knowledge.
+# -- H3 --
+# Nonfunctional changes to the CI pipeline to ensure it is up to date and
+# continuously improved. 
+#For example, removing deprecated makefile targets, or removing unused scripts
+# Members(POs, ST, marshalls):
+# - System Team
+# - Marshalls: System Team
+[CI/CD]
+# A3
+.gitlab-ci.yml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+.gitlab/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+# H3
+values.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+.make/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+.readthedocs.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+tests/Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+
+
+# Docs Reviewers, A4
+# Description:
+# Changes to documentation about the verification and CI processes related to 
+# product integration (e.g. update in the readme on new env variables) 
+# Since these changes are typical as a result of A2 or A3 they should be combined
+# as separate stories within the same feature used for A2 or A3.
+# Members(POs, marshalls):
+# - Marshalls: Ugur Yilmaz, Piers Harding, Verity Allan
+# - AIV Low: Malte Marquarding
+# - AIV Mid: Adriaan De Beer
+[Documentation]
+docs/ @limonkufu @piersharding @vla22 @adb-42 @mmarquar
+README.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar
+*.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar
+*.rst @limonkufu @piersharding @vla22 @adb-42 @mmarquar
+
+
+# Overall Reviewers
+# This covers all the files that are not part of the above and will be used to orchestrate those parts of the repository
+# Members:
+# - Marshalls: Ugur Yilmaz, Piers Harding
+# TODO: add more people
+* @limonkufu @piersharding
+
+
+# License
+# Members:
+# - Marshalls: Ugur Yilmaz, Piers Harding
+# - Architects: Marco Bartolini
+LICENSE @limonkufu @piersharding @flyingfrog81 
+
+
+# Other
+# Members:
+# - Owner: Gerhard LeRoux
+charts/ska-landingpage/ @gerhardlr 

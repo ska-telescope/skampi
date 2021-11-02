@@ -2,6 +2,7 @@
 # could be found here: 
 # https://confluence.skatelescope.org/display/SWSI/Skampi+Change+Management
 
+
 # Products (Helm charts) Reviewers, A1, and Product Organisation Reviewers, H1
 # Description: 
 # -- A1 --
@@ -31,6 +32,7 @@ charts/ @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison
 charts/ska-mid/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
 charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
 
+
 # Tests Reviewers, A2, and Test Management Reviewers, H2
 # Description:
 # -- A2 --
@@ -55,7 +57,7 @@ tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
 *.feature @adb-42 @mmarquar  @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
 # H2
 scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
-tests/Makefile @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+
 
 # CI/CD Reviewers, A3, and Housekeeping CI Reviewers, H3
 # Description:
@@ -82,6 +84,8 @@ Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @doming
 values.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 .make/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 .readthedocs.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+tests/Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+
 
 # Docs Reviewers, A4
 # Description:
@@ -99,17 +103,21 @@ README.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar
 *.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar
 *.rst @limonkufu @piersharding @vla22 @adb-42 @mmarquar
 
+
 # Overall Reviewers
+# This covers all the files that are not part of the above and will be used to orchestrate those parts of the repository
 # Members:
 # - Marshalls: Ugur Yilmaz, Piers Harding
 # TODO: add more people
 * @limonkufu @piersharding
+
 
 # License
 # Members:
 # - Marshalls: Ugur Yilmaz, Piers Harding
 # - Architects: Marco Bartolini
 LICENSE @limonkufu @piersharding @flyingfrog81 
+
 
 # Other
 # Members:

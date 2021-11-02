@@ -22,14 +22,14 @@
 # Members (POs/PMs, caretakers):
 # - AIV Low: Malte Marquarding
 # - AIV Mid: Adriaan De Beer
-# TODO: add more people
+# - Caretakers: Juande, Santander-Vela, Ben Mort, Gerhard LeRoux, Adam Avison
 [Integration]
 # A1
-charts/ @adb-42 @mmarquar
-.release @adb-42 @mmarquar
+charts/ @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+.release @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
 # H1
-charts/ska-mid/values.yaml @adb-42 @mmarquar
-charts/ska-low/values.yaml @adb-42 @mmarquar
+charts/ska-mid/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
 
 # Tests Reviewers, A2, and Test Management Reviewers, H2
 # Description:
@@ -47,15 +47,15 @@ charts/ska-low/values.yaml @adb-42 @mmarquar
 # Members (POs/PMs, stewards):
 # - AIV Low: Malte Marquarding
 # - AIV Mid: Adriaan De Beer 
-# TODO: add more people
+# - Stewards: Peter Wortmann, Alan Bridger, Sonja Vrcic, Thomas Juerges, Gerhard LeRoux, Matteo Di Carlo
 [Tests]
 # A2
-tests/ @adb-42 @mmarquar 
-*.py @adb-42 @mmarquar
-*.feature @adb-42 @mmarquar 
+tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
+*.py @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+*.feature @adb-42 @mmarquar  @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
 # H2
-scripts/ @adb-42 @mmarquar 
-tests/Makefile @adb-42 @mmarquar 
+scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+tests/Makefile @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
 
 # CI/CD Reviewers, A3, and Housekeeping CI Reviewers, H3
 # Description:
@@ -72,16 +72,16 @@ tests/Makefile @adb-42 @mmarquar
 #For example, removing deprecated makefile targets, or removing unused scripts
 # Members(POs, ST, marshalls):
 # - System Team
-# TODO: add more people
+# - Marshalls: System Team
 [CI/CD]
 # A3
-.gitlab-ci.yml @limonkufu @piersharding
-.gitlab/ @limonkufu @piersharding
-Makefile @limonkufu @piersharding
+.gitlab-ci.yml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+.gitlab/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 # H3
-values.yaml @limonkufu @piersharding
-.make/ @limonkufu @piersharding
-.readthedocs.yaml @limonkufu @piersharding
+values.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+.make/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+.readthedocs.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 
 # Docs Reviewers, A4
 # Description:
@@ -90,28 +90,28 @@ values.yaml @limonkufu @piersharding
 # Since these changes are typical as a result of A2 or A3 they should be combined
 # as separate stories within the same feature used for A2 or A3.
 # Members(POs, marshalls):
-# - 
-# TODO: add more people
+# - Marshalls: Ugur Yilmaz, Piers Harding, Verity Allan
+# - AIV Low: Malte Marquarding
+# - AIV Mid: Adriaan De Beer
 [Documentation]
-docs/ @limonkufu @piersharding
-README.md @limonkufu @piersharding
-*.md @limonkufu @piersharding
-*.rst @limonkufu @piersharding
+docs/ @limonkufu @piersharding @vla22 @adb-42 @mmarquar
+README.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar
+*.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar
+*.rst @limonkufu @piersharding @vla22 @adb-42 @mmarquar
 
 # Overall Reviewers
 # Members:
-# - 
+# - Marshalls: Ugur Yilmaz, Piers Harding
 # TODO: add more people
 * @limonkufu @piersharding
 
 # License
 # Members:
-# - 
-# TODO: add more people
-LICENSE @limonkufu @piersharding
+# - Marshalls: Ugur Yilmaz, Piers Harding
+# - Architects: Marco Bartolini
+LICENSE @limonkufu @piersharding @flyingfrog81 
 
 # Other
 # Members:
-# - 
-# TODO: add more people
+# - Owner: Gerhard LeRoux
 charts/ska-landingpage/ @gerhardlr 

@@ -121,34 +121,4 @@ fi
 source <(kubectl completion bash)
 source <(helm completion bash)
 
-# for using ska docker registry
-export DOCKER_REGISTRY_USERNAME=ci-cd
-export DOCKER_REGISTRY_PASSWORD=ci-cd-pipeline-8237
-export DOCKER_REGISTRY_HOST=nexus.engageska-portugal.pt
-
-# for using skampi
-export MINIKUBE=false
-export VALUES=tmp/values.yaml
-export KUBE_NAMESPACE=team-mvp
-export KUBE_NAMESPACE_SDP=team-mvp
-export INGRESS_HOST=mvptest.engageska-portugal.pt
-export KUBECONFIG=~/.kube/config
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-export DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null):0
-export LIBGL_ALWAYS_INDIRECT=1
-export CHROME_BIN='/usr/bin/google-chrome'
-export KUBE_BRANCH='low-49'
-export TEL='mid'
-export WEBJIVE_PASSPORT='abc123'
-export WEBJIVE_USER='user1'
-export DOMAIN='integration'
-export TANGO_HOST="databaseds-tango-base-test-${KUBE_BRANCH}:10000" 
-
-
-function getkube() {
-    curl https://nexus.engageska-portugal.pt/repository/k8s-ci-creds/k8s-ci-svc-skampi-$1-ci-skampi-$1-$2-conf --output ~/.kube/config
-    kubectl config use-context ci-svc-skampi-$1-ci-skampi-$1-$2-gitlab-deploy
-    kubectl version
-}
-
 

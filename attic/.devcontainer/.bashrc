@@ -120,5 +120,6 @@ if ! shopt -oq posix; then
 fi
 source <(kubectl completion bash)
 source <(helm completion bash)
+export KUBECONFIG=/workspaces/aux/.kube/config
 
 

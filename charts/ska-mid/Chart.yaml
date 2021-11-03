@@ -38,10 +38,10 @@ dependencies:
 #   version: 0.5.3
 #   repository: https://artefact.skao.int/repository/helm-internal
 #   condition: ska-oso-scripting.enabled
-# - name: ska-webjive
-#   version: 1.0.26
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-webjive.enabled
+- name: ska-webjive
+  version: 1.0.26
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-webjive.enabled
 # - name: ska-ser-skuid
 #   version: 0.3.0
 #   repository: https://artefact.skao.int/repository/helm-internal

@@ -198,7 +198,9 @@ k8s-post-test: # post test hook for processing received reports
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
 
 # install: k8s-clean k8s-namespace namespace-sdp check-archiver-dbname k8s-install-chart## install the helm chart on the namespace KUBE_NAMESPACE
-install: k8s-clean k8s-namespace namespace-sdp k8s-install-chart k8s-wait## install the helm chart on the namespace KUBE_NAMESPACE
+install: k8s-clean k8s-namespace namespace-sdp## install the helm chart on the namespace KUBE_NAMESPACE and wait for completion of jobs 
+	make k8s-install-chart K8S_CHART=$(DEPLOYMENT_CONFIGURATION) && \
+	make k8s-wait
 
 uninstall: k8s-uninstall-chart ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 

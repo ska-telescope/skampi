@@ -1,22 +1,20 @@
 {{ $fullname := .Chart.Name }}
-{{ $appname := .Chart.Name }}
 {{ $port := 80 }}
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
   name: {{ $fullname }}
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-    app: {{ $appname }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 spec:
   selector:
     matchLabels:
-      app: {{ $appname }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 6 }}
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{ $appname }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
     spec:
       containers:
       - name: {{ $fullname }}
@@ -40,7 +38,7 @@ kind: ConfigMap
 metadata:
   name: {{ $fullname }}-html
   labels:
-    app: {{ $appname }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 data: 
   index.html: |-
 {{ ($.Files.Get "data/index.html") | indent 4  }}
@@ -57,21 +55,21 @@ metadata:
   name: {{ $fullname }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-    app: {{ $appname }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 spec:
   ports:
   - name: http
     port: {{ $port }}
     targetPort: {{ $port }}
   selector:
-    app: {{ $appname }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullname }}
   labels:
-    app: {{ $appname }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     heritage: "{{ .Release.Service }}"
   annotations:

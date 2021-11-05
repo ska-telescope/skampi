@@ -9,7 +9,7 @@ make k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4 KUB
 make k8s-uninstall-chart KUBE_NAMESPACE=default
 ```
 
-The above installation step, including the creation of the namespace where deployment should happen, can be bundled into one by using the `make install` target, and specifying the KUBE_NAMESPACE in your `PrivateRules.mak` file as before.
+The above installation step, including the creation of the namespace where deployment should happen, can be bundled into one by using the `make install` target, and specifying the `KUBE_NAMESPACE` in your `PrivateRules.mak` file as before. Set the `VALUES` parameter in your `PrivateRules.mak` to the `values.yaml` file that enables/modifies the deployment if required.  
 
 
 Also, verify your Minikube cluster beforehand as below (assuming that you have the `tests/requirements.txt` installed in a `venv` or similar):

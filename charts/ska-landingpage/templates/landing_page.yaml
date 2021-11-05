@@ -5,6 +5,7 @@ kind: Deployment
 metadata: 
   name: {{ $fullname }}
   labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 spec:
   selector:

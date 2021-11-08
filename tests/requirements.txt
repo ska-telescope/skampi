@@ -1,4 +1,4 @@
-# -r SUT_requirements.txt
+-r SUT_requirements.txt
 # uncomment this if you want to install a dev skallop package from gitlab
 --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
 pytest-bdd==4.1.0; python_version >= "3.6"

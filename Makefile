@@ -180,14 +180,14 @@ update-chart-versions:
 		done; \
 	done
 
-PYTHON_VARS_BEFORE_PYTEST=LOADBALANCER_IP=${LOADBALANCER_IP} CLUSTER_TEST_NAMESPACE=ci-${CI_JOB_ID}
+PYTHON_VARS_BEFORE_PYTEST=LOADBALANCER_IP=${LOADBALANCER_IP} CLUSTER_TEST_NAMESPACE=$(CLUSTER_TEST_NAMESPACE)
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
 	pip3 install -r tests/requirements.txt
 
 k8s-pre-test: python-pre-test
 
 verify-minikube: # Run only infra tests on local minikube cluster as precursor
-	make python-test LOADBALANCER_IP=$(shell minikube ip) PYTHON_VARS_AFTER_PYTEST=' -m infra'
+	make python-test LOADBALANCER_IP=$(shell minikube ip) PYTHON_VARS_AFTER_PYTEST=' -m infra' && $(CLUSTER_TEST_NAMESPACE)==default || kubectl delete ns $(CLUSTER_TEST_NAMESPACE)
 
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra

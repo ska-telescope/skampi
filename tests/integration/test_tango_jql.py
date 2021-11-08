@@ -18,6 +18,9 @@ def test_tangojql_service_available():
 def a_configuration_to_access_a_tango_device_remotely():
     """a configuration to access a tango device remotely."""
     host = os.getenv("INGRESS_HOST")
+    # bypass external api domain name with internal one
+    if host == "k8s.stfc.skao.int":
+        host = "k8s.skao.stfc"
     namespace = os.getenv("KUBE_NAMESPACE")
     assert host, "Expected an INGRESS_HOST variable to be set"
     assert namespace, "Expected an KUBE_NAMESPACE variable to be set"

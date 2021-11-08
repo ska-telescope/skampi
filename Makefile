@@ -21,7 +21,7 @@ ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
-WEBJIVE_USER ?= user## the username for authentication to taranta services
+WEBJIVE_USER ?= user1## the username for authentication to taranta services
 WEBJIVE_PASSPORT ?= secret## the password for authentication to taranta services
 
 # these are the global overrides that get passed into the ska-mid/low deployments

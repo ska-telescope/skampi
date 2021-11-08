@@ -21,6 +21,8 @@ ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
+WEBJIVE_USER ?= user## the username for authentication to taranta services
+WEBJIVE_PASSPORT ?= secret## the password for authentication to taranta services
 
 # these are the global overrides that get passed into the ska-mid/low deployments
 
@@ -119,7 +121,9 @@ K8S_TEST_MAKE_PARAMS = \
 	JIRA_AUTH=$(JIRA_AUTH) \
 	CAR_RAW_USERNAME=$(RAW_USER) \
 	CAR_RAW_PASSWORD=$(RAW_PASS) \
-	CAR_RAW_REPOSITORY_URL=$(RAW_HOST)
+	CAR_RAW_REPOSITORY_URL=$(RAW_HOST) \
+	WEBJIVE_USER=$(WEBJIVE_USER ) \
+	WEBJIVE_PASSPORT=$(WEBJIVE_PASSPORT)
 
 # runs inside the test runner container after cd ./tests
 K8S_TEST_TEST_COMMAND = make -s \

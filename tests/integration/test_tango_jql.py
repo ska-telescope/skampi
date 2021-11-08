@@ -22,7 +22,7 @@ def a_configuration_to_access_a_tango_device_remotely():
     assert host, "Expected an INGRESS_HOST variable to be set"
     assert namespace, "Expected an KUBE_NAMESPACE variable to be set"
     os.environ["TANGO_BRIDGE_IP"] = f"{host}/{namespace}/taranta"
-    os.environ["BYPASS_AUTH"] = "true"
+    # os.environ["BYPASS_AUTH"] = "true"
     os.environ["TEST_ENV"] = "BUILD_OUT"
 
 

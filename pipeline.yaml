@@ -1,12 +1,9 @@
 minikube: false
-global:
-  labels:
-    app: skampi
 
 # Common products
 ska-tango-base:
   vnc:
-    enabled: true
+    enabled: false
 ska-sdp:
   enabled: false
 ska-oso-scripting:

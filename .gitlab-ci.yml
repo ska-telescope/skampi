@@ -64,6 +64,8 @@ python-test:
   variables:
     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
     PYTHON_VARS_AFTER_PYTEST: -m infra
+  after_script:
+    - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE
   environment:
     name: test-cluster
     kubernetes:

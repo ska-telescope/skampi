@@ -1,0 +1,30 @@
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test
+  labels:
+    app.kubernetes.io/name: test
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /nginx1/
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx1
+            port:
+              number: 80
+  - http:
+      paths:
+      - path: /nginx2/
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx2
+            port:
+              number: 80

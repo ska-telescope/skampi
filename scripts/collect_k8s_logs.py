@@ -54,7 +54,7 @@ for namespace in arguments["<ns>"]:
         lines += logs.collect_pod_logs(v1, namespace)
         lines += logs.collect_events(v1, namespace)
 
-lines = sorted(lines, key=lambda line: line["time"] if line["time"] else datetime.datetime(year=1970, month=1, day=1, tzinfo=datetime.timezone.utc))
+lines = sorted(lines, key=lambda line: line["time"])
 
 # Default is pretty-print to stdout
 pp_target = arguments["--pp"]
@@ -88,29 +88,9 @@ def make_target(target_name, message=""):
 
 
 # Pretty-print
-pp_date_format = arguments["--timefmt"]
-if pp_date_format is None:
-    pp_date_format = "%H:%M:%S.%f"
-# https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
-ansi_escape = re.compile(r"(?:\x1B[@-_]|[\x80-\x9F])[0-?]*[ -/]*[@-~]")
-
-
-def escape_ansi(line):
-    return ansi_escape.sub("", line)
-
-
-if arguments["--pp-thread"]:
-
-    def pp_line(line):
-        return f"{line['time'].strftime(pp_date_format)} {line.get('level', '---')}\t{line.get('pod', '---')}:{line.get('container', '---')}\t{line.get('thread', '---')}\t{escape_ansi(line['msg'])}"
-
-
-else:
-
-    def pp_line(line):
-        return f"{line['time'].strftime(pp_date_format)} {line.get('level', '---')}\t{line.get('pod', '---')}:{line.get('container', '---')}\t{escape_ansi(line['msg'])}"
-
-
+def pp_line(line):
+    return logs.pp_line(line, arguments["--timefmt"] or "%H:%M:%S.%f",
+                        arguments["--pp-thread"])
 for pp_file in make_target(pp_target, f"Pretty-printing to {pp_target}..."):
     for line in lines:
         print(pp_line(line), file=pp_file)

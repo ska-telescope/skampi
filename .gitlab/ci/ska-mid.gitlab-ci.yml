@@ -7,13 +7,14 @@ mid_deploy_test_destroy:
   stage: test
   variables:
     CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-mid"
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid-sdp"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-mid_archiver_db"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+    MARK: "not infra"
   extends:
     - .tags_default
     - .deploy_test_destroy_definition

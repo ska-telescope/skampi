@@ -22,8 +22,9 @@ helm_release = environ.get("HELM_RELEASE", "test")
 rest_cli_uri = f"http://oet-rest-{helm_release}:5000/api/v1.0/procedures"
 REST_CLIENT = RestClientUI(rest_cli_uri)
 
+
 def oet_compose_sub():
-    cdm_file_path = 'resources/test_data/OET_integration/example_allocate.json'
+    cdm_file_path = "resources/test_data/OET_integration/example_allocate.json"
     LOGGER.info("cdm_file_path :" + str(cdm_file_path))
     update_resource_config_file(cdm_file_path)
     cdm_request_object = cdm_CODEC.load_from_file(AssignResourcesRequest, cdm_file_path)
@@ -37,6 +38,7 @@ class ObsState(enum.Enum):
     """
     Represent the ObsState Tango enumeration
     """
+
     EMPTY = 0
     RESOURCING = 1
     IDLE = 2
@@ -88,9 +90,7 @@ class ObsStateRecorder:
         # connect to the target device and subscribe to obsState change events
         self.dp = DeviceProxy(device_url)
         self.subscription_id = self.dp.subscribe_event(
-            'obsState',
-            EventType.CHANGE_EVENT,
-            self._cb
+            "obsState", EventType.CHANGE_EVENT, self._cb
         )
 
     def start_recording(self):
@@ -104,7 +104,7 @@ class ObsStateRecorder:
         """
         if self.subscription_id is None:
             raise RuntimeError(
-                'Cannot restart obsState recording on a stopped ObsStateRecorder'
+                "Cannot restart obsState recording on a stopped ObsStateRecorder"
             )
 
         # the subscription is already established, so just set the event to
@@ -136,9 +136,7 @@ class ObsStateRecorder:
         enum_id = event.attr_value.value
         enum_name = ObsState(enum_id).name
 
-        LOGGER.info(
-            f"STATE MONITORING: State changed: {enum_name}"
-        )
+        LOGGER.info(f"STATE MONITORING: State changed: {enum_name}")
         self.results.append(enum_name)
 
     def state_transitions_match(self, expected_states) -> bool:
@@ -155,21 +153,23 @@ class ObsStateRecorder:
         :raises RuntimeError: if called while still recording
         """
         if self._recording_enabled.is_set():
-            raise RuntimeError('Cannot compare states while still recording')
+            raise RuntimeError("Cannot compare states while still recording")
         time.sleep(PAUSE_AT_END_OF_TASK_COMPLETION_IN_SECS)
 
         recorded_states = self.results
 
         # ignore 'READY' as it can be a transitory state so we don't rely
         # on it being present in the list to be matched
-        recorded_states = [i for i in recorded_states if i != 'READY']
+        recorded_states = [i for i in recorded_states if i != "READY"]
 
         n_expected = len(expected_states)
         n_recorded = len(recorded_states)
 
-        LOGGER.info("STATE MONITORING: Comparing the list of states observed with the expected states")
-        LOGGER.debug("STATE MONITORING: Expected states: %s", ','.join(expected_states))
-        LOGGER.debug("STATE MONITORING: Recorded states: %s", ','.join(recorded_states))
+        LOGGER.info(
+            "STATE MONITORING: Comparing the list of states observed with the expected states"
+        )
+        LOGGER.debug("STATE MONITORING: Expected states: %s", ",".join(expected_states))
+        LOGGER.debug("STATE MONITORING: Recorded states: %s", ",".join(recorded_states))
 
         if n_expected != n_recorded:
             LOGGER.warning(
@@ -178,7 +178,9 @@ class ObsStateRecorder:
             return False
 
         if expected_states != recorded_states:
-            LOGGER.warning("STATE MONITORING: Expected states do not match recorded states")
+            LOGGER.warning(
+                "STATE MONITORING: Expected states do not match recorded states"
+            )
             return False
 
         LOGGER.info("STATE MONITORING: All states match")
@@ -212,8 +214,9 @@ class ScriptExecutor:
         task = Task(
             task_id=elements[0],
             script=elements[1],
-            creation_time=str(elements[2] + ' ' + elements[3]),
-            state=elements[4])
+            creation_time=str(elements[2] + " " + elements[3]),
+            state=elements[4],
+        )
         return task
 
     @staticmethod
@@ -237,7 +240,7 @@ class ScriptExecutor:
 
     @staticmethod
     def parse_rest_start_response(resp):
-        """ Split the response from the REST API start
+        """Split the response from the REST API start
         command into columns.
 
         This needs to be done separately from other OET REST
@@ -252,7 +255,7 @@ class ScriptExecutor:
         """
         for line in resp:
             # Only get line with script details (ignore header lines)
-            if 'RUNNING' in line:
+            if "RUNNING" in line:
                 return ScriptExecutor.parse_rest_response_line(line)
         return None
 
@@ -274,14 +277,17 @@ class ScriptExecutor:
         t = timeout
         while t != 0:
             task = ScriptExecutor().get_script_by_id(task_id)
-            if not task.state_is('RUNNING'):
+            if not task.state_is("RUNNING"):
                 LOGGER.info("Script state changed from RUNNING to %s", task.state)
                 return task.state
             time.sleep(1)
             t -= 1
 
-        LOGGER.info("Timeout occurred (> %d seconds) when waiting for script "
-                    "to complete. Stopping script.", timeout)
+        LOGGER.info(
+            "Timeout occurred (> %d seconds) when waiting for script "
+            "to complete. Stopping script.",
+            timeout,
+        )
         ScriptExecutor().stop_script()
         task = ScriptExecutor().get_script_by_id(task_id)
         LOGGER.info("Script state: %s", task.state)
@@ -337,24 +343,31 @@ class ScriptExecutor:
         created_task = self.create_script(script)
 
         # confirm that creating the task worked and we have a valid ID
-        if not created_task.state_is('CREATED'):
-            LOGGER.info("Expected script to be CREATED but instead was %s",
-                        created_task.state)
+        if not created_task.state_is("CREATED"):
+            LOGGER.info(
+                "Expected script to be CREATED but instead was %s", created_task.state
+            )
             return None
 
         # start execution of created script
         started_task = self.start_script(*script_run_args)
         # confirm that it didn't fail on starting
-        if not started_task.state_is('RUNNING'):
-            LOGGER.info("Expected script to be RUNNING but instead was %s",
-                        started_task.state)
+        if not started_task.state_is("RUNNING"):
+            LOGGER.info(
+                "Expected script to be RUNNING but instead was %s", started_task.state
+            )
             return None
 
         # If task IDs do not match, wrong script was started
         if created_task.task_id != started_task.task_id:
-            LOGGER.info("Script IDs did not match, created script with ID %s but started script with ID %s",
-                        created_task.task_id, started_task.task_id)
+            LOGGER.info(
+                "Script IDs did not match, created script with ID %s but started script with ID %s",
+                created_task.task_id,
+                started_task.task_id,
+            )
             return None
 
-        script_final_state = ScriptExecutor.wait_for_script_to_complete(started_task.task_id, timeout)
+        script_final_state = ScriptExecutor.wait_for_script_to_complete(
+            started_task.task_id, timeout
+        )
         return script_final_state

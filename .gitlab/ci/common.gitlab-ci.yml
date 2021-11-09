@@ -31,7 +31,7 @@
     - |
       if [ -f build/cucumber.json ]; then
       bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
-      /usr/local/bin/xtp-xray-upload -f build/cucumber.json -v
+      /usr/local/bin/xtp-xray-upload -f build/cucumber.json -i test-exec.json -v
       fi
 
 .deploy_test_destroy_definition:
@@ -47,3 +47,4 @@
     reports:
       junit: build/report.xml
     when: always
+

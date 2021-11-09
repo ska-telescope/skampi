@@ -1,6 +1,5 @@
 # -r SUT_requirements.txt
 # uncomment this if you want to install a dev skallop package from gitlab
-# --extra-index-url https://deployskallopdev:rsaigjomsv-XyU2gNji7@gitlab.com/api/v4/projects/21173098/packages/pypi/simple
 # --extra-index-url https://artefact.skao.int/repository/pypi-internal/
 pytest
 pyyaml
@@ -12,7 +11,7 @@ pytest-ordering
 pytest-timeout
 pytest-repeat
 # elasticsearch
-kubernetes
+kubernetes>=18.20.0
 assertpy
 # mock
 # importlib
@@ -27,9 +26,11 @@ assertpy
 # ska-ser-log-transactions
 # tabulate
 # ska-ser-skallop[bit]==2.7.3
+# ska-ser-skallop>=2.6.0,<=2.7.4
 ska-ser-skallop==2.7.4
 # ska-ser-skuid
 # ska-ser-logging
+docopts
 
 pytest-mock
 pytest-forked

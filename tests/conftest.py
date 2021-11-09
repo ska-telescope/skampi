@@ -3,11 +3,12 @@ import logging
 import socket
 
 import pytest
-import tango
-from tango.test_context import MultiDeviceTestContext, get_host_ip
+from kubernetes import client, config, watch
+
+# import tango
+# from tango.test_context import MultiDeviceTestContext, get_host_ip
 
 # from ska_tango_examples.DevFactory import DevFactory
-
 
 # def pytest_sessionstart(session):
 #     """

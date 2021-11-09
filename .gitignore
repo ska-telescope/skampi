@@ -1,3 +1,8 @@
+.vscode
+.coverage
+kubeconfig
+tests/unit/test_playground.py
+.python-version
 *.out
 my_local_values.yaml
 **/.DS_Store
@@ -69,3 +74,4 @@ gilab_values.yaml
 gitlab_values.yaml
 KUBECONFIG
 /venv/
+tests/resources/assets/kubeconfig

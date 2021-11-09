@@ -1,6 +1,8 @@
+# THE FOLLOWING THREE VARIABLES MAY BE OBSOLETE BUT ARE NEEDED IF JIVE IS TO BE USED
 THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)##find IP addresses of this machine, setting THIS_HOST to the first address found
 DISPLAY := $(THIS_HOST):0##for GUI applications
 XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
+
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-skampi-chart
 
@@ -17,6 +19,7 @@ UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrel
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 CHARTS ?= ska-mid
 
+CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
@@ -69,26 +72,22 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 # include makefile targets for helm linting
 -include .make/helm.mk
 
-# ## local custom includes
-# # include makefile targets for testing
-# -include resources/test.mk
-
-# include makefile targets for EDA deployment
--include resources/archiver.mk
+# include makefile targets for python
+-include .make/python.mk
 
 # include core makefile targets
 -include .make/base.mk
 
-SKAMPI_K8S_CHART ?= ska-mid
+K8S_CHART = ska-mid##Default chart set to Mid for testing purposes
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
 
 HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 
 # KUBE_APP is set to the ska-tango-images base chart value
-SKAMPI_KUBE_APP ?= ska-tango-images
+SKAMPI_KUBE_APP ?= skampi
 KUBE_APP = $(SKAMPI_KUBE_APP)
 
-CI_JOB_ID ?= local
+CI_JOB_ID ?= local##local default for ci job id
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
 K8S_TEST_IMAGE_TO_TEST = artefact.skao.int/ska-ser-skallop:2.7.4## docker image that will be run for testing purpose
@@ -181,12 +180,27 @@ update-chart-versions:
 		done; \
 	done
 
+PYTHON_VARS_BEFORE_PYTEST=LOADBALANCER_IP=${LOADBALANCER_IP} CLUSTER_TEST_NAMESPACE=$(CLUSTER_TEST_NAMESPACE)
+python-pre-test: # must pass the current kubeconfig into the test container for infra tests
+	pip3 install -r tests/requirements.txt
+
+k8s-pre-test: python-pre-test
+
+verify-minikube: # Run only infra tests on local minikube cluster as precursor
+	make python-test LOADBALANCER_IP=$(shell minikube ip) PYTHON_VARS_AFTER_PYTEST=' -m infra' && $(CLUSTER_TEST_NAMESPACE)==default || kubectl delete ns $(CLUSTER_TEST_NAMESPACE)
+
+# make sure infra test do not run in k8s-test
+k8s-test: MARK := not infra
+
 k8s-post-test: # post test hook for processing received reports
 	@echo "k8s-post-test: Skampi post processing of test reports with scripts/collect_k8s_logs.py"
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
 
-install: k8s-clean k8s-namespace k8s-namespace-sdp check-archiver-dbname k8s-install-chart## install the helm chart on the namespace KUBE_NAMESPACE
+# install: k8s-clean k8s-namespace namespace-sdp check-archiver-dbname k8s-install-chart## install the helm chart on the namespace KUBE_NAMESPACE
+install: k8s-clean k8s-namespace namespace-sdp## install the helm chart on the namespace KUBE_NAMESPACE and wait for completion of jobs 
+	make k8s-install-chart K8S_CHART_PARAMS='--values $(VALUES)' \
+	k8s-wait
 
 uninstall: k8s-uninstall-chart ## uninstall the helm chart on the namespace KUBE_NAMESPACE
 

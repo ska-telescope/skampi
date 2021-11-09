@@ -19,7 +19,7 @@ low_uninstall:
   stage: clean
   extends:
     - .low_vars
-    - .only_on_master
+    # - .only_on_master
     - .uninstall_definition
   environment:
     name: "test-low"
@@ -34,7 +34,7 @@ low_deploy:
   stage: deploy
   extends:
     - .low_vars
-    - .only_on_master
+    # - .only_on_master
     - .deploy_definition
   environment:
     name: "test-low"
@@ -45,7 +45,7 @@ low_test:
   stage: test
   extends:
     - .low_vars
-    - .only_on_master
+    # - .only_on_master
     - .test_definition
     - .xray_upload
   variables:

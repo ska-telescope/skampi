@@ -20,8 +20,8 @@ def a_configuration_to_access_a_tango_device_remotely():
     host = os.getenv("INGRESS_HOST")
     assert host, "Expected an INGRESS_HOST variable to be set"
     # bypass external api domain name with internal one
-    if host == "k8s.stfc.skao.int":
-        host = "k8s.skao.stfc"
+    # if host == "k8s.stfc.skao.int":
+    #    host = "k8s.skao.stfc"
     os.environ["KUBE_HOST"] = host
     namespace = os.getenv("KUBE_NAMESPACE")
     assert namespace, "Expected an KUBE_NAMESPACE variable to be set"

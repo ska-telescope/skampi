@@ -20,6 +20,7 @@ CHARTS ?= ska-mid
 ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 WEBJIVE_USER ?= user1## the username for authentication to taranta services
 WEBJIVE_PASSWORD ?= abc123## the password for authentication to taranta services
+LOADBALANCER_IP ?= 
 
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
@@ -123,7 +124,8 @@ K8S_TEST_MAKE_PARAMS = \
 	CAR_RAW_PASSWORD=$(RAW_PASS) \
 	CAR_RAW_REPOSITORY_URL=$(RAW_HOST) \
 	WEBJIVE_USER=$(WEBJIVE_USER) \
-	WEBJIVE_PASSWORD=$(WEBJIVE_PASSWORD)
+	WEBJIVE_PASSWORD=$(WEBJIVE_PASSWORD) \
+	LOADBALANCER_IP=$(LOADBALANCER_IP)
 
 # runs inside the test runner container after cd ./tests
 K8S_TEST_TEST_COMMAND = make -s \

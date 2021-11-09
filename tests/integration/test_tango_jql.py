@@ -23,6 +23,7 @@ def a_configuration_to_access_a_tango_device_remotely():
     # if host == "k8s.stfc.skao.int":
     #    host = "k8s.skao.stfc"
     os.environ["KUBE_HOST"] = host
+    os.environ["BYPASS_AUTH"] = "True"
     namespace = os.getenv("KUBE_NAMESPACE")
     assert namespace, "Expected an KUBE_NAMESPACE variable to be set"
     os.environ["TEST_ENV"] = "BUILD_OUT"

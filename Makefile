@@ -90,7 +90,7 @@ KUBE_APP = $(SKAMPI_KUBE_APP)
 CI_JOB_ID ?= local##local default for ci job id
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
-K8S_TEST_IMAGE_TO_TEST = artefact.skao.int/ska-ser-skallop:2.7.4## docker image that will be run for testing purpose
+K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.7.4## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
 K8S_TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #
@@ -232,3 +232,8 @@ links: ## attempt to create the URLs with which to access
 	@echo "#            Access the landing page here:"
 	@echo "#            https://$(INGRESS_HOST)/$(KUBE_NAMESPACE)/start/"
 	@echo "############################################################################"
+
+centralnode_test:
+	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tmc-centralnode" {print $$2}'); \
+	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
+	make k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"

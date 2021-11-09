@@ -3,6 +3,8 @@ xauthority: "~/.Xauthority"
 minikube: true
 
 global:
+  annotations: 
+    skampi: true
   retry:
   - "--sleep=1"
   - "--tries=100"
@@ -122,5 +124,8 @@ ska-sdp:
 ska-tango-archiver:
   dbname: default_mvp_archiver_db
 
-ska-tmc-low:
-  enabled: true
+central_node:
+  telescope: SKA-low
+  deviceServers:
+    centralnode:
+      enabled: true

@@ -2,6 +2,8 @@ display: ":0"
 xauthority: "~/.Xauthority"
 
 global:
+  annotations: 
+    skampi: "true"
   retry:
     - "--sleep=1"
     - "--tries=100"
@@ -100,8 +102,11 @@ ska-sdp:
     enabled: false
 
 ## tm
-ska-tmc-mid:
-  enabled: true
+central_node:
+  telescope: SKA-mid
+  deviceServers:
+    centralnode:
+      enabled: true
 
 ska-tango-archiver:
   # enabled: false

@@ -17,5 +17,6 @@ pytest-ordering
 pytest-timeout
 kubernetes>=18.20.0
 assertpy
+requests
 docopts
 coverage

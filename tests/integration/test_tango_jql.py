@@ -1,6 +1,8 @@
 """Default feature tests."""
 import os
 from ska_ser_skallop.connectors.configuration import get_device_proxy
+import logging
+import requests
 from pytest_bdd import (
     given,
     scenario,
@@ -33,8 +35,16 @@ def a_configuration_to_access_a_tango_device_remotely():
 def i_send_a_ping_command_to_the_tango_database_device_server():
     """I send a ping command to the tango database device server."""
     device_name = "sys/database/2"
-    device_proxy = get_device_proxy(device_name)
-    device_proxy.ping()
+    # temp code for dev work delete afterwards
+    namespace = os.getenv("KUBE_NAMESPACE")
+    host = os.getenv("INGRESS_HOST")
+    url = f"http://{host}/{namespace}/taranta"
+    logging.info(f"checking results from running a get on {url}")
+    result = requests.get(url)
+    logging.info(f"Result:\n{result}")
+    # delete preceding code
+    # device_proxy = get_device_proxy(device_name)
+    # device_proxy.ping()
 
 
 @then("I expect a response to be returned from the device server")

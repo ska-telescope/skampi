@@ -78,7 +78,7 @@ low_deploy_test_destroy:
   extends:
     - .tags_default
     - .deploy_test_destroy_definition
-    - .xray_upload
+    # - .xray_upload
   environment:
     name: "test-$CONFIG-branch"
     kubernetes:

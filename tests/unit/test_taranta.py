@@ -1,8 +1,10 @@
 import os
 import logging
 import requests
+import pytest
 
 
+@pytest.mark.infra
 def test_taranta():
     namespace = os.getenv("KUBE_NAMESPACE")
     host = os.getenv("INGRESS_HOST")

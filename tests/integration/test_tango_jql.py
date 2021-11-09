@@ -18,7 +18,7 @@ def test_tangojql_service_available():
 def a_configuration_to_access_a_tango_device_remotely():
     """a configuration to access a tango device remotely."""
     host = os.getenv("LOADBALANCER_IP")
-    assert host, "Expected an INGRESS_HOST variable to be set"
+    assert host, "Expected an LOADBALANCER_IP variable to be set"
     os.environ["KUBE_HOST"] = host
     namespace = os.getenv("KUBE_NAMESPACE")
     assert namespace, "Expected an KUBE_NAMESPACE variable to be set"

@@ -2,60 +2,172 @@
 # # SKA Mid CI Stages
 # ################################################
 
-.cn_test_definition:
-  script:
-    - echo $CI_JOB_NAME - $CI_JOB_STAGE
-    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-    - make centralnode_test
-    - echo "############## Build Output"
-    - find ./build
-    - echo "############## EXTRA MAKE VARS OUTPUT"
-    - make vars
-    - echo "#####################################"
+# .cn_test_definition:
+#   script:
+#     - echo $CI_JOB_NAME - $CI_JOB_STAGE
+#     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+#     - make centralnode-test
+#     - echo "############## Build Output"
+#     - find ./build
+#     - echo "############## EXTRA MAKE VARS OUTPUT"
+#     - make vars
+#     - echo "#####################################"
 
 # mid merge blocking job - must pass for pipeline success
-mid_deploy_test_destroy:
+mid_deploy_test:
   stage: test
   variables:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     MARK: "not infra"
   extends:
     - .tags_default
-    - .deploy_test_destroy_definition
+    - .destroy_deploy_chart_before
+    - .test_deployment
   environment:
     name: "test-$CONFIG-branch"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
   retry: 2
 
-cn_mid_deploy_test_destroy:
-  stage: test
+# cn_mid_deploy_test_destroy:
+#   stage: test
+#   variables:
+#     CONFIG: mid
+#     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+#     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+#     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+#     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
+#     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
+#     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
+#     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+#     MARK: "not infra"
+#   extends:
+#     - .tags_default
+#     - .deploy_definition
+#     - .cn_test_definition
+#     - .uninstall_definition
+#   environment:
+#     name: "test-$CONFIG-cn-branch"
+#     kubernetes:
+#       # This repetition is needed for gitlab to parse the namespace correctly
+#       namespace: $KUBE_NAMESPACE
+#   retry: 2
+
+# mid deploy to integration - on merge to default
+mid_deploy_integration:
+  stage: deploy_integration
   variables:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_JOB_ID"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "integration-$CONFIG"
+    KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
+    ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
     MARK: "not infra"
   extends:
     - .tags_default
-    - .deploy_definition
-    - .cn_test_definition
-    - .uninstall_definition
+    - .uninstall_chart_before
+    - .deploy_chart_and_test_integration
   environment:
-    name: "test-$CONFIG-cn-branch"
+    name: "integration-mid"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-  retry: 2
+    on_stop: mid_uninstall_integration
+  only:
+    refs:
+      - master
+  except:
+    variables:
+      - $STRESS_TEST_DURATION
+
+# teardown integration on stop
+mid_uninstall_integration:
+  stage: clean_integration
+  extends:
+    - .tags_default
+    - .uninstall_chart
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "integration-$CONFIG"
+    KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
+    ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
+    KEEP_NAMESPACE: "true"
+  only:
+    refs:
+      - tags
+    variables:
+      - $DELETE == "true"
+  environment:
+    name: "integration-mid"
+    action: stop
+
+# deploy mid staging on tag
+mid_deploy_staging:
+  stage: deploy_staging
+  extends:
+    - .tags_default
+    - .uninstall_chart_before
+    - .deploy_chart
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "staging-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "staging-$CONFIG"
+    KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
+    ARCHIVER_DBNAME: "staging_$CONFIG_archiver_db"
+    MARK: "not infra"
+    KEEP_NAMESPACE: "true"
+  environment:
+    name: "staging-mid"
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: $KUBE_NAMESPACE
+    on_stop: mid_uninstall_staging
+  only:
+    refs:
+      - tags
+
+# teardown staging on stop
+mid_uninstall_staging:
+  stage: clean_staging
+  extends:
+    - .tags_default
+    - .uninstall_chart
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "staging-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "staging-$CONFIG"
+    KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
+    ARCHIVER_DBNAME: "staging_$CONFIG_archiver_db"
+    KEEP_NAMESPACE: "true"
+  only:
+    refs:
+      - tags
+    variables:
+      - $DELETE == "true"
+  environment:
+    name: "staging-mid"
+    action: stop

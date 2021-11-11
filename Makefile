@@ -9,14 +9,12 @@ SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-
 INGRESS_HOST ?= k8s.stfc.skao.int## default ingress host
 KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
-DOMAIN_TAG ?= test## always set for TANGO_DATABASE_DS
-TANGO_DATABASE_DS ?= databaseds-tango-base-$(DOMAIN_TAG)## Stable name for the Tango DB
-USE_NGINX ?= true##Traefik or Nginx
+TANGO_DATABASE_DS ?= databaseds-tango-base## Stable name for the Tango DB
+TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= ska-mid## umbrella chart to work with
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
-TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 CHARTS ?= ska-mid
 
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
@@ -43,11 +41,7 @@ CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that
 CI_ENVIRONMENT_SLUG?=skampi##The simplified version of the environment name, suitable for inclusion in DNS, URLs, Kubernetes labels, and so on. Available if environment:name is set.
 $(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gitlab_values.yaml)
 
-CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
-	--set ska-oso-scripting.ingress.nginx=$(USE_NGINX) \
-	--set ska-ser-skuid.ingress.nginx=$(USE_NGINX) \
-	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
-	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
+K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.minikube=$(MINIKUBE) \
 	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
@@ -59,26 +53,7 @@ CHART_PARAMS= --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--values gitlab_values.yaml \
 	$(PSI_LOW_SDP_PROXY_VARS)
 
-.DEFAULT_GOAL := help
-
-.PHONY: help
-
-# include makefile targets for interrim image building
--include .make/oci.mk
-
-# include makefile targets for Kubernetes management
--include .make/k8s.mk
-
-# include makefile targets for helm linting
--include .make/helm.mk
-
-# include makefile targets for python
--include .make/python.mk
-
-# include core makefile targets
--include .make/base.mk
-
-K8S_CHART = ska-mid##Default chart set to Mid for testing purposes
+K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
 
 HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
@@ -92,7 +67,7 @@ CI_JOB_ID ?= local##local default for ci job id
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
 K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.7.4## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
-K8S_TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
+K8S_TEST_RUNNER = test-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #
 # defines a function to copy the ./test-harness directory into the K8s K8S_TEST_RUNNER
 # and then runs the requested make target in the container.
@@ -141,99 +116,40 @@ K8S_TEST_TEST_COMMAND = make -s \
 			$(K8S_TEST_MAKE_PARAMS) \
 			$(K8S_TEST_TARGET)
 
-vars: k8s-vars ## Display variables
-	@echo "SKA_K8S_TOOLS_DEPLOY_IMAGE=$(SKA_K8S_TOOLS_DEPLOY_IMAGE)"
-	@echo ""
-	@echo "KUBE_NAMESPACE=$(KUBE_NAMESPACE)"
-	@echo "KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP)"
-	@echo "INGRESS_HOST=$(INGRESS_HOST)"
-	@echo "DEPLOYMENT_CONFIGURATION(translates to K8S_CHART)=$(DEPLOYMENT_CONFIGURATION)"
-	@echo "HELM_RELEASE=$(HELM_RELEASE)"
-	@echo "HELM_REPO_NAME=$(HELM_REPO_NAME) ## (should be empty except on Staging & Production)"
-	@echo "VALUES=$(VALUES)"
-	@echo ""
-	@echo "TANGO_DATABASE_DS=$(TANGO_DATABASE_DS)"
-	@echo "ARCHIVER_DBNAME=$(ARCHIVER_DBNAME)"
-	@echo ""
-	@echo "MARK=$(MARK)"
+.DEFAULT_GOAL := help
 
-namespace-sdp: KUBE_NAMESPACE := $(KUBE_NAMESPACE_SDP)
-namespace-sdp: ## create the kubernetes namespace for SDP dynamic deployments
-	@make k8s-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE)
+.PHONY: help
 
-delete-sdp-namespace: KUBE_NAMESPACE := $(KUBE_NAMESPACE_SDP)
-delete-sdp-namespace: ## delete the kubernetes SDP namespace
-	@make k8s-delete-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+# include makefile targets for interrim image building
+-include .make/oci.mk
 
-update-chart-versions:
-	@which yq >/dev/null 2>&1 || (echo "yq not installed - you must 'pip3 install yq'"; exit 1;)
-	@ which jq >/dev/null 2>&1 || (echo "jq not installed - see https://stedolan.github.io/jq/"; exit 1;)
-	@for chart in $(SKAMPI_K8S_CHARTS); do \
-		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
-		for upd in $$(yq -r '.dependencies[].name' charts/$$chart/Chart.yaml); do \
-			cur_version=$$(cat charts/$$chart/Chart.yaml | yq -r ".dependencies[] | select(.name == \"$$upd\") | .version"); \
-			echo "update-chart-versions: finding latest version for $$upd current version: $$cur_version"; \
-			upd_version=$$(. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sChartVersion $$upd); \
-			echo "update-chart-versions: updating $$upd from $$cur_version to $$upd_version"; \
-			sed -i.x -e "N;s/\(name: $$upd.*version:\).*/\1 $${upd_version}/;P;D" charts/$$chart/Chart.yaml; \
-			rm -f charts/*/Chart.yaml.x; \
-		done; \
-	done
+# include makefile targets for Kubernetes management
+-include .make/k8s.mk
 
-PYTHON_VARS_BEFORE_PYTEST=LOADBALANCER_IP=${LOADBALANCER_IP} CLUSTER_TEST_NAMESPACE=$(CLUSTER_TEST_NAMESPACE)
+# include makefile targets for helm linting
+-include .make/helm.mk
+
+# include makefile targets for python
+-include .make/python.mk
+
+# include core makefile targets
+-include .make/base.mk
+
+# include convenience and legacy make targets
+-include resources/localhelpers.mk
+
+# include Skampi extension make targets
+-include resources/skampi.mk
+
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
 	pip3 install -r tests/requirements.txt
 
 k8s-pre-test: python-pre-test
 
-verify-minikube: # Run only infra tests on local minikube cluster as precursor
-	make python-test LOADBALANCER_IP=$(shell minikube ip) PYTHON_VARS_AFTER_PYTEST=' -m infra' && $(CLUSTER_TEST_NAMESPACE)==default || kubectl delete ns $(CLUSTER_TEST_NAMESPACE)
-
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra
 
 k8s-post-test: # post test hook for processing received reports
-	@echo "k8s-post-test: Skampi post processing of test reports with scripts/collect_k8s_logs.py"
+	@echo "k8s-post-test: Skampi post processing of core Skampi test reports with scripts/collect_k8s_logs.py"
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
-
-# install: k8s-clean k8s-namespace namespace-sdp check-archiver-dbname k8s-install-chart## install the helm chart on the namespace KUBE_NAMESPACE
-install: k8s-clean k8s-namespace namespace-sdp## install the helm chart on the namespace KUBE_NAMESPACE and wait for completion of jobs 
-	make k8s-install-chart K8S_CHART_PARAMS='--values $(VALUES)' \
-	k8s-wait
-
-uninstall: k8s-uninstall-chart ## uninstall the helm chart on the namespace KUBE_NAMESPACE
-
-reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace KUBE_NAMESPACE
-
-install-or-upgrade: k8s-install-chart## install or upgrade the release
-
-quotas: k8s-namespace## delete and create the kubernetes namespace with quotas
-	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
-
-upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
-	@echo "THIS IS A SKAMPI SPECIFIC MAKE TARGET"
-	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
-		echo "Installing Helm charts from current ref of git repository..."; \
-		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
-	else \
-		echo "Deploying from artefact repository..."; \
-		helm repo add $(HELM_REPO_NAME) $(CAR_HELM_REPOSITORY_URL); \
-		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
-		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
-	fi
-	helm upgrade $(HELM_RELEASE) --install --wait \
-		$(CHART_PARAMS) \
-		--values $(VALUES) \
-		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
-
-links: ## attempt to create the URLs with which to access
-	@echo "############################################################################"
-	@echo "#            Access the landing page here:"
-	@echo "#            https://$(INGRESS_HOST)/$(KUBE_NAMESPACE)/start/"
-	@echo "############################################################################"
-
-centralnode_test:
-	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tmc-centralnode" {print $$2}'); \
-	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"

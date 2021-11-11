@@ -9,22 +9,17 @@ variables:
   SKALLOP_VERSION: "2.7.4"
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:$SKALLOP_VERSION
 
-
 stages:
+  - build
   - test
   - lint
-  - build
-  # - test
-  - clean
-  - deploy
-  - debug
   - publish
+  - deploy_integration
+  - clean_integration
   - pages
   - release
-  - clean_staging
   - deploy_staging
-  - update_versions
-  - cleanup
+  - clean_staging
 
 # Globally reused tags declaration for jobs
 .tags_default:
@@ -70,4 +65,3 @@ python-test:
     name: test-cluster
     kubernetes:
       namespace: $CLUSTER_TEST_NAMESPACE
-

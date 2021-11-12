@@ -1,5 +1,11 @@
 # This .mk include contains the Skampi specific make target extensions
 
+skampi-credentials:  ## PIPELINE USE ONLY - allocate credentials for deployment namespaces
+	make k8s-namespace
+	make k8s-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+	curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $(SERVICE_ACCOUNT) $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) || true
+
+
 ## TARGET: skampi-vars
 ## SYNOPSIS: make skampi-vars
 ## HOOKS: none
@@ -48,12 +54,26 @@ skampi-update-chart-versions:  ## update Skampi chart dependencies to latest ver
 ## TARGET: skampi-wait-all
 ## SYNOPSIS: make skampi-wait-all
 ## HOOKS: none
-## VARS: none
+## VARS:
+##       SKAMPI_YQ_VERSION=yq version to install
 ##  Introspects the chosen chart and look for sub-charts.  Iterate over these
 ##  and k8s-wait for each one.
 
+SKAMPI_YQ_VERSION ?= 4.14.1
+
 skampi-wait-all:  ## iterate over sub-charts and wait for each one
-	for chart in `helm inspect chart $(K8S_UMBRELLA_CHART_PATH) | /usr/local/bin/yq e '.dependencies[].name' - | grep -v ska-tango-util`; do \
+	$(eval TEMPDIR := $(shell mktemp -d))
+	$(eval TMP_FILE:= $(TEMPDIR)/yq)
+	@if [ ! -f "/usr/local/bin/yq" ]; then \
+		echo "skampi-wait-all: Installing yq version $(SKAMPI_YQ_VERSION) from https://github.com/mikefarah/yq/"; \
+		curl -Lo $(TMP_FILE) https://github.com/mikefarah/yq/releases/download/v$(SKAMPI_YQ_VERSION)/yq_linux_amd64 && \
+		mv $(TMP_FILE) "/usr/local/bin/yq" && \
+		chmod +x "/usr/local/bin/yq"; \
+	else \
+		echo "skampi-wait-all: yq already installed"; \
+	fi
+	@rm -rf $(TEMPDIR)
+	@for chart in `helm inspect chart $(K8S_UMBRELLA_CHART_PATH) | /usr/local/bin/yq e '.dependencies[].name' - | grep -v ska-tango-util`; do \
 		echo "Waiting for sub-chart: $${chart}"; \
 		make k8s-wait KUBE_APP=$${chart}; \
 	done
@@ -72,9 +92,13 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 	@mkdir -p build.previous
 	@cp -r build/* build.previous/
 	@for component in `grep -E '^skampi-test-[0-9a-zA-Z_-]+:.*$$' $(MAKEFILE_LIST) | sed 's/^[^:]*://' | sed 's/:.*$$//' | sort`; do \
-		echo "Running test in Component: $$component"; \
+		echo "skampi-component-tests: Running test in Component: $$component"; \
 		rm -rf build/*; \
 		make $$component K8S_TEST_RUNNER=test-$$component; \
+		if ! [[ -f build/status ]]; then \
+			echo "skampi-component-tests: something went very wrong with the test container (no build/status file) - ABORTING!"; \
+			exit 1; \
+		fi; \
 		if [[ -f build.previous/report.xml ]] && [[ -f build/report.xml ]]; then \
 			junitparser merge build.previous/report.xml build/report.xml report.xml; \
 			mv report.xml build.previous/report.xml; \

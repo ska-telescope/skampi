@@ -4,10 +4,7 @@
 
 # create namespace scoped credentials
 .create_k8s_creds: &create_k8s_creds
-- bash scripts/gitlab_section.sh creds "Create K8s Credentials"
-- make k8s-namespace
-- make k8s-namespace KUBE_NAMESPACE=$KUBE_NAMESPACE_SDP
-- curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $SERVICE_ACCOUNT $KUBE_NAMESPACE $KUBE_NAMESPACE_SDP || true
+- bash scripts/gitlab_section.sh creds "Create K8s Credentials" make skampi-credentials
 
 # must have K8S_CHART set correctly
 .deploy_chart_before:

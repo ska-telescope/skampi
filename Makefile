@@ -150,6 +150,10 @@ k8s-pre-test: python-pre-test
 k8s-test: MARK := not infra
 
 k8s-post-test: # post test hook for processing received reports
+	@if ! [[ -f build/status ]]; then \
+		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
+		exit 1; \
+	fi
 	@echo "k8s-post-test: Skampi post processing of core Skampi test reports with scripts/collect_k8s_logs.py"
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt

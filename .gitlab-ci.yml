@@ -3,7 +3,7 @@ image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
 variables:
   MINIKUBE: "false"
   VALUES: "pipeline.yaml"
-  CHARTS_TO_PUBLISH: ska-low ska-mid
+  CHARTS_TO_PUBLISH: ska-low ska-mid ska-landingpage
   INGRESS_HOST: "k8s.stfc.skao.int"
   GIT_SUBMODULE_STRATEGY: recursive
   SKALLOP_VERSION: "2.7.4"

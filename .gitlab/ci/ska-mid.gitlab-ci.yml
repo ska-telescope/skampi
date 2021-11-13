@@ -17,7 +17,7 @@ mid_deploy_test:
     MARK: "not infra"
   extends:
     - .tags_default
-    - .destroy_deploy_chart_before
+    - .deploy_chart_before
     - .test_deployment
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG

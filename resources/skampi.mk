@@ -38,11 +38,11 @@ skampi-vars: k8s-vars ## Display Skampi deployment context variables
 ##  the dependencies in Chart.yaml to the latest found in K8S_HELM_REPOSITORY .
 
 skampi-update-chart-versions:  ## update Skampi chart dependencies to latest versions eg: ska-tango-base etc.
-	@[[ ! -f "/usr/local/bin/yq" ]] || (echo "/usr/local/bin/jq not installed - see https://github.com/mikefarah/yq/"; exit 1;)
+	@[[ -f "/usr/local/bin/yq" ]] || (echo "/usr/local/bin/jq not installed - see https://github.com/mikefarah/yq/"; exit 1;)
 	@for chart in $(SKAMPI_K8S_CHARTS); do \
 		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
-		for upd in $$(/usr/local/bin/yq e '.dependencies[].name' charts/$$chart/Chart.yaml); do \
-			cur_version=$$(cat charts/$$chart/Chart.yaml | /usr/local/bin/yq e ".dependencies[] | select(.name == \"$$upd\") | .version"); \
+		for upd in $$(/usr/local/bin/yq e '.dependencies[].name' charts/$$chart/Chart.yaml | grep -v ska-landingpage); do \
+			cur_version=$$(cat charts/$$chart/Chart.yaml | /usr/local/bin/yq e ".dependencies[] | select(.name == \"$$upd\") | .version" -); \
 			echo "update-chart-versions: finding latest version for $$upd current version: $$cur_version"; \
 			upd_version=$$(. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sChartVersion $$upd); \
 			echo "update-chart-versions: updating $$upd from $$cur_version to $$upd_version"; \

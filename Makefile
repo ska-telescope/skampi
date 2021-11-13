@@ -11,13 +11,16 @@ KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 TANGO_DATABASE_DS ?= databaseds-tango-base## Stable name for the Tango DB
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
+TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
 HELM_RELEASE ?= test## release name of the chart
 DEPLOYMENT_CONFIGURATION ?= ska-mid## umbrella chart to work with
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
 CHARTS ?= ska-mid
+ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
+CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
@@ -45,11 +48,14 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.minikube=$(MINIKUBE) \
 	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
+	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
+	--set global.device_server_port=$(TANGO_SERVER_PORT) \
 	--set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) \
 	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	--set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) \
 	--values gitlab_values.yaml \
 	$(PSI_LOW_SDP_PROXY_VARS)
 

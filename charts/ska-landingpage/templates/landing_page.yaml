@@ -3,7 +3,7 @@
 {{ $port := 80 }}
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
+metadata:
   name: {{ $fullname }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -33,7 +33,7 @@ spec:
           name: {{ $fullname}}-html
       - name: chartinfo
         configMap:
-          name: {{ .Values.chartInfoSource }}
+          name: {{ .Values.chartInfoSource }}-{{ .Release.Name }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -41,7 +41,7 @@ metadata:
   name: {{ $fullname }}-html
   labels:
     app: {{ $appname }}
-data: 
+data:
   index.html: |-
 {{ ($.Files.Get "data/index.html") | indent 4  }}
   scripts.js: |-

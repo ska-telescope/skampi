@@ -22,9 +22,39 @@ ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 
+# these are the global overrides that get passed into the ska-mid/low deployments
+
+K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
+	--set global.minikube=$(MINIKUBE) \
+	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
+	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
+	--set global.device_server_port=$(TANGO_SERVER_PORT) \
+	--set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) \
+	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+	--set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) \
+	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
+	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
+	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
+	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	$(PSI_LOW_SDP_PROXY_VARS)
+
+# add on values.yaml file if it exists
+ifneq (,$(wildcard $(VALUES)))
+	K8S_CHART_PARAMS += --values $(VALUES)
+endif
+
+K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
+SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
+
+HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
+
+# KUBE_APP is set to the ska-tango-images base chart value
+SKAMPI_KUBE_APP ?= skampi
+KUBE_APP = ska-tango-images
+
 # PSI Low Environment need PROXY values to be set
 # This code detects environment and sets the variables
-ENV_CHECK := $(shell echo $(CI_ENVIRONMENT_SLUG) | egrep psi-low)
+ENV_CHECK := $(shell echo $(K8S_CHART) | egrep ska-low)
 ifneq ($(ENV_CHECK),)
 PSI_LOW_PROXY=http://delphoenix.atnf.csiro.au:8888
 PSI_LOW_NO_PROXY=localhost,landingpage,oet-rest-$(HELM_RELEASE),127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local
@@ -39,34 +69,6 @@ PSI_LOW_SDP_PROXY_VARS= --set ska-sdp.proxy.server=${PSI_LOW_PROXY} \
 					--set ska-tango-archiver.enabled=false \
 					--set "ska-sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
 endif
-
-CI_PROJECT_PATH_SLUG?=skampi##$CI_PROJECT_PATH in lowercase with characters that are not a-z or 0-9 replaced with -. Use in URLs and domain names.
-CI_ENVIRONMENT_SLUG?=skampi##The simplified version of the environment name, suitable for inclusion in DNS, URLs, Kubernetes labels, and so on. Available if environment:name is set.
-$(shell printf 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gitlab_values.yaml)
-
-K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
-	--set global.minikube=$(MINIKUBE) \
-	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
-	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
-	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
-	--set global.device_server_port=$(TANGO_SERVER_PORT) \
-	--set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) \
-	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
-	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
-	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
-	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
-	--set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) \
-	--values gitlab_values.yaml \
-	$(PSI_LOW_SDP_PROXY_VARS)
-
-K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
-SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
-
-HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
-
-# KUBE_APP is set to the ska-tango-images base chart value
-SKAMPI_KUBE_APP ?= skampi
-KUBE_APP = $(SKAMPI_KUBE_APP)
 
 CI_JOB_ID ?= local##local default for ci job id
 #

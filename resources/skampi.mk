@@ -37,8 +37,7 @@ skampi-vars: k8s-vars ## Display Skampi deployment context variables
 ##  Inspects the list of charts defined in SKAMPI_K8S_CHARTS and then updates
 ##  the dependencies in Chart.yaml to the latest found in K8S_HELM_REPOSITORY .
 
-skampi-update-chart-versions:  ## update Skampi chart dependencies to latest versions eg: ska-tango-base etc.
-	@[[ -f "/usr/local/bin/yq" ]] || (echo "/usr/local/bin/jq not installed - see https://github.com/mikefarah/yq/"; exit 1;)
+skampi-update-chart-versions: helm-install-yq ## update Skampi chart dependencies to latest versions eg: ska-tango-base etc.
 	@for chart in $(SKAMPI_K8S_CHARTS); do \
 		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
 		for upd in $$(/usr/local/bin/yq e '.dependencies[].name' charts/$$chart/Chart.yaml | grep -v ska-landingpage); do \
@@ -59,20 +58,7 @@ skampi-update-chart-versions:  ## update Skampi chart dependencies to latest ver
 ##  Introspects the chosen chart and look for sub-charts.  Iterate over these
 ##  and k8s-wait for each one.
 
-SKAMPI_YQ_VERSION ?= 4.14.1
-
-skampi-wait-all:  ## iterate over sub-charts and wait for each one
-	$(eval TEMPDIR := $(shell mktemp -d))
-	$(eval TMP_FILE:= $(TEMPDIR)/yq)
-	@if [ ! -f "/usr/local/bin/yq" ]; then \
-		echo "skampi-wait-all: Installing yq version $(SKAMPI_YQ_VERSION) from https://github.com/mikefarah/yq/"; \
-		curl -Lo $(TMP_FILE) https://github.com/mikefarah/yq/releases/download/v$(SKAMPI_YQ_VERSION)/yq_linux_amd64 && \
-		mv $(TMP_FILE) "/usr/local/bin/yq" && \
-		chmod +x "/usr/local/bin/yq"; \
-	else \
-		echo "skampi-wait-all: yq already installed"; \
-	fi
-	@rm -rf $(TEMPDIR)
+skampi-wait-all: helm-install-yq  ## iterate over sub-charts and wait for each one
 	@for chart in `helm inspect chart $(K8S_UMBRELLA_CHART_PATH) | /usr/local/bin/yq e '.dependencies[].name' - | grep -v ska-tango-util`; do \
 		echo "Waiting for sub-chart: $${chart}"; \
 		make k8s-wait KUBE_APP=$${chart}; \

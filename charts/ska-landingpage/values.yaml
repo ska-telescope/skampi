@@ -1,4 +1,4 @@
-MVPInstance: mvp-low
+MVPInstance: mvp-mid
 image: nginx
 basename: false
 ingress:

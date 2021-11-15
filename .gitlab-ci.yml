@@ -48,7 +48,11 @@ include:
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/docs-build.gitlab-ci.yml'
 
-    # .post steps
+  # release steps
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/release.gitlab-ci.yml'
+
+  # .post steps
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 

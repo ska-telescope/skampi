@@ -48,6 +48,8 @@ SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
 
 HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 
+OCI_IMAGES_TO_PUBLISH = 
+
 # KUBE_APP is set to the ska-tango-images base chart value
 SKAMPI_KUBE_APP ?= skampi
 KUBE_APP = ska-tango-images

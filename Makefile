@@ -20,7 +20,8 @@ CHARTS ?= ska-mid
 ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 WEBJIVE_USER ?= user1## the username for authentication to taranta services
 WEBJIVE_PASSWORD ?= abc123## the password for authentication to taranta services
-LOADBALANCER_IP ?= 
+LOADBALANCER_IP ?=
+WEBJIVE_AUTH_DASHBOARD_ENABLE ?= true## Enable auth and dashboard components for Taranta (Minikube only)
 KUBE_HOST ?= $(LOADBALANCER_IP)
 
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
@@ -29,6 +30,10 @@ CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 # these are the global overrides that get passed into the ska-mid/low deployments
 
 K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
+	--set ska-oso-scripting.ingress.nginx=$(USE_NGINX) \
+	--set ska-ser-skuid.ingress.nginx=$(USE_NGINX) \
+	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
+	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
 	--set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
@@ -45,6 +50,13 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 # add on values.yaml file if it exists
 ifneq (,$(wildcard $(VALUES)))
 	K8S_CHART_PARAMS += --values $(VALUES)
+endif
+
+ifeq ($(strip $(MINIKUBE)),true)
+ifeq ($(strip $(WEBJIVE_AUTH_DASHBOARD_ENABLE)),true)
+K8S_CHART_PARAMS += --set global.webjive_auth_enabled=true \
+										--set global.webjive_dashboard_enabled=true
+endif
 endif
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes

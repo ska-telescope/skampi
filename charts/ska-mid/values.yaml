@@ -1,12 +1,18 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
+tags:
+  webjive_auth: false
+  webjive_dashboard: false
+  
 global:
   minikube: true
   annotations:
     skampi: "true"
     app.gitlab.com/app: skampi
     app.gitlab.com/env: ska
+  webjive_auth_enabled: false
+  webjive_dashboard_enabled: false
   sub-system:
     tango-base:
       enabled: false

@@ -85,15 +85,13 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 			echo "skampi-component-tests: something went very wrong with the test container (no build/status file) - ABORTING!"; \
 			exit 1; \
 		fi; \
+		echo "skampi-component-tests: process reports for Component: $$component"; \
 		if [[ -f build.previous/report.xml ]] && [[ -f build/report.xml ]]; then \
 			junitparser merge build.previous/report.xml build/report.xml report.xml; \
 			mv report.xml build.previous/report.xml; \
 		fi; \
-		if [[ -f build.previous/cucumber.json ]] && [[ -f build/cucumber.json ]]; then \
-			cat build.previous/cucumber.json | sed 's/]$$/,/' > cucumber1.json; \
-			cat build/cucumber.json | sed 's/^\[//' > cucumber2.json; \
-			cat cucumber1.json cucumber2.json > build.previous/cucumber.json; \
-			rm -f cucumber1.json cucumber2.json; \
+		if [[ -f build/cucumber.json ]]; then \
+			cp -f build/cucumber.json build.previous/cucumber-$$component.json; \
 		fi; \
 	done
 	@rm -rf build

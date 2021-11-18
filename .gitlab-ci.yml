@@ -3,28 +3,23 @@ image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
 variables:
   MINIKUBE: "false"
   VALUES: "pipeline.yaml"
-  CHARTS_TO_PUBLISH: ska-low ska-mid
+  CHARTS_TO_PUBLISH: ska-low ska-mid ska-landingpage
   INGRESS_HOST: "k8s.stfc.skao.int"
   GIT_SUBMODULE_STRATEGY: recursive
   SKALLOP_VERSION: "2.7.4"
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:$SKALLOP_VERSION
 
-
 stages:
+  - build
   - test
   - lint
-  - build
-  # - test
-  - clean
-  - deploy
-  - debug
   - publish
+  - deploy_integration
+  - clean_integration
   - pages
   - release
-  - clean_staging
   - deploy_staging
-  - update_versions
-  - cleanup
+  - clean_staging
 
 # Globally reused tags declaration for jobs
 .tags_default:
@@ -53,7 +48,11 @@ include:
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/docs-build.gitlab-ci.yml'
 
-    # .post steps
+  # release steps
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/release.gitlab-ci.yml'
+
+  # .post steps
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 
@@ -67,7 +66,6 @@ python-test:
   after_script:
     - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE
   environment:
-    name: test-cluster
+    name: test/$CI_COMMIT_REF_SLUG-cluster
     kubernetes:
       namespace: $CLUSTER_TEST_NAMESPACE
-

@@ -1,11 +1,12 @@
 display: ":0"
 xauthority: "~/.Xauthority"
-minikube: true
 
 global:
-  retry:
-  - "--sleep=1"
-  - "--tries=100"
+  minikube: true
+  annotations:
+    skampi: true
+    app.gitlab.com/app: skampi
+    app.gitlab.com/env: ska
   sub-system:
     tango-base:
       enabled: false
@@ -13,8 +14,12 @@ global:
       enabled: false
     ska-webjive:
       enabled: false
-  minikube: false
-  tango_host: databaseds-tango-base-test:10000
+  retry:
+    - "--sleep=1"
+    - "--tries=100"
+  tango_host: databaseds-tango-base:10000
+  device_server_port: 45450
+  cluster_domain: cluster.local
   dsconfig:
     timeout: 300s
     image:
@@ -41,6 +46,7 @@ ska-landingpage:
 #       generator_id: mvp01
 
 ska-tango-base:
+  enabled: true
   vnc:
     replicas: 1
     enabled: true
@@ -81,7 +87,7 @@ ska-tango-base:
 
 
 ska-webjive:
-  minikube: false
+  enabled: true
   ingress:
     enabled: true
     nginx: true
@@ -120,7 +126,12 @@ ska-sdp:
     enabled: false
 
 ska-tango-archiver:
+  enabled: true
   dbname: default_mvp_archiver_db
 
-ska-tmc-low:
+ska-tmc-centralnode:
   enabled: true
+  telescope: SKA-low
+  deviceServers:
+    centralnode:
+      enabled: true

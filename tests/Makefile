@@ -22,7 +22,7 @@ test: install
 		--disable-pytest-warnings --timeout=300 $(FILE) --count=$(COUNT) tests | tee pytest.stdout; \
 	status=$$?; \
 	echo "test: status is ($$status)"; \
-	cp ./build/* tests/build/; \
+	cp -r ./build/* tests/build/; \
 	exit $$status
 
 install:

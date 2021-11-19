@@ -28,7 +28,8 @@ assertpy
 # tabulate
 # ska-ser-skallop[bit]==2.7.3
 # ska-ser-skallop>=2.6.0,<=2.7.4
-ska-ser-skallop
+# ska-ser-skallop==2.7.10
+# ska-ser-skallop
 # ska-ser-skuid
 # ska-ser-logging
 docopts

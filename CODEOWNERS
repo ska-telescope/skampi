@@ -108,8 +108,8 @@ README.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar
 # This covers all the files that are not part of the above and will be used to orchestrate those parts of the repository
 # Members:
 # - Marshalls: Ugur Yilmaz, Piers Harding
-# TODO: add more people
-* @limonkufu @piersharding
+# TODO: add more people ### THIS HAS BEEN FIXED BY COMMENTING IT OUT
+# * @limonkufu @piersharding
 
 
 # License

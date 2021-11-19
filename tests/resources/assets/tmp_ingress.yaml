@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app.kubernetes.io/name: cluster-test
+  name: cluster-test
+spec:
+  rules:
+  - host: nginx1-default
+    http:
+      paths:
+      - backend:
+          service:
+            name: nginx1
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  - host: nginx2-default
+    http:
+      paths:
+      - backend:
+          service:
+            name: nginx2
+            port:
+              number: 80
+        path: /
+        pathType: Prefix

@@ -37,6 +37,9 @@
     - echo "#####################################"
     - |
       echo "Processing XRay uploads"
+      if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then
+        bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+      fi
       for cuke in  build/cucumber*.json
       do
         echo "Processing XRay upload of: $cuke"
@@ -61,6 +64,9 @@
     - echo "#####################################"
     - |
       echo "Processing XRay uploads"
+      if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then
+        bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+      fi
       for cuke in  build/cucumber*.json
       do
         echo "Processing XRay upload of: $cuke"

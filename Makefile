@@ -21,7 +21,11 @@ ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 WEBJIVE_USER ?= user1## the username for authentication to taranta services
 WEBJIVE_PASSWORD ?= abc123## the password for authentication to taranta services
 WEBJIVE_PASSPORT = $(WEBJIVE_PASSWORD)# required for ska-ser-skallop
-LOADBALANCER_IP ?=
+MINIKUBE_RC := $(shell minikube ip 1>/dev/null 2> /dev/null; echo $$?)
+ifeq ($(MINIKUBE_RC),0)
+MINIKUBE_IP = $(shell minikube ip)
+endif
+LOADBALANCER_IP ?= $(MINIKUBE_IP) ## The IP address of the Kubernetes Ingress Controller (LB)
 WEBJIVE_AUTH_DASHBOARD_ENABLE ?= true## Enable auth and dashboard components for Taranta (Minikube only)
 KUBE_HOST ?= $(LOADBALANCER_IP)
 
@@ -136,7 +140,6 @@ K8S_TEST_MAKE_PARAMS = \
 	WEBJIVE_USER=$(WEBJIVE_USER) \
 	WEBJIVE_PASSWORD=$(WEBJIVE_PASSWORD) \
 	WEBJIVE_PASSPORT=$(WEBJIVE_PASSPORT) \
-	TANGO_BRIDGE_IP=$(TANGO_BRIDGE_IP) \
 	KUBE_HOST=$(KUBE_HOST)
 
 # runs inside the test runner container after cd ./tests

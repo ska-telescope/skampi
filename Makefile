@@ -142,6 +142,7 @@ K8S_TEST_MAKE_PARAMS = \
 	WEBJIVE_PASSPORT=$(WEBJIVE_PASSPORT) \
 	DOMAIN=$(DOMAIN) \
 	KUBE_BRANCH=$(KUBE_BRANCH) \
+	TEL=$(TEL) \
 	KUBE_HOST=$(KUBE_HOST)
 
 # runs inside the test runner container after cd ./tests

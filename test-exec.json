@@ -1,6 +1,7 @@
 {
     "test_plans": [
-        "XTP-3348"
+        "XTP-3348",
+        "XTP-3616"
     ],
     "name": {
         "env": "CI_JOB_NAME",

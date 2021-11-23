@@ -8,8 +8,9 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   SKALLOP_VERSION: "2.7.10"
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:$SKALLOP_VERSION
-  LOADBALANCER_IP: 192.168.99.222
-  TANGO_BRIDGE_IP: $LOADBALANCER_IP/$KUBE_NAMESPACE/taranta
+  KUBE_HOST: 192.168.99.222
+  KUBE_BRANCH: $CI_JOB_ID
+  DOMAIN: "branch"
 
 stages:
   - build

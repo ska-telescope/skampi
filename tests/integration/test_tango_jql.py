@@ -9,7 +9,7 @@ from pytest_bdd import (
 )
 
 
-@scenario("tangojql_upload.feature", "Tangojql service available")
+@scenario("features/tangojql_upload.feature", "Tangojql service available")
 def test_tangojql_service_available():
     """Tangojql service available."""
 

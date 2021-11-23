@@ -16,6 +16,7 @@ pycodestyle<2.7.0,>=2.6.0a1
 pytest-ordering
 pytest-timeout
 kubernetes>=18.20.0
-assertpy
+assertpy==1.1
 docopts
 coverage
+ska_ser_skallop

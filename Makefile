@@ -20,6 +20,7 @@ CHARTS ?= ska-mid
 ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 WEBJIVE_USER ?= user1## the username for authentication to taranta services
 WEBJIVE_PASSWORD ?= abc123## the password for authentication to taranta services
+WEBJIVE_PASSPORT = $(WEBJIVE_PASSWORD)# required for ska-ser-skallop
 LOADBALANCER_IP ?=
 WEBJIVE_AUTH_DASHBOARD_ENABLE ?= true## Enable auth and dashboard components for Taranta (Minikube only)
 KUBE_HOST ?= $(LOADBALANCER_IP)
@@ -30,10 +31,6 @@ CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 # these are the global overrides that get passed into the ska-mid/low deployments
 
 K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
-	--set ska-oso-scripting.ingress.nginx=$(USE_NGINX) \
-	--set ska-ser-skuid.ingress.nginx=$(USE_NGINX) \
-	--set ska-tango-base.ingress.nginx=$(USE_NGINX) \
-	--set ska-webjive.ingress.nginx=$(USE_NGINX) \
 	--set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
@@ -138,6 +135,7 @@ K8S_TEST_MAKE_PARAMS = \
 	CAR_RAW_REPOSITORY_URL=$(RAW_HOST) \
 	WEBJIVE_USER=$(WEBJIVE_USER) \
 	WEBJIVE_PASSWORD=$(WEBJIVE_PASSWORD) \
+	WEBJIVE_PASSPORT=$(WEBJIVE_PASSPORT) \
 	KUBE_HOST=$(KUBE_HOST)
 
 # runs inside the test runner container after cd ./tests

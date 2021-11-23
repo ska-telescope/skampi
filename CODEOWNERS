@@ -2,26 +2,18 @@
 # could be found here: 
 # https://confluence.skatelescope.org/display/SWSI/Skampi+Change+Management
 
-
-# Overall Reviewers
-# This covers all the files that are not part of the above and will be used to orchestrate those parts of the repository
+# Overall Default Reviewers
+# This covers all the files that are not part of the above and will be used to orchestrate those parts of the repository.
+# Files are matched as the last statement in order so this will act like a filter that catches any file that's been left out
+# by the rest of the file 
 # Members:
-# - POs: Ugur Yilmaz
-# - Architects: Piers Harding
-# TODO: add more people
-* @limonkufu @piersharding
-
-# License
-# Members:
-# - POs: Ugur Yilmaz,
-# - Architects: Marco Bartolini, Piers Harding
-LICENSE @limonkufu @piersharding @flyingfrog81 
+# - All
+* @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 
 # Other
 # Members:
 # - Owner: Gerhard LeRoux
-charts/ska-landingpage/ @gerhardlr 
-
+/charts/ska-landingpage/ @gerhardlr 
 
 ## Grouped Changes
 # Products (Helm charts) Reviewers, A1, and Product Organisation Reviewers, H1
@@ -45,13 +37,12 @@ charts/ska-landingpage/ @gerhardlr
 # - AIV Low: Malte Marquarding
 # - AIV Mid: Adriaan De Beer
 # - Caretakers: Juande, Santander-Vela, Ben Mort, Gerhard LeRoux, Adam Avison
-[Integration]
 # A1
-charts/ @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+/charts/ @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
 .release @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
 # H1
-charts/ska-mid/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
-charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+/charts/ska-mid/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+/charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
 
 
 # Tests Reviewers, A2, and Test Management Reviewers, H2
@@ -71,14 +62,10 @@ charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @a
 # - AIV Low: Malte Marquarding
 # - AIV Mid: Adriaan De Beer 
 # - Stewards: Peter Wortmann, Alan Bridger, Sonja Vrcic, Thomas Juerges, Gerhard LeRoux, Matteo Di Carlo
-[Tests]
 # A2
-tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
-*.py @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
-*.feature @adb-42 @mmarquar  @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
-# H2
-scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
-
+/tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
+/scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+/images/testing/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
 
 # CI/CD Reviewers, A3, and Housekeeping CI Reviewers, H3
 # Description:
@@ -96,17 +83,21 @@ scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @m
 # Members(POs, ST, marshalls):
 # - System Team
 # - Marshalls: System Team
-[CI/CD]
 # A3
 .gitlab-ci.yml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
-.gitlab/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+/.gitlab/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 # H3
 values.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
-.make/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+/.make/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 .readthedocs.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
-tests/Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
-
+tests/Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
+LICENSE @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
+/resources/ @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
+.gitignore @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
+.gitmodules @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
+pyproject.toml @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
+pipeline.yaml @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
 
 # Docs Reviewers, A4
 # Description:
@@ -118,9 +109,6 @@ tests/Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @
 # - Marshalls: System Team
 # - AIV Low: Malte Marquarding
 # - AIV Mid: Adriaan De Beer
-[Documentation]
-docs/ @limonkufu @piersharding @vla22 @adb-42 @mmarquar @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+/docs/ @limonkufu @piersharding @vla22 @adb-42 @mmarquar @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 README.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
-*.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
-*.rst @limonkufu @piersharding @vla22 @adb-42 @mmarquar @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 

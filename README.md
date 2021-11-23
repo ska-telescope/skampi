@@ -5,7 +5,7 @@ Skampi is currently undergoing major restructuring.  As a result, the current de
 For a Minikube deployment, this can be emulated with:
 ```
 make k8s-install-chart KUBE_NAMESPACE=default; make k8s-wait KUBE_NAMESPACE=default
-make k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4 KUBE_NAMESPACE=default
+make k8s-test KUBE_NAMESPACE=default
 make k8s-uninstall-chart KUBE_NAMESPACE=default
 ```
 

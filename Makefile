@@ -48,7 +48,7 @@ SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
 
 HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 
-OCI_IMAGES_TO_PUBLISH = 
+OCI_IMAGES_TO_PUBLISH =
 
 # KUBE_APP is set to the ska-tango-images base chart value
 SKAMPI_KUBE_APP ?= skampi
@@ -75,7 +75,7 @@ endif
 CI_JOB_ID ?= local##local default for ci job id
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
-K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.7.4## docker image that will be run for testing purpose
+K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.7.10## docker image that will be run for testing purpose
 # Test runner - run to completion job in K8s
 K8S_TEST_RUNNER = test-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #

@@ -1,39 +1,21 @@
 # -r SUT_requirements.txt
 # uncomment this if you want to install a dev skallop package from gitlab
 --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
-pytest
+pytest-bdd==4.1.0; python_version >= "3.6"
+pytest-cov==2.12.1; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.5.0")
+pytest-forked==1.3.0; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.5.0")
+pytest-json-report==1.4.1
+pytest-metadata==1.11.0; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.6.0"
+pytest-mock==3.6.1; python_version >= "3.6"
+pytest-repeat==0.9.1; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.5.0")
+pytest-xdist==2.4.0; python_version >= "3.6"
+pytest==6.2.5; python_version >= "3.6"
 pylint
 pyyaml
-pytest-cov
-pytest-json-report
 pycodestyle<2.7.0,>=2.6.0a1
-pytest-bdd
 pytest-ordering
 pytest-timeout
-pytest-repeat
-# elasticsearch
 kubernetes>=18.20.0
 assertpy
-# mock
-# importlib
-# elasticsearch-dsl
-# aiohttp
-# aiojobs
-# pytest-asyncio
-# aiohttp_cors
-# flake8
-# tango-simlib>=0.9.0
-# ska-tango-base
-# ska-ser-log-transactions
-# tabulate
-# ska-ser-skallop[bit]==2.7.3
-# ska-ser-skallop>=2.6.0,<=2.7.4
-ska-ser-skallop
-# ska-ser-skuid
-# ska-ser-logging
 docopts
-
-pytest-mock
-pytest-forked
-pytest-xdist
 coverage

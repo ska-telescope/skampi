@@ -85,6 +85,7 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 			echo "skampi-component-tests: something went very wrong with the test container (no build/status file) - ABORTING!"; \
 			exit 1; \
 		fi; \
+		echo "skampi-component-tests: result for Component: $$component is ($$(cat build/status))"; \
 		echo "skampi-component-tests: process reports for Component: $$component"; \
 		if [[ -f build.previous/report.xml ]] && [[ -f build/report.xml ]]; then \
 			junitparser merge build.previous/report.xml build/report.xml report.xml; \
@@ -93,9 +94,16 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 		if [[ -f build/cucumber.json ]]; then \
 			cp -f build/cucumber.json build.previous/cucumber-$$component.json; \
 		fi; \
+		if [[ -f build/status ]]; then \
+			cp -f build/status build.previous/$$component-status; \
+		fi; \
 	done
 	@rm -rf build
 	@mv build.previous build
+	@if [[ -n "$$(grep -v '0' build/*status)" ]]; then \
+		echo "skampi-component-tests: Errors occurred in tests - ABORTING!"; \
+		exit 1; \
+	fi
 
 ## TARGET: skampi-test-01centralnode
 ## SYNOPSIS: make skampi-test-01centralnode

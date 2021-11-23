@@ -1,7 +1,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: chartinfo
+  name: chartinfo-{{ .Release.Name }}
 data:
   chartinfo.js: |-
     const CHARTINFO = {
@@ -13,4 +13,3 @@ data:
         {{- end }}
         ]
     }
-  

@@ -5,11 +5,11 @@ Skampi is currently undergoing major restructuring.  As a result, the current de
 For a Minikube deployment, this can be emulated with:
 ```
 make k8s-install-chart KUBE_NAMESPACE=default; make k8s-wait KUBE_NAMESPACE=default
-make k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skallop:2.7.4 KUBE_NAMESPACE=default
+make k8s-test KUBE_NAMESPACE=default
 make k8s-uninstall-chart KUBE_NAMESPACE=default
 ```
 
-The above installation step, including the creation of the namespace where deployment should happen, can be bundled into one by using the `make install` target, and specifying the `KUBE_NAMESPACE` in your `PrivateRules.mak` file as before. Set the `VALUES` parameter in your `PrivateRules.mak` to the `values.yaml` file that enables/modifies the deployment if required.  
+The above installation step, including the creation of the namespace where deployment should happen, can be bundled into one by using the `make install` target, and specifying the `KUBE_NAMESPACE` in your `PrivateRules.mak` file as before. Set the `VALUES` parameter in your `PrivateRules.mak` to the `values.yaml` file that enables/modifies the deployment if require, which is the `values.yaml` file in the root of the project by default.
 
 
 Also, verify your Minikube cluster beforehand as below (assuming that you have the `tests/requirements.txt` installed in a `venv` or similar):
@@ -242,7 +242,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
     $ make template-chart
     helm dependency update ./charts/ska-mid/; \
     helm template test \
-            --set ska-tango-base.xauthority="" --set ska-oso-scripting.ingress.nginx=true --set ska-ser-skuid.ingress.nginx=true --set ska-tango-base.ingress.nginx=true --set ska-webjive.ingress.nginx=true --set global.minikube=true --set ska-sdp.helmdeploy.namespace=integration-sdp --set global.tango_host=databaseds-tango-base-test:10000 --set ska-tango-archiver.hostname= --set ska-tango-archiver.dbname=default_mvp_archiver_db  --set ska-tango-archiver.port= --set ska-tango-archiver.dbuser= --set ska-tango-archiver.dbpassword= --values gitlab_values.yaml  \
+            --set ska-tango-base.xauthority="" --set ska-oso-scripting.ingress.nginx=true --set ska-ser-skuid.ingress.nginx=true --set ska-tango-base.ingress.nginx=true --set ska-webjive.ingress.nginx=true --set global.minikube=true --set ska-sdp.helmdeploy.namespace=integration-sdp --set global.tango_host=databaseds-tango-base:1     0000 --set ska-tango-archiver.hostname= --set ska-tango-archiver.dbname=default_mvp_archiver_db  --set ska-tango-archiver.port= --set ska-tango-archiver.dbuser= --set ska-tango-archiver.dbpassword=   \
             --values my_local_values.yaml \
             ./charts/ska-mid/ --namespace integration;
     Hang tight while we grab the latest from your chart repositories...
@@ -295,14 +295,14 @@ The values.yaml file controls all the variables that are used by Helm when inter
     ```
     $ watch kubectl get all -n integration
     NAME                                            READY   STATUS              RESTARTS   AGE
-    pod/databaseds-tango-base-test-0                0/1     ContainerCreating   0          18s
+    pod/databaseds-tango-base-0                     0/1     ContainerCreating   0          18s
     pod/ska-tango-base-tango-rest-86646c966-5svhr   0/1     Init:0/5            0          18s
     pod/ska-tango-base-tangodb-0                    0/1     ContainerCreating   0          18s
     pod/tangotest-config-cbkxj                      0/1     Init:0/1            0          18s
     pod/tangotest-test-0                            0/1     Init:0/2            0          18s
 
     NAME                                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)           AGE
-    service/databaseds-tango-base-test   NodePort    10.99.68.66    <none>        10000:30397/TCP   19s
+    service/databaseds-tango-base        NodePort    10.99.68.66    <none>        10000:30397/TCP   19s
     service/ska-tango-base-tango-rest    NodePort    10.106.95.48   <none>        8080:31500/TCP    19s
     service/ska-tango-base-tangodb       NodePort    10.108.17.5    <none>        3306:31278/TCP    19s
     service/tangotest-test               ClusterIP   None           <none>        <none>            19s
@@ -315,7 +315,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
     replicaset.apps/ska-tango-base-tango-rest-86646c966   1         1         0       18s
 
     NAME                                          READY   AGE
-    statefulset.apps/databaseds-tango-base-test   0/1     18s
+    statefulset.apps/databaseds-tango-base        0/1     18s
     statefulset.apps/ska-tango-base-tangodb       0/1     18s
     statefulset.apps/tangotest-test               0/1     18s
 
@@ -394,4 +394,3 @@ This is the channel where (in general) the current progress of the MVP is discus
 
 ### [#team-system-support](https://skao.slack.com/archives/CEMF9HXUZ)
 The System Team help out whenever there are CI related problems that seem to be out of developers' control.
-

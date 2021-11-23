@@ -2,44 +2,124 @@
 # # Common CI Stages
 # ################################################
 
-.deploy_definition:
-  before_script:
-  - make k8s-install-chart K8S_CHART=$DEPLOYMENT_CONFIGURATION
-  - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-  - make k8s-wait
+# create namespace scoped credentials
+.create_k8s_creds: &create_k8s_creds
+- bash scripts/gitlab_section.sh creds "Create K8s Credentials" make skampi-credentials
 
-.test_definition:
+# must have K8S_CHART set correctly
+.deploy_chart_before:
+  before_script:
+    - echo $CI_JOB_NAME - $CI_JOB_STAGE
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - *create_k8s_creds
+    - make k8s-install-chart
+    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+    - make skampi-wait-all
+
+.deploy_chart:
+  script:
+    - make k8s-install-chart
+    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+    - make skampi-wait-all
+
+.test_deployment:
   script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - echo "############## Running Skampi core tests"
     - make k8s-test
+    - echo "############## Running Skampi component tests"
+    - make skampi-component-tests
     - echo "############## Build Output"
     - find ./build
     - echo "############## EXTRA MAKE VARS OUTPUT"
-    - make vars
+    - make skampi-vars
     - echo "#####################################"
+    - |
+      echo "Processing XRay uploads"
+      if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then
+        bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+      fi
+      for cuke in  build/cucumber*.json
+      do
+        echo "Processing XRay upload of: $cuke"
+        /usr/local/bin/xtp-xray-upload -f $cuke -i test-exec.json -v
+      done
 
-.uninstall_definition:
+.deploy_chart_and_test_integration:
+  script:
+    - make k8s-install-chart
+    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+    - make skampi-wait-all
+    - echo $CI_JOB_NAME - $CI_JOB_STAGE
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - echo "############## Running Skampi core tests"
+    - make k8s-test
+    - echo "############## Running Skampi component tests"
+    - make skampi-component-tests
+    - echo "############## Build Output"
+    - find ./build
+    - echo "############## EXTRA MAKE VARS OUTPUT"
+    - make skampi-vars
+    - echo "#####################################"
+    - |
+      echo "Processing XRay uploads"
+      if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then
+        bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+      fi
+      for cuke in  build/cucumber*.json
+      do
+        echo "Processing XRay upload of: $cuke"
+        /usr/local/bin/xtp-xray-upload -f $cuke -i test-exec.json -v
+      done
+
+.uninstall_chart_before:
+  before_script:
+    - echo $CI_JOB_NAME - $CI_JOB_STAGE
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - make k8s-uninstall-chart || true
+    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
+    - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
+    - make k8s-delete-namespace
+    - make delete-sdp-namespace
+
+.uninstall_chart:
+  script:
+    - echo $CI_JOB_NAME - $CI_JOB_STAGE
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - make k8s-uninstall-chart || true
+    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
+    - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
+    - make k8s-delete-namespace
+    - make delete-sdp-namespace
+
+.uninstall_chart_after:
   after_script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-    - make k8s-uninstall-chart
-    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
-    - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+    - make k8s-uninstall-chart || true
+    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
+    - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
     - make k8s-delete-namespace
     - make delete-sdp-namespace
     - |
-      if [ -f build/cucumber.json ]; then
-      bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
-      /usr/local/bin/xtp-xray-upload -f build/cucumber.json -i test-exec.json -v
+      echo "Processing XRay uploads"
+      if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then
+        bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
       fi
+      for cuke in  build/cucumber*.json
+      do
+        echo "Processing XRay upload of: $cuke"
+        /usr/local/bin/xtp-xray-upload -f $cuke -i test-exec.json -v
+      done
 
-.deploy_test_destroy_definition:
+## Not currently used!!!
+.deploy_test_destroy:
   stage: test
   extends:
-    - .deploy_definition
-    - .test_definition
-    - .uninstall_definition
+    - .deploy_chart_before
+    - .test_deployment
+    - .uninstall_chart_after
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -47,4 +127,3 @@
     reports:
       junit: build/report.xml
     when: always
-

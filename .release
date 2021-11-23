@@ -1,12 +1,12 @@
-release=0.8.0-pi10
-tag=0.8.0-pi10
+release=0.8.1
+tag=0.8.1
 tag_description=
 **Charts:**
 
 **1. ska-mid 0.7.0 - 0.8.0:**
 
     **1.1 tmc-mid - 0.2.7 - 0.3.2:
-    
+
         a.   Renamed tmc-prototype to ska-tmc to support ADR-25
         b. KATPoint(1.0a1) upgrades on DishLeafNode and CspSubarrayLeafnode
         c. Bug fixes for SKB-46, SKB-54 and SKB-64
@@ -24,7 +24,7 @@ tag_description=
 
         a. ability for tango devices to archive attributes and events
 
-    
+
     **1.5 oet-scripts - 0.3.6 - 0.3.8:
 
         a. fix obsreset and restart commands when using pub/sub
@@ -32,7 +32,7 @@ tag_description=
 **2. Ska-low 0.4.0 - 0.5.0:**
 
     **2.1. tmc-low - 0.1.8 - 0.1.9:
-    
+
         a.  renaming of tmc-prototype to ska-tmc to support ADR-25
 
     **2.2. webjive - 1.0.16 - 1.0.21:**
@@ -47,5 +47,3 @@ tag_description=
     **2.4 oet-scripts - 0.3.6 - 0.3.8:
 
         a. fix obsreset and restart commands when using pub/sub
-
-

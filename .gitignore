@@ -1,5 +1,6 @@
 .vscode
 .coverage
+.devcontainer
 kubeconfig
 tests/unit/test_playground.py
 .python-version

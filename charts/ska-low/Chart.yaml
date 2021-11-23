@@ -2,16 +2,22 @@ apiVersion: v2
 name: ska-low
 description: A Helm chart for Kubernetes MVP Low
 type: application
-version: 0.6.0-dev
-appVersion: 0.6.0-dev
+version: 0.8.1-dirty-dev.1.2.3
+appVersion: 0.8.1-dirty-dev.1.2.3
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: ska-tango-base
-  version: 0.2.30
+  version: 0.3.4
   repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-tango-base.enabled
 - name: ska-tango-util
-  version: 0.2.30
+  version: 0.3.4
   repository: https://artefact.skao.int/repository/helm-internal
+- name: ska-tmc-centralnode
+  version: 0.3.4
+  repository: https://artefact.skao.int/repository/helm-internal
+  alias: central_node
+  condition: ska-tmc-centralnode.enabled
 # - name: ska-sdp
 #   version: 0.7.0
 #   repository: https://artefact.skao.int/repository/helm-internal
@@ -36,11 +42,10 @@ dependencies:
 #   repository: https://artefact.skao.int/repository/helm-internal
 #   condition: ska-oso-scripting.enabled
 - name: ska-landingpage
-  version: 0.1.0
+  version: 0.8.1-dirty-dev.1.2.3
   repository: file://../ska-landingpage
   condition: ska-landingpage.enabled
 # - name: ska-tango-archiver
 #   version: 0.1.8
 #   repository: https://artefact.skao.int/repository/helm-internal
 #   condition: ska-tango-archiver.enabled
-

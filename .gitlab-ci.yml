@@ -10,6 +10,7 @@ variables:
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:$SKALLOP_VERSION
   LOADBALANCER_IP: 192.168.99.222
   DOMAIN: "branch"
+  KUBE_BRANCH: $CI_COMMIT_REF_SLUG
 
 stages:
   - build

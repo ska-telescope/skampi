@@ -1,12 +1,22 @@
 {
-    "test_plans": [
-        "XTP-3348",
-        "XTP-3616"
-    ],
+    "test_plans": {
+        "env": "CI_JOB_NAME",
+        "maps_to": {
+            "mid_deploy_test_destroy": [
+                "XTP-3348"
+            ],
+            "mid_deploy_test": [
+                "XTP-3348",
+                "XTP-3616",
+                "XTP-3614"
+            ],
+            "default": []
+        }
+    },
     "name": {
         "env": "CI_JOB_NAME",
         "maps_to": {
-            "test_cluster": "Test Cluster Execution",
+            "mid_deploy_test_destroy": "Skampi Branch Execution Results",
             "default": "Test Cluster Execution"
         }
     },

@@ -8,7 +8,13 @@
             }
         }
     ],
-    "name": "Skampi tests execution",
+    "name": {
+        "env": "CI_COMMIT_BRANCH",
+        "maps_to": {
+            "master": "Skampi Master Test Execution",
+            "default": "Skampi branch Execution"
+        }
+    },
     "chart_info": {
         "env": "DEPLOYMENT_CONFIGURATION",
         "maps_to": {
@@ -20,18 +26,32 @@
     "test_report": "build/report.json",
     "project_id": "XTP",
     "test_environments": [
-        "STFC-CI"
+        {
+            "env": "TEST_ENV",
+            "maps_to": {
+                "dev": "dev-testing",
+                "PSI": "PSI",
+                "default": "STFC-CI"
+            }
+        }
     ],
     "labels": [
-        "STFC-CI"
+        {
+            "env": "CI_COMMIT_BRANCH",
+            "maps_to": {
+                "default": "branch",
+                "master": "master"
+            }
+        }
     ],
     "description": "Test execution results as generated from https://gitlab.com/ska-telescope/ska-skampi\n",
     "versions": [
         {
-            "env": "DEPLOYMENT_CONFIGURATION",
+            "env": "K8S_CHART",
             "maps_to": {
                 "ska-mid": "ska-mid-0.9.1-dev",
-                "ska-low": "ska-low-0.6.0-dev"
+                "ska-low": "ska-low-0.6.0-dev",
+                "default": "ska-mid-0.9.1-dev"
             }
         }
     ],

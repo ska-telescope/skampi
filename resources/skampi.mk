@@ -152,8 +152,11 @@ skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ##
 
 skampi-component-tests:  ## iterate over Skampi component tests defined as make targets
 	@which junitparser >/dev/null 2>&1 || pip3 install junitparser
-	@mkdir -p build.previous
-	@cp -r build/* build.previous/
+	@mkdir -p build.previous build
+	@if compgen -G "build/*" > /dev/null; then \
+ 		echo "skampi-component-tests: copying old build files to previous"; \
+		cp -r build/* build.previous/; \
+	fi
 	@for component in `grep -E '^skampi-test-[0-9a-zA-Z_-]+:.*$$' $(MAKEFILE_LIST) | sed 's/^[^:]*://' | sed 's/:.*$$//' | sort`; do \
 		echo "skampi-component-tests: Running test in Component: $$component"; \
 		rm -rf build/*; \

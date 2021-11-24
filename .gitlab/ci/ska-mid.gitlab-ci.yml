@@ -7,7 +7,6 @@ mid_deploy_test:
   stage: test
   variables:
     CONFIG: mid
-    TEL: $CONFIG
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
@@ -40,7 +39,6 @@ mid_deploy_integration:
   stage: deploy_integration
   variables:
     CONFIG: mid
-    TEL: $CONFIG
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
@@ -82,7 +80,6 @@ mid_uninstall_integration:
     - .uninstall_chart
   variables:
     CONFIG: mid
-    TEL: $CONFIG
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
@@ -109,7 +106,6 @@ mid_deploy_staging:
     - .deploy_chart
   variables:
     CONFIG: mid
-    TEL: $CONFIG
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "staging-$CONFIG-$CI_JOB_ID"
@@ -138,7 +134,6 @@ mid_uninstall_staging:
     - .uninstall_chart
   variables:
     CONFIG: mid
-    TEL: $CONFIG
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "staging-$CONFIG-$CI_JOB_ID"

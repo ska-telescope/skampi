@@ -26,7 +26,7 @@ ifeq ($(MINIKUBE_RC),0)
 MINIKUBE_IP = $(shell minikube ip)
 endif
 LOADBALANCER_IP ?= $(MINIKUBE_IP) ## The IP address of the Kubernetes Ingress Controller (LB)
-WEBJIVE_AUTH_DASHBOARD_ENABLE ?= true## Enable auth and dashboard components for Taranta (Minikube only)
+WEBJIVE_AUTH_DASHBOARD_ENABLE ?= false## Enable auth and dashboard components for Taranta (Minikube only)
 KUBE_HOST ?= $(LOADBALANCER_IP) ## Required by Skallop
 DOMAIN ?= branch ## Required by Skallop
 TEL ?= mid ## Required by Skallop
@@ -49,20 +49,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
-	--set ska-webjive.enabled=true \
 	$(PSI_LOW_SDP_PROXY_VARS)
-
-# add on values.yaml file if it exists
-ifneq (,$(wildcard $(VALUES)))
-	K8S_CHART_PARAMS += --values $(VALUES)
-endif
-
-ifeq ($(strip $(MINIKUBE)),true)
-ifeq ($(strip $(WEBJIVE_AUTH_DASHBOARD_ENABLE)),true)
-K8S_CHART_PARAMS += --set global.webjive_auth_enabled=true \
-										--set global.webjive_dashboard_enabled=true
-endif
-endif
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
@@ -97,6 +84,31 @@ CI_JOB_ID ?= local##local default for ci job id
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
 K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.7.10## docker image that will be run for testing purpose
+
+# import your personal semi-static config
+-include PrivateRules.mak
+
+# add on values.yaml file if it exists
+ifneq (,$(wildcard $(VALUES)))
+	K8S_CHART_PARAMS += --values $(VALUES)
+endif
+
+ifeq ($(strip $(MINIKUBE)),true)
+ifeq ($(strip $(WEBJIVE_AUTH_DASHBOARD_ENABLE)),true)
+K8S_CHART_PARAMS += --set ska-webjive.enabled=true \
+										--set global.webjive_auth_enabled=true \
+										--set global.webjive_dashboard_enabled=true
+else
+K8S_CHART_PARAMS += --set ska-webjive.enabled=false
+endif
+else
+K8S_CHART_PARAMS += --set ska-webjive.enabled=true
+ifeq ($(strip $(WEBJIVE_AUTH_DASHBOARD_ENABLE)),true)
+K8S_CHART_PARAMS += --set global.webjive_auth_enabled=true \
+										--set global.webjive_dashboard_enabled=true
+endif
+endif
+
 # Test runner - run to completion job in K8s
 K8S_TEST_RUNNER = test-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #
@@ -117,8 +129,6 @@ ifneq (,$(findstring low,$(KUBE_NAMESPACE)))
 endif
 
 PUBSUB = true
-
--include PrivateRules.mak
 
 # Makefile target for test in ./tests/Makefile
 K8S_TEST_TARGET = test

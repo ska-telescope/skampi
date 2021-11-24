@@ -11,8 +11,8 @@
     "name": {
         "env": "CI_COMMIT_BRANCH",
         "maps_to": {
-            "master": "Skampi Master Test Execution",
-            "default": "Skampi branch Execution"
+            "master": "Skampi master branch Test Execution",
+            "default": "Skampi branch Test Execution"
         }
     },
     "chart_info": {
@@ -39,7 +39,7 @@
         {
             "env": "CI_COMMIT_BRANCH",
             "maps_to": {
-                "default": "branch",
+                "default": "Local branch only",
                 "master": "master"
             }
         }

@@ -14,12 +14,14 @@ test: install
 	# omniORB: (0) 2021-10-13 14:29:20.153601: Error: cannot create directory: /tmp/omni-root
 	# omniORB: (0) 2021-10-13 14:29:20.153613: Error: Unable to create an endpoint of this description: giop:unix:
 	# make remove_log_consumer
+	echo "KUBE_NAMESPACE: $${KUBE_NAMESPACE}"
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \
 	cd .. && \
-	PYTHONPATH=/app:/app/skampi:/app/skampi/test pytest -v -r fEx \
+	pytest --version; \
+	PYTHONPATH=/app:/app/skampi:/app/skampi/test KUBE_NAMESPACE=$(KUBE_NAMESPACE) pytest -v -r fEx \
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
-		--disable-pytest-warnings --timeout=300 $(FILE) --count=$(COUNT) tests | tee pytest.stdout; \
+		--disable-pytest-warnings $(FILE) --count=$(COUNT) tests | tee pytest.stdout; \
 	status=$$?; \
 	echo "test: status is ($$status)"; \
 	cp -r ./build/* tests/build/; \

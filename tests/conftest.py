@@ -3,7 +3,7 @@ import logging
 import socket
 
 import pytest
-from kubernetes import client, config, watch
+# from kubernetes import client, config, watch
 
 # import tango
 # from tango.test_context import MultiDeviceTestContext, get_host_ip

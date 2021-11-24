@@ -27,7 +27,10 @@ MINIKUBE_IP = $(shell minikube ip)
 endif
 LOADBALANCER_IP ?= $(MINIKUBE_IP) ## The IP address of the Kubernetes Ingress Controller (LB)
 WEBJIVE_AUTH_DASHBOARD_ENABLE ?= true## Enable auth and dashboard components for Taranta (Minikube only)
-KUBE_HOST ?= $(LOADBALANCER_IP)
+KUBE_HOST ?= $(LOADBALANCER_IP) ## Required by Skallop
+DOMAIN ?= branch ## Required by Skallop
+TEL ?= mid ## Required by Skallop
+KUBE_BRANCH ?= local ## Required by Skallop
 
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
@@ -141,9 +144,6 @@ K8S_TEST_MAKE_PARAMS = \
 	WEBJIVE_USER=$(WEBJIVE_USER) \
 	WEBJIVE_PASSWORD=$(WEBJIVE_PASSWORD) \
 	WEBJIVE_PASSPORT=$(WEBJIVE_PASSPORT) \
-	DOMAIN=$(DOMAIN) \
-	TEL=$(TEL) \
-	KUBE_BRANCH=$(KUBE_BRANCH) \
 	KUBE_HOST=$(KUBE_HOST)
 
 # runs inside the test runner container after cd ./tests
@@ -176,10 +176,21 @@ K8S_TEST_TEST_COMMAND = make -s \
 # include Skampi extension make targets
 -include resources/skampi.mk
 
+k8s_test_command = /bin/bash -o pipefail -c "\
+	mkfifo results-pipe && tar zx --warning=all && \
+        ( if [[ -f pyproject.toml ]]; then poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes --dev; echo 'k8s-test: installing poetry-requirements.txt';  pip install -qUr poetry-requirements.txt; cd $(k8s_test_folder); else if [[ -f $(k8s_test_folder)/requirements.txt ]]; then echo 'k8s-test: installing $(k8s_test_folder)/requirements.txt'; pip install -qUr $(k8s_test_folder)/requirements.txt; fi; fi ) && \
+				 cd $(k8s_test_folder) && \
+		export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs) && \
+		mkdir -p build && \
+	( \
+	$(K8S_TEST_TEST_COMMAND) \
+	); \
+	echo \$$? > build/status; pip list > build/pip_list.txt; \
+	echo \"k8s_test_command: test command exit is: \$$(cat build/status)\"; \
+	tar zcf ../results-pipe build;"
+
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
 	pip3 install -r tests/requirements.txt
-
-k8s-pre-test: python-pre-test
 
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra

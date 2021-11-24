@@ -1,7 +1,7 @@
 #-r SUT_requirements.txt
 # uncomment this if you want to install a dev skallop package from gitlab
 --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
-pytest-bdd==4.1.0; python_version >= "3.6"
+pytest-bdd==5.0.0; python_version >= "3.6"
 pytest-cov==2.12.1; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.5.0")
 pytest-forked==1.3.0; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.5.0")
 pytest-json-report==1.4.1
@@ -19,4 +19,4 @@ kubernetes>=18.20.0
 assertpy==1.1
 docopts
 coverage
-ska_ser_skallop
+ska_ser_skallop==2.7.10

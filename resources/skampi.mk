@@ -64,6 +64,83 @@ skampi-wait-all: helm-install-yq  ## iterate over sub-charts and wait for each o
 		make k8s-wait KUBE_APP=$${chart}; \
 	done
 
+# Set up of the testing pod. This goes through the following steps:
+# 1. Create the pod, piping the contents of $(k8s_test_folder) in. This is
+#    run in the background, with stdout left attached - albeit slightly
+#    de-cluttered by removing pytest's live logs.
+# 2. In parallel we wait for the testing pod to become ready.
+# 3. Once it is there, we attempt to pull the results from the FIFO queue.
+#    This blocks until the testing pod script writes it (see above).
+skampi-k8s-do-test:
+	@rm -fr build; mkdir build
+	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
+	@echo "skampi-k8s-test: start test runner: $(k8s_test_runner)"
+	@echo "skampi-k8s-test: sending test folder: tar -cz $(k8s_test_folder)/"
+	( cd $(BASE); tar --exclude $(k8s_test_folder)/integration  --exclude $(k8s_test_folder)/resources  --exclude $(k8s_test_folder)/unit  --exclude $(k8s_test_folder)/conftest.py  --exclude $(k8s_test_folder)/pytest.ini -cz $(k8s_test_folder)/ \
+	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
+	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
+	sleep 1; \
+	echo "skampi-k8s-test: waiting for test runner to boot up: $(k8s_test_runner)"; \
+	( \
+	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
+	wait_status=$$?; \
+	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
+	 ) && \
+		echo "skampi-k8s-test: $(k8s_test_runner) is up, now waiting for tests to complete" && \
+		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
+	\
+	cd $(BASE)/; \
+	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
+	echo "skampi-k8s-test: test run complete, processing files"; \
+	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
+	@echo "skampi-k8s-test: the test run exit code is ($$(cat build/status))"
+	@exit `cat build/status`
+
+skampi-k8s-pre-test:
+
+skampi-k8s-post-test:
+
+## TARGET: skampi-k8s-test
+## SYNOPSIS: make skampi-k8s-test
+## HOOKS: skampi-k8s-pre-test, skampi-k8s-post-test
+## VARS:
+##       K8S_TEST_TEST_COMMAND=<a command passed into the test Pod> - see K8S_TEST_TEST_COMMAND
+##       KUBE_NAMESPACE=<Kubernetes Namespace to deploy to> - default is project name (directory)
+##       K8S_TEST_RUNNER=<name of test runner container>
+##       K8S_TIMEOUT=<timeout value> - defaults to 360s
+##       PYTHON_RUNNER=<python executor> - defaults to empty, but could pass something like python -m
+##       PYTHON_VARS_BEFORE_PYTEST=<environment variables defined before pytest in run> - default empty
+##       PYTHON_VARS_AFTER_PYTEST=<additional switches passed to pytest> - default empty
+##
+##  Launch a K8S_TEST_RUNNER in the target Kubernetes Namespace, to run the tests against a
+##  deployed environment in the same way that python-test runs in a local context.
+##  The default configuration runs pytest against the tests defined in ./tests.
+##  By default, this will pickup any pytest specific configuration set in pytest.ini,
+##  setup.cfg etc. located in ./tests.
+##  This test harness, is highly configurable, in that it is essentially a mechanism that enables
+##  remote execution of a oneline shell command, that is started in a copy of the current ./tests
+##  directory, and on completion, the contents of the ./build directory is returned.  This is suited
+##  to the standard pytest runtime.
+##  With this in mind, the default configuration for the oneline shellscript looks like:
+##  K8S_TEST_TEST_COMMAND ?= cd .. && $(PYTHON_VARS_BEFORE_PYTEST) $(PYTHON_RUNNER) \
+##  						pytest \
+##  						$(PYTHON_VARS_AFTER_PYTEST) ./tests \
+##  						 | tee pytest.stdout; ## skampi-k8s-test test command to run in container
+## NOTE the command steps back a directory so as to be outside of ./tests when skampi-k8s-test is
+##   running - this is to bring it into line with python-test behaviour.
+##
+##  This can be replaced with essentially any executable application - for example, the one
+##  configured in Skampi is based on make:.
+##  K8S_TEST_TEST_COMMAND = make -s \
+##  			$(K8S_TEST_MAKE_PARAMS) \
+##  			$(K8S_TEST_TARGET)
+##
+##  The test runner Pod is launched, and the contents of ./tests is piped in before the
+##  K8S_TEST_TEST_COMMAND is executed.  This is expected to generate output into a ./build
+##  directory with a specifc set of files containing the test report output - the same as python-test.
+
+skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ## run the defined test cycle against Kubernetes
+
 ## TARGET: skampi-component-tests
 ## SYNOPSIS: make skampi-component-tests
 ## HOOKS: none
@@ -114,4 +191,4 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 skampi-test-01centralnode:  ## launcher for centralnode tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tmc-centralnode" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"
+	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"

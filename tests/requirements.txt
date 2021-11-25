@@ -18,5 +18,6 @@ pytest-timeout
 kubernetes>=18.20.0
 assertpy==1.1
 docopts
+requests
 coverage
 ska_ser_skallop==2.7.10

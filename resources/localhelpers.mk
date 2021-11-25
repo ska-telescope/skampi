@@ -18,7 +18,7 @@ verify-minikube: # Run only infra tests on local minikube cluster as precursor
 
 # install: k8s-clean k8s-namespace namespace-sdp check-archiver-dbname k8s-install-chart## install the helm chart on the namespace KUBE_NAMESPACE
 install: k8s-clean k8s-namespace namespace-sdp## install the helm chart on the namespace KUBE_NAMESPACE and wait for completion of jobs
-	make k8s-install-chart K8S_CHART_PARAMS+=' --values $(VALUES)' \
+	make k8s-install-chart WEBJIVE_AUTH_DASHBOARD_ENABLE=$(WEBJIVE_AUTH_DASHBOARD_ENABLE) \
 	k8s-wait
 
 uninstall: k8s-uninstall-chart ## uninstall the helm chart on the namespace KUBE_NAMESPACE

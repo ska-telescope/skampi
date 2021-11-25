@@ -9,7 +9,7 @@ ska-sdp:
 ska-oso-scripting:
   enabled: false
 ska-webjive:
-  enabled: false
+  enabled: true
 ska-ser-skuid:
   enabled: false
 ska-tango-archiver:

@@ -39,7 +39,7 @@
         {
             "env": "CI_COMMIT_BRANCH",
             "maps_to": {
-                "default": "branch_only",
+                "default": "branch",
                 "master": "master"
             }
         }

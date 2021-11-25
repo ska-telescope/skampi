@@ -46,8 +46,14 @@ upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 		--values $(VALUES) \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
 
-links: ## attempt to create the URLs with which to access
+## TARGET: skampi-links
+## SYNOPSIS: make skampi-links
+## HOOKS: none
+## VARS: none
+##  make target for generating the URLs for accessing a Skampi deployment
+
+skampi-links: ## Create the URLs with which to access Skampi
 	@echo "############################################################################"
-	@echo "#            Access the landing page here:"
+	@echo "#            Access the Skampi landing page here:"
 	@echo "#            https://$(INGRESS_HOST)/$(KUBE_NAMESPACE)/start/"
 	@echo "############################################################################"

@@ -9,9 +9,9 @@ from pytest_bdd import (
 )
 
 
-@scenario("features/tangojql_upload.feature", "Tangojql service available")
+@scenario("features/tangogql_upload.feature", "TangoGQL service available")
 def test_tangojql_service_available():
-    """Tangojql service available."""
+    """TangoGql service available."""
 
 
 @given("a configuration to access a tango device remotely")

@@ -76,6 +76,15 @@ Taranta specific deployment notes for Minikube environment
 
 Two important aspects for developers deploying Taranta on their local Minikube environment, are the resource requirements, and the need for authorization if the user wants to be able to log into the web UI.
 
+Enabling Taranta with authorization for the Dashboard UI
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+See the note in the |taranta_readme|.
+
+.. |taranta_readme| raw:: html
+
+    <a href="https://gitlab.com/ska-telescope/ska-skampi#taranta-enabled" target="_blank">README</a>
+
 Resource Requirements
 +++++++++++++++++++++
 
@@ -128,12 +137,3 @@ Verify the scaling worked:
 
     NAME                                         READY   AGE
     statefulset.apps/tangogql-ska-webjive-test   1/1     18h
-
-Enabling Taranta with authorization for the Dashboard UI
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-See the note in the |taranta_readme|.
-
-.. |taranta_readme| raw:: html
-
-    <a href="https://gitlab.com/ska-telescope/ska-skampi#taranta-enabled" target="_blank">README</a>

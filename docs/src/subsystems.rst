@@ -57,3 +57,71 @@ The OET is an application, which provides on-demand Python script
 .. |oet_jupyter| raw:: html
 
     <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/oet_with_skampi.html#accessing-jupyter-on-skampi" target="_blank">OET Jupyter Notebooks for direct SKAMPI interactions</a>
+
+Taranta/Webjive
+===============
+
+The Taranta deployment from SKAMPI consists of four components. Following the deployment steps to enable Taranta, a deployment can be made according to the applicable requirements for the environment.
+
+Please refer to the |taranta_docs| for further information.
+
+.. todo:: (the link provided is not to the latest documentation version - update this link as soons as Taranta namechange is on https://taranta.readthedocs.io/en/master/)
+
+.. |taranta_docs| raw:: html
+
+    <a href="https://taranta.readthedocs.io/en/sp-1406/" target="_blank">Taranta documentation</a>
+
+Taranta specific deployment notes for Minikube environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Two important aspects for developers deploying Taranta on their local Minikube environment, are the resource requirements, and the need for authorization if the user wants to be able to log into the web UI.
+
+For the Resource requirements, if it becomes apparent that the default scaled deployment of TangoGQL (replicas=3) is too much, this can be rectified by scaling down the replicaset.
+
+As example (assuming you're using integration namespace):
+
+.. code-block:: console
+
+    $ kubectl  get all -n integration -l app=tangogql-ska-webjive-test
+    NAME                              READY   STATUS    RESTARTS   AGE
+    pod/tangogql-ska-webjive-test-0   1/1     Running   0          18h
+    pod/tangogql-ska-webjive-test-1   1/1     Running   0          18h
+    pod/tangogql-ska-webjive-test-2   0/1     Pending   0          3s
+
+    NAME                                TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+    service/tangogql-ska-webjive-test   ClusterIP   10.105.252.8   <none>        5004/TCP   18h
+
+    NAME                                         READY   AGE
+    statefulset.apps/tangogql-ska-webjive-test   2/3     18h
+
+That meant that the third pod was not deployed for some reason. Let's find out why:
+
+.. code-block:: console
+
+    $ kubectl  describe pod/tangogql-ska-webjive-test-2 -n integration
+    ... snip ...
+    Events:
+    Type     Reason            Age   From               Message
+    ----     ------            ----  ----               -------
+    Warning  FailedScheduling  69s   default-scheduler  0/1 nodes are available: 1 Insufficient cpu.
+
+So let's scale it down to only one replica:
+
+.. code-block:: console
+
+    $ kubectl -n integration scale statefulset tangogql-ska-webjive-test --replicas 1
+    statefulset.apps/tangogql-ska-webjive-test scaled
+
+Verify the scaling worked:
+
+.. code-block:: console
+
+    $ kubectl get all -n integration -l app=tangogql-ska-webjive-test                
+    NAME                              READY   STATUS    RESTARTS   AGE
+    pod/tangogql-ska-webjive-test-0   1/1     Running   0          18h
+
+    NAME                                TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+    service/tangogql-ska-webjive-test   ClusterIP   10.105.252.8   <none>        5004/TCP   18h
+
+    NAME                                         READY   AGE
+    statefulset.apps/tangogql-ska-webjive-test   1/1     18h

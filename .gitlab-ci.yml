@@ -6,7 +6,7 @@ variables:
   CHARTS_TO_PUBLISH: ska-low ska-mid ska-landingpage
   INGRESS_HOST: "k8s.stfc.skao.int"
   GIT_SUBMODULE_STRATEGY: recursive
-  SKALLOP_VERSION: "2.7.10"
+  SKALLOP_VERSION: "2.9.1"
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:$SKALLOP_VERSION
   KUBE_HOST: 192.168.99.222
   KUBE_BRANCH: $CI_JOB_ID

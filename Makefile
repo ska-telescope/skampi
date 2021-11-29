@@ -18,15 +18,15 @@ MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
 CHARTS ?= ska-mid
 ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
-WEBJIVE_USER ?= user1## the username for authentication to taranta services
-WEBJIVE_PASSWORD ?= abc123## the password for authentication to taranta services
-WEBJIVE_PASSPORT = $(WEBJIVE_PASSWORD)# required for ska-ser-skallop
+TARANTA_USER ?= user1## the username for authentication to taranta services
+TARANTA_PASSWORD ?= abc123## the password for authentication to taranta services
+TARANTA_PASSPORT = $(TARANTA_PASSWORD)# required for ska-ser-skallop
 MINIKUBE_RC := $(shell minikube ip 1>/dev/null 2> /dev/null; echo $$?)
 ifeq ($(MINIKUBE_RC),0)
 MINIKUBE_IP = $(shell minikube ip)
 endif
 LOADBALANCER_IP ?= $(MINIKUBE_IP) ## The IP address of the Kubernetes Ingress Controller (LB)
-WEBJIVE_AUTH_DASHBOARD_ENABLE ?= false## Enable auth and dashboard components for Taranta (Minikube only)
+TARANTA_AUTH_DASHBOARD_ENABLE ?= false## Enable auth and dashboard components for Taranta (Minikube only)
 KUBE_HOST ?= $(LOADBALANCER_IP) ## Required by Skallop
 DOMAIN ?= branch ## Required by Skallop
 TEL ?= mid ## Required by Skallop
@@ -94,18 +94,18 @@ ifneq (,$(wildcard $(VALUES)))
 endif
 
 ifeq ($(strip $(MINIKUBE)),true)
-ifeq ($(strip $(WEBJIVE_AUTH_DASHBOARD_ENABLE)),true)
-K8S_CHART_PARAMS += --set ska-webjive.enabled=true \
-										--set global.webjive_auth_enabled=true \
-										--set global.webjive_dashboard_enabled=true
+ifeq ($(strip $(TARANTA_AUTH_DASHBOARD_ENABLE)),true)
+K8S_CHART_PARAMS += --set ska-taranta.enabled=true \
+										--set global.taranta_auth_enabled=true \
+										--set global.taranta_dashboard_enabled=true
 else
-K8S_CHART_PARAMS += --set ska-webjive.enabled=false
+K8S_CHART_PARAMS += --set ska-taranta.enabled=false
 endif
 else
-K8S_CHART_PARAMS += --set ska-webjive.enabled=true
-ifeq ($(strip $(WEBJIVE_AUTH_DASHBOARD_ENABLE)),true)
-K8S_CHART_PARAMS += --set global.webjive_auth_enabled=true \
-										--set global.webjive_dashboard_enabled=true
+K8S_CHART_PARAMS += --set ska-taranta.enabled=true
+ifeq ($(strip $(TARANTA_AUTH_DASHBOARD_ENABLE)),true)
+K8S_CHART_PARAMS += --set global.taranta_auth_enabled=true \
+										--set global.taranta_dashboard_enabled=true
 endif
 endif
 
@@ -151,9 +151,9 @@ K8S_TEST_MAKE_PARAMS = \
 	CAR_RAW_USERNAME=$(RAW_USER) \
 	CAR_RAW_PASSWORD=$(RAW_PASS) \
 	CAR_RAW_REPOSITORY_URL=$(RAW_HOST) \
-	WEBJIVE_USER=$(WEBJIVE_USER) \
-	WEBJIVE_PASSWORD=$(WEBJIVE_PASSWORD) \
-	WEBJIVE_PASSPORT=$(WEBJIVE_PASSPORT) \
+	TARANTA_USER=$(TARANTA_USER) \
+	TARANTA_PASSWORD=$(TARANTA_PASSWORD) \
+	TARANTA_PASSPORT=$(TARANTA_PASSPORT) \
 	KUBE_HOST=$(KUBE_HOST)
 
 # runs inside the test runner container after cd ./tests

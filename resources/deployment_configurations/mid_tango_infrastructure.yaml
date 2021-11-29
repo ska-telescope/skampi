@@ -18,7 +18,7 @@ ska-tmc-mid:
   enabled: false
 ska-oso-scripting:
   enabled: false
-ska-webjive:
+ska-taranta:
   enabled: false
 ska-ser-skuid:
   enabled: false

@@ -58,7 +58,7 @@ The OET is an application, which provides on-demand Python script
 
     <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/oet_with_skampi.html#accessing-jupyter-on-skampi" target="_blank">OET Jupyter Notebooks for direct SKAMPI interactions</a>
 
-Taranta/Webjive
+Taranta
 ===============
 
 The Taranta deployment from SKAMPI consists of four components. Following the deployment steps to enable Taranta, a deployment can be made according to the applicable requirements for the environment.
@@ -94,23 +94,23 @@ As example (assuming you're using integration namespace):
 
 .. code-block:: console
 
-    $ kubectl  get all -n integration -l app=tangogql-ska-webjive-test
+    $ kubectl  get all -n integration -l app=tangogql-ska-taranta-test
     NAME                              READY   STATUS    RESTARTS   AGE
-    pod/tangogql-ska-webjive-test-0   1/1     Running   0          18h
-    pod/tangogql-ska-webjive-test-1   1/1     Running   0          18h
-    pod/tangogql-ska-webjive-test-2   0/1     Pending   0          3s
+    pod/tangogql-ska-taranta-test-0   1/1     Running   0          18h
+    pod/tangogql-ska-taranta-test-1   1/1     Running   0          18h
+    pod/tangogql-ska-taranta-test-2   0/1     Pending   0          3s
 
     NAME                                TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-    service/tangogql-ska-webjive-test   ClusterIP   10.105.252.8   <none>        5004/TCP   18h
+    service/tangogql-ska-taranta-test   ClusterIP   10.105.252.8   <none>        5004/TCP   18h
 
     NAME                                         READY   AGE
-    statefulset.apps/tangogql-ska-webjive-test   2/3     18h
+    statefulset.apps/tangogql-ska-taranta-test   2/3     18h
 
 That meant that the third pod was not deployed for some reason. Let's find out why:
 
 .. code-block:: console
 
-    $ kubectl  describe pod/tangogql-ska-webjive-test-2 -n integration
+    $ kubectl  describe pod/tangogql-ska-taranta-test-2 -n integration
     ... snip ...
     Events:
     Type     Reason            Age   From               Message
@@ -121,19 +121,19 @@ So let's scale it down to only one replica:
 
 .. code-block:: console
 
-    $ kubectl -n integration scale statefulset tangogql-ska-webjive-test --replicas 1
-    statefulset.apps/tangogql-ska-webjive-test scaled
+    $ kubectl -n integration scale statefulset tangogql-ska-taranta-test --replicas 1
+    statefulset.apps/tangogql-ska-taranta-test scaled
 
 Verify the scaling worked:
 
 .. code-block:: console
 
-    $ kubectl get all -n integration -l app=tangogql-ska-webjive-test                
+    $ kubectl get all -n integration -l app=tangogql-ska-taranta-test                
     NAME                              READY   STATUS    RESTARTS   AGE
-    pod/tangogql-ska-webjive-test-0   1/1     Running   0          18h
+    pod/tangogql-ska-taranta-test-0   1/1     Running   0          18h
 
     NAME                                TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-    service/tangogql-ska-webjive-test   ClusterIP   10.105.252.8   <none>        5004/TCP   18h
+    service/tangogql-ska-taranta-test   ClusterIP   10.105.252.8   <none>        5004/TCP   18h
 
     NAME                                         READY   AGE
-    statefulset.apps/tangogql-ska-webjive-test   1/1     18h
+    statefulset.apps/tangogql-ska-taranta-test   1/1     18h

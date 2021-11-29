@@ -138,8 +138,8 @@ export DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/nu
 export LIBGL_ALWAYS_INDIRECT=1
 export CHROME_BIN='/usr/bin/google-chrome'
 export TEL='mid'
-export WEBJIVE_PASSPORT='abc123'
-export WEBJIVE_USER='user1'
+export TARANTA_PASSPORT='abc123'
+export TARANTA_USER='user1'
 export DOMAIN='integration'
 
 

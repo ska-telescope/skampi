@@ -29,10 +29,10 @@ dependencies:
 # - name: ska-low-mccs
 #   version: 0.8.3
 #   repository: https://artefact.skao.int/repository/helm-internal
-- name: ska-webjive
-  version: 1.0.26
+- name: ska-taranta
+  version: 1.0.29
   repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-webjive.enabled
+  condition: ska-taranta.enabled
 # - name: ska-ser-skuid
 #   version: 0.3.0
 #   repository: https://artefact.skao.int/repository/helm-internal

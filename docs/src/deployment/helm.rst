@@ -45,11 +45,11 @@ Update chart settings.
 ----------------------
 
 In some cases you may want to alter the settings applied in the chart.
-E.g To set the webjive chart to have 3 replicas of tangogql, update `values.yaml` to the following:
+E.g To set the taranta chart to have 3 replicas of tangogql, update `values.yaml` to the following:
 
 .. code-block:: console
 
-   webjive:
+   taranta:
     tangogql:
      replicas: 3
 

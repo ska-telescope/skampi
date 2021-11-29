@@ -96,6 +96,7 @@ endif
 ifeq ($(strip $(MINIKUBE)),true)
 ifeq ($(strip $(TARANTA_AUTH_DASHBOARD_ENABLE)),true)
 K8S_CHART_PARAMS += --set ska-taranta.enabled=true \
+										--set ska-taranta.tangogql.replicas=1 \
 										--set global.taranta_auth_enabled=true \
 										--set global.taranta_dashboard_enabled=true
 else

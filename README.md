@@ -133,9 +133,9 @@ Now install SKAMPI. Take note: all default values of variables will be used if n
 $ cd .. # this is to go back to the root of the SKAMPI repo after the above commands
 $ make install-or-upgrade
 $ make wait
-$ make links
+$ make skampi-links
 ```
-Once `make wait` finishes, you can run `make links` and follow the URL given to check if you can access the deployed software.
+Once `make wait` finishes, you can run `make skampi-links` and follow the URL given to check if you can access the deployed software.
 
 ### Helm Charts
 Installation of Helm should be done as part of familiarising with SKA Tango Examples. This will also help you getting familiar with what a Helm Chart is.
@@ -349,11 +349,11 @@ The values.yaml file controls all the variables that are used by Helm when inter
     NAME                                   DESIRED   CURRENT   READY   AGE
     replicaset.apps/ska-landingpage-5f95cdff   1         1         1       27m
     ```
-7. You should now be able to get an output of the ska-landingpage by running `make links`:
+7. You should now be able to get an output of the ska-landingpage by running `make skampi-links`:
     ```
-    $ make links
+    $ make skampi-links
     ############################################################################
-    #            Access the landing page here:
+    #            Access the Skampi landing page here:
     #            https://192.168.64.12/integration/start/
     ############################################################################
     ```

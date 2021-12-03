@@ -62,6 +62,7 @@
     - echo "############## EXTRA MAKE VARS OUTPUT"
     - make skampi-vars
     - echo "#####################################"
+    - make skampi-links
     - |
       echo "Processing XRay uploads"
       if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then

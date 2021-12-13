@@ -14,6 +14,22 @@ import subprocess
 from kubernetes import config, client
 from kubernetes.stream import stream
 
+# BDD implementation starts here
+from pytest_bdd import (
+    given,
+    scenario,
+    then,
+    when,
+)
+
+
+@pytest.mark.infra
+@scenario(
+    "../integration/features/xray_upload.feature", "Kubernetes cluster basic tests"
+)
+def test_cluster(test_namespace, all_the_things, ingress):
+    """Kubernetes cluster basic tests."""
+
 
 @pytest.fixture(name="assets_dir")
 def fxt_assets_dir():
@@ -259,8 +275,9 @@ def fxt_create_ingress(test_namespace, assets_dir):
 
 
 # TODO: PATCH THE INGRESS RESOURCE SO THAT IT IS CREATED WITH NAMESPACED HOSTNAME
+@when("I write to the shared volume via the nginx1 service")
 def write_to_volume(write_service_name, test_namespace, all_the_things, ingress):
-    # def write_to_volume(write_service_name, test_namespace, all_the_things):
+    """I write to the shared volume via the nginx1 service."""
     logging.info(f"Result of creating all the things: {all_the_things}")
 
     command_to_run = "echo $(date) > /usr/share/nginx/html/index.html"
@@ -282,6 +299,7 @@ def write_to_volume(write_service_name, test_namespace, all_the_things, ingress)
 
     write_result = subprocess.run(command, check=True)
     assert write_result.returncode == 0, "Writing to test pod failed"
+    logging.info("Test: Successfully executed a write to a shared volume")
 
 
 def curl_service_with_shared_volume(host0, host1, test_namespace):
@@ -353,14 +371,23 @@ def wait_for_pod(test_namespace, service_name):
     logging.info("Pod Ready")
 
 
-@pytest.mark.infra
-def test_cluster(test_namespace, all_the_things, ingress):
+@given("a service nginx1 exposing a deployment nginx1")
+def a_service_nginx1_exposing_a_deployment_nginx1(test_namespace):
+    """a service nginx1 exposing a deployment nginx1."""
     wait_for_pod(test_namespace, "nginx1")
     logging.info(f"Test: Deployment nginx1 Ready")
+
+
+@given("a service nginx2 exposing a deployment nginx2")
+def a_service_nginx2_exposing_a_deployment_nginx2(test_namespace):
+    """a service nginx2 exposing a deployment nginx2."""
     wait_for_pod(test_namespace, "nginx2")
     logging.info(f"Test: Deployment nginx2 Ready")
-    write_to_volume("nginx1", test_namespace, all_the_things, ingress)
-    logging.info("Test: Successfully executed a write to a shared volume")
+
+
+@then("the result of a curl to both services is the same")
+def the_result_of_a_curl_to_both_services_is_the_same(test_namespace):
+    """the result of a curl to both services is the same."""
     curl_service_with_shared_volume(
         "nginx1", "nginx2", test_namespace
     )  # this is the actual test

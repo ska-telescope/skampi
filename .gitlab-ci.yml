@@ -65,6 +65,17 @@ python-test:
     PYTHON_VARS_AFTER_PYTEST: -m infra
   after_script:
     - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE
+    - find ./build
+    - |
+      echo "Processing XRay uploads"
+      if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then
+        bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
+      fi
+      for cuke in  build/cucumber*.json
+      do
+        echo "Processing XRay upload of: $cuke"
+        /usr/local/bin/xtp-xray-upload -f $cuke -i tests/test-exec.json -v
+      done
   environment:
     name: test/$CI_COMMIT_REF_SLUG-cluster
     kubernetes:

@@ -274,6 +274,11 @@ def fxt_create_ingress(test_namespace, assets_dir):
     assert destroy_ingress.returncode == 0
 
 
+@pytest.fixture(name="write_service_name")
+def fxt_write_service_name():
+    return "nginx1"
+
+
 # TODO: PATCH THE INGRESS RESOURCE SO THAT IT IS CREATED WITH NAMESPACED HOSTNAME
 @when("I write to the shared volume via the nginx1 service")
 def write_to_volume(write_service_name, test_namespace, all_the_things, ingress):

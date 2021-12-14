@@ -60,6 +60,8 @@ include:
 # in the python-test
 python-test:
   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+  only:
+    manual
   variables:
     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
     PYTHON_VARS_AFTER_PYTEST: -m infra

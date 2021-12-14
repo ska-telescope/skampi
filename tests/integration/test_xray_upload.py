@@ -9,7 +9,8 @@ from pytest_bdd import (
 
 
 @pytest.mark.infra
-@scenario("features/xray_upload.feature", "SKAMPI CI Pipeline tests execute on SKAMPI")
+@scenario("features/testing_infrastructure_VTS-1.feature", "SKAMPI CI Pipeline tests execute on SKAMPI")
+@scenario("features/xray_upload_XTP-3361.feature", "SKAMPI CI Pipeline tests execute on SKAMPI")
 def test_skampi_ci_pipeline_tests_execute_on_skampi():
     """SKAMPI CI Pipeline tests execute on SKAMPI."""
 

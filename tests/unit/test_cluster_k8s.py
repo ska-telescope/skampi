@@ -25,7 +25,7 @@ from pytest_bdd import (
 
 @pytest.mark.infra
 @scenario(
-    "../integration/features/xray_upload.feature", "Kubernetes cluster basic tests"
+    "../integration/features/testing_infrastructure_VTS-1.feature", "Kubernetes cluster basic tests"
 )
 def test_cluster(test_namespace, all_the_things, ingress):
     """Kubernetes cluster basic tests."""

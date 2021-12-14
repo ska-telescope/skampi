@@ -1,6 +1,8 @@
-@XTP-3361
-Feature: Cucumber test results are uploaded to XRay from k8s cluster
-	#Cucumber test results are uploaded to XRay after CI job execution in a kubernetes cluster.
+@VTS-1
+Feature: SKAMPI Infrastructure Tests
+	#The requirement to have a running Kubernetes cluster, that can be used to deploy SKA software, is not included in any consortia-created set of requirements. It is deemed an emergent requirement that precludes integration tests running on such clusters in CI pipelines.
+	#
+	# 
 
 	
 	@XTP-3346 @XTP-3347 @XTP-3348

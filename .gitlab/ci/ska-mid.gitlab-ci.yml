@@ -166,6 +166,8 @@ mid_on_demand_deploy:
   extends:
     - .tags_default
     - .deploy_chart_before
+  script:
+    - make skampi-links
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:

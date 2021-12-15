@@ -153,7 +153,7 @@ mid_uninstall_staging:
 
 # Mid on-demand deployment
 mid_on_demand_deploy:
-  stage: deploy_integration
+  stage: build
   variables:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
@@ -181,3 +181,4 @@ mid_on_demand_deploy:
     reports:
       junit: build/report.xml
   when: manual
+  allow_failure: true

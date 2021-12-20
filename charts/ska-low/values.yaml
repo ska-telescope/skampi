@@ -36,7 +36,7 @@ global:
 
 ska-landingpage:
   enabled: true
-  MVPInstance: mvp-low
+  MVPInstance: ska-low
 
 # ska-ser-skuid:
 #   enabled: true

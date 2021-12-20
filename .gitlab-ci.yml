@@ -32,29 +32,29 @@ include:
   - local: "/.gitlab/ci/common.gitlab-ci.yml"
   # temp comment out - only test mid
   # # All SKA Low stages
-  # - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
+  - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
   # All SKA Mid stages
   - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
 
   # Python tests, directly run
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/python-test.gitlab-ci.yml'
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/python-test.gitlab-ci.yml"
 
   # Helm Charts
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/helm-chart.gitlab-ci.yml"
 
   # Docs - only build as stress tests use 'public'
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/docs-build.gitlab-ci.yml'
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/docs-build.gitlab-ci.yml"
 
   # release steps
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/release.gitlab-ci.yml'
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/release.gitlab-ci.yml"
 
   # .post steps
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
 
 # overide the image because we need Python 3.9+ and a unique Namespace
 # in the python-test

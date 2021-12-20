@@ -1,6 +1,10 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
+tags:
+  taranta_auth: false
+  taranta_dashboard: false
+
 global:
   minikube: true
   annotations:

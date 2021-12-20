@@ -17,7 +17,10 @@
 		"python.linting.enabled": true,
 		"python.linting.flake8Enabled": true,
 		"python.formatting.blackPath": ".venv/bin/black",
-		"python.linting.flake8Path": ".venv/bin/flake8"
+		"python.linting.flake8Path": ".venv/bin/flake8",
+		"gitPrefix.pattern": "(\\w+-\\d+).*",
+		"gitPrefix.replacement": "p1.replace(/(\\w+)/, function(v) { return v.toUpperCase();})+\": \"",
+		"gitPrefix.replacementIsFunction": true
 	},
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
@@ -29,7 +32,8 @@
 		"njpwerner.autodocstring",
 		"lextudio.restructuredtext",
 		"streetsidesoftware.code-spell-checker",
-		"bungcip.better-toml"
+		"bungcip.better-toml",
+		"srmeyers.git-prefix"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],

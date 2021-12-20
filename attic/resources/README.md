@@ -17,7 +17,7 @@ kubectl proxy
 
 More information on https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
 
-It is also included an example of graphql query for the webjive application. The graphQl Engine is available in the following path of the integration web server: /gql/graphiql/
+It is also included an example of graphql query for the taranta application. The graphQl Engine is available in the following path of the integration web server: /gql/graphiql/
 
 Traefik
 =======

@@ -142,9 +142,9 @@ Copy and paste these into a ``PrivateRules.mak`` file in your root folder. This 
 Branch names and access patterns
 ================================
 
-From the namespace pattern, a URL can be formed for accessing Webjive / Jupyter / Tango REST interface. For instance, if you branch name is *st-605* and you are running the tests for SKA MID telescope:
+From the namespace pattern, a URL can be formed for accessing Taranta / Jupyter / Tango REST interface. For instance, if you branch name is *st-605* and you are running the tests for SKA MID telescope:
 
-* Webjive: https://k8s.stfc.skao.int/ci-skampi-st-605-mid/taranta/devices
+* Taranta: https://k8s.stfc.skao.int/ci-skampi-st-605-mid/taranta/devices
         * which comes from: <hostname>/ci-skampi-<branch>-mid/taranta/devices
 * Jupyter: https://k8s.stfc.skao.int/ci-skampi-st-605-mid/jupyter
         * which comes from: <hostname>/ci-skampi-<branch>-mid/jupyter

@@ -100,7 +100,7 @@ persistent storage:
       use_pv: false
     tangotest:
       enabled: true
-    webjive:
+    taranta:
       enabled: false
     minikube: true
 

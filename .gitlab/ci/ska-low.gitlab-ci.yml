@@ -117,14 +117,9 @@ low_on_demand_deploy:
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
   extends:
     - .tags_default
-<<<<<<< HEAD
     - .deploy_chart_before
   script:
     - make skampi-links
-=======
-    - .deploy_test_destroy_definition
-    # - .xray_upload
->>>>>>> master
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:

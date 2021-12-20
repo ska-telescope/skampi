@@ -5,10 +5,15 @@ description = "Integration tests to be used on ska low and ska mid software"
 authors = ["Your Name <you@example.com>"]
 license = "BCD"
 readme = "README.md"
-packages = [{include = "ska_skampi_tests"}]
+packages = [{include = "tests/integration"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+
+
+[[tool.poetry.source]]
+name = 'ska'
+url = 'https://artefact.skatelescope.org/repository/pypi-all/simple'
 
 
 [build-system]

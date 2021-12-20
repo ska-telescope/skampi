@@ -4,7 +4,7 @@ This section contains the testing scripts and configuration data for performing 
 
 ## Concepts 
 
-The tests aims to replicate a user operating on the system to achieve a set of user requirements. To help with automation the interface is via a text based interactive OET console. Thus the entrypoint into the system is on the OET. Future tests should also explore the greater use of GUI's (e.g. webjive) as entry points.
+The tests aims to replicate a user operating on the system to achieve a set of user requirements. To help with automation the interface is via a text based interactive OET console. Thus the entrypoint into the system is on the OET. Future tests should also explore the greater use of GUI's (e.g. taranta) as entry points.
 
 To observe the system requires looking at the internal state of the system. This is currently implemented using the TANGO framework but in future may include accessing the kubernetes framework and other SDP related communication frameworks.
 

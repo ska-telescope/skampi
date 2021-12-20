@@ -28,13 +28,13 @@ def test_start_up_telescope(run_context):
   LOGGER.info("Before starting the telescope checking if the telescope is in StandBy.")
   assert(telescope_is_in_standby)
   jsonLogin={"username":"user1","password":"abc123"}
-  url = 'http://webjive-webjive-{}:8080/login'.format(run_context.HELM_RELEASE)
+  url = 'http://taranta-taranta-{}:8080/login'.format(run_context.HELM_RELEASE)
   r = requests.post(url=url, json=jsonLogin)
-  webjive_jwt = r.cookies.get_dict()['webjive_jwt']
+  taranta_jwt = r.cookies.get_dict()['taranta_jwt']
     
-  cookies = {'webjive_jwt': webjive_jwt}
+  cookies = {'taranta_jwt': taranta_jwt}
 
-  url = 'http://webjive-webjive-{}:5004/db'.format(run_context.HELM_RELEASE)
+  url = 'http://taranta-taranta-{}:5004/db'.format(run_context.HELM_RELEASE)
   # with open('test-harness/files/mutation.json', 'r') as file:
   #   mutation = file.read().replace('\n', '')
   mutation = '{"query":"mutation {\\n  executeCommand(device: \\"ska_mid/tm_central/central_node\\", command: \\"TelescopeOn\\") {\\n    ok\\n    output\\n    message\\n  }\\n}\\n","variables":"null"}'

@@ -1,18 +1,24 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
+tags:
+  taranta_auth: false
+  taranta_dashboard: false
+  
 global:
   minikube: true
   annotations:
     skampi: "true"
     app.gitlab.com/app: skampi
     app.gitlab.com/env: ska
+  taranta_auth_enabled: false
+  taranta_dashboard_enabled: false
   sub-system:
     tango-base:
       enabled: false
     ska-tango-base:
       enabled: false
-    ska-webjive:
+    ska-taranta:
       enabled: false
   retry:
     - "--sleep=1"
@@ -56,7 +62,7 @@ ska-tango-base:
   tangodb:
     use_pv: false
 
-ska-webjive:
+ska-taranta:
   enabled: true
   ingress:
     enabled: true

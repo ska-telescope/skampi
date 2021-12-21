@@ -9,7 +9,7 @@ const CHARTINFO = {
     { name: 'sdp' , version: '0.3.5' },
     { name: 'tmc-mid' , version: '0.2.0' },
     { name: 'oet-scripts' , version: '0.3.2' },
-    { name: 'webjive' , version: '1.0.10' },
+    { name: 'taranta' , version: '1.0.10' },
     { name: 'skuid' , version: '0.1.0' },
     { name: 'landingpage' , version: '0.1.0' },
     ]

@@ -9,13 +9,16 @@ make k8s-test KUBE_NAMESPACE=default
 make k8s-uninstall-chart KUBE_NAMESPACE=default
 ```
 
-The above installation step, including the creation of the namespace where deployment should happen, can be bundled into one by using the `make install` target, and specifying the `KUBE_NAMESPACE` in your `PrivateRules.mak` file as before. Set the `VALUES` parameter in your `PrivateRules.mak` to the `values.yaml` file that enables/modifies the deployment if require, which is the `values.yaml` file in the root of the project by default.
+The above installation step, including the creation of the namespace where deployment should happen, can be bundled into one by using the `make install` target, and specifying the `KUBE_NAMESPACE` in your `PrivateRules.mak` file as before. Set the `VALUES` parameter in your `PrivateRules.mak` to the `values.yaml` file that enables/modifies the deployment if required (such as `pipeline.yaml`, which is the `values.yaml` file in the root of the project by default).
 
 
 Also, verify your Minikube cluster beforehand as below (assuming that you have the `tests/requirements.txt` installed in a `venv` or similar):
 ```
 make verify-minikube
 ```
+
+## Taranta Enabled
+If you want to deploy Taranta locally, and you want to be able to log into the web dashboards UI, you should set `TARANTA_AUTH_DASHBOARD_ENABLE=true` in your `PrivateRules.mak` file.
 
 # Getting Started
 [![Documentation Status](https://readthedocs.org/projects/ska-telescope-ska-skampi/badge/?version=latest)](https://developer.skatelescope.org/projects/ska-skampi/en/latest/?badge=latest)
@@ -242,7 +245,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
     $ make template-chart
     helm dependency update ./charts/ska-mid/; \
     helm template test \
-            --set ska-tango-base.xauthority="" --set ska-oso-scripting.ingress.nginx=true --set ska-ser-skuid.ingress.nginx=true --set ska-tango-base.ingress.nginx=true --set ska-webjive.ingress.nginx=true --set global.minikube=true --set ska-sdp.helmdeploy.namespace=integration-sdp --set global.tango_host=databaseds-tango-base:1     0000 --set ska-tango-archiver.hostname= --set ska-tango-archiver.dbname=default_mvp_archiver_db  --set ska-tango-archiver.port= --set ska-tango-archiver.dbuser= --set ska-tango-archiver.dbpassword=   \
+            --set ska-tango-base.xauthority="" --set ska-oso-scripting.ingress.nginx=true --set ska-ser-skuid.ingress.nginx=true --set ska-tango-base.ingress.nginx=true --set ska-taranta.ingress.nginx=true --set global.minikube=true --set ska-sdp.helmdeploy.namespace=integration-sdp --set global.tango_host=databaseds-tango-base:1     0000 --set ska-tango-archiver.hostname= --set ska-tango-archiver.dbname=default_mvp_archiver_db  --set ska-tango-archiver.port= --set ska-tango-archiver.dbuser= --set ska-tango-archiver.dbpassword=   \
             --values my_local_values.yaml \
             ./charts/ska-mid/ --namespace integration;
     Hang tight while we grab the latest from your chart repositories...
@@ -280,7 +283,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
       enabled: false
     ska-oso-scripting:
       enabled: false
-    ska-webjive:
+    ska-taranta:
       enabled: false
     ska-ser-skuid:
       enabled: false

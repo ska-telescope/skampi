@@ -116,7 +116,11 @@ def the_sdp_must_be_on():
     assert_that(result).is_equal_to("ON")
 
 
-def test_test(request: Any, _pytest_bdd_example: Dict):
+def test_test(
+    request: Any,
+    _pytest_bdd_example: Dict,
+    mock_entry_point: fxt_types.mock_entry_point,
+):
     """Test the test using a mock SUT"""
     global MOCK_SUT  # pylint: disable=global-statement
     MOCK_SUT = True

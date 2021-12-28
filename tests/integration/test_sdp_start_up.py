@@ -25,7 +25,7 @@ class SDPEntryPoint(SynchedEntryPoint):
         self.sdp_master = config.get_device_proxy(tel.sdp.master)
 
     def set_telescope_to_running(self):
-        pass
+        self.sdp_master.command_inout("On")
 
     def abort_subarray(self, sub_array_id: int):
         pass
@@ -59,7 +59,7 @@ class SDPEntryPoint(SynchedEntryPoint):
         pass
 
     def set_telescope_to_standby(self):
-        pass
+        self.sdp_master.command_inout("Standby")
 
     def tear_down_subarray(self, sub_array_id: int):
         pass
@@ -77,7 +77,7 @@ def fxt_set_env(mock_entry_point: fxt_types.mock_entry_point):
 
 
 @pytest.fixture(name="set_entry_point", scope="session")
-def fxt_set_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
+def fxt_set_entry_point(set_session_exec_env: fxt_types.set_session_exec_env, request):
     exec_env = set_session_exec_env
     if not MOCK_SUT:
         exec_env.entrypoint = SDPEntryPoint
@@ -87,7 +87,7 @@ def fxt_set_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
     exec_env.scope = ["sdp"]
 
 
-@pytest.mark.skip
+@pytest.mark.skalow
 @scenario("features/sdp_start_up_telescope.feature", "Start up the telescope")
 def test_start_up_the_telescope():
     """Start up the telescope."""
@@ -100,7 +100,8 @@ def a_sdp(set_entry_point):
 
 @when("I start up the telescope")
 def i_start_up_the_telescope(
-    standby_telescope: fxt_types.standby_telescope, entry_point: fxt_types.entry_point
+    standby_telescope: fxt_types.standby_telescope,
+    entry_point: fxt_types.entry_point,
 ):
     """I start up the telescope."""
     with standby_telescope.wait_for_starting_up():

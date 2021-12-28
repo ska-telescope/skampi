@@ -46,6 +46,7 @@ dependencies:
     condition: ska-landingpage.enabled
   - name: ska-csp-lmc-low
     version: 0.1.4
+    repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-csp-lmc-low.enabled
 # - name: ska-tango-archiver
 #   version: 0.1.8

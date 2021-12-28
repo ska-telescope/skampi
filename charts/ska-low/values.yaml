@@ -138,3 +138,6 @@ ska-tmc-centralnode:
   deviceServers:
     centralnode:
       enabled: true
+
+ska-csp-lmc-low:
+  enabled: true

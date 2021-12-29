@@ -17,8 +17,20 @@ dependencies:
     version: 1.0.29
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-taranta.enabled
+  - name: ska-taranta-auth
+    version: 0.1.5
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: global.taranta_auth_enabled
+    tags:
+      - taranta_auth
+  - name: ska-dashboard-repo
+    version: 0.1.9
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: global.taranta_dashboard_enabled
+    tags:
+      - taranta_dashboard
   - name: ska-mid-cbf # CIPA team
-    version: 0.5.3
+    version: 0.2.5
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-mid-cbf.enabled
   - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
@@ -45,6 +57,12 @@ dependencies:
     version: 0.8.2
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
+  # - name: ska-tango-archiver
+  #   version: 0.1.8
+  #   repository: https://artefact.skao.int/repository/helm-internal
+  #   condition: ska-tango-archiver.enabled
+  # ## DISH LMC Prototype was disabled in the old version of skampi
+  # # - name: dsh-lmc-prototype
   # #   version: 0.0.1
   # #   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
   - name: ska-sdp

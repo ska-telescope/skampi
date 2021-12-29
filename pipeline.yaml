@@ -19,9 +19,9 @@ ska-landingpage:
 
 # Mid specific products
 ska-mid-cbf:
-  enabled: true
+  enabled: false
 ska-csp-lmc-mid:
-  enabled: true
+  enabled: false
 ska-tmc-mid:
   enabled: false
 

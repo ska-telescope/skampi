@@ -17,10 +17,22 @@ dependencies:
     version: 1.0.29
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-taranta.enabled
+  - name: ska-taranta-auth
+    version: 0.1.5
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: global.taranta_auth_enabled
+    tags:
+      - taranta_auth
+  - name: ska-dashboard-repo
+    version: 0.1.9
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: global.taranta_dashboard_enabled
+    tags:
+      - taranta_dashboard
   - name: ska-sdp
     version: 0.8.1
     repository: https://artefact.skao.int/repository/helm-internal
-  #   condition: ska-sdp.enabled
+    condition: ska-sdp.enabled
   # - name: ska-tmc-low
   #   version: 0.3.8
   #   repository: https://artefact.skao.int/repository/helm-internal
@@ -28,10 +40,6 @@ dependencies:
   # - name: ska-low-mccs
   #   version: 0.8.3
   #   repository: https://artefact.skao.int/repository/helm-internal
-  # - name: ska-webjive
-  #   version: 1.0.26
-  #   repository: https://artefact.skao.int/repository/helm-internal
-  #   condition: ska-webjive.enabled
   # - name: ska-ser-skuid
   #   version: 0.3.0
   #   repository: https://artefact.skao.int/repository/helm-internal
@@ -52,7 +60,11 @@ dependencies:
     version: 0.5.3
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-low-cbf.enabled
-# - name: ska-tango-archiver
-#   version: 0.1.8
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-tango-archiver.enabled
+  # - name: ska-tango-archiver
+  #   version: 0.1.8
+  #   repository: https://artefact.skao.int/repository/helm-internal
+  #   condition: ska-tango-archiver.enabled
+  - name: ska-sdp
+    version: 0.8.1
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-sdp.enabled

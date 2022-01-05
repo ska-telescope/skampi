@@ -4,7 +4,7 @@ xauthority: "~/.Xauthority"
 tags:
   taranta_auth: false
   taranta_dashboard: false
-  
+
 global:
   minikube: true
   annotations:
@@ -122,3 +122,6 @@ ska-tmc-centralnode:
 ska-tango-archiver:
   enabled: true
   dbname: default_mvp_archiver_db
+
+ska-log-consumer:
+  enabled: false

@@ -9,7 +9,7 @@ packages = [{include = "tests/integration"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-ska-ser-skallop = "2.11.2"
+ska-ser-skallop = "2.11.4"
 
 
 

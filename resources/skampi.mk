@@ -60,7 +60,7 @@ skampi-update-chart-versions: helm-install-yq ## update Skampi chart dependencie
 
 skampi-upload-test-results: ## Upload Skampi system acceptance and integration test results
 	echo "Processing XRay uploads"; \
-	if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then \
+	if [ -n "$$(ls -A build/cucumber*.json 2>/dev/null)" ]; then \
 		bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$(SKALLOP_VERSION)"  --extra-index-url $(CAR_PYPI_REPOSITORY_URL); \
 	fi; \
 	for cuke in  build/cucumber*.json; do \

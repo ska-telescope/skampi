@@ -201,7 +201,7 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 	tar zcf ../results-pipe build;"
 
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
-	pip3 install -r tests/requirements.txt
+	bash scripts/gitlab_section tests_requirements "Installing Requirements for Python Tests" pip3 install -r tests/requirements.txt
 
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra

@@ -1,17 +1,18 @@
 """Assign resources to subarray feature tests."""
-from typing import NamedTuple, cast
+import logging
+from typing import cast
+
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.event_handling.logging import device_logging_context
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_control.event_waiting.wait import wait_for, EWhilstWaiting
-from ska_ser_skallop.subscribing.base import MessageBoardBase
+from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting, wait_for
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.event_handling.logging import device_logging_context
-import logging
+from ska_ser_skallop.subscribing.base import MessageBoardBase
 
 logger = logging.getLogger(__name__)
 
@@ -33,13 +34,6 @@ def test_assign_resources_to_sdp_subarray_in_low():
 )
 def test_assign_resources_to_sdp_subarray_in_mid():
     """Assign resources to sdp subarray in mid."""
-
-
-@pytest.fixture(name="set_sdp_logging")
-def fxt_set_sdp_logging(exec_settings: fxt_types.exec_settings):
-    sdp_subarray = names.TEL().sdp.subarray(SUB_ARRAY_ID)
-    with exec_settings.set_capturing_logs_from(str(sdp_subarray)):
-        yield
 
 
 @given("an SDP subarray", target_fixture="test_func_settings")

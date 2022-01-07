@@ -19,6 +19,10 @@ class CBFEntryPoint(SynchedEntryPoint):
 
     def set_telescope_to_running(self):
         self.cbf_controller.command_inout("On")
+        # cbf low needs to start up subarrays individually
+        if self._tel.skalow:
+            subarray = con_config.get_device_proxy(self._tel.csp.cbf.subarray(1))
+            subarray.command_inout(("On"))
 
     def abort_subarray(self, sub_array_id: int):
         pass
@@ -52,7 +56,14 @@ class CBFEntryPoint(SynchedEntryPoint):
         pass
 
     def set_telescope_to_standby(self):
-        self.cbf_controller.command_inout("Standby")
+        #  mid uses standby
+        if self._tel.skamid:
+            self.cbf_controller.command_inout("Standby")
+        else:
+            self.cbf_controller.command_inout("Off")
+            # low needs to manually switch off subarray 1
+            subarray = con_config.get_device_proxy(self._tel.csp.cbf.subarray(1))
+            subarray.command_inout(("Off"))
 
     def tear_down_subarray(self, sub_array_id: int):
         pass

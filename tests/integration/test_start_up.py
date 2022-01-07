@@ -21,6 +21,18 @@ def test_sdp_start_up_telescope_low():
     """Start up the sdp in low."""
 
 
+@pytest.mark.skamid
+@scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in mid")
+def test_cbf_start_up_telescope_mid():
+    """Start up the sdp in mid."""
+
+
+@pytest.mark.skalow
+@scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in low")
+def test_cbf_start_up_telescope_low():
+    """Start up the sdp in low."""
+
+
 @pytest.mark.skalow
 @scenario("features/csp_start_up_telescope.feature", "Start up the csp in mid")
 def test_csp_start_up_telescope_mid():
@@ -40,6 +52,11 @@ def a_sdp(set_sdp_entry_point):
 
 @given("an CSP")
 def a_csp(set_csp_entry_point):
+    """a SDP."""
+
+
+@given("an CBF")
+def a_cbf(set_cbf_entry_point):
     """a SDP."""
 
 
@@ -70,11 +87,24 @@ def the_sdp_must_be_on():
 def the_csp_must_be_on():
     """the csp must be on."""
     tel = names.TEL()
-    csp_master = con_config.get_device_proxy(tel.csp.master)
+    csp_master = con_config.get_device_proxy(tel.csp.controller)
     result = csp_master.read_attribute("state").value
     assert_that(result).is_equal_to("ON")
     for index in range(1, conftest.NR_OFF_SUBARRAYS + 1):
         subarray = con_config.get_device_proxy(tel.csp.subarray(index))
+        result = subarray.read_attribute("state").value
+        assert_that(result).is_equal_to("ON")
+
+
+@then("the cbf must be on")
+def the_cbf_must_be_on():
+    """the cbf must be on."""
+    tel = names.TEL()
+    cbf_controller = con_config.get_device_proxy(tel.csp.cbf.controller)
+    result = cbf_controller.read_attribute("state").value
+    assert_that(result).is_equal_to("ON")
+    for index in range(1, conftest.NR_OFF_SUBARRAYS + 1):
+        subarray = con_config.get_device_proxy(tel.csp.cbf.subarray(index))
         result = subarray.read_attribute("state").value
         assert_that(result).is_equal_to("ON")
 
@@ -86,19 +116,15 @@ def test_test_sdp_startup(run_mock):
     run_mock(test_sdp_start_up_telescope_mid)
 
 
-@pytest.fixture(name="setup_csp_mock")
-def fxt_setup_csp_mock(mock_entry_point: fxt_types.mock_entry_point):
-    @mock_entry_point.when_set_telescope_to_running
-    def mck_set_telescope_to_running():
-        mock_entry_point.model.csp.set_states_for_telescope_running()
-
-    @mock_entry_point.when_set_telescope_to_standby
-    def mck_set_telescope_to_standby():
-        mock_entry_point.model.csp.set_states_for_telescope_standby()
-
-
-# @pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
+@pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
 @pytest.mark.usefixtures("setup_csp_mock")
 def test_test_csp_startup(run_mock):
     """Test the test using a mock SUT"""
     run_mock(test_csp_start_up_telescope_mid)
+
+
+# @pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
+@pytest.mark.usefixtures("setup_cbf_mock")
+def test_test_cbf_startup(run_mock):
+    """Test the test using a mock SUT"""
+    run_mock(test_cbf_start_up_telescope_mid)

@@ -24,8 +24,8 @@ def set_wating_for_start_up(
     tel = get_tel()
 
     if tel.skamid:
-        if tel.csp.master.enabled:
-            brd.set_waiting_on(tel.csp.master).for_attribute(
+        if tel.csp.controller.enabled:
+            brd.set_waiting_on(tel.csp.controller).for_attribute(
                 "state"
             ).to_become_equal_to("ON")
         if tel.sdp.master.enabled:
@@ -40,6 +40,10 @@ def set_wating_for_start_up(
                     brd.set_waiting_on(device).for_attribute(
                         "state"
                     ).to_become_equal_to("ON")
+        if tel.csp.cbf.controller.enabled:
+            brd.set_waiting_on(tel.csp.cbf.controller).for_attribute(
+                "state"
+            ).to_become_equal_to("ON")
         # subarrays
         for i in range(1, nr_of_subarrays + 1):
             for device in (
@@ -76,8 +80,8 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
     tel = get_tel()
 
     if tel.skamid:
-        if tel.csp.master.enabled:
-            brd.set_waiting_on(tel.csp.master).for_attribute(
+        if tel.csp.controller.enabled:
+            brd.set_waiting_on(tel.csp.controller).for_attribute(
                 "state"
             ).to_become_equal_to("STANDBY")
         if tel.sdp.master.enabled:
@@ -92,6 +96,10 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
                     brd.set_waiting_on(device).for_attribute(
                         "state"
                     ).to_become_equal_to("STANDBY")
+        if tel.csp.cbf.controller.enabled:
+            brd.set_waiting_on(tel.csp.cbf.controller).for_attribute(
+                "state"
+            ).to_become_equal_to("STANDBY")
         for i in range(1, nr_of_subarrays + 1):
             for device in (
                 tel.subarrays(i).subtract("tm").subtract("fsp")

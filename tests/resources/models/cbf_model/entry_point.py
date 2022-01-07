@@ -7,7 +7,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.configuration import types
 
 
-class CSPEntryPoint(SynchedEntryPoint):
+class CBFEntryPoint(SynchedEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2
@@ -15,13 +15,10 @@ class CSPEntryPoint(SynchedEntryPoint):
     def __init__(self) -> None:
         super().__init__()
         self._tel = names.TEL()
-        self.csp_controller = con_config.get_device_proxy(self._tel.csp.controller)
+        self.cbf_controller = con_config.get_device_proxy(self._tel.csp.cbf.controller)
 
     def set_telescope_to_running(self):
-        self.csp_controller.command_inout("On")
-        for index in range(1, self.nr_of_subarrays + 1):
-            subarray = con_config.get_device_proxy(self._tel.csp.subarray(index))
-            subarray.command_inout("On")
+        self.cbf_controller.command_inout("On")
 
     def abort_subarray(self, sub_array_id: int):
         pass
@@ -55,10 +52,7 @@ class CSPEntryPoint(SynchedEntryPoint):
         pass
 
     def set_telescope_to_standby(self):
-        self.csp_controller.command_inout("Off")
-        for index in range(1, self.nr_of_subarrays + 1):
-            subarray = con_config.get_device_proxy(self._tel.csp.subarray(index))
-            subarray.command_inout("Off")
+        self.cbf_controller.command_inout("Standby")
 
     def tear_down_subarray(self, sub_array_id: int):
         pass

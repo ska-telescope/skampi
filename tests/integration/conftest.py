@@ -1,15 +1,13 @@
 from typing import Callable
+
 import pytest
-
-from resources.models.sdp_model.entry_point import SDPEntryPoint
+from resources.models.cbf_model.entry_point import CBFEntryPoint
 from resources.models.csp_model.entry_point import CSPEntryPoint
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_control.configuration import composition as comp
-from resources.models.mvp_model.states import ObsState
-
-
+from resources.models.sdp_model.entry_point import SDPEntryPoint
+from resources.models.sdp_model.mocking import setup_sdp_mock
+from resources.models.cbf_model.mocking import setup_cbf_mock
+from resources.models.csp_model.mocking import setup_csp_mock
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
 
 MOCK_SUT = False
 NR_OFF_SUBARRAYS = 2
@@ -51,137 +49,28 @@ def fxt_set_csp_entry_point(set_session_exec_env: fxt_types.set_session_exec_env
     exec_env.scope = ["csp"]
 
 
+@pytest.fixture(name="set_cbf_entry_point", scope="session")
+def fxt_set_cbf_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
+    exec_env = set_session_exec_env
+    if not MOCK_SUT:
+        CBFEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
+        exec_env.entrypoint = CBFEntryPoint
+        exec_env.session_entry_point = CBFEntryPoint
+    else:
+        exec_env.entrypoint = "mock"
+    exec_env.scope = ["cbf scope"]
+
+
 @pytest.fixture(name="setup_sdp_mock")
 def fxt_setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
-    mock_entry_point.set_spy(SDPEntryPoint)
+    setup_sdp_mock(mock_entry_point)
 
-    @mock_entry_point.when_set_telescope_to_running
-    def mck_set_telescope_to_running():
-        mock_entry_point.model.sdp.set_states_for_telescope_running()
 
-    @mock_entry_point.when_set_telescope_to_standby
-    def mock_set_telescope_to_standby():
-        mock_entry_point.model.sdp.set_states_for_telescope_standby()
+@pytest.fixture(name="setup_csp_mock")
+def fxt_setup_csp_mock(mock_entry_point: fxt_types.mock_entry_point):
+    setup_csp_mock(mock_entry_point)
 
-    @mock_entry_point.when_compose_subarray
-    def mock_compose_subarray(
-        subarray_id: int,
-        _: list[int],
-        __: conf_types.Composition,
-        ___: str,
-    ):
-        if subarray_id == 1:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.RESOURCING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
-        if subarray_id == 2:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.RESOURCING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
-        if subarray_id == 3:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.RESOURCING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
-        if subarray_id == 4:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.RESOURCING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
 
-    @mock_entry_point.when_tear_down_subarray
-    def mock_tear_down_subarray(subarray_id: int):
-        if subarray_id == 1:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.RESOURCING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.EMPTY)
-            )
-        if subarray_id == 2:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.RESOURCING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.EMPTY)
-            )
-        if subarray_id == 3:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.RESOURCING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.EMPTY)
-            )
-        if subarray_id == 4:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.RESOURCING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.EMPTY)
-            )
-
-    @mock_entry_point.when_configure_subarray
-    def mock_configure_subarray(
-        subarray_id: int,
-        _: list[int],
-        __: conf_types.ScanConfiguration,
-        ___: str,
-        ____: float,
-    ):
-        if subarray_id == 1:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.CONFIGURING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.READY)
-            )
-        if subarray_id == 2:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.CONFIGURING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.READY)
-            )
-        if subarray_id == 3:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.CONFIGURING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.READY)
-            )
-        if subarray_id == 4:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.CONFIGURING)
-            )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.READY)
-            )
-
-    @mock_entry_point.when_clear_configuration
-    def mock_clear_configuration(subarray_id: int):
-        if subarray_id == 1:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
-        if subarray_id == 2:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
-        if subarray_id == 3:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
-        if subarray_id == 4:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
+@pytest.fixture(name="setup_cbf_mock")
+def fxt_setup_cbf_mock(mock_entry_point: fxt_types.mock_entry_point):
+    setup_cbf_mock(mock_entry_point)

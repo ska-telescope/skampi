@@ -63,6 +63,25 @@ def set_wating_for_start_up(
             # ).for_attribute("state").to_become_equal_to("ON")
             # TODO SKB-95 ignoring subarrays in low as they don't transition to ON/OFF
             # correctly
+        if tel.csp.controller.enabled:
+            brd.set_waiting_on(tel.csp.controller).for_attribute(
+                "state"
+            ).to_become_equal_to("ON")
+        for i in range(1, nr_of_subarrays + 1):
+            subarray = tel.csp.subarray(i)
+            if subarray.enabled:
+                brd.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
+                    "ON"
+                )
+        if tel.csp.cbf.controller.enabled:
+            brd.set_waiting_on(tel.csp.cbf.controller).for_attribute(
+                "state"
+            ).to_become_equal_to("ON")
+        # only wait for subarray 1
+        if tel.csp.cbf.subarray(1).enabled:
+            brd.set_waiting_on(tel.csp.cbf.subarray(1)).for_attribute(
+                "state"
+            ).to_become_equal_to("ON")
         if tel.skalow.sdp.master.enabled:
             brd.set_waiting_on(tel.sdp.master).for_attribute(
                 "state"
@@ -115,6 +134,25 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
             ).to_become_equal_to("OFF")
             # TODO SKB-95 ignoring subarrays in low as they don't transition to ON/OFF
             # correctly
+        if tel.csp.controller.enabled:
+            brd.set_waiting_on(tel.csp.controller).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF")
+        for i in range(1, nr_of_subarrays + 1):
+            subarray = tel.csp.subarray(i)
+            if subarray.enabled:
+                brd.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
+                    "OFF"
+                )
+        if tel.csp.cbf.controller.enabled:
+            brd.set_waiting_on(tel.csp.cbf.controller).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF")
+        # only wait for subarray 1
+        if tel.csp.cbf.subarray(1).enabled:
+            brd.set_waiting_on(tel.csp.cbf.subarray(1)).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF")
         if tel.skalow.sdp.master.enabled:
             brd.set_waiting_on(tel.sdp.master).for_attribute(
                 "state"

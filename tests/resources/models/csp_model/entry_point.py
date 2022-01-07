@@ -19,9 +19,6 @@ class CSPEntryPoint(SynchedEntryPoint):
 
     def set_telescope_to_running(self):
         self.csp_controller.command_inout("On")
-        for index in range(1, self.nr_of_subarrays + 1):
-            subarray = con_config.get_device_proxy(self._tel.csp.subarray(index))
-            subarray.command_inout("On")
 
     def abort_subarray(self, sub_array_id: int):
         pass
@@ -56,9 +53,6 @@ class CSPEntryPoint(SynchedEntryPoint):
 
     def set_telescope_to_standby(self):
         self.csp_controller.command_inout("Off")
-        for index in range(1, self.nr_of_subarrays + 1):
-            subarray = con_config.get_device_proxy(self._tel.csp.subarray(index))
-            subarray.command_inout("Off")
 
     def tear_down_subarray(self, sub_array_id: int):
         pass

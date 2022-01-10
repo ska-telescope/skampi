@@ -59,7 +59,11 @@ def fxt_set_cbf_entry_point(set_session_exec_env: fxt_types.set_session_exec_env
         exec_env.session_entry_point = CBFEntryPoint
     else:
         exec_env.entrypoint = "mock"
-    exec_env.scope = ["cbf scope", "csp controller"]
+    # include csp in scope when deployed
+    if exec_env.telescope_type == "skalow":
+        exec_env.scope = ["cbf scope", "csp controller"]
+    else:
+        exec_env.scope = ["cbf scope"]
 
 
 @pytest.fixture(name="set_mccs_entry_point", scope="session")

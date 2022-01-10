@@ -14,14 +14,16 @@ mid_deploy_test_destroy:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
-    PYTHON_VARS_AFTER_PYTEST: 'm XTP-3324 -v -r fEx'
+    PYTHON_VARS_AFTER_PYTEST: '-m XTP-3324 -v -r fEx'
+    TEST_ENV: 'BUILD_OUT'
   extends:
     - .tags_default
     - .deploy_chart_before
     - .uninstall_chart_after
   script:
     - echo "########## Running Skampi Acceptance and End to End Tests"
-    - make python-test PYTHON_VARS_AFTER_PYTEST=$PYTHON_VARS_AFTER_PYTEST CONFIG=$CONFIG
+    - make python-test
+    # - make test-ska-midid
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:

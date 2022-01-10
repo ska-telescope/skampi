@@ -10,7 +10,7 @@ packages = [{include = "tests/integration"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 pytest-repeat = "^0.9.1"
-ska-ser-skallop = "2.12.1"
+ska-ser-skallop = "2.12.2"
 kubernetes = "^21.7.0"
 
 

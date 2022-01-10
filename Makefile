@@ -205,8 +205,8 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
 	pip3 install .
 
-# make sure infra test do not run in k8s-test
-k8s-test: MARK := not infra
+# make sure only tests that require a testing pod are executed in k8s-test job
+k8s-test: MARK := k8s-only
 
 k8s-post-test: # post test hook for processing received reports
 	@if ! [[ -f build/status ]]; then \

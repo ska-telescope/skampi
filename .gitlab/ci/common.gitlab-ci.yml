@@ -35,16 +35,7 @@
     - echo "############## EXTRA MAKE VARS OUTPUT"
     - make skampi-vars
     - echo "#####################################"
-    - |
-      echo "Processing XRay uploads"
-      if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then
-        bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
-      fi
-      for cuke in  build/cucumber*.json
-      do
-        echo "Processing XRay upload of: $cuke"
-        /usr/local/bin/xtp-xray-upload -f $cuke -i tests/test-exec.json -v
-      done
+    - make skampi-upload-test-results CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
 
 .deploy_chart_and_test_integration:
   script:
@@ -63,16 +54,7 @@
     - make skampi-vars
     - echo "#####################################"
     - make skampi-links
-    - |
-      echo "Processing XRay uploads"
-      if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then
-        bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
-      fi
-      for cuke in  build/cucumber*.json
-      do
-        echo "Processing XRay upload of: $cuke"
-        /usr/local/bin/xtp-xray-upload -f $cuke -i tests/test-exec.json -v
-      done
+    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
 
 .uninstall_chart_before:
   before_script:
@@ -103,16 +85,7 @@
     - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
     - make k8s-delete-namespace
     - make delete-sdp-namespace
-    - |
-      echo "Processing XRay uploads"
-      if [ -n "$(ls -A build/cucumber*.json 2>/dev/null)" ]; then
-        bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$SKALLOP_VERSION"  --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple
-      fi
-      for cuke in  build/cucumber*.json
-      do
-        echo "Processing XRay upload of: $cuke"
-        /usr/local/bin/xtp-xray-upload -f $cuke -i tests/test-exec.json -v
-      done
+    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
 
 ## Not currently used!!!
 .deploy_test_destroy:

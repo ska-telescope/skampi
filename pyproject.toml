@@ -12,6 +12,17 @@ python = "^3.9"
 pytest-repeat = "^0.9.1"
 ska-ser-skallop = "2.12.2"
 kubernetes = "^21.7.0"
+pytest-cov = "^3.0.0"
+pytest-forked = "^1.4.0"
+pytest-json-report = "^1.4.1"
+pytest-metadata = "^1.11.0"
+pytest-mock = "^3.6.1"
+pytest-xdist = "^2.5.0"
+requests = "^2.26.0"
+assertpy = "^1.1"
+docopts = "^0.6.1"
+pytest-timeout = "^2.0.2"
+pytest-ordering = "^0.6"
 
 
 
@@ -25,21 +36,9 @@ url = 'https://deployskallopdev:rsaigjomsv-XyU2gNji7@gitlab.com/api/v4/projects/
 
 
 
-
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
 black = "^21.12b0"
-pytest-cov = "^3.0.0"
-pytest-forked = "^1.4.0"
-pytest-json-report = "^1.4.1"
-pytest-metadata = "^1.11.0"
-pytest-mock = "^3.6.1"
-pytest-xdist = "^2.5.0"
-requests = "^2.26.0"
-assertpy = "^1.1"
-docopts = "^0.6.1"
-pytest-timeout = "^2.0.2"
-pytest-ordering = "^0.6"
 ipython = "^7.30.1"
 [build-system]
 requires = ["poetry-core"]

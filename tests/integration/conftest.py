@@ -4,6 +4,7 @@ import pytest
 from resources.models.cbf_model.entry_point import CBFEntryPoint
 from resources.models.csp_model.entry_point import CSPEntryPoint
 from resources.models.sdp_model.entry_point import SDPEntryPoint
+from resources.models.mccs_model.entry_point import MCCSEntryPoint
 from resources.models.sdp_model.mocking import setup_sdp_mock
 from resources.models.cbf_model.mocking import setup_cbf_mock
 from resources.models.csp_model.mocking import setup_csp_mock
@@ -58,7 +59,19 @@ def fxt_set_cbf_entry_point(set_session_exec_env: fxt_types.set_session_exec_env
         exec_env.session_entry_point = CBFEntryPoint
     else:
         exec_env.entrypoint = "mock"
-    exec_env.scope = ["cbf scope"]
+    exec_env.scope = ["cbf scope", "csp controller"]
+
+
+@pytest.fixture(name="set_mccs_entry_point", scope="session")
+def fxt_set_mssc_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
+    exec_env = set_session_exec_env
+    if not MOCK_SUT:
+        MCCSEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
+        exec_env.entrypoint = MCCSEntryPoint
+        exec_env.session_entry_point = MCCSEntryPoint
+    else:
+        exec_env.entrypoint = "mock"
+    exec_env.scope = ["mccs"]
 
 
 @pytest.fixture(name="setup_sdp_mock")

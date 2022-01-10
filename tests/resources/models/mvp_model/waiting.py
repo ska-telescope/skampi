@@ -86,6 +86,10 @@ def set_wating_for_start_up(
             brd.set_waiting_on(tel.sdp.master).for_attribute(
                 "state"
             ).to_become_equal_to("ON")
+        if tel.skalow.mccs.master.enabled:
+            brd.set_waiting_on(tel.skalow.mccs.master).for_attribute(
+                "state"
+            ).to_become_equal_to("ON")
     return brd
 
 
@@ -128,12 +132,6 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
                         "state"
                     ).to_become_equal_to("OFF")
     elif tel.skalow:
-        if tel.skalow.mccs.master.enabled:
-            brd.set_waiting_on(tel.skalow.mccs.master).for_attribute(
-                "state"
-            ).to_become_equal_to("OFF")
-            # TODO SKB-95 ignoring subarrays in low as they don't transition to ON/OFF
-            # correctly
         if tel.csp.controller.enabled:
             brd.set_waiting_on(tel.csp.controller).for_attribute(
                 "state"
@@ -155,6 +153,10 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
             ).to_become_equal_to("OFF")
         if tel.skalow.sdp.master.enabled:
             brd.set_waiting_on(tel.sdp.master).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF")
+        if tel.skalow.mccs.master.enabled:
+            brd.set_waiting_on(tel.skalow.mccs.master).for_attribute(
                 "state"
             ).to_become_equal_to("OFF")
     return brd

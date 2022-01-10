@@ -52,6 +52,13 @@ def test_csp_start_up_telescope_low():
     """Start up the csp in low."""
 
 
+@pytest.mark.skalow
+@pytest.mark.startup
+@scenario("features/mccs_start_up_telescope.feature", "Start up the MCCS")
+def test_mccs_start_up_telescope():
+    """Start up the csp in low."""
+
+
 @given("an SDP")
 def a_sdp(set_sdp_entry_point):
     """a SDP."""
@@ -59,12 +66,17 @@ def a_sdp(set_sdp_entry_point):
 
 @given("an CSP")
 def a_csp(set_csp_entry_point):
-    """a SDP."""
+    """a CSP."""
 
 
 @given("an CBF")
 def a_cbf(set_cbf_entry_point):
-    """a SDP."""
+    """a CBF."""
+
+
+@given("the MCCS")
+def a_mccs(set_mccs_entry_point):
+    """a MCCS."""
 
 
 @when("I start up the telescope")
@@ -119,6 +131,17 @@ def the_cbf_must_be_on():
         subarray = con_config.get_device_proxy(tel.csp.cbf.subarray(index))
         result = subarray.read_attribute("state").value
         assert_that(result).is_equal_to("ON")
+
+
+@then("the MCCS must be on")
+def the_mccs_must_be_on():
+    """the MCCS must be on."""
+    tel = names.TEL()
+    assert tel.skalow
+    mccs_controller = con_config.get_device_proxy(tel.skalow.mccs.master)
+    result = mccs_controller.read_attribute("state").value
+    assert_that(result).is_equal_to("ON")
+    # only check subarray 1 for cbf low
 
 
 @pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")

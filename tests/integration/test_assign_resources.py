@@ -20,6 +20,7 @@ RECEPTORS = [1, 2]
 SUB_ARRAY_ID = 1
 
 
+@pytest.mark.skip(reason="test still in dev phase")
 @pytest.mark.skalow
 @scenario(
     "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in low"
@@ -28,6 +29,7 @@ def test_assign_resources_to_sdp_subarray_in_low():
     """Assign resources to sdp subarray in low."""
 
 
+@pytest.mark.skip(reason="test still in dev phase")
 @pytest.mark.skamid
 @scenario(
     "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in mid"

@@ -216,3 +216,13 @@ k8s-post-test: # post test hook for processing received reports
 	@echo "k8s-post-test: Skampi post processing of core Skampi test reports with scripts/collect_k8s_logs.py"
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
+
+test-ska-low:
+	pytest tests/integration -m 'XTP-3325' -v -r fEx
+
+upload-test-results:
+	xtp-xray-upload -f build/cucumber.json -i tests/test-exec.json -v
+
+upload-local-test-results:
+	xtp-xray-upload -f build/cucumber.json -i tests/test-exec.json -v -u $$JIRA_USERNAME -p $$JIRA_PASSWORD
+

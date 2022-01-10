@@ -4,6 +4,8 @@
             "select_from_tag": {
                 "XTP-3348": "XTP-3348",
                 "XTP-3612": "XTP-3616",
+                "XTP-3324": "XTP-3324",
+                "XTP-3325": "XTP-3325",
                 "default": "XTP-3348"
             }
         }

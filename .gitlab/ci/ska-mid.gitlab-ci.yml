@@ -15,8 +15,6 @@ mid_deploy_test_destroy:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     PYTHON_VARS_AFTER_PYTEST: "-m XTP-3324 -v -r fEx"
-    TARANTA_USER: $TARANTA_USER
-    TARANTA_PASSWORD: $TARANTA_PASSWORD
     TEST_ENV: "BUILD_OUT"
   extends:
     - .tags_default

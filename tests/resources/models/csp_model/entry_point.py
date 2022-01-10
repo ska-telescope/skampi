@@ -10,7 +10,7 @@ from ska_ser_skallop.mvp_control.configuration import types
 class CSPEntryPoint(SynchedEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
-    nr_of_subarrays = 2
+    nr_of_subarrays = 1
 
     def __init__(self) -> None:
         super().__init__()

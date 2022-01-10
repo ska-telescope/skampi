@@ -226,3 +226,6 @@ upload-test-results:
 upload-local-test-results:
 	xtp-xray-upload -f build/cucumber.json -i tests/test-exec.json -v -u $$JIRA_USERNAME -p $$JIRA_PASSWORD
 
+test-ska-mid:
+	pytest tests/integration -m 'XTP-3324' -v -r fEx
+

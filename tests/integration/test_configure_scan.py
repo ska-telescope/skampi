@@ -12,6 +12,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 SCAN_DURATION = 2
 
 
+@pytest.mark.skip(reason="test still in dev phase")
 @scenario(
     "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in low"
 )
@@ -19,6 +20,7 @@ def test_configure_scan_on_sdp_subarray_in_low():
     """Configure scan on sdp subarray in low."""
 
 
+@pytest.mark.skip(reason="test still in dev phase")
 @scenario(
     "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in mid"
 )
@@ -64,7 +66,7 @@ def the_subarray_must_be_in_the_ready_state(
     assert_that(result).is_equal_to(ObsState.READY)
 
 
-# @pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
+@pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_configure_scan(run_mock):
     """Test the test using a mock SUT"""

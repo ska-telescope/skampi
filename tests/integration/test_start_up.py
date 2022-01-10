@@ -39,6 +39,7 @@ def test_cbf_start_up_telescope_low():
 
 @pytest.mark.skalow
 @pytest.mark.startup
+@pytest.mark.skip(reason="current csp mid version not able to do start up")
 @scenario("features/csp_start_up_telescope.feature", "Start up the csp in mid")
 def test_csp_start_up_telescope_mid():
     """Start up the csp in mid."""

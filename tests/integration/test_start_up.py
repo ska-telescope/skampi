@@ -10,36 +10,42 @@ from . import conftest
 
 
 @pytest.mark.skamid
+@pytest.mark.startup
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in mid")
 def test_sdp_start_up_telescope_mid():
     """Start up the sdp in mid."""
 
 
 @pytest.mark.skalow
+@pytest.mark.startup
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in low")
 def test_sdp_start_up_telescope_low():
     """Start up the sdp in low."""
 
 
 @pytest.mark.skamid
+@pytest.mark.startup
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in mid")
 def test_cbf_start_up_telescope_mid():
     """Start up the sdp in mid."""
 
 
 @pytest.mark.skalow
+@pytest.mark.startup
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in low")
 def test_cbf_start_up_telescope_low():
     """Start up the sdp in low."""
 
 
 @pytest.mark.skalow
+@pytest.mark.startup
 @scenario("features/csp_start_up_telescope.feature", "Start up the csp in mid")
 def test_csp_start_up_telescope_mid():
     """Start up the csp in mid."""
 
 
 @pytest.mark.skalow
+@pytest.mark.startup
 @scenario("features/csp_start_up_telescope.feature", "Start up the csp in low")
 def test_csp_start_up_telescope_low():
     """Start up the csp in low."""
@@ -128,7 +134,7 @@ def test_test_csp_startup(run_mock):
     run_mock(test_csp_start_up_telescope_mid)
 
 
-# @pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
+@pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
 @pytest.mark.usefixtures("setup_cbf_mock")
 def test_test_cbf_startup(run_mock):
     """Test the test using a mock SUT"""

@@ -27,7 +27,7 @@ ska-tmc-mid:
 
 # Low specific products
 ska-tmc-low:
-  enabled: false
+  enabled: true
 ska-low-mccs:
   enabled: false
 

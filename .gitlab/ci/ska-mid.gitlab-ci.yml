@@ -14,8 +14,10 @@ mid_deploy_test_destroy:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
-    PYTHON_VARS_AFTER_PYTEST: '-m XTP-3324 -v -r fEx'
-    TEST_ENV: 'BUILD_OUT'
+    PYTHON_VARS_AFTER_PYTEST: "-m XTP-3324 -v -r fEx"
+    TARANTA_USER: $TARANTA_USER
+    TARANTA_PASSWORD: $TARANTA_PASSWORD
+    TEST_ENV: "BUILD_OUT"
   extends:
     - .tags_default
     - .deploy_chart_before

@@ -5,6 +5,7 @@ from pipe import select, where
 
 import pytest
 import requests
+from time import sleep
 from requests import exceptions
 from resources.models.cbf_model.entry_point import CBFEntryPoint
 from resources.models.csp_model.entry_point import CSPEntryPoint
@@ -15,11 +16,7 @@ from resources.models.cbf_model.mocking import setup_cbf_mock
 from resources.models.csp_model.mocking import setup_csp_mock
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.connectors.tangodb import TangoDB
-from ska_ser_skallop.connectors.remoting.tangobridge.configuration import (
-    get_env,
-    get_tango_gql_rest_url,
-)
-from ska_ser_skallop.connectors.remotefactory import TBridgeFactory
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,20 +27,8 @@ NR_OFF_SUBARRAYS = 2
 @pytest.fixture(autouse=True, scope="session")
 def fxt_check_tango_db(request):
     # pylint: disable=no-value-for-parameter
-    try:
-        env = get_env()
-        url = get_tango_gql_rest_url(TBridgeFactory.settings, env)
-        result = requests.get(url)
-        assert result.status_code in [200, 404], f"Unable to reach {url}"
-    except AssertionError as error:
-        logger.warning(error)
-        return
-    except exceptions.RequestException as error:
-        logger.warning(error)
-        return
-    logger.info(f"controlling SUT on {url}")
     db = TangoDB()
-    devices = "\n".join(db.devices)
+    devices = "\n".join(db.devices | where(lambda args: "dserver/" not in args[0]))
     logger.info(f"\nDevices in db:\n{devices}")
     device_states = list(db.get_db_state().items())
     device_states = "\n".join(
@@ -52,6 +37,7 @@ def fxt_check_tango_db(request):
         | select(lambda args: f"{args[0]:<100}{args[1]}")
     )
     logger.info(f"\n{'':<50}Device states:\n{device_states}")
+    sleep(10)
 
 
 @pytest.fixture(name="run_mock")

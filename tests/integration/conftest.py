@@ -34,13 +34,14 @@ def fxt_check_tango_db(request):
         env = get_env()
         url = get_tango_gql_rest_url(TBridgeFactory.settings, env)
         result = requests.get(url)
-        assert result.ok
+        assert result.ok, f"Unable to reach {url}"
     except AssertionError as error:
         logger.warning(error)
         return
     except exceptions.RequestException as error:
         logger.warning(error)
         return
+    logger.info(f"controlling SUT on {url}")
     db = TangoDB()
     devices = "\n".join(db.devices)
     logger.info(f"\nDevices in db:\n{devices}")

@@ -780,6 +780,19 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
+name = "pipe"
+version = "1.6.0"
+description = "Module enablig a sh like infix syntax (using pipes)"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
 name = "platformdirs"
 version = "2.4.1"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -1309,7 +1322,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-ser-skallop"
-version = "2.12.2"
+version = "2.13.0"
 description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
 category = "main"
 optional = false
@@ -1483,7 +1496,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "9673c68bfcf2c7b618aef73d5fd28144e135fe30b87d1e0e613ebbfc3c8da5a8"
+content-hash = "78a2183499ee8da626df61f6170d46ab786af9adc1a3423f8c5e1fbc4a75f417"
 
 [metadata.files]
 aiohttp = [
@@ -2025,6 +2038,10 @@ pickleshare = [
     {file = "pickleshare-0.7.5-py2.py3-none-any.whl", hash = "sha256:9649af414d74d4df115d5d718f82acb59c9d418196b7b4290ed47a12ce62df56"},
     {file = "pickleshare-0.7.5.tar.gz", hash = "sha256:87683d47965c1da65cdacaf31c8441d12b8044cdec9aca500cd78fc2c683afca"},
 ]
+pipe = [
+    {file = "pipe-1.6.0-py2.py3-none-any.whl", hash = "sha256:cb89e7c553d819e97fa912afaf592c2553fa7b92c047c47772b4a96ef59c8825"},
+    {file = "pipe-1.6.0.tar.gz", hash = "sha256:9bec3a88f8829f5074507795bc633603d61c025c88069f4d865018c721c6aa31"},
+]
 platformdirs = [
     {file = "platformdirs-2.4.1-py3-none-any.whl", hash = "sha256:1d7385c7db91728b83efd0ca99a5afb296cab9d0ed8313a45ed8ba17967ecfca"},
     {file = "platformdirs-2.4.1.tar.gz", hash = "sha256:440633ddfebcc36264232365d7840a970e75e1018d15b4327d11f91909045fda"},
@@ -2181,8 +2198,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-ser-skallop = [
-    {file = "ska-ser-skallop-2.12.2.tar.gz", hash = "md5:10094b6caa1954e448846593b7c4ecc6"},
-    {file = "ska_ser_skallop-2.12.2-py3-none-any.whl", hash = "md5:39974dc799836d888ad59a5008b2102f"},
+    {file = "ska-ser-skallop-2.13.0.tar.gz", hash = "md5:a2ef9a2de1f855dcefa1c23d7ba85225"},
+    {file = "ska_ser_skallop-2.13.0-py3-none-any.whl", hash = "md5:ee03bfc43e636d3ee7e7078b39de90e7"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},

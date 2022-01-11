@@ -22,7 +22,8 @@ mid_deploy_test_destroy:
     - .uninstall_chart_after
   script:
     - echo "########## Running Skampi Acceptance and End to End Tests"
-    - make python-test
+    - make python-pre-test
+    - pytest tests/integration/test_tango_basic.py::test_tangogql_service_available
     # - make test-ska-midid
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG

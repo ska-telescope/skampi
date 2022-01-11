@@ -18,6 +18,7 @@ def test_sdp_start_up_telescope_mid():
 
 @pytest.mark.skalow
 @pytest.mark.startup
+@pytest.mark.skip(reason="bug in sdp not being ready immediately after deployed")
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in low")
 def test_sdp_start_up_telescope_low():
     """Start up the sdp in low."""

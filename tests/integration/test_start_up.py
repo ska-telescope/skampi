@@ -11,6 +11,7 @@ from . import conftest
 
 @pytest.mark.skamid
 @pytest.mark.startup
+@pytest.mark.skip(reason="bug in sdp not being ready immediately after deployed")
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in mid")
 def test_sdp_start_up_telescope_mid():
     """Start up the sdp in mid."""
@@ -26,17 +27,16 @@ def test_sdp_start_up_telescope_low():
 
 @pytest.mark.skamid
 @pytest.mark.startup
-@pytest.mark.skip(reason="bug in sdp not being ready immediately after deployed")
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in mid")
 def test_cbf_start_up_telescope_mid():
-    """Start up the sdp in mid."""
+    """Start up the cbf in mid."""
 
 
 @pytest.mark.skalow
 @pytest.mark.startup
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in low")
 def test_cbf_start_up_telescope_low():
-    """Start up the sdp in low."""
+    """Start up the cbf in low."""
 
 
 @pytest.mark.skalow

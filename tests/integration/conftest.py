@@ -24,6 +24,8 @@ NR_OFF_SUBARRAYS = 2
 def fxt_check_tango_db():
     # pylint: disable=no-value-for-parameter
     db = TangoDB()
+    devices = "\n".join(db.devices)
+    logger.info(f"\nDevices in db:\n{devices}")
     device_states = list(db.get_db_state().items())
     device_states = "\n".join(
         device_states

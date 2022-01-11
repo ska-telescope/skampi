@@ -26,7 +26,7 @@ def fxt_run_mock_wrapper(request, _pytest_bdd_example):
     return run_mock
 
 
-@pytest.fixture(name="set_sdp_entry_point", scope="session")
+@pytest.fixture(name="set_sdp_entry_point")
 def fxt_set_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
     exec_env = set_session_exec_env
     if not MOCK_SUT:
@@ -38,7 +38,7 @@ def fxt_set_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
     exec_env.scope = ["sdp"]
 
 
-@pytest.fixture(name="set_csp_entry_point", scope="session")
+@pytest.fixture(name="set_csp_entry_point")
 def fxt_set_csp_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
     exec_env = set_session_exec_env
     if not MOCK_SUT:
@@ -50,7 +50,7 @@ def fxt_set_csp_entry_point(set_session_exec_env: fxt_types.set_session_exec_env
     exec_env.scope = ["csp"]
 
 
-@pytest.fixture(name="set_cbf_entry_point", scope="session")
+@pytest.fixture(name="set_cbf_entry_point")
 def fxt_set_cbf_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
     exec_env = set_session_exec_env
     if not MOCK_SUT:
@@ -66,7 +66,7 @@ def fxt_set_cbf_entry_point(set_session_exec_env: fxt_types.set_session_exec_env
         exec_env.scope = ["cbf scope"]
 
 
-@pytest.fixture(name="set_mccs_entry_point", scope="session")
+@pytest.fixture(name="set_mccs_entry_point")
 def fxt_set_mssc_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
     exec_env = set_session_exec_env
     if not MOCK_SUT:

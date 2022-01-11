@@ -8,7 +8,7 @@
                 "skalow": "XTP-3325",
                 "skamid_k8s_testing_pod": "XTP-4020",
                 "skalow_k8s_testing_pod": "XTP-4021",
-                "default": "XTP-3348"
+                "default": "XTP-4020"
             }
         }
     ],

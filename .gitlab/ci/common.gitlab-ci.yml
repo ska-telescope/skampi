@@ -35,7 +35,7 @@
     - echo "############## EXTRA MAKE VARS OUTPUT"
     - make skampi-vars
     - echo "#####################################"
-    - make skampi-upload-test-results CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
+    - make skampi-upload-test-results
 
 .deploy_chart_and_test_integration:
   script:
@@ -54,7 +54,7 @@
     - make skampi-vars
     - echo "#####################################"
     - make skampi-links
-    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
+    - make skampi-upload-test-results
 
 .uninstall_chart_before:
   before_script:

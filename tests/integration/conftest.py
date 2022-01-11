@@ -34,7 +34,7 @@ def fxt_check_tango_db(request):
         env = get_env()
         url = get_tango_gql_rest_url(TBridgeFactory.settings, env)
         result = requests.get(url)
-        assert result.ok, f"Unable to reach {url}"
+        assert result.status_code in [200, 404], f"Unable to reach {url}"
     except AssertionError as error:
         logger.warning(error)
         return

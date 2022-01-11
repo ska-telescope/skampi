@@ -13,6 +13,7 @@ from resources.models.cbf_model.mocking import setup_cbf_mock
 from resources.models.csp_model.mocking import setup_csp_mock
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.connectors.tangodb import TangoDB
+from ska_ser_skallop.connectors.remoting.tangobridge.configuration import get_env
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +22,13 @@ NR_OFF_SUBARRAYS = 2
 
 
 @pytest.fixture(autouse=True, scope="session")
-def fxt_check_tango_db():
+def fxt_check_tango_db(request):
     # pylint: disable=no-value-for-parameter
+    try:
+        get_env()
+    except AssertionError as error:
+        logger.warning(error)
+        return
     db = TangoDB()
     devices = "\n".join(db.devices)
     logger.info(f"\nDevices in db:\n{devices}")

@@ -1,4 +1,7 @@
-from typing import Callable
+from typing import Callable, cast, List
+import logging
+
+from pipe import select, where
 
 import pytest
 from resources.models.cbf_model.entry_point import CBFEntryPoint
@@ -9,9 +12,25 @@ from resources.models.sdp_model.mocking import setup_sdp_mock
 from resources.models.cbf_model.mocking import setup_cbf_mock
 from resources.models.csp_model.mocking import setup_csp_mock
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.connectors.tangodb import TangoDB
+
+logger = logging.getLogger(__name__)
 
 MOCK_SUT = False
 NR_OFF_SUBARRAYS = 2
+
+
+@pytest.fixture(autouse=True, scope="session")
+def fxt_check_tango_db():
+    # pylint: disable=no-value-for-parameter
+    db = TangoDB()
+    device_states = list(db.get_db_state().items())
+    device_states = "\n".join(
+        device_states
+        | where(lambda args: "dserver/" not in args[0])
+        | select(lambda args: f"{args[0]:<100}{args[1]}")
+    )
+    logger.info(f"\n{'':<50}Device states:\n{device_states}")
 
 
 @pytest.fixture(name="run_mock")

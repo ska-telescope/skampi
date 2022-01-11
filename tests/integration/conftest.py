@@ -4,6 +4,8 @@ import logging
 from pipe import select, where
 
 import pytest
+import requests
+from requests import exceptions
 from resources.models.cbf_model.entry_point import CBFEntryPoint
 from resources.models.csp_model.entry_point import CSPEntryPoint
 from resources.models.sdp_model.entry_point import SDPEntryPoint
@@ -13,7 +15,11 @@ from resources.models.cbf_model.mocking import setup_cbf_mock
 from resources.models.csp_model.mocking import setup_csp_mock
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.connectors.tangodb import TangoDB
-from ska_ser_skallop.connectors.remoting.tangobridge.configuration import get_env
+from ska_ser_skallop.connectors.remoting.tangobridge.configuration import (
+    get_env,
+    get_tango_gql_rest_url,
+)
+from ska_ser_skallop.connectors.remotefactory import TBridgeFactory
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +31,14 @@ NR_OFF_SUBARRAYS = 2
 def fxt_check_tango_db(request):
     # pylint: disable=no-value-for-parameter
     try:
-        get_env()
+        env = get_env()
+        url = get_tango_gql_rest_url(TBridgeFactory.settings, env)
+        result = requests.get(url)
+        assert result.ok
     except AssertionError as error:
+        logger.warning(error)
+        return
+    except exceptions.RequestException as error:
         logger.warning(error)
         return
     db = TangoDB()

@@ -1,4 +1,7 @@
 """Start up the sdp feature tests."""
+import logging
+from typing import List, cast
+
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
@@ -7,6 +10,8 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from . import conftest
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.mark.skamid
@@ -69,8 +74,21 @@ def a_csp(set_csp_entry_point):
     """a CSP."""
 
 
+@pytest.fixture(name="set_up_transit_checking_for_cbf")
+@pytest.mark.usefixtures("set_cbf_entry_point")
+def fxt_set_up_transit_checking_for_cbf(transit_checking: conftest.TransitChecking):
+    tel = names.TEL()
+    devices_to_follow = cast(List, [tel.csp.cbf.subarray(1)])
+    subject_device = tel.csp.cbf.controller
+    transit_checking.check_that(subject_device).transits_according_to(["ON"]).on_attr(
+        "state"
+    ).when_transit_occur_on(
+        devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
+    )
+
+
 @given("an CBF")
-def a_cbf(set_cbf_entry_point):
+def a_cbf(set_cbf_entry_point, set_up_transit_checking_for_cbf):
     """a CBF."""
 
 
@@ -83,10 +101,12 @@ def a_mccs(set_mccs_entry_point):
 def i_start_up_the_telescope(
     standby_telescope: fxt_types.standby_telescope,
     entry_point: fxt_types.entry_point,
+    transit_checking: conftest.TransitChecking,
 ):
     """I start up the telescope."""
-    with standby_telescope.wait_for_starting_up():
-        entry_point.set_telescope_to_running()
+    with transit_checking.set_transit_for_next_call_on_entry_point():
+        with standby_telescope.wait_for_starting_up():
+            entry_point.set_telescope_to_running()
 
 
 @then("the sdp must be on")
@@ -116,7 +136,7 @@ def the_csp_must_be_on():
 
 
 @then("the cbf must be on")
-def the_cbf_must_be_on():
+def the_cbf_must_be_on(transit_checking: conftest.TransitChecking):
     """the cbf must be on."""
     tel = names.TEL()
     cbf_controller = con_config.get_device_proxy(tel.csp.cbf.controller)
@@ -128,6 +148,11 @@ def the_cbf_must_be_on():
         subarray = con_config.get_device_proxy(tel.csp.cbf.subarray(index))
         result = subarray.read_attribute("state").value
         assert_that(result).is_equal_to("ON")
+    if transit_checking:
+        checker = transit_checking.checker
+        assert checker
+        logger.info(checker.print_outcome_for(checker.subject_device))
+        checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")
 
 
 @then("the MCCS must be on")

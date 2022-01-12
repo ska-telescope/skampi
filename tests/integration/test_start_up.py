@@ -122,11 +122,8 @@ def the_cbf_must_be_on():
     cbf_controller = con_config.get_device_proxy(tel.csp.cbf.controller)
     result = cbf_controller.read_attribute("state").value
     assert_that(result).is_equal_to("ON")
-    # only check subarray 1 for cbf low
-    if tel.skalow:
-        nr_of_subarrays = 1
-    else:
-        nr_of_subarrays = conftest.NR_OFF_SUBARRAYS
+    # only check subarray 1 for cbf
+    nr_of_subarrays = 1
     for index in range(1, nr_of_subarrays + 1):
         subarray = con_config.get_device_proxy(tel.csp.cbf.subarray(index))
         result = subarray.read_attribute("state").value

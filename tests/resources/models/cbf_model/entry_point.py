@@ -58,7 +58,7 @@ class CBFEntryPoint(SynchedEntryPoint):
     def set_telescope_to_standby(self):
         #  mid uses standby
         if self._tel.skamid:
-            self.cbf_controller.command_inout("Standby")
+            self.cbf_controller.command_inout("Off")
         else:
             self.cbf_controller.command_inout("Off")
             # low needs to manually switch off subarray 1

@@ -1,21 +1,19 @@
-from typing import List, NamedTuple, Set, Union
+from typing import List, Union
 
 from ska_ser_skallop.event_handling.builders import (
     MessageBoardBuilder,
     get_message_board_builder,
 )
-from ska_ser_skallop.mvp_control.describing.mvp_names import DomainList, get_tel
+from ska_ser_skallop.mvp_control.describing.mvp_names import get_tel
 
 # rule based pre and post conditions #
 
 
 # telescope starting up #
 def set_wating_for_start_up(
-    board: MessageBoardBuilder = None,
+    builder: MessageBoardBuilder = None,
 ) -> MessageBoardBuilder:
-    if board:
-        brd = board
-    else:
+    if not (brd := builder):
         brd = get_message_board_builder()
 
     nr_of_dishes = 4
@@ -98,8 +96,11 @@ def set_wating_for_start_up(
 
 
 # telescope shutting down
-def set_wating_for_shut_down() -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+def set_wating_for_shut_down(
+    builder: Union[None, MessageBoardBuilder] = None
+) -> MessageBoardBuilder:
+    if not (brd := builder):
+        brd = get_message_board_builder()
 
     nr_of_dishes = 4
     nr_of_subarrays = 1
@@ -173,8 +174,11 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
 # assigning resources
 
 
-def set_waiting_for_assign_resources(ind: int) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+def set_waiting_for_assign_resources(
+    ind: int, builder: Union[None, MessageBoardBuilder] = None
+) -> MessageBoardBuilder:
+    if not (brd := builder):
+        brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -195,8 +199,11 @@ def set_waiting_for_assign_resources(ind: int) -> MessageBoardBuilder:
     return brd
 
 
-def set_waiting_until_resourcing(ind: int) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+def set_waiting_until_resourcing(
+    ind: int, builder: Union[None, MessageBoardBuilder] = None
+) -> MessageBoardBuilder:
+    if not (brd := builder):
+        brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -211,8 +218,11 @@ def set_waiting_until_resourcing(ind: int) -> MessageBoardBuilder:
     return brd
 
 
-def set_waiting_for_release_resources(ind: int) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+def set_waiting_for_release_resources(
+    ind: int, builder: Union[None, MessageBoardBuilder] = None
+) -> MessageBoardBuilder:
+    if not (brd := builder):
+        brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -236,9 +246,10 @@ def set_waiting_for_release_resources(ind: int) -> MessageBoardBuilder:
 
 
 def set_waiting_for_configure_scan(
-    ind: int, receptors: List[int]
+    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
 ) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+    if not (brd := builder):
+        brd = get_message_board_builder()
     subarray_change_order = ["CONFIGURING", "READY"]
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
@@ -261,9 +272,10 @@ def set_waiting_for_configure_scan(
 
 
 def set_waiting_until_configuring(
-    ind: int, receptors: List[int]
+    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
 ) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+    if not (brd := builder):
+        brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -278,8 +290,11 @@ def set_waiting_until_configuring(
     return brd
 
 
-def set_waiting_until_scanning(ind: int, receptors: List[int]) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+def set_waiting_until_scanning(
+    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
+) -> MessageBoardBuilder:
+    if not (brd := builder):
+        brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -295,9 +310,10 @@ def set_waiting_until_scanning(ind: int, receptors: List[int]) -> MessageBoardBu
 
 
 def set_waiting_for_releasing_a_configuration(
-    ind: int, receptors: List[int]
+    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
 ) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+    if not (brd := builder):
+        brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -327,10 +343,11 @@ def set_waiting_for_releasing_a_configuration(
 
 # scanning
 def set_waiting_for_scanning_to_complete(
-    ind: int, receptors: List[int]
+    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
 ) -> MessageBoardBuilder:
 
-    brd = get_message_board_builder()
+    if not (brd := builder):
+        brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -356,8 +373,11 @@ def set_waiting_for_scanning_to_complete(
 
 
 # abort
-def set_waiting_for_abort(ind: int, nr_resources: int) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+def set_waiting_for_abort(
+    ind: int, nr_resources: int, builder: Union[None, MessageBoardBuilder] = None
+) -> MessageBoardBuilder:
+    if not (brd := builder):
+        brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -383,8 +403,11 @@ def set_waiting_for_abort(ind: int, nr_resources: int) -> MessageBoardBuilder:
 
 
 # obsreset
-def set_waiting_for_obsreset(ind: int, receptors: List[int]) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+def set_waiting_for_obsreset(
+    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
+) -> MessageBoardBuilder:
+    if not (brd := builder):
+        brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -410,8 +433,11 @@ def set_waiting_for_obsreset(ind: int, receptors: List[int]) -> MessageBoardBuil
 
 
 # restart
-def set_waiting_for_restart(ind: int, nr_resources: int) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
+def set_waiting_for_restart(
+    ind: int, nr_resources: int, builder: Union[None, MessageBoardBuilder] = None
+) -> MessageBoardBuilder:
+    if not (brd := builder):
+        brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -433,43 +459,4 @@ def set_waiting_for_restart(ind: int, nr_resources: int) -> MessageBoardBuilder:
                 brd.set_waiting_on(tel.skamid.dish(index)).for_attribute(
                     "pointingState"
                 ).and_observe()
-    return brd
-
-
-class WatchSpec(NamedTuple):
-    device_name: str
-    attr: str
-    value: Union[List[str], str]
-
-
-def specs(
-    devices: DomainList, attr: str, value: Union[List[str], str]
-) -> Set[WatchSpec]:
-    return {WatchSpec(str(device_name), attr, value) for device_name in devices}
-
-
-def set_waiting_for(
-    specs: Union[Set[WatchSpec], MessageBoardBuilder]
-) -> MessageBoardBuilder:
-    if isinstance(specs, MessageBoardBuilder):
-        return specs
-    brd = get_message_board_builder()
-    for spec in specs:
-        if isinstance(spec.value, str):
-            brd.set_waiting_on(spec.device_name).for_attribute(
-                spec.attr
-            ).to_become_equal_to(spec.value)
-        else:
-            brd.set_waiting_on(spec.device_name).for_attribute(
-                spec.attr
-            ).to_change_in_order(spec.value)
-    return brd
-
-
-def set_observe(
-    specs: Set[WatchSpec],
-) -> MessageBoardBuilder:
-    brd = get_message_board_builder()
-    for spec in specs:
-        brd.set_waiting_on(spec.device_name).for_attribute(spec.attr).and_observe()
     return brd

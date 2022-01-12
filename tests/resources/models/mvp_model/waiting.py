@@ -53,6 +53,10 @@ def set_wating_for_start_up(
                     brd.set_waiting_on(device).for_attribute(
                         "state"
                     ).to_become_equal_to("ON")
+        if tel.csp.cbf.subarray(1).enabled:
+            brd.set_waiting_on(tel.csp.cbf.subarray(1)).for_attribute(
+                "state"
+            ).to_become_equal_to("ON")
     elif tel.skalow:
         if tel.skalow.mccs.master.enabled:
             brd.set_waiting_on(tel.skalow.mccs.master).for_attribute(
@@ -122,7 +126,7 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
         if tel.csp.cbf.controller.enabled:
             brd.set_waiting_on(tel.csp.cbf.controller).for_attribute(
                 "state"
-            ).to_become_equal_to("STANDBY")
+            ).to_become_equal_to("OFF")
         for i in range(1, nr_of_subarrays + 1):
             for device in (
                 tel.subarrays(i).subtract("tm").subtract("fsp")
@@ -131,6 +135,10 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
                     brd.set_waiting_on(device).for_attribute(
                         "state"
                     ).to_become_equal_to("OFF")
+        if tel.csp.cbf.subarray(1).enabled:
+            brd.set_waiting_on(tel.csp.cbf.subarray(1)).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF")
     elif tel.skalow:
         if tel.csp.controller.enabled:
             brd.set_waiting_on(tel.csp.controller).for_attribute(

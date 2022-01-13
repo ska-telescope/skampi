@@ -10,11 +10,9 @@ from ska_ser_skallop.mvp_control.describing.mvp_names import get_tel
 
 
 # telescope starting up #
-def set_wating_for_start_up(
-    builder: MessageBoardBuilder = None,
-) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+def set_wating_for_start_up() -> MessageBoardBuilder:
+
+    brd = get_message_board_builder()
 
     nr_of_dishes = 4
     nr_of_subarrays = 1
@@ -96,11 +94,8 @@ def set_wating_for_start_up(
 
 
 # telescope shutting down
-def set_wating_for_shut_down(
-    builder: Union[None, MessageBoardBuilder] = None
-) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+def set_wating_for_shut_down() -> MessageBoardBuilder:
+    brd = get_message_board_builder()
 
     nr_of_dishes = 4
     nr_of_subarrays = 1
@@ -174,11 +169,8 @@ def set_wating_for_shut_down(
 # assigning resources
 
 
-def set_waiting_for_assign_resources(
-    ind: int, builder: Union[None, MessageBoardBuilder] = None
-) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+def set_waiting_for_assign_resources(ind: int) -> MessageBoardBuilder:
+    brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -199,11 +191,8 @@ def set_waiting_for_assign_resources(
     return brd
 
 
-def set_waiting_until_resourcing(
-    ind: int, builder: Union[None, MessageBoardBuilder] = None
-) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+def set_waiting_until_resourcing(ind: int) -> MessageBoardBuilder:
+    brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -218,11 +207,8 @@ def set_waiting_until_resourcing(
     return brd
 
 
-def set_waiting_for_release_resources(
-    ind: int, builder: Union[None, MessageBoardBuilder] = None
-) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+def set_waiting_for_release_resources(ind: int) -> MessageBoardBuilder:
+    brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -246,10 +232,9 @@ def set_waiting_for_release_resources(
 
 
 def set_waiting_for_configure_scan(
-    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
+    ind: int, receptors: List[int]
 ) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+    brd = get_message_board_builder()
     subarray_change_order = ["CONFIGURING", "READY"]
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
@@ -272,10 +257,9 @@ def set_waiting_for_configure_scan(
 
 
 def set_waiting_until_configuring(
-    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
+    ind: int, receptors: List[int]
 ) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+    brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -290,11 +274,8 @@ def set_waiting_until_configuring(
     return brd
 
 
-def set_waiting_until_scanning(
-    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
-) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+def set_waiting_until_scanning(ind: int, receptors: List[int]) -> MessageBoardBuilder:
+    brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -310,10 +291,9 @@ def set_waiting_until_scanning(
 
 
 def set_waiting_for_releasing_a_configuration(
-    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
+    ind: int, receptors: List[int]
 ) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+    brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -343,11 +323,10 @@ def set_waiting_for_releasing_a_configuration(
 
 # scanning
 def set_waiting_for_scanning_to_complete(
-    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
+    ind: int, receptors: List[int]
 ) -> MessageBoardBuilder:
 
-    if not (brd := builder):
-        brd = get_message_board_builder()
+    brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -373,11 +352,8 @@ def set_waiting_for_scanning_to_complete(
 
 
 # abort
-def set_waiting_for_abort(
-    ind: int, nr_resources: int, builder: Union[None, MessageBoardBuilder] = None
-) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+def set_waiting_for_abort(ind: int, nr_resources: int) -> MessageBoardBuilder:
+    brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -403,11 +379,8 @@ def set_waiting_for_abort(
 
 
 # obsreset
-def set_waiting_for_obsreset(
-    ind: int, receptors: List[int], builder: Union[None, MessageBoardBuilder] = None
-) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+def set_waiting_for_obsreset(ind: int, receptors: List[int]) -> MessageBoardBuilder:
+    brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:
@@ -433,11 +406,8 @@ def set_waiting_for_obsreset(
 
 
 # restart
-def set_waiting_for_restart(
-    ind: int, nr_resources: int, builder: Union[None, MessageBoardBuilder] = None
-) -> MessageBoardBuilder:
-    if not (brd := builder):
-        brd = get_message_board_builder()
+def set_waiting_for_restart(ind: int, nr_resources: int) -> MessageBoardBuilder:
+    brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
     if tm_subbarray.enabled:

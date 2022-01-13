@@ -96,10 +96,10 @@ def fxt_check_tango_db(request):
     db = TangoDB()
     devices = "\n".join(db.devices | where(lambda args: "dserver/" not in args[0]))
     ts=time.time()
-    logger.info(f"section_start:`{ts}:devices[collapsed=true]\r\e[0KDevices in db")
+    logger.info(f"\e[0Ksection_start:`{ts}:devices[collapsed=true]\r\e[0KDevices in db")
     logger.info(f"{devices}")
     ts=time.time()
-    logger.info(f"section_end:{ts}:devices\r\e[0K")
+    logger.info(f"\e[0Ksection_end:{ts}:devices\r\e[0K")
 
     device_states = list(db.get_db_state().items())
     device_states = "\n".join(

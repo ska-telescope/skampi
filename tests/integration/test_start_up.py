@@ -76,7 +76,7 @@ def a_csp(set_csp_entry_point):
 
 @pytest.fixture(name="set_up_transit_checking_for_cbf")
 @pytest.mark.usefixtures("set_cbf_entry_point")
-def fxt_set_up_transit_checking_for_cbf(transit_checking: conftest.TransitChecking):
+def fxt_set_up_transit_checking_for_cbf(transit_checking: fxt_types.transit_checking):
     tel = names.TEL()
     devices_to_follow = cast(List, [tel.csp.cbf.subarray(1)])
     subject_device = tel.csp.cbf.controller
@@ -101,10 +101,10 @@ def a_mccs(set_mccs_entry_point):
 def i_start_up_the_telescope(
     standby_telescope: fxt_types.standby_telescope,
     entry_point: fxt_types.entry_point,
-    transit_checking: conftest.TransitChecking,
+    context_monitoring: fxt_types.context_monitoring,
 ):
     """I start up the telescope."""
-    with transit_checking.set_transit_for_next_call_on_entry_point():
+    with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up():
             entry_point.set_telescope_to_running()
 
@@ -136,7 +136,7 @@ def the_csp_must_be_on():
 
 
 @then("the cbf must be on")
-def the_cbf_must_be_on(transit_checking: conftest.TransitChecking):
+def the_cbf_must_be_on(transit_checking: fxt_types.transit_checking):
     """the cbf must be on."""
     tel = names.TEL()
     cbf_controller = con_config.get_device_proxy(tel.csp.cbf.controller)

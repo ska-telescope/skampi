@@ -1,6 +1,7 @@
 """Start up the sdp feature tests."""
 import logging
 from typing import List, cast
+import os
 
 import pytest
 from assertpy import assert_that
@@ -12,6 +13,16 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from . import conftest
 
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(name="start_up_test_exec_settings")
+def fxt_start_up_test_exec_settings(
+    exec_settings: fxt_types.exec_settings,
+) -> fxt_types.exec_settings:
+    start_up_test_exec_settings = exec_settings.replica()
+    if os.getenv("LIVE_LOGGING"):
+        start_up_test_exec_settings.run_with_live_logging()
+    return start_up_test_exec_settings
 
 
 @pytest.mark.skamid
@@ -87,8 +98,20 @@ def fxt_set_up_transit_checking_for_cbf(transit_checking: fxt_types.transit_chec
     )
 
 
+@pytest.fixture(name="set_up_log_checking_for_cbf")
+@pytest.mark.usefixtures("set_cbf_entry_point")
+def fxt_set_up_log_capturing_for_cbf(log_checking: fxt_types.log_checking):
+    if os.getenv("CAPTURE_LOGS"):
+        tel = names.TEL()
+        cbf_controller = str(tel.csp.cbf.controller)
+        subarray = str(tel.csp.cbf.subarray(1))
+        log_checking.capture_logs_from_devices(cbf_controller, subarray)
+
+
 @given("an CBF")
-def a_cbf(set_cbf_entry_point, set_up_transit_checking_for_cbf):
+def a_cbf(
+    set_cbf_entry_point, set_up_transit_checking_for_cbf, set_up_log_checking_for_cbf
+):
     """a CBF."""
 
 
@@ -102,10 +125,11 @@ def i_start_up_the_telescope(
     standby_telescope: fxt_types.standby_telescope,
     entry_point: fxt_types.entry_point,
     context_monitoring: fxt_types.context_monitoring,
+    start_up_test_exec_settings: fxt_types.exec_settings,
 ):
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up():
+        with standby_telescope.wait_for_starting_up(start_up_test_exec_settings):
             entry_point.set_telescope_to_running()
 
 

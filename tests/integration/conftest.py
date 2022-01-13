@@ -1,6 +1,7 @@
 import logging
 from contextlib import contextmanager
 from time import sleep
+import time
 from typing import Callable, List, Tuple, Union, cast
 
 import pytest
@@ -94,9 +95,11 @@ def fxt_check_tango_db(request):
     # pylint: disable=no-value-for-parameter
     db = TangoDB()
     devices = "\n".join(db.devices | where(lambda args: "dserver/" not in args[0]))
-    logger.info("\nDevices in db:\nsection_start:`date +%s`:$1[collapsed=true]\r\e[0K$2")
+    ts=time.time()
+    logger.info(f"section_start:`{ts}:devices[collapsed=true]\r\e[0KDevices in db:")
     logger.info(f"{devices}")
-    logger.info("section_end:`date +%s`:$1\r\e[0K")
+    ts=time.time()
+    logger.info(f"section_end:{ts}:devices\r\e[0K")
 
     device_states = list(db.get_db_state().items())
     device_states = "\n".join(

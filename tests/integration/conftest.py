@@ -44,7 +44,10 @@ def fxt_check_tango_db(request):
     logger.info(f"controlling SUT on {url}")
     db = TangoDB()
     devices = "\n".join(db.devices)
-    logger.info(f"\nDevices in db:\n{devices}")
+    logger.info("\nDevices in db:\nsection_start:`date +%s`:$1[collapsed=true]\r\e[0K$2")
+    logger.info(f"{devices}")
+
+    logger.info("section_end:`date +%s`:$1\r\e[0K")
     device_states = list(db.get_db_state().items())
     device_states = "\n".join(
         device_states

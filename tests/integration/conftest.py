@@ -22,7 +22,7 @@ MOCK_SUT = False
 NR_OFF_SUBARRAYS = 2
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def fxt_check_tango_db(request):
     # pylint: disable=no-value-for-parameter
     db = TangoDB()

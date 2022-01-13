@@ -10,7 +10,6 @@ packages = [{include = "tests/integration"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 pytest-repeat = "^0.9.1"
-ska-ser-skallop = "2.13.0"
 kubernetes = "^21.7.0"
 pytest-cov = "^3.0.0"
 pytest-forked = "^1.4.0"
@@ -24,6 +23,7 @@ docopts = "^0.6.1"
 pytest-timeout = "^2.0.2"
 pytest-ordering = "^0.6"
 pipe = "^1.6.0"
+ska-ser-skallop = "2.14.0"
 
 
 

@@ -30,8 +30,8 @@ dependencies:
     tags:
       - taranta_dashboard
   - name: ska-mid-cbf # CIPA team
-    # version: 0.2.8
-    version: 0.2.7
+    # version: 0.2.9
+    version: 0.2.9
     repository: https://artefact.skao.int/repository/helm-internal
     # repository: file://../../../ska-mid-cbf-mcs/charts/ska-mid-cbf
     condition: ska-mid-cbf.enabled

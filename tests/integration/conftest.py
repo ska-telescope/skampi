@@ -40,7 +40,6 @@ def fxt_check_tango_db(request):
         | select(lambda args: f"{args[0]:<100}{args[1]}")
     )
     logger.info(f"\n{'':<50}Device states:\n{device_states}")
-    sleep(10)
 
 
 @pytest.fixture(name="run_mock")

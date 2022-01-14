@@ -45,7 +45,6 @@ def fxt_check_tango_db(request):
     )
     logger.info(f"{device_states}")
     logger.info(f"\n\x1b[0Ksection_end:{int(time.time())}:device_states\r\x1b[0K")
-    sleep(10)
 
 
 @pytest.fixture(name="run_mock")

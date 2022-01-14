@@ -30,8 +30,8 @@ dependencies:
     tags:
       - taranta_dashboard
   - name: ska-mid-cbf # CIPA team
-    # version: 0.2.8
-    version: 0.2.7
+    # version: 0.2.9
+    version: 0.2.9
     repository: https://artefact.skao.int/repository/helm-internal
     # repository: file://../../../ska-mid-cbf-mcs/charts/ska-mid-cbf
     condition: ska-mid-cbf.enabled
@@ -40,7 +40,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-csp-lmc-mid.enabled
   # - name: ska-tmc-mid
-  #   version: 0.4.9
+  #   version: 0.4.11
   #   repository: https://artefact.skao.int/repository/helm-internal
   #   condition: ska-tmc-mid.enabled
   # - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs

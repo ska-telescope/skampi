@@ -89,13 +89,15 @@ def a_csp(set_csp_entry_point):
 @pytest.mark.usefixtures("set_cbf_entry_point")
 def fxt_set_up_transit_checking_for_cbf(transit_checking: fxt_types.transit_checking):
     tel = names.TEL()
-    devices_to_follow = cast(List, [tel.csp.cbf.subarray(1)])
-    subject_device = tel.csp.cbf.controller
-    transit_checking.check_that(subject_device).transits_according_to(["ON"]).on_attr(
-        "state"
-    ).when_transit_occur_on(
-        devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
-    )
+    # only do this for skamid as no inner devices used for low
+    if tel.skamid:
+        devices_to_follow = cast(List, [tel.csp.cbf.subarray(1)])
+        subject_device = tel.csp.cbf.controller
+        transit_checking.check_that(subject_device).transits_according_to(
+            ["ON"]
+        ).on_attr("state").when_transit_occur_on(
+            devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
+        )
 
 
 @pytest.fixture(name="set_up_log_checking_for_cbf")

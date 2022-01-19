@@ -33,10 +33,10 @@ dependencies:
   version: 1.0.29
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-taranta.enabled
-# - name: ska-ser-skuid
-#   version: 0.3.0
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-ser-skuid.enabled
+- name: ska-ser-skuid
+  version: 0.3.0
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-ser-skuid.enabled
 # - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
 #   version: 0.5.3
 #   repository: https://artefact.skao.int/repository/helm-internal

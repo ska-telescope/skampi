@@ -38,12 +38,12 @@ ska-landingpage:
   enabled: true
   MVPInstance: mvp-low
 
-# ska-ser-skuid:
-#   enabled: true
-#   skuid:
-#     use_pv: false
-#     config:
-#       generator_id: mvp01
+ska-ser-skuid:
+  enabled: true
+  skuid:
+    use_pv: false
+    config:
+      generator_id: mvp01
 
 ska-tango-base:
   enabled: true

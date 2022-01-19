@@ -199,4 +199,4 @@ skampi-test-01centralnode:  ## launcher for centralnode tests
 skampi-test-02skuidservice:  ## launcher for skuid tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-ser-skuid" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=registry.gitlab.com/ska-telescope/ska-ser-skuid/ska-ser-skuid:3.3.0-dev.c4f462a74 MARK="acceptance"
+	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=registry.gitlab.com/ska-telescope/ska-ser-skuid/ska-ser-skuid:3.3.0-dev.c5e7237ae MARK="acceptance and (not skuid_repo)"

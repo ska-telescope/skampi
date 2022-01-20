@@ -1,4 +1,5 @@
 import logging
+import os
 from time import sleep
 import time
 from typing import Callable
@@ -25,26 +26,27 @@ NR_OFF_SUBARRAYS = 2
 @pytest.fixture(scope="session", autouse=True)
 def fxt_check_tango_db(request):
     # pylint: disable=no-value-for-parameter
-    db = TangoDB()
-    devices = "\n".join(db.devices | where(lambda args: "dserver/" not in args[0]))
-    logger.info("#### Devices and States ####")
-    logger.info(
-        f"\n\x1b[0Ksection_start:{int(time.time())}:devices[collapsed=true]\r\x1b[0KDevices in db:"
-    )
-    logger.info(f"{devices}")
-    logger.info(f"\n\x1b[0Ksection_end:{int(time.time())}:devices\r\x1b[0K")
+    if not os.getenv("DEVENV"):
+        db = TangoDB()
+        devices = "\n".join(db.devices | where(lambda args: "dserver/" not in args[0]))
+        logger.info("#### Devices and States ####")
+        logger.info(
+            f"\n\x1b[0Ksection_start:{int(time.time())}:devices[collapsed=true]\r\x1b[0KDevices in db:"
+        )
+        logger.info(f"{devices}")
+        logger.info(f"\n\x1b[0Ksection_end:{int(time.time())}:devices\r\x1b[0K")
 
-    device_states = list(db.get_db_state().items())
-    device_states = "\n".join(
-        device_states
-        | where(lambda args: "dserver/" not in args[0])
-        | select(lambda args: f"{args[0]:<100}{args[1]}")
-    )
-    logger.info(
-        f"\n\x1b[0Ksection_start:{int(time.time())}:device_states[collapsed=true]\r\x1b[0KDevice states:"
-    )
-    logger.info(f"{device_states}")
-    logger.info(f"\n\x1b[0Ksection_end:{int(time.time())}:device_states\r\x1b[0K")
+        device_states = list(db.get_db_state().items())
+        device_states = "\n".join(
+            device_states
+            | where(lambda args: "dserver/" not in args[0])
+            | select(lambda args: f"{args[0]:<100}{args[1]}")
+        )
+        logger.info(
+            f"\n\x1b[0Ksection_start:{int(time.time())}:device_states[collapsed=true]\r\x1b[0KDevice states:"
+        )
+        logger.info(f"{device_states}")
+        logger.info(f"\n\x1b[0Ksection_end:{int(time.time())}:device_states\r\x1b[0K")
 
 
 @pytest.fixture(name="run_mock")

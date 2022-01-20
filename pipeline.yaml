@@ -29,7 +29,7 @@ ska-tmc-mid:
 ska-tmc-low:
   enabled: false
 ska-low-mccs:
-  enabled: true
+  enabled: false
 
 ska-log-consumer:
   enabled: true

@@ -74,8 +74,12 @@ def fxt_set_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
 
 
 @pytest.fixture(name="set_csp_entry_point")
-def fxt_set_csp_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
+def fxt_set_csp_entry_point(
+    set_session_exec_env: fxt_types.set_session_exec_env,
+    exec_settings: fxt_types.exec_settings,
+):
     exec_env = set_session_exec_env
+    exec_settings.time_out = 20
     if not MOCK_SUT:
         CSPEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
         exec_env.entrypoint = CSPEntryPoint
@@ -86,8 +90,12 @@ def fxt_set_csp_entry_point(set_session_exec_env: fxt_types.set_session_exec_env
 
 
 @pytest.fixture(name="set_cbf_entry_point")
-def fxt_set_cbf_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
+def fxt_set_cbf_entry_point(
+    set_session_exec_env: fxt_types.set_session_exec_env,
+    exec_settings: fxt_types.exec_settings,
+):
     exec_env = set_session_exec_env
+    exec_settings.time_out = 20
     if not MOCK_SUT:
         CBFEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
         exec_env.entrypoint = CBFEntryPoint
@@ -102,8 +110,12 @@ def fxt_set_cbf_entry_point(set_session_exec_env: fxt_types.set_session_exec_env
 
 
 @pytest.fixture(name="set_mccs_entry_point")
-def fxt_set_mssc_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
+def fxt_set_mssc_entry_point(
+    set_session_exec_env: fxt_types.set_session_exec_env,
+    exec_settings: fxt_types.exec_settings,
+):
     exec_env = set_session_exec_env
+    exec_settings.time_out = 20
     if not MOCK_SUT:
         MCCSEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
         exec_env.entrypoint = MCCSEntryPoint

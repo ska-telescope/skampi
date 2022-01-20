@@ -22,6 +22,8 @@ def fxt_start_up_test_exec_settings(
     start_up_test_exec_settings = exec_settings.replica()
     if os.getenv("LIVE_LOGGING"):
         start_up_test_exec_settings.run_with_live_logging()
+    if os.getenv("REPLAY_EVENTS_AFTERWARDS"):
+        start_up_test_exec_settings.replay_events_afterwards()
     return start_up_test_exec_settings
 
 
@@ -133,9 +135,6 @@ def fxt_set_up_log_checking_for_cspf(log_checking: fxt_types.log_checking):
         cbf_controller = str(tel.csp.controller)
         subarray = str(tel.csp.subarray(1))
         log_checking.capture_logs_from_devices(cbf_controller, subarray)
-
-
-# givens
 
 
 @given("an SDP")

@@ -25,6 +25,9 @@ def fxt_start_up_test_exec_settings(
     return start_up_test_exec_settings
 
 
+# tests marking
+
+
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in mid")
@@ -75,14 +78,7 @@ def test_mccs_start_up_telescope():
     """Start up the csp in low."""
 
 
-@given("an SDP")
-def a_sdp(set_sdp_entry_point):
-    """a SDP."""
-
-
-@given("an CSP")
-def a_csp(set_csp_entry_point):
-    """a CSP."""
+# transit checking
 
 
 @pytest.fixture(name="set_up_transit_checking_for_cbf")
@@ -100,6 +96,25 @@ def fxt_set_up_transit_checking_for_cbf(transit_checking: fxt_types.transit_chec
         )
 
 
+@pytest.fixture(name="set_up_transit_checking_for_csp")
+@pytest.mark.usefixtures("set_csp_entry_point")
+def fxt_set_up_transit_checking_for_csp(transit_checking: fxt_types.transit_checking):
+    tel = names.TEL()
+    if tel.skalow:
+        devices_to_follow = cast(
+            List, [tel.csp.subarray(1), tel.csp.cbf.subarray(1), tel.csp.cbf.controller]
+        )
+        subject_device = tel.csp.controller
+        transit_checking.check_that(subject_device).transits_according_to(
+            ["ON"]
+        ).on_attr("state").when_transit_occur_on(
+            devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
+        )
+
+
+# log capturing
+
+
 @pytest.fixture(name="set_up_log_checking_for_cbf")
 @pytest.mark.usefixtures("set_cbf_entry_point")
 def fxt_set_up_log_capturing_for_cbf(log_checking: fxt_types.log_checking):
@@ -108,6 +123,31 @@ def fxt_set_up_log_capturing_for_cbf(log_checking: fxt_types.log_checking):
         cbf_controller = str(tel.csp.cbf.controller)
         subarray = str(tel.csp.cbf.subarray(1))
         log_checking.capture_logs_from_devices(cbf_controller, subarray)
+
+
+@pytest.fixture(name="set_up_log_checking_for_csp")
+@pytest.mark.usefixtures("set_cbf_entry_point")
+def fxt_set_up_log_checking_for_cspf(log_checking: fxt_types.log_checking):
+    if os.getenv("CAPTURE_LOGS"):
+        tel = names.TEL()
+        cbf_controller = str(tel.csp.controller)
+        subarray = str(tel.csp.subarray(1))
+        log_checking.capture_logs_from_devices(cbf_controller, subarray)
+
+
+# givens
+
+
+@given("an SDP")
+def a_sdp(set_sdp_entry_point):
+    """a SDP."""
+
+
+@given("an CSP")
+def a_csp(
+    set_csp_entry_point, set_up_transit_checking_for_csp, set_up_log_checking_for_csp
+):
+    """a CSP."""
 
 
 @given("an CBF")
@@ -122,6 +162,9 @@ def a_mccs(set_mccs_entry_point):
     """a MCCS."""
 
 
+# whens
+
+
 @when("I start up the telescope")
 def i_start_up_the_telescope(
     standby_telescope: fxt_types.standby_telescope,
@@ -133,6 +176,9 @@ def i_start_up_the_telescope(
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(start_up_test_exec_settings):
             entry_point.set_telescope_to_running()
+
+
+# thens
 
 
 @then("the sdp must be on")
@@ -149,7 +195,7 @@ def the_sdp_must_be_on():
 
 
 @then("the csp must be on")
-def the_csp_must_be_on():
+def the_csp_must_be_on(transit_checking: fxt_types.transit_checking):
     """the csp must be on."""
     tel = names.TEL()
     csp_master = con_config.get_device_proxy(tel.csp.controller)
@@ -159,6 +205,11 @@ def the_csp_must_be_on():
         subarray = con_config.get_device_proxy(tel.csp.subarray(index))
         result = subarray.read_attribute("state").value
         assert_that(result).is_equal_to("ON")
+    if transit_checking:
+        checker = transit_checking.checker
+        assert checker
+        logger.info(checker.print_outcome_for(checker.subject_device))
+        checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")
 
 
 @then("the cbf must be on")
@@ -190,6 +241,9 @@ def the_mccs_must_be_on():
     result = mccs_controller.read_attribute("state").value
     assert_that(result).is_equal_to("ON")
     # only check subarray 1 for cbf low
+
+
+# test validation
 
 
 @pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")

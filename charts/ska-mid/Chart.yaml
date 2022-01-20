@@ -51,10 +51,10 @@ dependencies:
   #   version: 1.0.26
   #   repository: https://artefact.skao.int/repository/helm-internal
   #   condition: ska-webjive.enabled
-  # - name: ska-ser-skuid
-  #   version: 0.3.0
-  #   repository: https://artefact.skao.int/repository/helm-internal
-  #   condition: ska-ser-skuid.enabled
+  - name: ska-ser-skuid
+    version: 0.3.1
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-ser-skuid.enabled
   - name: ska-landingpage
     version: 0.8.2
     repository: file://../ska-landingpage

@@ -1,0 +1,10 @@
+apiVersion: v2
+description: A Helm chart for deploying the MCCS prototype on Kubernetes
+name: ska-low-mccs
+version: "0.8.6"
+appVersion: "0.8.6"
+icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+dependencies:
+- name: ska-tango-util
+  version: 0.3.5
+  repository: https://artefact.skao.int/repository/helm-internal

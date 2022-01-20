@@ -1,0 +1,162 @@
+# Default values for mccs (ska-low-mccs)
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+display: ":0"
+xauthority: "~/.Xauthority"
+
+system: SW-infrastructure
+subsystem: mccs
+telescope: SKA-low
+
+labels:
+  app: ska-low-mccs
+annotations:
+  app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+  app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+
+global:
+  minikube: true
+  tango_host: databaseds-tango-base-test:10000
+
+resources:
+  limits:
+    cpu: 60m
+    memory: 150Mi
+  requests:
+    cpu: 20m
+    memory: 50Mi
+
+# Main values to control for using the ska-low-mccs subchart
+
+dsconfig:
+  # the configuration.json contains the deviceserver (instances)
+  # if addition instances are required the need to be defined there
+  configuration_file: data/configuration.json
+  image:
+      registry: artefact.skao.int
+      image: ska-tango-images-tango-dsconfig
+      tag: 1.5.3
+      pullPolicy: IfNotPresent
+
+# Default docker image - used by all of MCCS
+mccs:
+  image:
+    registry: artefact.skao.int
+    image: ska-low-mccs
+    tag: 0.8.6 #VERSION: Used to update tags on release - DO NOT REMOVE COMMENT
+    pullPolicy: IfNotPresent
+
+
+# Default ska-low-mccs device server instances
+deviceServers:
+  # controller has only one instance
+  controller:
+    name: mccs-controller
+    function: controller
+    domain: ska-low-mccs
+    command: "MccsController"
+    instances: ["controller"]
+    depends_on:
+      - device: sys/database/2
+  subarrays:
+    name: mccs-subarray
+    # subarray instances have to be 0-padded to two digits
+    function: subarray
+    domain: ska-low-mccs
+    command: "MccsSubarray"
+    instances: ["subarray_01", "subarray_02"]
+    depends_on:
+      - device: sys/database/2
+  stations:
+    name: mccs-station
+    # station instances have to be 0-padded to three digits
+    function: station
+    domain: ska-low-mccs
+    command: "MccsStation"
+    instances: ["station_001", "station_002"]
+    depends_on:
+      - device: sys/database/2
+  subracks:
+    name: mccs-subrack
+    # subrack instances have to be 0-padded to two digits
+    function: subrack
+    domain: ska-low-mccs
+    command: "MccsSubrack"
+    instances: ["subrack_01"]
+    depends_on:
+      - device: sys/database/2
+  tiles:
+    name: mccs-tile
+    # tile instances have to be 0-padded to four digits
+    function: tile
+    domain: ska-low-mccs
+    command: "MccsTile"
+    instances: ["tile_0001", "tile_0002", "tile_0003", "tile_0004"]
+    resources:
+      requests:
+        memory: 512Mi
+      limits:
+        memory: 512Mi
+    depends_on:
+      - device: sys/database/2
+  apius:
+    name: mccs-apiu
+    # apiu instances have to be 0-padded to three digits
+    function: apiu
+    domain: ska-low-mccs
+    command: "MccsAPIU"
+    instances: ["apiu_001", "apiu_002"]
+    depends_on:
+      - device: sys/database/2
+  antennas:
+    name: mccs-antenna
+    # antenna instances have to be 0-padded to six digits
+    function: antenna
+    domain: ska-low-mccs
+    command: "MccsAntenna"
+    instances: ["antenna_000001", "antenna_000002", "antenna_000003", "antenna_000004",
+                "antenna_000005", "antenna_000006", "antenna_000007", "antenna_000008"]
+    depends_on:
+      - device: sys/database/2
+  station-beams:
+    name: mccs-station-beam
+    # beam instances have to be 0-padded to three digits
+    function: beam
+    domain: ska-low-mccs
+    command: "MccsStationBeam"
+    instances: ["beam_01", "beam_02", "beam_03", "beam_04"]
+    depends_on:
+      - device: sys/database/2
+  subarray-beams:
+    name: mccs-subarray-beam
+    # subarray beam instances have to be 0-padded to two digits
+    function: subarraybeam
+    domain: ska-low-mccs
+    command: "MccsSubarrayBeam"
+    instances: ["subarraybeam_01", "subarraybeam_02", "subarraybeam_03", "subarraybeam_04"]
+    depends_on:
+      - device: sys/database/2
+
+cli:
+  # use the MCCS unix cli tool
+  enabled: true
+  component: mccs-cli
+  function: mccs-cli-tango-client
+  domain: interactive-testing
+  intent: enabling
+  resources:
+    requests:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 512Mi # 128Mi = 0.125 GB mem
+      ephemeral-storage: 512Mi
+    limits:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 512Mi # 128Mi = 0.125 GB mem
+      ephemeral-storage: 512Mi
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

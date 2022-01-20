@@ -1,0 +1,65 @@
+{{ if .Values.cli.enabled }}
+{{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
+{{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
+{{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Values.subsystem }}-{{ .Values.cli.component }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+    component: {{ .Values.cli.component }}
+    function: {{ .Values.cli.function }}
+    domain: {{ .Values.cli.domain }}
+    intent: {{ .Values.cli.intent }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+  initContainers:
+  - name: check-dependencies-0
+    image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
+    imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
+    command:
+      - retry
+      - --max=10
+      - --
+      - tango_admin
+      - --check-device
+      - sys/database/2
+    env:
+    - name: TANGO_HOST
+      value: {{ $tango_host }}
+  containers:
+  - name: cli
+    image: "{{ .Values.mccs.image.registry }}/{{ .Values.mccs.image.image }}:{{ .Values.mccs.image.tag }}"
+    imagePullPolicy: {{ .Values.mccs.image.pullPolicy }}
+    command:
+      - /usr/local/bin/wait-for-it.sh
+      - {{ $tango_host }}
+      - --timeout=30
+      - --strict
+      - --
+      - sleep
+      - infinity
+    env:
+    - name: TANGO_HOST
+      value: "{{ $tango_host }}"
+    resources:
+{{ toYaml .Values.cli.resources | indent 6 }}
+  restartPolicy: Always
+{{- with .Values.nodeSelector }}
+  nodeSelector:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.affinity }}
+  affinity:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+
+{{ end }}

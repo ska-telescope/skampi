@@ -1,0 +1,35 @@
+{
+    "servers": {
+        "MccsClusterManagerDevice": {
+            "clustermanager": {
+                "MccsClusterManagerDevice": {
+                    "low-mccs/clustermanager/clustermanager": {
+                        "properties": {}
+                    }
+                }
+            }
+        },
+        "MccsTelState": {
+            "telstate": {
+                "MccsTelState": {
+                    "low-mccs/telstate/telstate": {
+                        "properties": {
+                            "TelStateConfigFile": "",
+                            "SkaLevel": "4",
+                            "GroupDefinitions": ""
+                        }
+                    }
+                }
+            }
+        },
+        "MccsTransientBuffer": {
+            "transientbuffer": {
+                "MccsTransientBuffer": {
+                    "low-mccs/transientbuffer/transientbuffer": {
+                        "properties": {}
+                    }
+                }
+            }
+        }
+    }
+}

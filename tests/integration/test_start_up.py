@@ -1,5 +1,6 @@
 """Start up the sdp feature tests."""
 import logging
+import re
 from typing import List, cast
 import os
 
@@ -9,6 +10,7 @@ from pytest_bdd import given, scenario, then, when
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.subscribing.message_board import MessageBoard
 
 from . import conftest
 
@@ -76,6 +78,7 @@ def test_csp_start_up_telescope_low():
 
 @pytest.mark.skalow
 @pytest.mark.startup
+@pytest.mark.skip(reason="current mccs-low version is deprecated")
 @scenario("features/mccs_start_up_telescope.feature", "Start up the MCCS")
 def test_mccs_start_up_telescope():
     """Start up the csp in low."""
@@ -90,13 +93,15 @@ def fxt_set_up_transit_checking_for_cbf(transit_checking: fxt_types.transit_chec
     tel = names.TEL()
     # only do this for skamid as no inner devices used for low
     if tel.skamid:
-        devices_to_follow = cast(List, [tel.csp.cbf.subarray(1)])
-        subject_device = tel.csp.cbf.controller
-        transit_checking.check_that(subject_device).transits_according_to(
-            ["ON"]
-        ).on_attr("state").when_transit_occur_on(
-            devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
-        )
+        if os.getenv("DEVENV"):
+            # only do transit checking in dev as timeout problems can lead to false positives
+            devices_to_follow = cast(List, [tel.csp.cbf.subarray(1)])
+            subject_device = tel.csp.cbf.controller
+            transit_checking.check_that(subject_device).transits_according_to(
+                ["ON"]
+            ).on_attr("state").when_transit_occur_on(
+                devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
+            )
 
 
 @pytest.fixture(name="set_up_transit_checking_for_csp")
@@ -104,15 +109,18 @@ def fxt_set_up_transit_checking_for_cbf(transit_checking: fxt_types.transit_chec
 def fxt_set_up_transit_checking_for_csp(transit_checking: fxt_types.transit_checking):
     tel = names.TEL()
     if tel.skalow:
-        devices_to_follow = cast(
-            List, [tel.csp.subarray(1), tel.csp.cbf.subarray(1), tel.csp.cbf.controller]
-        )
-        subject_device = tel.csp.controller
-        transit_checking.check_that(subject_device).transits_according_to(
-            ["ON"]
-        ).on_attr("state").when_transit_occur_on(
-            devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
-        )
+        if os.getenv("DEVENV"):
+            # only do transit checking in dev as timeout problems can lead to false positives
+            devices_to_follow = cast(
+                List,
+                [tel.csp.subarray(1), tel.csp.cbf.subarray(1), tel.csp.cbf.controller],
+            )
+            subject_device = tel.csp.controller
+            transit_checking.check_that(subject_device).transits_according_to(
+                ["ON"]
+            ).on_attr("state").when_transit_occur_on(
+                devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
+            )
 
 
 # log capturing

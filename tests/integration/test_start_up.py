@@ -203,19 +203,9 @@ def the_sdp_must_be_on():
 
 
 @then("the csp must be on")
-def the_csp_must_be_on(
-    transit_checking: fxt_types.transit_checking,
-    context_monitoring: fxt_types.context_monitoring,
-):
+def the_csp_must_be_on(transit_checking: fxt_types.transit_checking):
     """the csp must be on."""
     tel = names.TEL()
-    board = context_monitoring.builder.board
-    if re.match(
-        r"iteration stopped by surpressed timeout;",
-        cast(MessageBoard, board).tracer.print_messages(),
-    ):
-        logger.warning("waiting unexpectedly stopped")
-        assert False
     csp_master = con_config.get_device_proxy(tel.csp.controller)
     result = csp_master.read_attribute("state").value
     assert_that(result).is_equal_to("ON")
@@ -231,19 +221,9 @@ def the_csp_must_be_on(
 
 
 @then("the cbf must be on")
-def the_cbf_must_be_on(
-    transit_checking: fxt_types.transit_checking,
-    context_monitoring: fxt_types.context_monitoring,
-):
+def the_cbf_must_be_on(transit_checking: fxt_types.transit_checking):
     """the cbf must be on."""
     tel = names.TEL()
-    board = context_monitoring.builder.board
-    if re.match(
-        r"iteration stopped by surpressed timeout;",
-        cast(MessageBoard, board).tracer.print_messages(),
-    ):
-        logger.warning("waiting unexpectedly stopped")
-        assert False
     cbf_controller = con_config.get_device_proxy(tel.csp.cbf.controller)
     result = cbf_controller.read_attribute("state").value
     assert_that(result).is_equal_to("ON")

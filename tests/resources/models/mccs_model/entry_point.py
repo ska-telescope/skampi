@@ -37,11 +37,6 @@ class MCCSEntryPoint(SynchedEntryPoint):
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
                 "ON"
             )
-        for index in range(1, self.nr_of_apiu + 1):
-            device = self._tel.mccs.apiu(index)
-            builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "ON"
-            )
         for index in range(1, self.nr_of_stations + 1):
             device = self._tel.mccs.station(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(

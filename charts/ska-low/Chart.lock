@@ -1,0 +1,39 @@
+dependencies:
+- name: ska-tango-base
+  repository: https://artefact.skao.int/repository/helm-internal
+  version: 0.3.5
+- name: ska-tango-util
+  repository: https://artefact.skao.int/repository/helm-internal
+  version: 0.3.5
+- name: ska-taranta
+  repository: https://artefact.skao.int/repository/helm-internal
+  version: 1.0.29
+- name: ska-taranta-auth
+  repository: https://artefact.skao.int/repository/helm-internal
+  version: 0.1.5
+- name: ska-dashboard-repo
+  repository: https://artefact.skao.int/repository/helm-internal
+  version: 0.1.9
+- name: ska-sdp
+  repository: https://artefact.skao.int/repository/helm-internal
+  version: 0.8.1
+- name: ska-low-mccs
+  repository: file://../pre-released/ska-low-mccs
+  version: 0.8.6-dev
+- name: ska-landingpage
+  repository: file://../ska-landingpage
+  version: 0.8.2
+- name: ska-csp-lmc-low
+  repository: https://artefact.skao.int/repository/helm-internal
+  version: 0.1.4
+- name: ska-low-cbf
+  repository: https://artefact.skao.int/repository/helm-internal
+  version: 0.5.3
+- name: ska-sdp
+  repository: https://artefact.skao.int/repository/helm-internal
+  version: 0.8.1
+- name: ska-log-consumer
+  repository: https://artefact.skao.int/repository/helm-internal
+  version: 0.1.6
+digest: sha256:f09798f05c8c62c9573ef8e473ec5d283922fbfea9c52752f222025d216a33bf
+generated: "2022-01-21T06:34:33.5282193+02:00"

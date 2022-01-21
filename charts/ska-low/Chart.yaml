@@ -35,7 +35,7 @@ dependencies:
     condition: ska-sdp.enabled
   - name: ska-low-mccs
     version: 0.8.6-dev
-    repository: file://../pre-released/ska-low-mccs
+    repository: file://../ska-low-mccs
   # - name: ska-ser-skuid
   #   version: 0.3.0
   #   repository: https://artefact.skao.int/repository/helm-internal

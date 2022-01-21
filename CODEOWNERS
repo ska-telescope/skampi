@@ -16,6 +16,8 @@
 /charts/ska-landingpage/ @gerhardlr 
 
 ## Grouped Changes
+## Groups and Descriptions ar defined below and the codes will be commented for the file assignments
+# ---------------------------------------- #
 # Products (Helm charts) Reviewers, A1, and Product Organisation Reviewers, H1
 # Description: 
 # -- A1 --
@@ -37,14 +39,7 @@
 # - AIV Low: Malte Marquarding
 # - AIV Mid: Adriaan De Beer
 # - Caretakers: Juande, Santander-Vela, Ben Mort, Gerhard LeRoux, Adam Avison
-# A1
-/charts/ @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
-.release @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
-# H1
-/charts/ska-mid/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
-/charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
-
-
+# ---------------------------------------- #
 # Tests Reviewers, A2, and Test Management Reviewers, H2
 # Description:
 # -- A2 --
@@ -62,11 +57,7 @@
 # - AIV Low: Malte Marquarding
 # - AIV Mid: Adriaan De Beer 
 # - Stewards: Peter Wortmann, Alan Bridger, Sonja Vrcic, Thomas Juerges, Gerhard LeRoux, Matteo Di Carlo
-# A2
-/tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
-/scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
-/images/testing/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
-
+# ---------------------------------------- #
 # CI/CD Reviewers, A3, and Housekeeping CI Reviewers, H3
 # Description:
 # -- A3 --
@@ -83,12 +74,39 @@
 # Members(POs, ST, marshalls):
 # - System Team
 # - Marshalls: System Team
+# ---------------------------------------- #
+#Docs Reviewers, A4
+# Description:
+# Changes to documentation about the verification and CI processes related to 
+# product integration (e.g. update in the readme on new env variables) 
+# Since these changes are typical as a result of A2 or A3 they should be combined
+# as separate stories within the same feature used for A2 or A3.
+# Members(POs, marshalls):
+# - Marshalls: System Team
+# - AIV Low: Malte Marquarding
+# - AIV Mid: Adriaan De Beer
+# ---------------------------------------- #
+
+## Assignments
+# A1
+/charts/ @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+.release @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+
+# H1 and H3
+/charts/ska-mid/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+/charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+
+# A2
+/tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
+/scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+/images/testing/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+
 # A3
 .gitlab-ci.yml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 /.gitlab/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+
 # H3
-values.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 /.make/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 .readthedocs.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 tests/Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
@@ -99,16 +117,7 @@ LICENSE @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmo
 pyproject.toml @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
 pipeline.yaml @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
 
-# Docs Reviewers, A4
-# Description:
-# Changes to documentation about the verification and CI processes related to 
-# product integration (e.g. update in the readme on new env variables) 
-# Since these changes are typical as a result of A2 or A3 they should be combined
-# as separate stories within the same feature used for A2 or A3.
-# Members(POs, marshalls):
-# - Marshalls: System Team
-# - AIV Low: Malte Marquarding
-# - AIV Mid: Adriaan De Beer
+# A4
 /docs/ @limonkufu @piersharding @vla22 @adb-42 @mmarquar @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 README.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 

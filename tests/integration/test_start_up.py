@@ -134,7 +134,7 @@ def fxt_set_up_transit_checking_for_csp(
 
 @pytest.fixture(name="set_up_transit_checking_for_mccs")
 @pytest.mark.usefixtures("set_csp_entry_point")
-def fxt_set_up_transit_checking_for_csp(transit_checking: fxt_types.transit_checking):
+def fxt_set_up_transit_checking_for_mccs(transit_checking: fxt_types.transit_checking):
     tel = names.TEL()
     if tel.skalow:
         if os.getenv("DEVENV"):

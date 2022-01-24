@@ -40,8 +40,8 @@ skampi-vars: k8s-vars ## Display Skampi deployment context variables
 skampi-update-chart-versions: helm-install-yq ## update Skampi chart dependencies to latest versions eg: ska-tango-base etc.
 	@for chart in $(SKAMPI_K8S_CHARTS); do \
 		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
-		for upd in $$(/usr/local/bin/yq e '.dependencies[].name' charts/$$chart/Chart.yaml | grep -v ska-landingpage); do \
-			cur_version=$$(cat charts/$$chart/Chart.yaml | /usr/local/bin/yq e ".dependencies[] | select(.name == \"$$upd\") | .version" -); \
+		for upd in $$(yq e '.dependencies[].name' charts/$$chart/Chart.yaml | grep -v ska-landingpage); do \
+			cur_version=$$(cat charts/$$chart/Chart.yaml | yq e ".dependencies[] | select(.name == \"$$upd\") | .version" -); \
 			echo "update-chart-versions: finding latest version for $$upd current version: $$cur_version"; \
 			upd_version=$$(. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sChartVersion $$upd); \
 			echo "update-chart-versions: updating $$upd from $$cur_version to $$upd_version"; \
@@ -59,7 +59,7 @@ skampi-update-chart-versions: helm-install-yq ## update Skampi chart dependencie
 ##  and k8s-wait for each one.
 
 skampi-wait-all: helm-install-yq  ## iterate over sub-charts and wait for each one
-	@for chart in `helm inspect chart $(K8S_UMBRELLA_CHART_PATH) | /usr/local/bin/yq e '.dependencies[].name' - | grep -v ska-tango-util`; do \
+	@for chart in `helm inspect chart $(K8S_UMBRELLA_CHART_PATH) | yq e '.dependencies[].name' - | grep -v ska-tango-util`; do \
 		echo "Waiting for sub-chart: $${chart}"; \
 		make k8s-wait KUBE_APP=$${chart}; \
 	done

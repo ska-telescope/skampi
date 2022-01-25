@@ -18,6 +18,7 @@ dependencies:
   repository: https://artefact.skao.int/repository/helm-internal
   alias: central_node
   condition: ska-tmc-centralnode.enabled
+  
 # - name: ska-mid-cbf # CIPA team
 #   version: 0.2.4
 #   repository: https://artefact.skao.int/repository/helm-internal

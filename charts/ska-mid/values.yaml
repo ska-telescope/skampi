@@ -40,6 +40,7 @@ global:
       tag: 9.3.5
       pullPolicy: IfNotPresent
 
+
 ska-landingpage:
   enabled: true
   MVPInstance: ska-mid

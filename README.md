@@ -31,6 +31,7 @@ $ cd ska-skampi
 ```
 
 
+
 ## Before you begin
 The documentation for SKAMPI is currently being reworked. To look at the documentation that was available before this rework started, please go to [this temporary build on ReadtheDocs](https://developer.skao.int/projects/ska-skampi/en/sp-1747-docs-old/).
 

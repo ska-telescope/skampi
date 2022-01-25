@@ -230,13 +230,13 @@ test-ska-mid:
 	pytest tests/integration -m 'XTP-3324' -v -r fEx
 
 helm-pre-build:
-	helm repo add --username gitlab-ci-token --password $$CI_JOB_TOKEN  ska-sdp-dev https://gitlab.com/api/v4/projects/21141217/packages/helm/stable
+	helm repo add --username gitlab-ci-token --password $$CI_JOB_TOKEN  ska-sdp-dev https://gitlab.com/api/v4/projects/21141217/packages/helm/dev
 	helm repo update
 	helm search repo ska-sdp-dev
 
 
 k8s-pre-dep-update:
-	helm repo add --username gitlab-ci-token --password $$CI_JOB_TOKEN  ska-sdp-dev https://gitlab.com/api/v4/projects/21141217/packages/helm/stable
+	helm repo add --username gitlab-ci-token --password $$CI_JOB_TOKEN  ska-sdp-dev https://gitlab.com/api/v4/projects/21141217/packages/helm/dev
 	helm repo update
 	helm search repo ska-sdp-dev
 

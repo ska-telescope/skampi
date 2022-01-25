@@ -228,4 +228,7 @@ upload-local-test-results:
 
 test-ska-mid:
 	pytest tests/integration -m 'XTP-3324' -v -r fEx
+	
+k8s-pre-dep-update:
+	helm repo add --username gitlab-ci-token --password $$CI_JOB_TOKEN  ska-sdp-dev https://gitlab.example.com/api/v4/projects/21141217/packages/helm/stable
 

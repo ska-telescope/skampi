@@ -54,7 +54,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	$(PSI_LOW_SDP_PROXY_VARS)
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
-SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
+SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage ska-sdp
 
 HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 
@@ -228,7 +228,7 @@ upload-local-test-results:
 
 test-ska-mid:
 	pytest tests/integration -m 'XTP-3324' -v -r fEx
-	
+
 k8s-pre-dep-update:
 	helm repo add --username gitlab-ci-token --password $$CI_JOB_TOKEN  ska-sdp-dev https://gitlab.example.com/api/v4/projects/21141217/packages/helm/stable
 

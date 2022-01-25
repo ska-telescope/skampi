@@ -1,8 +1,8 @@
 import logging
 import os
-from time import sleep
 import time
 from typing import Callable
+from mock import patch, Mock
 
 import pytest
 from pipe import select, where
@@ -56,7 +56,11 @@ def fxt_run_mock_wrapper(request, _pytest_bdd_example):
         global MOCK_SUT  # pylint: disable=global-statement
         MOCK_SUT = True
         # pylint: disable-next=too-many-function-args
-        mock_test(request, _pytest_bdd_example)  # type: ignore
+        with patch(
+            "ska_ser_skallop.mvp_fixtures.fixtures.TransitChecking"
+        ) as transit_checking_mock:
+            transit_checking_mock.return_value.checker = Mock(unsafe=True)
+            mock_test(request, _pytest_bdd_example)  # type: ignore
 
     return run_mock
 

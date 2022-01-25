@@ -70,12 +70,12 @@
 # -- H3 --
 # Nonfunctional changes to the CI pipeline to ensure it is up to date and
 # continuously improved. 
-#For example, removing deprecated makefile targets, or removing unused scripts
+# For example, removing deprecated makefile targets, or removing unused scripts
 # Members(POs, ST, marshalls):
 # - System Team
 # - Marshalls: System Team
 # ---------------------------------------- #
-#Docs Reviewers, A4
+# Docs Reviewers, A4
 # Description:
 # Changes to documentation about the verification and CI processes related to 
 # product integration (e.g. update in the readme on new env variables) 
@@ -92,14 +92,19 @@
 /charts/ @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
 .release @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
 
-# H1 and H3
-/charts/ska-mid/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
-/charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
+# H1
+/charts/ska-mid/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison
+/charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison
+pipeline.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison
 
 # A2
 /tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
 /scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
 /images/testing/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+
+# H2 and H3
+/resources/ @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
+tests/Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
 
 # A3
 .gitlab-ci.yml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
@@ -109,13 +114,10 @@ Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @doming
 # H3
 /.make/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
 .readthedocs.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 
-tests/Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
 LICENSE @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
-/resources/ @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
 .gitignore @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
 .gitmodules @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
 pyproject.toml @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
-pipeline.yaml @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam
 
 # A4
 /docs/ @limonkufu @piersharding @vla22 @adb-42 @mmarquar @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @digvijaygautam 

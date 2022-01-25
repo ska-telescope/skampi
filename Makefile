@@ -54,7 +54,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	$(PSI_LOW_SDP_PROXY_VARS)
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
-SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage ska-sdp
+SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
 
 HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 

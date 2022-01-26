@@ -16,7 +16,6 @@ ska-tango-archiver:
   enabled: false
 ska-landingpage:
   enabled: true
-# no TMC chart - single TMC product in PBS
 
 # Mid specific products
 ska-mid-cbf:

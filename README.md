@@ -374,7 +374,7 @@ While running SKAMPI on a local Minikube, the following steps can be carried out
 python3 -m venv venv && . venv/bin/activate && pip3 install --upgrade pip
 python3 -m pip install kubernetes
 ```
-2. Run the test suite from a pod deployed in the cluster (using `MARK=ping` will limit your test to only one test that checks if you can communicate with the cluster).
+2. Run the test suite from a pod deployed in the cluster (using `MARK=ping` will limit your test to only one).
 ```
 make k8s_test MARK=ping
 ```

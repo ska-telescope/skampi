@@ -101,6 +101,7 @@ K8S_CHART_PARAMS += --set ska-taranta.enabled=true \
 										--set global.taranta_dashboard_enabled=true
 else
 K8S_CHART_PARAMS += --set ska-taranta.enabled=false
+DISABLE_TARANTA = and not taranta
 endif
 else
 K8S_CHART_PARAMS += --set ska-taranta.enabled=true
@@ -204,7 +205,7 @@ python-pre-test: # must pass the current kubeconfig into the test container for 
 	pip3 install -r tests/requirements.txt
 
 # make sure infra test do not run in k8s-test
-k8s-test: MARK := not infra
+k8s-test: MARK := not infra $(DISABLE_TARANTA)
 
 k8s-post-test: # post test hook for processing received reports
 	@if ! [[ -f build/status ]]; then \

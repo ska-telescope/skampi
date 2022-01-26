@@ -178,12 +178,12 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 			cp -f build/status build.previous/$$component-status; \
 		fi; \
 	done
-	@rm -rf build
-	@mv build.previous build
 	@if [[ -n "$$(grep -v '0' build/*status)" ]]; then \
 		echo "skampi-component-tests: Errors occurred in tests - ABORTING!"; \
 		exit 1; \
 	fi
+	@rm -rf build
+	@mv build.previous build
 
 ## TARGET: skampi-test-01centralnode
 ## SYNOPSIS: make skampi-test-01centralnode

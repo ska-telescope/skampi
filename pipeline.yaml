@@ -16,6 +16,7 @@ ska-tango-archiver:
   enabled: false
 ska-landingpage:
   enabled: true
+# no TMC here - this is possibly an error
 
 # Mid specific products
 ska-mid-cbf:

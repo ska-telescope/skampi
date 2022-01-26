@@ -41,7 +41,7 @@ global:
       pullPolicy: IfNotPresent
 
 ska-landingpage:
-  enabled: true
+  enabled: true # ignore this comment
   MVPInstance: ska-mid
 
 ska-ser-skuid:

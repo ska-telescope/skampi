@@ -67,10 +67,6 @@ dependencies:
   # # - name: dsh-lmc-prototype
   # #   version: 0.0.1
   # #   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
-  - name: ska-sdp
-    version: 0.8.1
-    repository: https://artefact.skao.int/repository/helm-internal
-    condition: ska-sdp.enabled
   - name: ska-log-consumer
     version: 0.1.6
     repository: https://artefact.skao.int/repository/helm-internal

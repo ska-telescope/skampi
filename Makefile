@@ -234,4 +234,4 @@ test-ska-mid:
 k8s-post-install-chart:
 	helm repo add --username gitlab-ci-token --password $$CI_JOB_TOKEN  sdp-dev https://gitlab.com/api/v4/projects/21141217/packages/helm/dev
 	helm repo update
-	helm install ska-sdp-dev sdp-dev/ska-sdp --devel --values charts/ska-mid/values.yaml
+	helm install ska-sdp-dev sdp-dev/ska-sdp --devel --set ska-tango-base.enabled=false --set lmc.prefix=$$TEL

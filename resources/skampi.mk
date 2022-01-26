@@ -206,3 +206,14 @@ skampi-test-02skuidservice:  ## launcher for skuid tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-ser-skuid" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
 	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skuid:$$version MARK="$$telescope and acceptance"
+
+## TARGET: skampi-test-03sdp
+## SYNOPSIS: make skampi-test-03sdp
+## HOOKS: none
+## VARS: none
+##  make target for running the SDP-specific tests in the Skampi CI pipeline
+
+skampi-test-03sdp:  ## launcher for SDP tests
+	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sdp" {print $$2}'); \
+	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
+	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=registry.gitlab.com/ska-telescope/sdp/ska-sdp-integration/ska-sdp-integration-tests:$$version MARK="$$telescope and acceptance"

@@ -18,10 +18,10 @@ dependencies:
   repository: https://artefact.skao.int/repository/helm-internal
   alias: central_node
   condition: ska-tmc-centralnode.enabled
-# - name: ska-sdp
-#   version: 0.7.0
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-sdp.enabled
+- name: ska-sdp
+  version: 0.8.2
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-sdp.enabled
 # - name: ska-tmc-low
 #   version: 0.3.8
 #   repository: https://artefact.skao.int/repository/helm-internal

@@ -17,6 +17,7 @@ mid_deploy_test_destroy:
     PYTHON_VARS_AFTER_PYTEST: "-m skamid -v -r fEx"
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
+    TEl: mid
   extends:
     - .tags_default
     - .deploy_chart_before

@@ -54,10 +54,10 @@ dependencies:
   condition: global.taranta_dashboard_enabled
   tags:
     - taranta_dashboard
-# - name: ska-ser-skuid
-#   version: 0.3.0
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-ser-skuid.enabled
+- name: ska-ser-skuid
+  version: 3.3.3
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-ser-skuid.enabled
 - name: ska-landingpage
   version: 0.8.2
   repository: file://../ska-landingpage

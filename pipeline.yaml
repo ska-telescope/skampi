@@ -11,7 +11,7 @@ ska-oso-scripting:
 ska-taranta:
   enabled: true
 ska-ser-skuid:
-  enabled: false
+  enabled: true
 ska-tango-archiver:
   enabled: false
 ska-landingpage:

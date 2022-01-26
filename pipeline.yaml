@@ -16,6 +16,7 @@ ska-tango-archiver:
   enabled: false
 ska-landingpage:
   enabled: true
+# No TMC - might need to change as there is a single PBS item called TMC Software
 
 # Mid specific products
 ska-mid-cbf:

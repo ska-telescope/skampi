@@ -234,7 +234,11 @@ test-ska-mid:
 k8s-post-install-chart:
 	helm repo add --username gitlab-ci-token --password $$CI_JOB_TOKEN  sdp-dev https://gitlab.com/api/v4/projects/21141217/packages/helm/dev
 	helm repo update
-	helm install ska-sdp-dev sdp-dev/ska-sdp --devel --set ska-tango-base.enabled=false --set helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) --set global.minikube=$(MINIKUBE) \
+	helm install ska-sdp-dev sdp-dev/ska-sdp --devel \
+	--set ska-tango-base.enabled=false \
+	--set helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+	--set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
 	--set global.device_server_port=$(TANGO_SERVER_PORT) \
+	--set lmc.prefix=$(TEL)

@@ -229,6 +229,10 @@ upload-local-test-results:
 test-ska-mid:
 	pytest tests/integration -m 'skamid' -v -r fEx
 
+test-tests: export DEVENV := True
+test-tests:
+	pytest tests/integration  -m "test_tests" -v -r fEx
+
 
 # remove this target after evaluation of dev versions finished
 k8s-post-install-chart:

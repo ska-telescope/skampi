@@ -114,22 +114,22 @@ def fxt_set_up_transit_checking_for_csp(
 ):
     tel = names.TEL()
     if tel.skalow:
-        # if os.getenv("DEVENV"):
-        # only do transit checking in dev as timeout problems can lead to false positives
-        devices_to_follow = cast(
-            List,
-            [
-                tel.csp.subarray(1),
-                tel.csp.cbf.subarray(1),
-                tel.csp.cbf.controller,
-            ],
-        )
-        subject_device = tel.csp.controller
-        transit_checking.check_that(subject_device).transits_according_to(
-            ["ON"]
-        ).on_attr("state").when_transit_occur_on(
-            devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
-        )
+        if os.getenv("DEVENV"):
+            # only do transit checking in dev as timeout problems can lead to false positives
+            devices_to_follow = cast(
+                List,
+                [
+                    tel.csp.subarray(1),
+                    tel.csp.cbf.subarray(1),
+                    tel.csp.cbf.controller,
+                ],
+            )
+            subject_device = tel.csp.controller
+            transit_checking.check_that(subject_device).transits_according_to(
+                ["ON"]
+            ).on_attr("state").when_transit_occur_on(
+                devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
+            )
 
 
 # log capturing

@@ -241,4 +241,5 @@ k8s-post-install-chart:
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
 	--set global.device_server_port=$(TANGO_SERVER_PORT) \
-	--set lmc.prefix=$(TEL)
+	--set lmc.prefix=$(TEL) \
+	--set lmc.nsubarray=3

@@ -121,8 +121,6 @@ def fxt_set_up_transit_checking_for_csp(
             [
                 tel.csp.subarray(1),
                 tel.csp.cbf.subarray(1),
-                tel.csp.subarray(2),
-                tel.csp.cbf.subarray(2),
                 tel.csp.cbf.controller,
             ],
         )

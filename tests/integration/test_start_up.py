@@ -16,6 +16,8 @@ from . import conftest
 
 logger = logging.getLogger(__name__)
 
+# global settings
+
 
 @pytest.fixture(name="start_up_test_exec_settings")
 def fxt_start_up_test_exec_settings(
@@ -61,7 +63,7 @@ def test_cbf_start_up_telescope_low():
     """Start up the cbf in low."""
 
 
-@pytest.mark.skalow
+@pytest.mark.skamid
 @pytest.mark.startup
 @pytest.mark.skip(reason="current csp mid version not able to do start up")
 @scenario("features/csp_start_up_telescope.feature", "Start up the csp in mid")
@@ -106,21 +108,30 @@ def fxt_set_up_transit_checking_for_cbf(transit_checking: fxt_types.transit_chec
 
 @pytest.fixture(name="set_up_transit_checking_for_csp")
 @pytest.mark.usefixtures("set_csp_entry_point")
-def fxt_set_up_transit_checking_for_csp(transit_checking: fxt_types.transit_checking):
+@pytest.mark.usefixtures("exec_env")
+def fxt_set_up_transit_checking_for_csp(
+    exec_env, transit_checking: fxt_types.transit_checking
+):
     tel = names.TEL()
     if tel.skalow:
-        if os.getenv("DEVENV"):
-            # only do transit checking in dev as timeout problems can lead to false positives
-            devices_to_follow = cast(
-                List,
-                [tel.csp.subarray(1), tel.csp.cbf.subarray(1), tel.csp.cbf.controller],
-            )
-            subject_device = tel.csp.controller
-            transit_checking.check_that(subject_device).transits_according_to(
-                ["ON"]
-            ).on_attr("state").when_transit_occur_on(
-                devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
-            )
+        # if os.getenv("DEVENV"):
+        # only do transit checking in dev as timeout problems can lead to false positives
+        devices_to_follow = cast(
+            List,
+            [
+                tel.csp.subarray(1),
+                tel.csp.cbf.subarray(1),
+                tel.csp.subarray(2),
+                tel.csp.cbf.subarray(2),
+                tel.csp.cbf.controller,
+            ],
+        )
+        subject_device = tel.csp.controller
+        transit_checking.check_that(subject_device).transits_according_to(
+            ["ON"]
+        ).on_attr("state").when_transit_occur_on(
+            devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
+        )
 
 
 # log capturing
@@ -254,21 +265,22 @@ def the_mccs_must_be_on():
 # test validation
 
 
-@pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
+@pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_startup(run_mock):
     """Test the test using a mock SUT"""
     run_mock(test_sdp_start_up_telescope_mid)
 
 
-@pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
+@pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_csp_mock")
 def test_test_csp_startup(run_mock):
     """Test the test using a mock SUT"""
     run_mock(test_csp_start_up_telescope_mid)
 
 
-@pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
+# @pytest.mark.skip(reason="mocking model does not have low-cbf/control/0")
+@pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_cbf_mock")
 def test_test_cbf_startup(run_mock):
     """Test the test using a mock SUT"""

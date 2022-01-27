@@ -55,7 +55,7 @@ class MCCSEntryPoint(SynchedEntryPoint):
         return builder
 
     def set_telescope_to_running(self):
-        self.mccs_controller.command_inout("Startup")
+        self.mccs_controller.command_inout("On")
 
     def abort_subarray(self, sub_array_id: int):
         pass

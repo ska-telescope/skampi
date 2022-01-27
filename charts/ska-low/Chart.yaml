@@ -34,7 +34,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tmc-low.enabled
   - name: ska-low-mccs
-    version: 0.8.6
+    version: 0.9.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-low-mccs.enabled
   # - name: ska-ser-skuid

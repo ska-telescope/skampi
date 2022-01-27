@@ -218,7 +218,7 @@ k8s-post-test: # post test hook for processing received reports
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
 
 test-ska-low:
-	pytest tests/integration -m 'XTP-3325' -v -r fEx
+	pytest tests/integration -m 'skalow' -v -r fEx
 
 upload-test-results:
 	xtp-xray-upload -f build/cucumber.json -i tests/test-exec.json -v
@@ -227,7 +227,7 @@ upload-local-test-results:
 	xtp-xray-upload -f build/cucumber.json -i tests/test-exec.json -v -u $$JIRA_USERNAME -p $$JIRA_PASSWORD
 
 test-ska-mid:
-	pytest tests/integration -m 'XTP-3324' -v -r fEx
+	pytest tests/integration -m 'skamid' -v -r fEx
 
 
 # remove this target after evaluation of dev versions finished

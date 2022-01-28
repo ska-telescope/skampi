@@ -13,6 +13,7 @@ from resources.models.csp_model.mocking import setup_csp_mock
 from resources.models.mccs_model.entry_point import MCCSEntryPoint
 from resources.models.sdp_model.entry_point import SDPEntryPoint
 from resources.models.sdp_model.mocking import setup_sdp_mock
+from resources.models.mvp_model.session_entry_point import get_session_entry_point
 from ska_ser_skallop.connectors.tangodb import TangoDB
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
@@ -49,6 +50,12 @@ def fxt_check_tango_db(request):
         logger.info(f"\n\x1b[0Ksection_end:{int(time.time())}:device_states\r\x1b[0K")
 
 
+@pytest.fixture(autouse=True, scope="session")
+def fxt_set_session_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
+    env = set_session_exec_env
+    env.session_entry_point = get_session_entry_point()
+
+
 @pytest.fixture(name="run_mock")
 def fxt_run_mock_wrapper(request, _pytest_bdd_example):
     def run_mock(mock_test: Callable):
@@ -71,7 +78,6 @@ def fxt_set_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
     if not MOCK_SUT:
         SDPEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
         exec_env.entrypoint = SDPEntryPoint
-        exec_env.session_entry_point = SDPEntryPoint
     else:
         exec_env.entrypoint = "mock"
     exec_env.scope = ["sdp"]
@@ -87,7 +93,6 @@ def fxt_set_csp_entry_point(
     if not MOCK_SUT:
         CSPEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
         exec_env.entrypoint = CSPEntryPoint
-        exec_env.session_entry_point = CSPEntryPoint
     else:
         exec_env.entrypoint = "mock"
     exec_env.scope = ["csp"]
@@ -103,7 +108,6 @@ def fxt_set_cbf_entry_point(
     if not MOCK_SUT:
         CBFEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
         exec_env.entrypoint = CBFEntryPoint
-        exec_env.session_entry_point = CBFEntryPoint
     else:
         exec_env.entrypoint = "mock"
     # include csp in scope when deployed
@@ -123,7 +127,6 @@ def fxt_set_mssc_entry_point(
     if not MOCK_SUT:
         MCCSEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
         exec_env.entrypoint = MCCSEntryPoint
-        exec_env.session_entry_point = MCCSEntryPoint
     else:
         exec_env.entrypoint = "mock"
     exec_env.scope = ["mccs"]

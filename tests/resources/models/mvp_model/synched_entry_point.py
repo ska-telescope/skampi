@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from contextlib import contextmanager
 from typing import List
 
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint

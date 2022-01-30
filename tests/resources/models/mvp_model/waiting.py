@@ -23,7 +23,7 @@ def set_wating_for_start_up() -> MessageBoardBuilder:
         if tel.csp.controller.enabled:
             brd.set_waiting_on(tel.csp.controller).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON",ignore_first=)
         if tel.sdp.master.enabled:
             brd.set_waiting_on(tel.sdp.master).for_attribute(
                 "state"
@@ -76,12 +76,12 @@ def set_wating_for_start_up() -> MessageBoardBuilder:
         if tel.csp.cbf.controller.enabled:
             brd.set_waiting_on(tel.csp.cbf.controller).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON",ignore_first=False)
         # only wait for subarray 1
         if tel.csp.cbf.subarray(1).enabled:
             brd.set_waiting_on(tel.csp.cbf.subarray(1)).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON",ignore_first=False)
         if tel.skalow.sdp.master.enabled:
             brd.set_waiting_on(tel.sdp.master).for_attribute(
                 "state"
@@ -89,7 +89,7 @@ def set_wating_for_start_up() -> MessageBoardBuilder:
         if tel.skalow.mccs.master.enabled:
             brd.set_waiting_on(tel.skalow.mccs.master).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON",ignore_first=False)
     return brd
 
 

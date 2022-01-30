@@ -30,27 +30,27 @@ class MCCSEntryPoint(SynchedEntryPoint):
         for index in range(1, self.nr_of_antennae + 1):
             device = self._tel.mccs.antenna(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "ON"
+                "ON", ignore_first=False
             )
         for index in range(1, self.nr_of_apiu + 1):
             device = self._tel.mccs.apiu(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "ON"
+                "ON", ignore_first=False
             )
         for index in range(1, self.nr_of_stations + 1):
             device = self._tel.mccs.station(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "ON"
+                "ON", ignore_first=False
             )
         for index in range(1, self.nr_of_subracks + 1):
             device = self._tel.mccs.subrack(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "ON"
+                "ON", ignore_first=False
             )
         for index in range(1, self.nr_of_tiles + 1):
             device = self._tel.mccs.tile(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "ON"
+                "ON", ignore_first=False
             )
         return builder
 
@@ -94,32 +94,32 @@ class MCCSEntryPoint(SynchedEntryPoint):
         for index in range(1, self.nr_of_antennae + 1):
             device = self._tel.mccs.antenna(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "OFF"
+                "OFF", ignore_first=False
             )
         for index in range(1, self.nr_of_apiu + 1):
             device = self._tel.mccs.apiu(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "OFF"
+                "OFF", ignore_first=False
             )
         for index in range(1, self.nr_of_apiu + 1):
             device = self._tel.mccs.apiu(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "OFF"
+                "OFF", ignore_first=False
             )
         for index in range(1, self.nr_of_stations + 1):
             device = self._tel.mccs.station(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "OFF"
+                "OFF", ignore_first=False
             )
         for index in range(1, self.nr_of_subracks + 1):
             device = self._tel.mccs.subrack(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "OFF"
+                "OFF", ignore_first=False
             )
         for index in range(1, self.nr_of_tiles + 1):
             device = self._tel.mccs.tile(index)
             builder.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                "OFF"
+                "OFF", ignore_first=False
             )
         return builder
 

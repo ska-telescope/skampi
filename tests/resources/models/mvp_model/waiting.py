@@ -66,12 +66,12 @@ def set_wating_for_start_up() -> MessageBoardBuilder:
         if tel.csp.controller.enabled:
             brd.set_waiting_on(tel.csp.controller).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON", ignore_first=False)
         for i in range(1, 3):
             subarray = tel.csp.subarray(i)
             if subarray.enabled:
                 brd.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
-                    "ON"
+                    "ON", ignore_first=False
                 )
         if tel.csp.cbf.controller.enabled:
             brd.set_waiting_on(tel.csp.cbf.controller).for_attribute(

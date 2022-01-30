@@ -46,7 +46,7 @@ class SessionEntryPointLow(EntryPoint):
 
     def set_offline_components_to_online(self):
 
-        logging.info("setting up waiting for going online in Low")
+        logging.info("command mccs components to go into online")
         chart = cast(DevicesChart, get_mvp_release().sub_charts["ska-low-mccs"])
         try:
             chart.devices.write_attributes("adminmode", 0)

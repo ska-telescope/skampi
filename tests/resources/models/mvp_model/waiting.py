@@ -139,30 +139,30 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
         if tel.csp.controller.enabled:
             brd.set_waiting_on(tel.csp.controller).for_attribute(
                 "state"
-            ).to_become_equal_to("OFF")
+            ).to_become_equal_to("OFF", ignore_first=False)
         for i in range(1, nr_of_subarrays + 1):
             subarray = tel.csp.subarray(i)
             if subarray.enabled:
                 brd.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
-                    "OFF"
+                    "OFF", ignore_first=False
                 )
         if tel.csp.cbf.controller.enabled:
             brd.set_waiting_on(tel.csp.cbf.controller).for_attribute(
                 "state"
-            ).to_become_equal_to("OFF")
+            ).to_become_equal_to("OFF", ignore_first=False)
         # only wait for subarray 1
         if tel.csp.cbf.subarray(1).enabled:
             brd.set_waiting_on(tel.csp.cbf.subarray(1)).for_attribute(
                 "state"
-            ).to_become_equal_to("OFF")
+            ).to_become_equal_to("OFF", ignore_first=False)
         if tel.skalow.sdp.master.enabled:
             brd.set_waiting_on(tel.sdp.master).for_attribute(
                 "state"
-            ).to_become_equal_to("OFF")
+            ).to_become_equal_to("OFF", ignore_first=False)
         if tel.skalow.mccs.master.enabled:
             brd.set_waiting_on(tel.skalow.mccs.master).for_attribute(
                 "state"
-            ).to_become_equal_to("OFF")
+            ).to_become_equal_to("OFF", ignore_first=False)
     return brd
 
 

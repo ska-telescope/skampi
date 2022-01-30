@@ -1322,7 +1322,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-ser-skallop"
-version = "2.15.6+dev.c98a7a8fc"
+version = "2.15.6"
 description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
 category = "main"
 optional = false
@@ -1345,8 +1345,8 @@ bit = ["pytango (==9.3.3)"]
 
 [package.source]
 type = "legacy"
-url = "https://deployskallopdev:rsaigjomsv-XyU2gNji7@gitlab.com/api/v4/projects/21173098/packages/pypi/simple"
-reference = 'skallop_private_repo'
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
 
 [[package]]
 name = "toml"
@@ -1498,7 +1498,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f18614f72fe570f7662812a06960f51a6b2215a1456a1161e51dd8528bbe77b9"
+content-hash = "2431551f03382d2c6ceebcbd5413fdbdaf9f4159c72eea589d0cf8867f058821"
 
 [metadata.files]
 aiohttp = [
@@ -2197,8 +2197,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-ser-skallop = [
-    {file = "ska-ser-skallop-2.15.6+dev.c98a7a8fc.tar.gz", hash = "sha256:914c19db64e4b39d20edffca8d01cc744474abdc052285a443d28dcdaa8e3cd9"},
-    {file = "ska_ser_skallop-2.15.6+dev.c98a7a8fc-py3-none-any.whl", hash = "sha256:1753890736cb0cd84a3dc1809ac79789d52fe43d2d0c93123bc303acc34a7d24"},
+    {file = "ska-ser-skallop-2.15.6.tar.gz", hash = "md5:3317fba908874fbbd720d1e9a4167445"},
+    {file = "ska_ser_skallop-2.15.6-py3-none-any.whl", hash = "md5:f745e72c73296156361563dd90565969"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},

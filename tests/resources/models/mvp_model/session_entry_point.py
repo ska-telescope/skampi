@@ -1,6 +1,5 @@
 import logging
 from typing import Callable, List, Union, cast
-from black import err
 
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.describing.mvp_names import TEL
@@ -43,6 +42,7 @@ class SessionEntryPointLow(EntryPoint):
             brd.set_waiting_on(device).for_attribute("state").to_become_equal_to(
                 ["OFF", "ON"]
             )
+        return brd
 
     def set_offline_components_to_online(self):
 

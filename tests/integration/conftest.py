@@ -52,8 +52,9 @@ def fxt_check_tango_db(request):
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_session_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
-    env = set_session_exec_env
-    env.session_entry_point = get_session_entry_point()
+    if not os.getenv("DEVENV"):
+        env = set_session_exec_env
+        env.session_entry_point = get_session_entry_point()
 
 
 @pytest.fixture(name="run_mock")

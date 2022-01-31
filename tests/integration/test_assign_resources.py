@@ -1,6 +1,8 @@
 """Assign resources to subarray feature tests."""
 import logging
+from types import SimpleNamespace
 from typing import cast
+import os
 
 import pytest
 from assertpy import assert_that
@@ -20,7 +22,42 @@ RECEPTORS = [1, 2]
 SUB_ARRAY_ID = 1
 
 
-@pytest.mark.skip(reason="test still in dev phase")
+@pytest.fixture(name="assign_resources_test_exec_settings")
+def fxt_start_up_test_exec_settings(
+    exec_settings: fxt_types.exec_settings,
+) -> fxt_types.exec_settings:
+    start_up_test_exec_settings = exec_settings.replica()
+    start_up_test_exec_settings.time_out = 30
+    if os.getenv("LIVE_LOGGING"):
+        start_up_test_exec_settings.run_with_live_logging()
+    if os.getenv("REPLAY_EVENTS_AFTERWARDS"):
+        start_up_test_exec_settings.replay_events_afterwards()
+    return start_up_test_exec_settings
+
+
+# resource configurations
+
+
+@pytest.fixture(name="sdp_base_composition")
+def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
+    composition = conf_types.CompositionByFile(
+        tmp_path, conf_types.CompositionType.STANDARD
+    )
+    return composition
+
+
+# log capturing
+
+
+@pytest.fixture(name="set_up_log_checking_for_sdp")
+@pytest.mark.usefixtures("set_cbf_entry_point")
+def fxt_set_up_log_capturing_for_cbf(log_checking: fxt_types.log_checking):
+    if os.getenv("CAPTURE_LOGS"):
+        tel = names.TEL()
+        sdp_subarray = str(tel.sdp.subarray(SUB_ARRAY_ID))
+        log_checking.capture_logs_from_devices(sdp_subarray)
+
+
 @pytest.mark.skalow
 @scenario(
     "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in low"
@@ -29,7 +66,6 @@ def test_assign_resources_to_sdp_subarray_in_low():
     """Assign resources to sdp subarray in low."""
 
 
-@pytest.mark.skip(reason="test still in dev phase")
 @pytest.mark.skamid
 @scenario(
     "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in mid"
@@ -38,67 +74,45 @@ def test_assign_resources_to_sdp_subarray_in_mid():
     """Assign resources to sdp subarray in mid."""
 
 
-@given("an SDP subarray", target_fixture="test_func_settings")
+@given("an SDP subarray", target_fixture="composition")
 def an_sdp_subarray(
-    set_sdp_entry_point, exec_settings: fxt_types.exec_settings
-) -> fxt_types.exec_settings:
+    set_sdp_entry_point,
+    set_up_log_checking_for_sdp,
+    sdp_base_composition: conf_types.Composition,
+) -> conf_types.Composition:
     """an SDP subarray."""
-    test_func_settings = exec_settings.replica(log_enabled=True)
-    sdp_subarray = names.TEL().sdp.subarray(SUB_ARRAY_ID)
-    test_func_settings.capture_logs_from(str(sdp_subarray))
-    return test_func_settings
+    return sdp_base_composition
 
 
 @when("I assign resources to it", target_fixture="message_board")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,
     exec_settings: fxt_types.exec_settings,
+    context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
     sb_config: fxt_types.sb_config,
-    tmp_path,
-    test_func_settings: fxt_types.exec_settings,
-) -> MessageBoardBase:
+    composition: conf_types.Composition,
+):
     """I assign resources to it."""
-    composition = conf_types.CompositionByFile(
-        tmp_path, conf_types.CompositionType.STANDARD
-    )
-    running_telescope.release_subarray_when_finished(
-        SUB_ARRAY_ID, RECEPTORS, exec_settings
-    )
-    builder = entry_point.set_waiting_for_assign_resources(SUB_ARRAY_ID)
-    with device_logging_context(builder, test_func_settings.get_log_specs()):
-        board = None
-        try:
-            with wait_for(
-                entry_point.set_waiting_for_assign_resources(SUB_ARRAY_ID), timeout=300
-            ) as board:
-                entry_point.compose_subarray(
-                    SUB_ARRAY_ID, RECEPTORS, composition, sb_config.sbid
-                )
-                exec_settings.touch()
-        except EWhilstWaiting as exception:
-            if board:
-                logs = board.play_log_book()
-                logger.info(f"Log messages during waiting:\n{logs}")
-                raise exception
-    return cast(MessageBoardBase, board)
+    with context_monitoring.context_monitoring():
+        with running_telescope.wait_for_allocating_a_subarray(
+            SUB_ARRAY_ID, exec_settings
+        ):
+            entry_point.compose_subarray(
+                SUB_ARRAY_ID, RECEPTORS, composition, sb_config.sbid
+            )
 
 
 @then("the subarray must be in IDLE state")
-def the_subarray_must_be_in_idle_state(message_board: MessageBoardBase):
+def the_subarray_must_be_in_idle_state():
     """the subarray must be in IDLE state."""
     tel = names.TEL()
     sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(SUB_ARRAY_ID))
     result = sdp_subarray.read_attribute("obsstate").value
-    # try:
     assert_that(result).is_equal_to(ObsState.IDLE)
-    # except AssertionError as exception:
-    logs = message_board.play_log_book()
-    logger.info(f"Log messages during resource asignment:\n{logs}")
-    # raise exception
 
 
-# @pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
+@pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_assign_resources(
     run_mock, mock_entry_point: fxt_types.mock_entry_point

@@ -98,11 +98,8 @@ def i_assign_resources_to_it(
 
     with context_monitoring.context_monitoring():
         with running_telescope.wait_for_allocating_a_subarray(
-            SUB_ARRAY_ID, assign_resources_test_exec_settings
+            SUB_ARRAY_ID, RECEPTORS, assign_resources_test_exec_settings
         ):
-            running_telescope.release_subarray_when_finished(
-                SUB_ARRAY_ID, RECEPTORS, exec_settings
-            )
             entry_point.compose_subarray(
                 SUB_ARRAY_ID, RECEPTORS, composition, sb_config.sbid
             )

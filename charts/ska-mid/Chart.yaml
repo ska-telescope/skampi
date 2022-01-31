@@ -1,43 +1,38 @@
 apiVersion: v2
 name: ska-mid
-description: A Helm chart for Kubernetes MVP Mid
+description: |
+  A Helm chart for installing all the software for the SKA MID Telescope that can be
+  deployed in a Kubernetes cluster.
 type: application
-version: 0.8.2
-appVersion: 0.8.2
+version: 0.13.0
+appVersion: 0.13.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
+##############################################################################
+#         Library charts, Enabling software                                  #
+#         These charts are not components of the SKA MID Telescope           #
+#         and may or may not be represented in the PBS                       #
+##############################################################################
 - name: ska-tango-base
+  # SKA Tango Base chart is used to generate the DeviceServers and uses the
+  # SKA Tango Utils library chart to do so (its only dependency)
   version: 0.3.5
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-tango-base.enabled
 - name: ska-tango-util
+  # Striclty speaking not necessary as it is a dependency of the Tango Base
+  # but since it is used by other charts it is better to indicate the correct
+  # version in the main chart
   version: 0.3.5
   repository: https://artefact.skao.int/repository/helm-internal
-- name: ska-tmc-centralnode
-  version: 0.3.5
-  repository: https://artefact.skao.int/repository/helm-internal
-  alias: central_node
-  condition: ska-tmc-centralnode.enabled
-# - name: ska-mid-cbf # CIPA team
-#   version: 0.2.4
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-mid-cbf.enabled
-# - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
-#   version: 0.1.9
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-csp-lmc-mid.enabled
-# - name: ska-sdp
-#   version: 0.7.0
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-sdp.enabled
-# - name: ska-tmc-mid
-#   version: 0.4.9
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-tmc-mid.enabled
-# - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
-#   version: 0.5.3
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-oso-scripting.enabled
+
+- name: ska-landingpage
+  # SKA Landing Page provides easy access to some software items and artefacts
+  version: 0.8.2
+  repository: file://../ska-landingpage
+  condition: ska-landingpage.enabled
+
+##### SKA TARANTA SUITE #####
 - name: ska-taranta
   version: 1.0.29
   repository: https://artefact.skao.int/repository/helm-internal
@@ -54,19 +49,55 @@ dependencies:
   condition: global.taranta_dashboard_enabled
   tags:
     - taranta_dashboard
+
 - name: ska-ser-skuid
+# SKA Unique Identifiers
   version: 3.3.3
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-ser-skuid.enabled
-- name: ska-landingpage
+
+##############################################################################
+#         SKA MID Telescope COMMON Component Charts                          #
+#         These charts are components of the SKA MID Telescope but have the  #
+#         same PBS config number in MID and LOW                              #
+##############################################################################
+- name: ska-tmc
+# COM TMC Software
+  version: 0.3.6 #TODO: Verify version number
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-tmc.enabled
+
+- name: ska-sdp
+# COM SDP Software
   version: 0.8.2
-  repository: file://../ska-landingpage
-  condition: ska-landingpage.enabled
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-sdp.enabled
+
+# - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
+#   version: 0.5.3
+#   repository: https://artefact.skao.int/repository/helm-internal
+#   condition: ska-oso-scripting.enabled
+
 # - name: ska-tango-archiver
 #   version: 0.1.8
 #   repository: https://artefact.skao.int/repository/helm-internal
 #   condition: ska-tango-archiver.enabled
+
+##############################################################################
+#         SKA MID Telescope MID Component Charts                             #
+#         These charts are components of the SKA MID Telescope and have      #
+#         unique PBS config numbers in the SKA MID Telescope                 #
+##############################################################################
+# - name: ska-mid-cbf-mcs # CIPA team
+#   version: 0.1.0 #TODO: Update Version
+#   repository: https://artefact.skao.int/repository/helm-internal
+#   condition: ska-mid-cbf.enabled
+# - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
+#   version: 0.1.11
+#   repository: https://artefact.skao.int/repository/helm-internal
+#   condition: ska-csp-lmc-mid.enabled
+
 # ## DISH LMC Prototype was disabled in the old version of skampi
 # # - name: dsh-lmc-prototype
-# #   version: 0.0.1
-# #   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+# #   version: 0.X.Y
+# #  repository: https://artefact.skao.int/repository/helm-internal

@@ -27,7 +27,7 @@ def fxt_start_up_test_exec_settings(
     exec_settings: fxt_types.exec_settings,
 ) -> fxt_types.exec_settings:
     start_up_test_exec_settings = exec_settings.replica()
-    start_up_test_exec_settings.time_out = 30
+    start_up_test_exec_settings.time_out = 150
     if os.getenv("LIVE_LOGGING"):
         start_up_test_exec_settings.run_with_live_logging()
     if os.getenv("REPLAY_EVENTS_AFTERWARDS"):

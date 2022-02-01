@@ -19,10 +19,10 @@ class SDPEntryPoint(SynchedEntryPoint):
         self.sdp_master = con_config.get_device_proxy(self._tel.sdp.master)
 
     def set_telescope_to_running(self):
-        self.sdp_master.command_inout("On")
         for index in range(1, self.nr_of_subarrays + 1):
             subarray = con_config.get_device_proxy(self._tel.sdp.subarray(index))
             subarray.command_inout("On")
+        self.sdp_master.command_inout("On")
 
     def abort_subarray(self, sub_array_id: int):
         pass
@@ -71,3 +71,34 @@ class SDPEntryPoint(SynchedEntryPoint):
         self._tel = names.TEL()
         subarray = con_config.get_device_proxy(self._tel.sdp.subarray(sub_array_id))
         subarray.command_inout("ReleaseResources")
+
+    def set_waiting_for_assign_resources(
+        self,
+        sub_array_id: int,
+    ):
+        builder = super().set_waiting_for_assign_resources(sub_array_id)
+        if self._tel.skalow:
+            subarray = self._tel.skalow.sdp.subarray(sub_array_id)
+            builder.set_waiting_on(subarray).for_attribute(
+                "obsState"
+            ).to_become_equal_to("IDLE")
+        elif self._tel.skamid:
+            subarray = self._tel.skamid.sdp.subarray(sub_array_id)
+            builder.set_waiting_on(subarray).for_attribute(
+                "obsState"
+            ).to_become_equal_to("IDLE")
+        return builder
+
+    def set_waiting_for_release_resources(self, sub_array_id: int):
+        builder = super().set_waiting_for_release_resources(sub_array_id)
+        if self._tel.skalow:
+            subarray = self._tel.skalow.sdp.subarray(sub_array_id)
+            builder.set_waiting_on(subarray).for_attribute(
+                "obsState"
+            ).to_become_equal_to("EMPTY")
+        elif self._tel.skamid:
+            subarray = self._tel.skamid.sdp.subarray(sub_array_id)
+            builder.set_waiting_on(subarray).for_attribute(
+                "obsState"
+            ).to_become_equal_to("EMPTY")
+        return builder

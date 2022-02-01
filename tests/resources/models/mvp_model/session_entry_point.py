@@ -47,4 +47,4 @@ class SessionEntryPointLow(EntryPoint):
         except ConcurrentTaskExecutionError as error:
             logger.exception(error)
             logger.warning("Will attempt to write attributes again after failure...")
-            chart.devices.write_attributes("adminmode", 0)
+            chart.devices.write_attributes("adminmode", 0, in_series=True)

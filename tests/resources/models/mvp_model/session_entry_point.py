@@ -22,14 +22,10 @@ def get_session_entry_point() -> Callable[[], EntryPoint]:
     tel = TEL()
     if tel.skalow:
         return SessionEntryPointLow
-    else:
-        return EntryPoint
+    return EntryPoint
 
 
 class SessionEntryPointLow(EntryPoint):
-    def __init__(self) -> None:
-        super().__init__()
-
     def set_waiting_for_offline_components_to_become_online(
         self,
     ) -> Union[MessageBoardBuilder, None]:
@@ -39,9 +35,7 @@ class SessionEntryPointLow(EntryPoint):
         logging.info("setting up waiting for going online in Low")
         chart = cast(DevicesChart, get_mvp_release().sub_charts["ska-low-mccs"])
         for device in chart.devices.names:
-            brd.set_waiting_on(device).for_attribute("state").to_become_equal_to(
-                ["OFF", "ON"]
-            )
+            brd.set_waiting_on(device).for_attribute("state").to_change()
         return brd
 
     def set_offline_components_to_online(self):

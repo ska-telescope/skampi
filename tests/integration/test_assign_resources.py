@@ -26,13 +26,16 @@ SUB_ARRAY_ID = 1
 def fxt_start_up_test_exec_settings(
     exec_settings: fxt_types.exec_settings,
 ) -> fxt_types.exec_settings:
-    start_up_test_exec_settings = exec_settings.replica()
-    start_up_test_exec_settings.time_out = 150
-    if os.getenv("LIVE_LOGGING"):
-        start_up_test_exec_settings.run_with_live_logging()
-    if os.getenv("REPLAY_EVENTS_AFTERWARDS"):
-        start_up_test_exec_settings.replay_events_afterwards()
-    return start_up_test_exec_settings
+    assign_resources_test_exec_settings = exec_settings.replica()
+    assign_resources_test_exec_settings.time_out = 150
+    if os.getenv("DEBUG"):
+        exec_settings.run_with_live_logging()
+        assign_resources_test_exec_settings.run_with_live_logging()
+    elif os.getenv("LIVE_LOGGING"):
+        assign_resources_test_exec_settings.run_with_live_logging()
+    elif os.getenv("REPLAY_EVENTS_AFTERWARDS"):
+        assign_resources_test_exec_settings.replay_events_afterwards()
+    return assign_resources_test_exec_settings
 
 
 # resource configurations
@@ -50,7 +53,7 @@ def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
 
 
 @pytest.fixture(name="set_up_log_checking_for_sdp")
-@pytest.mark.usefixtures("set_cbf_entry_point")
+@pytest.mark.usefixtures("set_sdp_entry_point")
 def fxt_set_up_log_capturing_for_cbf(log_checking: fxt_types.log_checking):
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
@@ -76,6 +79,7 @@ def test_assign_resources_to_sdp_subarray_in_mid():
 
 @given("an SDP subarray", target_fixture="composition")
 def an_sdp_subarray(
+    assign_resources_test_exec_settings,
     set_sdp_entry_point,
     set_up_log_checking_for_sdp,
     sdp_base_composition: conf_types.Composition,

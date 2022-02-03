@@ -33,9 +33,13 @@ DOMAIN ?= branch## Required by Skallop
 TEL ?= $(CONFIG)## Required by Skallop
 KUBE_BRANCH ?= local ## Required by Skallop
 NAME ?= $(CONFIG)
-MARK ?= ska$(TEL)
+ifneq ($(MARK), "")
+DASHMARK ?= "ska$(TEL) and $(MARK)"
+else
+DASHMARK ?= "ska$(TEL)"
+endif
 DASHCOUNT ?= "--count=$(COUNT)"
-PYTHON_VARS_AFTER_PYTEST ?= "-m $(MARK) $(DASHCOUNT) -v -r fEx" ## use to setup a particular pytest session
+PYTHON_VARS_AFTER_PYTEST ?= "-m $(DASHMARK) $(DASHCOUNT) -v -r fEx" ## use to setup a particular pytest session
 
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers

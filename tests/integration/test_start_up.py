@@ -80,7 +80,7 @@ def test_csp_start_up_telescope_low():
 
 @pytest.mark.skalow
 @pytest.mark.startup
-# @pytest.mark.skip(reason="current mccs-low version is deprecated")
+@pytest.mark.skip(reason="current mccs-low has problems with starting in admin mode")
 @scenario("features/mccs_start_up_telescope.feature", "Start up the MCCS")
 def test_mccs_start_up_telescope():
     """Start up the mccs in low."""
@@ -327,3 +327,10 @@ def test_test_csp_startup(run_mock):
 def test_test_cbf_startup(run_mock):
     """Test the test using a mock SUT"""
     run_mock(test_cbf_start_up_telescope_mid)
+
+
+@pytest.mark.test_tests
+@pytest.mark.usefixtures("setup_tmc_mock")
+def test_test_tmc_startup(run_mock):
+    """Test the test using a mock SUT"""
+    run_mock(test_tmc_start_up_telescope)

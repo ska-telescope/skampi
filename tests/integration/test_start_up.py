@@ -80,7 +80,7 @@ def test_csp_start_up_telescope_low():
 
 @pytest.mark.skalow
 @pytest.mark.startup
-@pytest.mark.skip(reason="current mccs-low has problems with starting in admin mode")
+@pytest.mark.skip(reason="current mccs-low has problems with starting in admin mode (see MCCS-923)")
 @scenario("features/mccs_start_up_telescope.feature", "Start up the MCCS")
 def test_mccs_start_up_telescope():
     """Start up the mccs in low."""

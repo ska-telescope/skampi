@@ -29,22 +29,25 @@ class SessionEntryPointLow(EntryPoint):
     def set_waiting_for_offline_components_to_become_online(
         self,
     ) -> Union[MessageBoardBuilder, None]:
+        pass
 
-        if not (brd := super().set_waiting_for_offline_components_to_become_online()):
-            brd = get_message_board_builder()
-        logging.info("setting up waiting for going online in Low")
-        chart = cast(DevicesChart, get_mvp_release().sub_charts["ska-low-mccs"])
-        for device in chart.devices.names:
-            brd.set_waiting_on(device).for_attribute("state").to_change()
-        return brd
+        # disable as mccs are flaky
+        # if not (brd := super().set_waiting_for_offline_components_to_become_online()):
+        #    brd = get_message_board_builder()
+        # logging.info("setting up waiting for going online in Low")
+        # chart = cast(DevicesChart, get_mvp_release().sub_charts["ska-low-mccs"])
+        # for device in chart.devices.names:
+        #    brd.set_waiting_on(device).for_attribute("state").to_change()
+        # return brd
 
     def set_offline_components_to_online(self):
+        pass
 
-        logging.info("command mccs components to go into online")
-        chart = cast(DevicesChart, get_mvp_release().sub_charts["ska-low-mccs"])
-        try:
-            chart.devices.write_attributes("adminmode", 0)
-        except ConcurrentTaskExecutionError as error:
-            logger.exception(error)
-            logger.warning("Will attempt to write attributes again after failure...")
-            chart.devices.write_attributes("adminmode", 0, in_series=True)
+        # logging.info("command mccs components to go into online")
+        # chart = cast(DevicesChart, get_mvp_release().sub_charts["ska-low-mccs"])
+        # try:
+        #    chart.devices.write_attributes("adminmode", 0)
+        # except ConcurrentTaskExecutionError as error:
+        #    logger.exception(error)
+        #    logger.warning("Will attempt to write attributes again after failure...")
+        #    chart.devices.write_attributes("adminmode", 0, in_series=True)

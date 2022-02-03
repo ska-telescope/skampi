@@ -13,6 +13,8 @@ from resources.models.csp_model.mocking import setup_csp_mock
 from resources.models.mccs_model.entry_point import MCCSEntryPoint
 from resources.models.sdp_model.entry_point import SDPEntryPoint
 from resources.models.sdp_model.mocking import setup_sdp_mock
+from resources.models.tmc_model.mocking import setup_tmc_mock
+from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.mvp_model.session_entry_point import get_session_entry_point
 from ska_ser_skallop.connectors.tangodb import TangoDB
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
@@ -133,6 +135,21 @@ def fxt_set_mssc_entry_point(
     exec_env.scope = ["mccs"]
 
 
+@pytest.fixture(name="set_tmc_entry_point")
+def fxt_set_tmc_entry_point(
+    set_session_exec_env: fxt_types.set_session_exec_env,
+    exec_settings: fxt_types.exec_settings,
+):
+    exec_env = set_session_exec_env
+    exec_settings.time_out = 20
+    if not MOCK_SUT:
+        TMCEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
+        exec_env.entrypoint = TMCEntryPoint
+    else:
+        exec_env.entrypoint = "mock"
+    exec_env.scope = []
+
+
 @pytest.fixture(name="setup_sdp_mock")
 def fxt_setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
     setup_sdp_mock(mock_entry_point)
@@ -146,3 +163,8 @@ def fxt_setup_csp_mock(mock_entry_point: fxt_types.mock_entry_point):
 @pytest.fixture(name="setup_cbf_mock")
 def fxt_setup_cbf_mock(mock_entry_point: fxt_types.mock_entry_point):
     setup_cbf_mock(mock_entry_point)
+
+
+@pytest.fixture(name="setup_tmc_mock")
+def fxt_setup_tmc_mockk(mock_entry_point: fxt_types.mock_entry_point):
+    setup_tmc_mock(mock_entry_point)

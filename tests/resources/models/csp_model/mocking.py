@@ -1,7 +1,11 @@
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
+from .entry_point import CSPEntryPoint
+
 
 def setup_csp_mock(mock_entry_point: fxt_types.mock_entry_point):
+    mock_entry_point.set_spy(CSPEntryPoint)
+
     @mock_entry_point.when_set_telescope_to_running
     def mck_set_telescope_to_running():
         mock_entry_point.model.csp.set_states_for_telescope_running()

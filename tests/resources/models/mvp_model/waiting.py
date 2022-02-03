@@ -106,7 +106,7 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
         if tel.csp.controller.enabled:
             brd.set_waiting_on(tel.csp.controller).for_attribute(
                 "state"
-            ).to_become_equal_to("STANDBY", ignore_first=False)
+            ).to_become_equal_to("OFF", ignore_first=False)
         if tel.sdp.master.enabled:
             brd.set_waiting_on(tel.sdp.master).for_attribute(
                 "state"

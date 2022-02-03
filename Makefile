@@ -33,7 +33,7 @@ DOMAIN ?= branch## Required by Skallop
 TEL ?= $(CONFIG)## Required by Skallop
 KUBE_BRANCH ?= local ## Required by Skallop
 NAME ?= $(CONFIG)
-ifneq ($(MARK), "")
+ifneq ($(MARK), "all")
 DASHMARK ?= ska$(TEL) and $(MARK)
 else
 DASHMARK ?= ska$(TEL)

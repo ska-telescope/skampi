@@ -41,7 +41,7 @@ DASHMARK ?= ska$(TEL)
 endif
 DASHCOUNT ?= --count=$(COUNT)
 ifeq ($(TEL),mid)
-PYTHON_VARS_AFTER_PYTEST = -m "skamid and XTP-4506" --count=5
+PYTHON_VARS_AFTER_PYTEST = -m "skamid and XTP-4506" --count=10
 else
 PYTHON_VARS_AFTER_PYTEST ?= -m $(DASHMARK) $(DASHCOUNT) -v -r fEx ## use to setup a particular pytest session
 endif

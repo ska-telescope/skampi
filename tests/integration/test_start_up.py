@@ -83,7 +83,15 @@ def test_csp_start_up_telescope_low():
 # @pytest.mark.skip(reason="current mccs-low version is deprecated")
 @scenario("features/mccs_start_up_telescope.feature", "Start up the MCCS")
 def test_mccs_start_up_telescope():
-    """Start up the csp in low."""
+    """Start up the mccs in low."""
+
+
+@pytest.mark.skalow
+@pytest.mark.startup
+# @pytest.mark.skip(reason="current tmc version is unavailable")
+@scenario("features/tmc_start_up_telescope.feature", "Start up the tmc in low")
+def test_tmc_start_up_telescope():
+    """Start up the tmc in low."""
 
 
 # transit checking
@@ -199,6 +207,11 @@ def a_mccs(set_mccs_entry_point, set_up_transit_checking_for_mccs):
     """a MCCS."""
 
 
+@given("the TMC")
+def a_tmc(set_tmc_entry_point, set_up_transit_checking_for_mccs):
+    """a TMC."""
+
+
 # whens
 
 
@@ -282,6 +295,13 @@ def the_mccs_must_be_on(transit_checking: fxt_types.transit_checking):
         assert checker
         logger.info(checker.print_outcome_for(checker.subject_device))
         checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")
+
+
+@then("the TMC must be on")
+def the_tmc_must_be_on(transit_checking: fxt_types.transit_checking):
+    """the TMC must be on."""
+    tel = names.TEL()
+    assert tel.skalow
 
 
 # test validation

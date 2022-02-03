@@ -14,7 +14,7 @@ mid_deploy_test_destroy:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
-    PYTHON_VARS_AFTER_PYTEST: "-m skamid -v -r fEx"
+    COUNT: 1
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
     TEl: mid

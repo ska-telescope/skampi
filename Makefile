@@ -35,16 +35,12 @@ KUBE_BRANCH ?= local ## Required by Skallop
 NAME ?= $(CONFIG)
 ADDMARKS ?=0
 ifneq ($(ADDMARKS),0)
-DASHMARK ?= ska$(TEL) and $(ADDMARKS)
+DASHMARK ?= "ska$(TEL) and $(ADDMARKS)"
 else
 DASHMARK ?= ska$(TEL)
 endif
 DASHCOUNT ?= --count=$(COUNT)
-ifeq ($(TEL),mid)
-PYTHON_VARS_AFTER_PYTEST = -m "skamid and XTP-4506" --count=10
-else
 PYTHON_VARS_AFTER_PYTEST ?= -m $(DASHMARK) $(DASHCOUNT) -v -r fEx ## use to setup a particular pytest session
-endif
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 

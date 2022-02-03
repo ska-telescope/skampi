@@ -182,6 +182,12 @@ def set_waiting_for_assign_resources(ind: int) -> MessageBoardBuilder:
             brd.set_waiting_on(device).for_attribute("obsState").to_become_equal_to(
                 "IDLE"
             )
+    if tel.skalow:
+        # specifically set sdp subarray as it isnt included in low subarrays
+        sdp_subarray = tel.skalow.sdp.subarray(ind)
+        brd.set_waiting_on(sdp_subarray).for_attribute("obsState").to_become_equal_to(
+            "IDLE"
+        )
     # brd.set_waiting_on(
     #     Mid.tm.subarray(ind).sdp_leaf_node
     # ).for_attribute('sdpSubarrayObsState').and_observe()

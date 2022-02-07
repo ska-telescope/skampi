@@ -1,20 +1,16 @@
 """Assign resources to subarray feature tests."""
 import logging
-from types import SimpleNamespace
-from typing import cast
 import os
 
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
-from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
-from ska_ser_skallop.event_handling.logging import device_logging_context
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting, wait_for
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.subscribing.base import MessageBoardBase
+
+from resources.models.mvp_model.states import ObsState
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +22,11 @@ SUB_ARRAY_ID = 1
 def fxt_start_up_test_exec_settings(
     exec_settings: fxt_types.exec_settings,
 ) -> fxt_types.exec_settings:
+    """Set up test specific execution settings.
+
+    :param exec_settings: The global test execution settings as a fixture.
+    :return: test specific execution settings as a fixture
+    """
     assign_resources_test_exec_settings = exec_settings.replica()
     assign_resources_test_exec_settings.time_out = 150
     if os.getenv("DEBUG"):
@@ -43,6 +44,11 @@ def fxt_start_up_test_exec_settings(
 
 @pytest.fixture(name="sdp_base_composition")
 def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
+    """Setup a base composition configuration to use for sdp.
+
+    :param tmp_path: a temporary path for sending configuration as a file.
+    :return: the configuration settings.
+    """
     composition = conf_types.CompositionByFile(
         tmp_path, conf_types.CompositionType.STANDARD
     )
@@ -55,6 +61,10 @@ def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
 @pytest.fixture(name="set_up_log_checking_for_sdp")
 @pytest.mark.usefixtures("set_sdp_entry_point")
 def fxt_set_up_log_capturing_for_cbf(log_checking: fxt_types.log_checking):
+    """Set up log capturing (if enabled by CATPURE_LOGS).
+
+    :param log_checking: The skallop log_checking fixture to use
+    """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
         sdp_subarray = str(tel.sdp.subarray(SUB_ARRAY_ID))
@@ -79,9 +89,9 @@ def test_assign_resources_to_sdp_subarray_in_mid():
 
 @given("an SDP subarray", target_fixture="composition")
 def an_sdp_subarray(
-    assign_resources_test_exec_settings,
-    set_sdp_entry_point,
-    set_up_log_checking_for_sdp,
+    assign_resources_test_exec_settings,  # pylint: disable=unused-argument
+    set_sdp_entry_point,  # pylint: disable=unused-argument
+    set_up_log_checking_for_sdp,  # pylint: disable=unused-argument
     sdp_base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """an SDP subarray."""
@@ -91,7 +101,6 @@ def an_sdp_subarray(
 @when("I assign resources to it", target_fixture="message_board")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,
-    exec_settings: fxt_types.exec_settings,
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
     sb_config: fxt_types.sb_config,

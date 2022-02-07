@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List
 
 from ska_ser_skallop.event_handling.builders import (
     MessageBoardBuilder,
@@ -11,6 +11,11 @@ from ska_ser_skallop.mvp_control.describing.mvp_names import get_tel
 
 # telescope starting up #
 def set_wating_for_start_up() -> MessageBoardBuilder:
+    """[summary]
+
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
 
     brd = get_message_board_builder()
 
@@ -95,6 +100,11 @@ def set_wating_for_start_up() -> MessageBoardBuilder:
 
 # telescope shutting down
 def set_wating_for_shut_down() -> MessageBoardBuilder:
+    """[summary]
+
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
 
     nr_of_dishes = 4
@@ -170,6 +180,13 @@ def set_wating_for_shut_down() -> MessageBoardBuilder:
 
 
 def set_waiting_for_assign_resources(ind: int) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
@@ -198,6 +215,13 @@ def set_waiting_for_assign_resources(ind: int) -> MessageBoardBuilder:
 
 
 def set_waiting_until_resourcing(ind: int) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
@@ -214,6 +238,13 @@ def set_waiting_until_resourcing(ind: int) -> MessageBoardBuilder:
 
 
 def set_waiting_for_release_resources(ind: int) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
@@ -240,6 +271,15 @@ def set_waiting_for_release_resources(ind: int) -> MessageBoardBuilder:
 def set_waiting_for_configure_scan(
     ind: int, receptors: List[int]
 ) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :param receptors: [description]
+    :type receptors: List[int]
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
     subarray_change_order = ["CONFIGURING", "READY"]
     tel = get_tel()
@@ -251,7 +291,7 @@ def set_waiting_for_configure_scan(
     for device in tel.subarrays(ind).subtract("tm").subtract("fsp"):
         if device.enabled:
             brd.set_waiting_on(device).for_attribute("obsState").to_become_equal_to(
-                "EMPTY"
+                "READY"
             )
     if tel.skamid:
         for index in receptors:
@@ -265,6 +305,15 @@ def set_waiting_for_configure_scan(
 def set_waiting_until_configuring(
     ind: int, receptors: List[int]
 ) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :param receptors: [description]
+    :type receptors: List[int]
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
@@ -281,6 +330,15 @@ def set_waiting_until_configuring(
 
 
 def set_waiting_until_scanning(ind: int, receptors: List[int]) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :param receptors: [description]
+    :type receptors: List[int]
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
@@ -299,6 +357,15 @@ def set_waiting_until_scanning(ind: int, receptors: List[int]) -> MessageBoardBu
 def set_waiting_for_releasing_a_configuration(
     ind: int, receptors: List[int]
 ) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :param receptors: [description]
+    :type receptors: List[int]
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
@@ -331,6 +398,15 @@ def set_waiting_for_releasing_a_configuration(
 def set_waiting_for_scanning_to_complete(
     ind: int, receptors: List[int]
 ) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :param receptors: [description]
+    :type receptors: List[int]
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
 
     brd = get_message_board_builder()
     tel = get_tel()
@@ -359,6 +435,15 @@ def set_waiting_for_scanning_to_complete(
 
 # abort
 def set_waiting_for_abort(ind: int, nr_resources: int) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :param nr_resources: [description]
+    :type nr_resources: int
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
@@ -386,6 +471,15 @@ def set_waiting_for_abort(ind: int, nr_resources: int) -> MessageBoardBuilder:
 
 # obsreset
 def set_waiting_for_obsreset(ind: int, receptors: List[int]) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :param receptors: [description]
+    :type receptors: List[int]
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)
@@ -413,6 +507,15 @@ def set_waiting_for_obsreset(ind: int, receptors: List[int]) -> MessageBoardBuil
 
 # restart
 def set_waiting_for_restart(ind: int, nr_resources: int) -> MessageBoardBuilder:
+    """[summary]
+
+    :param ind: [description]
+    :type ind: int
+    :param nr_resources: [description]
+    :type nr_resources: int
+    :return: [description]
+    :rtype: MessageBoardBuilder
+    """
     brd = get_message_board_builder()
     tel = get_tel()
     tm_subbarray = tel.tm.subarray(ind)

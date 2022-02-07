@@ -1,15 +1,18 @@
-import imp
+import logging
 from typing import List
 import json
 import os
-from ..mvp_model.synched_entry_point import SynchedEntryPoint
-
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.configuration import composition as comp
+from ska_ser_skallop.mvp_control.configuration import configuration as conf
+from ska_ser_skallop.event_handling.builders import get_message_board_builder
 
-import logging
+from ..mvp_model.synched_entry_point import (
+    SynchedEntryPoint,
+    waiting,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +27,14 @@ class SDPEntryPoint(SynchedEntryPoint):
         self._tel = names.TEL()
         self._sdp_master_name = self._tel.sdp.master
         self._live_logging = True if os.getenv("DEBUG") else False
+
+    def set_offline_components_to_online(self):
+        pass
+
+    def set_waiting_for_offline_components_to_become_online(
+        self,
+    ):
+        return None
 
     def _log(self, mssage: str):
         if self._live_logging:
@@ -43,7 +54,10 @@ class SDPEntryPoint(SynchedEntryPoint):
         pass
 
     def clear_configuration(self, sub_array_id: int):
-        pass
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with End command")
+        subarray.command_inout("End")
 
     def compose_subarray(
         self,
@@ -52,7 +66,7 @@ class SDPEntryPoint(SynchedEntryPoint):
         composition: types.Composition,
         sb_id: str,
     ):
-        self._tel = names.TEL()
+        # currently ignore composition as all types will be standard
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         standard_composition = comp.generate_standard_comp(
@@ -72,7 +86,19 @@ class SDPEntryPoint(SynchedEntryPoint):
         sb_id: str,
         duration: float,
     ):
-        pass
+        self._tel = names.TEL()
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        standard_configuration = conf.generate_standard_conf(
+            sub_array_id, sb_id, duration
+        )
+        sdp_standard_configuration = json.dumps(
+            json.loads(standard_configuration)["sdp"]
+        )
+        self._log(
+            f"commanding {subarray_name} with Configure: {sdp_standard_configuration} "
+        )
+        subarray.command_inout("Configure", sdp_standard_configuration)
 
     def reset_subarray(self, sub_array_id: int):
         pass
@@ -96,3 +122,20 @@ class SDPEntryPoint(SynchedEntryPoint):
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"Commanding {subarray_name} to ReleaseResources")
         subarray.command_inout("ReleaseResources")
+
+    def set_waiting_for_clear_configure(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> waiting.MessageBoardBuilder:
+        """[summary]
+
+        :param sub_array_id: [description]
+        :type sub_array_id: int
+        :return: [description]
+        :rtype: waiting.MessageBoardBuilder
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        return builder

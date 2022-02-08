@@ -23,7 +23,7 @@ docopts = "^0.6.1"
 pytest-timeout = "^2.0.2"
 pytest-ordering = "^0.6"
 pipe = "^1.6.0"
-ska-ser-skallop = "2.15.15"
+ska-ser-skallop = "2.15.16"
 
 
 

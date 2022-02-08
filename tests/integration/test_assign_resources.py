@@ -55,6 +55,19 @@ def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
     return composition
 
 
+@pytest.fixture(name="csp_base_composition")
+def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
+    """Setup a base composition configuration to use for csp/cbf.
+
+    :param tmp_path: a temporary path for sending configuration as a file.
+    :return: the configuration settings.
+    """
+    composition = conf_types.CompositionByFile(
+        tmp_path, conf_types.CompositionType.STANDARD
+    )
+    return composition
+
+
 # log capturing
 
 
@@ -71,6 +84,19 @@ def fxt_set_up_log_capturing_for_cbf(log_checking: fxt_types.log_checking):
         log_checking.capture_logs_from_devices(sdp_subarray)
 
 
+@pytest.fixture(name="set_up_log_checking_for_cbf")
+@pytest.mark.usefixtures("set_cbf_entry_point")
+def fxt_set_up_log_checking_for_cbf(log_checking: fxt_types.log_checking):
+    """Set up log capturing (if enabled by CATPURE_LOGS).
+
+    :param log_checking: The skallop log_checking fixture to use
+    """
+    if os.getenv("CAPTURE_LOGS"):
+        tel = names.TEL()
+        cbf_subarray = str(tel.csp.cbf.subarray(SUB_ARRAY_ID))
+        log_checking.capture_logs_from_devices(cbf_subarray)
+
+
 @pytest.mark.skalow
 @scenario(
     "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in low"
@@ -85,6 +111,25 @@ def test_assign_resources_to_sdp_subarray_in_low():
 )
 def test_assign_resources_to_sdp_subarray_in_mid():
     """Assign resources to sdp subarray in mid."""
+
+
+@pytest.mark.skamid
+@scenario(
+    "features/cbf_assign_resources.feature", "Assign resources to CBF mid subarray"
+)
+def test_assign_resources_to_cbf_mid_subarray():
+    """Assign resources to CBF mid subarray."""
+
+
+@given("an CBF subarray", target_fixture="composition")
+def an_cbf_subarray(
+    assign_resources_test_exec_settings,  # pylint: disable=unused-argument
+    set_cbf_entry_point,  # pylint: disable=unused-argument
+    set_up_log_checking_for_cbf,  # pylint: disable=unused-argument
+    csp_base_composition: conf_types.Composition,
+) -> conf_types.Composition:
+    """an SDP subarray."""
+    return csp_base_composition
 
 
 @given("an SDP subarray", target_fixture="composition")
@@ -124,6 +169,15 @@ def the_subarray_must_be_in_idle_state():
     tel = names.TEL()
     sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(SUB_ARRAY_ID))
     result = sdp_subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(ObsState.IDLE)
+
+
+@then("the CBF subarray must be in IDLE state")
+def the_cbf_subarray_must_be_in_idle_state():
+    """the subarray must be in IDLE state."""
+    tel = names.TEL()
+    cbf_subarray = con_config.get_device_proxy(tel.csp.cbf.subarray(SUB_ARRAY_ID))
+    result = cbf_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
 

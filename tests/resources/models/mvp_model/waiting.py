@@ -44,7 +44,7 @@ def set_wating_for_start_up() -> MessageBoardBuilder:
         if tel.csp.cbf.controller.enabled:
             brd.set_waiting_on(tel.csp.cbf.controller).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON", ignore_first=False)
         # subarrays
         for i in range(1, nr_of_subarrays + 1):
             for device in (
@@ -53,11 +53,11 @@ def set_wating_for_start_up() -> MessageBoardBuilder:
                 if device.enabled:
                     brd.set_waiting_on(device).for_attribute(
                         "state"
-                    ).to_become_equal_to("ON")
+                    ).to_become_equal_to("ON", ignore_first=False)
         if tel.csp.cbf.subarray(1).enabled:
             brd.set_waiting_on(tel.csp.cbf.subarray(1)).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON", ignore_first=False)
     elif tel.skalow:
         if tel.skalow.mccs.master.enabled:
             brd.set_waiting_on(tel.skalow.mccs.master).for_attribute(

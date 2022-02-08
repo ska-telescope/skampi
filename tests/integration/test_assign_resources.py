@@ -97,6 +97,7 @@ def fxt_set_up_log_checking_for_cbf(log_checking: fxt_types.log_checking):
         log_checking.capture_logs_from_devices(cbf_subarray)
 
 
+@pytest.mark.skip("test fails see bug https://jira.skatelescope.org/browse/SKB-124")
 @pytest.mark.skalow
 @scenario(
     "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in low"

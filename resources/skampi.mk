@@ -191,10 +191,10 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 ## VARS: none
 ##  make target for running the Central Node specific tests against Skampi
 
-skampi-test-01centralnode:  ## launcher for centralnode tests
-	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tmc-centralnode" {print $$2}'); \
-	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"
+# skampi-test-01centralnode:  ## launcher for centralnode tests
+# 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tmc-centralnode" {print $$2}'); \
+# 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
+# 	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"
 
 ## TARGET: skampi-test-02skuidservice
 ## SYNOPSIS: make skampi-test-02skuidservice
@@ -202,10 +202,10 @@ skampi-test-01centralnode:  ## launcher for centralnode tests
 ## VARS: none
 ##  make target for running the SKUID component's acceptance tests in the SKAMPI CI pipeline.
 
-skampi-test-02skuidservice:  ## launcher for skuid tests
-	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-ser-skuid" {print $$2}'); \
-	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skuid:$$version MARK="$$telescope and acceptance"
+# skampi-test-02skuidservice:  ## launcher for skuid tests
+# 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-ser-skuid" {print $$2}'); \
+# 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
+# 	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skuid:$$version MARK="$$telescope and acceptance"
 
 ## TARGET: skampi-test-03dishmaster-sim
 ## SYNOPSIS: make skampi-test-03dishmaster-sim
@@ -216,4 +216,4 @@ skampi-test-02skuidservice:  ## launcher for skuid tests
 skampi-test-03dishmaster-sim:  ## launcher for dishmaster tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sim-dishmaster" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=registry.gitlab.com/ska-telescope/ska-sim-dishmaster/ska-sim-dishmaster:2.0.1 MARK="$$telescope and acceptance"
+	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=registry.gitlab.com/ska-telescope/ska-sim-dishmaster/ska-sim-dishmaster:2.0.1-dev.cf140ed39 MARK="$$telescope and acceptance"

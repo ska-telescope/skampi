@@ -206,3 +206,14 @@ skampi-test-02skuidservice:  ## launcher for skuid tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-ser-skuid" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
 	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skuid:$$version MARK="$$telescope and acceptance"
+
+## TARGET: skampi-test-03dishmaster-sim
+## SYNOPSIS: make skampi-test-03dishmaster-sim
+## HOOKS: none
+## VARS: none
+##  make target for running dishmaster simulator component's acceptance tests in the SKAMPI CI pipeline.
+
+skampi-test-03dishmaster-sim:  ## launcher for dishmaster tests
+	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sim-dishmaster" {print $$2}'); \
+	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
+	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sim-dishmaster:$$version MARK="$$telescope and acceptance"

@@ -95,6 +95,19 @@ def fxt_set_up_log_checking_for_cbf(log_checking: fxt_types.log_checking):
         log_checking.capture_logs_from_devices(cbf_subarray)
 
 
+@pytest.fixture(name="set_up_log_checking_for_csp")
+@pytest.mark.usefixtures("set_csp_entry_point")
+def fxt_set_up_log_checking_for_csp(log_checking: fxt_types.log_checking):
+    """Set up log capturing (if enabled by CATPURE_LOGS).
+
+    :param log_checking: The skallop log_checking fixture to use
+    """
+    if os.getenv("CAPTURE_LOGS"):
+        tel = names.TEL()
+        csp_subarray = str(tel.csp.subarray(SUB_ARRAY_ID))
+        log_checking.capture_logs_from_devices(csp_subarray)
+
+
 @pytest.mark.skip(reason="test still in dev phase")
 @scenario(
     "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in low"
@@ -114,6 +127,16 @@ def test_configure_scan_on_sdp_subarray_in_mid():
 @scenario("features/cbf_configure_scan.feature", "Configure scan on CBF mid subarray")
 def test_configure_scan_on_cbf_mid_subarray():
     """Configure scan on CBF mid subarray."""
+
+
+@scenario("features/cbf_configure_scan.feature", "Configure scan on CBF low subarray")
+def test_configure_scan_on_cbf_low_subarray():
+    """Configure scan on CBF low subarray."""
+
+
+@scenario("features/csp_configure_scan.feature", "Configure scan on CSP low subarray")
+def test_configure_scan_on_csp_low_subarray():
+    """Configure scan on CSP low subarray."""
 
 
 @given("an SDP subarray in IDLE state", target_fixture="configuration")
@@ -141,6 +164,22 @@ def an_cbf_subarray_in_idle_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
 ) -> conf_types.ScanConfiguration:
     """Given an CBF subarray in IDLE state."""
+    subarray_allocation_spec.receptors = RECEPTORS
+    subarray_allocation_spec.subarray_id = SUB_ARRAY_ID
+    # will use default composition for the allocated subarray
+    # subarray_allocation_spec.composition
+    return csp_base_configuration
+
+
+@given("an CSP subarray in IDLE state", target_fixture="configuration")
+def an_csp_subarray_in_idle_state(
+    configure_scan_test_exec_settings,  # pylint: disable=unused-argument
+    set_csp_entry_point,  # pylint: disable=unused-argument
+    set_up_log_checking_for_csp,  # pylint: disable=unused-argument
+    csp_base_configuration: conf_types.ScanConfiguration,
+    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
+) -> conf_types.ScanConfiguration:
+    """Given an CSP subarray in IDLE state."""
     subarray_allocation_spec.receptors = RECEPTORS
     subarray_allocation_spec.subarray_id = SUB_ARRAY_ID
     # will use default composition for the allocated subarray
@@ -191,6 +230,18 @@ def the_cbf_subarray_must_be_in_the_ready_state(
     tel = names.TEL()
     sdp_subarray = con_config.get_device_proxy(tel.csp.cbf.subarray(sub_array_id))
     result = sdp_subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(ObsState.READY)
+
+
+@then("the CSP subarray must be in the READY state")
+def the_csp_subarray_must_be_in_the_ready_state(
+    allocated_subarray: fxt_types.allocated_subarray,
+):
+    """the subarray must be in the READY state."""
+    sub_array_id = allocated_subarray.id
+    tel = names.TEL()
+    csp_subarray = con_config.get_device_proxy(tel.csp.subarray(sub_array_id))
+    result = csp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)
 
 

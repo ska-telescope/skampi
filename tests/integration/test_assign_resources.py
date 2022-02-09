@@ -97,6 +97,19 @@ def fxt_set_up_log_checking_for_cbf(log_checking: fxt_types.log_checking):
         log_checking.capture_logs_from_devices(cbf_subarray)
 
 
+@pytest.fixture(name="set_up_log_checking_for_csp")
+@pytest.mark.usefixtures("set_csp_entry_point")
+def fxt_set_up_log_checking_for_csp(log_checking: fxt_types.log_checking):
+    """Set up log capturing (if enabled by CATPURE_LOGS).
+
+    :param log_checking: The skallop log_checking fixture to use
+    """
+    if os.getenv("CAPTURE_LOGS"):
+        tel = names.TEL()
+        csp_subarray = str(tel.csp.subarray(SUB_ARRAY_ID))
+        log_checking.capture_logs_from_devices(csp_subarray)
+
+
 @pytest.mark.skip("test fails see bug https://jira.skatelescope.org/browse/SKB-124")
 @pytest.mark.skalow
 @scenario(
@@ -122,11 +135,38 @@ def test_assign_resources_to_cbf_mid_subarray():
     """Assign resources to CBF mid subarray."""
 
 
+@pytest.mark.skalow
+@scenario(
+    "features/cbf_assign_resources.feature", "Assign resources to CBF low subarray"
+)
+def test_assign_resources_to_cbf_low_subarray():
+    """Assign resources to CBF low subarray."""
+
+
+@pytest.mark.skalow
+@scenario(
+    "features/csp_assign_resources.feature", "Assign resources to CSP low subarray"
+)
+def test_assign_resources_to_csp_low_subarray():
+    """Assign resources to CSP low subarray."""
+
+
 @given("an CBF subarray", target_fixture="composition")
 def an_cbf_subarray(
     assign_resources_test_exec_settings,  # pylint: disable=unused-argument
     set_cbf_entry_point,  # pylint: disable=unused-argument
     set_up_log_checking_for_cbf,  # pylint: disable=unused-argument
+    csp_base_composition: conf_types.Composition,
+) -> conf_types.Composition:
+    """an SDP subarray."""
+    return csp_base_composition
+
+
+@given("an CSP subarray", target_fixture="composition")
+def an_csp_subarray(
+    assign_resources_test_exec_settings,  # pylint: disable=unused-argument
+    set_csp_entry_point,  # pylint: disable=unused-argument
+    set_up_log_checking_for_csp,  # pylint: disable=unused-argument
     csp_base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """an SDP subarray."""
@@ -179,6 +219,15 @@ def the_cbf_subarray_must_be_in_idle_state():
     tel = names.TEL()
     cbf_subarray = con_config.get_device_proxy(tel.csp.cbf.subarray(SUB_ARRAY_ID))
     result = cbf_subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(ObsState.IDLE)
+
+
+@then("the CSP subarray must be in IDLE state")
+def the_csp_subarray_must_be_in_idle_state():
+    """the subarray must be in IDLE state."""
+    tel = names.TEL()
+    csp_subarray = con_config.get_device_proxy(tel.csp.subarray(SUB_ARRAY_ID))
+    result = csp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
 

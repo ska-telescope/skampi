@@ -172,6 +172,31 @@ def fxt_set_up_transit_checking_for_mccs(transit_checking: fxt_types.transit_che
             )
 
 
+@pytest.fixture(name="set_up_transit_checking_for_tmc")
+@pytest.mark.usefixtures("set_tmc_entry_point")
+def fxt_set_up_transit_checking_for_tmc(transit_checking: fxt_types.transit_checking):
+    """set up transit checking for tmc startup (if DEVENV enabled)
+
+    :param transit_checking: fixture used by skallop
+    """
+    tel = names.TEL()
+    if tel.skalow:
+        if os.getenv("DEVENV"):
+            # only do transit checking in dev as timeout problems can lead to false positives
+            devices_to_follow = cast(
+                List,
+                [
+                    tel.tm.subarray(1),
+                ],
+            )
+            subject_device = tel.tm.central_node
+            transit_checking.check_that(subject_device).transits_according_to(
+                ["ON"]
+            ).on_attr("state").when_transit_occur_on(
+                devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
+            )
+
+
 # log capturing
 
 
@@ -234,8 +259,8 @@ def a_mccs(
 
 @given("the TMC")
 def a_tmc(
-    # set_mccs_entry_point,  # pylint: disable=unused-argument
-    # set_up_transit_checking_for_mccs,  # pylint: disable=unused-argument
+    set_tmc_entry_point,  # pylint: disable=unused-argument
+    set_up_transit_checking_for_tmc,  # pylint: disable=unused-argument
 ):
     """a TMC."""
 
@@ -363,4 +388,4 @@ def test_test_cbf_startup(run_mock):
 @pytest.mark.usefixtures("setup_tmc_mock")
 def test_test_tmc_startup(run_mock):
     """Test the test using a mock SUT"""
-    # run_mock(test_tmc_start_up_telescope)
+    run_mock(test_tmc_start_up_telescope)

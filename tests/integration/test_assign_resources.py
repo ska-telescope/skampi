@@ -112,6 +112,7 @@ def fxt_set_up_log_checking_for_csp(log_checking: fxt_types.log_checking):
 
 @pytest.mark.skip("test fails see bug https://jira.skatelescope.org/browse/SKB-124")
 @pytest.mark.skalow
+@pytest.mark.assign
 @scenario(
     "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in low"
 )
@@ -120,6 +121,7 @@ def test_assign_resources_to_sdp_subarray_in_low():
 
 
 @pytest.mark.skamid
+@pytest.mark.assign
 @scenario(
     "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in mid"
 )
@@ -128,6 +130,7 @@ def test_assign_resources_to_sdp_subarray_in_mid():
 
 
 @pytest.mark.skamid
+@pytest.mark.assign
 @scenario(
     "features/cbf_assign_resources.feature", "Assign resources to CBF mid subarray"
 )
@@ -136,6 +139,7 @@ def test_assign_resources_to_cbf_mid_subarray():
 
 
 @pytest.mark.skalow
+@pytest.mark.assign
 @scenario(
     "features/cbf_assign_resources.feature", "Assign resources to CBF low subarray"
 )
@@ -144,6 +148,7 @@ def test_assign_resources_to_cbf_low_subarray():
 
 
 @pytest.mark.skalow
+@pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature", "Assign resources to CSP low subarray"
 )

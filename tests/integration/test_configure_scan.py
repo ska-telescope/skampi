@@ -108,7 +108,8 @@ def fxt_set_up_log_checking_for_csp(log_checking: fxt_types.log_checking):
         log_checking.capture_logs_from_devices(csp_subarray)
 
 
-@pytest.mark.skip(reason="test still in dev phase")
+@pytest.mark.skalow
+@pytest.mark.configure
 @scenario(
     "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in low"
 )
@@ -116,7 +117,8 @@ def test_configure_scan_on_sdp_subarray_in_low():
     """Configure scan on sdp subarray in low."""
 
 
-# @pytest.mark.skip(reason="test still in dev phase")
+@pytest.mark.skamid
+@pytest.mark.configure
 @scenario(
     "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in mid"
 )
@@ -124,16 +126,22 @@ def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid."""
 
 
+@pytest.mark.skamid
+@pytest.mark.configure
 @scenario("features/cbf_configure_scan.feature", "Configure scan on CBF mid subarray")
 def test_configure_scan_on_cbf_mid_subarray():
     """Configure scan on CBF mid subarray."""
 
 
+@pytest.mark.skalow
+@pytest.mark.configure
 @scenario("features/cbf_configure_scan.feature", "Configure scan on CBF low subarray")
 def test_configure_scan_on_cbf_low_subarray():
     """Configure scan on CBF low subarray."""
 
 
+@pytest.mark.skalow
+@pytest.mark.configure
 @scenario("features/csp_configure_scan.feature", "Configure scan on CSP low subarray")
 def test_configure_scan_on_csp_low_subarray():
     """Configure scan on CSP low subarray."""

@@ -177,7 +177,10 @@ csp_low_configure_scan = {
     "id": 1,
     "scanId": 1,
     "stationType": 0,
-    "common": {"subarray_id": 1},
+    "common": {
+        "subarray_id": 1,
+        "config_id": "sbi-mvp01-20200325-00001-science_A",
+    },
     "lowcbf": {
         "jones_source": "tango://host:port/domain/family/member",
         "station_beams": [

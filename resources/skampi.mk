@@ -98,12 +98,61 @@ skampi-wait-all: helm-install-yq  ## iterate over sub-charts and wait for each o
 # 2. In parallel we wait for the testing pod to become ready.
 # 3. Once it is there, we attempt to pull the results from the FIFO queue.
 #    This blocks until the testing pod script writes it (see above).
+
+xskampi-k8s-test-component:
+	kubectl -n $(KUBE_NAMESPACE) create configmap $(K8S_TEST_RUNNER) \
+		--from-file=Makefile=tests/Makefile --from-file=testrunner.sh=tests/resources/testrunner.sh
+	@echo "skampi-k8s-test-component: start test runner: $(K8S_TEST_RUNNER)"
+	K8S_TEST_RUNNER="$(K8S_TEST_RUNNER)" \
+	STORAGE_CLASS="$(STORAGE_CLASS)" \
+	K8S_TEST_IMAGE_TO_TEST="$(K8S_TEST_IMAGE_TO_TEST)" \
+	K8S_TEST_FOLDER="$(k8s_test_folder)" \
+	K8S_TEST_SRC_DIRS="$(k8s_test_src_dirs)" \
+	K8S_TEST_MAKE_PARAMS="$(K8S_TEST_MAKE_PARAMS)" \
+	K8S_TEST_TARGET="$(K8S_TEST_TARGET)" \
+	INGRESS_HOST="$(INGRESS_HOST)" \
+	PSI_LOW_PROXY_VALUES="$(PSI_LOW_PROXY_VALUES)" \
+	eval "echo \"$$(cat tests/resources/test-runner-manifest.yaml)\"" | \
+	kubectl -n $(KUBE_NAMESPACE) apply -f --
+	@sleep 3
+	@echo "skampi-k8s-test-component: waiting for test runner to complete: $(K8S_TEST_RUNNER)"
+	@time kubectl wait job --for=condition=complete --timeout=$(K8S_TIMEOUT) $(K8S_TEST_RUNNER) -n $(KUBE_NAMESPACE); \
+	wait_result=$$?; \
+	if [[ $$wait_result == 0 ]]; then \
+		echo "skampi-k8s-test-component: Jobs complete - $(K8S_TEST_RUNNER) "; \
+	else \
+		echo "skampi-k8s-test-component: jobs FAILED - $(K8S_TEST_RUNNER) ! "; \
+		kubectl get events -n $(KUBE_NAMESPACE) --sort-by=.metadata.creationTimestamp | tac; \
+		kubectl -n $(KUBE_NAMESPACE) get job; \
+		exit $$wait_result; \
+	fi
+	@rm -fr build; mkdir build
+	@echo "skampi-k8s-test-component: start the reclaim Pod: $(K8S_TEST_RUNNER)-reclaim"
+	K8S_TEST_RUNNER="$(K8S_TEST_RUNNER)" \
+	eval "echo \"$$(cat tests/resources/test-runner-retriever.yaml)\"" | \
+	kubectl -n $(KUBE_NAMESPACE) apply -f --
+	@sleep 3
+	@echo "skampi-k8s-test-component: wait for the reclaim Pod: $(K8S_TEST_RUNNER)-reclaim"
+	kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready pod/$(K8S_TEST_RUNNER)-reclaim --timeout=$(K8S_TIMEOUT)
+	@echo "skampi-k8s-test-component: file list in the reclaim Pod: $(K8S_TEST_RUNNER)-reclaim"
+	echo "ls -latr /build" | kubectl -n $(KUBE_NAMESPACE) exec -i $(K8S_TEST_RUNNER)-reclaim sh
+	@echo "skampi-k8s-test-component: copy files"
+	kubectl cp $(KUBE_NAMESPACE)/$(K8S_TEST_RUNNER)-reclaim:/build $$(pwd)/build
+	@find ./build
+	@echo "skampi-k8s-test-component: cleanup all resources"
+	kubectl -n $(KUBE_NAMESPACE) delete pod $(K8S_TEST_RUNNER)-reclaim \
+	                             delete job $(K8S_TEST_RUNNER) \
+	                             delete ConfigMap $(K8S_TEST_RUNNER) \
+	                             delete PersistentVolumeClaim $(K8S_TEST_RUNNER) --now=true --wait=true
+	@echo "skampi-k8s-test: the test run exit code is ($$(cat build/status))"
+	@exit `cat build/status`
+
 skampi-k8s-do-test:
 	@rm -fr build; mkdir build
 	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
 	@echo "skampi-k8s-test: start test runner: $(k8s_test_runner)"
 	@echo "skampi-k8s-test: sending test folder: tar -cz $(k8s_test_folder)/"
-	( cd $(BASE); tar --exclude $(k8s_test_folder)/integration  --exclude $(k8s_test_folder)/resources  --exclude $(k8s_test_folder)/unit  --exclude $(k8s_test_folder)/conftest.py  --exclude $(k8s_test_folder)/pytest.ini -cz $(k8s_test_folder)/ \
+	( cd $(BASE); tar -cz $(k8s_test_folder)/Makefile \
 	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
 	sleep 1; \

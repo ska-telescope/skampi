@@ -133,6 +133,8 @@ K8S_CHART_PARAMS += --set global.taranta_auth_enabled=true \
 endif
 endif
 
+STORAGE_CLASS ?= nfss1
+
 # Test runner - run to completion job in K8s
 K8S_TEST_RUNNER = test-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 #

@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ${K8S_TEST_RUNNER}
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ${STORAGE_CLASS}
+
+---
+# run once Job for executing test-runner
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${K8S_TEST_RUNNER}
+  labels:
+    app: test-runner
+    component: ska-skampi
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      containers:
+      - name: test-runner
+        image: "${K8S_TEST_IMAGE_TO_TEST}"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - /config/testrunner.sh
+        env:
+        - name: K8S_TEST_FOLDER
+          value: "${K8S_TEST_FOLDER}"
+        - name: K8S_TEST_SRC_DIRS
+          value: "${K8S_TEST_SRC_DIRS}"
+        - name: K8S_TEST_MAKE_PARAMS
+          value: "${K8S_TEST_MAKE_PARAMS}"
+        - name: K8S_TEST_TARGET
+          value: "${K8S_TEST_TARGET}"
+        - name: INGRESS_HOST
+          value: "${INGRESS_HOST}"
+        - name: PSI_LOW_PROXY_VALUES
+          value: "${PSI_LOW_PROXY_VALUES}"
+        volumeMounts:
+          - name: configuration
+            mountPath: /config
+            readOnly: true
+          - name: data
+            mountPath: /data
+      volumes:
+        - name: configuration
+          configMap:
+            name: ${K8S_TEST_RUNNER}
+        - name: data
+          persistentVolumeClaim:
+            claimName: ${K8S_TEST_RUNNER}
+
+      restartPolicy: Never

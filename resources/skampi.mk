@@ -240,4 +240,4 @@ skampi-test-02skuidservice:  ## launcher for skuid tests
 skampi-test-03sdp:  ## launcher for SDP tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sdp" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=registry.gitlab.com/ska-telescope/sdp/ska-sdp-integration/ska-sdp-integration-tests:$$version MARK="$$telescope and acceptance"
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sdp-integration-tests:$$version MARK="$$telescope and acceptance"

@@ -23,3 +23,5 @@ You can also see a `deployment diagram for SKAMPI <https://confluence.skatelesco
    deployment
    subsystems
    testing
+   integrating
+   

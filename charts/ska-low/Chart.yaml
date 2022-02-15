@@ -58,7 +58,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-low-cbf.enabled
   - name: ska-low-cbf-proc
-    version: 0.7.4
+    version: 0.7.2
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-low-cbf.enabled
   # - name: ska-tango-archiver

@@ -97,6 +97,14 @@ def test_tmc_start_up_telescope():
     """Start up the tmc in low."""
 
 
+@pytest.mark.skalow
+@pytest.mark.startup
+@pytest.mark.e2e
+@scenario("features/start_up_telescope_basic_flow.feature", "Start up the telescope")
+def test_start_up_telescope_basic_flow():
+    """Start up the telescope in low."""
+
+
 # transit checking
 
 
@@ -265,9 +273,13 @@ def a_tmc(
     """a TMC."""
 
 
+@given("all SW and HW is operational")
+# define entry points to all subelements
+def all_sw_hw():
+    pass
+
+
 # whens
-
-
 @when("I start up the telescope")
 def i_start_up_the_telescope(
     standby_telescope: fxt_types.standby_telescope,

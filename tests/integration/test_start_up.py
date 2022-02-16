@@ -47,6 +47,7 @@ def test_sdp_start_up_telescope_mid():
 
 @pytest.mark.skalow
 @pytest.mark.startup
+@pytest.mark.skip
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in low")
 def test_sdp_start_up_telescope_low():
     """Start up the sdp in low."""
@@ -61,6 +62,7 @@ def test_cbf_start_up_telescope_mid():
 
 @pytest.mark.skalow
 @pytest.mark.startup
+@pytest.mark.skip
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in low")
 def test_cbf_start_up_telescope_low():
     """Start up the cbf in low."""
@@ -76,6 +78,7 @@ def test_csp_start_up_telescope_mid():
 
 @pytest.mark.skalow
 @pytest.mark.startup
+@pytest.mark.skip
 @scenario("features/csp_start_up_telescope.feature", "Start up the csp in low")
 def test_csp_start_up_telescope_low():
     """Start up the csp in low."""
@@ -83,6 +86,7 @@ def test_csp_start_up_telescope_low():
 
 @pytest.mark.skalow
 @pytest.mark.startup
+@pytest.mark.skip
 @pytest.mark.skip(reason="current mccs-low has problems with starting in admin mode")
 @scenario("features/mccs_start_up_telescope.feature", "Start up the MCCS")
 def test_mccs_start_up_telescope():
@@ -91,7 +95,7 @@ def test_mccs_start_up_telescope():
 
 @pytest.mark.skalow
 @pytest.mark.startup
-# @pytest.mark.skip(reason="currently tmc is not available")
+@pytest.mark.skip(reason="currently tmc is not available")
 @scenario("features/tmc_start_up_telescope.feature", "Start up the telescope")
 def test_tmc_start_up_telescope():
     """Start up the tmc in low."""
@@ -102,6 +106,17 @@ def test_tmc_start_up_telescope():
 @pytest.mark.e2e
 @scenario("features/start_up_telescope_basic_flow.feature", "Start up the telescope")
 def test_start_up_telescope_basic_flow():
+    """Start up the telescope in low."""
+
+
+@pytest.mark.skalow
+@pytest.mark.startup
+@pytest.mark.e2e
+@scenario(
+    "features/start_up_telescope_alternate_flow_unresponsive_hw.feature",
+    "Start up the telescope",
+)
+def test_start_up_telescope_alternate_flow_unresponsive_hw():
     """Start up the telescope in low."""
 
 

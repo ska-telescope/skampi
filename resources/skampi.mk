@@ -141,6 +141,30 @@ skampi-k8s-post-test:
 
 skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ## run the defined test cycle against Kubernetes
 
+skampi-k8s-test-component:
+	@rm -fr build; mkdir build
+	@echo "skampi-k8s-test-component: start test runner: $(k8s_test_runner)"
+	@echo "skampi-k8s-test-component: sending test Makefile: tar -cz $(k8s_test_folder)/Makefile"
+	( cd $(BASE); tar -cz $(k8s_test_folder)/Makefile \
+	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
+	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
+	sleep 1; \
+	echo "skampi-k8s-test-component: waiting for test runner to boot up: $(k8s_test_runner)"; \
+	( \
+	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
+	wait_status=$$?; \
+	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
+	 ) && \
+		echo "skampi-k8s-test-component: $(k8s_test_runner) is up, now waiting for tests to complete" && \
+		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
+	\
+	cd $(BASE)/; \
+	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
+	echo "skampi-k8s-test-component: test run complete, processing files"; \
+	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
+	@echo "skampi-k8s-test-component: the test run exit code is ($$(cat build/status))"
+	@exit `cat build/status`
+
 ## TARGET: skampi-component-tests
 ## SYNOPSIS: make skampi-component-tests
 ## HOOKS: none
@@ -194,7 +218,7 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 skampi-test-01centralnode:  ## launcher for centralnode tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tmc-centralnode" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"
 
 ## TARGET: skampi-test-02skuidservice
 ## SYNOPSIS: make skampi-test-02skuidservice
@@ -205,15 +229,26 @@ skampi-test-01centralnode:  ## launcher for centralnode tests
 skampi-test-02skuidservice:  ## launcher for skuid tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-ser-skuid" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skuid:$$version MARK="$$telescope and acceptance"
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skuid:$$version MARK="$$telescope and acceptance"
 
-## TARGET: skampi-test-03dishmaster-sim
-## SYNOPSIS: make skampi-test-03dishmaster-sim
+## TARGET: skampi-test-03sdp
+## SYNOPSIS: make skampi-test-03sdp
+## HOOKS: none
+## VARS: none
+##  make target for running the SDP-specific tests in the Skampi CI pipeline
+
+skampi-test-03sdp:  ## launcher for SDP tests
+	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sdp" {print $$2}'); \
+	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sdp-integration-tests:$$version MARK="$$telescope and acceptance"
+
+## TARGET: skampi-test-04dishmaster-sim
+## SYNOPSIS: make skampi-test-04dishmaster-sim
 ## HOOKS: none
 ## VARS: none
 ##  make target for running dishmaster simulator component's acceptance tests in the SKAMPI CI pipeline.
 
-skampi-test-03dishmaster-sim:  ## launcher for dishmaster tests
+skampi-test-04dishmaster-sim:  ## launcher for dishmaster tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sim-dishmaster" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=registry.gitlab.com/ska-telescope/ska-sim-dishmaster/ska-sim-dishmaster:2.0.1-dev.c23f63ebd MARK="$$telescope and acceptance"
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=registry.gitlab.com/ska-telescope/ska-sim-dishmaster/ska-sim-dishmaster:2.0.1-dev.c23f63ebd MARK="$$telescope and acceptance"

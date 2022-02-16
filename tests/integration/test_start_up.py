@@ -234,6 +234,9 @@ def fxt_set_up_log_checking_for_cspf(log_checking: fxt_types.log_checking):
         log_checking.capture_logs_from_devices(cbf_controller, subarray)
 
 
+# given
+
+
 @given("an SDP")
 def a_sdp(set_sdp_entry_point):  # pylint: disable=unused-argument
     """a SDP."""
@@ -274,9 +277,20 @@ def a_tmc(
 
 
 @given("all SW and HW is operational")
-# define entry points to all subelements
-def all_sw_hw():
-    pass
+def all_sw_hw(
+    set_tmc_entry_point,  # pylint: disable=unused-argument
+    set_up_transit_checking_for_tmc,  # pylint: disable=unused-argument
+    # set_mccs_entry_point,  # pylint: disable=unused-argument
+    # set_up_transit_checking_for_mccs,  # pylint: disable=unused-argument
+    # set_csp_entry_point,  # pylint: disable=unused-argument
+    # set_up_transit_checking_for_csp,  # pylint: disable=unused-argument
+    # set_up_log_checking_for_csp,  # pylint: disable=unused-argument
+    # set_cbf_entry_point,  # pylint: disable=unused-argument
+    # set_up_transit_checking_for_cbf,  # pylint: disable=unused-argument
+    # set_up_log_checking_for_cbf,  # pylint: disable=unused-argument
+    # set_sdp_entry_point,  # pylint: disable=unused-argument
+):
+    """all_sw_hw"""
 
 
 # whens

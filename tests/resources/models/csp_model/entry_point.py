@@ -1,9 +1,9 @@
 """Domain logging for CSP"""
-import imp
 from typing import List
 import logging
 import os
 import json
+from time import sleep
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.configuration import types
@@ -12,6 +12,7 @@ from ..mvp_model.synched_entry_point import SynchedEntryPoint
 from ..mvp_model import waiting
 
 logger = logging.getLogger(__name__)
+SCAN_DURATION = 1
 
 
 class CSPEntryPoint(SynchedEntryPoint):
@@ -92,6 +93,8 @@ class CSPEntryPoint(SynchedEntryPoint):
         sb_id: str,
         duration: float,
     ):
+        global SCAN_DURATION  # pylint: disable=global-statement
+        SCAN_DURATION = duration
         if self._tel.skalow:
             subarray_name = self._tel.skalow.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
@@ -120,9 +123,6 @@ class CSPEntryPoint(SynchedEntryPoint):
     def reset_subarray(self, sub_array_id: int):
         pass
 
-    def scan(self, sub_array_id: int):
-        pass
-
     def set_telescope_to_standby(self):
         self.csp_controller.command_inout("Off")
 
@@ -146,6 +146,45 @@ class CSPEntryPoint(SynchedEntryPoint):
             subarray = con_config.get_device_proxy(subarray_name)
             self._log(f"commanding {subarray_name} with ReleaseAllResources")
             subarray.command_inout("ReleaseAllResources")
+
+    def set_waiting_until_scanning(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> waiting.MessageBoardBuilder:
+        """
+        :param sub_array_id: _description_
+        :type sub_array_id: int
+        :param receptors: _description_
+        :type receptors: List[int]
+        :return: _description_
+        :rtype: waiting.MessageBoardBuilder
+        """
+        builder = waiting.get_message_board_builder()
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        return builder
+
+    def scan(self, sub_array_id: int):
+        """[summary]
+
+        :param sub_array_id: [description]
+        :type sub_array_id: int
+        :return: [description]
+        :rtype: [type]
+        """
+        scan_config_arg = json.dumps({"scan_id": 1})
+        self._tel = names.TEL()
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg}")
+        try:
+            subarray.command_inout("Scan", scan_config_arg)
+            sleep(SCAN_DURATION)
+            subarray.command_inout("EndScan")
+        except Exception as exception:
+            logger.exception(exception)
+            raise exception
 
 
 csp_low_assign_resources = {

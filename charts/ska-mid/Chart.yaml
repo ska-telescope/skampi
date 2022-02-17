@@ -72,6 +72,6 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
   - name: ska-sdp
-    version: 0.8.2
+    version: 0.9.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled

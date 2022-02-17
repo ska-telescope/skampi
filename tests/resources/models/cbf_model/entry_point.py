@@ -3,6 +3,7 @@ from typing import List
 import logging
 import json
 import os
+from time import sleep
 
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.connectors import configuration as con_config
@@ -13,6 +14,7 @@ from ..mvp_model import waiting
 from ..mvp_model.synched_entry_point import SynchedEntryPoint
 
 logger = logging.getLogger(__name__)
+SCAN_DURATION = 1
 
 
 class CBFEntryPoint(SynchedEntryPoint):
@@ -102,6 +104,8 @@ class CBFEntryPoint(SynchedEntryPoint):
         duration: float,
     ):
         self._tel = names.TEL()
+        global SCAN_DURATION  # pylint: disable=global-statement
+        SCAN_DURATION = duration
         if self._tel.skamid:
             subarray_name = self._tel.skamid.csp.cbf.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
@@ -146,9 +150,6 @@ class CBFEntryPoint(SynchedEntryPoint):
     def reset_subarray(self, sub_array_id: int):
         pass
 
-    def scan(self, sub_array_id: int):
-        pass
-
     def set_telescope_to_standby(self):
         #  mid uses standby
         if self._tel.skamid:
@@ -186,6 +187,64 @@ class CBFEntryPoint(SynchedEntryPoint):
             self._log(f"commanding {subarray_name} with ReleaseAllResources")
             subarray.command_inout("ReleaseAllResources")
 
+    def set_waiting_until_scanning(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> waiting.MessageBoardBuilder:
+        """
+        :param sub_array_id: _description_
+        :type sub_array_id: int
+        :param receptors: _description_
+        :type receptors: List[int]
+        :return: _description_
+        :rtype: waiting.MessageBoardBuilder
+        """
+        builder = waiting.get_message_board_builder()
+        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        return builder
+
+    def scan(self, sub_array_id: int):
+        """[summary]
+
+        :param sub_array_id: [description]
+        :type sub_array_id: int
+        :return: [description]
+        :rtype: [type]
+        """
+        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        if self._tel.skalow:
+            scan_config_arg = json.dumps(cbf_low_start_scan)
+            self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg}")
+            try:
+                subarray.command_inout("Scan", scan_config_arg)
+            except Exception as exception:
+                logger.exception(exception)
+                raise exception
+        else:
+            scan_config_arg = json.dumps({"scan_id": 1})
+            self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg}")
+            try:
+                subarray.command_inout("Scan", scan_config_arg)
+                sleep(SCAN_DURATION)
+                subarray.command_inout("EndScan")
+            except Exception as exception:
+                logger.exception(exception)
+                raise exception
+
+
+cbf_low_start_scan = {
+    "common": {"subarray_id": 1},
+    "lowcbf": {
+        "scan_id": 987654321,
+        "unix_epoch_seconds": 1616971738,
+        "timestamp_ns": 987654321,
+        "packet_offset": 123456789,
+        "scan_seconds": 2,
+    },
+}
 
 cbf_low_assign_resources = {
     "common": {"subarrayID": 1},
@@ -240,23 +299,7 @@ cbf_low_configure_scan = {
                                 "channels": 500,
                             },
                         ],
-                    },
-                    {
-                        "pst_beam_id": 2,
-                        "pst_beam_delay_src": "tango://host:port/domain/family/member",
-                        "pst_beam_dest": [
-                            {
-                                "dest_ip": "10.0.3.3",
-                                "dest_mac": "02:00:00:00:03:03",
-                                "channels": 200,
-                            },
-                            {
-                                "dest_ip": "10.0.3.4",
-                                "dest_mac": "02:00:00:00:03:04",
-                                "channels": 500,
-                            },
-                        ],
-                    },
+                    }
                 ],
             },
             {
@@ -265,24 +308,7 @@ cbf_low_configure_scan = {
                 "visibility_dest": [
                     {"dest_ip": "10.0.3.3", "dest_mac": "02:00:00:00:03:03"}
                 ],
-                "pst_beams": [
-                    {
-                        "pst_beam_id": 3,
-                        "pst_beam_delay_src": "tango://host:port/domain/family/member",
-                        "pst_beam_dest": [
-                            {
-                                "dest_ip": "10.0.2.5",
-                                "dest_mac": "02:00:00:00:02:05",
-                                "channels": 200,
-                            },
-                            {
-                                "dest_ip": "10.0.2.6",
-                                "dest_mac": "02:00:00:00:02:06",
-                                "channels": 500,
-                            },
-                        ],
-                    }
-                ],
+                "pst_beams": [],
             },
         ],
     },

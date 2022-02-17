@@ -27,7 +27,7 @@ NR_OFF_SUBARRAYS = 2
 @pytest.fixture(scope="session", autouse=True)
 def fxt_check_tango_db(request):
     # pylint: disable=no-value-for-parameter
-    if not os.getenv("DEVENV"):
+    if os.getenv("VERIFY_TANGO_DB"):
         db = TangoDB()
         devices = "\n".join(db.devices | where(lambda args: "dserver/" not in args[0]))
         logger.info("#### Devices and States ####")

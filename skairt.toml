@@ -1,0 +1,132 @@
+
+[dep.ska-sdp-integration]
+dep_type = "gitlab:helm-chart"
+project = "ska-telescope/sdp/ska-sdp-integration"
+chart_name = "ska-sdp"
+
+  [dep.ska-sdp-integration.sink.chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-low/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+[dep.ska-tango-base]
+dep_type = "gitlab:helm-chart"
+project = "ska-telescope/ska-tango-images"
+chart_name = "ska-tango-base"
+
+  [dep.ska-tango-base.sink.ska-low-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-low/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+  [dep.ska-tango-base.sink.ska-mid-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-mid/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+[dep.ska-tango-util]
+dep_type = "gitlab:helm-chart"
+project = "ska-telescope/ska-tango-images"
+chart_name = "ska-tango-util"
+
+  [dep.ska-tango-util.sink.ska-low-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-low/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+  [dep.ska-tango-util.sink.ska-mid-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-mid/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+[dep.ska-tmc-centralnode]
+dep_type = "gitlab:helm-chart"
+project = "ska-telescope/ska-tmc-centralnode"
+chart_name = "ska-tmc-centralnode"
+
+  [dep.ska-tmc-centralnode.sink.ska-low-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-low/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+  [dep.ska-tmc-centralnode.sink.ska-mid-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-mid/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+[dep.ska-tango-taranta]
+dep_type = "gitlab:helm-chart"
+project = "ska-telescope/ska-tango-taranta-group/ska-tango-taranta-pipeline"
+chart_name = "ska-tango-taranta"
+
+  [dep.ska-tango-taranta.sink.ska-low-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-low/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+  [dep.ska-tango-taranta.sink.ska-mid-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-mid/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+[dep.ska-tango-taranta-auth]
+dep_type = "gitlab:helm-chart"
+project = "ska-telescope/ska-tango-taranta-group/ska-tango-taranta-auth-pipeline"
+chart_name = "ska-tango-taranta-auth"
+
+  [dep.ska-tango-taranta-auth.sink.ska-mid-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-mid/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+[dep.ska-ser-skuid]
+dep_type = "gitlab:helm-chart"
+project = "ska-telescope/ska-ser-skuid"
+chart_name = "ska-ser-skuid"
+
+  [dep.ska-ser-skuid.sink.ska-low-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-low/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+
+  [dep.ska-ser-skuid.sink.ska-mid-chart-yaml]
+  sink_type = "yaml"
+  file = "charts/ska-mid/Chart.yaml"
+  updates = [
+      { path = "dependencies[?name=\"{name}\"].repository", value = "{repository}" },
+      { path = "dependencies[?name=\"{name}\"].version", value = "{version}" },
+  ]
+

@@ -38,11 +38,11 @@ dependencies:
 #   version: 0.5.3
 #   repository: https://artefact.skao.int/repository/helm-internal
 #   condition: ska-oso-scripting.enabled
-- name: ska-taranta
+- name: ska-tango-taranta
   version: 1.0.29
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-taranta.enabled
-- name: ska-taranta-auth
+- name: ska-tango-taranta-auth
   version: 0.1.5
   repository: https://artefact.skao.int/repository/helm-internal
   condition: global.taranta_auth_enabled

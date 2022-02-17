@@ -71,3 +71,18 @@ python-test:
     name: test/$CI_COMMIT_REF_SLUG-cluster
     kubernetes:
       namespace: $CLUSTER_TEST_NAMESPACE
+
+# experimental SKAirt dependency update
+skairt-update:
+  image: $SKA_PYTHON_PYTANGO_BUILDER_IMAGE
+  stage: .pre
+  tags:
+    - k8srunner
+  before_script:
+    - time pip3 install poetry git+https://gitlab.com/scpmw/skairt.git
+  script:
+    - time skairt update
+  artifacts:
+    paths:
+      - charts/ska-mid/Chart.yaml
+      - charts/ska-low/Chart.yaml

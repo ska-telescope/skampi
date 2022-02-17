@@ -244,6 +244,19 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
+name = "contextlib2"
+version = "21.6.0"
+description = "Backports and enhancements for the contextlib module"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
 name = "coverage"
 version = "6.3.1"
 description = "Code coverage measurement for Python"
@@ -1308,6 +1321,22 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
+name = "schema"
+version = "0.7.5"
+description = "Simple data validation library"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+contextlib2 = ">=0.5.5"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -1322,7 +1351,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-ser-skallop"
-version = "2.15.17"
+version = "2.15.18+dev.c77d017f7"
 description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
 category = "main"
 optional = false
@@ -1342,6 +1371,25 @@ requests = ">=2.26.0,<3.0.0"
 
 [package.extras]
 bit = ["pytango (==9.3.3)"]
+
+[package.source]
+type = "legacy"
+url = "https://deployskallopdev:rsaigjomsv-XyU2gNji7@gitlab.com/api/v4/projects/21173098/packages/pypi/simple"
+reference = 'skallop_private_repo'
+
+[[package]]
+name = "ska-telescope-model"
+version = "1.3.1"
+description = "SKA telescope model library"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+schema = "*"
+
+[package.extras]
+dev = ["prospector", "yapf", "isort"]
 
 [package.source]
 type = "legacy"
@@ -1498,7 +1546,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "2064e9415a1b3831d46dca8e6f303e3db9829c7984e4d94b174bca4336a996e1"
+content-hash = "ba0a21cfe4f936f931a2ee3f887d8b11795c64182eca7ae1f9c14fb4fda594aa"
 
 [metadata.files]
 aiohttp = [
@@ -1629,6 +1677,10 @@ click = [
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+contextlib2 = [
+    {file = "contextlib2-21.6.0-py2.py3-none-any.whl", hash = "sha256:3fbdb64466afd23abaf6c977627b75b6139a5a3e8ce38405c5b413aed7a0471f"},
+    {file = "contextlib2-21.6.0.tar.gz", hash = "sha256:ab1e2bfe1d01d968e1b7e8d9023bc51ef3509bba217bb730cee3827e1ee82869"},
 ]
 coverage = [
     {file = "coverage-6.3.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:eeffd96882d8c06d31b65dddcf51db7c612547babc1c4c5db6a011abe9798525"},
@@ -2189,13 +2241,21 @@ rsa = [
     {file = "rsa-4.8-py3-none-any.whl", hash = "sha256:95c5d300c4e879ee69708c428ba566c59478fd653cc3a22243eeb8ed846950bb"},
     {file = "rsa-4.8.tar.gz", hash = "sha256:5c6bd9dc7a543b7fe4304a631f8a8a3b674e2bbfc49c2ae96200cdbe55df6b17"},
 ]
+schema = [
+    {file = "schema-0.7.5-py2.py3-none-any.whl", hash = "sha256:f3ffdeeada09ec34bf40d7d79996d9f7175db93b7a5065de0faa7f41083c1e6c"},
+    {file = "schema-0.7.5.tar.gz", hash = "sha256:f06717112c61895cabc4707752b88716e8420a8819d71404501e114f91043197"},
+]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-ser-skallop = [
-    {file = "ska-ser-skallop-2.15.17.tar.gz", hash = "md5:d1b9e504011537505dc35f270eca7345"},
-    {file = "ska_ser_skallop-2.15.17-py3-none-any.whl", hash = "md5:28b9285603d756d50b141e7594045f9b"},
+    {file = "ska-ser-skallop-2.15.18+dev.c77d017f7.tar.gz", hash = "sha256:1ffc603cc02632a5ef4df0d5617161cf971187845d5bd4dbb97c89cb48a38965"},
+    {file = "ska_ser_skallop-2.15.18+dev.c77d017f7-py3-none-any.whl", hash = "sha256:ebbc786506b5293cd9d8501f5b66ed6806b3a785067b01c61f85a7657426fdd5"},
+]
+ska-telescope-model = [
+    {file = "ska-telescope-model-1.3.1.tar.gz", hash = "md5:f15441afc500f210c3f21f2474973767"},
+    {file = "ska_telescope_model-1.3.1-py3-none-any.whl", hash = "md5:e5eb18b4e36988f2f79eaedf81a5f4ba"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},

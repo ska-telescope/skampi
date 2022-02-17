@@ -1,8 +1,10 @@
 """Domain logic for the sdp."""
 import logging
+from time import sleep
 from typing import List
 import json
 import os
+
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.configuration import types
@@ -16,6 +18,7 @@ from ..mvp_model.synched_entry_point import (
 )
 
 logger = logging.getLogger(__name__)
+SCAN_DURATION = 1
 
 
 class SDPEntryPoint(SynchedEntryPoint):
@@ -88,6 +91,8 @@ class SDPEntryPoint(SynchedEntryPoint):
         duration: float,
     ):
         self._tel = names.TEL()
+        global SCAN_DURATION  # pylint: disable=global-statement
+        SCAN_DURATION = duration
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         standard_configuration = conf.generate_standard_conf(
@@ -102,9 +107,6 @@ class SDPEntryPoint(SynchedEntryPoint):
         subarray.command_inout("Configure", sdp_standard_configuration)
 
     def reset_subarray(self, sub_array_id: int):
-        pass
-
-    def scan(self, sub_array_id: int):
         pass
 
     def set_telescope_to_standby(self):
@@ -140,3 +142,42 @@ class SDPEntryPoint(SynchedEntryPoint):
             "obsState"
         ).to_become_equal_to("IDLE")
         return builder
+
+    def set_waiting_until_scanning(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> waiting.MessageBoardBuilder:
+        """[summary]
+
+        :param sub_array_id: [description]
+        :type sub_array_id: int
+        :param receptors: [description]
+        :type receptors: List[int]
+        :return: [description]
+        :rtype: waiting.MessageBoardBuilder
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        return builder
+
+    def scan(self, sub_array_id: int):
+        """[summary]
+
+        :param sub_array_id: [description]
+        :type sub_array_id: int
+        :return: [description]
+        :rtype: [type]
+        """
+        scan_config = json.dumps({"id": 1})
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
+        try:
+            subarray.command_inout("Scan", scan_config)
+            sleep(SCAN_DURATION)
+            subarray.command_inout("EndScan")
+        except Exception as exception:
+            logger.exception(exception)
+            raise exception

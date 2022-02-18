@@ -79,7 +79,7 @@ skairt-update:
   tags:
     - k8srunner
   before_script:
-    - time pip3 install poetry git+https://gitlab.com/scpmw/skairt.git
+    - time pip3 install git+https://gitlab.com/scpmw/skairt.git
   script:
     - time skairt update
   artifacts:

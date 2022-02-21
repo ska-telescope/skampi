@@ -9,9 +9,9 @@ ska-sdp:
 ska-oso-scripting:
   enabled: false
 ska-taranta:
-  enabled: true
+  enabled: false
 ska-ser-skuid:
-  enabled: true
+  enabled: false
 ska-tango-archiver:
   enabled: false
 ska-landingpage:

@@ -206,7 +206,8 @@ python-pre-test: # must pass the current kubeconfig into the test container for 
 
 # use hook to create SDP namespace
 k8s-pre-install-chart:
-	make namespace-sdp
+	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
+	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra $(DISABLE_TARANTA)

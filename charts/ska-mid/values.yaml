@@ -122,3 +122,7 @@ ska-tmc-centralnode:
 ska-tango-archiver:
   enabled: true
   dbname: default_mvp_archiver_db
+
+## dishmasters
+ska-sim-dishmaster:
+  enabled: true

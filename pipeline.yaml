@@ -24,6 +24,8 @@ ska-csp-lmc-mid:
   enabled: false
 ska-tmc-mid:
   enabled: false
+ska-sim-dishmaster:
+  enabled: true
 
 # Low specific products
 ska-tmc-low:

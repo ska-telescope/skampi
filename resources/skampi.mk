@@ -241,3 +241,14 @@ skampi-test-03sdp:  ## launcher for SDP tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sdp" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
 	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sdp-integration-tests:$$version MARK="$$telescope and acceptance"
+
+## TARGET: skampi-test-04tangoexamples
+## SYNOPSIS: make skampi-test-03tangoexamples
+## HOOKS: none
+## VARS: none
+##  make target for running the tango-examples-specific tests in the Skampi CI pipeline
+
+skampi-test-04tangoexamples:  ## launcher for tango-examples tests
+	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tango-examples" {print $$2}'); \
+	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tango-examples-integration-tests:$$version MARK="$$telescope and acceptance"

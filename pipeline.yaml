@@ -4,6 +4,8 @@ minikube: false
 ska-tango-base:
   vnc:
     enabled: false
+ska-tango-examples:
+  enabled: true
 ska-sdp:
   enabled: true
 ska-oso-scripting:

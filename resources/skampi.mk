@@ -26,6 +26,10 @@ skampi-vars: k8s-vars ## Display Skampi deployment context variables
 	@echo "TANGO_HOST:                 $(TANGO_HOST)"
 	@echo "ARCHIVER_DBNAME:            $(ARCHIVER_DBNAME)"
 	@echo "MARK:                       $(MARK)"
+	@echo "PYTHON_VARS_AFTER_PYTEST:   $(PYTHON_VARS_AFTER_PYTEST)"
+	@echo "CONFIG:                     $(CONFIG)"
+	@echo "TEL:                        $(TEL)"
+	@echo "TEST_ENV:                   $(TEST_ENV)"
 
 ## TARGET: skampi-update-chart-versions
 ## SYNOPSIS: make skampi-update-chart-versions
@@ -40,8 +44,8 @@ skampi-vars: k8s-vars ## Display Skampi deployment context variables
 skampi-update-chart-versions: helm-install-yq ## update Skampi chart dependencies to latest versions eg: ska-tango-base etc.
 	@for chart in $(SKAMPI_K8S_CHARTS); do \
 		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
-		for upd in $$(yq e '.dependencies[].name' charts/$$chart/Chart.yaml | grep -v ska-landingpage); do \
-			cur_version=$$(cat charts/$$chart/Chart.yaml | yq e ".dependencies[] | select(.name == \"$$upd\") | .version" -); \
+		for upd in $$(/usr/local/bin/yq e '.dependencies[].name' charts/$$chart/Chart.yaml | grep -v ska-landingpage); do \
+			cur_version=$$(cat charts/$$chart/Chart.yaml | /usr/local/bin/yq e ".dependencies[] | select(.name == \"$$upd\") | .version" -); \
 			echo "update-chart-versions: finding latest version for $$upd current version: $$cur_version"; \
 			upd_version=$$(. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sChartVersion $$upd); \
 			echo "update-chart-versions: updating $$upd from $$cur_version to $$upd_version"; \
@@ -49,6 +53,24 @@ skampi-update-chart-versions: helm-install-yq ## update Skampi chart dependencie
 			rm -f charts/*/Chart.yaml.x; \
 		done; \
 	done
+
+## TARGET: skampi-upload-test-results
+## SYNOPSIS: make skampi-upload-test-results
+## HOOKS: none
+## VARS:
+##		SKALLOP_VERSION=<version of Skallop to install>
+##		CAR_PYPI_REPOSITORY_URL=<URL of Central Artefact Repository>
+## 	uploads cucumber test results to XTP Jira project using XRAY API implementation in SKALLOP package
+
+skampi-upload-test-results: ## Upload Skampi system acceptance and integration test results
+	@echo "Processing XRay uploads"
+	@if [ -n "$$(ls -A build/cucumber*.json 2>/dev/null)" ]; then \
+		bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$(SKALLOP_VERSION)"  --extra-index-url $(CAR_PYPI_REPOSITORY_URL); \
+	fi
+	@for cuke in  build/cucumber*.json; do \
+		echo "Processing XRay upload of: $$cuke"; \
+		/usr/local/bin/xtp-xray-upload -f $$cuke -i tests/test-exec.json -v; \
+	done; \
 
 ## TARGET: skampi-wait-all
 ## SYNOPSIS: make skampi-wait-all
@@ -59,7 +81,7 @@ skampi-update-chart-versions: helm-install-yq ## update Skampi chart dependencie
 ##  and k8s-wait for each one.
 
 skampi-wait-all: helm-install-yq  ## iterate over sub-charts and wait for each one
-	@for chart in `helm inspect chart $(K8S_UMBRELLA_CHART_PATH) | yq e '.dependencies[].name' - | grep -v ska-tango-util`; do \
+	@for chart in `helm inspect chart $(K8S_UMBRELLA_CHART_PATH) | /usr/local/bin/yq e '.dependencies[].name' - | grep -v ska-tango-util`; do \
 		echo "Waiting for sub-chart: $${chart}"; \
 		make k8s-wait KUBE_APP=$${chart}; \
 	done
@@ -141,30 +163,6 @@ skampi-k8s-post-test:
 
 skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ## run the defined test cycle against Kubernetes
 
-skampi-k8s-test-component:
-	@rm -fr build; mkdir build
-	@echo "skampi-k8s-test-component: start test runner: $(k8s_test_runner)"
-	@echo "skampi-k8s-test-component: sending test Makefile: tar -cz $(k8s_test_folder)/Makefile"
-	( cd $(BASE); tar -cz $(k8s_test_folder)/Makefile \
-	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
-	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
-	sleep 1; \
-	echo "skampi-k8s-test-component: waiting for test runner to boot up: $(k8s_test_runner)"; \
-	( \
-	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
-	wait_status=$$?; \
-	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
-	 ) && \
-		echo "skampi-k8s-test-component: $(k8s_test_runner) is up, now waiting for tests to complete" && \
-		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
-	\
-	cd $(BASE)/; \
-	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
-	echo "skampi-k8s-test-component: test run complete, processing files"; \
-	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
-	@echo "skampi-k8s-test-component: the test run exit code is ($$(cat build/status))"
-	@exit `cat build/status`
-
 ## TARGET: skampi-component-tests
 ## SYNOPSIS: make skampi-component-tests
 ## HOOKS: none
@@ -202,12 +200,12 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 			cp -f build/status build.previous/$$component-status; \
 		fi; \
 	done
+	@rm -rf build
+	@mv build.previous build
 	@if [[ -n "$$(grep -v '0' build/*status)" ]]; then \
 		echo "skampi-component-tests: Errors occurred in tests - ABORTING!"; \
 		exit 1; \
 	fi
-	@rm -rf build
-	@mv build.previous build
 
 ## TARGET: skampi-test-01centralnode
 ## SYNOPSIS: make skampi-test-01centralnode
@@ -218,37 +216,4 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 skampi-test-01centralnode:  ## launcher for centralnode tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tmc-centralnode" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"
-
-## TARGET: skampi-test-02skuidservice
-## SYNOPSIS: make skampi-test-02skuidservice
-## HOOKS: none
-## VARS: none
-##  make target for running the SKUID component's acceptance tests in the SKAMPI CI pipeline.
-
-skampi-test-02skuidservice:  ## launcher for skuid tests
-	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-ser-skuid" {print $$2}'); \
-	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skuid:$$version MARK="$$telescope and acceptance"
-
-## TARGET: skampi-test-03sdp
-## SYNOPSIS: make skampi-test-03sdp
-## HOOKS: none
-## VARS: none
-##  make target for running the SDP-specific tests in the Skampi CI pipeline
-
-skampi-test-03sdp:  ## launcher for SDP tests
-	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sdp" {print $$2}'); \
-	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sdp-integration-tests:$$version MARK="$$telescope and acceptance"
-
-## TARGET: skampi-test-04dishmaster-sim
-## SYNOPSIS: make skampi-test-04dishmaster-sim
-## HOOKS: none
-## VARS: none
-##  make target for running dishmaster simulator component's acceptance tests in the SKAMPI CI pipeline.
-
-skampi-test-04dishmaster-sim:  ## launcher for dishmaster tests
-	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sim-dishmaster" {print $$2}'); \
-	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sim-dishmaster:$$version MARK="$$telescope and acceptance"
+	make skampi-k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"

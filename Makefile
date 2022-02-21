@@ -204,6 +204,11 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
 	pip3 install -r tests/requirements.txt
 
+# use hook to create SDP namespace
+k8s-pre-install-chart:
+	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
+	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra $(DISABLE_TARANTA)
 

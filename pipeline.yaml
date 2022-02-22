@@ -21,7 +21,7 @@ ska-landingpage:
 ska-mid-cbf:
   enabled: true
 ska-csp-lmc-mid:
-  enabled: true
+  enabled: false
 ska-tmc-mid:
   enabled: false
 

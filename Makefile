@@ -84,9 +84,7 @@ PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
 				--env=https_proxy=${PSI_LOW_PROXY} \
 				--env=no_proxy=${PSI_LOW_NO_PROXY}
 
-PSI_LOW_SDP_PROXY_VARS= --set ska-sdp.proxy.server=${PSI_LOW_PROXY} \
-					--set ska-tango-archiver.enabled=false \
-					--set "ska-sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
+PSI_LOW_SDP_PROXY_VARS= --set ska-tango-archiver.enabled=false
 endif
 
 CI_JOB_ID ?= local##local default for ci job id

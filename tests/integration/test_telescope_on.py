@@ -46,7 +46,6 @@ def device_list():
 @given("Telescope is in OFF state")
 def check_telescope_off():
     """Verify Telescope is Off"""
-    assert TMCCentralNode.telescopeState == DevState.STANDBY
     assert SdpMaster.State() in [DevState.STANDBY, DevState.OFF]
     assert SdpSubarray.State() == DevState.OFF
 
@@ -70,7 +69,7 @@ def check_device_state(fixture):
     assert SdpMaster.State() == DevState.ON
     assert SdpSubarray.State() == DevState.ON
 
-    fixture["state"] = "TelescopOn"
+    fixture["state"] = "TelescopeOn"
 
     LOGGER.info("Tests complete: tearing down...")
     tear_down(fixture)
@@ -80,7 +79,7 @@ def tear_down(fixture):
     LOGGER.info(
             "Tearing down failed test, state = {}".format(fixture["state"])
     )
-    if fixture["state"] == "Telescope On":
+    if fixture["state"] == "TelescopeOn":
         TMCCentralNode.TelescopeOff()
     else:
         pytest.fail("unable to complete test without exceptions")

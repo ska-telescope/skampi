@@ -1,5 +1,6 @@
 """Default feature tests."""
 import pytest
+import time
 from pytest_bdd import given, scenario, then, when
 
 import logging
@@ -46,7 +47,7 @@ def device_list():
 def check_telescope_off():
     """Verify Telescope is Off"""
     assert TMCCentralNode.telescopeState == DevState.STANDBY
-    assert SdpMaster.State() == DevState.STANDBY
+    assert SdpMaster.State() in [DevState.STANDBY, DevState.OFF]
     assert SdpSubarray.State() == DevState.OFF
 
 
@@ -58,6 +59,7 @@ def invoke_telescope_on_command(fixture):
 
     LOGGER.info("Invoking TelescopeOn command on TMC CentralNode")
     TMCCentralNode.TelescopeOn()
+    time.sleep(0.5)
     LOGGER.info("TelescopeOn command is invoked successfully")
 
 

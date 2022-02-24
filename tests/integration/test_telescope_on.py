@@ -73,7 +73,7 @@ def check_device_state(fixture):
     fixture["state"] = "TelescopOn"
 
     LOGGER.info("Tests complete: tearing down...")
-    tear_down()
+    tear_down(fixture)
 
 
 def tear_down(fixture):

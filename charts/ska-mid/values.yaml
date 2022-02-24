@@ -126,3 +126,34 @@ ska-tango-archiver:
 ## dishmasters
 ska-sim-dishmaster:
   enabled: true
+
+# tmc subarraynode
+tmc_subarray_node:
+  deviceServers:
+    mocks:
+      enabled: false
+      component:
+        mccs: false
+        csp: false
+        sdp: false
+        dish: false
+  
+    subarraynode:
+      enabled: true
+
+# tmc leaf nodes
+tmc-leafnodes:
+  deviceServers:
+    mocks:
+      enabled: true
+      component:
+        csp: true
+        sdp: false
+        dish: true
+        mccs: true
+
+    sdpsln:
+      enabled: true
+    
+    sdpmln:
+      enabled: true

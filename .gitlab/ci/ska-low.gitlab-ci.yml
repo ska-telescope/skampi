@@ -3,7 +3,7 @@
 # ################################################
 
 # low merge blocking job - must pass for pipeline success
-low_deploy_test_destroy:
+low-test:
   stage: test
   variables:
     CONFIG: low

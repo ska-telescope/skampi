@@ -1,6 +1,4 @@
 import logging
-import time
-
 import pytest
 from tango import DeviceProxy, DevState
 
@@ -48,9 +46,8 @@ def test_telescopeon():
         fixture["state"] = "Telescope On"
         LOGGER.info("Invoked TelescopeOn on CentralNode")
 
-        time.sleep(10)
         assert CentralNode.State() == DevState.ON
-        assert CentralNode.telescopeState == DevState.UNKNOWN
+        # assert CentralNode.telescopeState == DevState.UNKNOWN
         assert sdp_mln.State() == DevState.ON
         assert sdp_master.State() == DevState.ON
 
@@ -78,7 +75,6 @@ def test_telescopeon():
         CentralNode.TelescopeOff()
         fixture["state"] = "Telescope Off"
 
-        time.sleep(10)
         LOGGER.info(
         "After Sending TelescopeOff command on CentralNode state :"
         + str(CentralNode.State())

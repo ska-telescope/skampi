@@ -48,9 +48,8 @@ def test_telescopestandby():
         fixture["state"] = "Telescope On"
         LOGGER.info("Invoked TelescopeOn on CentralNode")
 
-        time.sleep(10)
         assert CentralNode.State() == DevState.ON
-        assert CentralNode.telescopeState == DevState.UNKNOWN
+        # assert CentralNode.telescopeState == DevState.UNKNOWN
         assert sdp_mln.State() == DevState.ON
         assert sdp_master.State() == DevState.ON
 
@@ -78,7 +77,6 @@ def test_telescopestandby():
         CentralNode.TelescopeStandby()
         fixture["state"] = "Telescope standby"
 
-        time.sleep(10)
         assert CentralNode.State() == DevState.ON
         assert CentralNode.telescopeState == DevState.STANDBY
         assert sdp_mln.State() == DevState.ON

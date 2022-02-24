@@ -7,7 +7,7 @@ from tango import DeviceProxy, DevState
 LOGGER = logging.getLogger(__name__)
 
 
-@pytest.mark.skamid
+@pytest.mark.e2e
 def test_telescopestandby():
     try:
         fixture = {}

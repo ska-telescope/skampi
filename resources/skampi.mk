@@ -259,7 +259,7 @@ skampi-test-04dishmaster-sim:  ## launcher for dishmaster tests
 ## VARS: none
 ##  make target for running the TMC Leaf Node specific tests against Skampi
 
-skampi-test-05leafnodes:  ## launcher for centralnode tests
+skampi-test-05leafnodes:  ## launcher for sdp leaf node tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tmc-leafnodes" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc:$$version MARK="$$telescope and acceptance"
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc:0.8.10 MARK="$$telescope and acceptance"

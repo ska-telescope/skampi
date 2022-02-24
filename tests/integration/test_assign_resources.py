@@ -110,7 +110,7 @@ def fxt_set_up_log_checking_for_csp(log_checking: fxt_types.log_checking):
         log_checking.capture_logs_from_devices(csp_subarray)
 
 
-@pytest.mark.skip("test fails see bug https://jira.skatelescope.org/browse/SKB-124")
+# @pytest.mark.skip("test fails see bug https://jira.skatelescope.org/browse/SKB-124")
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(

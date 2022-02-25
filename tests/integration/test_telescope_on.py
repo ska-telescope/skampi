@@ -19,7 +19,7 @@ TMCSubarrayNode = DeviceProxy("ska_mid/tm_subarray_node/1")
 def fixture():
     return {}
 
-@pytest.mark.shraddha
+@pytest.mark.skamid
 @scenario("features/telescopeOn.feature", "Test TelescopeOn command")
 def test_telescope_on():
     """TelescopeOn() is executed."""
@@ -77,7 +77,7 @@ def check_device_state(fixture):
 
 def tear_down(fixture):
     LOGGER.info(
-            "Tearing down failed test, state = {}".format(fixture["state"])
+        "Tearing down failed test, state = {}".format(fixture["state"])
     )
     if fixture["state"] == "TelescopeOn":
         TMCCentralNode.TelescopeOff()

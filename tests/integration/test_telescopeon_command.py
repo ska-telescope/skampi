@@ -74,8 +74,8 @@ def test_telescopeon():
         )
         # command invokation
         TMCCentralNode.TelescopeOff()
+        time.sleep(0.5)
         fixture["state"] = "Telescope Off"
-
         LOGGER.info(
         "After Sending TelescopeOff command on CentralNode state :"
         + str(TMCCentralNode.State())

@@ -13,7 +13,6 @@ variables:
 
 stages:
   - build
-  - test
   - lint
   - publish
   - deploy_integration
@@ -39,8 +38,8 @@ include:
   - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
 
   # Python tests, directly run
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/python-test.gitlab-ci.yml'
+  # - project: 'ska-telescope/templates-repository'
+  #   file: 'gitlab-ci/includes/python-test.gitlab-ci.yml'
 
   # Helm Charts
   - project: 'ska-telescope/templates-repository'

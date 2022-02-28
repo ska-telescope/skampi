@@ -188,35 +188,35 @@ K8S_TEST_TEST_COMMAND = make -s \
 # include Skampi extension make targets
 -include resources/skampi.mk
 
-# k8s_test_command = /bin/bash -o pipefail -c "\
-# 	mkfifo results-pipe && tar zx --warning=all && \
-#         ( if [[ -f pyproject.toml ]]; then poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes --dev; echo 'k8s-test: installing poetry-requirements.txt';  pip install -qUr poetry-requirements.txt; cd $(k8s_test_folder); else if [[ -f $(k8s_test_folder)/requirements.txt ]]; then echo 'k8s-test: installing $(k8s_test_folder)/requirements.txt'; pip install -qUr $(k8s_test_folder)/requirements.txt; fi; fi ) && \
-# 				 cd $(k8s_test_folder) && \
-# 		export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs) && \
-# 		mkdir -p build && \
-# 	( \
-# 	$(K8S_TEST_TEST_COMMAND) \
-# 	); \
-# 	echo \$$? > build/status; pip list > build/pip_list.txt; \
-# 	echo \"k8s_test_command: test command exit is: \$$(cat build/status)\"; \
-# 	tar zcf ../results-pipe build;"
+k8s_test_command = /bin/bash -o pipefail -c "\
+	mkfifo results-pipe && tar zx --warning=all && \
+        ( if [[ -f pyproject.toml ]]; then poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes --dev; echo 'k8s-test: installing poetry-requirements.txt';  pip install -qUr poetry-requirements.txt; cd $(k8s_test_folder); else if [[ -f $(k8s_test_folder)/requirements.txt ]]; then echo 'k8s-test: installing $(k8s_test_folder)/requirements.txt'; pip install -qUr $(k8s_test_folder)/requirements.txt; fi; fi ) && \
+				 cd $(k8s_test_folder) && \
+		export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs) && \
+		mkdir -p build && \
+	( \
+	$(K8S_TEST_TEST_COMMAND) \
+	); \
+	echo \$$? > build/status; pip list > build/pip_list.txt; \
+	echo \"k8s_test_command: test command exit is: \$$(cat build/status)\"; \
+	tar zcf ../results-pipe build;"
 
-# python-pre-test: # must pass the current kubeconfig into the test container for infra tests
-# 	pip3 install -r tests/requirements.txt
+python-pre-test: # must pass the current kubeconfig into the test container for infra tests
+	pip3 install -r tests/requirements.txt
 
-# # use hook to create SDP namespace
-# k8s-pre-install-chart:
-# 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
-# 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+# use hook to create SDP namespace
+k8s-pre-install-chart:
+	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
+	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
-# # make sure infra test do not run in k8s-test
-# k8s-test: MARK := not infra $(DISABLE_TARANTA)
+# make sure infra test do not run in k8s-test
+k8s-test: MARK := not infra $(DISABLE_TARANTA)
 
-# k8s-post-test: # post test hook for processing received reports
-# 	@if ! [[ -f build/status ]]; then \
-# 		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
-# 		exit 1; \
-# 	fi
-# 	@echo "k8s-post-test: Skampi post processing of core Skampi test reports with scripts/collect_k8s_logs.py"
-# 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
-# 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
+k8s-post-test: # post test hook for processing received reports
+	@if ! [[ -f build/status ]]; then \
+		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
+		exit 1; \
+	fi
+	@echo "k8s-post-test: Skampi post processing of core Skampi test reports with scripts/collect_k8s_logs.py"
+	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
+		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt

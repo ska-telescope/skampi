@@ -71,34 +71,34 @@ skampi-wait-all: helm-install-yq  ## iterate over sub-charts and wait for each o
 # 2. In parallel we wait for the testing pod to become ready.
 # 3. Once it is there, we attempt to pull the results from the FIFO queue.
 #    This blocks until the testing pod script writes it (see above).
-# skampi-k8s-do-test:
-# 	@rm -fr build; mkdir build
-# 	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
-# 	@echo "skampi-k8s-test: start test runner: $(k8s_test_runner)"
-# 	@echo "skampi-k8s-test: sending test folder: tar -cz $(k8s_test_folder)/"
-# 	( cd $(BASE); tar --exclude $(k8s_test_folder)/integration  --exclude $(k8s_test_folder)/resources  --exclude $(k8s_test_folder)/unit  --exclude $(k8s_test_folder)/conftest.py  --exclude $(k8s_test_folder)/pytest.ini -cz $(k8s_test_folder)/ \
-# 	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
-# 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
-# 	sleep 1; \
-# 	echo "skampi-k8s-test: waiting for test runner to boot up: $(k8s_test_runner)"; \
-# 	( \
-# 	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
-# 	wait_status=$$?; \
-# 	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
-# 	 ) && \
-# 		echo "skampi-k8s-test: $(k8s_test_runner) is up, now waiting for tests to complete" && \
-# 		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
-# 	\
-# 	cd $(BASE)/; \
-# 	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
-# 	echo "skampi-k8s-test: test run complete, processing files"; \
-# 	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
-# 	@echo "skampi-k8s-test: the test run exit code is ($$(cat build/status))"
-# 	@exit `cat build/status`
+skampi-k8s-do-test:
+	@rm -fr build; mkdir build
+	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
+	@echo "skampi-k8s-test: start test runner: $(k8s_test_runner)"
+	@echo "skampi-k8s-test: sending test folder: tar -cz $(k8s_test_folder)/"
+	( cd $(BASE); tar --exclude $(k8s_test_folder)/integration  --exclude $(k8s_test_folder)/resources  --exclude $(k8s_test_folder)/unit  --exclude $(k8s_test_folder)/conftest.py  --exclude $(k8s_test_folder)/pytest.ini -cz $(k8s_test_folder)/ \
+	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
+	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
+	sleep 1; \
+	echo "skampi-k8s-test: waiting for test runner to boot up: $(k8s_test_runner)"; \
+	( \
+	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
+	wait_status=$$?; \
+	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
+	 ) && \
+		echo "skampi-k8s-test: $(k8s_test_runner) is up, now waiting for tests to complete" && \
+		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
+	\
+	cd $(BASE)/; \
+	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
+	echo "skampi-k8s-test: test run complete, processing files"; \
+	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
+	@echo "skampi-k8s-test: the test run exit code is ($$(cat build/status))"
+	@exit `cat build/status`
 
-# skampi-k8s-pre-test:
+skampi-k8s-pre-test:
 
-# skampi-k8s-post-test:
+skampi-k8s-post-test:
 
 ## TARGET: skampi-k8s-test
 ## SYNOPSIS: make skampi-k8s-test
@@ -139,125 +139,125 @@ skampi-wait-all: helm-install-yq  ## iterate over sub-charts and wait for each o
 ##  K8S_TEST_TEST_COMMAND is executed.  This is expected to generate output into a ./build
 ##  directory with a specifc set of files containing the test report output - the same as python-test.
 
-# skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ## run the defined test cycle against Kubernetes
+skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ## run the defined test cycle against Kubernetes
 
-# skampi-k8s-test-component:
-# 	@rm -fr build; mkdir build
-# 	@echo "skampi-k8s-test-component: start test runner: $(k8s_test_runner)"
-# 	@echo "skampi-k8s-test-component: sending test Makefile: tar -cz $(k8s_test_folder)/Makefile"
-# 	( cd $(BASE); tar -cz $(k8s_test_folder)/Makefile \
-# 	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
-# 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
-# 	sleep 1; \
-# 	echo "skampi-k8s-test-component: waiting for test runner to boot up: $(k8s_test_runner)"; \
-# 	( \
-# 	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
-# 	wait_status=$$?; \
-# 	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
-# 	 ) && \
-# 		echo "skampi-k8s-test-component: $(k8s_test_runner) is up, now waiting for tests to complete" && \
-# 		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
-# 	\
-# 	cd $(BASE)/; \
-# 	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
-# 	echo "skampi-k8s-test-component: test run complete, processing files"; \
-# 	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
-# 	@echo "skampi-k8s-test-component: the test run exit code is ($$(cat build/status))"
-# 	@exit `cat build/status`
+skampi-k8s-test-component:
+	@rm -fr build; mkdir build
+	@echo "skampi-k8s-test-component: start test runner: $(k8s_test_runner)"
+	@echo "skampi-k8s-test-component: sending test Makefile: tar -cz $(k8s_test_folder)/Makefile"
+	( cd $(BASE); tar -cz $(k8s_test_folder)/Makefile \
+	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
+	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
+	sleep 1; \
+	echo "skampi-k8s-test-component: waiting for test runner to boot up: $(k8s_test_runner)"; \
+	( \
+	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
+	wait_status=$$?; \
+	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
+	 ) && \
+		echo "skampi-k8s-test-component: $(k8s_test_runner) is up, now waiting for tests to complete" && \
+		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
+	\
+	cd $(BASE)/; \
+	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
+	echo "skampi-k8s-test-component: test run complete, processing files"; \
+	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
+	@echo "skampi-k8s-test-component: the test run exit code is ($$(cat build/status))"
+	@exit `cat build/status`
 
-# ## TARGET: skampi-component-tests
-# ## SYNOPSIS: make skampi-component-tests
-# ## HOOKS: none
-# ## VARS: none
-# ##  introspects the Makefile looking for targets starting with skampi-test-*
-# ##  and then executes them in sorted order.
-# ##  These tests are run directly after k8s-test.
-# ##  The report.xml and cucumber.json are concatenated across the test runs.
+## TARGET: skampi-component-tests
+## SYNOPSIS: make skampi-component-tests
+## HOOKS: none
+## VARS: none
+##  introspects the Makefile looking for targets starting with skampi-test-*
+##  and then executes them in sorted order.
+##  These tests are run directly after k8s-test.
+##  The report.xml and cucumber.json are concatenated across the test runs.
 
-# skampi-component-tests:  ## iterate over Skampi component tests defined as make targets
-# 	@which junitparser >/dev/null 2>&1 || pip3 install junitparser
-# 	@mkdir -p build.previous build
-# 	@if compgen -G "build/*" > /dev/null; then \
-#  		echo "skampi-component-tests: copying old build files to previous"; \
-# 		cp -r build/* build.previous/; \
-# 	fi
-# 	@for component in `grep -E '^skampi-test-[0-9a-zA-Z_-]+:.*$$' $(MAKEFILE_LIST) | sed 's/^[^:]*://' | sed 's/:.*$$//' | sort`; do \
-# 		echo "skampi-component-tests: Running test in Component: $$component"; \
-# 		rm -rf build/*; \
-# 		make $$component K8S_TEST_RUNNER=test-$$component; \
-# 		if ! [[ -f build/status ]]; then \
-# 			echo "skampi-component-tests: something went very wrong with the test container (no build/status file) - ABORTING!"; \
-# 			exit 1; \
-# 		fi; \
-# 		echo "skampi-component-tests: result for Component: $$component is ($$(cat build/status))"; \
-# 		echo "skampi-component-tests: process reports for Component: $$component"; \
-# 		if [[ -f build.previous/report.xml ]] && [[ -f build/report.xml ]]; then \
-# 			junitparser merge build.previous/report.xml build/report.xml report.xml; \
-# 			mv report.xml build.previous/report.xml; \
-# 		fi; \
-# 		if [[ -f build/cucumber.json ]]; then \
-# 			cp -f build/cucumber.json build.previous/cucumber-$$component.json; \
-# 		fi; \
-# 		if [[ -f build/status ]]; then \
-# 			cp -f build/status build.previous/$$component-status; \
-# 		fi; \
-# 	done
-# 	@if [[ -n "$$(grep -v '0' build/*status)" ]]; then \
-# 		echo "skampi-component-tests: Errors occurred in tests - ABORTING!"; \
-# 		exit 1; \
-# 	fi
-# 	@rm -rf build
-# 	@mv build.previous build
+skampi-component-tests:  ## iterate over Skampi component tests defined as make targets
+	@which junitparser >/dev/null 2>&1 || pip3 install junitparser
+	@mkdir -p build.previous build
+	@if compgen -G "build/*" > /dev/null; then \
+ 		echo "skampi-component-tests: copying old build files to previous"; \
+		cp -r build/* build.previous/; \
+	fi
+	@for component in `grep -E '^skampi-test-[0-9a-zA-Z_-]+:.*$$' $(MAKEFILE_LIST) | sed 's/^[^:]*://' | sed 's/:.*$$//' | sort`; do \
+		echo "skampi-component-tests: Running test in Component: $$component"; \
+		rm -rf build/*; \
+		make $$component K8S_TEST_RUNNER=test-$$component; \
+		if ! [[ -f build/status ]]; then \
+			echo "skampi-component-tests: something went very wrong with the test container (no build/status file) - ABORTING!"; \
+			exit 1; \
+		fi; \
+		echo "skampi-component-tests: result for Component: $$component is ($$(cat build/status))"; \
+		echo "skampi-component-tests: process reports for Component: $$component"; \
+		if [[ -f build.previous/report.xml ]] && [[ -f build/report.xml ]]; then \
+			junitparser merge build.previous/report.xml build/report.xml report.xml; \
+			mv report.xml build.previous/report.xml; \
+		fi; \
+		if [[ -f build/cucumber.json ]]; then \
+			cp -f build/cucumber.json build.previous/cucumber-$$component.json; \
+		fi; \
+		if [[ -f build/status ]]; then \
+			cp -f build/status build.previous/$$component-status; \
+		fi; \
+	done
+	@if [[ -n "$$(grep -v '0' build/*status)" ]]; then \
+		echo "skampi-component-tests: Errors occurred in tests - ABORTING!"; \
+		exit 1; \
+	fi
+	@rm -rf build
+	@mv build.previous build
 
-# ## TARGET: skampi-test-01centralnode
-# ## SYNOPSIS: make skampi-test-01centralnode
-# ## HOOKS: none
-# ## VARS: none
-# ##  make target for running the Central Node specific tests against Skampi
+## TARGET: skampi-test-01centralnode
+## SYNOPSIS: make skampi-test-01centralnode
+## HOOKS: none
+## VARS: none
+##  make target for running the Central Node specific tests against Skampi
 
 # skampi-test-01centralnode:  ## launcher for centralnode tests
 # 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tmc-centralnode" {print $$2}'); \
 # 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
 # 	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tmc-centralnode:$$version MARK="$$telescope and acceptance"
 
-# ## TARGET: skampi-test-02skuidservice
-# ## SYNOPSIS: make skampi-test-02skuidservice
-# ## HOOKS: none
-# ## VARS: none
-# ##  make target for running the SKUID component's acceptance tests in the SKAMPI CI pipeline.
+## TARGET: skampi-test-02skuidservice
+## SYNOPSIS: make skampi-test-02skuidservice
+## HOOKS: none
+## VARS: none
+##  make target for running the SKUID component's acceptance tests in the SKAMPI CI pipeline.
 
-# skampi-test-02skuidservice:  ## launcher for skuid tests
-# 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-ser-skuid" {print $$2}'); \
-# 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-# 	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skuid:$$version MARK="$$telescope and acceptance"
+skampi-test-02skuidservice:  ## launcher for skuid tests
+	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-ser-skuid" {print $$2}'); \
+	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-ser-skuid:$$version MARK="$$telescope and acceptance"
 
-# ## TARGET: skampi-test-03sdp
-# ## SYNOPSIS: make skampi-test-03sdp
-# ## HOOKS: none
-# ## VARS: none
-# ##  make target for running the SDP-specific tests in the Skampi CI pipeline
+## TARGET: skampi-test-03sdp
+## SYNOPSIS: make skampi-test-03sdp
+## HOOKS: none
+## VARS: none
+##  make target for running the SDP-specific tests in the Skampi CI pipeline
 
-# skampi-test-03sdp:  ## launcher for SDP tests
-# 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sdp" {print $$2}'); \
-# 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-# 	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sdp-integration-tests:$$version MARK="$$telescope and acceptance"
+skampi-test-03sdp:  ## launcher for SDP tests
+	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sdp" {print $$2}'); \
+	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sdp-integration-tests:$$version MARK="$$telescope and acceptance"
 
-# ## TARGET: skampi-test-04dishmaster-sim
-# ## SYNOPSIS: make skampi-test-04dishmaster-sim
-# ## HOOKS: none
-# ## VARS: none
-# ##  make target for running dishmaster simulator component's acceptance tests in the SKAMPI CI pipeline.
+## TARGET: skampi-test-04dishmaster-sim
+## SYNOPSIS: make skampi-test-04dishmaster-sim
+## HOOKS: none
+## VARS: none
+##  make target for running dishmaster simulator component's acceptance tests in the SKAMPI CI pipeline.
 
-# skampi-test-04dishmaster-sim:  ## launcher for dishmaster tests
-# 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sim-dishmaster" {print $$2}'); \
-# 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
-# 	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sim-dishmaster:$$version MARK="$$telescope and acceptance"
+skampi-test-04dishmaster-sim:  ## launcher for dishmaster tests
+	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sim-dishmaster" {print $$2}'); \
+	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sim-dishmaster:$$version MARK="$$telescope and acceptance"
 
-# ## TARGET: skampi-test-05leafnodes
-# ## SYNOPSIS: make skampi-test-05leafnodes
-# ## HOOKS: none
-# ## VARS: none
-# ##  make target for running the TMC Leaf Node specific tests against Skampi
+## TARGET: skampi-test-05leafnodes
+## SYNOPSIS: make skampi-test-05leafnodes
+## HOOKS: none
+## VARS: none
+##  make target for running the TMC Leaf Node specific tests against Skampi
 
 # skampi-test-05leafnodes:  ## launcher for sdp leaf node tests
 # 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-tmc-leafnodes" {print $$2}'); \

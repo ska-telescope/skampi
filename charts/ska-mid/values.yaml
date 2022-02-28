@@ -125,7 +125,7 @@ ska-tango-archiver:
 
 ## dishmasters
 ska-sim-dishmaster:
-  enabled: true
+  enabled: false
 
 # tmc subarraynode
 tmc_subarray_node:

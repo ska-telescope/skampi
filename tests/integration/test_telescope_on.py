@@ -19,7 +19,7 @@ TMCSubarrayNode = DeviceProxy("ska_mid/tm_subarray_node/1")
 def fixture():
     return {}
 
-@pytest.mark.skamid
+@pytest.mark.skip
 @scenario("features/telescopeOn.feature", "Test TelescopeOn command")
 def test_telescope_on():
     """TelescopeOn() is executed."""

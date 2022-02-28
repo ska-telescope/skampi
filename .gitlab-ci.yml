@@ -60,14 +60,14 @@ include:
 
 # overide the image because we need Python 3.9+ and a unique Namespace
 # in the python-test
-python-test:
-  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
-  variables:
-    CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
-    PYTHON_VARS_AFTER_PYTEST: -m infra
-  after_script:
-    - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE
-  environment:
-    name: test/$CI_COMMIT_REF_SLUG-cluster
-    kubernetes:
-      namespace: $CLUSTER_TEST_NAMESPACE
+# python-test:
+#   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+#   variables:
+#     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
+#     PYTHON_VARS_AFTER_PYTEST: -m infra
+#   after_script:
+#     - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE
+#   environment:
+#     name: test/$CI_COMMIT_REF_SLUG-cluster
+#     kubernetes:
+#       namespace: $CLUSTER_TEST_NAMESPACE

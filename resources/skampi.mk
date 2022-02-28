@@ -71,34 +71,34 @@ skampi-wait-all: helm-install-yq  ## iterate over sub-charts and wait for each o
 # 2. In parallel we wait for the testing pod to become ready.
 # 3. Once it is there, we attempt to pull the results from the FIFO queue.
 #    This blocks until the testing pod script writes it (see above).
-skampi-k8s-do-test:
-	@rm -fr build; mkdir build
-	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
-	@echo "skampi-k8s-test: start test runner: $(k8s_test_runner)"
-	@echo "skampi-k8s-test: sending test folder: tar -cz $(k8s_test_folder)/"
-	( cd $(BASE); tar --exclude $(k8s_test_folder)/integration  --exclude $(k8s_test_folder)/resources  --exclude $(k8s_test_folder)/unit  --exclude $(k8s_test_folder)/conftest.py  --exclude $(k8s_test_folder)/pytest.ini -cz $(k8s_test_folder)/ \
-	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
-	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
-	sleep 1; \
-	echo "skampi-k8s-test: waiting for test runner to boot up: $(k8s_test_runner)"; \
-	( \
-	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
-	wait_status=$$?; \
-	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
-	 ) && \
-		echo "skampi-k8s-test: $(k8s_test_runner) is up, now waiting for tests to complete" && \
-		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
-	\
-	cd $(BASE)/; \
-	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
-	echo "skampi-k8s-test: test run complete, processing files"; \
-	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
-	@echo "skampi-k8s-test: the test run exit code is ($$(cat build/status))"
-	@exit `cat build/status`
+# skampi-k8s-do-test:
+# 	@rm -fr build; mkdir build
+# 	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
+# 	@echo "skampi-k8s-test: start test runner: $(k8s_test_runner)"
+# 	@echo "skampi-k8s-test: sending test folder: tar -cz $(k8s_test_folder)/"
+# 	( cd $(BASE); tar --exclude $(k8s_test_folder)/integration  --exclude $(k8s_test_folder)/resources  --exclude $(k8s_test_folder)/unit  --exclude $(k8s_test_folder)/conftest.py  --exclude $(k8s_test_folder)/pytest.ini -cz $(k8s_test_folder)/ \
+# 	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
+# 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
+# 	sleep 1; \
+# 	echo "skampi-k8s-test: waiting for test runner to boot up: $(k8s_test_runner)"; \
+# 	( \
+# 	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
+# 	wait_status=$$?; \
+# 	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
+# 	 ) && \
+# 		echo "skampi-k8s-test: $(k8s_test_runner) is up, now waiting for tests to complete" && \
+# 		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
+# 	\
+# 	cd $(BASE)/; \
+# 	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
+# 	echo "skampi-k8s-test: test run complete, processing files"; \
+# 	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
+# 	@echo "skampi-k8s-test: the test run exit code is ($$(cat build/status))"
+# 	@exit `cat build/status`
 
-skampi-k8s-pre-test:
+# skampi-k8s-pre-test:
 
-skampi-k8s-post-test:
+# skampi-k8s-post-test:
 
 ## TARGET: skampi-k8s-test
 ## SYNOPSIS: make skampi-k8s-test
@@ -139,7 +139,7 @@ skampi-k8s-post-test:
 ##  K8S_TEST_TEST_COMMAND is executed.  This is expected to generate output into a ./build
 ##  directory with a specifc set of files containing the test report output - the same as python-test.
 
-skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ## run the defined test cycle against Kubernetes
+# skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ## run the defined test cycle against Kubernetes
 
 # skampi-k8s-test-component:
 # 	@rm -fr build; mkdir build

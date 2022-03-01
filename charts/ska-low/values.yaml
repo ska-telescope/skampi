@@ -4,7 +4,7 @@ xauthority: "~/.Xauthority"
 global:
   minikube: true
   annotations:
-    skampi: true
+    skampi: "true"
     app.gitlab.com/app: skampi
     app.gitlab.com/env: ska
   sub-system:

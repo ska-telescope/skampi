@@ -50,6 +50,20 @@ PYTHON_VARS_AFTER_PYTEST ?= -m $(DASHMARK) $(DASHCOUNT) -v -r fEx## use to setup
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 
+# Some environments need HTTP(s) requests to go through a proxy server.
+ifneq ($(PROXY),)
+NO_PROXY ?= localhost,landingpage,oet-rest-$(HELM_RELEASE),127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local## specific to PSI Low!
+PROXY_VALUES = --env=HTTP_PROXY=${PROXY} \
+		--env=HTTPS_PROXY=${PROXY} \
+		--env=NO_PROXY=${NO_PROXY} \
+		--env=http_proxy=${PROXY} \
+		--env=https_proxy=${PROXY} \
+		--env=no_proxy=${NO_PROXY}
+
+SDP_PROXY_VARS= --set ska-sdp.proxy.server=${PROXY} \
+		--set "ska-sdp.proxy.noproxy={${NO_PROXY}}"
+endif
+
 # these are the global overrides that get passed into the ska-mid/low deployments
 
 K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
@@ -64,7 +78,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
-	$(PSI_LOW_SDP_PROXY_VARS)
+	$(SDP_PROXY_VARS)
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
@@ -76,22 +90,6 @@ OCI_IMAGES_TO_PUBLISH =
 # KUBE_APP is set to the ska-tango-images base chart value
 SKAMPI_KUBE_APP ?= skampi
 KUBE_APP = ska-tango-images
-
-# PSI Low Environment need PROXY values to be set
-# This code detects environment and sets the variables
-ENV_CHECK := $(shell echo $(K8S_CHART) | egrep ska-low)
-ifneq ($(ENV_CHECK),)
-PSI_LOW_PROXY=http://delphoenix.atnf.csiro.au:8888
-PSI_LOW_NO_PROXY=localhost,landingpage,oet-rest-$(HELM_RELEASE),127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local
-PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
-				--env=HTTPS_PROXY=${PSI_LOW_PROXY} \
-				--env=NO_PROXY=${PSI_LOW_NO_PROXY} \
-				--env=http_proxy=${PSI_LOW_PROXY} \
-				--env=https_proxy=${PSI_LOW_PROXY} \
-				--env=no_proxy=${PSI_LOW_NO_PROXY}
-
-PSI_LOW_SDP_PROXY_VARS= --set ska-tango-archiver.enabled=false
-endif
 
 CI_JOB_ID ?= local##local default for ci job id
 #

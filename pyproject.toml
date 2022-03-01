@@ -3,7 +3,7 @@ name = "ska-skampi-tests"
 version = "0.1.0"
 description = "Integration tests to be used on ska low and ska mid software"
 authors = ["Your Name <you@example.com>"]
-license = "BCD"
+license = "BSD"
 readme = "README.md"
 packages = [{include = "tests/integration"}]
 

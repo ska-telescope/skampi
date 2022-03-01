@@ -67,7 +67,6 @@ python-test:
     PYTHON_VARS_AFTER_PYTEST: tests/unit -m infra
   after_script:
     - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE
-    - find ./build
     ## Not necessary to upload these results
     # - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
   environment:

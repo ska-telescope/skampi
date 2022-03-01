@@ -30,11 +30,9 @@ stages:
     kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
     make delete_namespace
     make delete_sdp_namespace
-  only:
-    refs:
-      - master
-    variables:
-      - $DELETE == "true"
+  rules:
+    - if: $DELETE == "true"
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 .create_k8s_creds: &create_k8s_creds
 - bash scripts/gitlab_section.sh creds "Create K8s Credentials"
@@ -209,12 +207,8 @@ mid_on_demand_uninstall:
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-mid
     action: stop
   when: manual
-  only:
-    refs:
-      - branches
-  except:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
 low_on_demand_uninstall:
   stage: cleanup
@@ -234,12 +228,8 @@ low_on_demand_uninstall:
       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
     action: stop
   when: manual
-  only:
-    refs:
-      - branches
-  except:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
 psi_low_on_demand_uninstall:
   stage: cleanup
@@ -256,12 +246,8 @@ psi_low_on_demand_uninstall:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     action: stop
   when: manual
-  only:
-    refs:
-      - branches
-  except:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
 mid_test:
   retry: 2
@@ -283,12 +269,10 @@ mid_test:
     kubernetes:
       namespace: $KUBE_NAMESPACE
     on_stop: mid_uninstall
-  only:
-    refs:
-      - master
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
+  rules:
+    - if: $STRESS_TEST_DURATION
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 mid_test_quarantine:
   stage: test
@@ -310,12 +294,10 @@ mid_test_quarantine:
     kubernetes:
       namespace: $KUBE_NAMESPACE
     on_stop: mid_quarantine_uninstall
-  only:
-    refs:
-      - master
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
+  rules:
+    - if: $STRESS_TEST_DURATION
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   allow_failure: true
 
 mid_on_demand_test:
@@ -344,12 +326,8 @@ mid_on_demand_test:
     on_stop: mid_on_demand_uninstall
     auto_stop_in: 2 hours
   when: manual
-  only:
-    refs:
-    - branches
-  except:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
 mid_stress_test:
   stage: test
@@ -394,12 +372,10 @@ low_test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     on_stop: low_uninstall
-  only:
-    refs:
-      - master
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
+  rules:
+    - if: $STRESS_TEST_DURATION
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 low_test_quarantine:
   stage: test
@@ -422,12 +398,10 @@ low_test_quarantine:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     on_stop: low_quarantine_uninstall
-  only:
-    refs:
-      - master
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
+  rules:
+    - if: $STRESS_TEST_DURATION
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   allow_failure: true
 
 psi_low_test:
@@ -448,12 +422,10 @@ psi_low_test:
     name: "psi-low-integration"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     on_stop: psi_low_uninstall
-  only:
-    refs:
-      - master
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
+  rules:
+    - if: $STRESS_TEST_DURATION
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 low_on_demand_test:
   stage: test
@@ -479,15 +451,10 @@ low_on_demand_test:
     on_stop: low_on_demand_uninstall
     auto_stop_in: 2 hours
   when: manual
-  only:
-    refs:
-      - branches
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
-  except:
-    refs:
-      - master
+  rules:
+    - if: $STRESS_TEST_DURATION
+      when: never
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
 psi_low_on_demand_test:
   stage: test
@@ -511,12 +478,8 @@ psi_low_on_demand_test:
     on_stop: psi_low_on_demand_uninstall
     auto_stop_in: 2 hours
   when: manual
-  only:
-    refs:
-      - branches
-  except:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
 get_sizes_mid:
   stage: debug
@@ -528,9 +491,8 @@ get_sizes_mid:
     - make get_size_images
   environment:
     name: "test-mid"
-  only:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 get_sizes_low:
   stage: debug
@@ -542,9 +504,8 @@ get_sizes_low:
     - make get_size_images
   environment:
     name: "test-low"
-  only:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 mid_sdp_config_dump:
   stage: debug
@@ -565,9 +526,8 @@ mid_sdp_config_dump:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
   when: manual
-  only:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 tag_commit:
   stage: release
@@ -580,9 +540,8 @@ tag_commit:
   when: manual
   # needs:
   #   - job: publish-chart
-  only:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - make release-skampi
 
@@ -595,11 +554,9 @@ low_clean_staging:
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true"
-  only:
-    refs:
-      - tags
-    variables:
-      - $DELETE == "true"
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $DELETE == "true"
   script:
   - *uninstall_scripts
   environment:
@@ -614,11 +571,9 @@ psi_low_clean_staging:
     KUBE_NAMESPACE: "staging-low"
     KUBE_NAMESPACE_SDP: "staging-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
-  only:
-    refs:
-      - tags
-    variables:
-      - $DELETE == "true"
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $DELETE == "true"
   script:
   - *uninstall_scripts
   environment:
@@ -634,11 +589,9 @@ mid_clean_staging:
     KUBE_NAMESPACE_SDP: "staging-mid-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-mid"
     KEEP_NAMESPACE: "true"
-  only:
-    refs:
-      - tags
-    variables:
-      - $DELETE == "true"
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $DELETE == "true"
   script:
   - *uninstall_scripts
   environment:
@@ -664,9 +617,8 @@ low_deploy_staging:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     on_stop: low_clean_staging
-  only:
-    refs:
-      - tags
+  rules:
+    - if: $CI_COMMIT_TAG
   # needs:
   #   - job: low_clean_staging
 
@@ -686,9 +638,8 @@ psi_low_deploy_staging:
     name: "psi-low-staging"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     on_stop: psi_low_clean_staging
-  only:
-    refs:
-      - tags
+  rules:
+    - if: $CI_COMMIT_TAG
   # needs:
   #   - job: psi_low_clean_staging
 
@@ -711,9 +662,8 @@ mid_deploy_staging:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     on_stop: mid_clean_staging
-  only:
-    refs:
-      - tags
+  rules:
+    - if: $CI_COMMIT_TAG
   # needs:
   #   - job: mid_clean_staging
 
@@ -725,9 +675,8 @@ version_bump_charts:
     PRIVATE_TOKEN: $MARVIN_PRIVATE_TOKEN
   tags:
     - k8srunner
-  only:
-    refs:
-      - tags
+  rules:
+    - if: $CI_COMMIT_TAG
   script:
     - curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/version_bump_charts.sh | bash
     - make commit-and-push-to-master

@@ -3,7 +3,7 @@
 # ################################################
 
 # mid merge blocking job - must pass for pipeline success
-mid_deploy_test:
+mid-test:
   stage: test
   variables:
     CONFIG: mid
@@ -14,11 +14,17 @@ mid_deploy_test:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
-    MARK: "not infra"
+    COUNT: 1
+    DISABLE_MAINTAIN_ON: "True"
+    TEST_ENV: "BUILD_OUT"
+    TEL: mid
   extends:
     - .tags_default
     - .deploy_chart_before
-    - .test_deployment
+    - .uninstall_chart_after
+  script:
+    - echo "########## Running Skampi Acceptance and End to End Tests"
+    - make python-test
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:
@@ -32,7 +38,7 @@ mid_deploy_test:
     reports:
       junit: build/report.xml
     when: always
-  retry: 2
+  retry: 1
 
 # mid deploy to integration - on merge to default
 mid_deploy_integration:
@@ -65,12 +71,10 @@ mid_deploy_integration:
     reports:
       junit: build/report.xml
     when: always
-  only:
-    refs:
-      - master
-  except:
-    variables:
-      - $STRESS_TEST_DURATION
+  rules:
+    - if: $STRESS_TEST_DURATION
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 # teardown integration on stop
 mid_uninstall_integration:
@@ -88,11 +92,9 @@ mid_uninstall_integration:
     SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
     ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
     KEEP_NAMESPACE: "true"
-  only:
-    refs:
-      - tags
-    variables:
-      - $DELETE == "true"
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $DELETE == "true"
   environment:
     name: "integration-mid"
     action: stop
@@ -122,9 +124,8 @@ mid_deploy_staging:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     on_stop: mid_uninstall_staging
-  only:
-    refs:
-      - tags
+  rules:
+    - if: $CI_COMMIT_TAG
 
 # teardown staging on stop
 mid_uninstall_staging:
@@ -142,11 +143,41 @@ mid_uninstall_staging:
     SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
     ARCHIVER_DBNAME: "staging_$CONFIG_archiver_db"
     KEEP_NAMESPACE: "true"
-  only:
-    refs:
-      - tags
-    variables:
-      - $DELETE == "true"
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $DELETE == "true"
   environment:
     name: "staging-mid"
     action: stop
+
+# Mid on-demand deployment
+mid_on_demand_deploy:
+  stage: build
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CONFIG"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+  extends:
+    - .tags_default
+    - .deploy_chart_before
+  script:
+    - make skampi-links
+  environment:
+    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: $KUBE_NAMESPACE
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+  when: manual
+  allow_failure: true

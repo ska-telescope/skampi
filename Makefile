@@ -13,25 +13,40 @@ TANGO_DATABASE_DS ?= databaseds-tango-base## Stable name for the Tango DB
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
 HELM_RELEASE ?= test## release name of the chart
-DEPLOYMENT_CONFIGURATION ?= ska-mid## umbrella chart to work with
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
-CHARTS ?= ska-mid
+CONFIG ?= mid## telescope - mid or low
+K8S_CHART ?= ska-$(CONFIG)
+DEPLOYMENT_CONFIGURATION ?= ska-$(CONFIG)## umbrella chart to work with
 ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 TARANTA_USER ?= user1## the username for authentication to taranta services
 TARANTA_PASSWORD ?= abc123## the password for authentication to taranta services
-TARANTA_PASSPORT = $(TARANTA_PASSWORD)# required for ska-ser-skallop
+TARANTA_PASSPORT = $(TARANTA_PASSWORD)## required for ska-ser-skallop
 MINIKUBE_RC := $(shell minikube ip 1>/dev/null 2> /dev/null; echo $$?)
 ifeq ($(MINIKUBE_RC),0)
 MINIKUBE_IP = $(shell minikube ip)
 endif
-LOADBALANCER_IP ?= $(MINIKUBE_IP) ## The IP address of the Kubernetes Ingress Controller (LB)
+LOADBALANCER_IP ?= $(MINIKUBE_IP)## The IP address of the Kubernetes Ingress Controller (LB)
 TARANTA_AUTH_DASHBOARD_ENABLE ?= false## Enable auth and dashboard components for Taranta (Minikube only)
-KUBE_HOST ?= $(LOADBALANCER_IP) ## Required by Skallop
-DOMAIN ?= branch ## Required by Skallop
-TEL ?= mid ## Required by Skallop
-KUBE_BRANCH ?= local ## Required by Skallop
+KUBE_HOST ?= $(LOADBALANCER_IP)## Required by Skallop
+DOMAIN ?= branch## Required by Skallop
+TEL ?= $(CONFIG)## Required by Skallop
+KUBE_BRANCH ?= local## Required by Skallop
+NAME ?= $(CONFIG)## The name of the telescope
+ADDMARKS ?= ## Additional Marks to add to pytests
+ifneq ($(ADDMARKS),)
+DASHMARK ?= "ska$(TEL) and $(ADDMARKS)"
+else
+DASHMARK ?= "ska$(TEL)"
+endif
 
+TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
+ifneq ($(TESTCOUNT),)
+DASHCOUNT ?= --count=$(TESTCOUNT)
+else
+DASHCOUNT ?=
+endif
+PYTHON_VARS_AFTER_PYTEST ?= -m $(DASHMARK) $(DASHCOUNT) -v -r fEx## use to setup a particular pytest session
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 
@@ -75,9 +90,7 @@ PSI_LOW_PROXY_VALUES = --env=HTTP_PROXY=${PSI_LOW_PROXY} \
 				--env=https_proxy=${PSI_LOW_PROXY} \
 				--env=no_proxy=${PSI_LOW_NO_PROXY}
 
-PSI_LOW_SDP_PROXY_VARS= --set ska-sdp.proxy.server=${PSI_LOW_PROXY} \
-					--set ska-tango-archiver.enabled=false \
-					--set "ska-sdp.proxy.noproxy={${PSI_LOW_NO_PROXY}}"
+PSI_LOW_SDP_PROXY_VARS= --set ska-tango-archiver.enabled=false
 endif
 
 CI_JOB_ID ?= local##local default for ci job id
@@ -202,7 +215,7 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 	tar zcf ../results-pipe build;"
 
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
-	pip3 install -r tests/requirements.txt
+	bash scripts/gitlab_section.sh pip_install "Installing Pytest Requirements" pip3 install .
 
 # use hook to create SDP namespace
 k8s-pre-install-chart:

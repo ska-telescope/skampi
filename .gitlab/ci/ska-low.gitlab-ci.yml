@@ -38,7 +38,7 @@ low-test:
     reports:
       junit: build/report.xml
     when: always
-  retry: 2
+  retry: 1
 
 # low deploy to integration - on merge to default
 low_deploy_integration:

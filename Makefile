@@ -31,50 +31,21 @@ TARANTA_AUTH_DASHBOARD_ENABLE ?= false## Enable auth and dashboard components fo
 KUBE_HOST ?= $(LOADBALANCER_IP)## Required by Skallop
 DOMAIN ?= branch## Required by Skallop
 TEL ?= $(CONFIG)## Required by Skallop
-<<<<<<< HEAD
-<<<<<<< HEAD
-KUBE_BRANCH ?= local## Required by Skallop
-NAME ?= $(CONFIG)
-ADDMARKS ?=## Add any pytest marks
-=======
-KUBE_BRANCH ?= local ## Required by Skallop
-NAME ?= $(CONFIG) ## The name of the telescope
-ADDMARKS ?= ## Additional Marks to add to pytests
-=======
 KUBE_BRANCH ?= local## Required by Skallop
 NAME ?= $(CONFIG)## The name of the telescope
-<<<<<<< HEAD
-ADDMARKS ?=## Additional Marks to add to pytests
-TESTCOUNT ?=## the amount of times to repeat tests for non k8s tests
->>>>>>> 00a13242 (AT-120: rename testcount to prevent name clashes)
+ADDMARKS ?= ## Additional Marks to add to pytests
 ifneq ($(ADDMARKS),)
-=======
-ADDMARKS ?=0## Additional Marks to add to pytests
-TESTCOUNT ?=0## the amount of times to repeat tests for non k8s tests
-ifneq ($(ADDMARKS),0)
->>>>>>> d07e1adc (AT-120: veriufy 0)
 DASHMARK ?= "ska$(TEL) and $(ADDMARKS)"
 else
->>>>>>> 24faad4d (AT-120: add comments)
-DASHMARK ?= ska$(TEL)
-ifneq ($(ADDMARKS),)
-DASHMARK += and $(ADDMARKS)
+DASHMARK ?= "ska$(TEL)"
 endif
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-TESTCOUNT ?= 1
-DASHCOUNT ?= --count=$(TESTCOUNT)
-=======
+TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
 ifneq ($(TESTCOUNT),)
-=======
-ifneq ($(TESTCOUNT),0)
->>>>>>> d07e1adc (AT-120: veriufy 0)
-DASHCOUNT ?=
-else
 DASHCOUNT ?= --count=$(TESTCOUNT)
+else
+DASHCOUNT ?=
 endif
->>>>>>> 00a13242 (AT-120: rename testcount to prevent name clashes)
 PYTHON_VARS_AFTER_PYTEST ?= -m $(DASHMARK) $(DASHCOUNT) -v -r fEx## use to setup a particular pytest session
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers

@@ -38,7 +38,7 @@ mid-test:
     reports:
       junit: build/report.xml
     when: always
-  retry: 2
+  retry: 1
 
 # mid deploy to integration - on merge to default
 mid_deploy_integration:

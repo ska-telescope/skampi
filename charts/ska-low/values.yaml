@@ -36,7 +36,7 @@ global:
 
 ska-landingpage:
   enabled: true
-  MVPInstance: mvp-low
+  MVPInstance: ska-low
 
 ska-ser-skuid:
   enabled: true
@@ -55,11 +55,11 @@ ska-tango-base:
     enabled: true
     resources:
       requests:
-        cpu: 100m     # 100m = 0.1 CPU
+        cpu: 100m # 100m = 0.1 CPU
         memory: 128Mi # 256Mi = 0.25 GB mem
         ephemeral-storage: 256Mi
       limits:
-        cpu: 200m     # 100m = 0.1 CPU
+        cpu: 200m # 100m = 0.1 CPU
         memory: 768Mi # 256Mi = 0.25 GB mem
         ephemeral-storage: 256Mi
   tangotest:
@@ -85,7 +85,6 @@ ska-tango-base:
 #       tag: latest
 #       pullPolicy: IfNotPresent
 
-
 ska-taranta:
   enabled: true
   ingress:
@@ -96,10 +95,10 @@ ska-taranta:
     replicas: 3
     resources:
       requests:
-        cpu: 600m     # 600m = 0.6 CPU
+        cpu: 600m # 600m = 0.6 CPU
         memory: 512Mi # 512Mi = 0.5 GB mem
       limits:
-        cpu: 1000m     # 1000m = 1 CPU
+        cpu: 1000m # 1000m = 1 CPU
         memory: 1024Mi # 1024Mi = 1 GB mem
 
 ska-oso-scripting:

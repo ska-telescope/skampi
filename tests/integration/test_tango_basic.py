@@ -10,6 +10,8 @@ from requests.models import Response
 from assertpy import assert_that
 from ska_ser_skallop.connectors.configuration import get_device_proxy
 
+@pytest.mark.skamid
+@pytest.mark.skalow
 @pytest.mark.taranta
 @scenario("features/taranta_basic.feature", "TangoGQL service available")
 def test_tangogql_service_available():

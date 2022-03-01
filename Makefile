@@ -25,12 +25,12 @@ MINIKUBE_RC := $(shell minikube ip 1>/dev/null 2> /dev/null; echo $$?)
 ifeq ($(MINIKUBE_RC),0)
 MINIKUBE_IP = $(shell minikube ip)
 endif
-LOADBALANCER_IP ?= $(MINIKUBE_IP) ## The IP address of the Kubernetes Ingress Controller (LB)
+LOADBALANCER_IP ?= $(MINIKUBE_IP)## The IP address of the Kubernetes Ingress Controller (LB)
 TARANTA_AUTH_DASHBOARD_ENABLE ?= false## Enable auth and dashboard components for Taranta (Minikube only)
-KUBE_HOST ?= $(LOADBALANCER_IP) ## Required by Skallop
-DOMAIN ?= branch ## Required by Skallop
-TEL ?= mid ## Required by Skallop
-KUBE_BRANCH ?= local ## Required by Skallop
+KUBE_HOST ?= $(LOADBALANCER_IP)## Required by Skallop
+DOMAIN ?= branch## Required by Skallop
+TEL ?= mid## Required by Skallop
+KUBE_BRANCH ?= local## Required by Skallop
 
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers

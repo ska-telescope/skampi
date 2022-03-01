@@ -62,7 +62,7 @@
 # k8s_test_kubectl_run_args = \
 # 	$(k8s_test_runner) --restart=Never \
 # 	--image-pull-policy=IfNotPresent --image=$(K8S_TEST_IMAGE_TO_TEST) \
-# 	--env=INGRESS_HOST=$(INGRESS_HOST) $(PSI_LOW_PROXY_VALUES)
+# 	--env=INGRESS_HOST=$(INGRESS_HOST) $(PROXY_VALUES)
 
 # # Set up of the testing pod. This goes through the following steps:
 # # 1. Create the pod, piping the contents of post-deployment in. This is

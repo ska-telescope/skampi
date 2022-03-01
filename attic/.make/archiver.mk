@@ -60,7 +60,7 @@ archiver_k8s_test = tar -c post-deployment/ | \
 		--limits='cpu=1000m,memory=500Mi' \
 		--requests='cpu=900m,memory=400Mi' \
 		--env=INGRESS_HOST=$(INGRESS_HOST) \
-		$(PSI_LOW_PROXY_VALUES) -- \
+		$(PROXY_VALUES) -- \
 		/bin/bash -c "mkdir skampi && tar xv --directory skampi --strip-components 1 --warning=all && cd skampi && \
 		make \
 			SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \

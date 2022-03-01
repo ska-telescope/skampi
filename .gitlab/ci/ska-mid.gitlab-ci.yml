@@ -17,7 +17,7 @@ mid-test:
     COUNT: 1
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
-    TEl: mid
+    TEL: mid
   extends:
     - .tags_default
     - .deploy_chart_before

@@ -31,9 +31,18 @@ TARANTA_AUTH_DASHBOARD_ENABLE ?= false## Enable auth and dashboard components fo
 KUBE_HOST ?= $(LOADBALANCER_IP)## Required by Skallop
 DOMAIN ?= branch## Required by Skallop
 TEL ?= $(CONFIG)## Required by Skallop
+<<<<<<< HEAD
 KUBE_BRANCH ?= local## Required by Skallop
 NAME ?= $(CONFIG)
 ADDMARKS ?=## Add any pytest marks
+=======
+KUBE_BRANCH ?= local ## Required by Skallop
+NAME ?= $(CONFIG) ## The name of the telescope
+ADDMARKS ?= ## Additional Marks to add to pytests
+ifneq ($(ADDMARKS),)
+DASHMARK ?= "ska$(TEL) and $(ADDMARKS)"
+else
+>>>>>>> 24faad4d (AT-120: add comments)
 DASHMARK ?= ska$(TEL)
 ifneq ($(ADDMARKS),)
 DASHMARK += and $(ADDMARKS)

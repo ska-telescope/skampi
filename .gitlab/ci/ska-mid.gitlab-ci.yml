@@ -179,5 +179,7 @@ mid_on_demand_deploy:
       - "build/"
     reports:
       junit: build/report.xml
-  when: manual
-  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      when: manual
+      allow_failure: true

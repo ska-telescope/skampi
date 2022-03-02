@@ -1,8 +1,10 @@
 # The current state of Skampi
 
-Skampi is currently undergoing major restructuring.  As a result, the current deployment consists of the ska-tango-base chart (containing MariaDB and the central DS) that is deployed in a single test pipeline simulating ska-mid.  The test deploys, runs tests and tears down the deployment on Kubernetes.  This can run both in cluster, and on Minikube.
+Skampi components are being reintroduced via a lightweight but thorough code review process. The base deployment consists of the ska-tango-base chart (containing MariaDB and the central DS) that is deployed in a single test pipeline simulating ska-mid, as well as all other components included via the Makefile targets found under `resources/skampi.mk`. For more information about reintegrating a chart into Skampi, please consult the training material provided in Confluence.
 
-For a Minikube deployment, this can be emulated with:
+The test jobs (`low-test` and `mid-test`) running in the `master` branch and also in development branches deploy, run tests and tear down the deployments on Kubernetes in namespaces corresponding to the telescope configuration (Mid / Low).  This can run both in cluster, and on Minikube.
+
+For a Minikube deployment, this can be emulated with the following commands (note that all defaults are for the `mid` telescope and can be overwritten with the Makefile variables):
 ```
 make k8s-install-chart KUBE_NAMESPACE=default; make k8s-wait KUBE_NAMESPACE=default
 make k8s-test KUBE_NAMESPACE=default
@@ -32,7 +34,7 @@ $ cd ska-skampi
 
 
 ## Before you begin
-The documentation for SKAMPI is currently being reworked. To look at the documentation that was available before this rework started, please go to [this temporary build on ReadtheDocs](https://developer.skao.int/projects/ska-skampi/en/sp-1747-docs-old/).
+For legacy documentation please go to [this temporary build on ReadtheDocs](https://developer.skao.int/projects/ska-skampi/en/sp-1747-docs-old/).
 
 For information on how to use the subsystems / components that are deployed using SKAMPI, please first look at the documentation on [SKAMPI Subsystems](https://developer.skao.int/projects/ska-skampi/en/latest/subsystems.html)
 
@@ -96,6 +98,8 @@ To gitlab.com:ska-telescope/ska-skampi.git
  ```
 
 Follow the [Documentation](https://developer.skao.int/projects/ska-skampi/en/latest/deployment/multitenancy.html#deploying-in-a-namespace-linked-to-a-development-branch) for deploying in a namespace, and then downloading and using the KUBECONFIG file. This file is your key to accessing the namespace in the cluster where your branch has just been deployed.
+
+..note: On-demand deployment works for branch-based pipelines only, which differs from Merged Result pipelines (MRPs). MRPs run from the state of the code after the merge to the target branch, while a branch pipeline runs from the branch where the commit was made. More info [here](https://docs.gitlab.com/ee/ci/pipelines/merged_results_pipelines.html).
 
 ### VSCode Kubernetes
 There are multiple ways to access your cluster. With the Kubernetes plugin installed in VSCode, you can set your VSCode to access the namespaced deployment. Follow the above-mentioned documentation and set your cluster to the KUBECONFIG file provided.

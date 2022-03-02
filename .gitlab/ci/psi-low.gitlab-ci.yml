@@ -77,9 +77,9 @@ psi_low_on_demand_uninstall:
   #  - .uninstall_scripts
   tags: *tags_psi_low
   variables:
-    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    HELM_RELEASE: "test-low-$CI_COMMIT_REF_SLUG"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
   environment:
@@ -94,16 +94,16 @@ psi_low_on_demand_deploy:
   #  - .deploy_scripts
   # tags: *tags_psi_low
   variables:
-    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
+    HELM_RELEASE: "test-low-$CI_COMMIT_REF_SLUG"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low-sdp"
     DEPLOYMENT_CONFIGURATION: "ska-low"
     KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low
     on_stop: psi_low_on_demand_uninstall
 
 psi_low_on_demand_test:
@@ -114,12 +114,12 @@ psi_low_on_demand_test:
   variables:
     DEPLOYMENT_CONFIGURATION: "ska-low"
     MARK: "(skalow or common) and not archiver"
-    HELM_RELEASE: "test-low-$CI_COMMIT_BRANCH"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_BRANCH"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low-sdp"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH"
-    ARCHIVER_DBNAME: "$CI_COMMIT_BRANCH-low_archiver_db"
+    HELM_RELEASE: "test-low-$CI_COMMIT_REF_SLUG"
+    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_REF_SLUG"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
+    ARCHIVER_DBNAME: "$CI_COMMIT_REF_SLUG-low_archiver_db"
     INGRESS_HOST: "202.9.15.131" # psi-head ip
   #before_script:
   # using reference as there seems to be a problem with extends
@@ -127,7 +127,7 @@ psi_low_on_demand_test:
   #- !reference [.psi_test_definition,script] # This needs checking!!!!
   environment:
     name: "psi-low-test/$CI_COMMIT_REF_NAME"
-    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-low/taranta"
+    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low/taranta"
     on_stop: psi_low_on_demand_uninstall
     auto_stop_in: 2 hours
   rules:

@@ -125,7 +125,7 @@ ska-sdp:
     enabled: false
 
 ska-tango-archiver:
-  enabled: true
+  enabled: false
   dbname: default_mvp_archiver_db
 
 ska-tmc-centralnode:

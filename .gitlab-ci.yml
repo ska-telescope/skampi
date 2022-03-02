@@ -37,6 +37,8 @@ include:
   - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
   # All SKA Mid stages
   - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
+  # Jobs to run on PSI Low
+  - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
 
   # Python tests, directly run
   - project: "ska-telescope/templates-repository"

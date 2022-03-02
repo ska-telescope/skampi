@@ -50,18 +50,24 @@ PYTHON_VARS_AFTER_PYTEST ?= -m $(DASHMARK) $(DASHCOUNT) -v -r fEx## use to setup
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 
-# Some environments need HTTP(s) requests to go through a proxy server.
-ifneq ($(PROXY),)
-NO_PROXY ?= localhost,landingpage,oet-rest-$(HELM_RELEASE),127.0.0.1,10.96.0.0/12,192.168.0.0/16,202.9.15.0/24,172.17.0.1/16,.svc.cluster.local## specific to PSI Low!
-PROXY_VALUES = --env=HTTP_PROXY=${PROXY} \
-		--env=HTTPS_PROXY=${PROXY} \
-		--env=NO_PROXY=${NO_PROXY} \
-		--env=http_proxy=${PROXY} \
-		--env=https_proxy=${PROXY} \
-		--env=no_proxy=${NO_PROXY}
+# Some environments need HTTP(s) requests to go through a proxy server. If http_proxy
+# is present we assume all proxy vars are set and pass them through. See
+# https://about.gitlab.com/blog/2021/01/27/we-need-to-talk-no-proxy/ for some
+# background reading about these variables.
+ifneq ($(http_proxy),)
+NO_PROXY ?= landingpage,oet-rest-$(HELM_RELEASE),.svc.cluster.local,${NO_PROXY}
+no_proxy ?= landingpage,oet-rest-$(HELM_RELEASE),.svc.cluster.local,${no_proxy}
 
-SDP_PROXY_VARS= --set ska-sdp.proxy.server=${PROXY} \
-		--set "ska-sdp.proxy.noproxy={${NO_PROXY}}"
+PROXY_VALUES = \
+		--env=HTTP_PROXY=${HTTP_PROXY} \
+		--env=HTTPS_PROXY=${HTTPS_PROXY} \
+		--env=NO_PROXY=${NO_PROXY} \
+		--env=http_proxy=${http_proxy} \
+		--env=https_proxy=${https_proxy} \
+		--env=no_proxy=${no_proxy} \
+
+SDP_PROXY_VARS = --set ska-sdp.proxy.server=${http_proxy} \
+	--set "ska-sdp.proxy.noproxy={${no_proxy}}"
 endif
 
 # these are the global overrides that get passed into the ska-mid/low deployments

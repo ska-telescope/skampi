@@ -99,7 +99,7 @@ To gitlab.com:ska-telescope/ska-skampi.git
 
 Follow the [Documentation](https://developer.skao.int/projects/ska-skampi/en/latest/deployment/multitenancy.html#deploying-in-a-namespace-linked-to-a-development-branch) for deploying in a namespace, and then downloading and using the KUBECONFIG file. This file is your key to accessing the namespace in the cluster where your branch has just been deployed.
 
-..note: On-demand deployment works for branch-based pipelines only, which differs from Merged Result pipelines (MRPs). MRPs run from the state of the code after the merge to the target branch, while a branch pipeline runs from the branch where the commit was made. More info [here](https://docs.gitlab.com/ee/ci/pipelines/merged_results_pipelines.html).
+..note: On-demand deployment works for branch-based pipelines only, which differs from Merged Result pipelines (MRPs). MRPs run from the state of the code after the merge to the target branch, while a branch pipeline runs from the branch where the commit was made. More info [here](https://docs.gitlab.com/ee/ci/pipelines/merged_results_pipelines.html). This may cause duplicate pipelines running - testing in progress.
 
 ### VSCode Kubernetes
 There are multiple ways to access your cluster. With the Kubernetes plugin installed in VSCode, you can set your VSCode to access the namespaced deployment. Follow the above-mentioned documentation and set your cluster to the KUBECONFIG file provided.

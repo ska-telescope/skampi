@@ -82,7 +82,7 @@ def the_sdp_must_be_on():
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value
     assert_that(result).is_equal_to("ON")
-    for index in range(1, conftest.NR_OFF_SUBARRAYS + 1):
+    for index in range(1, conftest.NR_OF_SUBARRAYS + 1):
         subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
         result = subarray.read_attribute("state").value
         assert_that(result).is_equal_to("ON")

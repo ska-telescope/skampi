@@ -14,7 +14,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 logger = logging.getLogger(__name__)
 
 MOCK_SUT = False
-NR_OFF_SUBARRAYS = 2
+NR_OF_SUBARRAYS = 2
 
 
 @pytest.fixture(name="run_mock")
@@ -40,7 +40,7 @@ def fxt_set_entry_point(set_session_exec_env: fxt_types.set_session_exec_env):
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
     if not MOCK_SUT:
-        SDPEntryPoint.nr_of_subarrays = NR_OFF_SUBARRAYS
+        SDPEntryPoint.nr_of_subarrays = NR_OF_SUBARRAYS
         exec_env.entrypoint = SDPEntryPoint
     else:
         exec_env.entrypoint = "mock"

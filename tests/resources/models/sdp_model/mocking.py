@@ -35,21 +35,21 @@ def setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.IDLE)
             )
-        if subarray_id == 2:
+        elif subarray_id == 2:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.RESOURCING)
             )
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.IDLE)
             )
-        if subarray_id == 3:
+        elif subarray_id == 3:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.RESOURCING)
             )
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.IDLE)
             )
-        if subarray_id == 4:
+        elif subarray_id == 4:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.RESOURCING)
             )
@@ -66,21 +66,21 @@ def setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.EMPTY)
             )
-        if subarray_id == 2:
+        elif subarray_id == 2:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.RESOURCING)
             )
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.EMPTY)
             )
-        if subarray_id == 3:
+        elif subarray_id == 3:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.RESOURCING)
             )
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.EMPTY)
             )
-        if subarray_id == 4:
+        elif subarray_id == 4:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.RESOURCING)
             )
@@ -103,21 +103,21 @@ def setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.READY)
             )
-        if subarray_id == 2:
+        elif subarray_id == 2:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.CONFIGURING)
             )
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.READY)
             )
-        if subarray_id == 3:
+        elif subarray_id == 3:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.CONFIGURING)
             )
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.READY)
             )
-        if subarray_id == 4:
+        elif subarray_id == 4:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.CONFIGURING)
             )
@@ -131,15 +131,15 @@ def setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.IDLE)
             )
-        if subarray_id == 2:
+        elif subarray_id == 2:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.IDLE)
             )
-        if subarray_id == 3:
+        elif subarray_id == 3:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.IDLE)
             )
-        if subarray_id == 4:
+        elif subarray_id == 4:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.IDLE)
             )

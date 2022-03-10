@@ -1,36 +1,40 @@
-"""pytest global settings and utility like fixtures."""
+"""pytest global settings, fixtures and global bdd step implementations for integration tests."""
 import logging
 from types import SimpleNamespace
+import os
 
 from typing import Callable
 from mock import patch, Mock
 
 import pytest
+from pytest_bdd import when
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from resources.models.sdp_model.entry_point import SDPEntryPoint
-from resources.models.sdp_model.mocking import setup_sdp_mock
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 
 logger = logging.getLogger(__name__)
 
 
-class ConfTestSettings(SimpleNamespace):
-    """Object representing env like settings for fixtures in conftest."""
+class SutTestSettings(SimpleNamespace):
+    """Object representing env like SUT settings for fixtures in conftest."""
 
     mock_sut: bool = False
     nr_of_subarrays = 2
+    subarray_id = 1
+    receptors = [1, 2]
+    scan_duration = 1
 
 
-@pytest.fixture(name="conftest_settings")
-def fxt_conftest_settings() -> ConfTestSettings:
-    """Fixture to use for setting env like settings for fixtures in conftest"""
-    return ConfTestSettings()
+@pytest.fixture(name="sut_settings")
+def fxt_conftest_settings() -> SutTestSettings:
+    """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
+    return SutTestSettings()
 
 
 @pytest.fixture(name="run_mock")
 def fxt_run_mock_wrapper(
-    request, _pytest_bdd_example, conftest_settings: ConfTestSettings
+    request, _pytest_bdd_example, conftest_settings: SutTestSettings
 ):
     """Fixture that returns a function to use for running a test as a mock."""
 
@@ -47,22 +51,99 @@ def fxt_run_mock_wrapper(
     return run_mock
 
 
-@pytest.fixture(name="set_sdp_entry_point")
-def fxt_set_entry_point(
-    set_session_exec_env: fxt_types.set_session_exec_env,
-    conftest_settings: ConfTestSettings,
+@pytest.fixture(name="integration_test_exec_settings")
+def fxt_integration_test_exec_settings(
+    exec_settings: fxt_types.exec_settings,
+) -> fxt_types.exec_settings:
+    """Set up test specific execution settings.
+
+    :param exec_settings: The global test execution settings as a fixture.
+    :return: test specific execution settings as a fixture
+    """
+    integration_test_exec_settings = exec_settings.replica()
+    if os.getenv("DEBUG"):
+        exec_settings.run_with_live_logging()
+        integration_test_exec_settings.run_with_live_logging()
+    elif os.getenv("LIVE_LOGGING"):
+        integration_test_exec_settings.run_with_live_logging()
+    elif os.getenv("REPLAY_EVENTS_AFTERWARDS"):
+        integration_test_exec_settings.replay_events_afterwards()
+    return integration_test_exec_settings
+
+
+# global when steps
+# start up
+
+
+@when("I start up the telescope")
+def i_start_up_the_telescope(
+    standby_telescope: fxt_types.standby_telescope,
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """Fixture to use for setting up the entry point as from only the interface to sdp."""
-    exec_env = set_session_exec_env
-    if not conftest_settings.mock_sut:
-        SDPEntryPoint.nr_of_subarrays = conftest_settings.nr_of_subarrays
-        exec_env.entrypoint = SDPEntryPoint
-    else:
-        exec_env.entrypoint = "mock"
-    exec_env.scope = ["sdp"]
+    """I start up the telescope."""
+    with context_monitoring.context_monitoring():
+        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+            entry_point.set_telescope_to_running()
 
 
-@pytest.fixture(name="setup_sdp_mock")
-def fxt_setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
-    """Fixture to use for injecting a mocked entrypoin for sdp in stead of the real one."""
-    setup_sdp_mock(mock_entry_point)
+# resource assignment
+
+
+@when("I assign resources to it")
+def i_assign_resources_to_it(
+    running_telescope: fxt_types.running_telescope,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    sb_config: fxt_types.sb_config,
+    composition: conf_types.Composition,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    """I assign resources to it."""
+
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    with context_monitoring.context_monitoring():
+        with running_telescope.wait_for_allocating_a_subarray(
+            subarray_id, receptors, integration_test_exec_settings
+        ):
+            entry_point.compose_subarray(
+                subarray_id, receptors, composition, sb_config.sbid
+            )
+
+
+# scan configuration
+@when("I configure it for a scan")
+def i_configure_it_for_a_scan(
+    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    configuration: conf_types.ScanConfiguration,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    """I configure it for a scan."""
+    sub_array_id = allocated_subarray.id
+    receptors = allocated_subarray.receptors
+    sb_id = allocated_subarray.sb_config.sbid
+    scan_duration = sut_settings.scan_duration
+
+    with context_monitoring.context_monitoring():
+        with allocated_subarray.wait_for_configuring_a_subarray(
+            integration_test_exec_settings
+        ):
+            entry_point.configure_subarray(
+                sub_array_id, receptors, configuration, sb_id, scan_duration
+            )
+
+
+# scans
+@when("I command it to scan for a given period")
+def i_command_it_to_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I configure it for a scan."""
+    configured_subarray.set_to_scanning(integration_test_exec_settings)

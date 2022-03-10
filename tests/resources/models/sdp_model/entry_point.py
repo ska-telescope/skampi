@@ -20,6 +20,9 @@ from ska_ser_skallop.event_handling.builders import get_message_board_builder
 
 
 logger = logging.getLogger(__name__)
+
+# scan duration needs to be a singleton in order to keep track of scan
+# settings between configure scan and run scan
 SCAN_DURATION = 1
 
 
@@ -204,6 +207,8 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         self._tel = names.TEL()
+        # scan duration needs to be a singleton in order to keep track of scan
+        # settings between configure scan and run scan
         global SCAN_DURATION  # pylint: disable=global-statement
         SCAN_DURATION = duration
         subarray_name = self._tel.sdp.subarray(sub_array_id)

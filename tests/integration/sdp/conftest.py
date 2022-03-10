@@ -5,6 +5,7 @@ import pytest
 
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from resources.models.sdp_model.entry_point import SDPEntryPoint
 from resources.models.sdp_model.mocking import setup_sdp_mock
@@ -59,7 +60,7 @@ def fxt_sdp_assign_resources_exec_settings(
 # log checking
 
 
-@pytest.fixture(name="set_up_log_checking_for_sdp", autouse=True)
+@pytest.fixture(name="set_up_subarray_log_checking_for_sdp", autouse=True)
 @pytest.mark.usefixtures("set_sdp_entry_point")
 def fxt_set_up_log_capturing_for_cbf(
     log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
@@ -72,3 +73,35 @@ def fxt_set_up_log_capturing_for_cbf(
         tel = names.TEL()
         sdp_subarray = str(tel.sdp.subarray(sut_settings.subarray_id))
         log_checking.capture_logs_from_devices(sdp_subarray)
+
+
+# resource configurations
+
+
+@pytest.fixture(name="sdp_base_composition")
+def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
+    """Setup a base composition configuration to use for sdp.
+
+    :param tmp_path: a temporary path for sending configuration as a file.
+    :return: the configuration settings.
+    """
+    composition = conf_types.CompositionByFile(
+        tmp_path, conf_types.CompositionType.STANDARD
+    )
+    return composition
+
+
+# scan configurations
+
+
+@pytest.fixture(name="sdp_base_configuration")
+def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
+    """Setup a base scan configuration to use for sdp.
+
+    :param tmp_path: a temporary path for sending configuration as a file.
+    :return: the configuration settings.
+    """
+    configuration = conf_types.ScanConfigurationByFile(
+        tmp_path, conf_types.ScanConfigurationType.STANDARD
+    )
+    return configuration

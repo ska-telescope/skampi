@@ -12,21 +12,6 @@ from resources.models.mvp_model.states import ObsState
 
 from .. import conftest
 
-# scan configurations
-
-
-@pytest.fixture(name="sdp_base_configuration")
-def fxt_sdp_base_composition(tmp_path) -> conf_types.ScanConfiguration:
-    """Setup a base scan configuration to use for sdp.
-
-    :param tmp_path: a temporary path for sending configuration as a file.
-    :return: the configuration settings.
-    """
-    configuration = conf_types.ScanConfigurationByFile(
-        tmp_path, conf_types.ScanConfigurationType.STANDARD
-    )
-    return configuration
-
 
 @pytest.mark.skalow
 @pytest.mark.scan
@@ -44,6 +29,7 @@ def test_run_a_scan_on_sdp_subarray_in_mid():
 
 @given("an SDP subarray in READY state")
 def an_sdp_subarray_in_ready_state(
+    set_up_subarray_log_checking_for_sdp,
     sdp_base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,

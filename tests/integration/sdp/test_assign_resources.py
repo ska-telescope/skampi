@@ -15,23 +15,6 @@ from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
 
-
-# resource configurations
-
-
-@pytest.fixture(name="sdp_base_composition")
-def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
-    """Setup a base composition configuration to use for sdp.
-
-    :param tmp_path: a temporary path for sending configuration as a file.
-    :return: the configuration settings.
-    """
-    composition = conf_types.CompositionByFile(
-        tmp_path, conf_types.CompositionType.STANDARD
-    )
-    return composition
-
-
 # log capturing
 
 
@@ -55,7 +38,7 @@ def test_assign_resources_to_sdp_subarray_in_mid():
 
 @given("an SDP subarray", target_fixture="composition")
 def an_sdp_subarray(
-    sdp_base_composition: conf_types.Composition,
+    set_up_subarray_log_checking_for_sdp, sdp_base_composition: conf_types.Composition
 ) -> conf_types.Composition:
     """an SDP subarray."""
     return sdp_base_composition

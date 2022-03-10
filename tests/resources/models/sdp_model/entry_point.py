@@ -206,7 +206,6 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         :param composition: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        self._tel = names.TEL()
         # scan duration needs to be a singleton in order to keep track of scan
         # settings between configure scan and run scan
         global SCAN_DURATION  # pylint: disable=global-statement

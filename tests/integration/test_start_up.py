@@ -91,6 +91,9 @@ def the_sdp_must_be_on(conftest_settings: conftest.ConfTestSettings):
 # test validation
 
 
+@pytest.mark.skip(
+    reason="tests interfere currently with other tests by not removing session mocks"
+)
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_startup(run_mock):

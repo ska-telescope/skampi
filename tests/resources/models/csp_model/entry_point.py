@@ -49,10 +49,16 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
         This implments the set_telescope_to_running method on the entry_point.
         """
-        self.csp_controller.command_inout("On")
+        if self._tel.skamid:
+            # mid csp is already on but requires subarray sto be switched on
+            for index in range(1, self.nr_of_subarrays + 1):
+                subarray = con_config.get_device_proxy(self._tel.csp.subarray(index))
+                subarray.command_inout("On")
+        else:
+            self.csp_controller.command_inout("On")
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifying what needs to be waited for before startup of cbf is done."""
+        """Domain logic specifying what needs to be waited for before startup of csp is done."""
         brd = get_message_board_builder()
 
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
@@ -70,12 +76,13 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic for what needs to be waited for switching the sdp off."""
+        """Domain logic for what needs to be waited for switching the csp off."""
         brd = get_message_board_builder()
-
-        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-            "state"
-        ).to_become_equal_to("OFF", ignore_first=False)
+        if self._tel.skalow:
+            # mid csp remains on
+            brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF", ignore_first=False)
         # subarrays
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
@@ -85,7 +92,13 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
     def undo(self):
         """Domain logic for switching the sdp off."""
-        self.csp_controller.command_inout("Off")
+        if self._tel.skamid:
+            # mid csp is already on but requires subarray sto be switched on
+            for index in range(1, self.nr_of_subarrays + 1):
+                subarray = con_config.get_device_proxy(self._tel.csp.subarray(index))
+                subarray.command_inout("Off")
+        else:
+            self.csp_controller.command_inout("Off")
 
 
 class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):

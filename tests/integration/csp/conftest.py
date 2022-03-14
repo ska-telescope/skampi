@@ -14,7 +14,7 @@ from resources.models.cbf_model.mocking import setup_cbf_mock
 from .. import conftest
 
 
-@pytest.fixture(name="set_csp_entry_point")
+@pytest.fixture(name="set_csp_entry_point", autouse=True)
 def fxt_set_csp_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
     exec_settings: fxt_types.exec_settings,

@@ -85,7 +85,7 @@ def the_sdp_must_be_on(conftest_settings: conftest.ConfTestSettings):
     for index in range(1, conftest_settings.nr_of_subarrays + 1):
         subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
         result = subarray.read_attribute("state").value
-        assert_that(result).is_equal_to("ON")
+        assert_that(str(result)).is_equal_to("ON")
 
 
 # test validation

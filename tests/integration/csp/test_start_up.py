@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.skamid
 @pytest.mark.startup
-@pytest.mark.skip(reason="current csp mid version not able to do start up")
 @scenario("features/csp_start_up_telescope.feature", "Start up the csp in mid")
 def test_csp_start_up_telescope_mid():
     """Start up the csp in mid."""
@@ -35,7 +34,7 @@ def test_csp_start_up_telescope_low():
 
 
 @pytest.fixture(name="set_up_log_checking_for_csp")
-@pytest.mark.usefixtures("set_cbf_entry_point")
+@pytest.mark.usefixtures("set_csp_entry_point")
 def fxt_set_up_log_checking_for_csp(
     log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
 ):

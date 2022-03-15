@@ -54,15 +54,15 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 subarray = con_config.get_device_proxy(self._tel.csp.subarray(index))
                 subarray.command_inout("On")
         else:
-            self.csp_controller.command_inout("On")
+            self.csp_controller.command_inout("On", [])
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifying what needs to be waited for before startup of csp is done."""
         brd = get_message_board_builder()
-
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
             "state"
         ).to_become_equal_to("ON", ignore_first=False)
+        # Note we do not wait for controller on skalow as it seems it does not change state
         # subarrays
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
@@ -97,7 +97,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 subarray = con_config.get_device_proxy(self._tel.csp.subarray(index))
                 subarray.command_inout("Off")
         else:
-            self.csp_controller.command_inout("Off")
+            self.csp_controller.command_inout("Off", [])
 
 
 class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):

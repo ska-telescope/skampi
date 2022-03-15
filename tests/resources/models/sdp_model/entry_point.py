@@ -121,12 +121,12 @@ class SdpAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
     ):
         """Domain logic for assigning resources to a subarray in sdp.
 
-        This implments the compose_subarray method on the entry_point.
+        This implements the compose_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
         :param composition: The assign resources configuration paramaters
-        :param sb_id: a generic ide to identify a sb to assign resources
+        :param sb_id: a generic id to identify a sb to assign resources
         """
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.sdp.subarray(sub_array_id)

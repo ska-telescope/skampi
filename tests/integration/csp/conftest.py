@@ -6,6 +6,7 @@ import pytest
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.event_waiting.wait import wait_for
 
 from resources.models.csp_model.entry_point import CSPEntryPoint
 
@@ -18,7 +19,9 @@ from .. import conftest
 def fxt_set_admin_mode_to_zero():
     """Set offline components to online."""
     entry_point = CSPEntryPoint()
-    entry_point.set_offline_components_to_online()
+    if builder := entry_point.set_waiting_for_offline_components_to_become_online():
+        with wait_for(builder):
+            entry_point.set_offline_components_to_online()
 
 
 @pytest.fixture(name="set_csp_entry_point", autouse=True)

@@ -6,6 +6,7 @@ import json
 from time import sleep
 
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.transactions.atomic import atomic
 from ska_ser_skallop.mvp_control.configuration import composition as comp
 from ska_ser_skallop.mvp_control.configuration import configuration as conf
 from ska_ser_skallop.mvp_control.configuration import types
@@ -337,7 +338,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         return None
 
 
-class SDPEntryPoint(CompositeEntryPoint):
+class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2
@@ -350,3 +351,14 @@ class SDPEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = SdpAsignResourcesStep()
         self.configure_scan_step = SdpConfigureStep()
         self.scan_step = SDPScanStep()
+
+    def set_offline_components_to_online(self):
+        """set any off line components t
+        `
+
+        o online"""
+        if self._tel.skalow:
+            controller_name = self._tel.skalow.csp.controller.__str__()
+            controller = con_config.get_device_proxy(controller_name)
+            with atomic(controller_name, "adminMode", "0"):
+                controller.write_attribute("adminMode", 0)

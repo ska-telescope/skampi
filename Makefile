@@ -105,9 +105,9 @@ K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.9.1## docker image
 # import your personal semi-static config
 -include PrivateRules.mak
 
-# add on values.yaml file if it exists
+# add `--values <file>` for each space-separated file in VALUES that exists
 ifneq (,$(wildcard $(VALUES)))
-	K8S_CHART_PARAMS += --values $(VALUES)
+	K8S_CHART_PARAMS += $(foreach f,$(wildcard $(VALUES)),--values $(f))
 endif
 
 ifeq ($(strip $(MINIKUBE)),true)

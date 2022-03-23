@@ -8,6 +8,9 @@ from pytest_bdd import (
     when,
 )
 
+# declare pytestmark globally so that the whole scenario can be marked as infra
+pytestmark = pytest.mark.infra
+
 
 @scenario("features/xray_upload.feature", "SKAMPI CI Pipeline tests execute on SKAMPI")
 def test_skampi_ci_pipeline_tests_execute_on_skampi():
@@ -26,7 +29,6 @@ def an_attempt_is_made_to_run_tests_within_the_repository():
     pass
 
 
-@pytest.mark.infra
 @then("the tests within the SKAMPI repository are run")
 def the_tests_within_the_skampi_repository_are_run():
     """the tests within the SKAMPI repository are run."""

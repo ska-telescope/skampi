@@ -71,10 +71,10 @@ mid_deploy_integration:
     reports:
       junit: build/report.xml
     when: always
-  rules:
-    - if: $STRESS_TEST_DURATION
-      when: never
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+#  rules:
+#    - if: $STRESS_TEST_DURATION
+#      when: never
+#    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 # teardown integration on stop
 mid_uninstall_integration:

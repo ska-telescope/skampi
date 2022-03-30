@@ -1,177 +1,104 @@
-# Local Anchors
-.tags_psi_low: &tags_psi_low
-  - k8srunner-psi-low
-
-# psi-low-integration environment
-
-psi_low_deploy:
-  stage: deploy
-  extends:
-    - .output_step_info
-  #  - .deploy_definition
-  #tags: *tags_psi_low
+# template jobs
+.psi_low_base:
+  tags:
+    - k8srunner-psi-low
   variables:
-    HELM_RELEASE: "test-low"
-    KUBE_NAMESPACE: "integration-low"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    KEEP_NAMESPACE: "true"
-  environment:
-    name: "psi-low-integration"
-    on_stop: psi_low_uninstall
-  allow_failure: true
+    VALUES: pipeline.yaml resources/deployment_configurations/psi-low.yaml
+    CONFIG: low
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    INGRESS_HOST: "psi-head.atnf.csiro.au:30080"
+  when: manual
 
-psi_low_test:
-  stage: test
+.psi_low_deploy:
   extends:
-    - .output_step_info
-  #  - .xray_upload
-  tags: *tags_psi_low
+    - .deploy_chart_before
+  script:
+    - make skampi-links
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+
+
+# on-demand deployment from branch to branch namespace
+.psi_low_branch_job:
+  stage: build
+  extends:
+    - .psi_low_base
   variables:
-    HELM_RELEASE: "test-low"
-    KUBE_NAMESPACE: "integration-low"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    MARK: "(skalow or common) and not archiver and not quarantine"
-    KEEP_NAMESPACE: "true"
-    ARCHIVER_DBNAME: "integration_low_archiver_db"
-    INGRESS_HOST: "202.9.15.131" # psi-head ip
-  #before_script:
-  # using reference as there seems to be a problem with extends
-  #- !reference [.create_k8s_creds, before_script]
-  #- !reference [.psi_test_definition,script] # This needs checking!!!!
-  environment:
-    name: "psi-low-integration"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    on_stop: psi_low_uninstall
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
+    KUBE_NAMESPACE_SDP: "$KUBE_NAMESPACE-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $STRESS_TEST_DURATION != ""'
-
-psi_low_uninstall:
-  stage: cleanup
-  needs:
-    - psi_low_deploy
-  extends:
-    - .output_step_info
-  #  - .uninstall_definition
-  #tags: *tags_psi_low
-  variables:
-    HELM_RELEASE: "test-low"
-    KUBE_NAMESPACE: "integration-low"
-    KUBE_NAMESPACE_SDP: "integration-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    KEEP_NAMESPACE: "true"
-  environment:
-    name: "psi-low-integration"
-    action: stop
-  allow_failure: true
-
-# psi-low on-demand environment
-
-psi_low_on_demand_uninstall:
-  stage: cleanup
-  needs:
-    - low_on_demand_deploy
-  extends:
-    - .output_step_info
-  #  - .uninstall_scripts
-  tags: *tags_psi_low
-  variables:
-    HELM_RELEASE: "test-low-$CI_COMMIT_REF_SLUG"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-  environment:
-    name: "psi-low-test/$CI_COMMIT_REF_NAME"
-    action: stop
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
 psi_low_on_demand_deploy:
-  stage: deploy
   extends:
-    - .output_step_info
-    - .on_demand_definition
-  #  - .deploy_scripts
-  # tags: *tags_psi_low
-  variables:
-    HELM_RELEASE: "test-low-$CI_COMMIT_REF_SLUG"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    KEEP_NAMESPACE: "true" # to stop ns deletion before actual uninstall
-  environment:
-    name: "psi-low-test/$CI_COMMIT_REF_NAME"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low
-    on_stop: psi_low_on_demand_uninstall
+    - .psi_low_branch_job
+    - .psi_low_deploy
 
-psi_low_on_demand_test:
-  stage: test
-  #tags: *tags_psi_low
+psi_low_on_demand_uninstall:
   extends:
-    - .output_step_info
+    - .psi_low_branch_job
+    - .uninstall_chart
   variables:
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    MARK: "(skalow or common) and not archiver"
-    HELM_RELEASE: "test-low-$CI_COMMIT_REF_SLUG"
-    TANGO_DATABASE_DS: "databaseds-tango-base-test-$CI_COMMIT_REF_SLUG"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low-sdp"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
-    ARCHIVER_DBNAME: "$CI_COMMIT_REF_SLUG-low_archiver_db"
-    INGRESS_HOST: "202.9.15.131" # psi-head ip
-  #before_script:
-  # using reference as there seems to be a problem with extends
-  #- !reference [.create_k8s_creds, before_script]
-  #- !reference [.psi_test_definition,script] # This needs checking!!!!
-  environment:
-    name: "psi-low-test/$CI_COMMIT_REF_NAME"
-    url: "http://$INGRESS_HOST/ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-low/taranta"
-    on_stop: psi_low_on_demand_uninstall
-    auto_stop_in: 2 hours
+    KEEP_NAMESPACE: "true"
+
+
+# on-demand from master to integration namespace
+.psi_low_integration_job:
+  stage: deploy_integration
+  extends:
+    - .psi_low_base
+  variables:
+    HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "integration-$CONFIG"
+    KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
+    ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
   rules:
-    - if: "$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
-      when: manual
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
-# psi-low staging environment
+psi_low_deploy_integration:
+  extends:
+    - .psi_low_integration_job
+    - .psi_low_deploy
 
-psi_low_deploy_staging:
+psi_low_uninstall_integration:
+  extends:
+    - .psi_low_integration_job
+    - .uninstall_chart
+  variables:
+    KEEP_NAMESPACE: "true"
+
+
+# on-demand from tags to staging namespace
+.psi_low_staging_job:
   stage: deploy_staging
   extends:
-    - .output_step_info
-  #  - .deploy_definition
-  tags: *tags_psi_low
+    - .psi_low_base
   variables:
-    HELM_REPO_NAME: "skatelescope"
-    UMBRELLA_CHART_PATH: "$HELM_REPO_NAME/ska-low" ## The name of the chart as published to CAR
-    HELM_RELEASE: "staging-low"
-    KUBE_NAMESPACE: "staging-low"
-    KUBE_NAMESPACE_SDP: "staging-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-    INGRESS_HOST: "202.9.15.131" # psi-head ip
-  environment:
-    name: "psi-low-staging"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    on_stop: psi_low_uninstall_staging
-  rules:
-    - if: "$CI_COMMIT_TAG"
-  # needs:
-  #   - job: psi_low_uninstall_staging
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "staging-$CONFIG"
+    KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
+    ARCHIVER_DBNAME: "staging_$CONFIG_archiver_db"
+  only:
+    - tags
+
+psi_low_deploy_staging:
+  extends:
+    - .psi_low_staging_job
+    - .psi_low_deploy
 
 psi_low_uninstall_staging:
-  stage: clean_staging
   extends:
-    - .output_step_info
-  #  - .uninstall_scripts
-  tags: *tags_psi_low
+    - .psi_low_staging_job
+    - .uninstall_chart
   variables:
-    HELM_RELEASE: "staging-low"
-    KUBE_NAMESPACE: "staging-low"
-    KUBE_NAMESPACE_SDP: "staging-low-sdp"
-    DEPLOYMENT_CONFIGURATION: "ska-low"
-  rules:
-    - if: '$CI_COMMIT_TAG && $DELETE == "true"'
-  environment:
-    name: "psi-low-staging"
-    action: stop
+    KEEP_NAMESPACE: "true"

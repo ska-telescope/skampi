@@ -12,3 +12,4 @@ Here you can find instructions to deploy and interact with SKAMPI in different e
    deployment/helm
    deployment/multitenancy
    deployment/remote_deploy
+   deployment/psi

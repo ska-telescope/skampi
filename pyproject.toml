@@ -23,7 +23,7 @@ docopts = "^0.6.1"
 pytest-timeout = "^2.0.2"
 pytest-ordering = "^0.6"
 pipe = "^1.6.0"
-ska-ser-skallop = "2.16.2"
+ska-ser-skallop = "2.16.3"
 ska-telescope-model = "1.3.1"
 
 

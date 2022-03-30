@@ -6,6 +6,7 @@ import json
 from time import sleep
 
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.utils.singleton import Memo
 from ska_ser_skallop.mvp_control.configuration import composition as comp
 from ska_ser_skallop.mvp_control.configuration import configuration as conf
 from ska_ser_skallop.mvp_control.configuration import types
@@ -20,10 +21,6 @@ from ska_ser_skallop.event_handling.builders import get_message_board_builder
 
 
 logger = logging.getLogger(__name__)
-
-# scan duration needs to be a singleton in order to keep track of scan
-# settings between configure scan and run scan
-SCAN_DURATION = 1
 
 
 class LogEnabled:
@@ -121,12 +118,12 @@ class SdpAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
     ):
         """Domain logic for assigning resources to a subarray in sdp.
 
-        This implments the compose_subarray method on the entry_point.
+        This implements the compose_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
         :param composition: The assign resources configuration paramaters
-        :param sb_id: a generic ide to identify a sb to assign resources
+        :param sb_id: a generic id to identify a sb to assign resources
         """
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.sdp.subarray(sub_array_id)
@@ -206,10 +203,8 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         :param composition: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        # scan duration needs to be a singleton in order to keep track of scan
-        # settings between configure scan and run scan
-        global SCAN_DURATION  # pylint: disable=global-statement
-        SCAN_DURATION = duration
+        # scan duration needs to be a memorised for future objects that mnay require it
+        Memo(scan_duration=duration)
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         standard_configuration = conf.generate_standard_conf(
@@ -288,12 +283,13 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         scan_config = json.dumps({"id": 1})
+        scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         try:
             subarray.command_inout("Scan", scan_config)
-            sleep(SCAN_DURATION)
+            sleep(scan_duration)
             subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)

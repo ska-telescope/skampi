@@ -48,13 +48,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
         This implments the set_telescope_to_running method on the entry_point.
         """
-        if self._tel.skamid:
-            # mid csp is already on but requires subarray sto be switched on
-            for index in range(1, self.nr_of_subarrays + 1):
-                subarray = con_config.get_device_proxy(self._tel.csp.subarray(index))
-                subarray.command_inout("On")
-        else:
-            self.csp_controller.command_inout("On", [])
+        self.csp_controller.command_inout("On", [])
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifying what needs to be waited for before startup of csp is done."""
@@ -90,12 +84,11 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         return brd
 
     def undo(self):
-        """Domain logic for switching the sdp off."""
+        """Domain logic for switching the csp off."""
         if self._tel.skamid:
-            # mid csp is already on but requires subarray sto be switched on
-            for index in range(1, self.nr_of_subarrays + 1):
-                subarray = con_config.get_device_proxy(self._tel.csp.subarray(index))
-                subarray.command_inout("Off")
+            # mid csp currently remains on but can switch of the subarrays when commanded with the
+            # Standby command
+            self.csp_controller.command_inout("Standby", [])
         else:
             self.csp_controller.command_inout("Off", [])
 
@@ -348,67 +341,61 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
 
     def do(self):
         """Domain logic for setting devices in csp to online."""
-        if self._tel.skalow:
-            controller_name = self._tel.skalow.csp.controller
-            controller = con_config.get_device_proxy(controller_name)
-            self._log(f"Setting adminMode for {controller_name} to '0' (ONLINE)")
-            controller.write_attribute("adminmode", 0)
-            for index in range(1, self.nr_of_subarrays + 1):
-                subarray_name = self._tel.csp.subarray(index)
-                subarray = con_config.get_device_proxy(subarray_name)
-                self._log(f"Setting adminMode for {subarray_name} to '0' (ONLINE)")
-                subarray.write_attribute("adminmode", 0)
+        controller_name = self._tel.csp.controller
+        controller = con_config.get_device_proxy(controller_name)
+        self._log(f"Setting adminMode for {controller_name} to '0' (ONLINE)")
+        controller.write_attribute("adminmode", 0)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray_name = self._tel.csp.subarray(index)
+            subarray = con_config.get_device_proxy(subarray_name)
+            self._log(f"Setting adminMode for {subarray_name} to '0' (ONLINE)")
+            subarray.write_attribute("adminmode", 0)
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic for waiting for setting to online to be complete."""
-        if self._tel.skalow:
-            controller_name = self._tel.skalow.csp.controller
-            builder = get_message_board_builder()
-            builder.set_waiting_on(controller_name).for_attribute(
+        controller_name = self._tel.csp.controller
+        builder = get_message_board_builder()
+        builder.set_waiting_on(controller_name).for_attribute(
+            "adminMode"
+        ).to_become_equal_to("ONLINE", ignore_first=False)
+        builder.set_waiting_on(controller_name).for_attribute(
+            "state"
+        ).to_become_equal_to("OFF", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray = self._tel.csp.subarray(index)
+            builder.set_waiting_on(subarray).for_attribute(
                 "adminMode"
             ).to_become_equal_to("ONLINE", ignore_first=False)
-            builder.set_waiting_on(controller_name).for_attribute(
-                "state"
-            ).to_become_equal_to("OFF", ignore_first=False)
-            for index in range(1, self.nr_of_subarrays + 1):
-                subarray = self._tel.csp.subarray(index)
-                builder.set_waiting_on(subarray).for_attribute(
-                    "adminMode"
-                ).to_become_equal_to("ONLINE", ignore_first=False)
-                builder.set_waiting_on(subarray).for_attribute(
-                    "state"
-                ).to_become_equal_to("OFF", ignore_first=False)
-            return builder
-        return None
+            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
+                "OFF", ignore_first=False
+            )
+        return builder
 
     def undo(self):
         """Domain logic for setting devices in csp to offline."""
-        if self._tel.skalow:
-            controller_name = self._tel.skalow.csp.controller
-            controller = con_config.get_device_proxy(controller_name)
-            self._log(f"Setting adminMode for {controller_name} to '1' (OFFLINE)")
-            controller.write_attribute("adminmode", 1)
-            for index in range(1, self.nr_of_subarrays + 1):
-                subarray_name = self._tel.csp.subarray(index)
-                subarray = con_config.get_device_proxy(subarray_name)
-                self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
-                subarray.write_attribute("adminmode", 1)
+        controller_name = self._tel.csp.controller
+        controller = con_config.get_device_proxy(controller_name)
+        self._log(f"Setting adminMode for {controller_name} to '1' (OFFLINE)")
+        controller.write_attribute("adminmode", 1)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray_name = self._tel.csp.subarray(index)
+            subarray = con_config.get_device_proxy(subarray_name)
+            self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
+            subarray.write_attribute("adminmode", 1)
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic for waiting for setting to offline to be complete."""
-        if self._tel.skalow:
-            controller_name = self._tel.skalow.csp.controller
-            builder = get_message_board_builder()
-            builder.set_waiting_on(controller_name).for_attribute(
+        controller_name = self._tel.csp.controller
+        builder = get_message_board_builder()
+        builder.set_waiting_on(controller_name).for_attribute(
+            "adminMode"
+        ).to_become_equal_to("OFFLINE", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray = self._tel.csp.subarray(index)
+            builder.set_waiting_on(subarray).for_attribute(
                 "adminMode"
             ).to_become_equal_to("OFFLINE", ignore_first=False)
-            for index in range(1, self.nr_of_subarrays + 1):
-                subarray = self._tel.csp.subarray(index)
-                builder.set_waiting_on(subarray).for_attribute(
-                    "adminMode"
-                ).to_become_equal_to("OFFLINE", ignore_first=False)
-            return builder
-        return None
+        return builder
 
     def set_wait_for_doing(self) -> MessageBoardBuilder:
         """Not implemented."""

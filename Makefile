@@ -35,9 +35,9 @@ KUBE_BRANCH ?= local## Required by Skallop
 NAME ?= $(CONFIG)## The name of the telescope
 ADDMARKS ?=## Additional Marks to add to pytests
 ifneq ($(ADDMARKS),)
-DASHMARK ?= "and ska$(TEL) and $(ADDMARKS)"
+DASHMARK ?= and ska$(TEL) and $(ADDMARKS)
 else
-DASHMARK ?= "and ska$(TEL)"
+DASHMARK ?= and ska$(TEL)
 endif
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs

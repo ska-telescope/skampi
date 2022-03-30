@@ -33,11 +33,11 @@ DOMAIN ?= branch## Required by Skallop
 TEL ?= $(CONFIG)## Required by Skallop
 KUBE_BRANCH ?= local## Required by Skallop
 NAME ?= $(CONFIG)## The name of the telescope
-ADDMARKS ?= ## Additional Marks to add to pytests
+ADDMARKS ?=## Additional Marks to add to pytests
 ifneq ($(ADDMARKS),)
-DASHMARK ?= "ska$(TEL) and $(ADDMARKS)"
+DASHMARK ?= "and ska$(TEL) and $(ADDMARKS)"
 else
-DASHMARK ?= "ska$(TEL)"
+DASHMARK ?= "and ska$(TEL)"
 endif
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
@@ -227,7 +227,7 @@ k8s-pre-install-chart:
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
 # make sure infra test do not run in k8s-test
-k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
+k8s-test: MARK := not infra $(DASHMARK) $(DISABLE_TARANTA)
 
 k8s-post-test: # post test hook for processing received reports
 	@if ! [[ -f build/status ]]; then \

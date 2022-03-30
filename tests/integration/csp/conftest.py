@@ -6,7 +6,6 @@ import pytest
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_control.event_waiting.wait import wait_for
 
 from resources.models.csp_model.entry_point import CSPEntryPoint
 

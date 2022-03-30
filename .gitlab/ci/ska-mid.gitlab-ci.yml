@@ -101,6 +101,7 @@ mid_k8s_test:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
+    auto_stop_in: 1 day
     on_stop: mid_k8s_test_uninstall
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
@@ -110,6 +111,8 @@ mid_k8s_test:
       junit: build/report.xml
     when: always
   retry: 1
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
       
 mid_k8s_test_uninstall:
   stage: test
@@ -130,6 +133,10 @@ mid_k8s_test_uninstall:
   environment:
     name: test/ska-$CONFIG-k8s-$CI_COMMIT_REF_SLUG
     action: stop
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+      when: manual
+
 
 # teardown integration on stop
 mid_uninstall_integration:
@@ -148,8 +155,8 @@ mid_uninstall_integration:
     ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
     KEEP_NAMESPACE: "true"
   rules:
-    - if: $CI_COMMIT_TAG
     - if: $DELETE == "true"
+      when: manual
   environment:
     name: "integration-mid"
     action: stop
@@ -200,7 +207,9 @@ mid_uninstall_staging:
     KEEP_NAMESPACE: "true"
   rules:
     - if: $CI_COMMIT_TAG
+      when: manual
     - if: $DELETE == "true"
+      when: manual
   environment:
     name: "staging-mid"
     action: stop

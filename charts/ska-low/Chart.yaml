@@ -55,3 +55,7 @@ dependencies:
   - name: ska-low-cbf
     version: 0.5.3
     repository: https://artefact.skao.int/repository/helm-internal
+  - name: ska-log-consumer
+    version: 0.1.6
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-log-consumer.enabled

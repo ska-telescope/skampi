@@ -232,7 +232,7 @@ k8s-pre-install-chart:
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
 # make sure infra test do not run in k8s-test
-k8s-test: MARK := not infra $(DASHMARK) $(DISABLE_TARANTA)
+k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
 
 k8s-post-test: # post test hook for processing received reports
 	@if ! [[ -f build/status ]]; then \

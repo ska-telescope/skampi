@@ -136,6 +136,7 @@ mid_k8s_test_uninstall:
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
       when: manual
+  allow_failure: true
 
 
 # teardown integration on stop

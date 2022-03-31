@@ -33,15 +33,20 @@ DOMAIN ?= branch## Required by Skallop
 TEL ?= $(CONFIG)## Required by Skallop
 KUBE_BRANCH ?= local## Required by Skallop
 NAME ?= $(CONFIG)## The name of the telescope
-ADDMARKS ?= ## Additional Marks to add to pytests
+ADDMARKS ?=## Additional Marks to add to pytests
+# Dishmark is a synthesis of marks to add to test, it will always start with the tests for the appropriate
+# telescope (e.g. TEL=mid or TEL-low) thereafter followed by additional filters
 ifneq ($(ADDMARKS),)
-DASHMARK ?= "ska$(TEL) and $(ADDMARKS)"
+DASHMARK ?= ska$(TEL) and $(ADDMARKS)
 else
-DASHMARK ?= "ska$(TEL)"
+DASHMARK ?= ska$(TEL)
 endif
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
 ifneq ($(TESTCOUNT),)
+# Dashcount is a synthesis of testcount as input user variable and is used to
+# run a paricular test/s multiple times. If no testcount is set then the entire
+# --count option is removed
 DASHCOUNT ?= --count=$(TESTCOUNT)
 else
 DASHCOUNT ?=

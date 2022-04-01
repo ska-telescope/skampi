@@ -24,6 +24,16 @@ def test_assign_resources_to_csp_low_subarray():
     """Assign resources to CSP low subarray."""
 
 
+@pytest.mark.skalow
+@pytest.mark.assign
+@scenario(
+    "features/csp_assign_resources.feature",
+    "Release resources assigned to an CSP low subarray",
+)
+def test_release_resources_to_csp_low_subarray():
+    """Release resources assigned to an CSP low subarray"""
+
+
 @given("an CSP subarray", target_fixture="composition")
 def an_csp_subarray(
     set_up_subarray_log_checking_for_csp,  # pylint: disable=unused-argument
@@ -33,8 +43,12 @@ def an_csp_subarray(
     return csp_base_composition
 
 
-# use when from ..shared_assign_resources
+# use when from ..shared_assign_resources in ..conftest.py
 # @when("I assign resources to it")
+
+# for release resources test
+# use when from ..shared_assign_resources in ..conftest.py
+# @when("I release all resources assigned to it")
 
 
 @then("the CSP subarray must be in IDLE state")
@@ -46,6 +60,17 @@ def the_csp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     )
     result = csp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.IDLE)
+
+
+@then("the CSP subarray must be in EMPTY state")
+def the_csp_subarray_must_be_in_empty_state(sut_settings: SutTestSettings):
+    """the subarray must be in IDLE state."""
+    tel = names.TEL()
+    csp_subarray = con_config.get_device_proxy(
+        tel.csp.subarray(sut_settings.subarray_id)
+    )
+    result = csp_subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(ObsState.EMPTY)
 
 
 # mock tests

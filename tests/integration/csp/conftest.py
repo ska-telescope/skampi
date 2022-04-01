@@ -14,8 +14,24 @@ from resources.models.cbf_model.mocking import setup_cbf_mock
 from .. import conftest
 
 
+@pytest.fixture(name="set_nr_of_subarray", autouse=True)
+def fxt_set_nr_of_subarray(
+    sut_settings: conftest.SutTestSettings,
+):
+    """_summary_
+
+    :param sut_settings: _description_
+    :type sut_settings: conftest.SutTestSettings
+    """
+    tel = names.TEL()
+    # we only work with 1 subarray as CBF low currently limits deployment of only 1
+    if tel.skalow:
+        sut_settings.nr_of_subarrays = 1
+
+
 @pytest.fixture(name="set_csp_entry_point", autouse=True)
 def fxt_set_csp_entry_point(
+    set_nr_of_subarray,
     set_session_exec_env: fxt_types.set_session_exec_env,
     exec_settings: fxt_types.exec_settings,
     sut_settings: conftest.SutTestSettings,

@@ -10,6 +10,10 @@ import pytest
 from pytest_bdd import when
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_management import telescope_management as tel
+from ska_ser_skallop.mvp_fixtures.base import ExecSettings
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 
@@ -24,6 +28,27 @@ class SutTestSettings(SimpleNamespace):
     subarray_id = 1
     receptors = [1, 2]
     scan_duration = 1
+
+
+@pytest.fixture(name="set_subsystem_online")
+def fxt_set_subsystem_online(
+    session_exec_settings: ExecSettings,
+) -> Callable[[EntryPoint], None]:
+    """Fixture that is used to take a subsystem online using the given entrypoint.
+
+    :param session_exec_settings: session wide exec settings
+    :return: the callable function that takes an entrypoint and sets the relevant components
+        online.
+    """
+
+    def fn_set_subsystem_online(entry_point: EntryPoint):
+        with entry_conf.inject_entry_point(
+            entry_point,
+            "entry_point used for setting subsystem online",
+        ):
+            tel.set_offline_components_to_online(session_exec_settings)
+
+    return fn_set_subsystem_online
 
 
 @pytest.fixture(name="sut_settings")
@@ -61,6 +86,7 @@ def fxt_integration_test_exec_settings(
     :return: test specific execution settings as a fixture
     """
     integration_test_exec_settings = exec_settings.replica()
+
     if os.getenv("DEBUG"):
         exec_settings.run_with_live_logging()
         integration_test_exec_settings.run_with_live_logging()

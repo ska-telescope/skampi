@@ -1,11 +1,14 @@
 """Pytest fixtures and bdd step implementations specific to csp integration tests."""
 import os
+from typing import Callable
 
 import pytest
+import logging
 
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from pytest_bdd import given
 
 from resources.models.csp_model.entry_point import CSPEntryPoint
@@ -14,9 +17,27 @@ from resources.models.csp_model.entry_point import CSPEntryPoint
 from .. import conftest
 
 
+@pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
+def fxt_nr_of_subarrays() -> int:
+    # we only work with 1 subarray as CBF low currently limits deployment of only 1
+    # cbf mid only controls the state of subarray 1 so will also limit to 1
+    return 1
+
+
+@pytest.fixture(autouse=True, scope="session")
+def fxt_set_cbf_online(
+    nr_of_subarrays: int, set_subsystem_online: Callable[[EntryPoint], None]
+):
+    logging.info("setting csp components online")
+    CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
+    entry_point = CSPEntryPoint()
+    set_subsystem_online(entry_point)
+
+
 @pytest.fixture(name="set_nr_of_subarray", autouse=True)
 def fxt_set_nr_of_subarray(
     sut_settings: conftest.SutTestSettings,
+    exec_settings: fxt_types.exec_settings,
 ):
     """_summary_
 

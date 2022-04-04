@@ -15,6 +15,22 @@ from ska_ser_skallop.connectors import configuration as con_config
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skamid
+@pytest.mark.cbf
+@pytest.mark.startup
+@scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in mid")
+def test_cbf_start_up_telescope_mid():
+    """Start up the cbf in mid."""
+
+
+@pytest.mark.skalow
+@pytest.mark.cbf
+@pytest.mark.startup
+@scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in low")
+def test_cbf_start_up_telescope_low():
+    """Start up the cbf in low."""
+
+
 @pytest.fixture(name="set_up_transit_checking_for_cbf")
 @pytest.mark.usefixtures("set_cbf_entry_point")
 def fxt_set_up_transit_checking_for_cbf(transit_checking: fxt_types.transit_checking):
@@ -47,22 +63,6 @@ def fxt_set_up_log_capturing_for_cbf(log_checking: fxt_types.log_checking):
         cbf_controller = str(tel.csp.cbf.controller)
         subarray = str(tel.csp.cbf.subarray(1))
         log_checking.capture_logs_from_devices(cbf_controller, subarray)
-
-
-@pytest.mark.skamid
-@pytest.mark.cbf
-@pytest.mark.startup
-@scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in mid")
-def test_cbf_start_up_telescope_mid():
-    """Start up the cbf in mid."""
-
-
-@pytest.mark.skalow
-@pytest.mark.cbf
-@pytest.mark.startup
-@scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in low")
-def test_cbf_start_up_telescope_low():
-    """Start up the cbf in low."""
 
 
 @given("an CBF")

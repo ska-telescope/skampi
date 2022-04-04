@@ -9,7 +9,7 @@ Feature: Start up the csp
 		Then the csp must be on	
 
 	
-	@XTP-3964 @XTP-3963 @XTP-3324 @XTP-5539
+	@XTP-3964 @XTP-3963 @XTP-3324 @XTP-5573
 	Scenario: Start up the csp in mid
 		Given an CSP
 		When I start up the telescope

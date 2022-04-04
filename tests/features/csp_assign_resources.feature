@@ -2,7 +2,7 @@
 Feature: Assign resources to CSP subarray
 
 	
-	@XTP-4636 @XTP-5537 @XTP-4635 @XTP-3324 @XTP-5539
+	@XTP-4636 @XTP-5537 @XTP-4635 @XTP-3324 @XTP-5573
 	Scenario: Assign resources to CSP mid subarray
 		Given an CSP subarray
 		When I assign resources to it

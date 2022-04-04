@@ -91,7 +91,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         return brd
 
     def undo(self):
-        """Domain logic for switching the sdp off."""
+        """Domain logic for switching the cbf off."""
         self.cbf_controller.command_inout("Off")
         if self._tel.skalow:
             for index in range(1, self.nr_of_subarrays + 1):
@@ -102,7 +102,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
 
 class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
-    """Implementation of Assign Resources Step for SDP."""
+    """Implementation of Assign Resources Step for cbf."""
 
     def __init__(self) -> None:
         """Init object."""

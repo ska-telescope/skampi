@@ -130,7 +130,7 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             subarray = con_config.get_device_proxy(subarray_name)
             dis_id_str = [f"{dish_id:0>3}" for dish_id in dish_ids]
             csp_mid_assign_resources = csp_mid_assign_resources_template.copy()
-            csp_mid_assign_resources["receptors"]["receptor_ids"] = dis_id_str
+            csp_mid_assign_resources["dish"]["receptor_ids"] = dis_id_str
             csp_mid_configuration = json.dumps(csp_mid_assign_resources)
             self._log(
                 f"commanding {subarray_name} with AssignResources: {csp_mid_assign_resources} "
@@ -371,7 +371,7 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
                 "adminMode"
             ).to_become_equal_to("ONLINE", ignore_first=False)
             builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
-                "OFF", ignore_first=False
+                ["OFF", "ON"], ignore_first=False
             )
         return builder
 
@@ -424,7 +424,7 @@ class CSPEntryPoint(CompositeEntryPoint):
 csp_mid_assign_resources_template = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
     "subarray_id": 1,
-    "receptors": {"receptor_ids": ["0001", "0002"]},
+    "dish": {"receptor_ids": ["001", "002"]},
 }
 
 csp_low_assign_resources = {

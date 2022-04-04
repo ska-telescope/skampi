@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.mark.skalow
+@pytest.mark.csp
 @pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature", "Assign resources to CSP low subarray"
@@ -25,6 +26,7 @@ def test_assign_resources_to_csp_low_subarray():
 
 
 @pytest.mark.skalow
+@pytest.mark.csp
 @pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature",

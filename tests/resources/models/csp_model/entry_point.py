@@ -360,7 +360,7 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         ).to_become_equal_to("ONLINE", ignore_first=False)
         builder.set_waiting_on(controller_name).for_attribute(
             "state"
-        ).to_become_equal_to("OFF", ignore_first=False)
+        ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
         for index in range(1, self.nr_of_subarrays + 1):
             subarray = self._tel.csp.subarray(index)
             builder.set_waiting_on(subarray).for_attribute(

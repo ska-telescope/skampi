@@ -25,6 +25,16 @@ def test_assign_resources_to_csp_low_subarray():
     """Assign resources to CSP low subarray."""
 
 
+@pytest.mark.skamid
+@pytest.mark.csp
+@pytest.mark.assign
+@scenario(
+    "features/csp_assign_resources.feature", "Assign resources to CSP mid subarray"
+)
+def test_assign_resources_to_csp_mid_subarray():
+    """Assign resources to CSP mid subarray."""
+
+
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign

@@ -10,8 +10,6 @@ from pytest_bdd import given
 
 from resources.models.csp_model.entry_point import CSPEntryPoint
 
-from resources.models.cbf_model.mocking import setup_cbf_mock
-
 
 from .. import conftest
 
@@ -55,16 +53,6 @@ def fxt_set_csp_entry_point(
     else:
         exec_env.entrypoint = "mock"
     exec_env.scope = ["csp"]
-
-
-@pytest.fixture(name="setup_cbf_mock")
-def fxt_setup_cbf_mock(mock_entry_point: fxt_types.mock_entry_point):
-    """_summary_
-
-    :param mock_entry_point: _description_
-    :type mock_entry_point: fxt_types.mock_entry_point
-    """
-    setup_cbf_mock(mock_entry_point)
 
 
 # log checking

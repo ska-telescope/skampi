@@ -1,4 +1,4 @@
-"""Start up the sdp feature tests."""
+"""Start up the csp feature tests."""
 import logging
 import os
 from typing import cast, List

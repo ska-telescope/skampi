@@ -125,8 +125,17 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
                 f"commanding {subarray_name} with AssignResources: {csp_low_configuration} "
             )
             subarray.command_inout("AssignResources", csp_low_configuration)
-        else:
-            raise NotImplementedError()
+        elif self._tel.skamid:
+            subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
+            subarray = con_config.get_device_proxy(subarray_name)
+            dis_id_str = [f"{dish_id:0>3}" for dish_id in dish_ids]
+            csp_mid_assign_resources = csp_mid_assign_resources_template.copy()
+            csp_mid_assign_resources["receptors"]["receptor_ids"] = dis_id_str
+            csp_mid_configuration = json.dumps(csp_mid_assign_resources)
+            self._log(
+                f"commanding {subarray_name} with AssignResources: {csp_mid_assign_resources} "
+            )
+            subarray.command_inout("AssignResources", csp_mid_configuration)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in csp.
@@ -135,13 +144,10 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        if self._tel.skalow:
-            subarray_name = self._tel.skalow.csp.subarray(sub_array_id)
-            subarray = con_config.get_device_proxy(subarray_name)
-            self._log(f"commanding {subarray_name} with ReleaseAllResources")
-            subarray.command_inout("ReleaseAllResources")
-        else:
-            raise NotImplementedError()
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ReleaseAllResources")
+        subarray.command_inout("ReleaseAllResources")
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
@@ -167,12 +173,10 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         builder = get_message_board_builder()
-        self._tel = names.TEL()
-        if self._tel.skamid:
-            subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
-            builder.set_waiting_on(subarray_name).for_attribute(
-                "obsState"
-            ).to_become_equal_to("EMPTY")
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
 
         return builder
 
@@ -416,6 +420,12 @@ class CSPEntryPoint(CompositeEntryPoint):
         self.configure_scan_step = CspConfigureStep()
         self.scan_step = CspScanStep()
 
+
+csp_mid_assign_resources_template = {
+    "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+    "subarray_id": 1,
+    "receptors": {"receptor_ids": ["0001", "0002"]},
+}
 
 csp_low_assign_resources = {
     "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",

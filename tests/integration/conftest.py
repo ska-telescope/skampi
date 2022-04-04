@@ -30,7 +30,7 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 1
 
 
-@pytest.fixture(name="set_subsystem_online")
+@pytest.fixture(name="set_subsystem_online", scope="session")
 def fxt_set_subsystem_online(
     session_exec_settings: ExecSettings,
 ) -> Callable[[EntryPoint], None]:

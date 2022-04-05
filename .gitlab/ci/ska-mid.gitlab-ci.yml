@@ -18,6 +18,7 @@ mid-test:
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
     TEL: mid
+    MARK: "not infra"
   extends:
     - .tags_default
     - .deploy_chart_before

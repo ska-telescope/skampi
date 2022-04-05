@@ -12,18 +12,23 @@ from resources.models.cbf_model.mocking import setup_cbf_mock
 from .. import conftest
 
 
+@pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
+def fxt_nr_of_subarrays() -> int:
+    # we only work with 1 subarray as CBF low currently limits deployment of only 1
+    # cbf mid only controls the state of subarray 1 so will also limit to 1
+    return 1
+
+
 @pytest.fixture(name="set_nr_of_subarray", autouse=True)
 def fxt_set_nr_of_subarray(
-    sut_settings: conftest.SutTestSettings,
+    sut_settings: conftest.SutTestSettings, nr_of_subarrays: int
 ):
     """_summary_
 
     :param sut_settings: _description_
     :type sut_settings: conftest.SutTestSettings
     """
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
-    # cbf mid only controls the state of subarray 1 so will also limit to 1
-    sut_settings.nr_of_subarrays = 1
+    sut_settings.nr_of_subarrays = nr_of_subarrays
 
 
 @pytest.fixture(name="set_cbf_entry_point", autouse=True)

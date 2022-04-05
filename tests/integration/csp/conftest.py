@@ -21,29 +21,32 @@ from .. import conftest
 def fxt_nr_of_subarrays() -> int:
     # we only work with 1 subarray as CBF low currently limits deployment of only 1
     # cbf mid only controls the state of subarray 1 so will also limit to 1
-    return 1
+    tel = names.TEL()
+    if tel.skalow:
+        return 1
+    return 2
 
 
 @pytest.fixture(name="set_nr_of_subarray", autouse=True)
 def fxt_set_nr_of_subarray(
     sut_settings: conftest.SutTestSettings,
     exec_settings: fxt_types.exec_settings,
+    nr_of_subarrays: int,
 ):
     """_summary_
 
     :param sut_settings: _description_
     :type sut_settings: conftest.SutTestSettings
     """
-    tel = names.TEL()
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
-    nr_of_subarrays = 1
-    if tel.skalow:
-        CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
-        sut_settings.nr_of_subarrays = nr_of_subarrays
+
+    CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
+    sut_settings.nr_of_subarrays = nr_of_subarrays
 
 
 @pytest.fixture(autouse=True, scope="session")
-def fxt_set_cbf_online(set_subsystem_online: Callable[[EntryPoint], None]):
+def fxt_set_cbf_online(
+    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays: int
+):
     """_summary_
 
     :param nr_of_subarrays: _description_

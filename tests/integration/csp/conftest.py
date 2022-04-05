@@ -19,6 +19,11 @@ from .. import conftest
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
 def fxt_nr_of_subarrays() -> int:
+    """_summary_
+
+    :return: _description_
+    :rtype: int
+    """
     # we only work with 1 subarray as CBF low currently limits deployment of only 1
     # cbf mid only controls the state of subarray 1 so will also limit to 1
     tel = names.TEL()
@@ -55,6 +60,7 @@ def fxt_set_cbf_online(
     :type set_subsystem_online: Callable[[EntryPoint], None]
     """
     logging.info("setting csp components online")
+    CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
     entry_point = CSPEntryPoint()
     set_subsystem_online(entry_point)
 

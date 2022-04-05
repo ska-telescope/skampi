@@ -30,27 +30,6 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 1
 
 
-@pytest.fixture(name="set_subsystem_online", scope="session")
-def fxt_set_subsystem_online(
-    session_exec_settings: ExecSettings,
-) -> Callable[[EntryPoint], None]:
-    """Fixture that is used to take a subsystem online using the given entrypoint.
-
-    :param session_exec_settings: session wide exec settings
-    :return: the callable function that takes an entrypoint and sets the relevant components
-        online.
-    """
-
-    def fn_set_subsystem_online(entry_point: EntryPoint):
-        with entry_conf.inject_entry_point(
-            entry_point,
-            "entry_point used for setting subsystem online",
-        ):
-            tel.set_offline_components_to_online(session_exec_settings)
-
-    return fn_set_subsystem_online
-
-
 @pytest.fixture(name="sut_settings")
 def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""

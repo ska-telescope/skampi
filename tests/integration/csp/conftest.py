@@ -24,16 +24,6 @@ def fxt_nr_of_subarrays() -> int:
     return 1
 
 
-@pytest.fixture(autouse=True, scope="session")
-def fxt_set_cbf_online(
-    nr_of_subarrays: int, set_subsystem_online: Callable[[EntryPoint], None]
-):
-    logging.info("setting csp components online")
-    CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
-    entry_point = CSPEntryPoint()
-    set_subsystem_online(entry_point)
-
-
 @pytest.fixture(name="set_nr_of_subarray", autouse=True)
 def fxt_set_nr_of_subarray(
     sut_settings: conftest.SutTestSettings,
@@ -46,8 +36,24 @@ def fxt_set_nr_of_subarray(
     """
     tel = names.TEL()
     # we only work with 1 subarray as CBF low currently limits deployment of only 1
+    nr_of_subarrays = 1
     if tel.skalow:
-        sut_settings.nr_of_subarrays = 1
+        CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
+        sut_settings.nr_of_subarrays = nr_of_subarrays
+
+
+@pytest.fixture(autouse=True, scope="session")
+def fxt_set_cbf_online(set_subsystem_online: Callable[[EntryPoint], None]):
+    """_summary_
+
+    :param nr_of_subarrays: _description_
+    :type nr_of_subarrays: int
+    :param set_subsystem_online: _description_
+    :type set_subsystem_online: Callable[[EntryPoint], None]
+    """
+    logging.info("setting csp components online")
+    entry_point = CSPEntryPoint()
+    set_subsystem_online(entry_point)
 
 
 @pytest.fixture(name="set_csp_entry_point", autouse=True)

@@ -259,8 +259,10 @@ skampi-component-tests:  ## iterate over Skampi component tests defined as make 
 ## VARS: none
 ##  make target for running the SDP-specific tests in the Skampi CI pipeline
 
+
+## ST-1189:--overrides='{"spec": { "serviceAccountName": "ci-svc-${CI_PROJECT_NAME}-${CI_JOB_ID}" } }' is used to hijack the variable to support runner serviceaccount usage until it's supported makefile targets
 skampi-test-03sdp:  ## launcher for SDP tests
 	@version=$$(helm dependency list charts/$(DEPLOYMENT_CONFIGURATION) | awk '$$1 == "ska-sdp" {print $$2}'); \
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
 #	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sdp-integration-tests:$$version MARK="$$telescope and acceptance"
-	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=registry.gitlab.com/ska-telescope/sdp/ska-sdp-integration/ska-sdp-integration-tests:0.9.1-dirty-dev.cf66fd65d MARK="SKA_mid and acceptance"
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=registry.gitlab.com/ska-telescope/sdp/ska-sdp-integration/ska-sdp-integration-tests:0.9.1-dirty-dev.cf66fd65d --overrides='{"spec": { "serviceAccountName": "ci-svc-${CI_PROJECT_NAME}-${CI_JOB_ID}" } }' MARK="SKA_mid and acceptance"

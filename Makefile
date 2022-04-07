@@ -100,7 +100,7 @@ KUBE_APP = ska-tango-images
 CI_JOB_ID ?= local##local default for ci job id
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
-K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.9.1 --overrides='{"spec": { serviceAccountName: "ci-svc-${CI_PROJECT_NAME}-${CI_JOB_ID}" } }'## docker image that will be run for testing purpose
+K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.16.0 --overrides='{"spec": { serviceAccountName: "ci-svc-${CI_PROJECT_NAME}-${CI_JOB_ID}" } }'## docker image that will be run for testing purpose
 
 # import your personal semi-static config
 -include PrivateRules.mak

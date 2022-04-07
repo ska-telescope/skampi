@@ -158,6 +158,7 @@ mid_uninstall_integration:
   rules:
     - if: $DELETE == "true"
       when: manual
+  allow_failure: true
   environment:
     name: "integration-mid"
     action: stop

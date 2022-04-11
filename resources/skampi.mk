@@ -163,74 +163,12 @@ skampi-k8s-post-test:
 
 skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ## run the defined test cycle against Kubernetes
 
-#k8s_test_command_sdp = /bin/bash -c "\
-#	mkfifo results-pipe && tar zx --warning=all && cd post-deployment && \
-#        pip install -qUr test_requirements.txt && \
-#	make -s SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
-#		KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
-#		KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP) \
-#		HELM_RELEASE=$(HELM_RELEASE) \
-#		TANGO_HOST=$(TANGO_HOST) \
-#		CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
-#		MARK='$(MARK)' \
-#		COUNT=$(COUNT) \
-#		FILE='$(FILE)' \
-#		SKA_TELESCOPE=$(TELESCOPE) \
-#		CENTRALNODE_FQDN=$(CENTRALNODE) \
-#		SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
-#		OET_READ_VIA_PUBSUB=$(PUBSUB) \
-#		JIRA_AUTH=$(JIRA_AUTH) \
-#		CAR_RAW_USERNAME=$(RAW_USER) \
-#		CAR_RAW_PASSWORD=$(RAW_PASS) \
-#		CAR_RAW_REPOSITORY_URL=$(RAW_HOST) \
-#		$1; \
-#	echo \$$? > build/status; pip list > build/pip_list.txt; \
-#	tar zcf ../results-pipe build"
-
-#k8s_test_command = /bin/bash -o pipefail -c "\
-#	mkfifo results-pipe && tar zx --warning=all && \
-#        ( if [[ -f pyproject.toml ]]; then poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes --dev; echo 'k8s-test: installing poetry-requirements.txt';  pip install -qUr poetry-requirements.txt; cd $(k8s_test_folder); else if [[ -f $(k8s_test_folder)/requirements.txt ]]; then echo 'k8s-test: installing $(k8s_test_folder)/requirements.txt'; pip install -qUr $(k8s_test_folder)/requirements.txt; fi; fi ) && \
-#				 cd $(k8s_test_folder) && \
-#		export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs) && \
-#		mkdir -p build && \
-#	( \
-#	$(K8S_TEST_TEST_COMMAND) \
-#	); \
-#	echo \$$? > build/status; pip list > build/pip_list.txt; \
-#	echo \"k8s_test_command: test command exit is: \$$(cat build/status)\"; \
-#	tar zcf ../results-pipe build;"
-
- k8s_test_command_sdp = /bin/bash -c "\
-	mkfifo results-pipe && tar zx --warning=all && \
-        ( if [[ -f pyproject.toml ]]; then poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes --dev; echo 'k8s-test: installing poetry-requirements.txt';  pip install -qUr poetry-requirements.txt; cd $(k8s_test_folder); else if [[ -f $(k8s_test_folder)/requirements.txt ]]; then echo 'k8s-test: installing $(k8s_test_folder)/requirements.txt'; pip install -qUr $(k8s_test_folder)/requirements.txt; fi; fi ) && \
-				 cd $(k8s_test_folder) && \
- 	make -s SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
- 		KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
- 		KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP) \
- 		HELM_RELEASE=$(HELM_RELEASE) \
- 		TANGO_HOST=$(TANGO_HOST) \
- 		CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
- 		MARK='$(MARK)' \
- 		COUNT=$(COUNT) \
- 		FILE='$(FILE)' \
- 		SKA_TELESCOPE=$(TELESCOPE) \
- 		CENTRALNODE_FQDN=$(CENTRALNODE) \
- 		SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
- 		OET_READ_VIA_PUBSUB=$(PUBSUB) \
- 		JIRA_AUTH=$(JIRA_AUTH) \
- 		CAR_RAW_USERNAME=$(RAW_USER) \
- 		CAR_RAW_PASSWORD=$(RAW_PASS) \
- 		CAR_RAW_REPOSITORY_URL=$(RAW_HOST) \
- 		$1; \
- 	echo \$$? > build/status; pip list > build/pip_list.txt; \
- 	tar zcf results-pipe build"
-
 skampi-k8s-test-component:
 	@rm -fr build; mkdir build
 	@echo "skampi-k8s-test-component: start test runner: $(k8s_test_runner)"
 	@echo "skampi-k8s-test-component: sending test Makefile: tar -cz $(k8s_test_folder)/Makefile"
 	( cd $(BASE); tar -cz $(k8s_test_folder)/Makefile \
-	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command_sdp) 2>&1 \
+	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
 	sleep 1; \
 	echo "skampi-k8s-test-component: waiting for test runner to boot up: $(k8s_test_runner)"; \

@@ -49,7 +49,7 @@ def fxt_set_nr_of_subarray(
 
 
 @pytest.fixture(autouse=True, scope="session")
-def fxt_set_cbf_online(
+def fxt_set_csp_online(
     set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays: int
 ):
     """_summary_

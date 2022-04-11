@@ -163,7 +163,7 @@ skampi-k8s-post-test:
 
 skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ## run the defined test cycle against Kubernetes
 
-k8s_test_command = /bin/bash -c "\
+k8s_test_command_sdp = /bin/bash -c "\
 	mkfifo results-pipe && tar zx --warning=all && cd post-deployment && \
         pip install -qUr test_requirements.txt && \
 	make -s SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
@@ -192,7 +192,7 @@ skampi-k8s-test-component:
 	@echo "skampi-k8s-test-component: start test runner: $(k8s_test_runner)"
 	@echo "skampi-k8s-test-component: sending test Makefile: tar -cz $(k8s_test_folder)/Makefile"
 	( cd $(BASE); tar -cz $(k8s_test_folder)/Makefile \
-	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
+	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command_sdp) 2>&1 \
 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
 	sleep 1; \
 	echo "skampi-k8s-test-component: waiting for test runner to boot up: $(k8s_test_runner)"; \

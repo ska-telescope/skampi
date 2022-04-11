@@ -10,7 +10,7 @@ delete-sdp-namespace: KUBE_NAMESPACE := $(KUBE_NAMESPACE_SDP)
 delete-sdp-namespace: ## delete the kubernetes SDP namespace
 	@make k8s-delete-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
-PYTHON_VARS_BEFORE_PYTEST +=  LOADBALANCER_IP=${LOADBALANCER_IP} CLUSTER_TEST_NAMESPACE=$(CLUSTER_TEST_NAMESPACE) KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP)
+PYTHON_VARS_BEFORE_PYTEST +=  LOADBALANCER_IP=${LOADBALANCER_IP} CLUSTER_TEST_NAMESPACE=$(CLUSTER_TEST_NAMESPACE)
 verify-minikube: # Run only infra tests on local minikube cluster as precursor
 	@make python-test LOADBALANCER_IP=$(shell minikube ip) PYTHON_VARS_AFTER_PYTEST=' -m infra'
 	@make k8s-delete-namespace KUBE_NAMESPACE=$(CLUSTER_TEST_NAMESPACE)

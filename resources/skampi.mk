@@ -163,6 +163,30 @@ skampi-k8s-post-test:
 
 skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ## run the defined test cycle against Kubernetes
 
+k8s_test_command = /bin/bash -c "\
+	mkfifo results-pipe && tar zx --warning=all && cd post-deployment && \
+        pip install -qUr test_requirements.txt && \
+	make -s SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
+		KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
+		KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP) \
+		HELM_RELEASE=$(HELM_RELEASE) \
+		TANGO_HOST=$(TANGO_HOST) \
+		CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
+		MARK='$(MARK)' \
+		COUNT=$(COUNT) \
+		FILE='$(FILE)' \
+		SKA_TELESCOPE=$(TELESCOPE) \
+		CENTRALNODE_FQDN=$(CENTRALNODE) \
+		SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
+		OET_READ_VIA_PUBSUB=$(PUBSUB) \
+		JIRA_AUTH=$(JIRA_AUTH) \
+		CAR_RAW_USERNAME=$(RAW_USER) \
+		CAR_RAW_PASSWORD=$(RAW_PASS) \
+		CAR_RAW_REPOSITORY_URL=$(RAW_HOST) \
+		$1; \
+	echo \$$? > build/status; pip list > build/pip_list.txt; \
+	tar zcf ../results-pipe build"
+
 skampi-k8s-test-component:
 	@rm -fr build; mkdir build
 	@echo "skampi-k8s-test-component: start test runner: $(k8s_test_runner)"

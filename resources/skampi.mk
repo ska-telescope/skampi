@@ -192,7 +192,7 @@ skampi-k8s-test-component:
 	@echo "skampi-k8s-test-component: start test runner: $(k8s_test_runner)"
 	@echo "skampi-k8s-test-component: sending test Makefile: tar -cz $(k8s_test_folder)/Makefile"
 	( cd $(BASE); tar -cz $(k8s_test_folder)/Makefile \
-	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command_sdp) 2>&1 \
+	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
 	sleep 1; \
 	echo "skampi-k8s-test-component: waiting for test runner to boot up: $(k8s_test_runner)"; \

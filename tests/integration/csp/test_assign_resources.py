@@ -46,6 +46,17 @@ def test_release_resources_to_csp_low_subarray():
     """Release resources assigned to an CSP low subarray"""
 
 
+@pytest.mark.skamid
+@pytest.mark.csp
+@pytest.mark.assign
+@scenario(
+    "features/csp_assign_resources.feature",
+    "Release resources assigned to an CSP mid subarray",
+)
+def test_release_resources_to_csp_mid_subarray():
+    """Release resources assigned to an CSP mid subarray"""
+
+
 @given("an CSP subarray", target_fixture="composition")
 def an_csp_subarray(
     set_up_subarray_log_checking_for_csp,  # pylint: disable=unused-argument

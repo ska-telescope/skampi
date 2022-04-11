@@ -200,7 +200,7 @@ skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ##
 #	echo \"k8s_test_command: test command exit is: \$$(cat build/status)\"; \
 #	tar zcf ../results-pipe build;"
 
- k8s_test_command = /bin/bash -c "\
+ k8s_test_command_sdp = /bin/bash -c "\
 	mkfifo results-pipe && tar zx --warning=all && \
         ( if [[ -f pyproject.toml ]]; then poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes --dev; echo 'k8s-test: installing poetry-requirements.txt';  pip install -qUr poetry-requirements.txt; cd $(k8s_test_folder); else if [[ -f $(k8s_test_folder)/requirements.txt ]]; then echo 'k8s-test: installing $(k8s_test_folder)/requirements.txt'; pip install -qUr $(k8s_test_folder)/requirements.txt; fi; fi ) && \
 				 cd $(k8s_test_folder) && \
@@ -230,7 +230,7 @@ skampi-k8s-test-component:
 	@echo "skampi-k8s-test-component: start test runner: $(k8s_test_runner)"
 	@echo "skampi-k8s-test-component: sending test Makefile: tar -cz $(k8s_test_folder)/Makefile"
 	( cd $(BASE); tar -cz $(k8s_test_folder)/Makefile \
-	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
+	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command_sdp) 2>&1 \
 	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
 	sleep 1; \
 	echo "skampi-k8s-test-component: waiting for test runner to boot up: $(k8s_test_runner)"; \

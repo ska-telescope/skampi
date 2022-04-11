@@ -266,4 +266,4 @@ skampi-test-03sdp:  ## launcher for SDP tests
 	telescope=$$(echo $(DEPLOYMENT_CONFIGURATION) | sed s/-/_/ | sed s/ska/SKA/); \
 	make skampi-vars
 #	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-sdp-integration-tests:$$version MARK="$$telescope and acceptance"
-	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST="registry.gitlab.com/ska-telescope/sdp/ska-sdp-integration/ska-sdp-integration-tests:0.9.1-dirty-dev.c4d6e2742 --overrides='{\"spec\": { \"serviceAccountName\": \"ci-svc-${CI_PROJECT_NAME}-${CI_JOB_ID}\" } }'" MARK="SKA_mid and acceptance"
+	make skampi-k8s-test-component K8S_TEST_IMAGE_TO_TEST="registry.gitlab.com/ska-telescope/sdp/ska-sdp-integration/ska-sdp-integration-tests:0.9.1-dirty-dev.c530db155 --overrides='{\"spec\": { \"serviceAccountName\": \"ci-svc-${CI_PROJECT_NAME}-${CI_JOB_ID}\" } }'" MARK="SKA_mid and acceptance"

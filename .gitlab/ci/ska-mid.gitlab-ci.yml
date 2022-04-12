@@ -215,6 +215,7 @@ mid_uninstall_staging:
   environment:
     name: "staging-mid"
     action: stop
+  allow_failure: true
 
 # Mid on-demand deployment
 mid_on_demand_deploy:

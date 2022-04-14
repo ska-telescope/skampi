@@ -58,6 +58,11 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         ).to_become_equal_to("ON", ignore_first=False)
         # Note we do not wait for controller on skalow as it seems it does not change state
         # subarrays
+        if self._tel.skamid:
+            # we wait for cbf vccs to be in proper initialised state
+            brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
+                "reportVccState"
+            ).to_become_equal_to("[0, 0, 0, 0]", ignore_first=False)
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"

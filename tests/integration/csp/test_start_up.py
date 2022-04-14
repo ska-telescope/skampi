@@ -54,6 +54,19 @@ def fxt_set_up_log_checking_for_csp(
 # transit checking
 
 
+@pytest.fixture(name="check_reported_vcc_state")
+def fxt_check_reported_vcc_state(context_monitoring: fxt_types.context_monitoring):
+    """Subscribe to reportVccState attribute of controller for diagnostic purposes.
+
+    :param context_monitoring: fixture used for setting up context monitoring
+    """
+    tel = names.TEL()
+    if tel.skamid:
+        context_monitoring.set_waiting_on(tel.csp.controller).for_attribute(
+            "reportVccState"
+        ).and_observe()
+
+
 @pytest.fixture(name="set_up_transit_checking_for_csp")
 @pytest.mark.usefixtures("set_csp_entry_point")
 def fxt_set_up_transit_checking_for_csp(transit_checking: fxt_types.transit_checking):

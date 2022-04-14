@@ -15,6 +15,7 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(reason="csp lmc low not integrated")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign
@@ -35,6 +36,7 @@ def test_assign_resources_to_csp_mid_subarray():
     """Assign resources to CSP mid subarray."""
 
 
+@pytest.mark.skip(reason="csp lmc low not integrated")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign

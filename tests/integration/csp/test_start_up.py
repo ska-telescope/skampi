@@ -62,7 +62,7 @@ def fxt_check_reported_vcc_state(context_monitoring: fxt_types.context_monitorin
     """
     tel = names.TEL()
     if tel.skamid:
-        context_monitoring.set_waiting_on(tel.csp.controller).for_attribute(
+        context_monitoring.set_waiting_on(tel.csp.cbf.controller).for_attribute(
             "reportVccState"
         ).and_observe()
 
@@ -98,6 +98,7 @@ def fxt_set_up_transit_checking_for_csp(transit_checking: fxt_types.transit_chec
 def a_csp(
     set_up_transit_checking_for_csp,  # pylint: disable=unused-argument
     set_up_log_checking_for_csp,  # pylint: disable=unused-argument
+    check_reported_vcc_state,  # pylint: disable=unused-argument
 ):
     """a CSP."""
 

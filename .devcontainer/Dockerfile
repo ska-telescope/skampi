@@ -19,6 +19,8 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 
 COPY --from=kubectl /opt/bitnami/kubectl/bin/kubectl /usr/local/bin/
 
+RUN su vscode -c "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
+
 RUN su vscode -c "curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -"
 
 # [Optional] Uncomment this line to install global node packages.

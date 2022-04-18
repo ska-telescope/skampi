@@ -112,12 +112,31 @@ ska-sdp:
     enabled: false
 
 ## tm
-ska-tmc-centralnode:
-  enabled: true
-  telescope: SKA-mid
+# ska-tmc-centralnode:
+#   enabled: true
+#   telescope: SKA-mid
+#   deviceServers:
+#     centralnode:
+#       enabled: true
+## tmc
+ska-tmc-mid:
+  # enabled: true
   deviceServers:
     centralnode:
       enabled: true
+    
+    subarraynode:
+      enabled: true
+    
+    sdpsubarrayleafnode:
+      enabled: true
+
+    sdpmasterleafnode:
+      enabled: true
+   
+    mocks:
+      enabled: false
+
 
 ska-tango-archiver:
   enabled: true

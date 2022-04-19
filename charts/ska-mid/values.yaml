@@ -120,7 +120,7 @@ ska-sdp:
 #       enabled: true
 ## tmc
 ska-tmc-mid:
-  # enabled: true
+  enabled: true
   deviceServers:
     centralnode:
       enabled: true

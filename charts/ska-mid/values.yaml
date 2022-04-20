@@ -124,18 +124,18 @@ tmc-mid:
   enabled: true
   telescope: SKA-mid
   deviceServers:
-    centralnode:
-      enabled: true
-    
-    subarraynode:
-      enabled: true
-    
-    sdpsubarrayleafnode:
-      enabled: true
+  #   centralnode:
+  #     enabled: true
 
-    sdpmasterleafnode:
-      enabled: true
-   
+  #   subarraynode:
+  #     enabled: true
+
+  #   sdpsubarrayleafnode:
+  #     enabled: true
+
+  #   sdpmasterleafnode:
+  #     enabled: true
+
     mocks:
       enabled: false
 

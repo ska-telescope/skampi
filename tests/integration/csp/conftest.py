@@ -8,11 +8,17 @@ import logging
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from pytest_bdd import given
+from pytest_bdd import given, then, parsers
+from assertpy import assert_that
+
 
 from resources.models.csp_model.entry_point import CSPEntryPoint
 
+from ..conftest import SutTestSettings
+
+from resources.models.mvp_model.states import ObsState
 
 from .. import conftest
 
@@ -137,6 +143,14 @@ def fxt_csp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 
 # shared givens
 
+@given("an CSP subarray", target_fixture="composition")
+def an_csp_subarray(
+    set_up_subarray_log_checking_for_csp,  # pylint: disable=unused-argument
+    csp_base_composition: conf_types.Composition,
+) -> conf_types.Composition:
+    """an CSP subarray."""
+    return csp_base_composition
+
 
 @given("an CSP subarray in IDLE state")
 def an_sdp_subarray_in_idle_state(
@@ -144,6 +158,17 @@ def an_sdp_subarray_in_idle_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,
 ) -> None:
-    """an SDP subarray in IDLE state."""
+    """an CSP subarray in IDLE state."""
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
+
+
+@then(parsers.parse("the CSP subarray must be in {obsstate} state"))
+def the_csp_subarray_must_be_in_some_obsstate(sut_settings: SutTestSettings, obsstate:ObsState):
+    """the subarray must be in IDLE state."""
+    tel = names.TEL()
+    csp_subarray = con_config.get_device_proxy(
+        tel.csp.subarray(sut_settings.subarray_id)
+    )
+    result = csp_subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(eval(f"ObsState.{obsstate}"))

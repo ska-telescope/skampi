@@ -2,7 +2,7 @@
     "test_plans": [
         {
             "select_from_tag": {
-                "XTP-5539": "XTP-5539",
+                "XTP-5539": "XTP-5539, XTP-6104",
                 "XTP-5573": "XTP-5573",
                 "XTP-5589": "XTP-5589",
                 "XTP-5590": "XTP-5590",

@@ -1,26 +1,21 @@
 """Pytest fixtures and bdd step implementations specific to csp integration tests."""
+import logging
 import os
 from typing import Callable
 
 import pytest
-import logging
-
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.connectors import configuration as con_config
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from pytest_bdd import given, then, parsers
 from assertpy import assert_that
-
-
+from pytest_bdd import given, parsers, then
 from resources.models.csp_model.entry_point import CSPEntryPoint
-
-from ..conftest import SutTestSettings
-
 from resources.models.mvp_model.states import ObsState
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
+from ..conftest import SutTestSettings
 
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
@@ -151,16 +146,17 @@ def an_csp_subarray(
     """an CSP subarray."""
     return csp_base_composition
 
-
-@given("an CSP subarray in IDLE state")
-def an_sdp_subarray_in_idle_state(
+@given("an CSP subarray in IDLE state", target_fixture="configuration")
+def an_csp_subarray_in_idle_state(
     set_up_subarray_log_checking_for_csp,  # pylint: disable=unused-argument
+    csp_base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,
 ) -> None:
     """an CSP subarray in IDLE state."""
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
+    return csp_base_configuration
 
 
 @then(parsers.parse("the CSP subarray must be in {obsstate} state"))

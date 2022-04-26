@@ -147,7 +147,7 @@ def an_csp_subarray(
     return csp_base_composition
 
 @given("an CSP subarray in IDLE state", target_fixture="configuration")
-def an_sdp_subarray_in_idle_state(
+def an_csp_subarray_in_idle_state(
     set_up_subarray_log_checking_for_csp,  # pylint: disable=unused-argument
     csp_base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,

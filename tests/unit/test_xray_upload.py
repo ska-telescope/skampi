@@ -18,18 +18,18 @@ def test_skampi_ci_pipeline_tests_execute_on_skampi():
 
 
 @given("a Continuous Integration Pipeline")
-def a_continuous_integration_pipeline():
+def stuff():
     """a Continuous Integration Pipeline."""
     pass
 
 
 @when("an attempt is made to run tests within the repository")
-def an_attempt_is_made_to_run_tests_within_the_repository():
+def stuff_happens():
     """an attempt is made to run tests within the repository."""
     pass
 
 
 @then("the tests within the SKAMPI repository are run")
-def the_tests_within_the_skampi_repository_are_run():
+def all_is_good():
     """the tests within the SKAMPI repository are run."""
     pass

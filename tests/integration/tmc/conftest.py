@@ -22,7 +22,7 @@ def fxt_set_entry_point(
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["sdp"]
+    exec_env.scope = ["sdp", "sdp control"]
 
 
 @pytest.fixture(name="tmc_start_up_test_exec_settings", autouse=True)
@@ -45,7 +45,7 @@ def fxt_tmc_assign_resources_exec_settings(
     :param exec_settings: The global test execution settings as a fixture.
     :return: test specific execution settings as a fixture
     """
-    integration_test_exec_settings.time_out = 150
+    integration_test_exec_settings.time_out = 30
 
 
 # log checking

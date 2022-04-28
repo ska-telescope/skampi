@@ -3,12 +3,9 @@ import logging
 from typing import Union, List
 import os
 import json
-from time import sleep
 
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.utils.singleton import Memo
 from ska_ser_skallop.mvp_control.configuration import composition as comp
-from ska_ser_skallop.mvp_control.configuration import configuration as conf
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.entry_points.composite import (
@@ -48,12 +45,22 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
         This implements the set_telescope_to_running method on the entry_point.
         """
-        raise NotImplementedError()
+        central_node_name = self._tel.tm.central_node
+        central_node = con_config.get_device_proxy(central_node_name)
+        self._log(f"Commanding {central_node_name} with StartUpTelescope")
+        central_node.command_inout("StartUpTelescope")
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifying what needs to be waited for before startup of telescope is done."""
         brd = get_message_board_builder()
         # TODO set what needs to be waited before start up completes
+        brd.set_waiting_on(self._tel.sdp.master).for_attribute(
+            "state"
+        ).to_become_equal_to("ON", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("ON")
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
@@ -64,10 +71,21 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """Domain logic for what needs to be waited for switching the telescope off."""
         brd = get_message_board_builder()
         # TODO set what needs to be waited before start up completes
+        brd.set_waiting_on(self._tel.sdp.master).for_attribute(
+            "state"
+        ).to_become_equal_to("OFF", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF")
         return brd
 
     def undo(self):
         """Domain logic for switching the telescope off using tmc."""
+        central_node_name = self._tel.tm.central_node
+        central_node = con_config.get_device_proxy(central_node_name)
+        self._log(f"Commanding {central_node_name} with StandByTelescope")
+        central_node.command_inout("StandByTelescope")
 
 
 class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):

@@ -1,5 +1,6 @@
 """Start up the telescope from tmc feature tests."""
 import logging
+import os
 
 import pytest
 from assertpy import assert_that
@@ -13,7 +14,6 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="test under development")
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario(
@@ -34,7 +34,7 @@ def a_partial_telescope():
 
 
 # when
-# use @when("I start up the telescope") from ..shared_startup
+# use @when("I start up the telescope") from ..conftest
 
 # thens
 

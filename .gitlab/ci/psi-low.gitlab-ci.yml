@@ -3,6 +3,7 @@
   tags:
     - k8srunner-psi-low
   variables:
+    VALUES: pipeline.yaml resources/deployment_configurations/psi-low.yaml
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"

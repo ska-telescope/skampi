@@ -33,15 +33,20 @@ DOMAIN ?= branch## Required by Skallop
 TEL ?= $(CONFIG)## Required by Skallop
 KUBE_BRANCH ?= local## Required by Skallop
 NAME ?= $(CONFIG)## The name of the telescope
-ADDMARKS ?= ## Additional Marks to add to pytests
+ADDMARKS ?=## Additional Marks to add to pytests
+# Dishmark is a synthesis of marks to add to test, it will always start with the tests for the appropriate
+# telescope (e.g. TEL=mid or TEL-low) thereafter followed by additional filters
 ifneq ($(ADDMARKS),)
-DASHMARK ?= "ska$(TEL) and $(ADDMARKS)"
+DASHMARK ?= ska$(TEL) and $(ADDMARKS)
 else
-DASHMARK ?= "ska$(TEL)"
+DASHMARK ?= ska$(TEL)
 endif
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
 ifneq ($(TESTCOUNT),)
+# Dashcount is a synthesis of testcount as input user variable and is used to
+# run a paricular test/s multiple times. If no testcount is set then the entire
+# --count option is removed
 DASHCOUNT ?= --count=$(TESTCOUNT)
 else
 DASHCOUNT ?=
@@ -105,9 +110,9 @@ K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.9.1## docker image
 # import your personal semi-static config
 -include PrivateRules.mak
 
-# add on values.yaml file if it exists
+# add `--values <file>` for each space-separated file in VALUES that exists
 ifneq (,$(wildcard $(VALUES)))
-	K8S_CHART_PARAMS += --values $(VALUES)
+	K8S_CHART_PARAMS += $(foreach f,$(wildcard $(VALUES)),--values $(f))
 endif
 
 ifeq ($(strip $(MINIKUBE)),true)
@@ -227,7 +232,7 @@ k8s-pre-install-chart:
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
 # make sure infra test do not run in k8s-test
-k8s-test: MARK := not infra $(DISABLE_TARANTA)
+k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
 
 k8s-post-test: # post test hook for processing received reports
 	@if ! [[ -f build/status ]]; then \

@@ -53,7 +53,7 @@
     - echo "############## EXTRA MAKE VARS OUTPUT"
     - make skampi-vars
     - echo "#####################################"
-    - make skampi-links
+    - [[ ! -z "${NO_SKAMPI_LINKS}" ]] || make skampi-links
     - make skampi-upload-test-results
 
 .uninstall_chart_before:

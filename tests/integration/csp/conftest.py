@@ -98,7 +98,8 @@ def fxt_set_csp_entry_point(
 @pytest.fixture(name="set_up_subarray_log_checking_for_csp")
 @pytest.mark.usefixtures("set_csp_entry_point")
 def fxt_set_up_log_checking_for_csp(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
@@ -138,6 +139,7 @@ def fxt_csp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 
 # shared givens
 
+
 @given("an CSP subarray", target_fixture="composition")
 def an_csp_subarray(
     set_up_subarray_log_checking_for_csp,  # pylint: disable=unused-argument
@@ -145,6 +147,7 @@ def an_csp_subarray(
 ) -> conf_types.Composition:
     """an CSP subarray."""
     return csp_base_composition
+
 
 @given("an CSP subarray in IDLE state", target_fixture="configuration")
 def an_csp_subarray_in_idle_state(
@@ -160,7 +163,9 @@ def an_csp_subarray_in_idle_state(
 
 
 @then(parsers.parse("the CSP subarray must be in {obsstate} state"))
-def the_csp_subarray_must_be_in_some_obsstate(sut_settings: SutTestSettings, obsstate:ObsState):
+def the_csp_subarray_must_be_in_some_obsstate(
+    sut_settings: SutTestSettings, obsstate: ObsState
+):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
     csp_subarray = con_config.get_device_proxy(

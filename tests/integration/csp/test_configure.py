@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 @pytest.mark.csp
 @pytest.mark.configure
 @scenario(
-    "features/csp_configure_scan.feature", "Configure scan on csp subarray in mid"
+    "features/csp_configure_scan.feature",
+    "Configure scan on csp subarray in mid",
 )
 def test_configure_csp_mid_subarray():
     """Configure CSP low subarray."""

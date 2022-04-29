@@ -38,7 +38,8 @@ def test_csp_start_up_telescope_low():
 @pytest.fixture(name="set_up_log_checking_for_csp")
 @pytest.mark.usefixtures("set_csp_entry_point")
 def fxt_set_up_log_checking_for_csp(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log checking (using log consumer) on cbf.
     :param log_checking: skallop fixture used to set up log checking.
@@ -55,7 +56,9 @@ def fxt_set_up_log_checking_for_csp(
 
 @pytest.fixture(name="set_up_transit_checking_for_csp")
 @pytest.mark.usefixtures("set_csp_entry_point")
-def fxt_set_up_transit_checking_for_csp(transit_checking: fxt_types.transit_checking):
+def fxt_set_up_transit_checking_for_csp(
+    transit_checking: fxt_types.transit_checking,
+):
     """set up transit checking for csp startup (if DEVENV enabled)
 
     :param transit_checking: fixture used by skallop
@@ -76,7 +79,9 @@ def fxt_set_up_transit_checking_for_csp(transit_checking: fxt_types.transit_chec
             transit_checking.check_that(subject_device).transits_according_to(
                 ["ON"]
             ).on_attr("state").when_transit_occur_on(
-                devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
+                devices_to_follow,
+                ignore_first=True,
+                devices_to_follow_attr="state",
             )
 
 
@@ -94,7 +99,8 @@ def a_csp(
 
 @then("the csp must be on")
 def the_csp_must_be_on(
-    transit_checking: fxt_types.transit_checking, sut_settings: conftest.SutTestSettings
+    transit_checking: fxt_types.transit_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """the csp must be on."""
     tel = names.TEL()
@@ -110,7 +116,9 @@ def the_csp_must_be_on(
         checker = transit_checking.checker
         assert checker
         logger.info(checker.print_outcome_for(checker.subject_device))
-        checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")
+        checker.assert_that(checker.subject_device).is_behind_all_on_transit(
+            "ON"
+        )
 
 
 # test validation

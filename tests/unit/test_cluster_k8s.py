@@ -52,8 +52,7 @@ def fxt_k8s_cluster(assets_dir):
                 "kubeconfig already exists, skipping: "
                 + os.path.join(os.environ["HOME"], ".kube", "config")
             )
-            kubeconfig_filepath = os.path.join(
-                os.environ["HOME"], ".kube", "config")
+            kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
         else:
             logging.info(
                 f"Defaulting to loading kubeconfig from {kubeconfig_filepath}."
@@ -129,8 +128,7 @@ def fxt_pvc(test_namespace):
         spec=client.V1PersistentVolumeClaimSpec(
             storage_class_name="nfss1",
             access_modes=["ReadWriteMany"],
-            resources=client.V1ResourceRequirements(
-                requests={"storage": "1Gi"}),
+            resources=client.V1ResourceRequirements(requests={"storage": "1Gi"}),
         ),
     )
 
@@ -141,8 +139,7 @@ def fxt_pvc(test_namespace):
     except ApiException as e:
         logging.error("That didn't work: %s" % e)
 
-    pvcs = api.list_namespaced_persistent_volume_claim(
-        namespace=test_namespace)
+    pvcs = api.list_namespaced_persistent_volume_claim(namespace=test_namespace)
     logging.info(
         f"PVC {pvcs.items[0].metadata.name} currently {pvcs.items[0].status.phase}"
     )
@@ -322,8 +319,7 @@ def curl_service_with_shared_volume(host0, host1, test_namespace):
 
 def wait_for_pod(test_namespace, service_name):
     v1 = client.CoreV1Api()
-    ret = v1.list_namespaced_pod(
-        test_namespace, label_selector="app=" + service_name)
+    ret = v1.list_namespaced_pod(test_namespace, label_selector="app=" + service_name)
     logging.info("Checking Pod Readiness...")
     wait_for_seconds = 1.0
     while True:
@@ -354,6 +350,9 @@ def wait_for_pod(test_namespace, service_name):
     logging.info("Pod Ready")
 
 
+@pytest.mark.skipif(
+    os.getenv("CLUSTER_TESTS") == "skip", reason="Skipping Cluster Tests"
+)
 @pytest.mark.infra
 def test_cluster(test_namespace, all_the_things, ingress):
     wait_for_pod(test_namespace, "nginx1")

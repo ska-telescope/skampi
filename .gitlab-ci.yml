@@ -6,7 +6,7 @@ variables:
   CHARTS_TO_PUBLISH: ska-low ska-mid ska-landingpage
   INGRESS_HOST: "k8s.stfc.skao.int"
   GIT_SUBMODULE_STRATEGY: recursive
-  SKALLOP_VERSION: "2.16.3"
+  SKALLOP_VERSION: "2.18.4"
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:$SKALLOP_VERSION
   KUBE_BRANCH: $CI_JOB_ID
   DOMAIN: "branch"
@@ -69,8 +69,8 @@ python-test:
     PYTHON_VARS_AFTER_PYTEST: tests/unit -m infra
   after_script:
     - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE
-    ## Not necessary to upload these results
-    # - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
+    # Not necessary to upload these results
+    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
   environment:
     name: test/$CI_COMMIT_REF_SLUG-cluster
     kubernetes:

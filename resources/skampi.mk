@@ -65,11 +65,16 @@ skampi-update-chart-versions: helm-install-yq ## update Skampi chart dependencie
 skampi-upload-test-results: ## Upload Skampi system acceptance and integration test results
 	@echo "Processing XRay uploads"
 	@if [ -n "$$(ls -A build/cucumber*.json 2>/dev/null)" ]; then \
-		bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop>=$(SKALLOP_VERSION)"  --extra-index-url $(CAR_PYPI_REPOSITORY_URL); \
+		bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop==$(SKALLOP_VERSION)"  --extra-index-url $(CAR_PYPI_REPOSITORY_URL); \
 	fi
 	@for cuke in  build/cucumber*.json; do \
 		echo "Processing XRay upload of: $$cuke"; \
-		/usr/local/bin/xtp-xray-upload -f $$cuke -i tests/test-exec.json -v; \
+		if [[ -z "${JIRA_USERNAME}" ]]; then \
+			/usr/local/bin/xtp-xray-upload -f $$cuke -i tests/test-exec.json -v; \
+		else \
+			echo "Using Jira Username and Password for auth"; \
+			xtp-xray-upload -f $$cuke -i tests/test-exec.json -v -u ${JIRA_USERNAME} -p ${JIRA_PASSWORD}; \
+		fi; \
 	done; \
 
 ## TARGET: skampi-wait-all

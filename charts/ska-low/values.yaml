@@ -136,7 +136,7 @@ ska-tmc-centralnode:
       enabled: true
 
 ska-low-cbf:
-    enabled: true
+  enabled: true
 
 ska-csp-lmc-low:
-    enabled: true
+  enabled: true

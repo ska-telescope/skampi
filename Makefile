@@ -219,7 +219,7 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 	tar zcf ../results-pipe build;"
 
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
-	@if [[ -z "${CI_JOB_ID}" ]]; then \
+	@if [[ -z "$(CI_JOB_ID)" ]]; then \
 		bash scripts/gitlab_section.sh pip_install "Installing Pytest Requirements" poetry install; \
 	fi
 

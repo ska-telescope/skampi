@@ -8,7 +8,7 @@ Feature: Run a scan on CSP subarray
         When I command it to scan for a given period
         Then the CSP subarray must be in the SCANNING state until finished
 
-    @XTP-4772
+    @XTP-4772 @XTP-5539 @XTP-3325
     Scenario: Run a scan on csp subarray in low
         Given an CSP subarray in READY state
         When I command it to scan for a given period

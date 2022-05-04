@@ -51,14 +51,7 @@
     ],
     "description": "Test execution results as generated from https://gitlab.com/ska-telescope/ska-skampi\n",
     "versions": [
-        {
-            "env": "K8S_CHART",
-            "maps_to": {
-                "ska-mid": "ska-mid-0.12.5-dirty-dev.123",
-                "ska-low": "ska-low-0.12.5-dirty-dev.123",
-                "default": "ska-mid-0.12.5-dirty-dev.123"
-            }
-        }
+         "PI14"
     ],
     "environmental_variables": [
         "CI_JOB_URL",

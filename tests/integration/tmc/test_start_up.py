@@ -23,16 +23,6 @@ def test_tmc_start_up_telescope_mid_sdp_only():
     """Start up the telescope in mid  (sdp only)."""
 
 
-
-@pytest.mark.skamid
-@pytest.mark.standby
-@scenario(
-    "features/tmc_start_up_telescope.feature", "Switch of the telescope (SDP only)"
-)
-def test_tmc_off_telescope_mid_sdp_only():
-    """Off the telescope in mid  (sdp only)."""
-
-
 @given("an TMC")
 def a_tmc():
     """an TMC"""

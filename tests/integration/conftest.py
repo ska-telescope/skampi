@@ -75,7 +75,6 @@ def fxt_integration_test_exec_settings(
 # start up
 
 @when("I start up the telescope")
-@pytest.fixture(name="set_running_telescope")
 def i_start_up_the_telescope(
     standby_telescope: fxt_types.standby_telescope,
     entry_point: fxt_types.entry_point,

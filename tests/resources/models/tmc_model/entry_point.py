@@ -47,8 +47,8 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
-        self._log(f"Commanding {central_node_name} with StartUpTelescope")
-        central_node.command_inout("StartUpTelescope")
+        self._log(f"Commanding {central_node_name} with TelescopeOn")
+        central_node.command_inout("TelescopeOn")
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifying what needs to be waited for before startup of telescope is done."""

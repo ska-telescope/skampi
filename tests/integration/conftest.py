@@ -7,7 +7,7 @@ from typing import Callable
 from mock import patch, Mock
 
 import pytest
-from pytest_bdd import when
+from pytest_bdd import when, given
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
@@ -74,8 +74,8 @@ def fxt_integration_test_exec_settings(
 # global when steps
 # start up
 
-
 @when("I start up the telescope")
+@pytest.fixture(name="set_running_telescope")
 def i_start_up_the_telescope(
     standby_telescope: fxt_types.standby_telescope,
     entry_point: fxt_types.entry_point,

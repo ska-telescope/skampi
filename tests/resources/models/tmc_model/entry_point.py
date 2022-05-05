@@ -84,8 +84,8 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """Domain logic for switching the telescope off using tmc."""
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
-        self._log(f"Commanding {central_node_name} with StandByTelescope")
-        central_node.command_inout("StandByTelescope")
+        self._log(f"Commanding {central_node_name} with TelescopeOff")
+        central_node.command_inout("TelescopeOff")
 
 
 class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):

@@ -88,6 +88,21 @@ def i_start_up_the_telescope(
             entry_point.set_telescope_to_running()
 
 
+@when("I switch off the telescope")
+def i_switch_off_the_telescope(
+    running_telescope: fxt_types.running_telescope,
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I switch off the telescope."""
+    # we disable automatic shutdown as this is done by the test itself
+    running_telescope.disable_automatic_setdown()
+    with context_monitoring.context_monitoring():
+        with running_telescope.wait_for_shutting_down(integration_test_exec_settings):
+            entry_point.set_telescope_to_standby()
+
+
 # resource assignment
 
 

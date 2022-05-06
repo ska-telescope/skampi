@@ -163,8 +163,8 @@ SDP Leaf nodes devices are implementated in a separate gitlab repository `ska-tm
 CSP Leaf nodes devices are implementated in a separate gitlab repository `ska-tmc-cspleafnodes repository
 <https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-cspleafnodes>`_
 
-Dish Leaf nodes devices are implementated in a separate gitlab repository `ska-tmc-dishleafnodes repository
-<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-dishleafnodes>`_
+Dish Leaf nodes devices are implementated in a separate gitlab repository `ska-tmc-dishleafnode repository
+<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-dishleafnode>`_
 
 The components(CentralNode, SubarrayNode, Leaf Nodes) of the TMC system are integrated in the `TMC integration repository
 <https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-integration>`_, which contains

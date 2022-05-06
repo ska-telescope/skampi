@@ -151,20 +151,6 @@ images depend on libraries containing common code.
 The TMC has a hierarchy of control nodes for Mid and Low-
 Central Node, Subarray Node, SDP Leaf Nodes, CSP Leaf Nodes, MCCS Leaf Nodes, Dish Leaf Nodes.
 
-CentralNode device is implementated in a separate gitlab repository `ska-tmc-centralnode repository
-<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-centralnode>`_
-
-SubarrayNode device is implementated in a separate gitlab repository `ska-tmc-subarraynode repository
-<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-subarraynode>`_
-
-SDP Leaf nodes devices are implementated in a separate gitlab repository `ska-tmc-sdpleafnodes repository
-<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-sdpleafnodes>`_
-
-CSP Leaf nodes devices are implementated in a separate gitlab repository `ska-tmc-cspleafnodes repository
-<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-cspleafnodes>`_
-
-Dish Leaf nodes devices are implementated in a separate gitlab repository `ska-tmc-dishleafnode repository
-<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-dishleafnode>`_
 
 The components(CentralNode, SubarrayNode, Leaf Nodes) of the TMC system are integrated in the `TMC integration repository
 <https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-integration>`_, which contains

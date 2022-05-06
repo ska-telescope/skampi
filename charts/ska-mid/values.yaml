@@ -111,14 +111,6 @@ ska-sdp:
   ska-tango-base:
     enabled: false
 
-## tm
-# ska-tmc-centralnode:
-#   enabled: true
-#   telescope: SKA-mid
-#   deviceServers:
-#     centralnode:
-#       enabled: true
-
 ## tmc
 tmc-mid:
   enabled: true

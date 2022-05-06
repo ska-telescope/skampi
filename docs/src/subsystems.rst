@@ -139,7 +139,7 @@ Verify the scaling worked:
     statefulset.apps/tangogql-ska-taranta-test   1/1     18h
 
 
-Telescope Monitoring and Control
+Telescope Monitoring and Control(TMC)
 --------------------------------
 
 The Telescope Monitoring and Control(TMC) is part of the evolutionary prototype of the
@@ -148,7 +148,25 @@ types of artefacts. The components of the system are built as Docker images
 which are deployed on a Kubernetes cluster using a Helm chart. The Docker
 images depend on libraries containing common code.
 
-The components of the system are integrated in the `TMC integration repository
+The TMC has a hierarchy of control nodes for Mid and Low-
+Central Node, Subarray Node, SDP Leaf Nodes, CSP Leaf Nodes, MCCS Leaf Nodes, Dish Leaf Nodes.
+
+CentralNode device is implementated in a separate gitlab repository `ska-tmc-centralnode repository
+<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-centralnode>`_
+
+SubarrayNode device is implementated in a separate gitlab repository `ska-tmc-subarraynode repository
+<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-subarraynode>`_
+
+SDP Leaf nodes devices are implementated in a separate gitlab repository `ska-tmc-sdpleafnodes repository
+<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-sdpleafnodes>`_
+
+CSP Leaf nodes devices are implementated in a separate gitlab repository `ska-tmc-cspleafnodes repository
+<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-cspleafnodes>`_
+
+Dish Leaf nodes devices are implementated in a separate gitlab repository `ska-tmc-dishleafnodes repository
+<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-dishleafnodes>`_
+
+The components(CentralNode, SubarrayNode, Leaf Nodes) of the TMC system are integrated in the `TMC integration repository
 <https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-integration>`_, which contains
 the Helm chart to deploy the TMC. More details on the design of the TMC and how
 to run it locally or in the integration environment can be found in the 

@@ -137,3 +137,20 @@ Verify the scaling worked:
 
     NAME                                         READY   AGE
     statefulset.apps/tangogql-ska-taranta-test   1/1     18h
+
+
+Telescope Monitoring and Control
+--------------------------------
+
+The Telescope Monitoring and Control(TMC) is part of the evolutionary prototype of the
+SKA. The TMC is built from software modules which produce a number of different
+types of artefacts. The components of the system are built as Docker images
+which are deployed on a Kubernetes cluster using a Helm chart. The Docker
+images depend on libraries containing common code.
+
+The components of the system are integrated in the `TMC integration repository
+<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-integration>`_, which contains
+the Helm chart to deploy the TMC. More details on the design of the TMC and how
+to run it locally or in the integration environment can be found in the 
+`documentation
+<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-integration/-/blob/main/docs/src/getting_started/getting_started.rst>`_.

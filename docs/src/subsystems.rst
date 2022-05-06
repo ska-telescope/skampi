@@ -139,8 +139,8 @@ Verify the scaling worked:
     statefulset.apps/tangogql-ska-taranta-test   1/1     18h
 
 
-Telescope Monitoring and Control(TMC)
--------------------------------------
+TMC (Telescope Monitoring and Control)
+======================================
 
 The Telescope Monitoring and Control(TMC) is part of the evolutionary prototype of the
 SKA. The TMC is built from software modules which produce a number of different
@@ -152,53 +152,57 @@ The TMC has a hierarchy of control nodes for Mid and Low-
 Central Node, Subarray Node, SDP Leaf Nodes, CSP Leaf Nodes, MCCS Leaf Nodes, Dish Leaf Nodes.
 
 TMC Functionality includes: 
++++++++++++++++++++++++++++
 
-* [x] Monitoring and control functionality with hierarchy of nodes
-* [x] Automatic control actions on Alerts using Elettra Alarm Handler
-* [x] Simulator for DishMaster
-* [x] Allocation and Deallocation of receptors to a Subarray
-* [x] Commands and Events propagation
-* [x] TANGO group commands
-* [x] Conversion of Ra-Dec to Az-El coordinates using KATPoint for TMC-Mid
-* [x] Calculate Az-El periodically in Dish Leaf Node and implement tracking functionality in the Dish simulator
-* [x] Interface between the TMC and CSP:
-  * [x] Implementation of CSP Master Leaf Node and CSP Subarray Leaf Node
-  * [x] Monitor/subscribe CSP Master and CSP Subarray attributes from CSP Master Leaf Node and CSP Subarray Leaf Node respectively
-  * [x] Use of CSP Master health to calculate overall Telescope Health (in Central Node Mid)
-  * [x] Use of CSP Subarray health to calculate Subarray Node health state
-  * [x] TelescopeOn command on Central Node to change CSP Master device and CSP Subarray device state to ON
-  * [x] Configure the CSP for a simple scan
-  * [x] Publish Delay coefficients at regular time interval (every 10 seconds) on CSP Subarray Leaf Node per Subarray
-* [x] Interface between the TMC and SDP:
-  * [x] Implementation of SDP Master Leaf Node and SDP Subarray Leaf Node
-  * [x] Monitor/subscribe SDP Master and SDP Subarray attributes from SDP Master Leaf Node and SDP Subarray Leaf Node respectively
-  * [x] Use of SDP Master health to calculate overall Telescope Health (in Central Node Mid) 
-  * [x] Use of SDP Subarray health to calculate Subarray Node health state
-  * [x] TelescopeOn command on Central Node to change SDP Master device and SDP Subarray device state to ON
-  * [x] Configure the SDP for a simple scan
-* [x] Interface between the TMC and MCCS:
-  * [x] Implementation of MCCS Master Leaf Node and MCCS Subarray Leaf Node
-  * [x] Monitor/subscribe MCCS Master and MCCS Subarray attributes from MCCS Master Leaf Node and MCCS Subarray Leaf Node respectively
-  * [x] Use of MCCS Master health to calculate overall Telescope Health (in Central Node Low)
-  * [x] Use of MCCS Subarray health to calculate Subarray Node health state
-  * [x] TelescopeOn command on Central Node Low to change MCCS Master device state to ON
-  * [X] AssignResources command on Central Node Low to change MCCS Subarray device state to ON and allocates resources to MCCS Subarray through MCCS Master
-  * [x] Configure the MCCS for a simple scan
-  * [x] TMC commands/functionality to execute entire obsevation cycle
-  * [x] Telescope Startup
-  * [x] AssignResources command to allocate resources to the SubarrayNode
-  * [x] Execute Configure command for a Subarray
-  * [x] Execute Scan and End the Scan
-  * [x] End command on SubarrayNode to end the scheduling block
-  * [x] ReleaseResources commands to deallocate resources from the SubarrayNode
-  * [x] Telescope Standby
-* [x] Configure and execute multiple scans for TMC-Mid
-* [x] Implement the observation state model and state transitions as per [ADR-8.](https://confluence.skatelescope.org/pages/viewpage.action?pageId=105416556)
-* [x] Calculate Geometric delay values (in seconds) per antenna on CSP Subarray Leaf Node
-* [x] Convert delay values (in seconds) to 5th order polynomial coefficients for TMC-Mid
-* [x] Abort an ongoing operation, and Restart the control nodes, catch exceptions in the AssignResource workflow, log the exception details and raise them to the calling components for TMC-Mid.
-* [x] Implementation of obsReset functinality (as per ADR-8) in which resource allocation in Subarray is retained and only the scan configuration parameters are cleared for TMC-Mid.
-* [x] Update the JSON strings (command inputs and attributes) in the TMC as per ADR-35
+* Monitoring and control functionality with hierarchy of nodes
+* Automatic control actions on Alerts using Elettra Alarm Handler
+* Simulator for DishMaster
+* Allocation and Deallocation of receptors to a Subarray
+* Commands and Events propagation
+* TANGO group commands
+* Conversion of Ra-Dec to Az-El coordinates using KATPoint for TMC-Mid
+* Calculate Az-El periodically in Dish Leaf Node and implement tracking functionality in the Dish simulator
+* Interface between the TMC and CSP:
+++++++++++++++++++++++++++++++++++++
+  * Implementation of CSP Master Leaf Node and CSP Subarray Leaf Node
+  * Monitor/subscribe CSP Master and CSP Subarray attributes from CSP Master Leaf Node and CSP Subarray Leaf Node respectively
+  * Use of CSP Master health to calculate overall Telescope Health (in Central Node Mid)
+  * Use of CSP Subarray health to calculate Subarray Node health state
+  * TelescopeOn command on Central Node to change CSP Master device and CSP Subarray device state to ON
+  * Configure the CSP for a simple scan
+  * Publish Delay coefficients at regular time interval (every 10 seconds) on CSP Subarray Leaf Node per Subarray
+* Interface between the TMC and SDP:
+++++++++++++++++++++++++++++++++++++
+  * Implementation of SDP Master Leaf Node and SDP Subarray Leaf Node
+  * Monitor/subscribe SDP Master and SDP Subarray attributes from SDP Master Leaf Node and SDP Subarray Leaf Node respectively
+  * Use of SDP Master health to calculate overall Telescope Health (in Central Node Mid) 
+  * Use of SDP Subarray health to calculate Subarray Node health state
+  * TelescopeOn command on Central Node to change SDP Master device and SDP Subarray device state to ON
+  * Configure the SDP for a simple scan
+* Interface between the TMC and MCCS:
++++++++++++++++++++++++++++++++++++++
+  * Implementation of MCCS Master Leaf Node and MCCS Subarray Leaf Node
+  * Monitor/subscribe MCCS Master and MCCS Subarray attributes from MCCS Master Leaf Node and MCCS Subarray Leaf Node respectively
+  * Use of MCCS Master health to calculate overall Telescope Health (in Central Node Low)
+  * Use of MCCS Subarray health to calculate Subarray Node health state
+  * TelescopeOn command on Central Node Low to change MCCS Master device state to ON
+  * AssignResources command on Central Node Low to change MCCS Subarray device state to ON and allocates resources to MCCS Subarray through MCCS Master
+  * Configure the MCCS for a simple scan
+  * TMC commands/functionality to execute entire obsevation cycle
+  * Telescope Startup(TelescopeOn)
+  * AssignResources command to allocate resources to the SubarrayNode
+  * Execute Configure command for a Subarray
+  * Execute Scan and End the Scan
+  * End command on SubarrayNode to end the scheduling block
+  * ReleaseResources commands to deallocate resources from the SubarrayNode
+  * Telescope Standby(TelescopeOff, TelescopeStandBy)
+* Configure and execute multiple scans for TMC-Mid
+* Implement the observation state model and state transitions as per [ADR-8.](https://confluence.skatelescope.org/pages/viewpage.action?pageId=105416556)
+* Calculate Geometric delay values (in seconds) per antenna on CSP Subarray Leaf Node
+* Convert delay values (in seconds) to 5th order polynomial coefficients for TMC-Mid
+* Abort an ongoing operation, and Restart the control nodes, catch exceptions in the AssignResource workflow, log the exception details and raise them to the calling components for TMC-Mid.
+* Implementation of obsReset functinality (as per ADR-8) in which resource allocation in Subarray is retained and only the scan configuration parameters are cleared for TMC-Mid.
+* Update the JSON strings (command inputs and attributes) in the TMC as per ADR-35
 
 The components(CentralNode, SubarrayNode, Leaf Nodes) of the TMC system are integrated in the `TMC integration repository
 <https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-integration>`_, which contains

@@ -32,7 +32,6 @@ class LogEnabled:
             logger.info(mssage)
 
 
-# TODO implement start up
 class StartUpStep(base.ObservationStep, LogEnabled):
     """Implementation of Startup step for SDP"""
 
@@ -87,7 +86,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         self._log(f"Commanding {central_node_name} with TelescopeOff")
         central_node.command_inout("TelescopeOff")
 
-
+# TODO: Implement AssignResources and ReleaseResources
 class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
     """Implementation of Assign Resources Step."""
 

@@ -1,7 +1,5 @@
 *-workspace
-.vscode
 .coverage
-.devcontainer
 kubeconfig
 tests/unit/test_playground.py
 .python-version
@@ -12,7 +10,6 @@ gitlab_values.yaml
 /ska-cicd-deploy-minikube/
 docs/venv
 /.vagrant
-/.vscode
 /ansible.log
 /playbooks/ansible.log
 /playbooks/*.retry

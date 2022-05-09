@@ -2,7 +2,7 @@
 Feature: Run a scan on CSP subarray
 
 
-    @XTP-4771 @XTP-5573 @XTP-3324
+    @XTP-4771 @XTP-5573 @XTP-4769 @XTP-3324 @XTP-5573
     Scenario: Run a scan on csp subarray in mid
         Given an CSP subarray in READY state
         When I command it to scan for a given period

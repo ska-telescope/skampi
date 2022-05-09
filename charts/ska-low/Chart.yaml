@@ -37,10 +37,6 @@ dependencies:
   version: 3.3.3
   repository: https://artefact.skao.int/repository/helm-internal
   condition: ska-ser-skuid.enabled
-# - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
-#   version: 0.5.3
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-oso-scripting.enabled
 - name: ska-landingpage
   version: 0.8.2
   repository: file://../ska-landingpage
@@ -49,3 +45,7 @@ dependencies:
 #   version: 0.1.8
 #   repository: https://artefact.skao.int/repository/helm-internal
 #   condition: ska-tango-archiver.enabled
+- name: ska-oso-oet
+  version: 3.0.0
+  repository: https://artefact.skao.int/repository/helm-internal
+  condition: ska-oso-oet.enabled

@@ -1,5 +1,4 @@
 *-workspace
-.vscode
 .coverage
 kubeconfig
 tests/unit/test_playground.py

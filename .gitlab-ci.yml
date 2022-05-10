@@ -24,7 +24,7 @@ stages:
   - clean_staging
 
 # Globally reused tags declaration for jobs
-.tags_default:
+tags_default:
   tags:
     - k8srunner-agent
 

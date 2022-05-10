@@ -24,9 +24,8 @@ stages:
   - clean_staging
 
 # Globally reused tags declaration for jobs
-tags_default:
-  tags:
-    - k8srunner-agent
+.tags_default:
+- k8srunner-agent
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:

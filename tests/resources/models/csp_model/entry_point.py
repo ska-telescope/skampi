@@ -78,11 +78,10 @@ class StartUpStep(base.ObservationStep, LogEnabled):
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic for what needs to be waited for switching the csp off."""
         brd = get_message_board_builder()
-        if self._tel.skalow:
-            # mid csp remains on
-            brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-                "state"
-            ).to_become_equal_to("OFF", ignore_first=False)
+        # controller
+        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+            "state"
+        ).to_become_equal_to("OFF", ignore_first=False)
         # subarrays
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
@@ -92,12 +91,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
     def undo(self):
         """Domain logic for switching the csp off."""
-        if self._tel.skamid:
-            # mid csp currently remains on but can switch of the subarrays when commanded with the
-            # Standby command
-            self.csp_controller.command_inout("Standby", [])
-        else:
-            self.csp_controller.command_inout("Off", [])
+        self.csp_controller.command_inout("Off", [])
 
 
 class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):

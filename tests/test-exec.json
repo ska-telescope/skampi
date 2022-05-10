@@ -51,7 +51,13 @@
     ],
     "description": "Test execution results as generated from https://gitlab.com/ska-telescope/ska-skampi\n",
     "versions": [
-         "PI14"
+         {
+            "env": "CI_COMMIT_BRANCH",
+            "maps_to": {
+                "default": "",
+                "master": "PI14"
+            }
+        }
     ],
     "environmental_variables": [
         "CI_JOB_URL",

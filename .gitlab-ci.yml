@@ -63,6 +63,13 @@ include:
 helm-chart-lint:  
   tags: 
     - k8srunner-agent
+helm-chart-build:  
+  tags: 
+    - k8srunner-agent
+docs-build:
+  tags: 
+    - k8srunner-agent
+
 
 # overide the image because we need Python 3.9+ and a unique Namespace
 # in the python-test

@@ -25,7 +25,8 @@ stages:
 
 # Globally reused tags declaration for jobs
 .tags_default:
-  - k8srunner-agent
+  tags:
+    - k8srunner-agent
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
@@ -58,6 +59,47 @@ include:
   # .post steps
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
+
+oci-image-lint:  
+  tags: 
+    - k8srunner-agent
+python-lint:  
+  tags: 
+    - k8srunner-agent
+helm-chart-lint:  
+  tags: 
+    - k8srunner-agent
+oci-image-build:  
+  tags: 
+    - k8srunner-agent
+python-build-for-development:  
+  tags: 
+    - k8srunner-agent
+helm-chart-build:  
+  tags: 
+    - k8srunner-agent
+python-test:  
+  tags: 
+    - k8srunner-agent
+docs-pages:  
+  tags: 
+    - k8srunner-agent
+python-publish-to-gitlab: 
+  tags: 
+    - k8srunner-agent
+oci-image-scan:
+  tags: 
+    - k8srunner-agent
+python-gemnasium-scan:
+  tags: 
+    - k8srunner-agent
+create-ci-metrics:
+  tags: 
+    - k8srunner-agent
+  
+
+
+
 
 # overide the image because we need Python 3.9+ and a unique Namespace
 # in the python-test

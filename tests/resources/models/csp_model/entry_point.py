@@ -290,7 +290,10 @@ class CspScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        scan_config_arg = json.dumps({"scan_id": 1})
+        if self._tel.skalow:
+            scan_config_arg = json.dumps(csp_low_scan)
+        elif self._tel.skamid:
+            scan_config_arg = json.dumps({"scan_id": 1})
         scan_duration = Memo().get("scan_duration")
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -497,25 +500,18 @@ csp_low_assign_resources = {
             {
                 "station_beam_id": 1,
                 "channels": [1, 2, 3, 4, 5, 6, 7, 8],
-                "pst_beams": [{"pst_beam_id": 1}, {"pst_beam_id": 2}],
-            },
-            {
-                "station_beam_id": 2,
-                "channels": [9, 10, 11, 12, 13, 14, 15],
-                "pst_beams": [{"pst_beam_id": 3}],
-            },
+                "pst_beams": [{"pst_beam_id": 1}],
+            }
         ],
     },
 }
 
 csp_low_configure_scan = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
-    "id": 1,
-    "scanId": 1,
-    "stationType": 0,
+    "subarray": {"subarray_name": "science period 23"},
     "common": {
-        "subarray_id": 1,
         "config_id": "sbi-mvp01-20200325-00001-science_A",
+        "subarray_id": 1,
     },
     "lowcbf": {
         "jones_source": "tango://host:port/domain/family/member",
@@ -526,38 +522,26 @@ csp_low_configure_scan = {
                 "visibility_dest": [
                     {"dest_ip": "10.0.2.1", "dest_mac": "02:00:00:00:02:01"}
                 ],
-                "pst_beams": [
+                "zooms": [
                     {
-                        "pst_beam_id": 1,
-                        "pst_beam_delay_src": "tango://host:port/domain/family/member",
-                        "pst_beam_dest": [
-                            {
-                                "dest_ip": "10.0.3.1",
-                                "dest_mac": "02:00:00:00:03:01",
-                                "channels": 200,
-                            },
-                            {
-                                "dest_ip": "10.0.3.2",
-                                "dest_mac": "02:00:00:00:03:02",
-                                "channels": 500,
-                            },
-                        ],
+                        "zoom_id": 1,
+                        "zoom_centre_hz": 90000000,
+                        "zoom_resolution_hz": 14,
+                        "zoom_channels": 2000,
+                        "zoom_dest": {
+                            "dest_ip": "10.0.5.1",
+                            "dest_mac": "02:00:00:00:05:01",
+                        },
                     },
                     {
-                        "pst_beam_id": 2,
-                        "pst_beam_delay_src": "tango://host:port/domain/family/member",
-                        "pst_beam_dest": [
-                            {
-                                "dest_ip": "10.0.3.3",
-                                "dest_mac": "02:00:00:00:03:03",
-                                "channels": 200,
-                            },
-                            {
-                                "dest_ip": "10.0.3.4",
-                                "dest_mac": "02:00:00:00:03:04",
-                                "channels": 500,
-                            },
-                        ],
+                        "zoom_id": 2,
+                        "zoom_centre_hz": 120000000,
+                        "zoom_resolution_hz": 30,
+                        "zoom_channels": 2000,
+                        "zoom_dest": {
+                            "dest_ip": "10.0.5.2",
+                            "dest_mac": "02:00:00:00:05:02",
+                        },
                     },
                 ],
             },
@@ -565,27 +549,32 @@ csp_low_configure_scan = {
                 "station_beam_id": 2,
                 "station_delay_src": "tango://host:port/domain/family/member",
                 "visibility_dest": [
-                    {"dest_ip": "10.0.3.3", "dest_mac": "02:00:00:00:03:03"}
+                    {"dest_ip": "10.0.2.2", "dest_mac": "02:00:00:00:02:02"}
                 ],
-                "pst_beams": [
+                "zooms": [
                     {
-                        "pst_beam_id": 3,
-                        "pst_beam_delay_src": "tango://host:port/domain/family/member",
-                        "pst_beam_dest": [
-                            {
-                                "dest_ip": "10.0.2.5",
-                                "dest_mac": "02:00:00:00:02:05",
-                                "channels": 200,
-                            },
-                            {
-                                "dest_ip": "10.0.2.6",
-                                "dest_mac": "02:00:00:00:02:06",
-                                "channels": 500,
-                            },
-                        ],
+                        "zoom_id": 3,
+                        "zoom_centre_hz": 190000000,
+                        "zoom_resolution_hz": 60,
+                        "zoom_channels": 2000,
+                        "zoom_dest": {
+                            "dest_ip": "10.0.5.3",
+                            "dest_mac": "02:00:00:00:05:03",
+                        },
                     }
                 ],
             },
         ],
+    },
+}
+
+csp_low_scan = {
+    "common": {"subarray_id": 1},
+    "lowcbf": {
+        "scan_id": 987654321,
+        "unix_epoch_seconds": 1616971738,
+        "timestamp_ns": 987654321,
+        "packet_offset": 123456789,
+        "scan_seconds": 30,
     },
 }

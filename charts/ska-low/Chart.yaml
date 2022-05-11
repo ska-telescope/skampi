@@ -49,12 +49,15 @@ dependencies:
   #   version: 0.1.8
   #   repository: https://artefact.skao.int/repository/helm-internal
   #   condition: ska-tango-archiver.enabled
-  # - name: ska-csp-lmc-low
-  #   version: 0.2.2
-  #   repository: https://artefact.skao.int/repository/helm-internal
-  # - name: ska-low-cbf
-  #   version: 0.5.3
-  #   repository: https://artefact.skao.int/repository/helm-internal
+  - name: ska-csp-lmc-low
+    version: 0.2.2
+    repository: https://artefact.skao.int/repository/helm-internal
+  - name: ska-low-cbf
+    version: 0.5.3
+    repository: https://artefact.skao.int/repository/helm-internal
+  - name: ska-low-cbf-proc
+    version: 0.8.0
+    repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-log-consumer
     version: 0.1.6
     repository: https://artefact.skao.int/repository/helm-internal

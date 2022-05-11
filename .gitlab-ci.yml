@@ -64,8 +64,29 @@ mid-test:
   tags: 
     - k8srunner-engage
   variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "integration-$CONFIG"
+    KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
+    ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
+    ADDMARKS: "k8s"
+    MARK: "not infra"
     SKA_AGENT_NAME: "engage-agent"
     SKA_AGENT_URL: "ska-telescope/ska-cicd-gitlab-k8s-agents-config"
+  script:
+    - kubectl config use-context ${SKA_AGENT_URL}:${SKA_AGENT_NAME}
+    - kubectl config set-context --current --namespace=${KUBE_NAMESPACE}
+    - make python-test || true
+  after_script:
+    - echo $CI_JOB_NAME - $CI_JOB_STAGE
+    - kubectl config use-context ${SKA_AGENT_URL}:${SKA_AGENT_NAME}
+    - kubectl config set-context --current --namespace=${KUBE_NAMESPACE}
+    - make k8s-uninstall-chart
+    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+    - make k8s-delete-namespace
 
 
 helm-chart-lint:  

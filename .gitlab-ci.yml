@@ -76,6 +76,7 @@ docs-build:
 python-test:
   tags: 
     - k8srunner-agent
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   variables:
     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
     PYTHON_VARS_AFTER_PYTEST: tests/unit -m infra

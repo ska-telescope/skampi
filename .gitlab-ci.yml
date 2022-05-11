@@ -93,3 +93,4 @@ python-test:
     name: test/$CI_COMMIT_REF_SLUG-cluster
     kubernetes:
       namespace: $CLUSTER_TEST_NAMESPACE
+

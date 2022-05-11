@@ -26,7 +26,7 @@ stages:
 # Globally reused tags declaration for jobs
 .tags_default:
   tags:
-    - k8srunner-agent
+    - k8srunner-engage
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
@@ -62,13 +62,13 @@ include:
 
 helm-chart-lint:  
   tags: 
-    - k8srunner-agent
+    - k8srunner-engage
 helm-chart-build:  
   tags: 
-    - k8srunner-agent
+    - k8srunner-engage
 docs-build:
   tags: 
-    - k8srunner-agent
+    - k8srunner-engage
 
 
 # overide the image because we need Python 3.9+ and a unique Namespace

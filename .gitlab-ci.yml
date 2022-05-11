@@ -75,12 +75,12 @@ docs-build:
 # in the python-test
 python-test:
   tags: 
-    - k8srunner-engage
+    - k8srunner-agent
   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   variables:
     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
     PYTHON_VARS_AFTER_PYTEST: tests/unit -m infra
-    SKA_AGENT_NAME: "engage-agent"
+    SKA_AGENT_NAME: "engage-stfc"
     SKA_AGENT_URL: "ska-telescope/ska-cicd-gitlab-k8s-agents-config"
     KUBE_NAMESPACE: ci-$CI_JOB_ID-infra
   after_script:

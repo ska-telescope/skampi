@@ -333,7 +333,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         return None
 
 
-class SDPEntryPoint(CompositeEntryPoint):
+class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2

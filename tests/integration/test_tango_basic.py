@@ -1,7 +1,6 @@
 """Default feature tests."""
 import os
 from typing import NamedTuple
-from assertpy.assertpy import assert_that
 
 import requests
 import pytest
@@ -73,7 +72,7 @@ def a_deployed_taranta_web_dashboard_service(env: ENV) -> str:
 @pytest.mark.skalow
 @pytest.mark.k8s
 @scenario("features/taranta_basic.feature", "taranta devices service available")
-def test_taranta_devices_service_available(env: ENV) -> str:
+def test_taranta_devices_service_available(env: ENV):
     """taranta devices service available."""
 
 

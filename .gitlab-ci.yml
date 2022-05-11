@@ -26,7 +26,7 @@ stages:
 # Globally reused tags declaration for jobs
 .tags_default:
   tags:
-    - k8srunner-engage
+    - k8srunner
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
@@ -87,18 +87,6 @@ mid-test:
     - make k8s-uninstall-chart
     - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
     - make k8s-delete-namespace
-
-
-helm-chart-lint:  
-  tags: 
-    - k8srunner-engage
-helm-chart-build:  
-  tags: 
-    - k8srunner-engage
-docs-build:
-  tags: 
-    - k8srunner-engage
-
 
 # overide the image because we need Python 3.9+ and a unique Namespace
 # in the python-test

@@ -78,6 +78,9 @@ python-test:
   variables:
     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
     PYTHON_VARS_AFTER_PYTEST: tests/unit -m infra
+    SKA_AGENT_NAME: "engage-agent"
+    SKA_AGENT_URL: "ska-telescope/ska-cicd-gitlab-k8s-agents-config"
+    KUBE_NAMESPACE: ci-$CI_JOB_ID-infra
   after_script:
     - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE
     # Not necessary to upload these results

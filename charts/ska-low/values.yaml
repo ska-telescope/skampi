@@ -46,27 +46,12 @@ ska-ser-skuid:
       generator_id: mvp01
 
 ska-tango-base:
-  enabled: true
   vnc:
-    replicas: 1
-    enabled: true
+    enabled: false
   tangorest:
-    replicas: 1
-    enabled: true
-    resources:
-      requests:
-        cpu: 100m # 100m = 0.1 CPU
-        memory: 128Mi # 256Mi = 0.25 GB mem
-        ephemeral-storage: 256Mi
-      limits:
-        cpu: 200m # 100m = 0.1 CPU
-        memory: 768Mi # 256Mi = 0.25 GB mem
-        ephemeral-storage: 256Mi
-  tangotest:
-    enabled: true
+    enabled: false
   ingress:
-    enabled: true
-    hostname: k8s.stfc.skao.int
+    enabled: false
   tangodb:
     use_pv: false
 

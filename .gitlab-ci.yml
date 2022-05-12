@@ -26,7 +26,7 @@ stages:
 # Globally reused tags declaration for jobs
 .tags_default:
   tags:
-    - k8srunner
+    - k8srunner-agent
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
@@ -59,13 +59,6 @@ include:
   # .post steps
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
-
-mid-test:
-  tags: 
-    - k8srunner-agent
-  variables:
-    SKA_AGENT_NAME: "stfc-agent"
-    SKA_AGENT_URL: "ska-telescope/ska-cicd-gitlab-k8s-agents-config"
 
 # overide the image because we need Python 3.9+ and a unique Namespace
 # in the python-test

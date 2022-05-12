@@ -52,12 +52,13 @@ ska-ser-skuid:
       generator_id: mvp01
 
 ska-tango-base:
+  enabled: true
   vnc:
-    enabled: false
+    replicas: 1
+    enabled: true
   tangorest:
-    enabled: false
-  ingress:
-    enabled: false
+    enabled: true
+    replicas: 1
   tangodb:
     use_pv: false
 

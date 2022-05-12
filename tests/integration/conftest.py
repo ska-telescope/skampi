@@ -74,6 +74,7 @@ def fxt_integration_test_exec_settings(
 # global when steps
 # start up
 
+
 @when("I start up the telescope")
 def i_start_up_the_telescope(
     standby_telescope: fxt_types.standby_telescope,
@@ -105,6 +106,7 @@ def i_switch_off_the_telescope(
 # resource assignment
 
 
+@when("I assign those dishes to a subarray")
 @when("I assign resources to it")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,

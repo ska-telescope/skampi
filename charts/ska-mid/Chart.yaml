@@ -6,71 +6,71 @@ version: 0.8.2
 appVersion: 0.8.2
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
-- name: ska-tango-base
-  version: 0.3.5
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-tango-base.enabled
-- name: ska-tango-util
-  version: 0.3.5
-  repository: https://artefact.skao.int/repository/helm-internal
-- name: ska-tmc-centralnode
-  version: 0.3.5
-  repository: https://artefact.skao.int/repository/helm-internal
-  alias: central_node
-  condition: ska-tmc-centralnode.enabled
-# - name: ska-mid-cbf # CIPA team
-#   version: 0.2.4
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-mid-cbf.enabled
-# - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
-#   version: 0.1.9
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-csp-lmc-mid.enabled
-- name: ska-sdp
-  version: 0.9.1
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-sdp.enabled
-# - name: ska-tmc-mid
-#   version: 0.4.9
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-tmc-mid.enabled
-# - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
-#   version: 0.5.3
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-oso-scripting.enabled
-- name: ska-taranta
-  version: 1.0.29
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-taranta.enabled
-- name: ska-taranta-auth
-  version: 0.1.5
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: global.taranta_auth_enabled
-  tags:
-    - taranta_auth
-- name: ska-dashboard-repo
-  version: 0.1.9
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: global.taranta_dashboard_enabled
-  tags:
-    - taranta_dashboard
-- name: ska-ser-skuid
-  version: 3.3.3
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-ser-skuid.enabled
-- name: ska-landingpage
-  version: 0.8.2
-  repository: file://../ska-landingpage
-  condition: ska-landingpage.enabled
-- name: ska-sim-dishmaster
-  version: 2.0.2
-  repository: https://artefact.skao.int/repository/helm-internal
-  condition: ska-sim-dishmaster.enabled
-# - name: ska-tango-archiver
-#   version: 0.1.8
-#   repository: https://artefact.skao.int/repository/helm-internal
-#   condition: ska-tango-archiver.enabled
-# ## DISH LMC Prototype was disabled in the old version of skampi
-# # - name: dsh-lmc-prototype
-# #   version: 0.0.1
-# #   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  - name: ska-tango-base
+    version: 0.3.5
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-tango-base.enabled
+  - name: ska-tango-util
+    version: 0.3.5
+    repository: https://artefact.skao.int/repository/helm-internal
+  - name: ska-mid-cbf # CIPA team
+    version: 0.2.9
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-mid-cbf.enabled
+  - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
+    version: 0.11.5
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-csp-lmc-mid.enabled
+  - name: ska-sdp
+    version: 0.9.1
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-sdp.enabled
+  - name: ska-tmc-mid
+    version: 0.5.0
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-tmc-mid.enabled
+    alias: tmc-mid
+  # - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
+  #   version: 0.5.3
+  #   repository: https://artefact.skao.int/repository/helm-internal
+  #   condition: ska-oso-scripting.enabled
+  - name: ska-taranta
+    version: 1.0.29
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-taranta.enabled
+  - name: ska-taranta-auth
+    version: 0.1.5
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: global.taranta_auth_enabled
+    tags:
+      - taranta_auth
+  - name: ska-dashboard-repo
+    version: 0.1.9
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: global.taranta_dashboard_enabled
+    tags:
+      - taranta_dashboard
+  - name: ska-ser-skuid
+    version: 3.3.3
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-ser-skuid.enabled
+  - name: ska-landingpage
+    version: 0.8.2
+    repository: file://../ska-landingpage
+    condition: ska-landingpage.enabled
+  - name: ska-sim-dishmaster
+    version: 2.0.2
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-sim-dishmaster.enabled
+  # - name: ska-tango-archiver
+  #   version: 0.1.8
+  #   repository: https://artefact.skao.int/repository/helm-internal
+  #   condition: ska-tango-archiver.enabled
+  # ## DISH LMC Prototype was disabled in the old version of skampi
+  # # - name: dsh-lmc-prototype
+  # #   version: 0.0.1
+  # #   repository: https://nexus.engageska-portugal.pt/repository/helm-chart
+  - name: ska-log-consumer
+    version: 0.1.6
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-log-consumer.enabled

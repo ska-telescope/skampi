@@ -1,7 +1,5 @@
 *-workspace
-.vscode
 .coverage
-.devcontainer
 kubeconfig
 tests/unit/test_playground.py
 .python-version
@@ -12,7 +10,6 @@ gitlab_values.yaml
 /ska-cicd-deploy-minikube/
 docs/venv
 /.vagrant
-/.vscode
 /ansible.log
 /playbooks/ansible.log
 /playbooks/*.retry
@@ -68,13 +65,12 @@ post-deployment/resources/test_data/polaris_b1_no_cam.json
 post-deployment/build
 post-deployment/.pytest_cache
 post-deployment/resources/test_data/polaris_b1_no_cam.json
-.vscode/settings.json
 docs/src/_build/
 post-deployment/venv
-.vscode/settings.json
 gilab_values.yaml
 gitlab_values.yaml
 KUBECONFIG
 /venv/
 tests/resources/assets/kubeconfig
 tests/resources/assets/tmp_ingress.yaml
+.devcontainer

@@ -19,6 +19,7 @@ low-test:
     COUNT: 1
     TEL: low
   extends:
+    - .variables_agent_default
     - .tags_default
     - .deploy_chart_before
     - .uninstall_chart_after
@@ -55,6 +56,7 @@ low_deploy_integration_k8s_test:
     ADDMARKS: "k8s"
     MARK: "not infra"
   extends:
+    - .variables_agent_default
     - .tags_default
     - .uninstall_chart_before
     - .deploy_chart_and_test_integration
@@ -81,6 +83,7 @@ low_deploy_integration_k8s_test:
 low_uninstall_integration:
   stage: clean_integration
   extends:
+    - .variables_agent_default
     - .tags_default
     - .uninstall_chart
   variables:
@@ -104,6 +107,7 @@ low_uninstall_integration:
 low_deploy_staging:
   stage: deploy_staging
   extends:
+    - .variables_agent_default
     - .tags_default
     - .uninstall_chart_before
     - .deploy_chart
@@ -132,6 +136,7 @@ low_deploy_staging:
 low_uninstall_staging:
   stage: clean_staging
   extends:
+    - .variables_agent_default
     - .tags_default
     - .uninstall_chart
   variables:
@@ -164,6 +169,7 @@ low_on_demand_deploy:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
   extends:
+    - .variables_agent_default
     - .tags_default
     - .deploy_chart_before
   script:

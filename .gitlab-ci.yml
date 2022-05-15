@@ -33,8 +33,6 @@ stages:
     SKA_AGENT_NAME: "stfc-agent"
     SKA_AGENT_URL: "ska-telescope/ska-cicd-gitlab-k8s-agents-config"
 
-
-
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
   # Common template components
@@ -70,13 +68,14 @@ include:
 # overide the image because we need Python 3.9+ and a unique Namespace
 # in the python-test
 python-test:
+  stage: test
+  extends:
+    - .variables_agent_default
+    - .tags_default
   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   variables:
     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
     PYTHON_VARS_AFTER_PYTEST: tests/unit -m infra
-  extends:
-    - .variables_agent_default
-    - .tags_default
   after_script:
     - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE
     # Not necessary to upload these results

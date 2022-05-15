@@ -29,8 +29,9 @@ stages:
     - k8srunner-agent
 # variables required for deploying with the agent
 .variables_agent_default:
-  SKA_AGENT_NAME: "stfc-agent"
-  SKA_AGENT_URL: "ska-telescope/ska-cicd-gitlab-k8s-agents-config"
+  variables:
+    SKA_AGENT_NAME: "stfc-agent"
+    SKA_AGENT_URL: "ska-telescope/ska-cicd-gitlab-k8s-agents-config"
 
 
 

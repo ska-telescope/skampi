@@ -1,6 +1,7 @@
 """Configure Bandwith and point dishes."""
 import pytest
 from pytest_bdd import given, scenario, then
+from assertpy import assert_that
 
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -53,9 +54,5 @@ def those_dishes_shall_be_in_full_power(entry_point: DishEntryPoint):
     for dish_name in tel.skamid.dishes(entry_point.dishes_to_assign):
         dish = con_config.get_device_proxy(dish_name)
         result = dish.read_attribute("pointingstate").value
-        pointingstate = DishMasterPointingState(result).name
-        expected = ["READY", "TRACK"]
-        assert pointingstate in [
-            "READY",
-            "TRACK",
-        ], f"Got {pointingstate} but expected {expected}"
+        pointingstate: str = DishMasterPointingState(result).name
+        assert_that(pointingstate).is_equal_to("TRACK")

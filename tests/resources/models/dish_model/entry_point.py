@@ -85,11 +85,11 @@ class DishAssignStep(base.AssignResourcesStep, LogEnabled):
         dish_names = self._skamid.dishes(self.dishes_to_assign).list
         dish_name = ""
         try:
-        for dish_name in dish_names:
-            dish = con_config.get_device_proxy(dish_name, fast_load=True)
-            self._log(f"setting {dish_name} to StandbyFPMode")
-            dish.command_inout("SetStandbyFPMode")
-            successfully_commanded_dishes.append(dish)
+            for dish_name in dish_names:
+                dish = con_config.get_device_proxy(dish_name, fast_load=True)
+                self._log(f"setting {dish_name} to StandbyFPMode")
+                dish.command_inout("SetStandbyFPMode")
+                successfully_commanded_dishes.append(dish)
         except Exception as exception:
             self._log(
                 f"Exception in commanding {dish_name} will revert commands on other dishes"
@@ -106,10 +106,10 @@ class DishAssignStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         dish_names = self._skamid.dishes(self.dishes_to_assign).list
-            for dish_name in dish_names:
-                dish = con_config.get_device_proxy(dish_name, fast_load=True)
-                self._log(f"setting {dish_name} to SetStandbyLPMode")
-                dish.command_inout("SetStandbyLPMode")
+        for dish_name in dish_names:
+            dish = con_config.get_device_proxy(dish_name, fast_load=True)
+            self._log(f"setting {dish_name} to SetStandbyLPMode")
+            dish.command_inout("SetStandbyLPMode")
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
@@ -358,7 +358,7 @@ class PointingStep(LogEnabled):
         for dish_name in self._skamid.dishes(dish_ids):
             brd.set_waiting_on(dish_name).for_attribute(
                 "pointingstate"
-            ).to_become_equal_to(["READY", "TRACK"])
+            ).to_become_equal_to("TRACK")
         return brd
 
     def undo(self):

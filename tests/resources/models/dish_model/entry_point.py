@@ -83,11 +83,20 @@ class DishAssignStep(base.AssignResourcesStep, LogEnabled):
         )
         successfully_commanded_dishes: list[con_config.AbstractDeviceProxy] = []
         dish_names = self._skamid.dishes(self.dishes_to_assign).list
+        dish_name = ""
+        try:
         for dish_name in dish_names:
             dish = con_config.get_device_proxy(dish_name, fast_load=True)
             self._log(f"setting {dish_name} to StandbyFPMode")
             dish.command_inout("SetStandbyFPMode")
             successfully_commanded_dishes.append(dish)
+        except Exception as exception:
+            self._log(
+                f"Exception in commanding {dish_name} will revert commands on other dishes"
+            )
+            for successfully_commanded_dish in successfully_commanded_dishes:
+                successfully_commanded_dish.command_inout("SetStandbyLPMode")
+            raise exception
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -96,22 +105,11 @@ class DishAssignStep(base.AssignResourcesStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        successfully_commanded_dishes: list[con_config.AbstractDeviceProxy] = []
         dish_names = self._skamid.dishes(self.dishes_to_assign).list
-        dish_name = ""
-        try:
             for dish_name in dish_names:
                 dish = con_config.get_device_proxy(dish_name, fast_load=True)
                 self._log(f"setting {dish_name} to SetStandbyLPMode")
                 dish.command_inout("SetStandbyLPMode")
-                successfully_commanded_dishes.append(dish)
-        except Exception as exception:
-            self._log(
-                f"Exception in commanding {dish_name} will revert commands on other dishes"
-            )
-            for successfully_commanded_dish in successfully_commanded_dishes:
-                successfully_commanded_dish.command_inout("SetStandbyLPMode")
-            raise exception
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.

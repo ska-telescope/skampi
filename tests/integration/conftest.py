@@ -131,6 +131,9 @@ def i_assign_resources_to_it(
 
 
 # scan configuration
+@when(
+    "I configure those dishes in order to realise that scan configuration on the subarray"
+)
 @when("I configure it for a scan")
 def i_configure_it_for_a_scan(
     allocated_subarray: fxt_types.allocated_subarray,

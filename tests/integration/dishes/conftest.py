@@ -1,6 +1,5 @@
 """Pytest fixtures and bdd step implementations specific to dishes integration tests."""
 import os
-
 import pytest
 
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -19,7 +18,6 @@ def fxt_set_entry_point(
 ):
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
-    DishEntryPoint.dishes = sut_settings.receptors
     exec_env.entrypoint = DishEntryPoint
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = ["Dish"]
@@ -33,7 +31,7 @@ def fxt_dish_start_up_test_exec_settings(
 
     :param exec_settings: Fixture as used by skallop
     """
-    integration_test_exec_settings.time_out = 30
+    integration_test_exec_settings.time_out = 1000
 
 
 # log checking
@@ -50,6 +48,7 @@ def fxt_set_up_log_capturing_for_cbf(
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
+        assert tel.skamid
         dishes = tel.skamid.dishes(sut_settings.receptors)
         log_checking.capture_logs_from_devices(*dishes.list)
 
@@ -59,16 +58,23 @@ def fxt_set_up_log_capturing_for_cbf(
 
 @pytest.fixture(name="base_composition")
 def fxt_sdp_base_composition(
-    entry_point: DishEntryPoint, sut_settings: conftest.SutTestSettings
+    running_telescope,  # type: ignore
+    sut_settings: conftest.SutTestSettings,
+    entry_point: DishEntryPoint,
 ) -> list[int]:
     """Setup a base composition configuration to use for in a generic subarray composition for ska mid.
 
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    # we set the dishes as a context value for the subarray
-    # the implicication of this is to mean that teh dishes
-    DishEntryPoint.dishes = sut_settings.receptors
+    # we set the the composition in terms of dishes to assign
+    # we set this as an argument on the entrypoint even though
+    # it also gets passed as an argument in the command
+    # this is because the waiting needs to be specifically
+    # for the dishes also which does not take dish ids as an argument
+    # Future update in skallop should rather change the arguments for wait
+    # to also uses nr of dishes as an argument
+    entry_point.dishes_to_assign = [1, 2]
 
     return sut_settings.receptors
 
@@ -76,8 +82,13 @@ def fxt_sdp_base_composition(
 # scan configurations
 
 
-@pytest.fixture(name="base_configuration")
-def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
+@pytest.fixture(name="dish_base_configuration")
+def fxt_dish_base_configuration(
+    running_telescope: fxt_types.running_telescope,
+    tmp_path: str,
+    base_composition,  # type: ignore
+    entry_point: fxt_types.entry_point,
+) -> conf_types.ScanConfiguration:
     """Setup a base scan configuration to use for sdp.
 
     :param tmp_path: a temporary path for sending configuration as a file.
@@ -86,4 +97,5 @@ def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
     configuration = conf_types.ScanConfigurationByFile(
         tmp_path, conf_types.ScanConfigurationType.STANDARD
     )
+    # cast(DishEntryPoint, entry_point).set_stackable_context(running_telescope)
     return configuration

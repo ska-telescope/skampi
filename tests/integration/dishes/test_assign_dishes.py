@@ -31,7 +31,7 @@ def test_assign_dishes_to_subarray_in_mid():
 
 
 @given("a set of available dishes", target_fixture="composition")
-def an_sdp_subarray(
+def an_dish_subarray(
     base_composition: conf_types.Composition,
     set_up_subarray_log_checking_for_dishes,  # type: ignore
     entry_point: DishEntryPoint,

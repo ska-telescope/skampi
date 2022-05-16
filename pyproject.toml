@@ -23,7 +23,7 @@ docopts = "^0.6.1"
 pytest-timeout = "^2.0.2"
 pytest-ordering = "^0.6"
 pipe = "^1.6.0"
-ska-ser-skallop = "2.18.6"
+ska-ser-skallop = "2.18.7"
 ska-telescope-model = "1.3.1"
 
 
@@ -42,6 +42,8 @@ url = 'https://deployskallopdev:rsaigjomsv-XyU2gNji7@gitlab.com/api/v4/projects/
 flake8 = "^4.0.1"
 black = "^21.12b0"
 ipython = "^7.30.1"
+sphinx-rtd-theme = "^1.0.0"
+recommonmark = "^0.7.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

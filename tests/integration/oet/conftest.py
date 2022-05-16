@@ -1,46 +1,28 @@
-"""Pytest fixtures and bdd step implementations specific to OET integration tests."""
+"""Pytest fixtures and BDD step implementations specific to OET integration tests."""
 import logging
-from time import sleep
-from pytest_bdd import given, when, then
 
-import requests
+from pytest_bdd import given, then, when
+
+from .oet_helpers import ScriptExecutor
+
 LOGGER = logging.getLogger(__name__)
 
+EXECUTOR = ScriptExecutor()
 
-@given("the hello_world script is created in the OET")
+
+@given("The OET is integrated with SKAMPI")
 def hello_world_script_created():
-    request_json = {
-        "script_args": {
-            "init": dict(args=[], kwargs={"subarray_id": 1}),
-        },
-        "script": dict(script_type="filesystem", script_uri="file:///scripts/hello_world.py")
-    }
+    pass
 
-    response = requests.post("http://ska-oso-oet-rest-test:5000/api/v1.0/procedures", json=request_json)
 
 @when("the script is ran")
 def hello_world_script_ran():
-
-    procedures = requests.get("http://ska-oso-oet-rest-test:5000/api/v1.0/procedures")
-
-    url = procedures.json()["procedures"][-1]["uri"]
-
-    request_json = {"script_args": {"run": dict(args=[], kwargs={})}, "state": "RUNNING"}
-
-    response = requests.put(url, json=request_json)
+    EXECUTOR.execute_script("file:///data/hello_world.py")
 
 
 @then("script execution completes successfully")
 def hello_world_script_complete():
-    sleep(10)
+    latest_task = EXECUTOR.get_latest_script()
 
-    procedures = requests.get("http://ska-oso-oet-rest-test:5000/api/v1.0/procedures")
-
-    url = procedures.json()["procedures"][-1]["uri"]
-
-    response = requests.get(url)
-
-    state = response.json()['procedure']['state']
-
-    assert state == 'COMPLETED'
+    assert latest_task.state == 'COMPLETE'
 

@@ -1,7 +1,7 @@
-Feature: Turn the telescope on/off via OET
+Feature: Start up the telescope with a script executed by the OET
 
 	Scenario: Run the hello_world test script
-		Given the hello_world script is created in the OET
+		Given The OET is integrated with SKAMPI
 		When the script is ran
 		Then script execution completes successfully
 

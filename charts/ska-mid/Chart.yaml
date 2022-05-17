@@ -68,6 +68,6 @@ dependencies:
   #   condition: ska-tango-archiver.enabled
   # DISH LMC Prototype was disabled in the old version of skampi
   - name: ska-dish-lmc
-    version: 1.1.0
+    version: 1.2.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-dish-lmc.enabled

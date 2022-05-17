@@ -71,3 +71,7 @@ dependencies:
     version: 1.2.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-dish-lmc.enabled
+  - name: ska-log-consumer
+    version: 0.1.6
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-log-consumer.enabled

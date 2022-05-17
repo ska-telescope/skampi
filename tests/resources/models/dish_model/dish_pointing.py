@@ -37,10 +37,6 @@ def point(dish_id: int, desired_az: float, desired_el: float):
     dish.command_inout("Track", str(time.time() * 1000))
 
 
-def set_dish_to_tracking():
-    """_summary_"""
-
-
 def pointing(
     dish_id: int,
     inbox: Queue[Union[Literal["Stop"], SourcePosition]],
@@ -56,7 +52,6 @@ def pointing(
     :type inbox: Queue
     """
     enabled = True
-    set_dish_to_tracking()
     while enabled:
         desired_az, desired_el = get_as_el(target)
         point(dish_id, desired_az, desired_el)

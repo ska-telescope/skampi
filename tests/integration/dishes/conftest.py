@@ -6,7 +6,10 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
-from resources.models.dish_model.entry_point import DishEntryPoint
+from resources.models.dish_model.entry_point import (
+    DishEntryPoint,
+    set_execution_context,
+)
 
 from .. import conftest
 
@@ -23,6 +26,13 @@ def fxt_set_entry_point(
     exec_env.scope = ["Dish"]
 
 
+@pytest.fixture(name="set_global_exec_settings")
+def fxt_set_global_exec_settings(
+    exec_settings: fxt_types.exec_settings,
+):
+    exec_settings.time_out = 100
+
+
 @pytest.fixture(name="dish_start_up_test_exec_settings", autouse=True)
 def fxt_dish_start_up_test_exec_settings(
     integration_test_exec_settings: fxt_types.exec_settings,
@@ -31,7 +41,9 @@ def fxt_dish_start_up_test_exec_settings(
 
     :param exec_settings: Fixture as used by skallop
     """
-    integration_test_exec_settings.time_out = 1000
+    integration_test_exec_settings.time_out = 100
+    # we also make integration tests globally available to our model
+    set_execution_context(integration_test_exec_settings)
 
 
 # log checking
@@ -75,7 +87,6 @@ def fxt_sdp_base_composition(
     # Future update in skallop should rather change the arguments for wait
     # to also uses nr of dishes as an argument
     entry_point.dishes_to_assign = [1, 2]
-
     return sut_settings.receptors
 
 

@@ -8,6 +8,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.connectors import configuration as con_config
 from resources.models.dish_model.entry_point import DishEntryPoint
 from ska_ser_skallop.datatypes.attributes import DishMasterPointingState
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 
 @pytest.mark.skamid
@@ -21,7 +22,9 @@ def test_configure_dishes_for_a_subarray_scan():
 
 
 @given("an set of dish masters currently assigned to a subarray in IDLE state")
-def an_set_of_dish_masters_currently_assigned_to_a_subarray_in_idle_state():
+def an_set_of_dish_masters_currently_assigned_to_a_subarray_in_idle_state(
+    set_global_exec_settings: None,
+):
     """an set of dish masters currently assigned to a subarray in IDLE state."""
 
 
@@ -32,6 +35,7 @@ def an_set_of_dish_masters_currently_assigned_to_a_subarray_in_idle_state():
 def a_scan_configuration(
     set_up_subarray_log_checking_for_dishes,  # type: ignore
     dish_base_configuration: conf_types.ScanConfiguration,
+    exec_settings: fxt_types.exec_settings,
 ) -> conf_types.ScanConfiguration:
     """a scan configuration with a particular target position and desired freq band."""
     # will use default composition for the allocated subarray

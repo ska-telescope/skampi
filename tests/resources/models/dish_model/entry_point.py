@@ -10,6 +10,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_fixtures.context_management import StackableContext
 from ska_ser_skallop.mvp_control.event_waiting.wait import wait_for
 from ska_ser_skallop.utils.singleton import Memo
+from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
@@ -403,6 +404,12 @@ class DishConfigureStep(base.ConfigureStep, LogEnabled):
     def set_stackable_context(self, context: StackableContext):
         self.pointing_step.set_stackable_context(context)
 
+    @property
+    def execution_context(self) -> ExecSettings:
+        if global_execution_context := Memo().get("execution_context"):
+            return global_execution_context
+        return ExecSettings()
+
     def do(
         self,
         sub_array_id: int,
@@ -424,18 +431,24 @@ class DishConfigureStep(base.ConfigureStep, LogEnabled):
         band: BandType = "B2"
         # use dummy source position as it is not implemented yet
         source = SourcePosition(10.0, 10.0)
+        timeout = int(self.execution_context.time_out)
+        live_logging = self.execution_context.log_enabled
         clear_supscription_specs()
         configure_band_to_finish = self.set_band_step.set_wait_for_do(band, dish_ids)
-        with wait_for(configure_band_to_finish, timeout=100, live_logging=True):
+        with wait_for(
+            configure_band_to_finish, timeout=timeout, live_logging=live_logging
+        ):
             self.set_band_step.do(band, dish_ids)
         clear_supscription_specs()
         # then we set it to operational
         set_ready_to_finish = self.set_ready_step.set_wait_for_do(dish_ids)
-        with wait_for(set_ready_to_finish, timeout=100, live_logging=True):
+        with wait_for(set_ready_to_finish, timeout=timeout, live_logging=live_logging):
             self.set_ready_step.do(dish_ids)
         clear_supscription_specs()
         set_pointing_to_start = self.pointing_step.set_wait_for_do(dish_ids)
-        with wait_for(set_pointing_to_start, timeout=100, live_logging=True):
+        with wait_for(
+            set_pointing_to_start, timeout=timeout, live_logging=live_logging
+        ):
             self.pointing_step.do(dish_ids, source)
 
     def undo(self, sub_array_id: int):
@@ -484,6 +497,10 @@ class DishConfigureStep(base.ConfigureStep, LogEnabled):
         :param dish_ids: this dish indices (in case of mid) to control
         """
         return get_message_board_builder()
+
+
+def set_execution_context(execution_context: ExecSettings):
+    Memo(execution_context=execution_context)
 
 
 class DishEntryPoint(CompositeEntryPoint):

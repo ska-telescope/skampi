@@ -105,7 +105,7 @@ KUBE_APP = ska-tango-images
 CI_JOB_ID ?= local##local default for ci job id
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
-K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.9.1## docker image that will be run for testing purpose
+K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.16.3## docker image that will be run for testing purpose
 
 # import your personal semi-static config
 -include PrivateRules.mak
@@ -224,6 +224,7 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 	tar zcf ../results-pipe build;"
 
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
+    bash sudo apt install pkgconf
 	@if [[ "$$CI_JOB_ID" ]]; then \
 		echo "Running modified python-pre-test for CI job"; \
 		bash scripts/gitlab_section.sh pip_install "Installing Pytest Requirements" pip3 install .; \

@@ -22,6 +22,8 @@ low-test:
     - .tags_default
     - .deploy_chart_before
     - .uninstall_chart_after
+  before_script:
+    - poetry install --no-root
   script:
     - echo "########## Running Skampi Acceptance and End to End Tests"
     - make python-test

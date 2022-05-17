@@ -224,8 +224,9 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 	tar zcf ../results-pipe build;"
 
 python-pre-test: # must pass the current kubeconfig into the test container for infra tests
-    bash sudo apt install pkgconf
+
 	@if [[ "$$CI_JOB_ID" ]]; then \
+	    bash sudo apt install pkgconf; \
 		echo "Running modified python-pre-test for CI job"; \
 		bash scripts/gitlab_section.sh pip_install "Installing Pytest Requirements" pip3 install .; \
 	fi

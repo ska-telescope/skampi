@@ -118,7 +118,7 @@ class ScriptExecutor:
         ScriptExecutor().stop_script()
         task = ScriptExecutor().get_script_by_id(task_id)
         LOGGER.info("Script state: %s", task.state)
-        return None
+        return task.state
 
     def create_script(self, script) -> Task:
         resp = REST_CLIENT.create(script, subarray_id=1)

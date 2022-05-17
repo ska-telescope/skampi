@@ -223,10 +223,6 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 	echo \"k8s_test_command: test command exit is: \$$(cat build/status)\"; \
 	tar zcf ../results-pipe build;"
 
-python-pre-test: # must pass the current kubeconfig into the test container for infra tests
-	bash sudo apt install pkgconf
-	bash scripts/gitlab_section.sh pip_install "Installing Pytest Requirements" pip3 install .
-
 # use hook to create SDP namespace
 k8s-pre-install-chart:
 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"

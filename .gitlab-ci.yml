@@ -40,10 +40,6 @@ include:
   # Jobs to run on PSI Low
   - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
 
-  # Python tests, directly run
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/python-test.gitlab-ci.yml"
-
   # Helm Charts
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/helm-chart.gitlab-ci.yml"

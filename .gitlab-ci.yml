@@ -63,11 +63,16 @@ include:
 # overide the image because we need Python 3.9+ and a unique Namespace
 # in the python-test
 python-test:
-  image: artefact.skao.int/artefact.skao.int/ska-ser-skallop:2.18.9
+  image: artefact.skao.int/ska-tango-images-pytango-builder-alpine:9.3.28
   variables:
     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
     PYTHON_VARS_AFTER_PYTEST: tests/unit -m infra
   before_script:
+    - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    - install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    - chmod 700 get_helm.sh
+    - ./get_helm.sh
     - pip install .
   after_script:
     - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE

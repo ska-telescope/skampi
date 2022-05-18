@@ -19,6 +19,7 @@ EXECUTOR = ScriptExecutor()
 
 @pytest.mark.skamid
 @pytest.mark.startup
+@pytest.mark.k8s
 @scenario("features/oet_start_up_telescope.feature", "Starting up mid telescope")
 def test_telescope_startup_mid():
     """Telescope startup test."""

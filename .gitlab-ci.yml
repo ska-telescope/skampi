@@ -63,7 +63,7 @@ include:
 # overide the image because we need Python 3.9+ and a unique Namespace
 # in the python-test
 python-test:
-  image: artefact.skao.int/artefact.skao.int/ska-ser-skallop:2.18.9
+  image: artefact.skao.int/ska-ser-skallop:2.18.9
   variables:
     CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
     PYTHON_VARS_AFTER_PYTEST: tests/unit -m infra

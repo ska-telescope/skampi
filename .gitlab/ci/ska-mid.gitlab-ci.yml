@@ -25,9 +25,8 @@ mid-test:
     - .tags_default
     - .deploy_chart_before
     - .uninstall_chart_after
-  before_script:
-    - pip install .
   script:
+    - pip install .
     - echo "########## Running Skampi Acceptance and End to End Tests"
     - make python-test
   environment:

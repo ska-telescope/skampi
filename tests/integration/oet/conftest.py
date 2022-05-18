@@ -1,7 +1,7 @@
 """Pytest fixtures and BDD step implementations specific to OET integration tests."""
 import logging
-
-from pytest_bdd import given, then, when
+import pytest
+from pytest_bdd import given, scenario, then, when
 
 from .oet_helpers import ScriptExecutor
 
@@ -9,6 +9,10 @@ LOGGER = logging.getLogger(__name__)
 
 EXECUTOR = ScriptExecutor()
 
+@pytest.mark.skamid
+@scenario("features/oet_basic.feature", "Run the hello_world test script")
+def test_telescope_startup_mid():
+    """Telescope startup test."""
 
 @given("The OET is integrated with SKAMPI")
 def hello_world_script_created():

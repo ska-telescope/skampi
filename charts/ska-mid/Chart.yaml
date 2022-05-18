@@ -30,6 +30,10 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tmc-mid.enabled
     alias: tmc-mid
+  # - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
+  #   version: 0.5.3
+  #   repository: https://artefact.skao.int/repository/helm-internal
+  #   condition: ska-oso-scripting.enabled
   - name: ska-taranta
     version: 1.0.29
     repository: https://artefact.skao.int/repository/helm-internal

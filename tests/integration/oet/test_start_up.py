@@ -4,6 +4,7 @@ test_XTP-780-781
 Telescope startup and standby using OET scripts
 """
 import logging
+
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, parsers, scenario, then, when
@@ -57,6 +58,6 @@ def check_final_state(state):
     central_node = con_config.get_device_proxy(tel.central_node)
     final_state = central_node.read_attribute("state").value
     assert_that(str(final_state)).is_equal_to("ON")
-    assert final_state == state, \
+    assert str(final_state) == state, \
         f"Expected telescope to be {state} but instead was {final_state}"
     logger.info("Central node is in %s state", state)

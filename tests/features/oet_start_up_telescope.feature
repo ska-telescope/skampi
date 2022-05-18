@@ -1,7 +1,11 @@
-Feature: Start up the telescope with a script executed by the OET
+@VTS-225
+Feature: Verification of OET scripts being executed successfully during an observation
 
-	Scenario: Run the hello_world test script
-		Given The OET is integrated with SKAMPI
-		When the script is ran
-		Then script execution completes successfully
+	#*Scenario: Starting up mid telescope*
+	@XTP-780 @XTP-776
+	Scenario: Starting up mid telescope
+		Given an OET
+		When I tell the OET to run file:///scripts/startup.py
+		Then the central node must be ON
+
 

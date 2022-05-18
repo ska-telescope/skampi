@@ -5,6 +5,7 @@
 # low merge blocking job - must pass for pipeline success
 low-test:
   stage: test
+  image: artefact.skao.int/artefact.skao.int/ska-ser-skallop:2.18.9
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
@@ -23,7 +24,7 @@ low-test:
     - .deploy_chart_before
     - .uninstall_chart_after
   before_script:
-    - poetry install --no-root
+    - pip install .
   script:
     - echo "########## Running Skampi Acceptance and End to End Tests"
     - make python-test

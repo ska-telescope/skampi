@@ -58,10 +58,6 @@ dependencies:
     version: 0.8.2
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
-  - name: ska-sim-dishmaster
-    version: 2.0.2
-    repository: https://artefact.skao.int/repository/helm-internal
-    condition: ska-sim-dishmaster.enabled
   # - name: ska-tango-archiver
   #   version: 0.1.8
   #   repository: https://artefact.skao.int/repository/helm-internal

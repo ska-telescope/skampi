@@ -5,7 +5,6 @@
 # low merge blocking job - must pass for pipeline success
 low-test:
   stage: test
-  image: artefact.skao.int/ska-tango-images-pytango-builder-alpine:9.3.28
   image: artefact.skao.int/ska-ser-skallop:2.18.9
   variables:
     CONFIG: low

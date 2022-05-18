@@ -19,11 +19,11 @@ ska-landingpage:
 
 # Mid specific products
 ska-mid-cbf:
-  enabled: false
+  enabled: true
 ska-csp-lmc-mid:
-  enabled: false
+  enabled: true
 ska-tmc-mid:
-  enabled: false
+  enabled: true
 ska-sim-dishmaster:
   enabled: true
 

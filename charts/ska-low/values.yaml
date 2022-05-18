@@ -122,3 +122,12 @@ ska-tmc-centralnode:
   deviceServers:
     centralnode:
       enabled: true
+
+ska-low-cbf:
+  enabled: true
+
+ska-low-cbf-proc:
+  enabled: true
+
+ska-csp-lmc-low:
+  enabled: true

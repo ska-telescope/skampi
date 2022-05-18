@@ -69,7 +69,7 @@ ska-taranta:
     nginx: true
     hostname: k8s.stfc.skao.int
   tangogql:
-    replicas: 3
+    replicas: 1
     resources:
       requests:
         cpu: 600m # 600m = 0.6 CPU
@@ -99,13 +99,26 @@ ska-sdp:
   ska-tango-base:
     enabled: false
 
-## tm
-ska-tmc-centralnode:
+## tmc
+tmc-mid:
   enabled: true
   telescope: SKA-mid
   deviceServers:
     centralnode:
       enabled: true
+
+    subarraynode:
+      enabled: true
+
+    sdpsubarrayleafnode:
+      enabled: true
+
+    sdpmasterleafnode:
+      enabled: true
+
+    mocks:
+      enabled: true
+
 
 ska-tango-archiver:
   enabled: true

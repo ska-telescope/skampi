@@ -5,6 +5,7 @@
 # low merge blocking job - must pass for pipeline success
 low-test:
   stage: test
+  image: artefact.skao.int/ska-ser-skallop:2.18.9
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
@@ -14,6 +15,7 @@ low-test:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
     COUNT: 1
@@ -23,6 +25,7 @@ low-test:
     - .deploy_chart_before
     - .uninstall_chart_after
   script:
+    - pip install .
     - echo "########## Running Skampi Acceptance and End to End Tests"
     - make python-test
   environment:

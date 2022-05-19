@@ -145,21 +145,35 @@ The Telescope Monitor and Control (TMC) is the software module identified to per
 and data management functions of the Telescope Manager. 
 Main responsibilities identified for TMC are:
 
-Support execution of astronomical observations
-
-Manage telescope hardware and software subsystems in order to perform astronomical observations
-
-Manage the data to support operators, maintainers, engineers and science users to achieve their goals
-
-Determine telescope state.
+- General monitoring and control of the telescope
+- Support execution of astronomical observations
+- Manage telescope hardware and software subsystems in order to perform astronomical observations
+- Manage the data to support operators, maintainers, engineers and science users to achieve their goals
+- Determine telescope state.
 
 To support these responsibilities, the TMC performs high-level functions such as Observation Execution, 
 Monitoring and Control of Telescope, Resource Management, Configuration Management, Alarm and Fault Management, 
 and Telescope Data Management (Historical data and Real time data).
 These high level functions are again divided into lower level functions to perform the specific functionalities.
 
-The TMC has a hierarchy of control nodes for Mid and Low-
+TMC Architecture
+++++++++++++++++
+
+The TMC is a distributed system having multiple components to fulfil its functionalities. For carrying out 
+observation execution, monitoring and control it has a hierarchy of control nodes for Mid and Low-
 Central Node, Subarray Node, SDP Leaf Nodes, CSP Leaf Nodes, MCCS Leaf Nodes, Dish Leaf Nodes.
+The detailed architecture of the TMC can be found in `TMC Architecture<https://confluence.skatelescope.org/display/SWSI/TMC+Architecture>`_
+section in the Solution Intent.
+
+APIs
+++++
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    Genral Monitoring and Control<apis/general_mandc>
+    Observation Execution<apis/obs_mandc>
 
 The components(CentralNode, SubarrayNode, Leaf Nodes) of the TMC system are integrated in the `TMC integration repository
 <https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-integration>`_, which contains

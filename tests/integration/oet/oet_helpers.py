@@ -126,7 +126,7 @@ class ScriptExecutor:
         return tasks[0]
 
     def start_script(self, task_id, *script_args) -> Task:
-        resp = REST_CLIENT.start(task_id, *script_args, listen=False)
+        resp = REST_CLIENT.start(pid=task_id, *script_args, listen=False)
         task = ScriptExecutor.parse_rest_start_response(resp)
         return task
 

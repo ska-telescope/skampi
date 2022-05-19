@@ -6,10 +6,10 @@ from ska_oso_oet.procedure.application.restclient import RestClientUI
 
 LOGGER = logging.getLogger(__name__)
 
-helm_release = environ.get("HELM_RELEASE", "test")
-rest_cli_uri = f"http://ska-oso-oet-rest-{helm_release}:5000/api/v1.0/procedures"
+kube_namespace = environ.get("KUBE_NAMESPACE", "test")
+kube_host = environ.get("KUBE_HOST")
+rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0/procedures"
 REST_CLIENT = RestClientUI(rest_cli_uri)
-
 
 class Task:
     def __init__(self, task_id, script, creation_time, state):
@@ -127,7 +127,7 @@ class ScriptExecutor:
         return tasks[0]
 
     def start_script(self, task_id, *script_args) -> Task:
-        resp = REST_CLIENT.start(task_id, *script_args, listen=False)
+        resp = REST_CLIENT.start(pid=task_id, *script_args, listen=False)
         task = ScriptExecutor.parse_rest_start_response(resp)
         return task
 

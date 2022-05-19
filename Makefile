@@ -22,6 +22,7 @@ ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 TARANTA_USER ?= user1## the username for authentication to taranta services
 TARANTA_PASSWORD ?= abc123## the password for authentication to taranta services
 TARANTA_PASSPORT = $(TARANTA_PASSWORD)## required for ska-ser-skallop
+OET_INGRESS_ENABLED ?= false
 MINIKUBE_RC := $(shell minikube ip 1>/dev/null 2> /dev/null; echo $$?)
 ifeq ($(MINIKUBE_RC),0)
 MINIKUBE_IP = $(shell minikube ip)
@@ -89,6 +90,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	--set ska-oso-oet.rest.ingress.enabled=$(OET_INGRESS_ENABLED) \
 	$(SDP_PROXY_VARS)
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes

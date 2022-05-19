@@ -14,6 +14,7 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(reason="SKB-144 caused by duplicate deviceservers deployed by TMC mocks")
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario(
@@ -23,6 +24,7 @@ def test_tmc_start_up_telescope_mid_sdp_only():
     """Start up the telescope in mid  (sdp only)."""
 
 
+@pytest.mark.skip(reason="SKB-144 caused by duplicate deviceservers deployed by TMC mocks")
 @pytest.mark.skamid
 @pytest.mark.standby
 @scenario(

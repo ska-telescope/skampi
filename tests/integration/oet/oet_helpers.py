@@ -56,7 +56,7 @@ class ScriptExecutor:
         """
         task_list = []
         lines = resp.splitlines()
-        LOGGER.info(f"oet rest cli response {lines}")
+        # LOGGER.info(f"oet rest cli response {lines}")
         # Remove the headers
         del lines[0:2]
         # Remove the 'For more details..' line

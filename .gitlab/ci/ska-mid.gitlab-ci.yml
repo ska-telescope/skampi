@@ -24,6 +24,7 @@ mid-test:
   script:
     - echo "########## Running Skampi Acceptance and End to End Tests"
     - make python-test
+  after_script:
     - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG

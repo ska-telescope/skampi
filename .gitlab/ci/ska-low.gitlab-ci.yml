@@ -21,10 +21,10 @@ low-test:
   extends:
     - .tags_default
     - .deploy_chart_before
-    - .uninstall_chart_after
   script:
     - echo "########## Running Skampi Acceptance and End to End Tests"
     - make python-test
+    - *uninstall_chart_after
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:

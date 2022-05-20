@@ -6,6 +6,17 @@
 .create_k8s_creds: &create_k8s_creds
   - bash scripts/gitlab_section.sh creds "Create K8s Credentials" make skampi-credentials
 
+# create namespace scoped credentials
+.uninstall_chart_after: &uninstall_chart_after
+  - echo $CI_JOB_NAME - $CI_JOB_STAGE
+  - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+  - make k8s-uninstall-chart || true
+  - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
+  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
+  - make k8s-delete-namespace
+  - make delete-sdp-namespace
+  - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
+
 # must have K8S_CHART set correctly
 .deploy_chart_before:
   before_script:
@@ -36,6 +47,7 @@
     - make skampi-vars
     - echo "#####################################"
     - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
+    - *uninstall_chart_after
 
 .deploy_chart_and_test_integration:
   script:
@@ -57,6 +69,7 @@
     - |-
       [[ ! -z $NO_SKAMPI_LINKS ]] || make skampi-links
     - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
+    - *uninstall_chart_after
 
 .uninstall_chart_before:
   before_script:
@@ -78,24 +91,12 @@
     - make k8s-delete-namespace
     - make delete-sdp-namespace
 
-.uninstall_chart_after:
-  after_script:
-    - echo $CI_JOB_NAME - $CI_JOB_STAGE
-    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-    - make k8s-uninstall-chart || true
-    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
-    - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
-    - make k8s-delete-namespace
-    - make delete-sdp-namespace
-    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
-
 ## Not currently used!!!
 .deploy_test_destroy:
   stage: test
   extends:
     - .deploy_chart_before
     - .test_deployment
-    - .uninstall_chart_after
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

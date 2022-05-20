@@ -105,7 +105,7 @@ KUBE_APP = ska-tango-images
 CI_JOB_ID ?= local##local default for ci job id
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
-K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.9.1## docker image that will be run for testing purpose
+K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.16.3## docker image that will be run for testing purpose
 
 # import your personal semi-static config
 -include PrivateRules.mak
@@ -161,6 +161,7 @@ K8S_TEST_TARGET = test
 K8S_TEST_MAKE_PARAMS = \
 	SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
 	KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
+	KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP) \
 	HELM_RELEASE=$(HELM_RELEASE) \
 	TANGO_HOST=$(TANGO_HOST) \
 	CI_JOB_TOKEN=$(CI_JOB_TOKEN) \

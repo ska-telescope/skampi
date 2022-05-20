@@ -1,0 +1,18 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/Users/aragorn/code/skampi'
+ 
+for mkfile in Makefile PrivateRules.mak .make/oci.mk .make/k8s.mk .make/helm.mk .make/python.mk .make/base.mk .make/release.mk .make/docs.mk .make/make.mk .make/dev.mk .make/help.mk resources/localhelpers.mk resources/skampi.mk; do \
+	section=`echo $mkfile | sed 's/\.\.\///g' | sed 's/^\.make\///g' | sed 's/\.mk//g'`; \
+	if [[ "$section" != "base" ]]; then \
+		if [[ "" == "" ]] || [[ $( echo $section | grep "" ) ]]; then \
+			echo ""; echo "------"; \
+			echo "SECTION: $section"; \
+			echo "MAKE TARGETS:"; \
+			grep -E '^[0-9a-zA-Z_-]+:.*?## .*$' $mkfile | sed 's/^\.\.\///' | sed 's/^\.make\///' | sort | awk 'BEGIN {FS = ": .*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $1, $2}'; \
+			echo ""; echo "MAKE VARS (+defaults):"; \
+			grep -E '^[0-9a-zA-Z_-]+ \?=.*$' $mkfile | sed 's/^\.\.\///' | sed 's/^\.make\///' | sort | awk 'BEGIN {FS = " \\?= "}; {printf "\033[36m%-30s\033[0m %s\n", $1, $2}' || true ; \
+		fi; \
+	fi; \
+done
+make: Leaving directory '/Users/aragorn/code/skampi'
+ 

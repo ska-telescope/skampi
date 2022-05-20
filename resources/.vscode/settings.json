@@ -1,0 +1,22 @@
+{
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": true,
+    "python.testing.pytestArgs": [
+        "./tests/integration/",
+        "./tests/unit/",
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.envFile": "${workspaceFolder}/.vscode/.env",
+    "yaml.customTags": [
+        "!reference sequence"
+    ],
+    "python.pythonPath": ".venv/bin/python",
+    // "terminal.integrated.shell.linux": "/bin/bash",
+    "python.formatting.provider": "black",
+    "python.linting.flake8Enabled": true,
+    "python.formatting.blackPath": ".venv/bin/black",
+    "python.linting.flake8Path": ".venv/bin/flake8",
+    "esbonio.server.enabled": true,
+    "docker.host": "unix://$HOME/.lima/docker/sock/docker.sock",
+}

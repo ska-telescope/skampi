@@ -1,0 +1,2092 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'all'.  Stop.
+
+# GNU Make 4.3
+# Built for x86_64-apple-darwin20.1.0
+# Copyright (C) 1988-2020 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+ 
+
+# Make data base, printed on Thu May 19 19:24:41 2022
+
+# Variables
+
+# environment
+LC_ALL = C
+# makefile (from 'Makefile', line 34)
+KUBE_BRANCH = local
+# makefile (from 'Makefile', line 147)
+SUBARRAY = 'ska_mid/tm_subarray_node'
+# makefile (from '.make/oci.mk', line 8)
+PROJECT_NAME = $(shell basename $(CURDIR))
+# makefile (from '.make/help.mk', line 25)
+TEST_TERMINAL := 
+# environment
+TMPDIR = /var/folders/7l/dpcst7qj7334s0z3s6fvjkh80000gn/T/
+# environment
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.43809121.43809127
+# makefile (from '.make/docs.mk', line 15)
+DOCS_BUILDDIR = docs/build 
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/7l/dpcst7qj7334s0z3s6fvjkh80000gn/T/vscode-ipc-37fd328d-158e-4472-8501-0b087e09d4ab.sock
+# makefile (from 'Makefile', line 25)
+MINIKUBE_RC := 85
+# environment
+VSCODE_CWD = /
+# makefile (from '.make/k8s.mk', line 334)
+k8s_test_src_dir = $(shell if [ -d src ]; then echo "src/"; fi)
+# makefile (from '.make/k8s.mk', line 3)
+K8S_SUPPORT := /Users/aragorn/code/skampi/.make/.make-k8s-support
+# makefile (from '.make/python.mk', line 29)
+PYTHON_TEST_FILE = tests/ 
+# default
+MAKE_COMMAND := make
+# makefile (from 'Makefile', line 9)
+INGRESS_HOST = k8s.stfc.skao.int
+# makefile (from '.make/oci.mk', line 36)
+OCI_TOOLS_IMAGE = artefact.skao.int/ska-tango-images-pytango-builder:9.3.12
+# makefile (from 'Makefile', line 42)
+DASHMARK = ska$(TEL)
+# makefile (from 'PrivateRules.mak', line 18)
+K8S_TIMEOUT = 600s
+# makefile (from 'Makefile', line 36)
+ADDMARKS = 
+# environment
+__CFBundleIdentifier = com.microsoft.VSCode
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# makefile (from 'Makefile', line 184)
+K8S_TEST_TEST_COMMAND = make -s $(K8S_TEST_MAKE_PARAMS) $(K8S_TEST_TARGET)
+# makefile (from '.make/oci.mk', line 28)
+OCI_IMAGE_DIRS := testing
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# makefile (from '.make/python.mk', line 16)
+METADATA_SUPPORT := /Users/aragorn/code/skampi/.make/.make-metadata-support
+# default
+.VARIABLES := 
+# environment
+COMMAND_MODE = unix2003
+# environment
+PWD = /Users/aragorn/code/skampi
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+LSCOLORS = Gxfxcxdxbxegedabagacad
+# makefile (from '.make/release.mk', line 42)
+CHANGELOG_CONFIG = ".chglog/config.yml"
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+VSCODE_LOG_STACK = false
+# automatic
+%F = $(notdir $%)
+# makefile (from '.make/docs.mk', line 13)
+DOCS_SPHINXBUILD = python3 -msphinx 
+# environment
+VSCODE_CODE_CACHE_PATH = /Users/aragorn/Library/Application Support/Code/CachedData/da15b6fd3ef856477bf6f4fb29ba1b7af717770d
+# makefile (from '.make/k8s.mk', line 16)
+K8S_TEST_RUNNER_ADD_ARGS = --limits='cpu=1000m,memory=500Mi' --requests='cpu=900m,memory=400Mi' 
+# environment
+LANG = C
+# makefile (from '.make/docs.mk', line 14)
+DOCS_SOURCEDIR = docs/src 
+# makefile (from '.make/oci.mk', line 26)
+OCI_IMAGE_BUILD_CONTEXT = .  
+# default
+.LOADED := 
+# default
+.INCLUDE_DIRS = /usr/local/Cellar/make/4.3/include /usr/local/include
+# environment
+__CF_USER_TEXT_ENCODING = 0x1F5:0x0:0x0
+# makefile
+MAKEFLAGS = pqrR
+# makefile (from '.make/k8s.mk', line 38)
+COUNT = 1
+# makefile (from 'Makefile', line 137)
+K8S_TEST_RUNNER = test-runner-$(CI_JOB_ID)
+# makefile
+CURDIR := /Users/aragorn/code/skampi
+# makefile (from 'Makefile', line 15)
+HELM_RELEASE = test
+# environment
+VSCODE_PIPE_LOGGING = true
+# makefile (from '.make/docs.mk', line 12)
+DOCS_SPHINXOPTS = 
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# makefile (from '.make/release.mk', line 32)
+VERSION = $(shell . $(RELEASE_SUPPORT) ; RELEASE_CONTEXT_DIR=$(RELEASE_CONTEXT_DIR) setContextHelper; getVersion)
+# makefile (from '.make/helm.mk', line 22)
+HELM_YQ_INSTALL_DIR = /usr/local/bin
+# makefile (from 'PrivateRules.mak', line 16)
+K8S_CHART = $(DEPLOYMENT_CONFIGURATION)
+# environment
+MFLAGS = -pqrR
+# environment
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.X8ncS2HEMr/Listeners
+# default
+.SHELLFLAGS := -c
+# makefile (from 'Makefile', line 97)
+HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
+# makefile (from 'Makefile', line 13)
+TANGO_HOST = $(TANGO_DATABASE_DS):10000
+# makefile (from '.make/release.mk', line 34)
+RELEASE_CONTEXT_DIR = 
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# makefile (from 'resources/skampi.mk', line 1)
+MAKEFILE_LIST := Makefile PrivateRules.mak .make/oci.mk .make/k8s.mk .make/helm.mk .make/python.mk .make/base.mk .make/release.mk .make/docs.mk .make/make.mk .make/dev.mk .make/help.mk resources/localhelpers.mk resources/skampi.mk
+# makefile (from '.make/release.mk', line 39)
+DOCKER_FILE_PATH = Dockerfile
+# automatic
+@F = $(notdir $@)
+# environment
+ZSH = /Users/aragorn/.oh-my-zsh
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+VSCODE_PID = 23695
+# makefile (from '.make/k8s.mk', line 36)
+MARK = all
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# makefile (from 'PrivateRules.mak', line 12)
+CONFIG = mid
+# makefile (from 'Makefile', line 108)
+K8S_TEST_IMAGE_TO_TEST = artefact.skao.int/ska-ser-skallop:2.9.1
+# makefile (from '.make/release.mk', line 33)
+TAG = $(shell . $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=$(RELEASE_CONTEXT_DIR) setContextHelper; getTag)
+# makefile (from 'Makefile', line 4)
+XAUTHORITYx = ${XAUTHORITY}
+# automatic
+*F = $(notdir $*)
+# makefile (from 'Makefile', line 105)
+CI_JOB_ID = local
+# makefile (from '.make/python.mk', line 49)
+PYTHON_PUBLISH_USERNAME = 
+# makefile (from 'Makefile', line 12)
+TANGO_DATABASE_DS = databaseds-tango-base
+# makefile (from '.make/dev.mk', line 4)
+MAKE_VSCODE_CONFIG_DIR := resources/vscode
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupport":true}
+# default
+MAKE_HOST := x86_64-apple-darwin20.1.0
+# makefile (from '.make/docs.mk', line 7)
+SHELL := /usr/bin/env bash
+# default
+MAKECMDGOALS := all
+# makefile (from '.make/python.mk', line 31)
+PYTHON_SWITCHES_FOR_BLACK = --line-length 79 
+# makefile (from '.make/python.mk', line 51)
+PYTHON_PUBLISH_PASSWORD = 
+# makefile (from '.make/k8s.mk', line 332)
+k8s_test_src_dirs = $(shell if [ -n "$(k8s_test_src_modules)" ]; then for pkg in $(k8s_test_src_modules); do echo -n ":/app/$$pkg"; done; fi)
+# environment
+SHLVL = 1
+# makefile (from 'PrivateRules.mak', line 39)
+JIRA_URL = https://jira-test.skatelescope.org
+# environment
+MAKELEVEL := 0
+# makefile (from '.make/oci.mk', line 27)
+OCI_IMAGE_FILE_PATH = Dockerfile 
+# default
+MAKE = $(MAKE_COMMAND)
+# environment
+PATH = /usr/local/Cellar/pyenv-virtualenv/1.1.5/shims:/usr/local/opt/make/libexec/gnubin:/Users/aragorn/.local/bin:/Users/aragorn/bin:/usr/local/bin:/Users/aragorn/.pyenv/shims:/Users/aragorn/.pyenv/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+# makefile (from '.make/python.mk', line 39)
+PYTHON_LINT_TARGET = src/ tests/  
+# makefile (from 'Makefile', line 125)
+K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_DATABASE_DS):10000 --set global.cluster_domain=$(CLUSTER_DOMAIN) --set global.device_server_port=$(TANGO_SERVER_PORT) --set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) --set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) --set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) --set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) --set ska-tango-archiver.port=$(ARCHIVER_PORT) --set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) --set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) $(SDP_PROXY_VARS) --set ska-taranta.enabled=false
+# default
+MAKEFILES := 
+# makefile (from '.make/k8s.mk', line 331)
+k8s_test_src_modules = $(shell if [ -d src ]; then cd src; ls -d */ 2>/dev/null  | grep -v .egg-info; fi)
+# automatic
+^F = $(notdir $^)
+# makefile (from 'Makefile', line 145)
+TELESCOPE = 'SKA-Mid'
+# makefile (from 'PrivateRules.mak', line 42)
+SKALLOP_VERSION = "2.18.3+dev.c05fd030e"
+# makefile (from '.make/k8s.mk', line 30)
+K8S_UMBRELLA_CHART_PATH = ./charts/$(K8S_CHART)/ 
+ 
+# environment
+PYENV_VIRTUALENV_INIT = 1
+# makefile (from '.make/oci.mk', line 29)
+OCI_IMAGES = $(OCI_IMAGE_DIRS) 
+# makefile (from 'Makefile', line 32)
+DOMAIN = branch
+# makefile (from '.make/helm.mk', line 19)
+HELM_CHARTS_CHANNEL = dev  
+# makefile (from 'Makefile', line 24)
+TARANTA_PASSPORT = $(TARANTA_PASSWORD)
+# makefile (from 'Makefile', line 31)
+KUBE_HOST = $(LOADBALANCER_IP)
+# makefile (from '.make/python.mk', line 35)
+PYTHON_SWITCHES_FOR_PYLINT = 
+# makefile (from 'Makefile', line 55)
+CLUSTER_TEST_NAMESPACE = default
+# makefile (from '.make/oci.mk', line 31)
+OCI_IMAGE = $(PROJECT_NAME) 
+# makefile (from '.make/release.mk', line 43)
+CHANGELOG_TEMPLATE = ".chglog/CHANGELOG.tpl.md"
+# environment
+VSCODE_LOG_NATIVE = false
+# makefile (from 'Makefile', line 126)
+DISABLE_TARANTA = and not taranta
+# makefile (from 'Makefile', line 2)
+THIS_HOST := 192.168.4.32
+# makefile (from '.make/helm.mk', line 17)
+HELM_CHARTS = $(HELM_CHART_DIRS)
+# makefile (from 'Makefile', line 7)
+SKIP_HELM_DEPENDENCY_UPDATE = 0
+# environment
+DOCKER_HOST = unix:///Users/aragorn/.lima/docker.sock
+# automatic
+?F = $(notdir $?)
+# makefile (from '.make/release.mk', line 21)
+NAME = $(shell basename $(CURDIR))
+# makefile (from '.make/helm.mk', line 20)
+HELM_BUILD_PUSH_SKIP = 
+# makefile (from 'PrivateRules.mak', line 21)
+TEL = $(CONFIG)
+# automatic
++F = $(notdir $+)
+# environment
+LESS = -R
+# makefile (from '.make/k8s.mk', line 333)
+k8s_test_folder = tests
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# environment
+PYENV_ROOT = /Users/aragorn/.pyenv
+# 'override' directive
+GNUMAKEFLAGS := 
+# makefile (from 'Makefile', line 143)
+BIGGER_THAN = 
+# makefile (from '.make/oci.mk', line 13)
+OCI_IMAGE_SCRIPT_DIR := /Users/aragorn/code/skampi/.make
+# makefile (from 'Makefile', line 95)
+SKAMPI_K8S_CHARTS = ska-mid ska-low ska-landingpage
+# makefile (from 'PrivateRules.mak', line 38)
+PYTHON_VARS_AFTER_PYTEST = tests/unit -m infra
+# environment
+LOGNAME = aragorn
+# makefile (from 'Makefile', line 14)
+TANGO_SERVER_PORT = 45450
+# makefile (from 'Makefile', line 158)
+K8S_TEST_TARGET = test
+# makefile (from 'PrivateRules.mak', line 15)
+DEPLOYMENT_CONFIGURATION = ska-$(CONFIG)
+# makefile (from 'Makefile', line 21)
+ITANGO_ENABLED = false
+# makefile (from '.make/helm.mk', line 21)
+HELM_YQ_VERSION = 4.14.1
+# environment
+XPC_FLAGS = 0x0
+# makefile (from '.make/help.mk', line 4)
+.DEFAULT_GOAL := help
+# makefile (from 'PrivateRules.mak', line 41)
+JIRA_PASSWORD = SwedenBoth42-
+# makefile (from '.make/help.mk', line 16)
+HELP_CURRENT_TARGET := all
+# makefile (from '.make/release.mk', line 38)
+DOCKER_BUILD_CONTEXT = .
+# makefile (from 'Makefile', line 3)
+DISPLAY := 192.168.4.32:0
+# environment
+USER = aragorn
+# default
+MAKE_VERSION := 4.3
+# makefile (from '.make/k8s.mk', line 349)
+k8s_test_runner = $(K8S_TEST_RUNNER) -n $(KUBE_NAMESPACE)
+# makefile (from 'Makefile', line 161)
+K8S_TEST_MAKE_PARAMS = SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(HELM_RELEASE) TANGO_HOST=$(TANGO_HOST) CI_JOB_TOKEN=$(CI_JOB_TOKEN) MARK='$(MARK)' COUNT=$(COUNT) FILE='$(FILE)' SKA_TELESCOPE=$(TELESCOPE) CENTRALNODE_FQDN=$(CENTRALNODE) SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) OET_READ_VIA_PUBSUB=$(PUBSUB) JIRA_AUTH=$(JIRA_AUTH) CAR_RAW_USERNAME=$(RAW_USER) CAR_RAW_PASSWORD=$(RAW_PASS) CAR_RAW_REPOSITORY_URL=$(RAW_HOST) TARANTA_USER=$(TARANTA_USER) TARANTA_PASSWORD=$(TARANTA_PASSWORD) TARANTA_PASSPORT=$(TARANTA_PASSPORT) KUBE_HOST=$(KUBE_HOST)
+# 'override' directive
+.SHELLSTATUS := 2
+# makefile (from '.make/python.mk', line 47)
+PYTHON_BUILD_TYPE = non_tag_pyproject 
+# makefile (from '.make/release.mk', line 41)
+CHANGELOG_FILE = CHANGELOG.md
+# makefile (from 'Makefile', line 146)
+CENTRALNODE = 'ska_mid/tm_central/central_node'
+# makefile (from '.make/python.mk', line 37)
+PYTHON_SWITCHES_FOR_FLAKE8 = 
+# makefile (from '.make/oci.mk', line 12)
+OCI_SUPPORT := /Users/aragorn/code/skampi/.make/.make-oci-support
+# makefile (from '.make/oci.mk', line 33)
+OCI_BUILD_ADDITIONAL_ARGS = 
+# makefile (from '.make/k8s.mk', line 4)
+BASE := /Users/aragorn/code/skampi
+# makefile (from '.make/help.mk', line 7)
+HELP_TARGET_ARGS := 
+# environment
+PAGER = less
+# makefile (from 'Makefile', line 102)
+SKAMPI_KUBE_APP = skampi
+# environment
+_ = /usr/local/opt/make/libexec/gnubin/make
+# makefile (from 'Makefile', line 30)
+TARANTA_AUTH_DASHBOARD_ENABLE = false
+# makefile (from 'Makefile', line 23)
+TARANTA_PASSWORD = abc123
+# makefile (from '.make/k8s.mk', line 350)
+k8s_test_kubectl_run_args = $(k8s_test_runner) --restart=Never --pod-running-timeout=$(K8S_TIMEOUT) --image-pull-policy=IfNotPresent --image=$(K8S_TEST_IMAGE_TO_TEST) --env=INGRESS_HOST=$(INGRESS_HOST) $(PROXY_VALUES)
+# makefile (from 'Makefile', line 6)
+VALUES = values.yaml
+# makefile (from '.make/oci.mk', line 14)
+OCI_NEXUS_REPO = docker-internal
+# makefile (from '.make/helm.mk', line 16)
+HELM_CHART_DIRS := ska-landingpage ska-low ska-mid
+# makefile (from 'Makefile', line 52)
+DASHCOUNT = 
+# makefile (from 'Makefile', line 22)
+TARANTA_USER = user1
+# makefile (from '.make/release.mk', line 26)
+RELEASE_SUPPORT := /Users/aragorn/code/skampi/.make/.make-release-support
+# makefile (from 'Makefile', line 103)
+KUBE_APP = ska-tango-images
+# makefile (from 'resources/localhelpers.mk', line 13)
+PYTHON_VARS_BEFORE_PYTEST = PYTHONPATH=./src:/app/src LOADBALANCER_IP=${LOADBALANCER_IP} CLUSTER_TEST_NAMESPACE=$(CLUSTER_TEST_NAMESPACE)
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# makefile (from 'PrivateRules.mak', line 14)
+KUBE_NAMESPACE_SDP = integration-$(CONFIG)-sdp
+# makefile (from 'Makefile', line 16)
+MINIKUBE = true
+# makefile (from '.make/k8s.mk', line 37)
+FILE = 
+# environment
+HOME = /Users/aragorn
+# makefile (from '.make/python.mk', line 53)
+PYTHON_PUBLISH_URL = 
+# makefile (from '.make/oci.mk', line 95)
+OCI_SKIP_PUSH = yes
+# makefile (from '.make/python.mk', line 13)
+PYTHON_SUPPORT := /Users/aragorn/code/skampi/.make/.make-python-support
+# makefile (from '.make/oci.mk', line 34)
+OCI_LINTER = hadolint/hadolint:v2.9.2
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+VSCODE_IPC_HOOK = /Users/aragorn/Library/Application Support/Code/1.67.1-main.sock
+# makefile (from '.make/k8s.mk', line 29)
+K8S_CHARTS = $(K8S_CHART) 
+# makefile (from '.make/python.mk', line 15)
+PYTHON_SCRIPT_DIR := /Users/aragorn/code/skampi/.make
+# makefile (from 'PrivateRules.mak', line 13)
+KUBE_NAMESPACE = integration-$(CONFIG)
+# makefile (from '.make/helm.mk', line 14)
+HELM_SUPPORT := /Users/aragorn/code/skampi/.make/.make-helm-support
+# makefile (from '.make/k8s.mk', line 34)
+K8S_TEST_AUX_DIRS = 
+# default
+.RECIPEPREFIX := 
+# automatic
+<F = $(notdir $<)
+# makefile (from 'Makefile', line 45)
+TESTCOUNT = 
+# makefile (from '.make/oci.mk', line 32)
+OCI_BUILDER = docker 
+# default
+SUFFIXES := 
+# makefile (from 'Makefile', line 213)
+k8s_test_command = /bin/bash -o pipefail -c " mkfifo results-pipe && tar zx --warning=all && ( if [[ -f pyproject.toml ]]; then poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes --dev; echo 'k8s-test: installing poetry-requirements.txt';  pip install -qUr poetry-requirements.txt; cd $(k8s_test_folder); else if [[ -f $(k8s_test_folder)/requirements.txt ]]; then echo 'k8s-test: installing $(k8s_test_folder)/requirements.txt'; pip install -qUr $(k8s_test_folder)/requirements.txt; fi; fi ) && cd $(k8s_test_folder) && export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs) && mkdir -p build && ( $(K8S_TEST_TEST_COMMAND) ); echo \$$? > build/status; pip list > build/pip_list.txt; echo \"k8s_test_command: test command exit is: \$$(cat build/status)\"; tar zcf ../results-pipe build;"
+# makefile (from '.make/python.mk', line 33)
+PYTHON_SWITCHES_FOR_ISORT = -w 79 
+# makefile (from '.make/k8s.mk', line 5)
+K8S_HELM_REPOSITORY = https://artefact.skao.int/repository/helm-internal
+# makefile (from 'Makefile', line 155)
+PUBSUB = true
+# makefile (from 'Makefile', line 29)
+LOADBALANCER_IP = $(MINIKUBE_IP)
+# makefile (from 'Makefile', line 17)
+UMBRELLA_CHART_PATH = ./charts/$(DEPLOYMENT_CONFIGURATION)/
+# default
+ 
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink load
+# makefile (from 'Makefile', line 99)
+OCI_IMAGES_TO_PUBLISH = 
+# makefile (from '.make/dev.mk', line 3)
+MAKE_GIT_HOOKS_DIR := resources/git-hooks/
+# makefile (from 'PrivateRules.mak', line 40)
+JIRA_USERNAME = a.debeer
+# makefile (from '.make/python.mk', line 23)
+PYTHON_RUNNER = 
+# makefile (from 'PrivateRules.mak', line 43)
+CAR_PYPI_REPOSITORY_URL = https://pypi:glpat-pZ_nVkbF4CTmfCU1m87z@gitlab.com/api/v4/projects/21173098/packages/pypi/simple
+# makefile (from '.make/oci.mk', line 24)
+CAR_OCI_REGISTRY_HOST = artefact.skao.int
+# makefile (from 'Makefile', line 56)
+CLUSTER_DOMAIN = cluster.local
+# variable set hash-table stats:
+# Load=206/1024=20%, Rehash=0, Collisions=50/558=9%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 16777225, inode 10368840): 38 files, no impossibilities.
+
+# 38 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+python-pre-set-release:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+dev-git-hooks:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/dev.mk', line 19):
+	@if [[ -d "$(MAKE_GIT_HOOKS_DIR)" ]]; then \
+		echo "dev-git-hooks: enabling hooks in $(MAKE_GIT_HOOKS_DIR): $$(ls $(MAKE_GIT_HOOKS_DIR))"; \
+		git config --local core.hooksPath  $(MAKE_GIT_HOOKS_DIR); \
+	else \
+		echo "dev-git-hooks: no hooks found in $(MAKE_GIT_HOOKS_DIR)"; \
+	fi
+
+pre-set-release:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+upgrade-skampi-chart:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/localhelpers.mk', line 37):
+	@echo "THIS IS A SKAMPI SPECIFIC MAKE TARGET"
+	@if [ "" == "$(HELM_REPO_NAME)" ]; then \
+		echo "Installing Helm charts from current ref of git repository..."; \
+		test "$(SKIP_HELM_DEPENDENCY_UPDATE)" == "1" || helm dependency update $(UMBRELLA_CHART_PATH); \
+	else \
+		echo "Deploying from artefact repository..."; \
+		helm repo add $(HELM_REPO_NAME) $(CAR_HELM_REPOSITORY_URL); \
+		helm search repo $(HELM_REPO_NAME) | grep DESCRIPTION; \
+		helm search repo $(HELM_REPO_NAME) | grep $(UMBRELLA_CHART_PATH); \
+	fi
+	helm upgrade $(HELM_RELEASE) --install --wait \
+		$(K8S_CHART_PARAMS) \
+		--values $(VALUES) \
+		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE);
+
+docs-help:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/docs.mk', line 33):
+	@$(DOCS_SPHINXBUILD) -M help $(DOCS_SOURCEDIR) $(DOCS_BUILDDIR) $(DOCS_SPHINXOPTS) $(DOCS_TARGET_ARGS)
+
+oci-post-lint:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+oci-do-scan-all:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/oci.mk', line 254):
+	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make oci-scan OCI_IMAGE=$(ociimage); rc=$$?; if [[ $$rc -ne 0 ]]; then exit $$rc; fi;)
+
+reinstall-chart: uninstall install
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+oci-pre-publish-all:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+docs-do-build:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/docs.mk', line 42):
+	mkdir -p docs/build
+	$(DOCS_SPHINXBUILD) -M $(DOCS_TARGET_ARGS) $(DOCS_SOURCEDIR) $(DOCS_BUILDDIR) $(DOCS_SPHINXOPTS)
+
+helm-pre-lint:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+resources/localhelpers.mk:
+#  Implicit rule search has been done.
+#  Last modified 2022-03-10 12:04:55.531579517
+#  File has been updated.
+#  Successfully updated.
+
+check-status:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 256):
+	@. $(RELEASE_SUPPORT) ; ! hasChanges || (echo "ERROR: there are still outstanding changes" >&2 && exit 1) ;
+
+k8s-chart-version:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 66):
+	@. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sChartVersion $(K8S_CHART)
+
+skampi-k8s-post-test:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.make/release.mk:
+#  Implicit rule search has been done.
+#  Last modified 2022-04-11 07:58:54.246507621
+#  File has been updated.
+#  Successfully updated.
+
+# makefile (from 'resources/localhelpers.mk', line 5)
+namespace-sdp: KUBE_NAMESPACE := integration-mid-sdp
+namespace-sdp:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=1/32=3%, Rehash=0, Collisions=0/4=0%
+#  recipe to execute (from 'resources/localhelpers.mk', line 7):
+	@make k8s-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE)
+
+helm-pre-set-release:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+python-publish: python-pre-publish python-do-publish python-post-publish
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+verify-minikube:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/localhelpers.mk', line 15):
+	@make python-test LOADBALANCER_IP=$(shell minikube ip) PYTHON_VARS_AFTER_PYTEST=' -m infra'
+	@make k8s-delete-namespace KUBE_NAMESPACE=$(CLUSTER_TEST_NAMESPACE)
+
+python-do-set-release:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 133):
+	@. $(RELEASE_SUPPORT) ; ! hasChanges "RELEASE_CHECK" || (echo "ERROR: there are still outstanding changes" >&2 && exit 1) ;
+	poetry version $(VERSION)
+
+oci-post-build-all:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-do-uninstall-chart:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 239):
+	@echo "uninstall-chart: release: $(HELM_RELEASE) in Namespace: $(KUBE_NAMESPACE)"
+	@helm uninstall  $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE) || true
+
+# Not a target:
+PrivateRules.mak:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-04 09:30:49.33185322
+#  File has been updated.
+#  Successfully updated.
+
+python-post-format:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+python-do-format:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/python.mk', line 66):
+	$(PYTHON_RUNNER) isort --profile black $(PYTHON_SWITCHES_FOR_ISORT) $(PYTHON_LINT_TARGET)
+	$(PYTHON_RUNNER) black $(PYTHON_SWITCHES_FOR_BLACK) $(PYTHON_LINT_TARGET)
+
+make:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+ 
+#  recipe to execute (from '.make/make.mk', line 18):
+	cd .make && git checkout master
+	cd .make && git fetch
+	git submodule update --remote --merge
+
+docs-post-build:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+python-do-publish:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/python.mk', line 165):
+	$(PYTHON_RUNNER) twine upload --username ${PYTHON_PUBLISH_USERNAME} --password ${PYTHON_PUBLISH_PASSWORD} --repository-url $(PYTHON_PUBLISH_URL) dist/*
+
+release-cn: .release
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 259):
+	@. $(RELEASE_SUPPORT) ; releaseCN
+
+helm-post-set-release:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+oci-build-all: oci-pre-build-all oci-do-build-all oci-post-build-all
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+helm-pre-publish:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+local-pre-test:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'PrivateRules.mak', line 33):
+	@export MAKE_EXPORTED_VAR=Hello
+
+k8s-describe:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 297):
+	@. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sDescribe $(KUBE_NAMESPACE) $(KUBE_APP)
+
+vars: skampi-vars
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+python-post-lint:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+oci-image-lint:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/oci.mk', line 46):
+	@. $(OCI_SUPPORT) ; OCI_BUILDER=$(OCI_BUILDER) \
+	OCI_LINTER=$(OCI_LINTER) \
+	OCI_IMAGE_FILE_PATH=$(OCI_IMAGE_FILE_PATH) \
+	ociImageLint "$(OCI_IMAGES)"
+
+links: skampi-links
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+helm-lint: helm-pre-lint helm-do-lint helm-post-lint
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-18 13:01:02.898804867
+#  File has been updated.
+#  Successfully updated.
+
+skampi-k8s-pre-test:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-pre-test:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-do-dep-update:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 156):
+	@echo "k8s-dep-update: updating dependencies"
+	@cd charts; \
+	for i in $(K8S_CHARTS); do \
+		echo "+++ Updating $${i} chart +++"; \
+		helm dependency update $${i}; \
+	done;
+
+submodule:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/make.mk', line 30):
+	git submodule init
+	git submodule update --recursive --remote
+	git submodule update --init --recursive
+
+k8s-do-template-chart: k8s-clean k8s-dep-update
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 204):
+	@echo "template-chart: install $(K8S_UMBRELLA_CHART_PATH) release: $(HELM_RELEASE) in Namespace: $(KUBE_NAMESPACE) with params: $(K8S_CHART_PARAMS)"
+	helm template $(HELM_RELEASE) \
+	$(K8S_CHART_PARAMS) \
+	--debug \
+	 $(K8S_UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
+	 rm -f gilab_values.yaml
+
+helm-do-build: helm-install-yq
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/helm.mk', line 116):
+	@. $(HELM_SUPPORT) ; \
+		VERSION=$(VERSION) \
+		HELM_BUILD_PUSH_SKIP=$(HELM_BUILD_PUSH_SKIP) \
+		HELM_CHARTS_CHANNEL=$(HELM_CHARTS_CHANNEL) \
+		helmChartBuild "$(HELM_CHARTS_TO_PUBLISH)"
+
+oci-post-scan:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+helm-post-lint:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-pre-template-chart:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+install-or-upgrade: k8s-install-chart
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# 'override' directive
+oci-do-publish: .SHELLSTATUS := 0
+# makefile (from '.make/oci.mk', line 158)
+oci-do-publish: VERSION := 0.8.2
+oci-do-publish:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=2/32=6%, Rehash=0, Collisions=0/8=0%
+#  recipe to execute (from '.make/oci.mk', line 160):
+	@. $(OCI_SUPPORT) ; \
+	export OCI_NEXUS_REPO=$(OCI_NEXUS_REPO); \
+	echo "oci-do-publish: Checking for $(OCI_IMAGE) $(VERSION)"; \
+	res=$$(ociImageExists "$(OCI_IMAGE)" "$(VERSION)"); \
+	echo "oci-do-publish: Image check returned: $$res"; \
+	if [[ "$$res" == "0" ]]; then \
+		echo "oci-publish:WARNING: $(CAR_OCI_REGISTRY_HOST)/$(OCI_IMAGE):$(VERSION) already exists, skipping "; \
+		exit 0; \
+	else \
+		echo "oci-do-publish: Pulling $${CI_REGISTRY}/$${CI_PROJECT_NAMESPACE}/$${CI_PROJECT_NAME}/$(OCI_IMAGE):$(VERSION)"; \
+		$(OCI_BUILDER) pull $${CI_REGISTRY}/$${CI_PROJECT_NAMESPACE}/$${CI_PROJECT_NAME}/$(OCI_IMAGE):$(VERSION); \
+		$(OCI_BUILDER) tag $${CI_REGISTRY}/$${CI_PROJECT_NAMESPACE}/$${CI_PROJECT_NAME}/$(OCI_IMAGE):$(VERSION) $(CAR_OCI_REGISTRY_HOST)/$(OCI_IMAGE):$(VERSION); \
+		echo "oci-do-publish: Pushing to $(CAR_OCI_REGISTRY_HOST)/$(OCI_IMAGE):$(VERSION)"; \
+		$(OCI_BUILDER) push $(CAR_OCI_REGISTRY_HOST)/$(OCI_IMAGE):$(VERSION); \
+	fi
+
+k8s-smoke-test: k8s-wait
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+helm-build: helm-pre-build helm-do-build helm-post-build
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+skampi-vars: k8s-vars
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/skampi.mk', line 16):
+	@echo "SKA_K8S_TOOLS_DEPLOY_IMAGE: $(SKA_K8S_TOOLS_DEPLOY_IMAGE)"
+	@echo "K8S_TEST_IMAGE_TO_TEST:     $(K8S_TEST_IMAGE_TO_TEST)"
+	@echo "KUBE_NAMESPACE:             $(KUBE_NAMESPACE)"
+	@echo "KUBE_NAMESPACE_SDP:         $(KUBE_NAMESPACE_SDP)"
+	@echo "INGRESS_HOST:               $(INGRESS_HOST)"
+	@echo "DEPLOYMENT_CONFIGURATION:   $(DEPLOYMENT_CONFIGURATION)"
+	@echo "K8S_CHART:                  $(K8S_CHART)"
+	@echo "HELM_RELEASE:               $(HELM_RELEASE)"
+	@echo "HELM_REPO_NAME:             $(HELM_REPO_NAME) ## (should be empty except on Staging & Production)"
+	@echo "VALUES:                     $(VALUES)"
+	@echo "TANGO_HOST:                 $(TANGO_HOST)"
+	@echo "ARCHIVER_DBNAME:            $(ARCHIVER_DBNAME)"
+	@echo "MARK:                       $(MARK)"
+	@echo "PYTHON_VARS_AFTER_PYTEST:   $(PYTHON_VARS_AFTER_PYTEST)"
+	@echo "CONFIG:                     $(CONFIG)"
+ 
+	@echo "TEL:                        $(TEL)"
+	@echo "TEST_ENV:                   $(TEST_ENV)"
+
+uninstall: k8s-uninstall-chart
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+.release:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 54):
+	@if [ -n "$(RELEASE_CONTEXT_DIR)" ]; then \
+		export RELEASE_CONTEXT_DIR="$(RELEASE_CONTEXT_DIR)/" ; \
+	fi; \
+	if [[ ! -f $${RELEASE_CONTEXT_DIR}.release ]]; then \
+		echo "release=0.0.0" > $${RELEASE_CONTEXT_DIR}.release; \
+		echo "tag=$(NAME)-0.0.0" >> $${RELEASE_CONTEXT_DIR}.release; \
+		echo INFO: $${RELEASE_CONTEXT_DIR}.release created; \
+		cat $${RELEASE_CONTEXT_DIR}.release; \
+	fi
+
+git-delete-tag: delete-git-tag
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+oci-pre-scan-all:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-delete-namespace:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 116):
+	@if [ "default" == "$(KUBE_NAMESPACE)" ] || [ "kube-system" == "$(KUBE_NAMESPACE)" ]; then \
+		echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
+		exit 1; \
+	else \
+		kubectl delete --ignore-not-found namespace $(KUBE_NAMESPACE); \
+	fi
+
+show-version: .release
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 75):
+	@. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=$(RELEASE_CONTEXT_DIR) setContextHelper; getVersion
+
+k8s-do-test:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 363):
+	@rm -fr build; mkdir build
+	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
+	@echo "k8s-test: start test runner: $(k8s_test_runner)"
+	@echo "k8s-test: sending test folder: tar -cz $(k8s_test_src_dir) $(k8s_test_folder) $(K8S_TEST_AUX_DIRS)"
+	( cd $(BASE); tar -cz $(k8s_test_src_dir) $(k8s_test_folder) $(K8S_TEST_AUX_DIRS) \
+	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
+	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
+	sleep 1; \
+	echo "k8s-test: waiting for test runner to boot up: $(k8s_test_runner)"; \
+	( \
+	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
+	wait_status=$$?; \
+	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
+	 ) && \
+		echo "k8s-test: $(k8s_test_runner) is up, now waiting for tests to complete" && \
+		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
+	\
+	cd $(BASE)/; \
+	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
+	echo "k8s-test: test run complete, processing files"; \
+	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
+	@echo "k8s-test: the test run exit code is ($$(cat build/status))"
+	@exit `cat build/status`
+
+oci-lint: oci-pre-lint oci-image-lint oci-post-lint
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-reinstall-chart: k8s-uninstall-chart k8s-install-chart
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+oci-post-scan-all:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+push-git-tag: show-version
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 207):
+	@if [[ -n "$(shell git remote -v)" ]]; then \
+		git push; \
+		git push --tags; \
+	else \
+		echo 'no remote to push tags to'; \
+	fi
+
+k8s-clean:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 132):
+	@rm -rf ./charts/*/charts/*.tgz \
+		./charts/*/Chart.lock \
+		./charts/*/requirements.lock \
+		./repository/* \
+		./.eggs \
+		./charts/build \
+		./build \
+		./docs/build \
+		./dist \
+		./*.egg-info \
+		tests/.pytest_cache \
+		tests/unit/__pycache__ \
+		tests/__pycache__ \
+		tests/*/__pycache__ \
+		src/*/__pycache__ \
+		src/*/*/__pycache__ \
+		.pytest_cache \
+		.coverage
+
+k8s-install-chart: k8s-pre-install-chart k8s-do-install-chart k8s-post-install-chart
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-post-dep-update:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-get-pods:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 312):
+	kubectl get pods -n $(KUBE_NAMESPACE)
+
+python-test: python-pre-test python-do-test python-post-test
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+python-do-test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/python.mk', line 141):
+	@$(PYTHON_RUNNER) pytest --version -c /dev/null
+	@mkdir -p build
+	$(PYTHON_VARS_BEFORE_PYTEST) $(PYTHON_RUNNER) pytest $(PYTHON_VARS_AFTER_PYTEST) \
+	 --cov=src --cov-report=term-missing --cov-report html:build/reports/code-coverage --cov-report xml:build/reports/code-coverage.xml --junitxml=build/reports/unit-tests.xml $(PYTHON_TEST_FILE)
+
+# Not a target:
+.make/python.mk:
+#  Implicit rule search has been done.
+#  Last modified 2022-04-08 10:14:06.388302018
+#  File has been updated.
+#  Successfully updated.
+
+python-post-publish:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+python-build: python-pre-build python-do-build python-post-build
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-bounce:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 227):
+	echo "stopping ..."; \
+	kubectl -n $(KUBE_NAMESPACE) scale --replicas=0 statefulset.apps -l app=$(KUBE_APP); \
+	echo "starting ..."; \
+	kubectl -n $(KUBE_NAMESPACE) scale --replicas=1 statefulset.apps -l app=$(KUBE_APP); \
+	echo "WARN: 'make k8s-wait' for terminating pods not possible. Use 'make k8s-watch'"
+
+# Not a target:
+.make/k8s.mk:
+#  Implicit rule search has been done.
+#  Last modified 2022-04-08 10:14:06.387084226
+#  File has been updated.
+#  Successfully updated.
+
+helm-pre-build:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.make/helm.mk:
+#  Implicit rule search has been done.
+#  Last modified 2022-03-22 16:49:39.679809045
+#  File has been updated.
+#  Successfully updated.
+
+local-do-test:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'PrivateRules.mak', line 29):
+	@echo $(MAKE_EXPORTED_VAR)
+	@echo $(EXPORTED_VAR)
+
+k8s-pod-versions:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 315):
+ 
+	kubectl get pods -l release=$(HELM_RELEASE) -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{range .spec.containers[*]}{.name}{'\t'}{.image}{'\n\n'}{end}{'\n'}{end}{'\n'}"
+
+skampi-update-chart-versions: helm-install-yq
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/skampi.mk', line 45):
+	@for chart in $(SKAMPI_K8S_CHARTS); do \
+		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
+		for upd in $$(/usr/local/bin/yq e '.dependencies[].name' charts/$$chart/Chart.yaml | grep -v ska-landingpage); do \
+			cur_version=$$(cat charts/$$chart/Chart.yaml | /usr/local/bin/yq e ".dependencies[] | select(.name == \"$$upd\") | .version" -); \
+			echo "update-chart-versions: finding latest version for $$upd current version: $$cur_version"; \
+			upd_version=$$(. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sChartVersion $$upd); \
+			echo "update-chart-versions: updating $$upd from $$cur_version to $$upd_version"; \
+			sed -i.x -e "N;s/\(name: $$upd.*version:\).*/\1 $${upd_version}/;P;D" charts/$$chart/Chart.yaml; \
+			rm -f charts/*/Chart.yaml.x; \
+		done; \
+	done
+
+helm-do-publish:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/helm.mk', line 67):
+	@. $(HELM_SUPPORT) ; helmChartPublish "$(HELM_CHARTS_TO_PUBLISH)"
+
+python-pre-publish:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-post-uninstall-chart:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+delete-cn-release: .release
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 262):
+	@. $(RELEASE_SUPPORT) ; deleteCNRelease
+
+# 'override' directive
+oci-do-scan: .SHELLSTATUS := 0
+# makefile (from '.make/oci.mk', line 220)
+oci-do-scan: VERSION := 0.8.2
+oci-do-scan:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=2/32=6%, Rehash=0, Collisions=0/8=0%
+#  recipe to execute (from '.make/oci.mk', line 222):
+	@. $(OCI_SUPPORT) ; \
+	export OCI_NEXUS_REPO=$(OCI_NEXUS_REPO); \
+	echo "oci-do-scan: Checking for $(OCI_IMAGE) $(VERSION)"; \
+	ociImageScan "$(OCI_IMAGE)" "$(VERSION)"; \
+	echo "oci-do-scan: Image scan returned: $$ocis_result"; \
+	if [[ "$$ocis_result" == "0" ]]; then \
+		echo "oci-scan:OK: $(CAR_OCI_REGISTRY_HOST)/$(OCI_IMAGE):$(VERSION) "; \
+		exit 0; \
+	else \
+		echo "oci-do-scan: ERROR $(CAR_OCI_REGISTRY_HOST)/$(OCI_IMAGE):$(VERSION)"; \
+		exit 1; \
+	fi
+
+oci-publish: oci-pre-publish oci-do-publish oci-post-publish
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+local-test: local-pre-test local-do-test
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+quotas: k8s-namespace
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/localhelpers.mk', line 34):
+	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
+
+oci-pre-lint:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+docs-build: docs-pre-build docs-do-build docs-post-build
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+python-pre-lint:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+python-exportlock:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/python.mk', line 188):
+	poetry export --without-hashes -f requirements.txt --output requirements.txt
+	poetry export --without-hashes --dev -f requirements.txt --output requirements-dev.txt
+
+python-do-build:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/python.mk', line 115):
+	@. $(PYTHON_SUPPORT) ; \
+		PYTHON_RUNNER="$(PYTHON_RUNNER)" \
+		pythonBuild $(PYTHON_BUILD_TYPE)
+
+k8s-upgrade-chart: k8s-install-chart
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+.make/help.mk:
+#  Implicit rule search has been done.
+#  Last modified 2022-03-22 16:49:39.680214644
+#  File has been updated.
+#  Successfully updated.
+
+python-post-set-release:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+delete-git-tag: show-version
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 223):
+	@. $(RELEASE_SUPPORT) ; tagExists $(TAG) || (echo "ERROR: version not yet tagged in git. make update-[minor,major,patch]-release." >&2 && exit 1) ;
+	git tag -d $(VERSION)
+
+skampi-upload-test-results:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/skampi.mk', line 66):
+	@echo "Processing XRay uploads"
+	@if [ -n "$$(ls -A build/cucumber*.json 2>/dev/null)" ]; then \
+		bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop==$(SKALLOP_VERSION)"  --extra-index-url $(CAR_PYPI_REPOSITORY_URL); \
+	fi
+	@for cuke in  build/cucumber*.json; do \
+		echo "Processing XRay upload of: $$cuke"; \
+		if [[ -z "${JIRA_USERNAME}" ]]; then \
+			/usr/local/bin/xtp-xray-upload -f $$cuke -i tests/test-exec.json -v; \
+		else \
+			echo "Using Jira Username and Password for auth"; \
+			xtp-xray-upload -f $$cuke -i tests/test-exec.json -v -u ${JIRA_USERNAME} -p ${JIRA_PASSWORD}; \
+		fi; \
+	done; \
+
+
+k8s-interactive:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 452):
+	@kubectl exec -it ska-tango-base-itango-console -c itango -n $(KUBE_NAMESPACE) -- itango3
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-post-install-chart:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+helm-do-set-release:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 151):
+	@. $(RELEASE_SUPPORT) ; ! hasChanges "RELEASE_CHECK" || (echo "ERROR: there are still outstanding changes" >&2 && exit 1) ;
+	@echo "helm-set-release: $(VERSION)"
+	@. $(RELEASE_SUPPORT) ; setHelmRelease $(VERSION) "$(HELM_CHARTS_TO_PUBLISH)"
+
+post-set-release:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+git-create-tag: create-git-tag
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+do-set-release:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 239):
+	@. $(RELEASE_SUPPORT) ; ! hasChanges "RELEASE_CHECK" || (echo "ERROR: there are still outstanding changes" >&2 && exit 1) ;
+	@. $(RELEASE_SUPPORT) ; ! tagExists $(TAG) || (echo "ERROR: tag $(TAG) for version $(VERSION) already tagged in git" >&2 && exit 1) ;
+	@echo "set-release: $(VERSION)"
+ 
+	@. $(RELEASE_SUPPORT) ; setRelease $(VERSION)
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-pre-dep-update:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-kubeconfig:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 318):
+	@KUBE_CONFIG_BASE64=`kubectl config view --flatten | base64`; \
+	echo "KUBE_CONFIG_BASE64: $$(echo $${KUBE_CONFIG_BASE64} | cut -c 1-40)..."; \
+	echo "appended to: PrivateRules.mak"; \
+	echo -e "\n\n# base64 encoded from: kubectl config view --flatten\nKUBE_CONFIG_BASE64 = $${KUBE_CONFIG_BASE64}" >> PrivateRules.mak
+
+help:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+oci-publish-all: oci-pre-publish-all oci-do-publish-all oci-post-publish-all
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+oci-scan: oci-pre-scan oci-do-scan oci-post-scan
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-post-template-chart:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-template-chart: k8s-pre-template-chart k8s-do-template-chart k8s-post-template-chart
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# makefile (from 'resources/localhelpers.mk', line 9)
+delete-sdp-namespace: KUBE_NAMESPACE := integration-mid-sdp
+delete-sdp-namespace:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=1/32=3%, Rehash=0, Collisions=0/4=0%
+#  recipe to execute (from 'resources/localhelpers.mk', line 11):
+	@make k8s-delete-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+
+helm-do-lint:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/helm.mk', line 41):
+	@. $(HELM_SUPPORT) ; helmChartLint "$(HELM_CHARTS)"
+
+oci-boot-into-tools:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/oci.mk', line 279):
+	$(OCI_BUILDER) run --rm -ti --volume $(pwd):/app $(OCI_TOOLS_IMAGE) bash -c \
+	'pip3 install black pylint-junit; if [[ -f "requirements-dev.txt" ]]; then pip3 install -r requirements-dev.txt; else if [[ -f "requirements.txt" ]]; then pip3 install -r requirements.txt; fi; fi; bash'
+
+oci-image-build: .release
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/oci.mk', line 70):
+	@echo "oci-image-build:Building image: $(OCI_IMAGE) registry: $(CAR_OCI_REGISTRY_HOST) context: $(OCI_IMAGE_BUILD_CONTEXT)"
+	@. $(OCI_SUPPORT) ; \
+	export OCI_IMAGE_BUILD_CONTEXT=$(OCI_IMAGE_BUILD_CONTEXT); \
+	export OCI_IMAGE_FILE_PATH=images/$(strip $(OCI_IMAGE))/$(OCI_IMAGE_FILE_PATH); \
+	if [[ -f Dockerfile ]]; then \
+		echo "This is a oneshot OCI Image project with Dockerfile in the root OCI_IMAGE_BUILD_CONTEXT=$(PWD)"; \
+		export OCI_IMAGE_BUILD_CONTEXT=$(PWD); \
+		export OCI_IMAGE_FILE_PATH=$(OCI_IMAGE_FILE_PATH); \
+	fi; \
+	PROJECT_NAME=$(PROJECT_NAME) \
+	CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) \
+	OCI_BUILDER=$(OCI_BUILDER) \
+	VERSION=$(VERSION) \
+	OCI_IMAGE=$(strip $(OCI_IMAGE)) \
+	TAG=$(TAG) \
+	OCI_BUILD_ADDITIONAL_ARGS="$(OCI_BUILD_ADDITIONAL_ARGS) --build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST)" \
+	OCI_SKIP_PUSH=$(OCI_SKIP_PUSH) \
+	OCI_NEXUS_REPO=$(OCI_NEXUS_REPO) \
+	ociImageBuild "$(strip $(OCI_IMAGE))"
+
+k8s-do-install-chart: k8s-clean k8s-dep-update k8s-namespace
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 179):
+	@echo "install-chart: install $(K8S_UMBRELLA_CHART_PATH) release: $(HELM_RELEASE) in Namespace: $(KUBE_NAMESPACE) with params: $(K8S_CHART_PARAMS)"
+	helm upgrade --install $(HELM_RELEASE) \
+	$(K8S_CHART_PARAMS) \
+	 $(K8S_UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)
+
+# Not a target:
+.make/dev.mk:
+#  Implicit rule search has been done.
+#  Last modified 2021-11-18 15:13:04.028385777
+#  File has been updated.
+#  Successfully updated.
+
+k8s-podlogs:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 309):
+	@. $(K8S_SUPPORT) ; K8S_HELM_REPOSITORY=$(K8S_HELM_REPOSITORY) k8sPodLogs $(KUBE_NAMESPACE) $(KUBE_APP)
+
+helm-post-publish:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+python-format: python-pre-format python-do-format python-post-format
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+helm-post-build:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+oci-post-publish:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-namespace:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 99):
+	@kubectl get namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
+		K_DESC=$$? ; \
+		if [ $$K_DESC -eq 0 ] ; then \
+			kubectl describe namespace $(KUBE_NAMESPACE); \
+		else \
+			kubectl create namespace $(KUBE_NAMESPACE); \
+		fi
+
+python-pre-test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 227):
+	@if [[ "$$CI_JOB_ID" ]]; then \
+		echo "Running modified python-pre-test for CI job"; \
+		bash scripts/gitlab_section.sh pip_install "Installing Pytest Requirements" pip3 install .; \
+	fi
+
+join-lint-reports:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/python.mk', line 192):
+	@echo -e "<testsuites>\n</testsuites>" > build/reports/linting.xml; \
+	for FILE in build/reports/linting-*.xml; do \
+	TEST_RESULTS=$$(tr -d "\n" < $${FILE} | \
+	sed -e "s/.*<testsuites[^<]*\(.*\)<\/testsuites>.*/\1/"); \
+	TT=$$(echo $${TEST_RESULTS} | sed 's/\//\\\//g'); \
+	sed -i.x -e "/<\/testsuites>/ s/.*/$${TT}\n&/" build/reports/linting.xml; \
+	rm -f build/reports/linting.xml.x; \
+	done
+
+# 'override' directive
+bump-major-release: .SHELLSTATUS := 0
+# makefile (from '.make/release.mk', line 118)
+bump-major-release: VERSION := 1.0.0
+bump-major-release: .release set-release
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=2/32=6%, Rehash=0, Collisions=0/8=0%
+
+skampi-credentials:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/skampi.mk', line 4):
+	make k8s-namespace
+	make k8s-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+	curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/master/scripts/namespace_auth.sh | bash -s $(SERVICE_ACCOUNT) $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) || true
+
+oci-post-build:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+.make/make.mk:
+#  Implicit rule search has been done.
+ 
+#  Last modified 2021-10-26 19:12:07.076731904
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+resources/skampi.mk:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-18 13:01:02.903111924
+#  File has been updated.
+#  Successfully updated.
+
+generate-changelog:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 283):
+	@. $(RELEASE_SUPPORT); OCI_IMAGES_TO_PUBLISH="${OCI_IMAGES_TO_PUBLISH}" HELM_CHARTS_TO_PUBLISH="${HELM_CHARTS_TO_PUBLISH}" \
+	RAW_PKGS_TO_PUBLISH="$(RAW_PKGS_TO_PUBLISH)" CONAN_PKGS_TO_PUBLISH="$(CONAN_PKGS_TO_PUBLISH)" CONAN_USER="$(CONAN_USER)" CONAN_CHANNEL="$(CONAN_CHANNEL)" \
+	CHANGELOG_FILE=$(CHANGELOG_FILE) CHANGELOG_CONFIG=$(CHANGELOG_CONFIG) \
+	CHANGELOG_TEMPLATE=$(CHANGELOG_TEMPLATE) generateChangelog
+
+k8s-uninstall-chart: k8s-pre-uninstall-chart k8s-do-uninstall-chart k8s-post-uninstall-chart
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+k8s-dep-update: k8s-pre-dep-update k8s-do-dep-update k8s-post-dep-update
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-watch:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 285):
+	watch kubectl get all,pv,pvc,ingress -n $(KUBE_NAMESPACE)
+
+install: k8s-clean k8s-namespace namespace-sdp
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/localhelpers.mk', line 20):
+	make k8s-install-chart \
+		TARANTA_AUTH_DASHBOARD_ENABLE=$(TARANTA_AUTH_DASHBOARD_ENABLE) \
+		KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
+		KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP) \
+		CONFIG=$(CONFIG) \
+	k8s-wait
+
+helm-install-yq:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/helm.mk', line 71):
+	$(eval TMP_FILE:= $(shell mktemp))
+	@if ! which yq &> /dev/null; then \
+		echo "helm-install-yq: Installing yq version $(HELM_YQ_VERSION) from https://github.com/mikefarah/yq/"; \
+		if [ ! -d "$(HELM_YQ_INSTALL_DIR)" -o ! -w "$(HELM_YQ_INSTALL_DIR)" ]; then \
+		  echo "helm-install-yq: HELM_YQ_INSTALL_DIR ($(HELM_YQ_INSTALL_DIR)) is not a writable directory."; \
+			echo "Please set HELM_YQ_INSTALL_DIR to a writable directory that is part of \$$PATH"; \
+			exit 1; \
+		fi; \
+		curl -Lo $(TMP_FILE) https://github.com/mikefarah/yq/releases/download/v$(HELM_YQ_VERSION)/yq_linux_amd64 && \
+		mv $(TMP_FILE) "$(HELM_YQ_INSTALL_DIR)/yq" && \
+		chmod +x "$(HELM_YQ_INSTALL_DIR)/yq" && \
+		if ! which yq &> /dev/null; then \
+		  echo "helm-install-yq: Could not find the installed yq in \$$PATH."; \
+			echo "Please check if HELM_YQ_INSTALL_DIR ($(HELM_YQ_INSTALL_DIR)) is part of \$$PATH."; \
+			exit 1; \
+		fi \
+	else \
+		echo "helm-install-yq: yq already installed"; \
+	fi
+
+# 'override' directive
+bump-minor-release: .SHELLSTATUS := 0
+# makefile (from '.make/release.mk', line 103)
+bump-minor-release: VERSION := 0.9.0
+bump-minor-release: .release set-release
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=2/32=6%, Rehash=0, Collisions=0/8=0%
+
+oci-pre-build-all:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# makefile (from '.make/release.mk', line 244)
+set-release: TAG = $(shell . $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=$(RELEASE_CONTEXT_DIR) setContextHelper; getTag $(VERSION))
+set-release: pre-set-release do-set-release post-set-release
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=1/32=3%, Rehash=0, Collisions=0/2=0%
+
+python-do-lint:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/python.mk', line 87):
+	@mkdir -p build/reports;
+	$(PYTHON_RUNNER) isort --check-only --profile black $(PYTHON_SWITCHES_FOR_ISORT) $(PYTHON_LINT_TARGET)
+	$(PYTHON_RUNNER) black --check $(PYTHON_SWITCHES_FOR_BLACK) $(PYTHON_LINT_TARGET)
+	$(PYTHON_RUNNER) flake8 --show-source --statistics $(PYTHON_SWITCHES_FOR_FLAKE8) $(PYTHON_LINT_TARGET)
+	$(PYTHON_RUNNER) pylint --output-format=parseable $(PYTHON_SWITCHES_FOR_PYLINT) $(PYTHON_LINT_TARGET) | tee build/code_analysis.stdout
+	$(PYTHON_RUNNER) pylint --output-format=pylint_junit.JUnitReporter $(PYTHON_SWITCHES_FOR_PYLINT) $(PYTHON_LINT_TARGET) > build/reports/linting-python.xml
+	@make --no-print-directory join-lint-reports
+
+python-set-release: python-pre-set-release python-do-set-release python-post-set-release
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+oci-do-build-all:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/oci.mk', line 137):
+	$(foreach ociimage,$(OCI_IMAGES), make oci-build CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) OCI_IMAGE=$(ociimage); rc=$$?; if [[ $$rc -ne 0 ]]; then exit $$rc; fi;)
+
+# makefile (from 'Makefile', line 239)
+k8s-test: MARK := not infra and skamid and not taranta
+k8s-test: k8s-pre-test k8s-do-test k8s-post-test
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=1/32=3%, Rehash=0, Collisions=0/6=0%
+
+oci-do-publish-all:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/oci.mk', line 212):
+	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make oci-publish OCI_IMAGE=$(ociimage); rc=$$?; if [[ $$rc -ne 0 ]]; then exit $$rc; fi;)
+
+# Not a target:
+.make/base.mk:
+#  Implicit rule search has been done.
+#  Last modified 2021-11-18 15:13:04.028035258
+#  File has been updated.
+#  Successfully updated.
+
+oci-pre-scan:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.make/docs.mk:
+#  Implicit rule search has been done.
+#  Last modified 2021-10-26 19:12:07.074086891
+#  File has been updated.
+#  Successfully updated.
+
+oci-build: oci-pre-build oci-image-build oci-post-build
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-pre-uninstall-chart:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+release:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+oci-post-publish-all:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+python-post-build:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+skampi-links:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/localhelpers.mk', line 59):
+	@echo "############################################################################"
+	@echo "#            Access the Skampi landing page here:"
+	@echo "#            https://$(INGRESS_HOST)/$(KUBE_NAMESPACE)/start/"
+ 
+	@echo "############################################################################"
+
+python-lint: python-pre-lint python-do-lint python-post-lint
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-wait:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 272):
+	@. $(K8S_SUPPORT) ; K8S_TIMEOUT=$(K8S_TIMEOUT) \
+		KUBE_APP=$(KUBE_APP) \
+		k8sWait $(KUBE_NAMESPACE)
+
+k8s-get-size-images:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 436):
+	@for p in `kubectl get pods -n $(KUBE_NAMESPACE) -o jsonpath="{range .items[*]}{range .spec.containers[*]}{.image}{'\n'}{end}{range .spec.initContainers[*]}{.image}{'\n'}{end}{end}" | sort | uniq`; do \
+		docker pull $$p > /dev/null; \
+		B=`docker inspect -f "{{ .Size }}" $$p`; \
+		if [ ! -z "$$BIGGER_THAN" ] ; then \
+			MB=$$(((B)/1024/1024)); \
+			if [ $$MB -lt $$BIGGER_THAN ] ; then \
+				continue; \
+			fi; \
+		fi; \
+		MB=$$(((B)/1000000)); \
+		cB=`docker manifest inspect $$p | jq '[.layers[].size] | add'`; \
+		cMB=$$(((cB)/1000000)); \
+		echo $$p: $$B B \($$MB MB\), $$cB \($$cMB MB\); \
+	done;
+
+dev-vscode:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/dev.mk', line 33):
+	@repository_dir=$$(git rev-parse --show-toplevel); \
+	if [[ -d "$(MAKE_VSCODE_CONFIG_DIR)/vscode" ]] || [[ -d "$(MAKE_VSCODE_CONFIG_DIR)/devcontainer" ]]; then \
+		if [[ -d "$(MAKE_VSCODE_CONFIG_DIR)/vscode" ]]; then \
+			mkdir -p $${repository_dir}/.vscode; \
+			cp -r $(MAKE_VSCODE_CONFIG_DIR)/vscode/* $${repository_dir}/.vscode/; \
+			echo "dev-vscode: added vscode config"; \
+		fi; \
+		if [[ -d "$(MAKE_VSCODE_CONFIG_DIR)/devcontainer" ]]; then \
+			mkdir -p $${repository_dir}/.devcontainer; \
+			cp -r $(MAKE_VSCODE_CONFIG_DIR)/devcontainer/* $${repository_dir}/.devcontainer/; \
+			echo "dev-vscode: added devcontainer config"; \
+		fi; \
+		echo "dev-vscode: enabled vscode config from $(MAKE_VSCODE_CONFIG_DIR) - you may need to restart your vscode for this to take effect"; \
+	else \
+		echo "dev-vscode: no vscode config found in $(MAKE_VSCODE_CONFIG_DIR)"; \
+	fi
+
+check-release: .release
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 166):
+	@. $(RELEASE_SUPPORT) ; tagExists $(TAG) || (echo "ERROR: version not yet tagged in git. make [minor,major,patch]-release." >&2 && exit 1) ;
+	@. $(RELEASE_SUPPORT) ; ! differsFromRelease $(TAG) || (echo "ERROR: current directory differs from tagged $(TAG). make [minor,major,patch]-release." ; exit 1)
+
+skampi-wait-all: helm-install-yq
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/skampi.mk', line 89):
+	@for chart in `helm inspect chart $(K8S_UMBRELLA_CHART_PATH) | /usr/local/bin/yq e '.dependencies[].name' - | grep -v ska-tango-util`; do \
+		echo "Waiting for sub-chart: $${chart}"; \
+		make k8s-wait KUBE_APP=$${chart}; \
+	done
+
+k8s-post-test:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 242):
+	@if ! [[ -f build/status ]]; then \
+		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
+		exit 1; \
+	fi
+	@echo "k8s-post-test: Skampi post processing of core Skampi test reports with scripts/collect_k8s_logs.py"
+	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
+		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
+
+# 'override' directive
+bump-patch-release: .SHELLSTATUS := 0
+# makefile (from '.make/release.mk', line 88)
+bump-patch-release: VERSION := 0.8.3
+bump-patch-release: .release set-release
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=2/32=6%, Rehash=0, Collisions=0/8=0%
+
+git-push-tag: push-git-tag
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+helm-publish: helm-pre-publish helm-do-publish helm-post-publish
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+.PHONY: help oci-pre-build oci-image-build oci-post-build oci-build oci-publish oci-pre-publish oci-do-publish oci-post-publish k8s-vars k8s-namespace k8s-delete-namespace k8s-clean k8s-dep-update k8s-install-chart k8s-template-chart k8s-uninstall-chart k8s-bounce k8s-reinstall-chart k8s-upgrade-chart k8s-wait k8s-watch k8s-describe k8s-podlogs k8s-smoke-test k8s-interactive helm-pre-lint helm-do-lint helm-post-lint helm-lint helm-publish helm-pre-publish helm-do-publish python-pre-build python-do-build python-post-build python-build python-format python-pre-format python-do-format python-post-format python-lint python-pre-lint python-do-lint python-post-lint python-test python-pre-test python-do-test python-post-test python-publish python-pre-publish python-do-publish release python-set-release bump-patch-release bump-minor-release bump-major-release set-release check-status check-release show-version create-git-tag push-git-tag check-release delete-git-tag helm-set-release .release generate-changelog docs-help docs-pre-build docs-do-build docs-post-build docs-build make submodule dev-git-hooks dev-vscode test-colours
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+python-pre-format:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-vars:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/k8s.mk', line 76):
+	@echo "Kubernetes cluster-info:"
+	@kubectl cluster-info || true
+	@echo ""
+	@echo "kubectl version:"
+	@kubectl version || true
+	@echo ""
+	@echo "Helm version:"
+	@helm version --client
+	@echo "Selected Namespace: $(KUBE_NAMESPACE)"
+	@echo "Chart: $(K8S_CHART)"
+	@echo "Charts: $(K8S_CHARTS)"
+	@echo "Chart params: $(K8S_CHART_PARAMS)"
+	@echo "kubectl wait timeout: $(K8S_TIMEOUT)"
+
+python-pre-build:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+oci-pre-build:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+skampi-component-tests:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/skampi.mk', line 181):
+	@which junitparser >/dev/null 2>&1 || pip3 install junitparser
+	@mkdir -p build.previous build
+	@if compgen -G "build/*" > /dev/null; then \
+ 		echo "skampi-component-tests: copying old build files to previous"; \
+		cp -r build/* build.previous/; \
+	fi
+	@for component in `grep -E '^skampi-test-[0-9a-zA-Z_-]+:.*$$' $(MAKEFILE_LIST) | sed 's/^[^:]*://' | sed 's/:.*$$//' | sort`; do \
+		echo "skampi-component-tests: Running test in Component: $$component"; \
+		rm -rf build/*; \
+		make $$component K8S_TEST_RUNNER=test-$$component; \
+		if ! [[ -f build/status ]]; then \
+			echo "skampi-component-tests: something went very wrong with the test container (no build/status file) - ABORTING!"; \
+			exit 1; \
+		fi; \
+		echo "skampi-component-tests: result for Component: $$component is ($$(cat build/status))"; \
+		echo "skampi-component-tests: process reports for Component: $$component"; \
+ 
+		if [[ -f build.previous/report.xml ]] && [[ -f build/report.xml ]]; then \
+			junitparser merge build.previous/report.xml build/report.xml report.xml; \
+			mv report.xml build.previous/report.xml; \
+		fi; \
+		if [[ -f build/cucumber.json ]]; then \
+			cp -f build/cucumber.json build.previous/cucumber-$$component.json; \
+		fi; \
+		if [[ -f build/status ]]; then \
+			cp -f build/status build.previous/$$component-status; \
+		fi; \
+	done
+	@rm -rf build
+	@mv build.previous build
+	@if [[ -n "$$(grep -v '0' build/*status)" ]]; then \
+		echo "skampi-component-tests: Errors occurred in tests - ABORTING!"; \
+		exit 1; \
+	fi
+
+docs-pre-build:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+python-post-test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+oci-pre-publish:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+k8s-pre-install-chart:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 235):
+	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
+	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+
+create-git-tag: .release show-version
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/release.mk', line 179):
+	@. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=$(RELEASE_CONTEXT_DIR) setContextHelper; \
+	if hasChanges; then \
+		printf "git says you have the following outstanding changes:\n $$(git status -s | grep -v -E '^\?\? ') \n"; \
+		read -p "Do you wish to continue (will commit outstanding changes) [N/y]: " SHALL_WE; \
+		if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+			test -n "$$(git status -s | grep -v -E '^\?\? ')"; \
+			hc_result=$$?; \
+			if [[ $hc_result -eq 0 ]]; then \
+				read -p "Tell me your Jira Ticket ID (REL-999): " JIRA_TICKET; \
+				echo "OK - commiting changes..."; \
+				git commit -a -m "$${JIRA_TICKET}: bumped version to $$(. $(RELEASE_SUPPORT) ; RELEASE_CONTEXT_DIR=$(RELEASE_CONTEXT_DIR) setContextHelper; getRelease)"; \
+			fi; \
+		else \
+			echo "OK - aborting"; \
+			exit 1; \
+		fi; \
+	fi; \
+	createGitTag || (echo "ERROR: Some error in creating tag" >&2 && exit 1)
+
+oci-scan-all: oci-pre-scan-all oci-do-scan-all oci-post-scan-all
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+test-colours:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from '.make/help.mk', line 130):
+	echo ${HELP_RED}HELP_RED${HELP_NORMAL} \
+	echo ${HELP_GREEN}HELP_GREEN${HELP_NORMAL} \
+	echo $(HELP_YELLOW)HELP_YELLOW$(HELP_NORMAL) \
+	echo $(HELP_LIME_YELLOW)HELP_LIME_YELLOW$(HELP_NORMAL) \
+	echo $(HELP_POWDER_BLUE)HELP_POWDER_BLUE$(HELP_NORMAL) \
+	echo $(HELP_BLUE)HELP_BLUE$(HELP_NORMAL)
+	echo $(HELP_NORMAL)HELP_NORMAL$(HELP_NORMAL)
+
+helm-set-release: helm-pre-set-release helm-do-set-release helm-post-set-release
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+.make/oci.mk:
+#  Implicit rule search has been done.
+#  Last modified 2022-04-08 10:14:06.387829526
+#  File has been updated.
+#  Successfully updated.
+
+skampi-k8s-do-test:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'resources/skampi.mk', line 102):
+	@rm -fr build; mkdir build
+	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
+	@echo "skampi-k8s-test: start test runner: $(k8s_test_runner)"
+	@echo "skampi-k8s-test: sending test folder: tar -cz $(k8s_test_folder)/"
+	( cd $(BASE); tar --exclude $(k8s_test_folder)/integration  --exclude $(k8s_test_folder)/resources  --exclude $(k8s_test_folder)/unit  --exclude $(k8s_test_folder)/conftest.py  --exclude $(k8s_test_folder)/pytest.ini -cz $(k8s_test_folder)/ \
+	  | kubectl run $(k8s_test_kubectl_run_args) -iq -- $(k8s_test_command) 2>&1 \
+	  | grep -vE "^(1\||-+ live log)" --line-buffered &); \
+	sleep 1; \
+	echo "skampi-k8s-test: waiting for test runner to boot up: $(k8s_test_runner)"; \
+	( \
+	kubectl wait pod $(k8s_test_runner) --for=condition=ready --timeout=$(K8S_TIMEOUT); \
+	wait_status=$$?; \
+	if ! [[ $$wait_status -eq 0 ]]; then echo "Wait for Pod $(k8s_test_runner) failed - aborting"; exit 1; fi; \
+	 ) && \
+		echo "skampi-k8s-test: $(k8s_test_runner) is up, now waiting for tests to complete" && \
+		(kubectl exec $(k8s_test_runner) -- cat results-pipe | tar --directory=$(BASE) -xz); \
+	\
+	cd $(BASE)/; \
+	(kubectl get all,job,pv,pvc,ingress,cm -n $(KUBE_NAMESPACE) -o yaml > build/k8s_manifest.txt); \
+	echo "skampi-k8s-test: test run complete, processing files"; \
+	kubectl --namespace $(KUBE_NAMESPACE) delete --ignore-not-found pod $(K8S_TEST_RUNNER) --wait=false
+	@echo "skampi-k8s-test: the test run exit code is ($$(cat build/status))"
+	@exit `cat build/status`
+
+# files hash-table stats:
+# Load=185/1024=18%, Rehash=0, Collisions=32/500=6%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 222 / storage = 3311 B / avg = 14 B
+# current buf: size = 8162 B / used = 3311 B / count = 222 / avg = 14 B
+
+# strcache performance: lookups = 636 / hit rate = 65%
+# hash-table stats:
+# Load=222/8192=3%, Rehash=0, Collisions=16/636=3%
+# Finished Make data base on Thu May 19 19:24:41 2022
+
+ 

@@ -1,16 +1,5 @@
 image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
 
-# create namespace scoped credentials
-.uninstall_chart_after: &uninstall_chart_after
-  - echo $CI_JOB_NAME - $CI_JOB_STAGE
-  - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-  - make k8s-uninstall-chart || true
-  - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
-  - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
-  - make k8s-delete-namespace
-  - make delete-sdp-namespace
-  - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
-
 variables:
   MINIKUBE: "false"
   VALUES: "pipeline.yaml"

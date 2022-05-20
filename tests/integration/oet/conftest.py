@@ -1,5 +1,6 @@
 """Pytest fixtures and BDD step implementations specific to OET integration tests."""
 import logging
+
 import pytest
 from pytest_bdd import given, scenario, then, when
 
@@ -10,6 +11,7 @@ LOGGER = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 @pytest.mark.skamid
+@pytest.mark.k8s
 @scenario("features/oet_basic.feature", "Run the hello_world test script")
 def test_telescope_startup_mid():
     """Telescope startup test."""

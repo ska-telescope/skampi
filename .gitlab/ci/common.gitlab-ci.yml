@@ -87,7 +87,6 @@
     - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
     - make k8s-delete-namespace
     - make delete-sdp-namespace
-    - make skampi-upload-test-results
 
 ## Not currently used!!!
 .deploy_test_destroy:

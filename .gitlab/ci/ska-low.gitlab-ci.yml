@@ -54,6 +54,8 @@ clean-low-test:
     TEST_ENV: "BUILD_OUT"
     COUNT: 1
     TEL: low
+  extends:
+    - .tags_default
   script:
     - !reference [.uninstall_chart_after, after_script]
   when: always

@@ -54,6 +54,8 @@ clean-mid-test:
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
     TEL: mid
+  extends:
+    - .tags_default
   script:
     - !reference [.uninstall_chart_after, after_script]
   when: always

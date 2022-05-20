@@ -35,7 +35,7 @@
     - echo "############## EXTRA MAKE VARS OUTPUT"
     - make skampi-vars
     - echo "#####################################"
-    - make skampi-upload-test-results
+    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
 
 .deploy_chart_and_test_integration:
   script:
@@ -56,7 +56,7 @@
     - echo "#####################################"
     - |-
       [[ ! -z $NO_SKAMPI_LINKS ]] || make skampi-links
-    - make skampi-upload-test-results
+    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
 
 .uninstall_chart_before:
   before_script:
@@ -87,7 +87,7 @@
     - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
     - make k8s-delete-namespace
     - make delete-sdp-namespace
-    - make skampi-upload-test-results
+    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
 
 ## Not currently used!!!
 .deploy_test_destroy:

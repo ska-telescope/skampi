@@ -37,7 +37,8 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
     def __init__(self, nr_of_subarrays: int) -> None:
         super().__init__()
-        self.nr_of_subarrays = nr_of_subarrays
+        #self.nr_of_subarrays = nr_of_subarrays
+        self.nr_of_subarrays = 1
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to TMC.

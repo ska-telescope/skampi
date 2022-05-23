@@ -64,10 +64,11 @@ def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value
     assert_that(str(result)).is_equal_to("ON")
-    for index in range(1, sut_settings.nr_of_subarrays + 1):
-        subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
-        result = subarray.read_attribute("state").value
-        assert_that(str(result)).is_equal_to("ON")
+    # for index in range(1, sut_settings.nr_of_subarrays + 1):
+    index = 1
+    subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
+    result = subarray.read_attribute("state").value
+    assert_that(str(result)).is_equal_to("ON")
 
 
 @then("the sdp must be off")
@@ -77,7 +78,8 @@ def the_sdp_must_be_off(sut_settings: conftest.SutTestSettings):
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value
     assert_that(str(result)).is_equal_to("OFF")
-    for index in range(1, sut_settings.nr_of_subarrays + 1):
-        subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
-        result = subarray.read_attribute("state").value
-        assert_that(str(result)).is_equal_to("OFF")
+    # for index in range(1, sut_settings.nr_of_subarrays + 1):
+    index = 1
+    subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
+    result = subarray.read_attribute("state").value
+    assert_that(str(result)).is_equal_to("OFF")

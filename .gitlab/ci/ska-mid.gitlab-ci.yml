@@ -21,10 +21,11 @@ mid-test:
   extends:
     - .tags_default
     - .deploy_chart_before
-    - .uninstall_chart_after
   script:
     - echo "########## Running Skampi Acceptance and End to End Tests"
     - make python-test
+  after_script:
+    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:
@@ -39,6 +40,33 @@ mid-test:
       junit: build/report.xml
     when: always
   retry: 1
+
+clean-mid-test:
+  stage: clean_test_env
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+    COUNT: 1
+    DISABLE_MAINTAIN_ON: "True"
+    TEST_ENV: "BUILD_OUT"
+    TEL: mid
+  extends:
+    - .tags_default
+  script:
+    - !reference [.uninstall_chart_after, after_script]
+  when: always
+  environment:
+    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: $KUBE_NAMESPACE
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
 
 # mid deploy to integration - on merge to default
 mid_deploy_integration_k8s_test:
@@ -87,7 +115,7 @@ mid_k8s_test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-k8s"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-k8s-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"    
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     ADDMARKS: "k8s"
     MARK: "not infra"
     NO_SKAMPI_LINKS: "True"
@@ -95,14 +123,13 @@ mid_k8s_test:
     - .tags_default
     - .uninstall_chart_before
     - .deploy_chart_and_test_integration
-    - .uninstall_chart_after
   environment:
     name: test/ska-$CONFIG-k8s-$CI_COMMIT_REF_SLUG
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-    auto_stop_in: 1 day
+    auto_stop_in: 4 hours
     on_stop: mid_k8s_test_uninstall
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
@@ -114,7 +141,7 @@ mid_k8s_test:
   retry: 1
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
-      
+
 mid_k8s_test_uninstall:
   stage: test
   extends:
@@ -128,7 +155,7 @@ mid_k8s_test_uninstall:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-k8s"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-k8s-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"    
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     ADDMARKS: "k8s"
     MARK: "not infra"
   environment:

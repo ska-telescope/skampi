@@ -51,7 +51,7 @@ def run_startup_standby_script(script):
     # Execute startup or standby script
     script_completion_state = EXECUTOR.execute_script(
         script=script,
-        timeout=100
+        timeout=60
     )
     assert script_completion_state == 'COMPLETE', \
         f"Expected script to be COMPLETE, instead was {script_completion_state}"
@@ -66,7 +66,7 @@ def check_final_state(state):
         state (str): State central node is expected to be in
     """
     tel = names.TEL()
-    central_node = con_config.get_device_proxy(tel.central_node)
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
     final_state = central_node.read_attribute("state").value
     # assert_that(str(final_state)).is_equal_to("ON")
     assert str(final_state) == state, \

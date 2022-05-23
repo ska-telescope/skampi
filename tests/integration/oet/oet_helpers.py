@@ -1,156 +1,100 @@
 import logging
 import time
 from os import environ
+from typing import List, Optional
 
-from ska_oso_oet.procedure.application.restclient import RestClientUI
+from ska_oso_oet.procedure.application.application import ProcedureSummary
+from ska_oso_oet.procedure.application.restclient import RestAdapter
 
 LOGGER = logging.getLogger(__name__)
 
 kube_namespace = environ.get("KUBE_NAMESPACE", "test")
 kube_host = environ.get("KUBE_HOST")
 rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0/procedures"
-REST_CLIENT = RestClientUI(rest_cli_uri)
-
-class Task:
-    def __init__(self, task_id, script, creation_time, state):
-        self.task_id = task_id
-        self.script = script
-        self.creation_time = creation_time
-        self.state = state
-
-    def state_is(self, expected):
-        return self.state == expected
+REST_ADAPTER = RestAdapter(rest_cli_uri)
 
 
 class ScriptExecutor:
-    @staticmethod
-    def parse_rest_response_line(line):
-        """Split a line from the REST API lines
-        into columns
-
-        Args:
-            line (string): A line from OET REST CLI response
-
-        Returns:
-            task: Task object with task information.
-        """
-        elements = line.split()
-        task = Task(
-            task_id=elements[0],
-            script=elements[1],
-            creation_time=str(elements[2] + " " + elements[3]),
-            state=elements[4],
-        )
-        return task
 
     @staticmethod
-    def parse_rest_response(resp):
-        """Split the response from the REST API lines
-        into columns
-
-        Args:
-            resp (string): Response from OET REST CLI
-
-        Returns:
-            [task]: List Task objects.
-        """
-        task_list = []
-        lines = resp.splitlines()
-        # LOGGER.info(f"oet rest cli response {lines}")
-        # Remove the headers
-        del lines[0:2]
-        # Remove the 'For more details..' line
-        del lines[-1]
-        for line in lines:
-            task = ScriptExecutor.parse_rest_response_line(line)
-            task_list.append(task)
-        return task_list
+    def init_script(script_uri: str, *args, **kwargs) -> ProcedureSummary:
+        if not kwargs:
+            kwargs = dict()
+        if "subarray_id" not in kwargs:
+            kwargs["subarray_id"] = 1
+        init_args = dict(args=args, kwargs=kwargs)
+        return REST_ADAPTER.create(script_uri=script_uri, init_args=init_args)
 
     @staticmethod
-    def parse_rest_start_response(resp):
-        """Split the response from the REST API start
-        command into columns.
+    def start_script(pid: int, *args, **kwargs) -> ProcedureSummary:
+        run_args = dict(args=args, kwargs=kwargs)
+        return REST_ADAPTER.start(pid=pid, run_args=run_args)
 
-        This needs to be done separately from other OET REST
-        Client responses because starting a script returns a
-        Python Generator object instead of a static string.
+    @staticmethod
+    def stop_script(pid: int, run_abort: bool = False) -> None:
+        REST_ADAPTER.stop(pid, run_abort=run_abort)
 
-        Args:
-            resp (Generator): Response from OET REST CLI start
+    @staticmethod
+    def list_scripts() -> List[ProcedureSummary]:
+        return REST_ADAPTER.list()
 
-        Returns:
-            task: Task object with information on the started task.
-        """
-        for line in resp:
-            # Only get line with script details (ignore header lines)
-            if "RUNNING" in line or "READY" in line:
-                return ScriptExecutor.parse_rest_response_line(line)
+    @staticmethod
+    def get_latest_script() -> Optional[ProcedureSummary]:
+        procedures = ScriptExecutor.list_scripts()
+        if procedures:
+            return procedures[-1]
         return None
 
     @staticmethod
-    def wait_for_script_state(task_id, state, timeout):
+    def get_script_by_id(pid: int) -> Optional[ProcedureSummary]:
+        procedures_by_id = REST_ADAPTER.list(pid)
+        if procedures_by_id:
+            return procedures_by_id[0]
+        return None
+
+    @staticmethod
+    def wait_for_script_state(pid: int, state: str, timeout: int) -> str:
         """
         Wait until the script with the given ID is in the given state
 
         Args:
-            task_id (str): ID of the script on the task list
+            pid (str): ID of the script in the OET
             state (str): The desired OET state for the script (eg 'READY')
             timeout (int): timeout (~seconds) how long to wait
             for script to complete
 
         Returns:
-            task: Task representing the script when in the desired state.
-            None if timeout occurs before script in desired state.
+            state (str): Either the desired state, STOPPED if the timeout was
+                reached or FAILED if the script failed
         """
         t = timeout
         while t != 0:
-            task = ScriptExecutor().get_script_by_id(task_id)
-            if task.state_is(state):
-                LOGGER.info(f"Script state changed to {state}")
-                return task
-            time.sleep(1)
-            t -= 1
+            procedure = ScriptExecutor.get_script_by_id(pid)
+
+            if procedure.state == "FAILED":
+                stacktrace = procedure.history["stacktrace"]
+                LOGGER.info(f"Script {procedure.script['script_uri']} (PID={pid}) failed. Stacktrace follows:")
+                LOGGER.exception(stacktrace)
+                return procedure.state
+
+            if procedure.state == state:
+                LOGGER.info(f"Script {procedure.script['script_uri']} state changed to {state}")
+                return procedure.state
+
+            time.sleep(5)
+            t -= 5
 
         LOGGER.info(
-            "Timeout occurred (> %d seconds) when waiting for script "
-            "to change state to %s. Stopping script.",
-            timeout, state
+            f"Timeout occurred (> {timeout} seconds) when waiting for script "
+            f"to change state to {state}. Stopping script."
         )
-        ScriptExecutor().stop_script()
-        task = ScriptExecutor().get_script_by_id(task_id)
-        LOGGER.info("Script state: %s", task.state)
-        return task.state
+        ScriptExecutor.stop_script(pid)
+        procedure = ScriptExecutor.get_script_by_id(pid)
+        LOGGER.info(f"Script {procedure.script.script_uri} state: {procedure.state}")
+        return procedure.state
 
-    def create_script(self, script) -> Task:
-        resp = REST_CLIENT.create(script, subarray_id=1)
-        tasks = ScriptExecutor.parse_rest_response(resp)
-        return tasks[0]
-
-    def start_script(self, task_id, *script_args) -> Task:
-        resp = REST_CLIENT.start(pid=task_id, *script_args, listen=False)
-        task = ScriptExecutor.parse_rest_start_response(resp)
-        return task
-
-    def stop_script(self):
-        REST_CLIENT.stop(run_abort=False)
-
-    def list_scripts(self):
-        resp = REST_CLIENT.list()
-        tasks = ScriptExecutor.parse_rest_response(resp)
-        return tasks
-
-    def get_latest_script(self):
-        tasks = self.list_scripts()
-        return tasks[-1]
-
-    def get_script_by_id(self, task_id):
-        tasks = self.list_scripts()
-        for task in tasks:
-            if task.task_id == task_id:
-                return task
-        return None
-
-    def execute_script(self, script, *script_run_args, timeout=30):
+    @staticmethod
+    def execute_script(script: str, *script_run_args, timeout=30) -> str:
         """
         Execute the given script using OET REST client.
 
@@ -159,27 +103,28 @@ class ScriptExecutor:
             script_run_args: Arguments to pass to the script when
             the script execution is started
             timeout: Timeout (~seconds) for how long to wait for script
-            to complete
+            stages to complete
 
         Returns:
-            Task: The Task representing the script after completion.
+            state: The OET state for the script after execution (eg 'COMPLETE')
             None if something goes wrong.
         """
-        LOGGER.info("Running script %s", script)
+        LOGGER.info(f"Running script {script}")
 
-        # create script
-        created_task = self.create_script(script)
+        procedure = ScriptExecutor.init_script(script)
+        pid = procedure.uri.split('/')[-1]
 
-        # confirm that creating the task worked and we have a valid ID
-        if not self.wait_for_script_state(created_task.task_id, 'READY', timeout):
+        # confirm that creating the script worked and we have a valid ID
+        state = ScriptExecutor.wait_for_script_state(pid, "READY", timeout)
+        if state != "READY":
             LOGGER.info(
-                "Script did not reach READY state"
+                f"Script {script} did not reach READY state"
             )
-            return None
+            return state
 
         # start execution of created script
-        started_task = self.start_script(created_task.task_id, *script_run_args)
+        ScriptExecutor.start_script(pid, *script_run_args)
 
         return ScriptExecutor.wait_for_script_state(
-            started_task.task_id, "COMPLETE", timeout
+            pid, "COMPLETE", timeout
         )

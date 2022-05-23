@@ -12,7 +12,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from .. import conftest
 
 logger = logging.getLogger(__name__)
-
+nr_of_subarrays = 1
 
 # @pytest.mark.skip(reason="SKB-144 caused by duplicate deviceservers deployed by TMC mocks")
 @pytest.mark.skamid
@@ -58,28 +58,52 @@ def a_partial_telescope_with_sdp_on():
 
 
 @then("the sdp must be on")
-def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
+def the_sdp_and_csp_must_be_on(sut_settings: conftest.SutTestSettings):
     """the sdp must be on."""
     tel = names.TEL()
+    # Check state attribute of SDP Master
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value
     assert_that(str(result)).is_equal_to("ON")
-    # for index in range(1, sut_settings.nr_of_subarrays + 1):
-    index = 1
-    subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
-    result = subarray.read_attribute("state").value
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
+        result = subarray.read_attribute("state").value
+        assert_that(str(result)).is_equal_to("ON")
+    # Check state attribute of CSP Master
+    csp_master = con_config.get_device_proxy(tel.csp.master)
+    result = csp_master.read_attribute("state").value
+    assert_that(str(result)).is_equal_to("ON")
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        subarray = con_config.get_device_proxy(tel.csp.subarray(index))
+        result = subarray.read_attribute("state").value
+        assert_that(str(result)).is_equal_to("ON")
+    # Check telescopeState attribute of Central Node
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    result = central_node.read_attribute("telescopeState").value
     assert_that(str(result)).is_equal_to("ON")
 
 
 @then("the sdp must be off")
-def the_sdp_must_be_off(sut_settings: conftest.SutTestSettings):
+def the_sdp_and_csp_must_be_off(sut_settings: conftest.SutTestSettings):
     """the sdp must be off."""
     tel = names.TEL()
+    # Check state attribute of SDP Master
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value
     assert_that(str(result)).is_equal_to("OFF")
-    # for index in range(1, sut_settings.nr_of_subarrays + 1):
-    index = 1
-    subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
-    result = subarray.read_attribute("state").value
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
+        result = subarray.read_attribute("state").value
+        assert_that(str(result)).is_equal_to("OFF")
+    # Check state attribute of CSP Master
+    csp_master = con_config.get_device_proxy(tel.csp.master)
+    result = csp_master.read_attribute("state").value
+    assert_that(str(result)).is_equal_to("OFF")
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        subarray = con_config.get_device_proxy(tel.csp.subarray(index))
+        result = subarray.read_attribute("state").value
+        assert_that(str(result)).is_equal_to("OFF")
+    # Check telescopeState attribute of Central Node
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    result = central_node.read_attribute("telescopeState").value
     assert_that(str(result)).is_equal_to("OFF")

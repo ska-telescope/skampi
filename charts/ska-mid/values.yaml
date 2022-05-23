@@ -113,7 +113,7 @@ ska-sdp:
 
 ## tmc
 tmc-mid:
-  enabled: false
+  enabled: true
   telescope: SKA-mid
   deviceServers:
     centralnode:
@@ -129,7 +129,7 @@ tmc-mid:
       enabled: true
 
     mocks:
-      enabled: true
+      enabled: false
 
 
 ska-tango-archiver:

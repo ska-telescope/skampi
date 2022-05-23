@@ -51,7 +51,7 @@ def run_startup_standby_script(script):
     # Execute startup or standby script
     script_completion_state = EXECUTOR.execute_script(
         script=script,
-        timeout=300
+        timeout=100
     )
     assert script_completion_state == 'COMPLETE', \
         f"Expected script to be COMPLETE, instead was {script_completion_state}"

@@ -1,21 +1,20 @@
 """Domain logic for the tmc."""
-import logging
-from typing import Union, List
-import os
 import json
+import logging
+import os
+from typing import List, Union
 
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import composition as comp
 from ska_ser_skallop.mvp_control.configuration import types
-from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
-    NoOpStep,
     MessageBoardBuilder,
+    NoOpStep,
 )
-from ska_ser_skallop.mvp_control.entry_points import base
-from ska_ser_skallop.event_handling.builders import get_message_board_builder
-
 
 logger = logging.getLogger(__name__)
 
@@ -166,7 +165,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         #         "obsState"
         #     ).to_become_equal_to("IDLE")
         
-        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id).for_attribute("obsState")
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
         ).to_become_equal_to("IDLE")
         
         return brd
@@ -192,7 +191,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         #         "obsState"
         #     ).to_become_equal_to("EMPTY")
         
-        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id).for_attribute("obsState")
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
         ).to_become_equal_to("EMPTY")
         
         return brd

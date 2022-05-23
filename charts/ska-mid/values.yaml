@@ -117,7 +117,7 @@ tmc-mid:
       enabled: true
 
     mocks:
-      enabled: true
+      enabled: false
 
 ska-tango-archiver:
   enabled: true

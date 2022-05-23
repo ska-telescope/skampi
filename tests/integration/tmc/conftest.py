@@ -22,7 +22,8 @@ def fxt_set_entry_point(
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["sdp", "sdp control"]
+    exec_env.scope = ["tmc","mid"]
+
 
 
 @pytest.fixture(name="tmc_start_up_test_exec_settings", autouse=True)

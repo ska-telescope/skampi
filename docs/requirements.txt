@@ -1,7 +1,7 @@
 docutils>=0.14
 imagesize>=0.7.1
 Jinja2>=2.9.6
-MarkupSafe>=1.0
+MarkupSafe<2.1.0
 Pygments>=2.2.0
 Sphinx>=3.5.2
 sphinx-autobuild>=0.7.1

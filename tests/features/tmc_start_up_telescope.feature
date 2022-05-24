@@ -3,15 +3,15 @@ Feature: Start up the telescope using TMC
 
 	
 	@XTP-6187 @XTP-6186 @XTP-3324
-	Scenario: Start up the telescope (SDP only)
+	Scenario: Start up the telescope
 		Given an TMC
-		Given an partial Telescope consisting of SDP only
+		Given a Telescope consisting SDP, CSP and a Dish
 		When I start up the telescope
-		Then the sdp must be on
+		Then the sdp, csp and dish must be on
 
 	@XTP-6426 @XTP-6186 @XTP-3324
-	Scenario: Switch of the telescope (SDP only)
+	Scenario: Switch of the telescope
 		Given an TMC
-		Given an partial Telescope consisting of SDP only that is ON
+		Given a Telescope consisting of SDP, CSP and a Dish that is ON
 		When I switch off the telescope
-		Then the sdp must be off
+		Then the sdp, csp and dish must be off

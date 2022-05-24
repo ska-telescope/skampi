@@ -71,7 +71,7 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
         result = subarray.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
     # Check state attribute of CSP Master
-    csp_master = con_config.get_device_proxy(tel.csp.master)
+    csp_master = con_config.get_device_proxy(tel.csp.controller)
     result = csp_master.read_attribute("state").value
     assert_that(str(result)).is_equal_to("ON")
     for index in range(1, sut_settings.nr_of_subarrays + 1):
@@ -102,7 +102,7 @@ def the_sdp_csp_and_dish_must_be_off(sut_settings: conftest.SutTestSettings):
         result = subarray.read_attribute("state").value
         assert_that(str(result)).is_equal_to("OFF")
     # Check state attribute of CSP Master
-    csp_master = con_config.get_device_proxy(tel.csp.master)
+    csp_master = con_config.get_device_proxy(tel.csp.controller)
     result = csp_master.read_attribute("state").value
     assert_that(str(result)).is_equal_to("OFF")
     for index in range(1, sut_settings.nr_of_subarrays + 1):

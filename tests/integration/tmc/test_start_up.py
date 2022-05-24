@@ -61,7 +61,7 @@ def a_telescope_with_sdp_csp_and_dish_on():
 def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
     """the sdp, csp and dish must be on."""
     tel = names.TEL()
-    mid = names.Mid("mid")
+    mid = names.Mid()
     # Check state attribute of SDP Master
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value
@@ -92,7 +92,7 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
 def the_sdp_csp_and_dish_must_be_off(sut_settings: conftest.SutTestSettings):
     """the sdp, csp and dish must be off."""
     tel = names.TEL()
-    mid = names.Mid("mid")
+    mid = names.Mid()
     # Check state attribute of SDP Master
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value

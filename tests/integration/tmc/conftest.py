@@ -11,7 +11,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 
-from resources.models.csp_model.entry_point import CSPEntryPoint
+# from resources.models.csp_model.entry_point import CSPEntryPoint
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 
 from .. import conftest
@@ -55,8 +55,8 @@ def fxt_set_csp_online(
     :type set_subsystem_online: Callable[[EntryPoint], None]
     """
     logging.info("setting csp components online")
-    CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
-    entry_point = CSPEntryPoint()
+    TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+    entry_point = TMCEntryPoint()
     set_subsystem_online(entry_point)
 
 

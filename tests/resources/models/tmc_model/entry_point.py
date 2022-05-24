@@ -124,9 +124,19 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # subarray.command_inout("AssignResources", tmc_standard_composition)
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
+        # standard_composition = comp.generate_standard_comp(
+        #    sub_array_id, dish_ids, sb_id
+        # )
         standard_composition = comp.generate_standard_comp(
-           sub_array_id, dish_ids, sb_id
+            sub_array_id , [1] , sb_id
         )
+        #std_composition = json.loads(comp.generate_standard_comp(
+        #    sub_array_id, dish_ids, sb_id
+        # ))
+        #std_composition["dish"]["receptor_ids"]=["0001"]
+        #standard_composition=json.dumps(std_composition)
+        #
+        #
         self._log(f"Commanding {central_node_name} with AssignRescources")
         central_node.command_inout("AssignResources",standard_composition)
 
@@ -157,13 +167,14 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         brd = get_message_board_builder()
         # TODO determine what needs to be waited for
         # for index in range(1, self.nr_of_subarrays + 1):
-        #     brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
-        #         "obsState"
-        #     ).to_become_equal_to("IDLE")
+        index=1
+        brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
         # for index in range(1, self.nr_of_subarrays + 1):
-        #     brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
-        #         "obsState"
-        #     ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
         
         brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
         ).to_become_equal_to("IDLE")
@@ -183,13 +194,14 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         brd = get_message_board_builder()
         # TODO determine what needs to be waited for
         # for index in range(1, self.nr_of_subarrays + 1):
-        #     brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
-        #         "obsState"
-        #     ).to_become_equal_to("EMPTY")
+        index=1
+        brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
         # for index in range(1, self.nr_of_subarrays + 1):
-        #     brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
-        #         "obsState"
-        #     ).to_become_equal_to("EMPTY")
+        brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
         
         brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
         ).to_become_equal_to("EMPTY")

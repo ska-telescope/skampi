@@ -23,7 +23,7 @@ ska-mid-cbf:
 ska-csp-lmc-mid:
   enabled: true
 ska-tmc-mid:
-  enabled: true
+  enabled: false
 ska-sim-dishmaster:
   enabled: true
 

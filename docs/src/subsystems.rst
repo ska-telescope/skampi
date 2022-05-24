@@ -162,8 +162,7 @@ TMC Architecture
 The TMC is a distributed system having multiple components to fulfil its functionalities. For carrying out 
 observation execution, monitoring and control it has a hierarchy of control nodes for Mid and Low-
 Central Node, Subarray Node, SDP Leaf Nodes, CSP Leaf Nodes, MCCS Leaf Nodes, Dish Leaf Nodes.
-The detailed architecture of the TMC can be found in `TMC Architecture
-<https://confluence.skatelescope.org/display/SWSI/TMC+Architecture>`
+The detailed architecture of the TMC can be found in `TMC Architecture<https://confluence.skatelescope.org/display/SWSI/TMC+Architecture>`
 section in the Solution Intent.
 
 APIs

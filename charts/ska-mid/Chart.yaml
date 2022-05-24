@@ -34,8 +34,12 @@ dependencies:
   #   version: 0.5.3
   #   repository: https://artefact.skao.int/repository/helm-internal
   #   condition: ska-oso-scripting.enabled
-  - name: ska-taranta
-    version: 1.0.29
+  - name: ska-tango-taranta
+    version: 1.3.1
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-taranta.enabled
+  - name: ska-tango-tangogql
+    version: 1.3.3
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-taranta.enabled
   - name: ska-taranta-auth
@@ -44,12 +48,18 @@ dependencies:
     condition: global.taranta_auth_enabled
     tags:
       - taranta_auth
-  - name: ska-dashboard-repo
-    version: 0.1.9
+  - name: ska-tango-taranta-dashboard
+    version: 1.3.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: global.taranta_dashboard_enabled
     tags:
       - taranta_dashboard
+  - name: ska-tango-taranta-dashboard-pvc
+    version: 1.3.0
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: global.taranta_dashboard_enabled
+    tags:
+      - taranta_dashboard-pvc
   - name: ska-ser-skuid
     version: 3.3.3
     repository: https://artefact.skao.int/repository/helm-internal
@@ -58,10 +68,10 @@ dependencies:
     version: 0.8.2
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
-  # - name: ska-sim-dishmaster
-  #  version: 2.0.2
-  #  repository: https://artefact.skao.int/repository/helm-internal
-  #  condition: ska-sim-dishmaster.enabled
+  - name: ska-sim-dishmaster
+    version: 2.0.2
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-sim-dishmaster.enabled
   # - name: ska-tango-archiver
   #   version: 0.1.8
   #   repository: https://artefact.skao.int/repository/helm-internal

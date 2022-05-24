@@ -113,7 +113,7 @@ ska-sdp:
 
 ## tmc
 tmc-mid:
-  enabled: true
+  enabled: false
   telescope: SKA-mid
   deviceServers:
     centralnode:

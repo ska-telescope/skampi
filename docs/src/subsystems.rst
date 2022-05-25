@@ -157,16 +157,20 @@ and Telescope Data Management (Historical data and Real time data).
 These high level functions are again divided into lower level functions to perform the specific functionalities.
 
 TMC Architecture
-++++++++++++++++
+~~~~~~~~~~~~~~~~~
 
 The TMC is a distributed system having multiple components to fulfil its functionalities. For carrying out 
 observation execution, monitoring and control it has a hierarchy of control nodes for Mid and Low-
 Central Node, Subarray Node, SDP Leaf Nodes, CSP Leaf Nodes, MCCS Leaf Nodes, Dish Leaf Nodes.
-The detailed architecture of the TMC can be found in `TMC Architecture<https://confluence.skatelescope.org/display/SWSI/TMC+Architecture>`
+The detailed architecture of the TMC can be found in `TMC Architecture <https://confluence.skatelescope.org/display/SWSI/TMC+Architecture>`_
 section in the Solution Intent.
 
+More details on the design of the TMC and how
+to run it locally or in the integration environment can be found in the `Documentation 
+<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-integration/-/blob/main/docs/src/getting_started/getting_started.rst>`_
+
 APIs
-++++
+~~~~
 
 .. toctree::
     :titlesonly:
@@ -175,8 +179,37 @@ APIs
     Operational Monitoring and Control<apis/operational_mandc>
     Observation Execution<apis/obs_mandc>
 
-The components(CentralNode, SubarrayNode, Leaf Nodes) of the TMC system are integrated in the `TMC integration repository
-<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-integration>`, which contains
-the Helm chart to deploy the TMC. More details on the design of the TMC and how
-to run it locally or in the integration environment can be found in the `Documentation 
-<https://gitlab.com/ska-telescope/ska-tmc/ska-tmc-integration/-/blob/main/docs/src/getting_started/getting_started.rst>`_
+TMC Deployment Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is possible to alter the default configuration of TMC deployment. The entire TMC deployment 
+can be enabled of disabled by setting the `enabled` flag in values.yaml file as shown below
+
+.. code-block:: yaml
+   :emphasize-lines: 2
+
+    tmc-mid:
+        enabled: true
+
+
+TMC also allows selective deployment of its components. It can be achieved by enabling or disabling 
+the respective device server in the tmc-mid section as shown below.
+
+.. code-block:: yaml
+   :emphasize-lines: 5,8,11,14
+
+    tmc-mid:
+      enabled: true
+      deviceServers:
+          centralnode:
+              enabled: true
+
+          subarraynode:
+              enabled: true
+
+          sdpsubarrayleafnode:
+             enabled: true
+
+          sdpmasterleafnode:
+              enabled: true
+

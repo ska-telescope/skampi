@@ -1,4 +1,4 @@
-.. _apis:
+.. _obs_apis:
 
 Observation Execution APIs
 **************************

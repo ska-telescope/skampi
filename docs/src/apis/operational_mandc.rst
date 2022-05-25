@@ -1,4 +1,4 @@
-.. _apis:
+.. _ops_apis:
 
 Operational Monitoring and Control APIs
 ****************************************
@@ -10,5 +10,6 @@ TMC provides APIs for controlling the telescope as follws:
 * `Standby <https://developer.skao.int/projects/ska-tmc-centralnode/en/latest/api/ska_tmc_centralnode.commands.html#ska-tmc-centralnode-commands-telescope-standby-command-module>`_
 
 To monitor the telescope, the Central Node exposes following attributes:
+
 * telescopeState
 * healthState

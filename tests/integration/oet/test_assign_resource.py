@@ -53,18 +53,6 @@ def a_oet():
     """an OET"""
 
 
-@given("the SKUID service is running")
-def check_skuid_service_is_running():
-    """
-    Check that the SKA UID service is reachable at SKUID_URL environment variable.
-    """
-    skuid_url = os.environ["SKUID_URL"]
-    if not skuid_url.startswith("http"):
-        skuid_url = "http://" + skuid_url
-    logger.info("Checking SKUID is running at %s", skuid_url)
-    resp = requests.get(skuid_url)
-    assert resp.status_code == 200
-
 @given("an telescope subarray", target_fixture="composition")
 def an_sdp_subarray(
     set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition

@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+from threading import Event
 from contextlib import contextmanager
 import logging
 import time
@@ -8,7 +9,8 @@ from typing import List, Optional, Union
 from ska_oso_oet.procedure.application.application import ProcedureSummary
 from ska_oso_oet.procedure.application.restclient import RestAdapter
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.event_waiting.wait import wait
+from ska_ser_skallop.mvp_control.event_waiting.wait import wait, MessageBoardBase
+from ska_ser_skallop.subscribing.exceptions import EventTimedOut
 from ska_ser_skallop.mvp_fixtures.env_handling import ExecSettings
 
 LOGGER = logging.getLogger(__name__)
@@ -134,6 +136,43 @@ class ScriptExecutor:
         return ScriptExecutor.wait_for_script_state(pid, "COMPLETE", timeout)
 
 
+def concurrent_wait(
+    board: MessageBoardBase,
+    stop_signal: Event,
+    polling: float,
+    live_logging=False,
+):
+    """Waiting task that can be used in concurrent tasks allowing for a stop_signal to stop waiting.
+
+    This function should be implemented in skallop.
+
+    :param board: _description_
+
+    :param stop_signal: _description_
+
+    :param timeout: _description_
+
+    :param live_logging: _description_, defaults to False
+    :type live_logging: bool, optional
+    """
+
+    while stop_signal.is_set():
+        try:
+            item = next(board.get_items(polling))
+        except EventTimedOut:
+            # we treat timeout as a signal indicating no incoming message
+            # events occurred within a given period but does not mean
+            # we need to stop listening as that is determined by stop signal
+            continue
+        handler = item.handler
+        if handler:
+            handler.handle_event(item.event, item.subscription)
+            message = handler.print_event(item.event, ignore_first=False)
+            if live_logging:
+                LOGGER.info(message)
+    board.remove_all_subscriptions()
+
+
 @contextmanager
 def observe_while_running(
     context_monitoring: fxt_types.context_monitoring,
@@ -152,14 +191,20 @@ def observe_while_running(
     :param settings: settings related to the waiting whilst running the main thread
         , defaults to None
     """
+    poll_period = 0.1
     settings = settings if settings else ExecSettings()
     with context_monitoring.context_monitoring():
-        with ThreadPoolExecutor(max_workers=1) as pool:
+        with ThreadPoolExecutor(max_workers=2) as pool:
             board = context_monitoring.builder.setup_board()
-            attr_synching = False
+            stop_signal = Event()
+            stop_signal.set()
             pool.submit(
-                wait, board, settings.time_out, settings.log_enabled, attr_synching
+                concurrent_wait,
+                board,
+                stop_signal,
+                poll_period,
+                settings.log_enabled,
             )
             yield
             # at the end of the task we end waiting by cancelling all subscriptions
-            board.remove_all_subscriptions()
+            stop_signal.clear()

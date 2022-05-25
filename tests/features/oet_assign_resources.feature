@@ -11,7 +11,6 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	@XTP-777 @XTP-776
 	Scenario: Allocating resources with a SBI
 		Given an OET
-		And  an telescope subarray
 		And  sub-array is in ObsState EMPTY
 		When I tell the OET to allocate resources using script file:///scripts/allocate_from_file_sb.py and SBI data/mid_sb_example.json
 		Then the sub-array goes to ObsState IDLE

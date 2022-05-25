@@ -53,12 +53,12 @@ def a_oet():
     """an OET"""
 
 
-@given("an telescope subarray", target_fixture="composition")
-def an_sdp_subarray(
-    set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition
-) -> conf_types.Composition:
-    """an telescope subarray."""
-    return base_composition
+# @given("an telescope subarray", target_fixture="composition")
+# def an_sdp_subarray(
+#     set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition
+# ) -> conf_types.Composition:
+#     """an telescope subarray."""
+#     return base_composition
 
 
 @given("sub-array is in ObsState EMPTY")

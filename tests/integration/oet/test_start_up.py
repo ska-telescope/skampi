@@ -17,7 +17,7 @@ from .oet_helpers import ScriptExecutor, observe_while_running
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-
+@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.startup
 @pytest.mark.k8s
@@ -25,7 +25,7 @@ EXECUTOR = ScriptExecutor()
 def test_telescope_startup_mid():
     """Telescope startup test."""
 
-
+@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.standby
 @pytest.mark.k8s
@@ -63,7 +63,7 @@ def run_startup_standby_script(
     """
     # Execute startup or standby script
     with observe_while_running(context_monitoring):
-        script_completion_state = EXECUTOR.execute_script(script=script, timeout=60)
+        script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"

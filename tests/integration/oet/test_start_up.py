@@ -12,7 +12,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-from .oet_helpers import ScriptExecutor
+from .oet_helpers import ScriptExecutor, observe_while_running
 
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
@@ -62,7 +62,7 @@ def run_startup_standby_script(
         script (str): file path to an observing script
     """
     # Execute startup or standby script
-    with context_monitoring.context_monitoring():
+    with observe_while_running(context_monitoring):
         script_completion_state = EXECUTOR.execute_script(script=script, timeout=60)
         assert (
             script_completion_state == "COMPLETE"

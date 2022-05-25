@@ -1,10 +1,15 @@
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 import logging
 import time
 from os import environ
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from ska_oso_oet.procedure.application.application import ProcedureSummary
 from ska_oso_oet.procedure.application.restclient import RestAdapter
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_control.event_waiting.wait import wait
+from ska_ser_skallop.mvp_fixtures.env_handling import ExecSettings
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,7 +20,6 @@ REST_ADAPTER = RestAdapter(rest_cli_uri)
 
 
 class ScriptExecutor:
-
     @staticmethod
     def init_script(script_uri: str, *args, **kwargs) -> ProcedureSummary:
         if not kwargs:
@@ -73,12 +77,16 @@ class ScriptExecutor:
 
             if procedure.state == "FAILED":
                 stacktrace = procedure.history["stacktrace"]
-                LOGGER.info(f"Script {procedure.script['script_uri']} (PID={pid}) failed. Stacktrace follows:")
+                LOGGER.info(
+                    f"Script {procedure.script['script_uri']} (PID={pid}) failed. Stacktrace follows:"
+                )
                 LOGGER.exception(stacktrace)
                 return procedure.state
 
             if procedure.state == state:
-                LOGGER.info(f"Script {procedure.script['script_uri']} state changed to {state}")
+                LOGGER.info(
+                    f"Script {procedure.script['script_uri']} state changed to {state}"
+                )
                 return procedure.state
 
             time.sleep(5)
@@ -112,19 +120,46 @@ class ScriptExecutor:
         LOGGER.info(f"Running script {script}")
 
         procedure = ScriptExecutor.init_script(script)
-        pid = procedure.uri.split('/')[-1]
+        pid = procedure.uri.split("/")[-1]
 
         # confirm that creating the script worked and we have a valid ID
         state = ScriptExecutor.wait_for_script_state(pid, "READY", timeout)
         if state != "READY":
-            LOGGER.info(
-                f"Script {script} did not reach READY state"
-            )
+            LOGGER.info(f"Script {script} did not reach READY state")
             return state
 
         # start execution of created script
         ScriptExecutor.start_script(pid, *script_run_args)
 
-        return ScriptExecutor.wait_for_script_state(
-            pid, "COMPLETE", timeout
-        )
+        return ScriptExecutor.wait_for_script_state(pid, "COMPLETE", timeout)
+
+
+@contextmanager
+def observe_while_running(
+    context_monitoring: fxt_types.context_monitoring,
+    settings: Union[None, ExecSettings] = None,
+):
+    """Handle messages from incoming events in a background thread whilst running the main thread.
+
+    This mechanism does not block until all event handlers have been concluded but
+    rather immediately stop subscriptions when the main thread has finished within
+    the context.
+
+    Note, if this function is proved useful it should rather be exported as a method
+    of ContextMonitoring
+    in skallop package.
+    :param context_monitoring: the ContextMonitoring object (should be self in skallop)
+    :param settings: settings related to the waiting whilst running the main thread
+        , defaults to None
+    """
+    settings = settings if settings else ExecSettings()
+    with context_monitoring.context_monitoring():
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            board = context_monitoring.builder.setup_board()
+            attr_synching = False
+            pool.submit(
+                wait, board, settings.time_out, settings.log_enabled, attr_synching
+            )
+            yield
+            # at the end of the task we end waiting by cancelling all subscriptions
+            board.remove_all_subscriptions()

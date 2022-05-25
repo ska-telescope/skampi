@@ -4,7 +4,6 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	@XTP-779 @XTP-776
 	Scenario: Creating a new SBI with updated SB IDs and PB IDs
 		Given an OET
-		And  the SKUID service is running
 		When I tell the OET to create SBI using script file:///scripts/create_sbi.py and SB data/mid_sb_example.json
 		Then the script completes successfully
 

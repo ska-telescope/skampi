@@ -90,7 +90,7 @@ class ScriptExecutor:
         )
         ScriptExecutor.stop_script(pid)
         procedure = ScriptExecutor.get_script_by_id(pid)
-        LOGGER.info(f"Script {procedure.script.script_uri} state: {procedure.state}")
+        LOGGER.info(f"Script {procedure.script['script_uri']} state: {procedure.state}")
         return procedure.state
 
     @staticmethod

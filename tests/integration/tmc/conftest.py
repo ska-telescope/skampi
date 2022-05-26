@@ -18,12 +18,13 @@ from .. import conftest
 
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
 def fxt_set_entry_point(
+    nr_of_subarrays: int,
     set_session_exec_env: fxt_types.set_session_exec_env,
     sut_settings: conftest.SutTestSettings,
 ):
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
-    sut_settings.nr_of_subarrays = 1
+    sut_settings.nr_of_subarrays = nr_of_subarrays
     sut_settings.receptors = [1]
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     exec_env.entrypoint = TMCEntryPoint
@@ -31,10 +32,24 @@ def fxt_set_entry_point(
     exec_env.scope = ["tmc", "mid"]
 
 
+@pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
+def fxt_nr_of_subarrays() -> int:
+    """_summary_
+
+    :return: _description_
+    :rtype: int
+    """
+    # we only work with 1 subarray as CBF low currently limits deployment of only 1
+    # cbf mid only controls the state of subarray 1 so will also limit to 1
+    tel = names.TEL()
+    if tel.skalow:
+        return 1
+    return 2
+
+
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online(
-    set_subsystem_online: Callable[[EntryPoint], None],
-    sut_settings: conftest.SutTestSettings,
+    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
 ):
     """_summary_
 
@@ -44,7 +59,7 @@ def fxt_set_csp_online(
     :type set_subsystem_online: Callable[[EntryPoint], None]
     """
     logging.info("setting csp components online")
-    TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+    TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
     entry_point = TMCEntryPoint()
     set_subsystem_online(entry_point)
 

@@ -43,21 +43,22 @@ def fxt_set_entry_point(
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = ["tmc","mid"]
 
-@pytest.fixture(autouse=True, scope="session")
-def fxt_set_csp_online(
-    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays: int
-):
-    """_summary_
 
-    :param nr_of_subarrays: _description_
-    :type nr_of_subarrays: int
-    :param set_subsystem_online: _description_
-    :type set_subsystem_online: Callable[[EntryPoint], None]
-    """
-    logging.info("setting csp components online")
-    TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
-    entry_point = TMCEntryPoint()
-    set_subsystem_online(entry_point)
+# @pytest.fixture(autouse=True, scope="session")
+# def fxt_set_csp_online(
+#     set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays: int
+# ):
+#     """_summary_
+
+#     :param nr_of_subarrays: _description_
+#     :type nr_of_subarrays: int
+#     :param set_subsystem_online: _description_
+#     :type set_subsystem_online: Callable[[EntryPoint], None]
+#     """
+#     logging.info("setting csp components online")
+#     TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+#     entry_point = TMCEntryPoint()
+#     set_subsystem_online(entry_point)
 
 
 @pytest.fixture(name="tmc_start_up_test_exec_settings", autouse=True)

@@ -14,7 +14,6 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 nr_of_subarrays = 1
 
-# @pytest.mark.skip(reason="SKB-144 caused by duplicate deviceservers deployed by TMC mocks")
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario(
@@ -24,13 +23,12 @@ def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
 
 
-# @pytest.mark.skip(reason="SKB-144 caused by duplicate deviceservers deployed by TMC mocks")
 @pytest.mark.skamid
 @pytest.mark.standby
 @scenario(
     "features/tmc_start_up_telescope.feature", "Switch of the telescope"
 )
-def test_tmc_off_telescope_mid_sdp():
+def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
 
 
@@ -112,8 +110,8 @@ def the_sdp_csp_and_dish_must_be_off(sut_settings: conftest.SutTestSettings):
     # Check state attribute of Dish Master
     dish1 = con_config.get_device_proxy(mid.dish(1))
     result = dish1.read_attribute("state").value
-    assert_that(str(result)).is_equal_to("OFF")
+    assert_that(str(result)).is_equal_to("STANDBY")
     # Check telescopeState attribute of Central Node
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     result = central_node.read_attribute("telescopeState").value
-    assert_that(str(result)).is_equal_to("OFF")
+    assert_that(str(result)).is_equal_to("STANDBY")

@@ -45,13 +45,15 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
+        csp_master = con_config.get_device_proxy(self._tel.csp.controller)
+        csp_master.write_attribute("adminmode", 0)
         self._log(f"Commanding {central_node_name} with TelescopeOn")
         central_node.command_inout("TelescopeOn")
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifying what needs to be waited for before startup of telescope is done."""
         brd = get_message_board_builder()
-        # TODO set what needs to be waited before start up completes
+        # set sdp master and sdp subarray to be waited before startup completes
         brd.set_waiting_on(self._tel.sdp.master).for_attribute(
             "state"
         ).to_become_equal_to("ON", ignore_first=False)
@@ -59,6 +61,18 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("ON")
+        # set csp controller and csp subarray to be waited before startup completes
+        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+            "state"
+        ).to_become_equal_to("ON", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("ON")
+        # set centralnode telescopeState waited before startup completes
+        brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
+            "telescopeState"
+        ).to_become_equal_to("ON", ignore_first=False)
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
@@ -76,6 +90,17 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("OFF")
+        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+            "state"
+        ).to_become_equal_to("OFF", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF")
+        # set centralnode telescopeState waited before startup completes
+        brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
+            "telescopeState"
+        ).to_become_equal_to("STANDBY", ignore_first=False)
         return brd
 
     def undo(self):

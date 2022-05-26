@@ -46,6 +46,7 @@ def a_partial_telescope():
 def a_partial_telescope_with_sdp_on():
     """an partial Telescope consisting of SDP only that is ON"""
 
+
 # when
 # use @when("I start up the telescope") from ..conftest
 

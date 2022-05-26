@@ -1,16 +1,15 @@
-from concurrent.futures import ThreadPoolExecutor
-from threading import Event
+from threading import Thread, Event
 from contextlib import contextmanager
 import logging
 import time
 from os import environ
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
 from ska_oso_oet.procedure.application.application import ProcedureSummary
 from ska_oso_oet.procedure.application.restclient import RestAdapter
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.event_waiting.wait import wait, MessageBoardBase
-from ska_ser_skallop.subscribing.exceptions import EventTimedOut
+from ska_ser_skallop.mvp_control.event_waiting.wait import MessageBoardBase
+from ska_ser_skallop.subscribing.event_item import EventItem
 from ska_ser_skallop.mvp_fixtures.env_handling import ExecSettings
 
 LOGGER = logging.getLogger(__name__)
@@ -136,6 +135,24 @@ class ScriptExecutor:
         return ScriptExecutor.wait_for_script_state(pid, "COMPLETE", timeout)
 
 
+def get_current_items(message_board: MessageBoardBase) -> List[EventItem]:
+    """Get the current events contained in the buffer of a message board object.
+
+    Note this should be a method of the MessageBoard Class in skallop
+
+    :param message_board: _description_
+    :return: A list of current event items
+    """
+    inbox = message_board.board
+    items: List[EventItem] = []
+    while not inbox.empty():
+        items.append(inbox.get_nowait())
+    return items
+
+
+STOPSIGNAL = Literal["STOP"]
+
+
 def concurrent_wait(
     board: MessageBoardBase,
     stop_signal: Event,
@@ -155,22 +172,18 @@ def concurrent_wait(
     :param live_logging: _description_, defaults to False
     :type live_logging: bool, optional
     """
-
-    while stop_signal.is_set():
-        try:
-            item = next(board.get_items(polling))
-        except EventTimedOut:
-            # we treat timeout as a signal indicating no incoming message
-            # events occurred within a given period but does not mean
-            # we need to stop listening as that is determined by stop signal
-            continue
-        handler = item.handler
-        if handler:
-            handler.handle_event(item.event, item.subscription)
-            message = handler.print_event(item.event, ignore_first=False)
-            if live_logging:
-                LOGGER.info(message)
+    live_logging = True
+    while not stop_signal.wait(timeout=polling):
+        if items := get_current_items(board):
+            for item in items:
+                handler = item.handler
+                if handler:
+                    handler.handle_event(item.event, item.subscription)
+                    if live_logging:
+                        message = handler.print_event(item.event, ignore_first=False)
+                        LOGGER.info(message)
     board.remove_all_subscriptions()
+    return
 
 
 @contextmanager
@@ -191,20 +204,17 @@ def observe_while_running(
     :param settings: settings related to the waiting whilst running the main thread
         , defaults to None
     """
-    poll_period = 0.1
+    poll_period = 0.5
     settings = settings if settings else ExecSettings()
     with context_monitoring.context_monitoring():
-        with ThreadPoolExecutor(max_workers=2) as pool:
-            board = context_monitoring.builder.setup_board()
-            stop_signal = Event()
-            stop_signal.set()
-            pool.submit(
-                concurrent_wait,
-                board,
-                stop_signal,
-                poll_period,
-                settings.log_enabled,
-            )
+        board = context_monitoring.builder.setup_board()
+        stop_signal = Event()
+        Thread(
+            target=concurrent_wait,
+            args=[board, stop_signal, poll_period, settings.log_enabled],
+            daemon=True,
+        ).start()
+        try:
             yield
-            # at the end of the task we end waiting by cancelling all subscriptions
-            stop_signal.clear()
+        finally:
+            stop_signal.set()

@@ -56,6 +56,7 @@ def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
 def run_startup_standby_script(
     script,
     context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """
     Use the OET Rest API to run a script
@@ -63,8 +64,9 @@ def run_startup_standby_script(
     Args:
         script (str): file path to an observing script
     """
+    settings = integration_test_exec_settings
     # Execute startup or standby script
-    with observe_while_running(context_monitoring):
+    with observe_while_running(context_monitoring, settings):
         script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
     assert (
         script_completion_state == "COMPLETE"

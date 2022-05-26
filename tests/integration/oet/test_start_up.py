@@ -6,13 +6,12 @@ Telescope startup and standby using OET scripts
 import logging
 
 import pytest
-from assertpy import assert_that
 from pytest_bdd import given, parsers, scenario, then, when
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-from .oet_helpers import ScriptExecutor, observe_while_running
+from .oet_helpers import ScriptExecutor
 
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
@@ -66,7 +65,7 @@ def run_startup_standby_script(
     """
     settings = integration_test_exec_settings
     # Execute startup or standby script
-    with observe_while_running(context_monitoring, settings):
+    with context_monitoring.observe_while_running(settings):
         script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
     assert (
         script_completion_state == "COMPLETE"

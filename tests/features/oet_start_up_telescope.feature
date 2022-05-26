@@ -16,4 +16,4 @@ Feature: Verification of OET scripts being executed successfully during an obser
 		Given an OET
 		And a telescope in the ON state
 		When I tell the OET to run file:///scripts/standby.py
-		Then the central node must be OFF
+		Then the central node must be STANDBY

@@ -79,7 +79,7 @@ def check_final_state(state):
     """
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node)
-    final_state = central_node.read_attribute("state").value
+    final_state = central_node.read_attribute("telescopeState").value
     # assert_that(str(final_state)).is_equal_to("ON")
     assert (
         str(final_state) == state

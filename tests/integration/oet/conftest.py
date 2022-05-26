@@ -21,10 +21,12 @@ def fxt_set_entry_point(
 ):
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
+    sut_settings.nr_of_subarrays = 1
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["sdp", "sdp control"]
+    exec_env.scope = ["tmc","mid"]
+
 
 
 # log checking

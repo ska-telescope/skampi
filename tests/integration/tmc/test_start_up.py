@@ -37,7 +37,7 @@ def a_tmc():
     """an TMC"""
 
 
-@given("a Telescope consisting SDP, CSP and a Dish")
+@given("a Telescope consisting of SDP, CSP and a Dish")
 def a_telescope_with_csp_sdp_and_dish():
     """a Telescope consisting SDP, CSP and a Dish"""
 

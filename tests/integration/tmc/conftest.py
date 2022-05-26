@@ -11,24 +11,9 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 
-# from resources.models.csp_model.entry_point import CSPEntryPoint
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 
 from .. import conftest
-
-@pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
-def fxt_nr_of_subarrays() -> int:
-    """_summary_
-
-    :return: _description_
-    :rtype: int
-    """
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
-    # cbf mid only controls the state of subarray 1 so will also limit to 1
-    tel = names.TEL()
-    if tel.skalow:
-        return 1
-    return 2
 
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
 def fxt_set_entry_point(
@@ -38,6 +23,7 @@ def fxt_set_entry_point(
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = 1
+    sut_settings.receptors = [1]
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work

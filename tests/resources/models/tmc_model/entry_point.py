@@ -61,6 +61,13 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("ON")
+        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+            "state"
+        ).to_become_equal_to("ON", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("ON")
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
@@ -76,6 +83,13 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         ).to_become_equal_to("OFF", ignore_first=False)
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF")
+        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+            "state"
+        ).to_become_equal_to("OFF", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("OFF")
         return brd

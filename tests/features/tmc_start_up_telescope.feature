@@ -5,7 +5,7 @@ Feature: Start up the telescope using TMC
 	@XTP-6187 @XTP-6186 @XTP-3324
 	Scenario: Start up the telescope
 		Given an TMC
-		Given a Telescope consisting SDP, CSP and a Dish
+		Given a Telescope consisting of SDP, CSP and a Dish
 		When I start up the telescope
 		Then the sdp, csp and dish must be on
 

@@ -11,10 +11,26 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 
-# from resources.models.csp_model.entry_point import CSPEntryPoint
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 
 from .. import conftest
+
+
+@pytest.fixture(name="set_tmc_entry_point", autouse=True)
+def fxt_set_entry_point(
+    nr_of_subarrays: int,
+    set_session_exec_env: fxt_types.set_session_exec_env,
+    sut_settings: conftest.SutTestSettings,
+):
+    """Fixture to use for setting up the entry point as from only the interface to sdp."""
+    exec_env = set_session_exec_env
+    sut_settings.nr_of_subarrays = nr_of_subarrays
+    sut_settings.receptors = [1]
+    TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+    exec_env.entrypoint = TMCEntryPoint
+    #  TODO  determine correct scope for readiness checks to work
+    exec_env.scope = ["tmc", "mid"]
+
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
 def fxt_nr_of_subarrays() -> int:
@@ -30,35 +46,22 @@ def fxt_nr_of_subarrays() -> int:
         return 1
     return 2
 
-@pytest.fixture(name="set_tmc_entry_point", autouse=True)
-def fxt_set_entry_point(
-    set_session_exec_env: fxt_types.set_session_exec_env,
-    sut_settings: conftest.SutTestSettings,
+
+@pytest.fixture(autouse=True, scope="session")
+def fxt_set_csp_online(
+    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
 ):
-    """Fixture to use for setting up the entry point as from only the interface to sdp."""
-    exec_env = set_session_exec_env
-    sut_settings.nr_of_subarrays = 1
-    TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
-    exec_env.entrypoint = TMCEntryPoint
-    #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["tmc","mid"]
+    """_summary_
 
-
-# @pytest.fixture(autouse=True, scope="session")
-# def fxt_set_csp_online(
-#     set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays: int
-# ):
-#     """_summary_
-
-#     :param nr_of_subarrays: _description_
-#     :type nr_of_subarrays: int
-#     :param set_subsystem_online: _description_
-#     :type set_subsystem_online: Callable[[EntryPoint], None]
-#     """
-#     logging.info("setting csp components online")
-#     TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
-#     entry_point = TMCEntryPoint()
-#     set_subsystem_online(entry_point)
+    :param nr_of_subarrays: _description_
+    :type nr_of_subarrays: int
+    :param set_subsystem_online: _description_
+    :type set_subsystem_online: Callable[[EntryPoint], None]
+    """
+    logging.info("setting csp components online")
+    TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+    entry_point = TMCEntryPoint()
+    set_subsystem_online(entry_point)
 
 
 @pytest.fixture(name="tmc_start_up_test_exec_settings", autouse=True)

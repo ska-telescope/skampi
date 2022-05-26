@@ -20,9 +20,10 @@ logger = logging.getLogger(__name__)
 
 # @pytest.mark.skip(reason="test implementation is under progress")
 @pytest.mark.skamid
+@pytest.mark.assign
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
 def test_assign_resources_to_tmc_subarray_in_mid():
-    """Assign resources to tmc subarrays in mid."""
+    """Assign resources to sdp subarray in mid."""
 
 
 # @pytest.mark.skip(reason="ttest implementation is under progress")
@@ -56,7 +57,7 @@ def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
+    result = subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
 

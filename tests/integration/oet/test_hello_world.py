@@ -20,7 +20,7 @@ def hello_world_script_created():
 
 @when("the script is ran")
 def hello_world_script_ran():
-    EXECUTOR.execute_script("file:///data/hello_world.py")
+    EXECUTOR.execute_script("file:///tmp/oda/hello_world.py")
 
 
 @then("script execution completes successfully")

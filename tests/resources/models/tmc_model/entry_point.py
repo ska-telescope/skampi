@@ -45,6 +45,8 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
+        csp_master = con_config.get_device_proxy(self._tel.csp.controller)
+        csp_master.write_attribute("adminmode", 0)
         self._log(f"Commanding {central_node_name} with TelescopeOn")
         central_node.command_inout("TelescopeOn")
 

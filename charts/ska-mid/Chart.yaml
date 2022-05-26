@@ -26,7 +26,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
   - name: ska-tmc-mid
-    version: 0.5.1
+    version: 0.5.3
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tmc-mid.enabled
     alias: tmc-mid
@@ -58,10 +58,10 @@ dependencies:
     version: 0.8.2
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
-  # - name: ska-sim-dishmaster
-  #  version: 2.0.2
-  #  repository: https://artefact.skao.int/repository/helm-internal
-  #  condition: ska-sim-dishmaster.enabled
+   - name: ska-sim-dishmaster
+    version: 2.0.2
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-sim-dishmaster.enabled
   # - name: ska-tango-archiver
   #   version: 0.1.8
   #   repository: https://artefact.skao.int/repository/helm-internal
@@ -75,6 +75,6 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
   - name: ska-oso-oet
-    version: 4.0.1
+    version: 4.0.2
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-oso-oet.enabled

@@ -18,17 +18,13 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
-@pytest.mark.skip(reason="test implementation is under progress")
+@pytest.mark.skip(reason="test under development")
 @pytest.mark.skamid
+@pytest.mark.assign
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
 def test_assign_resources_to_tmc_subarray_in_mid():
-    """Assign resources to tmc subarrays in mid."""
+    """Assign resources to sdp subarray in mid."""
 
-@pytest.mark.skip(reason="ttest implementation is under progress")
-@pytest.mark.skamid
-@scenario("features/tmc_assign_resources.feature", "Release resources from mid subarray")
-def test_release_resources_from_tmc_subarray_in_mid():
-    """Release resources from tmc subarrays in mid."""
 
 @given("an TMC")
 def a_tmc():
@@ -47,21 +43,10 @@ def an_sdp_subarray(
 # @when("I assign resources to it")
 
 
-@given("the subarray must be in IDLE state")
 @then("the subarray must be in IDLE state")
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
+    result = subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.IDLE)
-
-#@when("I release all resources assigned to it")
-
-@then("the subarray must be in EMPTY state")
-def the_subarray_must_be_in_empty_state(sut_settings: SutTestSettings):
-    """the subarray must be in EMPTY state."""
-    tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.EMPTY)

@@ -45,8 +45,6 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
-        csp_master = con_config.get_device_proxy(self._tel.csp.controller)
-        csp_master.write_attribute("adminmode", 0)
         self._log(f"Commanding {central_node_name} with TelescopeOn")
         central_node.command_inout("TelescopeOn")
 
@@ -68,7 +66,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON", ignore_first=False)
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -96,7 +94,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("OFF")
+            ).to_become_equal_to("OFF", ignore_first=False)
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -109,6 +107,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         central_node = con_config.get_device_proxy(central_node_name)
         self._log(f"Commanding {central_node_name} with TelescopeOff")
         central_node.command_inout("TelescopeOff")
+
 
 # TODO: Implement AssignResources and ReleaseResources
 class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
@@ -155,16 +154,16 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # standard_composition = comp.generate_standard_comp(
         #     sub_array_id , [1] , sb_id
         # )
-        #std_composition = json.loads(comp.generate_standard_comp(
+        # std_composition = json.loads(comp.generate_standard_comp(
         #    sub_array_id, dish_ids, sb_id
         # ))
-        #std_composition["dish"]["receptor_ids"]=["0001"]
-        #standard_composition=json.dumps(std_composition)
+        # std_composition["dish"]["receptor_ids"]=["0001"]
+        # standard_composition=json.dumps(std_composition)
         #
         #
         self._log(f"Commanding {central_node_name} with AssignRescources")
         tmc_mid_assign_configuration = json.dumps(tmc_mid_assign_resources)
-        central_node.command_inout("AssignResources",tmc_mid_assign_configuration)
+        central_node.command_inout("AssignResources", tmc_mid_assign_configuration)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -185,7 +184,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # )
         self._log(f"Commanding {central_node_name} with ReleaseRescources")
         tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
-        central_node.command_inout("ReleaseResources",tmc_mid_release_configuration)
+        central_node.command_inout("ReleaseResources", tmc_mid_release_configuration)
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
@@ -194,21 +193,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         brd = get_message_board_builder()
         # TODO determine what needs to be waited for
-        # for index in range(1, self.nr_of_subarrays + 1):
-        index=1
-        brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
-        # for index in range(1, self.nr_of_subarrays + 1):
-        brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
-        
-        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
-        ).to_become_equal_to("IDLE")
-        
         return brd
-
 
     def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
         """Not implemented."""
@@ -221,19 +206,6 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         brd = get_message_board_builder()
         # TODO determine what needs to be waited for
-        # for index in range(1, self.nr_of_subarrays + 1):
-        index=1
-        brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY")
-        # for index in range(1, self.nr_of_subarrays + 1):
-        brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY")
-        
-        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
-        ).to_become_equal_to("EMPTY")
-        
         return brd
 
 
@@ -427,9 +399,9 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
             builder.set_waiting_on(subarray).for_attribute(
                 "adminMode"
             ).to_become_equal_to("ONLINE", ignore_first=False)
-            builder.set_waiting_on(subarray).for_attribute(
-                "state"
-            ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
+                ["OFF", "ON"], ignore_first=False
+            )
         return builder
 
     def undo(self):
@@ -441,9 +413,7 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.csp.subarray(index)
             subarray = con_config.get_device_proxy(subarray_name)
-            self._log(
-                f"Setting adminMode for {subarray_name} to '1' (OFFLINE)"
-            )
+            self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
             subarray.write_attribute("adminmode", 1)
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
@@ -473,7 +443,7 @@ class TMCEntryPoint(CompositeEntryPoint):
     def __init__(self) -> None:
         """Init Object"""
         super().__init__()
-        self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix 
+        self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
         self.start_up_step = StartUpStep(self.nr_of_subarrays)
         self.assign_resources_step = AssignResourcesStep()
         self.configure_scan_step = ConfigureStep()
@@ -481,137 +451,76 @@ class TMCEntryPoint(CompositeEntryPoint):
 
 
 tmc_mid_assign_resources = {
-  "interface": "https://schema.skao.int/ska-tmc-assignresources/2.0",
-  "transaction_id": "txn-local-20220526-0001",
-  "subarray_id": 1,
-  "dish": {
-    "receptor_ids": [
-      "0001",
-      "0002",
-      "0003",
-      "0004"
-    ]
-  },
-  "sdp": {
-    "interface": "https://schema.skao.int/ska-sdp-assignres/0.3",
-    "eb_id": "eb-mvp01-20200325-09059",
-    "max_length": 100.0,
-    "scan_types": [
-      {
-        "scan_type_id": "science_A",
-        "reference_frame": "ICRS",
-        "ra": "02:42:40.771",
-        "dec": "-00:00:47.84",
-        "channels": [
-          {
-            "count": 744,
-            "start": 0,
-            "stride": 2,
-            "freq_min": 350000000.0,
-            "freq_max": 368000000.0,
-            "link_map": [
-              [
-                0,
-                0
-              ],
-              [
-                200,
-                1
-              ],
-              [
-                744,
-                2
-              ],
-              [
-                944,
-                3
-              ]
-            ]
-          },
-          {
-            "count": 744,
-            "start": 2000,
-            "stride": 1,
-            "freq_min": 360000000.0,
-            "freq_max": 368000000.0,
-            "link_map": [
-              [
-                2000,
-                4
-              ],
-              [
-                2200,
-                5
-              ]
-            ]
-          }
-        ]
-      },
-      {
-        "scan_type_id": "calibration_B",
-        "reference_frame": "ICRS",
-        "ra": "12:29:06.699",
-        "dec": "02:03:08.598",
-        "channels": [
-          {
-            "count": 744,
-            "start": 0,
-            "stride": 2,
-            "freq_min": 350000000.0,
-            "freq_max": 368000000.0,
-            "link_map": [
-              [
-                0,
-                0
-              ],
-              [
-                200,
-                1
-              ],
-              [
-                744,
-                2
-              ],
-              [
-                944,
-                3
-              ]
-            ]
-          },
-          {
-            "count": 744,
-            "start": 2000,
-            "stride": 1,
-            "freq_min": 360000000.0,
-            "freq_max": 368000000.0,
-            "link_map": [
-              [
-                2000,
-                4
-              ],
-              [
-                2200,
-                5
-              ]
-            ]
-          }
-        ]
-      }
-    ],
-    "processing_blocks": [
-      {
-        "pb_id": "pb-mvp01-20200325-09059",
-        "workflow": {
-          "kind": "realtime",
-          "name": "test_receive_addresses",
-          "version": "0.3.6"
-        },
-        "parameters": {
-          
-        }
-      }
-    ]
-  }
+    "interface": "https://schema.skao.int/ska-tmc-assignresources/2.0",
+    "transaction_id": "txn-local-20220526-0001",
+    "subarray_id": 1,
+    "dish": {"receptor_ids": ["0001", "0002", "0003", "0004"]},
+    "sdp": {
+        "interface": "https://schema.skao.int/ska-sdp-assignres/0.3",
+        "eb_id": "eb-mvp01-20200325-09059",
+        "max_length": 100.0,
+        "scan_types": [
+            {
+                "scan_type_id": "science_A",
+                "reference_frame": "ICRS",
+                "ra": "02:42:40.771",
+                "dec": "-00:00:47.84",
+                "channels": [
+                    {
+                        "count": 744,
+                        "start": 0,
+                        "stride": 2,
+                        "freq_min": 350000000.0,
+                        "freq_max": 368000000.0,
+                        "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
+                    },
+                    {
+                        "count": 744,
+                        "start": 2000,
+                        "stride": 1,
+                        "freq_min": 360000000.0,
+                        "freq_max": 368000000.0,
+                        "link_map": [[2000, 4], [2200, 5]],
+                    },
+                ],
+            },
+            {
+                "scan_type_id": "calibration_B",
+                "reference_frame": "ICRS",
+                "ra": "12:29:06.699",
+                "dec": "02:03:08.598",
+                "channels": [
+                    {
+                        "count": 744,
+                        "start": 0,
+                        "stride": 2,
+                        "freq_min": 350000000.0,
+                        "freq_max": 368000000.0,
+                        "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
+                    },
+                    {
+                        "count": 744,
+                        "start": 2000,
+                        "stride": 1,
+                        "freq_min": 360000000.0,
+                        "freq_max": 368000000.0,
+                        "link_map": [[2000, 4], [2200, 5]],
+                    },
+                ],
+            },
+        ],
+        "processing_blocks": [
+            {
+                "pb_id": "pb-mvp01-20200325-09059",
+                "workflow": {
+                    "kind": "realtime",
+                    "name": "test_receive_addresses",
+                    "version": "0.3.6",
+                },
+                "parameters": {},
+            }
+        ],
+    },
 }
 
 
@@ -620,6 +529,5 @@ tmc_mid_release_resources = {
     "transaction_id": "txn-local-20210203-0001",
     "subarray_id": 1,
     "release_all": True,
-    "receptor_ids": [
-    ]
-  }
+    "receptor_ids": [],
+}

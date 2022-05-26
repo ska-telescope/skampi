@@ -150,9 +150,6 @@ def get_current_items(message_board: MessageBoardBase) -> List[EventItem]:
     return items
 
 
-STOPSIGNAL = Literal["STOP"]
-
-
 def concurrent_wait(
     board: MessageBoardBase,
     stop_signal: Event,

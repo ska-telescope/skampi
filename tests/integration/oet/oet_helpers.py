@@ -3,7 +3,7 @@ from contextlib import contextmanager
 import logging
 import time
 from os import environ
-from typing import List, Literal, Optional, Union
+from typing import List, Optional, Union
 
 from ska_oso_oet.procedure.application.application import ProcedureSummary
 from ska_oso_oet.procedure.application.restclient import RestAdapter
@@ -133,85 +133,3 @@ class ScriptExecutor:
         ScriptExecutor.start_script(pid, *script_run_args)
 
         return ScriptExecutor.wait_for_script_state(pid, "COMPLETE", timeout)
-
-
-def get_current_items(message_board: MessageBoardBase) -> List[EventItem]:
-    """Get the current events contained in the buffer of a message board object.
-
-    Note this should be a method of the MessageBoard Class in skallop
-
-    :param message_board: _description_
-    :return: A list of current event items
-    """
-    inbox = message_board.board
-    items: List[EventItem] = []
-    while not inbox.empty():
-        items.append(inbox.get_nowait())
-    return items
-
-
-def concurrent_wait(
-    board: MessageBoardBase,
-    stop_signal: Event,
-    polling: float,
-    live_logging=False,
-):
-    """Waiting task that can be used in concurrent tasks allowing for a stop_signal to stop waiting.
-
-    This function should be implemented in skallop.
-
-    :param board: _description_
-
-    :param stop_signal: _description_
-
-    :param timeout: _description_
-
-    :param live_logging: _description_, defaults to False
-    :type live_logging: bool, optional
-    """
-    live_logging = True
-    while not stop_signal.wait(timeout=polling):
-        if items := get_current_items(board):
-            for item in items:
-                handler = item.handler
-                if handler:
-                    handler.handle_event(item.event, item.subscription)
-                    if live_logging:
-                        message = handler.print_event(item.event, ignore_first=False)
-                        LOGGER.info(message)
-    board.remove_all_subscriptions()
-    return
-
-
-@contextmanager
-def observe_while_running(
-    context_monitoring: fxt_types.context_monitoring,
-    settings: Union[None, ExecSettings] = None,
-):
-    """Handle messages from incoming events in a background thread whilst running the main thread.
-
-    This mechanism does not block until all event handlers have been concluded but
-    rather immediately stop subscriptions when the main thread has finished within
-    the context.
-
-    Note, if this function is proved useful it should rather be exported as a method
-    of ContextMonitoring
-    in skallop package.
-    :param context_monitoring: the ContextMonitoring object (should be self in skallop)
-    :param settings: settings related to the waiting whilst running the main thread
-        , defaults to None
-    """
-    poll_period = 0.5
-    settings = settings if settings else ExecSettings()
-    with context_monitoring.context_monitoring():
-        board = context_monitoring.builder.setup_board()
-        stop_signal = Event()
-        Thread(
-            target=concurrent_wait,
-            args=[board, stop_signal, poll_period, settings.log_enabled],
-            daemon=True,
-        ).start()
-        try:
-            yield
-        finally:
-            stop_signal.set()

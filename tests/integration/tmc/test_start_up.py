@@ -30,7 +30,7 @@ def test_tmc_start_up_telescope_mid():
 @scenario(
     "features/tmc_start_up_telescope.feature", "Switch of the telescope"
 )
-def test_tmc_off_telescope_mid_sdp():
+def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
 
 

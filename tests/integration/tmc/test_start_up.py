@@ -24,7 +24,7 @@ def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
 
 
-# @pytest.mark.skip(reason="SKB-144 caused by duplicate deviceservers deployed by TMC mocks")
+@pytest.mark.skip(reason="SKB-144 caused by duplicate deviceservers deployed by TMC mocks")
 @pytest.mark.skamid
 @pytest.mark.standby
 @scenario(

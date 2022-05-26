@@ -107,7 +107,11 @@ def the_sdp_csp_and_dish_must_be_off(sut_settings: conftest.SutTestSettings):
         subarray = con_config.get_device_proxy(tel.csp.subarray(index))
         result = subarray.read_attribute("state").value
         assert_that(str(result)).is_equal_to("OFF")
-    # Check state attribute of Dish Master
+    # Check state attribute of Dish Masters
+    for dish_id in sut_settings.receptors:
+        dish = con_config.get_device_proxy(mid.dish(dish_id))
+        result = dish.read_attribute("state").value
+        assert_that(str(result)).is_equal_to("STANDBY")
     dish1 = con_config.get_device_proxy(mid.dish(1))
     result = dish1.read_attribute("state").value
     assert_that(str(result)).is_equal_to("STANDBY")

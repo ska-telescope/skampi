@@ -18,13 +18,13 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
-@pytest.mark.skip(reason="test implementation is under progress")
+# @pytest.mark.skip(reason="test implementation is under progress")
 @pytest.mark.skamid
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
 def test_assign_resources_to_tmc_subarray_in_mid():
     """Assign resources to tmc subarrays in mid."""
 
-@pytest.mark.skip(reason="ttest implementation is under progress")
+# @pytest.mark.skip(reason="ttest implementation is under progress")
 @pytest.mark.skamid
 @scenario("features/tmc_assign_resources.feature", "Release resources from mid subarray")
 def test_release_resources_from_tmc_subarray_in_mid():

@@ -14,7 +14,6 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 nr_of_subarrays = 1
 
-# @pytest.mark.skip(reason="SKB-144 caused by duplicate deviceservers deployed by TMC mocks")
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario(
@@ -24,7 +23,6 @@ def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
 
 
-# @pytest.mark.skip(reason="SKB-144 caused by duplicate deviceservers deployed by TMC mocks")
 @pytest.mark.skamid
 @pytest.mark.standby
 @scenario(

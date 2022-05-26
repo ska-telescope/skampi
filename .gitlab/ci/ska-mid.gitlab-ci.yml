@@ -67,6 +67,7 @@ clean-mid-test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+  allow_failure: true
 
 # mid deploy to integration - on merge to default
 mid_deploy_integration_k8s_test:

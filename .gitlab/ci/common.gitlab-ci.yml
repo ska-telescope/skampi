@@ -39,7 +39,6 @@
 
 .deploy_chart_and_test_integration:
   script:
-    - *create_k8s_creds
     - make k8s-install-chart
     - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
     - make skampi-wait-all
@@ -87,6 +86,7 @@
     - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
     - make k8s-delete-namespace
     - make delete-sdp-namespace
+    - make skampi-upload-test-results
 
 ## Not currently used!!!
 .deploy_test_destroy:

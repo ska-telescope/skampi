@@ -15,6 +15,7 @@ from resources.models.tmc_model.entry_point import TMCEntryPoint
 
 from .. import conftest
 
+
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
 def fxt_set_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
@@ -27,12 +28,13 @@ def fxt_set_entry_point(
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["tmc","mid"]
+    exec_env.scope = ["tmc", "mid"]
 
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online(
-    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays: int
+    set_subsystem_online: Callable[[EntryPoint], None],
+    sut_settings: conftest.SutTestSettings,
 ):
     """_summary_
 
@@ -42,7 +44,7 @@ def fxt_set_csp_online(
     :type set_subsystem_online: Callable[[EntryPoint], None]
     """
     logging.info("setting csp components online")
-    TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+    TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     entry_point = TMCEntryPoint()
     set_subsystem_online(entry_point)
 

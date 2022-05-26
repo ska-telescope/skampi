@@ -97,6 +97,10 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("OFF")
+        # set centralnode telescopeState waited before startup completes
+        brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
+            "telescopeState"
+        ).to_become_equal_to("STANDBY", ignore_first=False)
         return brd
 
     def undo(self):

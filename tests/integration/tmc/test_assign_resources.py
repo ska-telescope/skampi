@@ -23,10 +23,10 @@ logger = logging.getLogger(__name__)
 @pytest.mark.assign
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
 def test_assign_resources_to_tmc_subarray_in_mid():
-    """Assign resources to sdp subarray in mid."""
+    """Assign resources to tmc subarray in mid."""
 
 
-# @pytest.mark.skip(reason="ttest implementation is under progress")
+# @pytest.mark.skip(reason="test implementation is under progress")
 @pytest.mark.skamid
 @scenario(
     "features/tmc_assign_resources.feature", "Release resources from mid subarray"
@@ -41,7 +41,7 @@ def a_tmc():
 
 
 @given("an telescope subarray", target_fixture="composition")
-def an_sdp_subarray(
+def an_telescope_subarray(
     set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition
 ) -> conf_types.Composition:
     """an telescope subarray."""
@@ -57,7 +57,7 @@ def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsstate").value
+    result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
 @given("a subarray in the IDLE state")

@@ -186,13 +186,22 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
         central_node.command_inout("ReleaseResources", tmc_mid_release_configuration)
 
-    def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
+    def telescope(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
-        # TODO determine what needs to be waited for
+        # index=1
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
+        ).to_become_equal_to("IDLE")
         return brd
 
     def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -205,7 +214,17 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
-        # TODO determine what needs to be waited for
+        # index=1
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+        
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
+        ).to_become_equal_to("EMPTY")
+
         return brd
 
 
@@ -451,83 +470,143 @@ class TMCEntryPoint(CompositeEntryPoint):
 
 
 tmc_mid_assign_resources = {
-    "interface": "https://schema.skao.int/ska-tmc-assignresources/2.0",
-    "transaction_id": "txn-local-20220526-0001",
-    "subarray_id": 1,
-    "dish": {"receptor_ids": ["0001", "0002", "0003", "0004"]},
-    "sdp": {
-        "interface": "https://schema.skao.int/ska-sdp-assignres/0.3",
-        "eb_id": "eb-mvp01-20200325-09059",
-        "max_length": 100.0,
-        "scan_types": [
-            {
-                "scan_type_id": "science_A",
-                "reference_frame": "ICRS",
-                "ra": "02:42:40.771",
-                "dec": "-00:00:47.84",
-                "channels": [
-                    {
-                        "count": 744,
-                        "start": 0,
-                        "stride": 2,
-                        "freq_min": 350000000.0,
-                        "freq_max": 368000000.0,
-                        "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
-                    },
-                    {
-                        "count": 744,
-                        "start": 2000,
-                        "stride": 1,
-                        "freq_min": 360000000.0,
-                        "freq_max": 368000000.0,
-                        "link_map": [[2000, 4], [2200, 5]],
-                    },
-                ],
-            },
-            {
-                "scan_type_id": "calibration_B",
-                "reference_frame": "ICRS",
-                "ra": "12:29:06.699",
-                "dec": "02:03:08.598",
-                "channels": [
-                    {
-                        "count": 744,
-                        "start": 0,
-                        "stride": 2,
-                        "freq_min": 350000000.0,
-                        "freq_max": 368000000.0,
-                        "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
-                    },
-                    {
-                        "count": 744,
-                        "start": 2000,
-                        "stride": 1,
-                        "freq_min": 360000000.0,
-                        "freq_max": 368000000.0,
-                        "link_map": [[2000, 4], [2200, 5]],
-                    },
-                ],
-            },
-        ],
-        "processing_blocks": [
-            {
-                "pb_id": "pb-mvp01-20200325-09059",
-                "workflow": {
-                    "kind": "realtime",
-                    "name": "test_receive_addresses",
-                    "version": "0.3.6",
-                },
-                "parameters": {},
-            }
-        ],
-    },
+  "interface": "https://schema.skao.int/ska-tmc-assignresources/2.0",
+  "transaction_id": "txn-local-20220526-0001",
+  "subarray_id": 1,
+  "dish": {
+    "receptor_ids": [
+      "0001",
+      "0002",
+      "0003",
+      "0004"
+    ]
+  },
+  "sdp": {
+    "interface": "https://schema.skao.int/ska-sdp-assignres/0.3",
+    "eb_id": "eb-mvp01-20200325-09059",
+    "max_length": 100.0,
+    "scan_types": [
+      {
+        "scan_type_id": "science_A",
+        "reference_frame": "ICRS",
+        "ra": "02:42:40.771",
+        "dec": "-00:00:47.84",
+        "channels": [
+          {
+            "count": 744,
+            "start": 0,
+            "stride": 2,
+            "freq_min": 350000000.0,
+            "freq_max": 368000000.0,
+            "link_map": [
+              [
+                0,
+                0
+              ],
+              [
+                200,
+                1
+              ],
+              [
+                744,
+                2
+              ],
+              [
+                944,
+                3
+              ]
+            ]
+          },
+          {
+            "count": 744,
+            "start": 2000,
+            "stride": 1,
+            "freq_min": 360000000.0,
+            "freq_max": 368000000.0,
+            "link_map": [
+              [
+                2000,
+                4
+              ],
+              [
+                2200,
+                5
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "scan_type_id": "calibration_B",
+        "reference_frame": "ICRS",
+        "ra": "12:29:06.699",
+        "dec": "02:03:08.598",
+        "channels": [
+          {
+            "count": 744,
+            "start": 0,
+            "stride": 2,
+            "freq_min": 350000000.0,
+            "freq_max": 368000000.0,
+            "link_map": [
+              [
+                0,
+                0
+              ],
+              [
+                200,
+                1
+              ],
+              [
+                744,
+                2
+              ],
+              [
+                944,
+                3
+              ]
+            ]
+          },
+          {
+            "count": 744,
+            "start": 2000,
+            "stride": 1,
+            "freq_min": 360000000.0,
+            "freq_max": 368000000.0,
+            "link_map": [
+              [
+                2000,
+                4
+              ],
+              [
+                2200,
+                5
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "processing_blocks": [
+      {
+        "pb_id": "pb-mvp01-20200325-09059",
+        "workflow": {
+          "kind": "realtime",
+          "name": "test_receive_addresses",
+          "version": "0.3.6"
+        },
+        "parameters": {
+          
+        }
+      }
+    ]
+  }
 }
-
 
 tmc_mid_release_resources = {
     "interface": "https://schema.skao.int/ska-tmc-releaseresources/2.0",
     "transaction_id": "txn-local-20210203-0001",
     "subarray_id": 1,
     "release_all": True,
-    "receptor_ids": [],
+    "receptor_ids": []
 }

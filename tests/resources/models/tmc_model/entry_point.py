@@ -187,6 +187,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         
         # tmc_mid_assign_configuration = json.dumps(tmc_mid_assign_resources)
         tmc_mid_assign_configuration = get_assign_input_str()
+        self._log(f"tmc_mid_assign_configuration: {tmc_mid_assign_configuration}")
         central_node.command_inout("AssignResources", tmc_mid_assign_configuration)
 
     def undo(self, sub_array_id: int):

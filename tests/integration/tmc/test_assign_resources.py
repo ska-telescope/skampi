@@ -61,12 +61,12 @@ def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     assert_that(result).is_equal_to(ObsState.IDLE)
 
 @given("a subarray in the IDLE state")
-def a_subarray_in_the_idle_state():
+def a_subarray_in_the_idle_state(sut_settings: SutTestSettings):
     """a subarray in the IDLE state."""
-    # tel = names.TEL()
-    # subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    # result = subarray.read_attribute("obsState").value
-    # assert_that(result).is_equal_to(ObsState.IDLE)
+    tel = names.TEL()
+    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    result = subarray.read_attribute("obsState").value
+    assert_that(result).is_equal_to(ObsState.IDLE)
 
 #@when("I release all resources assigned to it")
 

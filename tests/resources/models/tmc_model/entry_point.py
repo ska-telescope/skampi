@@ -186,22 +186,16 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
         central_node.command_inout("ReleaseResources", tmc_mid_release_configuration)
 
-    def telescope(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
         # index=1
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
-        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
-        
-        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
-        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("IDLE")
         return brd
 
     def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -215,16 +209,9 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         brd = get_message_board_builder()
         # index=1
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY")
-        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY")
-        
-        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
-        ).to_become_equal_to("EMPTY")
-
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("EMPTY")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("EMPTY")
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("EMPTY")
         return brd
 
 

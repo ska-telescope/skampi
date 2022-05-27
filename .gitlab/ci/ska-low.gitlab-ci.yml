@@ -66,7 +66,8 @@ clean-low-test:
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
-
+  allow_failure: true
+  
 # low deploy to integration - on merge to default
 low_deploy_integration_k8s_test:
   stage: deploy_integration

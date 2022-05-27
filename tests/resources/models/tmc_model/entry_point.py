@@ -620,6 +620,6 @@ tmc_mid_release_resources = {
     "interface": "https://schema.skao.int/ska-tmc-releaseresources/2.0",
     "transaction_id": "txn-local-20210203-0001",
     "subarray_id": 1,
-    "release_all": true,
+    "release_all": True,
     "receptor_ids": []
 }

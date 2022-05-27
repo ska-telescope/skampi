@@ -1,5 +1,4 @@
 """Domain logic for the tmc."""
-from os.path import dirname, join
 import json
 import logging
 import os
@@ -19,16 +18,6 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 
 logger = logging.getLogger(__name__)
 
-def get_assign_input_str():
-    path = join(dirname(__file__), "command_AssignResources.json")
-    with open(path, "r") as f:
-        return f.read()
-
-def get_release_input_str():
-    path = join(dirname(__file__), "command_ReleaseResources.json")
-    with open(path, "r") as f:
-        return f.read()
-
 
 class LogEnabled:
     """class that allows for logging if set by env var"""
@@ -45,10 +34,9 @@ class LogEnabled:
 class StartUpStep(base.ObservationStep, LogEnabled):
     """Implementation of Startup step for SDP"""
 
-    def __init__(self, nr_of_subarrays: int, receptors: List[int]) -> None:
+    def __init__(self, nr_of_subarrays: int) -> None:
         super().__init__()
-        self.nr_of_subarrays = nr_of_subarrays
-        self.receptors = receptors
+        self.nr_of_subarrays = 1
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to TMC.
@@ -70,7 +58,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("ON", ignore_first=False)
+            ).to_become_equal_to("ON")
         # set csp controller and csp subarray to be waited before startup completes
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
             "state"
@@ -83,11 +71,6 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
         ).to_become_equal_to("ON", ignore_first=False)
-        if self._tel.skamid:
-            for dish in self._tel.skamid.dishes(self.receptors):
-                brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
-                    "ON", ignore_first=False
-                )
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
@@ -116,11 +99,6 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
         ).to_become_equal_to("STANDBY", ignore_first=False)
-        if self._tel.skamid:
-            for dish in self._tel.skamid.dishes(self.receptors):
-                brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
-                    "STANDBY", ignore_first=False
-                )
         return brd
 
     def undo(self):
@@ -184,10 +162,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         #
         #
         self._log(f"Commanding {central_node_name} with AssignRescources")
-        
-        # tmc_mid_assign_configuration = json.dumps(tmc_mid_assign_resources)
-        tmc_mid_assign_configuration = get_assign_input_str()
-        self._log(f"tmc_mid_assign_configuration: {tmc_mid_assign_configuration}")
+        tmc_mid_assign_configuration = json.dumps(tmc_mid_assign_resources)
         central_node.command_inout("AssignResources", tmc_mid_assign_configuration)
 
     def undo(self, sub_array_id: int):
@@ -208,8 +183,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         #    sub_array_id
         # )
         self._log(f"Commanding {central_node_name} with ReleaseRescources")
-        # tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
-        tmc_mid_release_configuration = get_release_input_str()
+        tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
         central_node.command_inout("ReleaseResources", tmc_mid_release_configuration)
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -219,9 +193,15 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         brd = get_message_board_builder()
         # index=1
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("IDLE")
-        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("IDLE")
-        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
+        ).to_become_equal_to("IDLE")
         return brd
 
     def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -235,9 +215,16 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         brd = get_message_board_builder()
         # index=1
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("EMPTY")
-        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("EMPTY")
-        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState").to_become_equal_to("EMPTY")
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+        
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute("obsState"
+        ).to_become_equal_to("EMPTY")
+
         return brd
 
 
@@ -471,13 +458,12 @@ class TMCEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2
-    receptors = [1, 2, 3, 4]
 
     def __init__(self) -> None:
         """Init Object"""
         super().__init__()
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
-        self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
+        self.start_up_step = StartUpStep(self.nr_of_subarrays)
         self.assign_resources_step = AssignResourcesStep()
         self.configure_scan_step = ConfigureStep()
         self.scan_step = ScanStep()

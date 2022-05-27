@@ -145,7 +145,7 @@ The Telescope Monitor and Control (TMC) is the software module identified to per
 and data management functions of the Telescope Manager. 
 Main responsibilities identified for TMC are:
 
-- General monitoring and control of the telescope
+- Operational monitoring and control of the telescope
 - Support execution of astronomical observations
 - Manage telescope hardware and software subsystems in order to perform astronomical observations
 - Manage the data to support operators, maintainers, engineers and science users to achieve their goals

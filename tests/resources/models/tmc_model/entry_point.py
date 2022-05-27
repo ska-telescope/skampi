@@ -186,7 +186,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
         central_node.command_inout("ReleaseResources", tmc_mid_release_configuration)
 
-    def telescope(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control

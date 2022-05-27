@@ -1,4 +1,5 @@
 """Domain logic for the tmc."""
+from os.path import dirname, join
 import json
 import logging
 import os
@@ -17,6 +18,16 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 
 logger = logging.getLogger(__name__)
+
+def get_assign_input_str():
+    path = join(dirname(__file__), "command_AssignResources.json")
+    with open(path, "r") as f:
+        return f.read()
+
+def get_release_input_str():
+    path = join(dirname(__file__), "command_ReleaseResources.json")
+    with open(path, "r") as f:
+        return f.read()
 
 
 class LogEnabled:
@@ -173,7 +184,9 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         #
         #
         self._log(f"Commanding {central_node_name} with AssignRescources")
-        tmc_mid_assign_configuration = json.dumps(tmc_mid_assign_resources)
+        
+        # tmc_mid_assign_configuration = json.dumps(tmc_mid_assign_resources)
+        tmc_mid_assign_configuration = get_assign_input_str()
         central_node.command_inout("AssignResources", tmc_mid_assign_configuration)
 
     def undo(self, sub_array_id: int):
@@ -194,7 +207,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         #    sub_array_id
         # )
         self._log(f"Commanding {central_node_name} with ReleaseRescources")
-        tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
+        # tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
+        tmc_mid_release_configuration = get_release_input_str()
         central_node.command_inout("ReleaseResources", tmc_mid_release_configuration)
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -606,6 +620,6 @@ tmc_mid_release_resources = {
     "interface": "https://schema.skao.int/ska-tmc-releaseresources/2.0",
     "transaction_id": "txn-local-20210203-0001",
     "subarray_id": 1,
-    "release_all": True,
+    "release_all": true,
     "receptor_ids": []
 }

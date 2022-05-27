@@ -34,9 +34,10 @@ class LogEnabled:
 class StartUpStep(base.ObservationStep, LogEnabled):
     """Implementation of Startup step for SDP"""
 
-    def __init__(self, nr_of_subarrays: int) -> None:
+    def __init__(self, nr_of_subarrays: int, receptors: List[int]) -> None:
         super().__init__()
-        self.nr_of_subarrays = 1
+        self.nr_of_subarrays = nr_of_subarrays
+        self.receptors = receptors
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to TMC.
@@ -58,7 +59,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON", ignore_first=False)
         # set csp controller and csp subarray to be waited before startup completes
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
             "state"
@@ -71,6 +72,11 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
         ).to_become_equal_to("ON", ignore_first=False)
+        if self._tel.skamid:
+            for dish in self._tel.skamid.dishes(self.receptors):
+                brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
+                    "ON", ignore_first=False
+                )
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
@@ -99,6 +105,11 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
         ).to_become_equal_to("STANDBY", ignore_first=False)
+        if self._tel.skamid:
+            for dish in self._tel.skamid.dishes(self.receptors):
+                brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
+                    "STANDBY", ignore_first=False
+                )
         return brd
 
     def undo(self):
@@ -445,12 +456,13 @@ class TMCEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2
+    receptors = [1, 2, 3, 4]
 
     def __init__(self) -> None:
         """Init Object"""
         super().__init__()
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
-        self.start_up_step = StartUpStep(self.nr_of_subarrays)
+        self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
         self.assign_resources_step = AssignResourcesStep()
         self.configure_scan_step = ConfigureStep()
         self.scan_step = ScanStep()

@@ -37,7 +37,7 @@ ADDMARKS ?=## Additional Marks to add to pytests
 # Dishmark is a synthesis of marks to add to test, it will always start with the tests for the appropriate
 # telescope (e.g. TEL=mid or TEL-low) thereafter followed by additional filters
 ifneq ($(ADDMARKS),)
-DASHMARK ?= ska$(TEL) and $(ADDMARKS)
+DASHMARK ?= "ska$(TEL) and $(ADDMARKS)"
 else
 DASHMARK ?= ska$(TEL)
 endif

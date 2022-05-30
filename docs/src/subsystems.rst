@@ -191,10 +191,6 @@ can be enabled of disabled by setting the `enabled` flag in values.yaml file as 
     tmc-mid:
         enabled: true
 
-
-TMC also allows selective deployment of its components. It can be achieved by enabling or disabling 
-the respective device server in the tmc-mid section as shown below.
-
 .. code-block:: yaml
    :emphasize-lines: 5,8,11,14
 

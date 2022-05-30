@@ -26,7 +26,7 @@ class SutTestSettings(SimpleNamespace):
     mock_sut: bool = False
     nr_of_subarrays = 2
     subarray_id = 1
-    receptors = [1, 2]
+    receptors = [1, 2, 3, 4]
     scan_duration = 1
 
 

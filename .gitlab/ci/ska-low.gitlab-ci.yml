@@ -80,8 +80,7 @@ low_deploy_integration_k8s_test:
     KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
     ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
-    ADDMARKS: "k8s"
-    MARK: "not infra"
+    MARK: "not infra and k8s"
   extends:
     - .tags_default
     - .uninstall_chart_before

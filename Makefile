@@ -37,7 +37,7 @@ ADDMARKS ?=## Additional Marks to add to pytests
 # Dishmark is a synthesis of marks to add to test, it will always start with the tests for the appropriate
 # telescope (e.g. TEL=mid or TEL-low) thereafter followed by additional filters
 ifneq ($(ADDMARKS),)
-DASHMARK ?= "ska$(TEL) and $(ADDMARKS)"
+DASHMARK ?= ska$(TEL) and $(ADDMARKS)
 else
 DASHMARK ?= ska$(TEL)
 endif
@@ -51,7 +51,7 @@ DASHCOUNT ?= --count=$(TESTCOUNT)
 else
 DASHCOUNT ?=
 endif
-PYTHON_VARS_AFTER_PYTEST ?= -m $(DASHMARK) $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
+PYTHON_VARS_AFTER_PYTEST ?= -m "$(DASHMARK)" $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 

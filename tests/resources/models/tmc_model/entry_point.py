@@ -67,6 +67,10 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("ON", ignore_first=False)
+        # we wait for cbf vccs to be in proper initialised state
+        brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
+                "reportVccState"
+            ).to_become_equal_to("[0, 0, 0, 0]", ignore_first=False)
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"

@@ -152,9 +152,10 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # subarray.command_inout("AssignResources", tmc_standard_composition)
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
-        # standard_composition = comp.generate_standard_comp(
-        #    sub_array_id, dish_ids, sb_id
-        # )
+        
+        standard_composition = comp.generate_standard_comp(
+           sub_array_id, dish_ids, sb_id
+        )
         # standard_composition = comp.generate_standard_comp(
         #     sub_array_id , [1] , sb_id
         # )
@@ -166,8 +167,9 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         #
         #
         self._log(f"Commanding {central_node_name} with AssignRescources")
-        tmc_mid_assign_configuration = json.dumps(tmc_mid_assign_resources)
-        central_node.command_inout("AssignResources", tmc_mid_assign_configuration)
+        #tmc_mid_assign_configuration = json.dumps(tmc_mid_assign_resources)
+        
+        central_node.command_inout("AssignResources", standard_composition)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.

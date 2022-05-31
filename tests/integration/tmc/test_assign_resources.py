@@ -26,7 +26,7 @@ def test_assign_resources_to_tmc_subarray_in_mid():
     """Assign resources to tmc subarray in mid."""
 
 
-@pytest.mark.skip(reason="test implementation is under progress")
+# @pytest.mark.skip(reason="test implementation is under progress")
 @pytest.mark.skamid
 @scenario(
     "features/tmc_assign_resources.feature", "Release resources from mid subarray"

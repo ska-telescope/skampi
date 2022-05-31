@@ -185,12 +185,12 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # subarray.command_inout("ReleaseResources")
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
-        # tear_down_composition = comp.generate_tear_down_all_resources(
-        #    sub_array_id
-        # )
+        tear_down_composition = comp.generate_tear_down_all_resources(
+           sub_array_id
+        )
         self._log(f"Commanding {central_node_name} with ReleaseRescources")
-        tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
-        central_node.command_inout("ReleaseResources", tmc_mid_release_configuration)
+        # tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
+        central_node.command_inout("ReleaseResources", tear_down_composition)
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.

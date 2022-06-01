@@ -1,6 +1,25 @@
 {
     "makefile.extensionOutputFolder": "./.vscode",
-    "terminal.integrated.shell.linux": "/bin/bash",
+    "terminal.integrated.profiles.linux":{
+        "bash": {
+            "path": "/bin/bash",
+            "icon": "terminal-bash"
+        },
+        "zsh": {
+            "path": "zsh"
+        },
+        "fish": {
+            "path": "fish"
+        },
+        "tmux": {
+            "path": "tmux",
+            "icon": "terminal-tmux"
+        },
+        "pwsh": {
+            "path": "pwsh",
+            "icon": "terminal-powershell"
+        }
+    },
     "python.pythonPath": ".venv/bin/python",
     "python.formatting.provider": "black",
     "python.linting.enabled": true,

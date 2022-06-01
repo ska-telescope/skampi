@@ -152,7 +152,9 @@ Development environments are not being dictated at the SKA. However, the develop
 
 Developers should take care not to confuse localised development environments with the environments provided by the standard deployment and testing container images used in CI Pipelines, as these represent supported dependencies in as many as possible maintained by the System Team.
 
-To run from the `.devcontainer` provided, copy the `/resources/.devcontainer` folder to the root of your project / workspace, as well as `/resources/.vscode`.
+To run from the `.devcontainer` provided, copy the `/resources/vscode/devcontainer` folder to `<skampi-root>/.devcontainer`, and `/resources/vscode/vscode` to `<skampi-root>/.vscode`. This can also be done by using 
+
+``` make dev-vscode```
 
 If not running in a Dev Container, do:
 - Copy the `settings` object from `.devcontainer.json` to `.vscode/settings.json`;

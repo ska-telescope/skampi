@@ -191,6 +191,8 @@ can be enabled of disabled by setting the `enabled` flag in values.yaml file as 
     tmc-mid:
         enabled: true
 
+It is also possible to enable or disable the deviceServers for each of the control nodes:
+
 .. code-block:: yaml
    :emphasize-lines: 5,8,11,14
 

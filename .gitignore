@@ -49,7 +49,7 @@ ansible-playbooks
 *~
 *__pycache__
 *.swp
-*.ipynb
+*.ipynb_checkpoints
 .pytest_cache/*
 cucumber.json
 junit-report.xml
@@ -67,8 +67,6 @@ post-deployment/.pytest_cache
 post-deployment/resources/test_data/polaris_b1_no_cam.json
 docs/src/_build/
 post-deployment/venv
-.vscode/settings.json
-.vscode/launch.json
 gilab_values.yaml
 gitlab_values.yaml
 KUBECONFIG

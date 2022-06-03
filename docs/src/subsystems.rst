@@ -183,13 +183,15 @@ TMC Deployment Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It is possible to alter the default configuration of TMC deployment. The entire TMC deployment 
-can be enabled of disabled by setting the `enabled` flag in values.yaml file as shown below (example shown for the MID telescope):
+can be enabled or disabled by setting the `enabled` flag in values.yaml file as shown below (example shown for the MID telescope):
 
 .. code-block:: yaml
    :emphasize-lines: 2
 
     tmc-mid:
         enabled: true
+
+It is also possible to enable or disable the deviceServers for each of the control nodes:
 
 .. code-block:: yaml
    :emphasize-lines: 5,8,11,14

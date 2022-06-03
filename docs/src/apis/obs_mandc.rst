@@ -12,4 +12,4 @@ The observation execution can be done by following a sequence of APIs as follows
 #. `Releasing the resources (Central Node) <https://developer.skao.int/projects/ska-tmc-centralnode/en/latest/api/ska_tmc_centralnode.commands.html#ska-tmc-centralnode-commands-release-resources-command-module>`_
 
 Before performing any observation related operation it is necessary 
-that the telescope is in ON state.
+that the telescope is in ``ON`` state.

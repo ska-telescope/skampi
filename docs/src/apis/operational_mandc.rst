@@ -11,5 +11,5 @@ TMC provides APIs for controlling the telescope as follows:
 
 To monitor the telescope, the Central Node exposes following attributes:
 
-* telescopeState
-* healthState
+* ``telescopeState``
+* ``healthState``

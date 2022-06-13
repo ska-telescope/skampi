@@ -4,7 +4,7 @@ xauthority: "~/.Xauthority"
 tags:
   taranta_auth: false
   taranta_dashboard: false
-
+  
 global:
   minikube: true
   annotations:
@@ -78,8 +78,20 @@ ska-taranta:
         cpu: 1000m # 1000m = 1 CPU
         memory: 1024Mi # 1024Mi = 1 GB mem
 
-ska-oso-oet:
+ska-oso-scripting:
   enabled: true
+  ingress:
+    hostname: k8s.stfc.skao.int
+  system: TM-mid
+  telescope: SKA-mid
+  central_node: ska_mid/tm_central/central_node
+  subarray: ska_mid/tm_subarray_node
+  jupyter:
+    featureFlags:
+      readViaPubSub: true
+  rest:
+    featureFlags:
+      readViaPubSub: true
 
 #telescope control
 ## mid-cbf
@@ -103,11 +115,11 @@ ska-sdp:
 tmc-mid:
   enabled: true
   telescope: SKA-mid
-
+ 
 ska-tango-archiver:
   enabled: true
   dbname: default_mvp_archiver_db
 
 ## dishmasters
 ska-sim-dishmaster:
-  enabled: false
+  enabled: true

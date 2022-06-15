@@ -103,6 +103,15 @@ ska-taranta:
 
 ska-oso-oet:
   enabled: true
+  system: TM-low
+  telescope: SKA-low
+  central_node: ska_low/tm_central/central_node
+  subarray: ska_low/tm_subarray_node
+  rest:
+    ingress:
+      enabled: false
+    featureFlags:
+      discardFirstEvent: true
 
 ska-sdp:
   enabled: true

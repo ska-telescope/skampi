@@ -80,18 +80,15 @@ ska-taranta:
 
 ska-oso-oet:
   enabled: true
-  ingress:
-    hostname: k8s.stfc.skao.int
   system: TM-mid
   telescope: SKA-mid
   central_node: ska_mid/tm_central/central_node
   subarray: ska_mid/tm_subarray_node
-  jupyter:
-    featureFlags:
-      readViaPubSub: true
   rest:
+    ingress:
+      enabled: false
     featureFlags:
-      readViaPubSub: true
+      discardFirstEvent: true
 
 #telescope control
 ## mid-cbf

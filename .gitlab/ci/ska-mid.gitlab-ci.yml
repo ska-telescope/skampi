@@ -123,6 +123,7 @@ mid_k8s_test:
     ADDMARKS: "k8s"
     MARK: "not infra"
     NO_SKAMPI_LINKS: "True"
+    OET_INGRESS_ENABLED: "true"
   extends:
     - .tags_default
     - .uninstall_chart_before

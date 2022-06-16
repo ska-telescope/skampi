@@ -1,19 +1,17 @@
 @VTS-225
 Feature: Verification of OET scripts being executed successfully during an observation
 
-	#*Scenario: Starting up mid telescope*
+	#*Scenario: Starting up telescope*
 	@XTP-780 @XTP-776
-	Scenario: Starting up mid telescope
-		Given an OET
-		And a telescope in standby or off state
+	Scenario: Starting up telescope
+		Given telescope is in STANDBY or OFF state
 		When I tell the OET to run file:///scripts/startup.py
-		Then the central node must be ON
+		Then the central node goes to state ON
 
 
     #*Scenario: Setting telescope to stand-by*
 	@XTP-781 @XTP-776
 	Scenario: Setting telescope to stand-by
-		Given an OET
-		And a telescope in the ON state
+		Given telescope is in ON state
 		When I tell the OET to run file:///scripts/standby.py
-		Then the central node must be STANDBY
+		Then the central node goes to state STANDBY

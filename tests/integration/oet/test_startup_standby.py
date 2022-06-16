@@ -21,7 +21,7 @@ EXECUTOR = ScriptExecutor()
 @pytest.mark.skamid
 @pytest.mark.startup
 @pytest.mark.k8s
-@scenario("features/oet_start_up_telescope.feature", "Starting up telescope")
+@scenario("features/oet_startup_standby_telescope.feature", "Starting up telescope")
 def test_telescope_startup():
     """Telescope startup test."""
 
@@ -29,7 +29,7 @@ def test_telescope_startup():
 @pytest.mark.skamid
 @pytest.mark.standby
 @pytest.mark.k8s
-@scenario("features/oet_start_up_telescope.feature", "Setting telescope to stand-by")
+@scenario("features/oet_startup_standby_telescope.feature", "Setting telescope to stand-by")
 def test_telescope_standby():
     """Set telescope to standby test."""
 

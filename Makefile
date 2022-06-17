@@ -39,7 +39,7 @@ ADDMARKS ?=## Additional Marks to add to pytests
 ifneq ($(ADDMARKS),)
 DASHMARK ?= ska$(TEL) and $(ADDMARKS)
 else
-DASHMARK ?= ska$(TEL)
+DASHMARK ?= ska$(TEL) and not onlyk8s
 endif
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs

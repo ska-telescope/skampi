@@ -258,11 +258,7 @@ reference = 'ska'
 
 [[package]]
 name = "coverage"
-<<<<<<< HEAD
-version = "6.3.3"
-=======
 version = "6.4.1"
->>>>>>> 49a20ed1... SKB-149: update skallop to fix  skb-149 bug
 description = "Code coverage measurement for Python"
 category = "main"
 optional = false
@@ -1541,7 +1537,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-oso-oet"
-version = "4.0.0"
+version = "4.0.3"
 description = "SKA Observation Execution Tool"
 category = "main"
 optional = false
@@ -1901,12 +1897,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-<<<<<<< HEAD
-content-hash = "d36958aed4241f7c2ce9388e30ee888b79715e3d708d598455274b444687d357"
-
-=======
-content-hash = "3b1f48dbf44c74d507ad6e75b434cda091dbfe735d8cd8cb51ca50a2575c4216"
->>>>>>> 49a20ed1... SKB-149: update skallop to fix  skb-149 bug
+content-hash = "a70efed72086e87d2601d4417e347b7b3a7724c685bb948e719a66f6372d5fd5"
 
 [metadata.files]
 aiohttp = [
@@ -2604,8 +2595,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-oso-oet = [
-    {file = "ska-oso-oet-4.0.0.tar.gz", hash = "md5:b8e6fb0475d76f32abcd2c188a683fa5"},
-    {file = "ska_oso_oet-4.0.0-py3-none-any.whl", hash = "md5:80fd0d3ea220f4e37cc1436c30e4d416"},
+    {file = "ska-oso-oet-4.0.3.tar.gz", hash = "md5:9e56b752cb7f593ebe2cbcb8971ae2fd"},
+    {file = "ska_oso_oet-4.0.3-py3-none-any.whl", hash = "md5:88fed24f4d4b1ec873ed554eeb088218"},
 ]
 ska-ser-logging = [
     {file = "ska_ser_logging-0.4.1+0a677a67-py3-none-any.whl", hash = "md5:6dba01d139ccca7224914a95bbf7d05a"},

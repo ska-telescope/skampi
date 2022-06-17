@@ -14,7 +14,7 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 nr_of_subarrays = 1
 
-#@pytest.mark.skip(reason="Bug in switch of TMC see skb-146 removing tmc")
+@pytest.mark.skip(reason="Bug in switch of TMC see skb-146 removing tmc")
 @pytest.mark.skamid
 @pytest.mark.tmc
 @pytest.mark.startup
@@ -22,7 +22,7 @@ nr_of_subarrays = 1
 def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
 
-#@pytest.mark.skip(reason="Bug in switch of TMC see skb-146 remving tmc")
+@pytest.mark.skip(reason="Bug in switch of TMC see skb-146 remving tmc")
 @pytest.mark.skamid
 @pytest.mark.tmc
 @pytest.mark.standby

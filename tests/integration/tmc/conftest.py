@@ -30,7 +30,7 @@ def fxt_set_entry_point(
     TMCEntryPoint.receptors = sut_settings.receptors
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["tmc", "mid", "sdp", "csp"]
+    exec_env.scope = ["tm", "mid", "sdp", "csp","tmc scope", "csp scope", "csp control", "sdp control"]
 
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
@@ -73,7 +73,7 @@ def fxt_sdp_start_up_test_exec_settings(
 
     :param exec_settings: Fixture as used by skallop
     """
-    integration_test_exec_settings.time_out = 100
+    integration_test_exec_settings.time_out = 130
 
 
 @pytest.fixture(name="assign_resources_test_exec_settings", autouse=True)

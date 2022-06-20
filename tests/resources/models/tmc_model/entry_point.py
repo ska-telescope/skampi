@@ -36,7 +36,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
     def __init__(self, nr_of_subarrays: int) -> None:
         super().__init__()
-        self.nr_of_subarrays = 1
+        self.nr_of_subarrays = 3
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to TMC.
@@ -67,6 +67,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("ON", ignore_first=False)
+            
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"

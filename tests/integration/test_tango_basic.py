@@ -1,6 +1,8 @@
 """Default feature tests."""
 import os
 from typing import NamedTuple
+import json
+import logging
 
 import requests
 import pytest
@@ -23,6 +25,8 @@ def test_tangogql_service_available():
 def fxt_inject_build_out():
     """Inject a value into os env for using build out"""
     original_value = os.environ["TEST_ENV"]
+    os_environ = json.dumps(os.environ, indent=2, default=str)
+    logging.info(f"Env Vars:{os_environ}")
     os.environ["TEST_ENV"] = "BUILD_OUT"
     yield
     os.environ["TEST_ENV"] = original_value
@@ -31,7 +35,6 @@ def fxt_inject_build_out():
 @given("a configuration to access a tango device remotely")
 def a_configuration_to_access_a_tango_device_remotely(inject_build_out):
     """a configuration to access a tango device remotely."""
-    os.environ["TEST_ENV"] = "BUILD_OUT"
 
 
 @when("I send a ping command to the tango database device server")

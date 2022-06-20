@@ -83,6 +83,9 @@ mid_deploy_integration_k8s_test:
     ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
     ADDMARKS: "k8s"
     MARK: "not infra"
+    DISABLE_MAINTAIN_ON: "True"
+    TEST_ENV: "BUILD_IN"
+    TEL: mid
   extends:
     - .tags_default
     - .uninstall_chart_before
@@ -120,6 +123,9 @@ mid_k8s_test:
     ADDMARKS: "k8s"
     MARK: "not infra"
     NO_SKAMPI_LINKS: "True"
+    DISABLE_MAINTAIN_ON: "True"
+    TEST_ENV: "BUILD_IN"
+    TEL: mid
   extends:
     - .tags_default
     - .uninstall_chart_before
@@ -166,7 +172,6 @@ mid_k8s_test_uninstall:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
       when: manual
   allow_failure: true
-
 
 # teardown integration on stop
 mid_uninstall_integration:

@@ -25,8 +25,6 @@ def test_tangogql_service_available():
 def fxt_inject_build_out():
     """Inject a value into os env for using build out"""
     original_value = os.environ.get("TEST_ENV", "")
-    os_environ = json.dumps(os.environ, indent=2, default=str)
-    logging.info(f"Env Vars:{os_environ}")
     os.environ["TEST_ENV"] = "BUILD_OUT"
     yield
     os.environ["TEST_ENV"] = original_value

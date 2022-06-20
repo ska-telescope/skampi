@@ -34,9 +34,9 @@ class LogEnabled:
 class StartUpStep(base.ObservationStep, LogEnabled):
     """Implementation of Startup step for SDP"""
 
-    def __init__(self, nr_of_subarrays: int) -> None:
+    def __init__(self, nr_of_subarrays: int = 3) -> None:
         super().__init__()
-        self.nr_of_subarrays = 3
+        self.nr_of_subarrays = nr_of_subarrays
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to TMC.

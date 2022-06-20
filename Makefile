@@ -38,7 +38,6 @@ ADDMARKS ?=## Additional Marks to add to pytests
 # telescope (e.g. TEL=mid or TEL-low) thereafter followed by additional filters
 ifneq ($(ADDMARKS),)
 DASHMARK ?= ska$(TEL) and $(ADDMARKS)
-MARK = $(MARK) and $(ADDMARKS)
 else
 DASHMARK ?= ska$(TEL) and not onlyk8s
 endif

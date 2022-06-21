@@ -39,7 +39,7 @@ ADDMARKS ?=## Additional Marks to add to pytests
 ifneq ($(ADDMARKS),)
 DASHMARK ?= ska$(TEL) and $(ADDMARKS)
 else
-DASHMARK ?= ska$(TEL)
+DASHMARK ?= ska$(TEL) and not onlyk8s
 endif
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
@@ -51,7 +51,7 @@ DASHCOUNT ?= --count=$(TESTCOUNT)
 else
 DASHCOUNT ?=
 endif
-PYTHON_VARS_AFTER_PYTEST ?= -m $(DASHMARK) $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
+PYTHON_VARS_AFTER_PYTEST ?= -m "$(DASHMARK)" $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 
@@ -165,7 +165,7 @@ K8S_TEST_MAKE_PARAMS = \
 	TANGO_HOST=$(TANGO_HOST) \
 	CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
 	MARK='$(MARK)' \
-	COUNT=$(COUNT) \
+	COUNT=$(TESTCOUNT) \
 	FILE='$(FILE)' \
 	SKA_TELESCOPE=$(TELESCOPE) \
 	CENTRALNODE_FQDN=$(CENTRALNODE) \
@@ -178,7 +178,14 @@ K8S_TEST_MAKE_PARAMS = \
 	TARANTA_USER=$(TARANTA_USER) \
 	TARANTA_PASSWORD=$(TARANTA_PASSWORD) \
 	TARANTA_PASSPORT=$(TARANTA_PASSPORT) \
-	KUBE_HOST=$(KUBE_HOST)
+	KUBE_HOST=$(KUBE_HOST) \
+	DISABLE_MAINTAIN_ON='$(DISABLE_MAINTAIN_ON)' \
+	TEST_ENV='$(TEST_ENV)' \
+	DEBUG_ENTRYPOINT=$(DEBUG_ENTRYPOINT) \
+	LIVE_LOGGING=$(LIVE_LOGGING) \
+	LIVE_LOGGING_EXTENDED=$(LIVE_LOGGING_EXTENDED) \
+	REPLAY_EVENTS_AFTERWARDS=$(REPLAY_EVENTS_AFTERWARDS) \
+	CAPTURE_LOGS=$(CAPTURE_LOGS)
 
 # runs inside the test runner container after cd ./tests
 K8S_TEST_TEST_COMMAND = make -s \

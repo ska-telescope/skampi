@@ -17,7 +17,7 @@ nr_of_subarrays = 1
 # @pytest.mark.skip(reason="Bug in switch of TMC see skb-146 removing tmc")
 @pytest.mark.skamid
 @pytest.mark.startup
-#@pytest.mark.k8s
+@pytest.mark.k8s
 @scenario("features/tmc_start_up_telescope.feature", "Start up the telescope")
 def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
@@ -26,7 +26,7 @@ def test_tmc_start_up_telescope_mid():
 #@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.standby
-#@pytest.mark.k8s
+@pytest.mark.k8s
 @scenario("features/tmc_start_up_telescope.feature", "Switch of the telescope")
 def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""

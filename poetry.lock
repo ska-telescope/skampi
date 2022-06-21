@@ -25,7 +25,7 @@ reference = 'ska'
 
 [[package]]
 name = "aiosignal"
-version = "1.2.0"
+version = "1.0"
 description = "aiosignal: a list of registered asynchronous callbacks"
 category = "main"
 optional = false
@@ -232,7 +232,7 @@ reference = 'ska'
 
 [[package]]
 name = "colorama"
-version = "0.4.4"
+version = "0.4.5"
 description = "Cross-platform colored terminal text."
 category = "main"
 optional = false
@@ -969,7 +969,7 @@ reference = 'ska'
 
 [[package]]
 name = "pylint"
-version = "2.14.2"
+version = "2.14.3"
 description = "python code static checker"
 category = "main"
 optional = false
@@ -977,7 +977,7 @@ python-versions = ">=3.7.2"
 
 [package.dependencies]
 astroid = ">=2.11.6,<=2.12.0-dev0"
-colorama = {version = "*", markers = "sys_platform == \"win32\""}
+colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = ">=0.2"
 isort = ">=4.2.5,<6"
 mccabe = ">=0.6,<0.8"
@@ -1375,7 +1375,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-ser-skallop"
-version = "2.19.1"
+version = "2.19.6"
 description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
 category = "main"
 optional = false
@@ -1461,7 +1461,7 @@ reference = 'ska'
 
 [[package]]
 name = "traitlets"
-version = "5.2.2.post1"
+version = "5.3.0"
 description = ""
 category = "dev"
 optional = false
@@ -1521,7 +1521,7 @@ reference = 'ska'
 
 [[package]]
 name = "websocket-client"
-version = "1.3.2"
+version = "1.3.3"
 description = "WebSocket client for Python with low level API options"
 category = "main"
 optional = false
@@ -1583,7 +1583,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "3b1f48dbf44c74d507ad6e75b434cda091dbfe735d8cd8cb51ca50a2575c4216"
+content-hash = "5f61a99cb7878b6c23b6a43bf05a0a27fb74894c44fdf5c1b713dac46194d817"
 
 [metadata.files]
 aiohttp = [
@@ -1712,8 +1712,8 @@ click = [
     {file = "click-8.1.3.tar.gz", hash = "sha256:7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"},
 ]
 colorama = [
-    {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
-    {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+    {file = "colorama-0.4.5-py2.py3-none-any.whl", hash = "sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da"},
+    {file = "colorama-0.4.5.tar.gz", hash = "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"},
 ]
 contextlib2 = [
     {file = "contextlib2-21.6.0-py2.py3-none-any.whl", hash = "sha256:3fbdb64466afd23abaf6c977627b75b6139a5a3e8ce38405c5b413aed7a0471f"},
@@ -2117,8 +2117,8 @@ pygments = [
     {file = "Pygments-2.12.0.tar.gz", hash = "sha256:5eb116118f9612ff1ee89ac96437bb6b49e8f04d8a13b514ba26f620208e26eb"},
 ]
 pylint = [
-    {file = "pylint-2.14.2-py3-none-any.whl", hash = "sha256:592d0a4d2ffa8e33020209d255827c5a310499cdc023d156187bc677d86bd495"},
-    {file = "pylint-2.14.2.tar.gz", hash = "sha256:482f1329d4b6b9e52599754a2e502c0ed91ebdfd0992a2299b7fa136a6c12349"},
+    {file = "pylint-2.14.3-py3-none-any.whl", hash = "sha256:6757a027e15816be23625b079ebc45464e4c9d9dde0c826d18beee53fe22a2e7"},
+    {file = "pylint-2.14.3.tar.gz", hash = "sha256:4e1378f815c63e7e44590d0d339ed6435f5281d0a0cc357d29a86ea0365ef868"},
 ]
 pylint-junit = [
     {file = "pylint_junit-0.3.2.tar.gz", hash = "sha256:c6dbe956e55bb9b365d86e2ec77b58df6b95262b5515d187ac54b8359507174b"},
@@ -2236,8 +2236,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-ser-skallop = [
-    {file = "ska-ser-skallop-2.19.1.tar.gz", hash = "md5:a34465d42d7171c3e24740128369a117"},
-    {file = "ska_ser_skallop-2.19.1-py3-none-any.whl", hash = "md5:d9614622b42f2c75812a691a4bb17808"},
+    {file = "ska-ser-skallop-2.19.6.tar.gz", hash = "md5:e8b0fa2861d92542a8a8ac6dcdb919a6"},
+    {file = "ska_ser_skallop-2.19.6-py3-none-any.whl", hash = "md5:1b14a8c1739ae2c789cf3a43f9683761"},
 ]
 ska-telescope-model = [
     {file = "ska-telescope-model-1.3.1.tar.gz", hash = "md5:f15441afc500f210c3f21f2474973767"},
@@ -2256,8 +2256,8 @@ tomlkit = [
     {file = "tomlkit-0.11.0.tar.gz", hash = "sha256:71ceb10c0eefd8b8f11fe34e8a51ad07812cb1dc3de23247425fbc9ddc47b9dd"},
 ]
 traitlets = [
-    {file = "traitlets-5.2.2.post1-py3-none-any.whl", hash = "sha256:1530d04badddc6a73d50b7ee34667d4b96914da352109117b4280cb56523a51b"},
-    {file = "traitlets-5.2.2.post1.tar.gz", hash = "sha256:74803a1baa59af70f023671d86d5c7a834c931186df26d50d362ee6a1ff021fd"},
+    {file = "traitlets-5.3.0-py3-none-any.whl", hash = "sha256:65fa18961659635933100db8ca120ef6220555286949774b9cfc106f941d1c7a"},
+    {file = "traitlets-5.3.0.tar.gz", hash = "sha256:0bb9f1f9f017aa8ec187d8b1b2a7a6626a2a1d877116baba52a129bfa124f8e2"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.2.0-py3-none-any.whl", hash = "sha256:6657594ee297170d19f67d55c05852a874e7eb634f4f753dbd667855e07c1708"},
@@ -2272,8 +2272,8 @@ wcwidth = [
     {file = "wcwidth-0.2.5.tar.gz", hash = "sha256:c4d647b99872929fdb7bdcaa4fbe7f01413ed3d98077df798530e5b04f116c83"},
 ]
 websocket-client = [
-    {file = "websocket-client-1.3.2.tar.gz", hash = "sha256:50b21db0058f7a953d67cc0445be4b948d7fc196ecbeb8083d68d94628e4abf6"},
-    {file = "websocket_client-1.3.2-py3-none-any.whl", hash = "sha256:722b171be00f2b90e1d4fb2f2b53146a536ca38db1da8ff49c972a4e1365d0ef"},
+    {file = "websocket-client-1.3.3.tar.gz", hash = "sha256:d58c5f284d6a9bf8379dab423259fe8f85b70d5fa5d2916d5791a84594b122b1"},
+    {file = "websocket_client-1.3.3-py3-none-any.whl", hash = "sha256:5d55652dc1d0b3c734f044337d929aaf83f4f9138816ec680c1aefefb4dc4877"},
 ]
 websockets = [
     {file = "websockets-10.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:661f641b44ed315556a2fa630239adfd77bd1b11cb0b9d96ed8ad90b0b1e4978"},

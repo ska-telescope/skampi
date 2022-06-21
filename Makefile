@@ -38,9 +38,8 @@ ADDMARKS ?=## Additional Marks to add to pytests
 # telescope (e.g. TEL=mid or TEL-low) thereafter followed by additional filters
 ifneq ($(ADDMARKS),)
 DASHMARK ?= ska$(TEL) and $(ADDMARKS)
-MARK = $(MARK) and $(ADDMARKS)
 else
-DASHMARK ?= ska$(TEL) 
+DASHMARK ?= ska$(TEL) and not onlyk8s
 endif
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
@@ -179,9 +178,10 @@ K8S_TEST_MAKE_PARAMS = \
 	TARANTA_USER=$(TARANTA_USER) \
 	TARANTA_PASSWORD=$(TARANTA_PASSWORD) \
 	TARANTA_PASSPORT=$(TARANTA_PASSPORT) \
-	KUBE_HOST=$(KUBE_HOST)
-	DISABLE_MAINTAIN_ON=$(DISABLE_MAINTAIN_ON) \
-	TEST_ENV=$(TEST_ENV)
+	KUBE_HOST=$(KUBE_HOST) \
+	DISABLE_MAINTAIN_ON='$(DISABLE_MAINTAIN_ON)' \
+	TEST_ENV='$(TEST_ENV)'
+
 
 # runs inside the test runner container after cd ./tests
 K8S_TEST_TEST_COMMAND = make -s \

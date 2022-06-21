@@ -48,8 +48,10 @@ ifneq ($(TESTCOUNT),)
 # run a paricular test/s multiple times. If no testcount is set then the entire
 # --count option is removed
 DASHCOUNT ?= --count=$(TESTCOUNT)
+COUNT ?= $(TESTCOUNT)
 else
 DASHCOUNT ?=
+COUNT ?= 1
 endif
 PYTHON_VARS_AFTER_PYTEST ?= -m "$(DASHMARK)" $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
@@ -165,7 +167,7 @@ K8S_TEST_MAKE_PARAMS = \
 	TANGO_HOST=$(TANGO_HOST) \
 	CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
 	MARK='$(MARK)' \
-	COUNT=$(TESTCOUNT) \
+	COUNT=$(COUNT) \
 	FILE='$(FILE)' \
 	SKA_TELESCOPE=$(TELESCOPE) \
 	CENTRALNODE_FQDN=$(CENTRALNODE) \

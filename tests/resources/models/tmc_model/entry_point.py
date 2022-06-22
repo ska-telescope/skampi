@@ -34,10 +34,12 @@ class LogEnabled:
 class StartUpStep(base.ObservationStep, LogEnabled):
     """Implementation of Startup step for SDP"""
 
-    def __init__(self, nr_of_subarrays: int = 3, nr_of_receptors: int = 4) -> None:
+    def __init__(
+        self, nr_of_subarrays: int = 3, receptors: list[int] = [1, 2, 3, 4]
+    ) -> None:
         super().__init__()
         self.nr_of_subarrays = nr_of_subarrays
-        self.nr_of_receptors = nr_of_receptors
+        self.receptors = receptors
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to TMC.
@@ -73,10 +75,11 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             "reportVccState"
         ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
         # set dish master to be waited before startup completes
-        for index in range(1, self.nr_of_receptors + 1):
-            brd.set_waiting_on(self._tel.skamid.dish(index)).for_attribute(
-                "state"
-            ).to_become_equal_to("ON")
+        if self._tel.skamid:
+            for dish in self._tel.skamid.dishes(self.receptors):
+                brd.set_waiting_on(dish).for_attribute(
+                    "state"
+                ).to_become_equal_to("ON")
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -105,10 +108,12 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("OFF", ignore_first=False)
-        for index in range(1, self.nr_of_receptors + 1):
-            brd.set_waiting_on(self._tel.skamid.dish(index)).for_attribute(
-                "state"
-            ).to_become_equal_to("STANDBY")
+        # set dish master to be waited before startup completes
+        if self._tel.skamid:
+            for dish in self._tel.skamid.dishes(self.receptors):
+                brd.set_waiting_on(dish).for_attribute(
+                    "state"
+                ).to_become_equal_to("STANDBY")
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -475,6 +480,7 @@ class TMCEntryPoint(CompositeEntryPoint):
 
     nr_of_subarrays = 2
     nr_of_receptors = 4
+    receptors = [1, 2, 3, 4]
 
     def __init__(self) -> None:
         """Init Object"""

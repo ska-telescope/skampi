@@ -172,4 +172,4 @@ def the_csp_subarray_must_be_in_some_obsstate(
         tel.csp.subarray(sut_settings.subarray_id)
     )
     result = csp_subarray.read_attribute("obsstate").value
-    assert_that(str(result)).is_equal_to(eval(f"ObsState.{obsstate}"))
+    assert_that(result).is_equal_to(eval(f"ObsState.{obsstate}"))

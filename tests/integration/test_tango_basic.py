@@ -32,8 +32,6 @@ def fxt_inject_build_out():
 @given("a configuration to access a tango device remotely")
 def a_configuration_to_access_a_tango_device_remotely(inject_build_out):
     """a configuration to access a tango device remotely."""
-    os.environ["TEST_ENV"] = "BUILD_OUT"
-
 
 @when("I send a ping command to the tango database device server")
 def i_send_a_ping_command_to_the_tango_database_device_server():

@@ -77,9 +77,6 @@ def fxt_integration_test_exec_settings(
     """
     integration_test_exec_settings = exec_settings.replica()
 
-    if os.getenv("DEBUG"):
-        exec_settings.run_with_live_logging()
-        integration_test_exec_settings.run_with_live_logging()
     if os.getenv("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()
     if os.getenv("REPLAY_EVENTS_AFTERWARDS"):

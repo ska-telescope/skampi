@@ -2,15 +2,14 @@
 import logging
 
 import pytest
-from pytest_bdd import given, scenario, then
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from pytest_bdd import scenario
 
 logger = logging.getLogger(__name__)
 
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.configure
+@pytest.mark.k8s
 @scenario(
     "features/csp_configure_scan.feature",
     "Configure scan on csp subarray in mid",
@@ -21,6 +20,7 @@ def test_configure_csp_mid_subarray():
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.configure
+@pytest.mark.k8s
 @scenario(
     "features/csp_configure_scan.feature",
     "Configure scan on csp subarray in low",

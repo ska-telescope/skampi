@@ -105,19 +105,17 @@ def the_csp_must_be_on(
     tel = names.TEL()
     csp_master = con_config.get_device_proxy(tel.csp.controller)
     result = csp_master.read_attribute("state").value
-    assert_that(result).is_equal_to("ON")
+    assert_that(str(result)).is_equal_to("ON")
     nr_of_subarrays = sut_settings.nr_of_subarrays
     for index in range(1, nr_of_subarrays + 1):
         subarray = con_config.get_device_proxy(tel.csp.subarray(index))
         result = subarray.read_attribute("state").value
-        assert_that(result).is_equal_to("ON")
+        assert_that(str(result)).is_equal_to("ON")
     if transit_checking:
         checker = transit_checking.checker
         assert checker
         logger.info(checker.print_outcome_for(checker.subject_device))
-        checker.assert_that(checker.subject_device).is_behind_all_on_transit(
-            "ON"
-        )
+        checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")
 
 
 # test validation

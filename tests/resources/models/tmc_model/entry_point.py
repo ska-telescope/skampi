@@ -71,7 +71,6 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
             "reportVccState"
         ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
-
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -153,8 +152,9 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # subarray.command_inout("AssignResources", tmc_standard_composition)
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
+
         standard_composition = comp.generate_standard_comp(
-           sub_array_id, dish_ids, sb_id
+            sub_array_id, dish_ids, sb_id
         )
         # standard_composition = comp.generate_standard_comp(
         #     sub_array_id , [1] , sb_id
@@ -184,14 +184,10 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # subarray.command_inout("ReleaseResources")
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
-        #tear_down_composition = comp.generate_tear_down_all_resources(sub_array_id)
-        
-        tear_down_composition = comp.generate_tear_down_all_resources(
-           sub_array_id
-        )
+        tear_down_composition = comp.generate_tear_down_all_resources(sub_array_id)
         self._log(f"Commanding {central_node_name} with ReleaseRescources")
+        # tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
         central_node.command_inout("ReleaseResources", tear_down_composition)
-
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
@@ -206,7 +202,6 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("IDLE")
-        
         brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("IDLE")
@@ -229,7 +224,6 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("EMPTY")
-        
         brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("EMPTY")
@@ -549,7 +543,6 @@ tmc_mid_assign_resources = {
             }
         ],
     },
-
 }
 
 tmc_mid_release_resources = {

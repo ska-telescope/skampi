@@ -4,7 +4,6 @@ from typing import NamedTuple
 import json
 import logging
 
-
 import requests
 import pytest
 from pytest_bdd import given, scenario, then, when
@@ -16,7 +15,6 @@ from ska_ser_skallop.connectors.configuration import get_device_proxy
 @pytest.mark.skamid
 @pytest.mark.skalow
 @pytest.mark.taranta
-#@pytest.mark.k8s
 @scenario("features/taranta_basic.feature", "TangoGQL service available")
 def test_tangogql_service_available():
     """TangoGQL service available."""
@@ -28,6 +26,15 @@ def fxt_inject_build_out():
     os.environ["TEST_ENV"] = "BUILD_OUT"
     yield
     os.environ["TEST_ENV"] = original_value
+
+@pytest.fixture(name="inject_build_out")
+def fxt_inject_build_out():
+    """Inject a value into os env for using build out"""
+    original_value = os.environ["TEST_ENV"]
+    os.environ["TEST_ENV"] = "BUILD_OUT"
+    yield
+    os.environ["TEST_ENV"] = original_value
+
 
 @given("a configuration to access a tango device remotely")
 def a_configuration_to_access_a_tango_device_remotely(inject_build_out):

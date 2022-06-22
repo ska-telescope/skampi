@@ -377,9 +377,9 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
             builder.set_waiting_on(subarray).for_attribute(
                 "adminMode"
             ).to_become_equal_to("ONLINE", ignore_first=False)
-            builder.set_waiting_on(subarray).for_attribute(
-                "state"
-            ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
+                ["OFF", "ON"], ignore_first=False
+            )
         return builder
 
     def undo(self):

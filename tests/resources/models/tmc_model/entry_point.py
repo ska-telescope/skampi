@@ -34,9 +34,10 @@ class LogEnabled:
 class StartUpStep(base.ObservationStep, LogEnabled):
     """Implementation of Startup step for SDP"""
 
-    def __init__(self, nr_of_subarrays: int = 3) -> None:
+    def __init__(self, nr_of_subarrays: int = 3, nr_of_receptors: int = 4) -> None:
         super().__init__()
         self.nr_of_subarrays = nr_of_subarrays
+        self.nr_of_receptors = nr_of_receptors
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to TMC.
@@ -71,6 +72,11 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
             "reportVccState"
         ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
+        # set dish master to be waited before startup completes
+        for index in range(1, self.nr_of_receptors + 1):
+            brd.set_waiting_on(self._tel.skamid.dish(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("ON")
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -99,6 +105,10 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("OFF", ignore_first=False)
+        for index in range(1, self.nr_of_receptors + 1):
+            brd.set_waiting_on(self._tel.skamid.dish(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("STANDBY")
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -464,12 +474,13 @@ class TMCEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2
+    nr_of_receptors = 4
 
     def __init__(self) -> None:
         """Init Object"""
         super().__init__()
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
-        self.start_up_step = StartUpStep(self.nr_of_subarrays)
+        self.start_up_step = StartUpStep(self.nr_of_subarrays, self.nr_of_receptors)
         self.assign_resources_step = AssignResourcesStep()
         self.configure_scan_step = ConfigureStep()
         self.scan_step = ScanStep()

@@ -4,7 +4,7 @@ xauthority: "~/.Xauthority"
 tags:
   taranta_auth: false
   taranta_dashboard: false
-  
+
 global:
   minikube: true
   annotations:
@@ -115,7 +115,7 @@ ska-sdp:
 tmc-mid:
   enabled: true
   telescope: SKA-mid
- 
+
 ska-tango-archiver:
   enabled: true
   dbname: default_mvp_archiver_db
@@ -123,3 +123,11 @@ ska-tango-archiver:
 ## dishmasters
 ska-sim-dishmaster:
   enabled: true
+
+#  need to change this once we have the correct image in artefact repo
+config-inspector:
+  createChartInfo: false
+  image:
+    repository: registry.gitlab.com/ska-telescope/ska-ser-config-inspector
+    pullPolicy: Always
+    tag: "latest"

@@ -48,8 +48,10 @@ ifneq ($(TESTCOUNT),)
 # run a paricular test/s multiple times. If no testcount is set then the entire
 # --count option is removed
 DASHCOUNT ?= --count=$(TESTCOUNT)
+COUNT ?= $(TESTCOUNT)
 else
 DASHCOUNT ?=
+COUNT ?= 1
 endif
 PYTHON_VARS_AFTER_PYTEST ?= -m "$(DASHMARK)" $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
@@ -180,7 +182,13 @@ K8S_TEST_MAKE_PARAMS = \
 	TARANTA_PASSPORT=$(TARANTA_PASSPORT) \
 	KUBE_HOST=$(KUBE_HOST) \
 	DISABLE_MAINTAIN_ON='$(DISABLE_MAINTAIN_ON)' \
-	TEST_ENV='$(TEST_ENV)'
+	TEST_ENV='$(TEST_ENV)' \
+	DEBUG_ENTRYPOINT=$(DEBUG_ENTRYPOINT) \
+	LIVE_LOGGING=$(LIVE_LOGGING) \
+	LIVE_LOGGING_EXTENDED=$(LIVE_LOGGING_EXTENDED) \
+	REPLAY_EVENTS_AFTERWARDS=$(REPLAY_EVENTS_AFTERWARDS) \
+	CAPTURE_LOGS=$(CAPTURE_LOGS)
+	
 
 
 # runs inside the test runner container after cd ./tests

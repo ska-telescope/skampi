@@ -73,7 +73,7 @@ def fxt_sdp_start_up_test_exec_settings(
 
     :param exec_settings: Fixture as used by skallop
     """
-    integration_test_exec_settings.time_out = 100
+    integration_test_exec_settings.time_out = 150
 
 
 @pytest.fixture(name="assign_resources_test_exec_settings", autouse=True)

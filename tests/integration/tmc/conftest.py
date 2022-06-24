@@ -30,7 +30,8 @@ def fxt_set_entry_point(
     TMCEntryPoint.receptors = sut_settings.receptors
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["tmc", "mid", "sdp", "csp"]
+    exec_env.scope = ["tm", "mid", "sdp", "csp","tmc scope", "csp scope", "csp control", "sdp control"]
+
 
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")

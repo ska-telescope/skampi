@@ -106,7 +106,7 @@ def fxt_set_up_log_capturing_for_cbf(
         subarray = str(tel.tm.subarray(sut_settings.subarray_id))
         log_checking.capture_logs_from_devices(subarray)
         sdp_subarray1 = str(tel.sdp.subarray(1))
-        log_checking.capture_logs_from_devices(sdp_subarray1)
+        log_checking.capture_logs_from_devices([sdp_subarray1])
 
 
 # resource configurations

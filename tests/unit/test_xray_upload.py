@@ -57,17 +57,13 @@ def get_earliest_unreleased_fix_version():
     url = os.environ["JIRA_URL"]
     username = os.environ["JIRA_USERNAME"]
     password = os.environ["JIRA_PASSWORD"]
-    # logger.info(f"URL: {url}, USERNAME: {username}, PASSWORD: {password}")
     jira = Jira(url=url, username=username, password=password)
     project_key = "XTP"
     versions = jira.get_project_versions(key=project_key, expand="All")
     unrel_vs = [v for v in versions if v['released'] == False]
     filtered_vs = [v for v in unrel_vs if v['archived'] == False][0]
-    # logger.info(f"{versions}")
     logger.info(f"{filtered_vs}")
     return filtered_vs['name']
-    # pytest.unreleased_fixversion = filtered_vs['name']
-    # logger.info(f"Earliest Unreleased version: {pytest.unreleased_fixversion}")
 
 
 @given("a test-exec.json file that contains a version parameter", target_fixture="local_version")
@@ -80,11 +76,8 @@ def fxt_load_file():
     fn = os.path.abspath(
         os.path.join(os.path.dirname(__file__), os.path.pardir, "test-exec.json")
     )
-    # assert isfile(fn), f"{fn} not found"
-
-    with open(fn, "r") as file:  # noqa
+    with open(fn, "r") as file:
         data = json.load(file)
-        # logger.info(f"Fixture 'data': {data}")
         curr_pi = data["versions"][0]["maps_to"]["master"]
     logger.info(f"Local FixVersion set to {curr_pi}")
     return curr_pi

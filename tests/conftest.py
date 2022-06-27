@@ -38,6 +38,11 @@ def pytest_addoption(parser):
     )
 
 
+# uncomment this if you want to override the default timeout settings in case your environment entails very long delays
+@pytest.fixture(autouse=True)
+def override_timeouts(exec_settings):
+exec_settings.time_out = 200
+
 # @pytest.fixture
 # def tango_context(devices_to_load, request):
 #     true_context = request.config.getoption("--true-context")

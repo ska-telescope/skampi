@@ -25,7 +25,10 @@ def test_tmc_start_up_telescope_mid():
 @pytest.mark.skamid
 @pytest.mark.standby
 @pytest.mark.k8s
+<<<<<<< HEAD
 @pytest.mark.onlyk8s
+=======
+>>>>>>> 8e4a7655ad7a915737b631e3401a9498ae1dd447
 @scenario("features/tmc_start_up_telescope.feature", "Switch of the telescope")
 def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""

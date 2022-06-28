@@ -60,8 +60,8 @@ def get_earliest_unreleased_fix_version():
     jira = Jira(url=url, username=username, password=password)
     project_key = "XTP"
     versions = jira.get_project_versions(key=project_key, expand="All")
-    unrel_vs = [v for v in versions if v['released'] == False]
-    filtered_vs = [v for v in unrel_vs if v['archived'] == False][0]
+    unrel_vs = [v for v in versions if v['released'] is False]
+    filtered_vs = [v for v in unrel_vs if v['archived'] is False][0]
     logger.info(f"{filtered_vs}")
     return filtered_vs['name']
 
@@ -76,7 +76,7 @@ def fxt_load_file():
     fn = os.path.abspath(
         os.path.join(os.path.dirname(__file__), os.path.pardir, "test-exec.json")
     )
-    with open(fn, "r") as file:
+    with open(fn, 'rb',) as file:
         data = json.load(file)
         curr_pi = data["versions"][0]["maps_to"]["master"]
     logger.info(f"Local FixVersion set to {curr_pi}")

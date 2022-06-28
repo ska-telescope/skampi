@@ -1,5 +1,5 @@
 pytest==5.3.2
-PyYAML==5.2
+PyYAML==5.4
 testinfra==3.3.0
 kubernetes==10.0.1
 elasticsearch==7.1.0

@@ -88,17 +88,17 @@
     - make delete-sdp-namespace
     - make skampi-upload-test-results
 
-## Not currently used!!!
-.deploy_test_destroy:
-  stage: test
-  extends:
-    - .deploy_chart_before
-    - .test_deployment
-    - .uninstall_chart_after
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
+# ## Not currently used!!!
+# .deploy_test_destroy:
+#   stage: test
+#   extends:
+#     - .deploy_chart_before
+#     - .test_deployment
+#     - .uninstall_chart_after
+#   artifacts:
+#     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+#     paths:
+#       - "build/"
+#     reports:
+#       junit: build/report.xml
+#     when: always

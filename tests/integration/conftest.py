@@ -1,6 +1,5 @@
 """pytest global settings, fixtures and global bdd step implementations for integration tests."""
 import logging
-from tkinter import N
 from types import SimpleNamespace
 import os
 

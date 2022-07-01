@@ -1,6 +1,7 @@
 [submodule ".make"]
 	path = .make
 	url = https://gitlab.com/ska-telescope/sdi/ska-cicd-makefile.git
+	branch = st-1258-refactor-k8s-test
 [submodule "docs/src/ska-ser-sphinx-templates"]
 	path = docs/src/ska-ser-sphinx-templates
 	url = https://gitlab.com/ska-telescope/templates/ska-ser-sphinx-templates.git

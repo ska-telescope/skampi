@@ -1,5 +1,6 @@
 """pytest global settings, fixtures and global bdd step implementations for integration tests."""
 import logging
+from tkinter import N
 from types import SimpleNamespace
 import os
 
@@ -26,9 +27,26 @@ class SutTestSettings(SimpleNamespace):
     mock_sut: bool = False
     nr_of_subarrays = 2
     subarray_id = 1
-    receptors = [1, 2]
     scan_duration = 1
+    _receptors=[1,2]
+    _nr_of_receptors=2
 
+    @property
+    def nr_of_receptors(self):
+        return self._nr_of_receptors
+
+    @nr_of_receptors.setter
+    def nr_of_receptors(self,value):
+        self._nr_of_receptors=value
+        self._receptors=[i for i in range(1,value+1)]
+
+    @property
+    def receptors(self):
+        return self._receptors
+    
+    @receptors.setter
+    def receptors(self,receptor):
+        self._receptors=receptor
 
 @pytest.fixture(name="sut_settings")
 def fxt_conftest_settings() -> SutTestSettings:

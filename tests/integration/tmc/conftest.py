@@ -25,7 +25,7 @@ def fxt_set_entry_point(
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
-    sut_settings.receptors = [1, 2, 3, 4]
+    sut_settings.nr_of_receptors=4
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     TMCEntryPoint.receptors = sut_settings.receptors
     exec_env.entrypoint = TMCEntryPoint

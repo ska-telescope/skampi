@@ -247,3 +247,7 @@ k8s-post-test: # post test hook for processing received reports
 	@echo "k8s-post-test: Skampi post processing of core Skampi test reports with scripts/collect_k8s_logs.py"
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
+	
+##  ST-1258: Delete namespace and exit using the test build status
+	@kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP)
+	exit $$(cat build/status)

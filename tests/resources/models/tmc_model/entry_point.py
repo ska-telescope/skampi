@@ -73,7 +73,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         # we wait for cbf vccs to be in proper initialised state
         brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
             "reportVccState"
-        ).to_become_equal_to("[0, 0, 0, 0]", ignore_first=False)
+        ).to_become_equal_to(["[0 0 0 0]"], ignore_first=False)
         # set dish master to be waited before startup completes
         if self._tel.skamid:
             for dish in self._tel.skamid.dishes(self.receptors):

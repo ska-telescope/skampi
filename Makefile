@@ -181,7 +181,7 @@ K8S_TEST_MAKE_PARAMS = \
 	KUBE_HOST=$(KUBE_HOST)
 
 # runs inside the test runner container after cd ./tests
-K8S_TEST_TEST_COMMAND = make -f ./tests/Makefile -s \
+K8S_TEST_TEST_COMMAND = make -s \
 			$(K8S_TEST_MAKE_PARAMS) \
 			$(K8S_TEST_TARGET)
 

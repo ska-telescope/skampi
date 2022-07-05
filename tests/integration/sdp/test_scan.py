@@ -22,6 +22,8 @@ def test_run_a_scan_on_sdp_subarray_in_low():
 
 @pytest.mark.skamid
 @pytest.mark.scan
+@pytest.mark.k8s
+@pytest.mark.onlyk8s
 @scenario("features/sdp_scan.feature", "Run a scan on sdp subarray in mid")
 def test_run_a_scan_on_sdp_subarray_in_mid():
     """Run a scan on sdp subarray in mid."""

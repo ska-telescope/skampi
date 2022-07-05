@@ -15,6 +15,7 @@ from .. import conftest
 
 @pytest.mark.skalow
 @pytest.mark.configure
+@pytest.mark.skip
 @scenario(
     "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in low"
 )
@@ -23,8 +24,7 @@ def test_configure_scan_on_sdp_subarray_in_low():
 
 @pytest.mark.skamid
 @pytest.mark.configure
-@pytest.mark.k8s
-@pytest.mark.onlyk8s
+@pytest.mark.skip
 @scenario(
     "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in mid"
 )

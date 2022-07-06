@@ -57,17 +57,17 @@ def a_tmc():
     assert result>0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        csp_subarray_leaf_node=tel.tm.subarray(index).csp_leaf_node
+        csp_subarray_leaf_node=con_config.get_device_proxy(tel.tm.subarray(index).csp_leaf_node)
         result=csp_subarray_leaf_node.ping()
         assert result>0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        sdp_subarray_leaf_node=tel.tm.subarray(index).sdp_leaf_node
+        sdp_subarray_leaf_node=con_config.get_device_proxy(tel.tm.subarray(index).sdp_leaf_node)
         result=sdp_subarray_leaf_node.ping()
         assert result>0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        dish_leaf_nodes=tel.tm.dish_leafnode(index)
+        dish_leaf_nodes=con_config.get_device_proxy(tel.tm.dish_leafnode(index))
         result=dish_leaf_nodes.ping()
         assert result>0
 

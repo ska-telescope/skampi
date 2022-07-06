@@ -35,6 +35,42 @@ def test_tmc_off_telescope_mid():
 @given("an TMC")
 def a_tmc():
     """an TMC"""
+    tel = names.TEL()    
+    sut_settings=conftest.SutTestSettings()
+
+    central_node_name = tel.tm.central_node
+    central_node = con_config.get_device_proxy(central_node_name)
+    result=central_node.ping()
+    assert result>0
+
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        sdp_subarray = con_config.get_device_proxy(tel.tm.subarray(index))
+        result=sdp_subarray.ping()
+        assert result>0
+
+    sdp_master = con_config.get_device_proxy(tel.sdp.master)
+    result=sdp_master.ping()
+    assert result>0
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
+        result=sdp_subarray.ping()
+        assert result>0
+
+    csp_master = con_config.get_device_proxy(tel.csp.controller)
+    result=csp_master.ping()
+    assert result>0
+
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        csp_subarray = con_config.get_device_proxy(tel.csp.subarray(index))
+        result=csp_subarray.ping()
+        assert result>0
+
+    for dish in tel.skamid.dishes(sut_settings.receptors):
+        dish = con_config.get_device_proxy(dish)
+        result= dish.ping()
+        assert result>0
+    
+
 
 
 @given("a Telescope consisting of SDP, CSP and a Dish")

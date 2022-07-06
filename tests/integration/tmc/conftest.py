@@ -47,6 +47,10 @@ def fxt_nr_of_subarrays() -> int:
         return 1
     return 2
 
+@pytest.fixture(autouse=True)
+def override_timeouts(exec_settings):
+    exec_settings.time_out = 3
+
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online(

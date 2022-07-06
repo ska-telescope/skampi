@@ -38,10 +38,6 @@ def pytest_addoption(parser):
     )
 
 
-@pytest.fixture(autouse=True)
-def override_timeouts(exec_settings):
-    exec_settings.time_out = 3
-
 # @pytest.fixture
 # def tango_context(devices_to_load, request):
 #     true_context = request.config.getoption("--true-context")

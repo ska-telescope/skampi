@@ -17,20 +17,14 @@ logger = logging.getLogger(__name__)
 
 # log capturing
 
+
+@pytest.mark.xfail
 @pytest.mark.skamid
 @pytest.mark.assign
 #@pytest.mark.k8s
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
 def test_assign_resources_to_tmc_subarray_in_mid():
-    """Assign resources to tmc subarray in mid."""
-
-
-@pytest.mark.skamid
-@scenario(
-    "features/tmc_assign_resources.feature", "Release resources from mid subarray"
-)
-def test_release_resources_from_tmc_subarray_in_mid():
-    """Release resources from tmc subarrays in mid."""
+    """Assign resources to sdp subarray in mid."""
 
 
 @given("an TMC")
@@ -39,7 +33,7 @@ def a_tmc():
 
 
 @given("an telescope subarray", target_fixture="composition")
-def an_telescope_subarray(
+def an_sdp_subarray(
     set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition
 ) -> conf_types.Composition:
     """an telescope subarray."""
@@ -55,23 +49,5 @@ def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
+    result = subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.IDLE)
-
-@given("a subarray in the IDLE state")
-def a_subarray_in_the_idle_state():
-    """a subarray in the IDLE state."""
-    # tel = names.TEL()
-    # subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    # result = subarray.read_attribute("obsState").value
-    # assert_that(result).is_equal_to(ObsState.IDLE)
-
-#@when("I release all resources assigned to it")
-
-@then("the subarray must be in EMPTY state")
-def the_subarray_must_be_in_empty_state(sut_settings: SutTestSettings):
-    """the subarray must be in EMPTY state."""
-    tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.EMPTY)

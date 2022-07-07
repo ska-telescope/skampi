@@ -26,9 +26,26 @@ class SutTestSettings(SimpleNamespace):
     mock_sut: bool = False
     nr_of_subarrays = 2
     subarray_id = 1
-    receptors = [1, 2]
     scan_duration = 1
+    _receptors=[1,2]
+    _nr_of_receptors=2
 
+    @property
+    def nr_of_receptors(self):
+        return self._nr_of_receptors
+
+    @nr_of_receptors.setter
+    def nr_of_receptors(self,value):
+        self._nr_of_receptors=value
+        self._receptors=[i for i in range(1,value+1)]
+
+    @property
+    def receptors(self):
+        return self._receptors
+    
+    @receptors.setter
+    def receptors(self,receptor):
+        self._receptors=receptor
 
 @pytest.fixture(name="sut_settings")
 def fxt_conftest_settings() -> SutTestSettings:
@@ -75,6 +92,17 @@ def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
         exec_settings.run_with_live_logging()
 
 
+@pytest.fixture(name="set_exec_settings_from_env", autouse=True)
+def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
+    """Set up general execution settings during setup and teardown.
+
+    :param exec_settings: The global test execution settings as a fixture.
+    :return: test specific execution settings as a fixture
+    """
+    if os.getenv("LIVE_LOGGING_EXTENDED"):
+        exec_settings.run_with_live_logging()
+
+
 @pytest.fixture(name="integration_test_exec_settings")
 def fxt_integration_test_exec_settings(
     exec_settings: fxt_types.exec_settings,
@@ -86,9 +114,7 @@ def fxt_integration_test_exec_settings(
     """
     integration_test_exec_settings = exec_settings.replica()
 
-    if os.getenv("DEBUG"):
-        exec_settings.run_with_live_logging()
-        integration_test_exec_settings.run_with_live_logging()
+ 
     if os.getenv("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()
     if os.getenv("REPLAY_EVENTS_AFTERWARDS"):

@@ -97,6 +97,29 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
+name = "atlassian-python-api"
+version = "3.25.0"
+description = "Python Atlassian REST API Wrapper"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+deprecated = "*"
+oauthlib = "*"
+requests = "*"
+requests_oauthlib = "*"
+six = "*"
+
+[package.extras]
+kerberos = ["requests-kerberos"]
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
@@ -289,15 +312,18 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
-name = "dill"
-version = "0.3.5.1"
-description = "serialize all of python"
+name = "deprecated"
+version = "1.2.13"
+description = "Python @deprecated decorator to deprecate old python classes, functions or methods."
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, !=3.6.*"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+wrapt = ">=1.10,<2"
 
 [package.extras]
-graph = ["objgraph (>=1.7.2)"]
+dev = ["tox", "bump2version (<1)", "sphinx (<2)", "importlib-metadata (<3)", "importlib-resources (<4)", "configparser (<5)", "sphinxcontrib-websupport (<2)", "zipp (<2)", "PyTest (<5)", "PyTest-Cov (<2.6)", "pytest", "pytest-cov"]
 
 [package.source]
 type = "legacy"
@@ -1583,7 +1609,11 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
+<<<<<<< HEAD
 content-hash = "5f61a99cb7878b6c23b6a43bf05a0a27fb74894c44fdf5c1b713dac46194d817"
+=======
+content-hash = "06a2c7540af3980a679f6970bc25bf5c50b12d3eb06fb451fb8dfa1008efd2f1"
+>>>>>>> master
 
 [metadata.files]
 aiohttp = [
@@ -1679,6 +1709,9 @@ async-timeout = [
     {file = "async-timeout-4.0.2.tar.gz", hash = "sha256:2163e1640ddb52b7a8c80d0a67a08587e5d245cc9c553a74a847056bc2976b15"},
     {file = "async_timeout-4.0.2-py3-none-any.whl", hash = "sha256:8ca1e4fcf50d07413d66d1a5e416e42cfdf5851c981d679a09851a6853383b3c"},
 ]
+atlassian-python-api = [
+    {file = "atlassian-python-api-3.25.0.tar.gz", hash = "sha256:0e0afe60f7005ed94fb3abd42d13b9c9fd34d1baff1a184a4e066bc9ceadb055"},
+]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
     {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},
@@ -1766,9 +1799,15 @@ decorator = [
     {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
     {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
 ]
+<<<<<<< HEAD
 dill = [
     {file = "dill-0.3.5.1-py2.py3-none-any.whl", hash = "sha256:33501d03270bbe410c72639b350e941882a8b0fd55357580fbc873fba0c59302"},
     {file = "dill-0.3.5.1.tar.gz", hash = "sha256:d75e41f3eff1eee599d738e76ba8f4ad98ea229db8b085318aa2b3333a208c86"},
+=======
+deprecated = [
+    {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
+    {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
+>>>>>>> master
 ]
 docopt = [
     {file = "docopt-0.6.1.tar.gz", hash = "sha256:71ad940a773fbc23be6093e9476ad57b2ecec446946a28d30127501f3b29aa35"},

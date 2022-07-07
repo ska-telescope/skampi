@@ -27,7 +27,7 @@
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
     - echo "############## Running Skampi core tests"
-    - make k8s-test
+    - make k8s-test-runner
     - echo "############## Running Skampi component tests"
     - make skampi-component-tests
     - echo "############## Build Output"
@@ -45,7 +45,7 @@
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
     - echo "############## Running Skampi core tests"
-    - make k8s-test
+    - make k8s-test-runner
     - echo "############## Running Skampi component tests"
     - make skampi-component-tests
     - echo "############## Build Output"

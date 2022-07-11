@@ -25,11 +25,12 @@ def fxt_set_entry_point(
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
-    sut_settings.receptors = [1]
+    sut_settings.nr_of_receptors=4
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+    TMCEntryPoint.receptors = sut_settings.receptors
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["tmc", "mid"]
+    exec_env.scope = ["tm", "mid", "sdp", "csp","tmc scope", "csp scope", "csp control", "sdp control"]
 
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
@@ -45,6 +46,10 @@ def fxt_nr_of_subarrays() -> int:
     if tel.skalow:
         return 1
     return 2
+
+@pytest.fixture(autouse=True)
+def override_timeouts(exec_settings):
+    exec_settings.time_out = 3
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -72,7 +77,7 @@ def fxt_sdp_start_up_test_exec_settings(
 
     :param exec_settings: Fixture as used by skallop
     """
-    integration_test_exec_settings.time_out = 30
+    integration_test_exec_settings.time_out = 3
 
 
 @pytest.fixture(name="assign_resources_test_exec_settings", autouse=True)
@@ -84,7 +89,7 @@ def fxt_tmc_assign_resources_exec_settings(
     :param exec_settings: The global test execution settings as a fixture.
     :return: test specific execution settings as a fixture
     """
-    integration_test_exec_settings.time_out = 30
+    integration_test_exec_settings.time_out = 3
 
 
 # log checking

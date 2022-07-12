@@ -124,10 +124,9 @@ ska-tango-archiver:
 ska-sim-dishmaster:
   enabled: true
 
-#  need to change this once we have the correct image in artefact repo
+# #  need to change this once we have the correct image in artefact repo
 config-inspector:
   createChartInfo: false
   image:
-    repository: registry.gitlab.com/ska-telescope/ska-ser-config-inspector
     pullPolicy: Always
-    tag: "latest"
+    tag: ""

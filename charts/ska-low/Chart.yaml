@@ -46,7 +46,7 @@ dependencies:
   #   repository: https://artefact.skao.int/repository/helm-internal
   #   condition: ska-oso-scripting.enabled
   - name: ska-landingpage
-    version: 0.8.2
+    version: 0.9.0
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
   # - name: ska-tango-archiver
@@ -66,3 +66,9 @@ dependencies:
     version: 0.1.6
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
+
+  ## For auxillary integration support
+  - name: ska-ser-config-inspector
+    version: 0.1.0
+    repository: https://artefact.skao.int/repository/helm-internal
+    alias: config-inspector

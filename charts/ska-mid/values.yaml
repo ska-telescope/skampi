@@ -123,3 +123,7 @@ ska-tango-archiver:
 ## dishmasters
 ska-sim-dishmaster:
   enabled: true
+
+## config inspector
+ska-ser-config-inspector:
+  enabled: true

@@ -8,6 +8,7 @@ Here you can find instructions to deploy and interact with SKAMPI in different e
 .. toctree::
    :maxdepth: 2
 
+   deployment/cia
    deployment/kubernetes
    deployment/helm
    deployment/multitenancy

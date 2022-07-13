@@ -40,8 +40,6 @@ Finally for the staging pipelines
    
 The review and integration jobs are replaced with mid-deploy-staging and low-deploy-staging jobs. The jobs depend not only on the test jobs like in the integration environment, but also on the chart jobs, including a new publish-chart job. A changelog is also built. This is also a persistent deployment. Altough a deployment to staging should not be viewed as a release, updating staging is in general accompanied by a SKAMPI release.
 
-CI/CD is aligned in such a way that MID an LOW should be handled through configuration options only. This is true also for interaction with the different clusters STFC, PSI Mid/Low, ITF environments. Pipelines and tests should behave same: the System Under Test and Test Environment both should be idempotent and reproducible.
-
 
 
 SKAMPI Configuration
@@ -97,6 +95,56 @@ Nonetheless some customization is required. The **.gitlab/ci** folder incorporat
 Configuration and the way SKAMPI pipelines will proceed is managed by different runner tags, 
 **k8srunner-psi-low** for PSI-LOW deployments, **k8srunner** (the default) for STFC MID and STFC LOW. 
 
+This is also true when selecting the telescopes. CI/CD is aligned in such a way that MID an LOW should be handled through configuration options only.
+Pipelines and tests should behave same: the System Under Test and Test Environment both should be idempotent and reproducible.
+The **mid-test** job defined in **.gitlab/ci/ska-mid.gitlab-ci.yml** and the 
+**low-test** job defined in **.gitlab/ci/ska-low.gitlab-ci.yml** differ only through the use of selecting "mid" or "low" in the CONFIG and
+TEL keys when setting the variables.
+
+Thus for **mid-test** we have
+
+.. code-block:: yaml
+
+  # mid merge blocking job - must pass for pipeline success
+  mid-test:
+    stage: test
+    variables:
+      CONFIG: mid
+      DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+      K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+      HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+      KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
+      KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
+      SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
+      ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+      COUNT: 1
+      DISABLE_MAINTAIN_ON: "True"
+      TEST_ENV: "BUILD_OUT"
+      TEL: mid
+      [... more code]
+
+and for **low-test** job
+
+.. code-block:: yaml
+
+  low-test:
+    stage: test
+    variables:
+      CONFIG: low
+      DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+      K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+      HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+      KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
+      KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
+      SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
+      ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+      DISABLE_MAINTAIN_ON: "True"
+      TEST_ENV: "BUILD_OUT"
+      COUNT: 1
+      TEL: low
+      [... more code]
+
+Only those two keys differ in the jobs. Developers are urged to maintain this similarity between jobs. 
 
 .. |SKA Minikube Deployment| raw:: html
 

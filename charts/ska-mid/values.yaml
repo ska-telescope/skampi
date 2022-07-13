@@ -113,7 +113,7 @@ ska-sdp:
 
 ## tmc
 tmc-mid:
-  enabled: false
+  enabled: true
   telescope: SKA-mid
  
 ska-tango-archiver:

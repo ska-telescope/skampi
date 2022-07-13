@@ -1,7 +1,7 @@
 .. _pipelines_main:
 
-SKAMPI Pipelines and Configuration
-**********************************
+SKAMPI Pipelines
+****************
 
 This section focus on deploying the SKAMPI suite of software products for testing and integration using the Gitlab CI Pipelines. If you have enough resources it is possible to deploy the MVP locally or on a dedicated server using a minikube installation compatible with SKAMPI like the one available from |SKA Minikube Deployment|. Nonetheless Gitlab CI pipelines is the recommended method since SKAMPI and its components are being actively developed, and can change rapidly. Those changes and  everything else required to set up the environment is readily included in the Gitlab CI infrastructure. 
 
@@ -44,8 +44,8 @@ CI/CD is aligned in such a way that MID an LOW should be handled through configu
 
 
 
-SKAMPI Pipelines and Configuration
-**********************************
+SKAMPI Configuration
+====================
 
 The SKAMPI repository folder structure at the time of this documentation is the following
 

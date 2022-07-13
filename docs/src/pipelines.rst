@@ -71,9 +71,6 @@ This follows standard SKAO practices: a charts folder, a test folder, an images 
     - project: "ska-telescope/templates-repository"
       file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
 
-**[modify, we are missing oci]**
-
-
 
 Nonetheless some customization is required. The **.gitlab/ci** folder incorporates the required templates to change from the default pipeline machinery jobs. These are also include in the **.gitlab-ci.yml** file:
 

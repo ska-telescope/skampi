@@ -14,7 +14,7 @@ When dealing with the CI SKAMPI infrastructure it is important to distinguish be
 This is how the development pipelines look like: 
 
 
-.. image:: ../_static/img/diagrama0.svg
+.. image:: _static/img/diagrama0.svg
    :align: center
 
 Pipelines will be using **needs** keyword to speed up development workflow and break-up unnecessary job dependencies between jobs. This means that stages here are for illustrative purposes and any job without any prior dependency, for example **docs-build**, will start as soon as pipeline starts.  
@@ -28,14 +28,14 @@ Review jobs are what in previous SKAMPI versions were called *on demand jobs.* T
 
 The overall picture for non-tagged pipelines running in the Main branch is the following
 
-.. image:: ../_static/img/diagrama1.svg
+.. image:: _static/img/diagrama1.svg
    :align: center
 
 Stages and jobs are similar to development branch pipelines except for the review jobs that are replaced with integration jobs for MID and LOW. These new jobs in turn require the corresponding tests to pass. If this happens then the SKAMPY deployment in the integration namespace is updated. This is a long living  deployment.
 
 Finally for the staging pipelines
 
-.. image:: ../_static/img/diagrama2.svg
+.. image:: _static/img/diagrama2.svg
    :align: center
    
 The review and integration jobs are replaced with mid-deploy-staging and low-deploy-staging jobs. The jobs depend not only on the test jobs like in the integration environment, but also on the chart jobs, including a new publish-chart job. A changelog is also built. This is also a persistent deployment. Although a deployment to staging should not be viewed as a release, updating staging is in general accompanied by a SKAMPI release.
@@ -47,7 +47,7 @@ SKAMPI Configuration
 
 The SKAMPI repository folder structure at the time of this documentation is the following
 
-.. image:: ../_static/img/folders.png
+.. image:: _static/img/folders.png
    :align: center
 
 This follows standard SKAO practices: a charts folder, a test folder, an images folder, and a documentation folder. SKAO pipeline machinery can thus be used and the **.gitlab-ci.yml** file will include the following lines:

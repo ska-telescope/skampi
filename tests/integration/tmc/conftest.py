@@ -25,11 +25,12 @@ def fxt_set_entry_point(
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
-    sut_settings.receptors = [1]
+    sut_settings.nr_of_receptors=4
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+    TMCEntryPoint.receptors = sut_settings.receptors
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["tmc", "mid"]
+    exec_env.scope = ["tm", "mid", "sdp", "csp","tmc scope", "csp scope", "csp control", "sdp control"]
 
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
@@ -45,6 +46,10 @@ def fxt_nr_of_subarrays() -> int:
     if tel.skalow:
         return 1
     return 2
+
+@pytest.fixture(autouse=True)
+def override_timeouts(exec_settings):
+    exec_settings.time_out = 3
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -72,7 +77,7 @@ def fxt_sdp_start_up_test_exec_settings(
 
     :param exec_settings: Fixture as used by skallop
     """
-    integration_test_exec_settings.time_out = 30
+    integration_test_exec_settings.time_out = 3
 
 
 @pytest.fixture(name="assign_resources_test_exec_settings", autouse=True)
@@ -84,7 +89,7 @@ def fxt_tmc_assign_resources_exec_settings(
     :param exec_settings: The global test execution settings as a fixture.
     :return: test specific execution settings as a fixture
     """
-    integration_test_exec_settings.time_out = 30
+    integration_test_exec_settings.time_out = 3
 
 
 # log checking
@@ -92,7 +97,7 @@ def fxt_tmc_assign_resources_exec_settings(
 
 @pytest.fixture(name="set_up_subarray_log_checking_for_tmc", autouse=True)
 @pytest.mark.usefixtures("set_tmc_entry_point")
-def fxt_set_up_log_capturing_for_cbf(
+def fxt_set_up_log_capturing_for_tmc(
     log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
@@ -101,8 +106,16 @@ def fxt_set_up_log_capturing_for_cbf(
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
-        subarray = str(tel.tm.subarray(sut_settings.subarray_id))
-        log_checking.capture_logs_from_devices(subarray)
+        subarray_node = str(tel.tm.subarray(sut_settings.subarray_id))
+        if tel.skamid:
+            sdp_subarray_leaf_node = str(
+                tel.skamid.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
+            )
+            log_checking.capture_logs_from_devices(
+                subarray_node, sdp_subarray_leaf_node
+            )
+        else:
+            log_checking.capture_logs_from_devices(subarray_node)
 
 
 # resource configurations

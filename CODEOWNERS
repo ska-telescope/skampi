@@ -8,7 +8,7 @@
 # by the rest of the file 
 # Members:
 # - All
-* @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw 
+* @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @ska-telescope/ska-dev/skao-team-system 
 
 # Other
 # Members:
@@ -103,23 +103,23 @@ pipeline.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison
 /images/testing/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
 
 # H2 and H3
-/resources/ @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
-tests/Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
+/resources/ @piersharding @flyingfrog81 @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @ska-telescope/ska-dev/skao-team-system 
+tests/Makefile @ska-telescope/ska-dev/skao-team-system @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
 
 # A3
-.gitlab-ci.yml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw 
-/.gitlab/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw 
-Makefile @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw 
+.gitlab-ci.yml @ska-telescope/ska-dev/skao-team-system 
+/.gitlab/ @ska-telescope/ska-dev/skao-team-system 
+Makefile @ska-telescope/ska-dev/skao-team-system 
 
 # H3
-/.make/ @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw 
-.readthedocs.yaml @limonkufu @piersharding @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw 
-LICENSE @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw
-.gitignore @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw
-.gitmodules @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw
-pyproject.toml @limonkufu @piersharding @flyingfrog81 @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw
+/.make/ @ska-telescope/ska-dev/skao-team-system 
+.readthedocs.yaml @ska-telescope/ska-dev/skao-team-system 
+LICENSE @piersharding @flyingfrog81  @ska-telescope/ska-dev/skao-team-system
+.gitignore @piersharding @flyingfrog81 @ska-telescope/ska-dev/skao-team-system
+.gitmodules @piersharding @flyingfrog81 @ska-telescope/ska-dev/skao-team-system
+pyproject.toml @piersharding @flyingfrog81 @piersharding @ska-telescope/ska-dev/skao-team-system
 
 # A4
-/docs/ @limonkufu @piersharding @vla22 @adb-42 @mmarquar @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw 
-README.md @limonkufu @piersharding @vla22 @adb-42 @mmarquar @dalmiromaia @Bruno_Ribeiro @jbmorgado @domingosnunes @diogoregateiro @matteo1981 @mpaulo_csw 
+/docs/ @piersharding @vla22 @adb-42 @mmarquar @ska-telescope/ska-dev/skao-team-system
+README.md @piersharding @vla22 @adb-42 @mmarquar @ska-telescope/ska-dev/skao-team-system
 

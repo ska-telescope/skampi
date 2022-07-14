@@ -22,7 +22,7 @@ def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
 
 
-@pytest.mark.skip(reason="Tests are not passing reliably - see SKB-163")
+# @pytest.mark.skip(reason="Bug in switch of TMC see skb-146 remving tmc")
 @pytest.mark.skamid
 @pytest.mark.standby
 @scenario("features/tmc_start_up_telescope.feature", "Switch of the telescope")

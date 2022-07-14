@@ -25,11 +25,11 @@ dependencies:
     version: 0.9.1
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
-  - name: ska-tmc-mid
-    version: 0.5.3
-    repository: https://artefact.skao.int/repository/helm-internal
-    condition: ska-tmc-mid.enabled
-    alias: tmc-mid
+  # - name: ska-tmc-mid
+  #   version: 0.5.3
+  #   repository: https://artefact.skao.int/repository/helm-internal
+  #   condition: ska-tmc-mid.enabled
+  #   alias: tmc-mid
   # - name: ska-oso-scripting # https://gitlab.com/ska-telescope/ska-oso-scripting/-/merge_requests/50/diffs
   #   version: 0.5.3
   #   repository: https://artefact.skao.int/repository/helm-internal
@@ -65,7 +65,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-ser-skuid.enabled
   - name: ska-landingpage
-    version: 0.9.0
+    version: 0.8.2
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
   - name: ska-sim-dishmaster
@@ -84,9 +84,3 @@ dependencies:
     version: 0.1.6
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
-
-  ## For auxillary integration support
-  - name: ska-ser-config-inspector
-    version: 0.1.0
-    repository: https://artefact.skao.int/repository/helm-internal
-    alias: config-inspector

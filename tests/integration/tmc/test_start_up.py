@@ -1,6 +1,6 @@
 """Start up the telescope from tmc feature tests."""
 import logging
-import os
+# import os
 
 import pytest
 from assertpy import assert_that

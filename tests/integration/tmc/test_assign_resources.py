@@ -26,10 +26,9 @@ def test_assign_resources_to_tmc_subarray_in_mid():
     """Assign resources to tmc subarray in mid."""
 
 
-# @pytest.mark.skamid
-# @pytest.mark.k8s
-# @pytest.mark.onlyk8s
-@pytest.mark.skip
+@pytest.mark.skamid
+@pytest.mark.k8s
+@pytest.mark.onlyk8s
 @scenario(
     "features/tmc_assign_resources.feature", "Release resources from mid subarray"
 )

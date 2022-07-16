@@ -111,6 +111,11 @@ K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.9.1## docker image
 # import your personal semi-static config
 -include PrivateRules.mak
 
+# Base Image variables
+OCI_IMAGES = ska-skampi-ci-base
+RELEASE_CONTEXT_DIR = images/ska-skampi-ci-base
+OCI_BUILD_ADDITIONAL_ARGS = "--build-arg\ SKA_PYTHON_PYTANGO_BUILDER_IMAGE=${SKA_PYTHON_PYTANGO_BUILDER_IMAGE}\ --build-arg\ SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE=${SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE}"
+
 # add `--values <file>` for each space-separated file in VALUES that exists
 ifneq (,$(wildcard $(VALUES)))
 	K8S_CHART_PARAMS += $(foreach f,$(wildcard $(VALUES)),--values $(f))

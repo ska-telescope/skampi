@@ -24,6 +24,14 @@ include:
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
 
+## Override oci image jobs to build base image
+oci-image-build:
+  stage: .pre # We need to override the stage so that we can built the base image first
+  rules:
+  # Only build if there's a change in dependencies or dockerfile
+   - changes:
+       - images/ska-skampi-ci-base/Dockerfile
+       - poetry.lock
 
 
 # create namespace scoped credentials

@@ -2,6 +2,30 @@
 # # Common CI Stages
 # ################################################
 
+## Create Base CI Image
+include:
+  # OCI Image
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/oci-image.gitlab-ci.yml"
+
+  # Helm Charts
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/helm-chart.gitlab-ci.yml"
+
+  # Docs - only build as stress tests use 'public'
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/docs-build.gitlab-ci.yml"
+
+  # release steps
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/release.gitlab-ci.yml"
+
+  # .post steps
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
+
+
+
 # create namespace scoped credentials
 .create_k8s_creds: &create_k8s_creds
   - bash scripts/gitlab_section.sh creds "Create K8s Credentials" make skampi-credentials

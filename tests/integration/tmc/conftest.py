@@ -74,7 +74,7 @@ def fxt_sdp_start_up_test_exec_settings(
 
     :param exec_settings: Fixture as used by skallop
     """
-    integration_test_exec_settings.time_out = 100
+    integration_test_exec_settings.time_out = 20
 
 
 @pytest.fixture(name="assign_resources_test_exec_settings", autouse=True)
@@ -86,7 +86,7 @@ def fxt_tmc_assign_resources_exec_settings(
     :param exec_settings: The global test execution settings as a fixture.
     :return: test specific execution settings as a fixture
     """
-    integration_test_exec_settings.time_out = 100
+    integration_test_exec_settings.time_out = 20
 
 
 # log checking
@@ -142,4 +142,4 @@ def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 
 @pytest.fixture(autouse=True)
 def override_timeouts(exec_settings):
-    exec_settings.time_out = 100
+    exec_settings.time_out = 20

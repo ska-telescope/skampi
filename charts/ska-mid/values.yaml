@@ -89,6 +89,13 @@ ska-oso-oet:
       enabled: false
     featureFlags:
       discardFirstEvent: true
+  resources:
+    requests:
+      cpu:  200m
+      memory: 256Mi
+    limits:
+      cpu:  2000m
+      memory: 1024Mi
 
 #telescope control
 ## mid-cbf

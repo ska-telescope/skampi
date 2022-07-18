@@ -119,6 +119,8 @@ mid_k8s_test:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-k8s-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+    DISABLE_MAINTAIN_ON: "True"
+    TEST_ENV: "BUILD_IN"
     ADDMARKS: "k8s"
     MARK: "not infra"
     NO_SKAMPI_LINKS: "True"

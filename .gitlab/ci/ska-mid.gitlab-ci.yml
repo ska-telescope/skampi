@@ -5,7 +5,7 @@
 # mid merge blocking job - must pass for pipeline success
 mid-test:
   stage: test
-  image: artefact.skao.int/ska-ser-skallop:2.18.9
+  image: artefact.skao.int/ska-ser-skallop:2.19.6
   variables:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"

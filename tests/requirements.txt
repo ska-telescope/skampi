@@ -19,3 +19,4 @@ assertpy==1.1
 docopts
 requests
 coverage
+atlassian-python-api>=3.25.0

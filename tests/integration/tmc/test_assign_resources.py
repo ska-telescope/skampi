@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
-@pytest.mark.skip(reason="test under development")
+@pytest.mark.skip("SKB-163: tests are not passing regularly")
 @pytest.mark.skamid
 @pytest.mark.assign
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")

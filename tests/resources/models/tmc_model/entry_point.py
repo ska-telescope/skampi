@@ -154,35 +154,14 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sb_id: a generic id to identify a sb to assign resources
         """
         # currently ignore composition as all types will be standard
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # subarray = con_config.get_device_proxy(subarray_name)
-        # standard_composition = comp.generate_standard_comp(
-        #     sub_array_id, dish_ids, sb_id
-        # )
-        # tmc_standard_composition = json.dumps(json.loads(standard_composition)["sdp"])
-        # self._log(
-        #     f"commanding {subarray_name} with AssignResources: {tmc_standard_composition} "
-        # )
-        # # TODO verify command correctness
-        # subarray.command_inout("AssignResources", tmc_standard_composition)
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
 
         standard_composition = comp.generate_standard_comp(
             sub_array_id, dish_ids, sb_id
         )
-        # standard_composition = comp.generate_standard_comp(
-        #     sub_array_id , [1] , sb_id
-        # )
-        # std_composition = json.loads(comp.generate_standard_comp(
-        #    sub_array_id, dish_ids, sb_id
-        # ))
-        # std_composition["dish"]["receptor_ids"]=["0001"]
-        # standard_composition=json.dumps(std_composition)
-        #
-        #
+
         self._log(f"Commanding {central_node_name} with AssignRescources")
-        # tmc_mid_assign_configuration = json.dumps(tmc_mid_assign_resources)
 
         central_node.command_inout("AssignResources", standard_composition)
 
@@ -193,16 +172,10 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # subarray = con_config.get_device_proxy(subarray_name)
-        # self._log(f"Commanding {subarray_name} to ReleaseResources")
-        # # TODO verify command correctness
-        # subarray.command_inout("ReleaseResources")
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name)
         tear_down_composition = comp.generate_tear_down_all_resources(sub_array_id)
         self._log(f"Commanding {central_node_name} with ReleaseRescources")
-        # tmc_mid_release_configuration = json.dumps(tmc_mid_release_resources)
         central_node.command_inout("ReleaseResources", tear_down_composition)
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -211,7 +184,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
-        # index=1
+ 
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("IDLE")
@@ -234,7 +207,6 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
-        # index=1
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("EMPTY")
@@ -490,85 +462,3 @@ class TMCEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = AssignResourcesStep()
         self.configure_scan_step = ConfigureStep()
         self.scan_step = ScanStep()
-
-
-tmc_mid_assign_resources = {
-    "interface": "https://schema.skao.int/ska-tmc-assignresources/2.0",
-    "transaction_id": "txn-local-20220526-0001",
-    "subarray_id": 1,
-    "dish": {"receptor_ids": ["0001", "0002", "0003", "0004"]},
-    "sdp": {
-        "interface": "https://schema.skao.int/ska-sdp-assignres/0.3",
-        "eb_id": "eb-mvp01-20200325-09059",
-        "max_length": 100.0,
-        "scan_types": [
-            {
-                "scan_type_id": "science_A",
-                "reference_frame": "ICRS",
-                "ra": "02:42:40.771",
-                "dec": "-00:00:47.84",
-                "channels": [
-                    {
-                        "count": 744,
-                        "start": 0,
-                        "stride": 2,
-                        "freq_min": 350000000.0,
-                        "freq_max": 368000000.0,
-                        "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
-                    },
-                    {
-                        "count": 744,
-                        "start": 2000,
-                        "stride": 1,
-                        "freq_min": 360000000.0,
-                        "freq_max": 368000000.0,
-                        "link_map": [[2000, 4], [2200, 5]],
-                    },
-                ],
-            },
-            {
-                "scan_type_id": "calibration_B",
-                "reference_frame": "ICRS",
-                "ra": "12:29:06.699",
-                "dec": "02:03:08.598",
-                "channels": [
-                    {
-                        "count": 744,
-                        "start": 0,
-                        "stride": 2,
-                        "freq_min": 350000000.0,
-                        "freq_max": 368000000.0,
-                        "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
-                    },
-                    {
-                        "count": 744,
-                        "start": 2000,
-                        "stride": 1,
-                        "freq_min": 360000000.0,
-                        "freq_max": 368000000.0,
-                        "link_map": [[2000, 4], [2200, 5]],
-                    },
-                ],
-            },
-        ],
-        "processing_blocks": [
-            {
-                "pb_id": "pb-mvp01-20200325-09059",
-                "workflow": {
-                    "kind": "realtime",
-                    "name": "test_receive_addresses",
-                    "version": "0.3.6",
-                },
-                "parameters": {},
-            }
-        ],
-    },
-}
-
-tmc_mid_release_resources = {
-    "interface": "https://schema.skao.int/ska-tmc-releaseresources/2.0",
-    "transaction_id": "txn-local-20210203-0001",
-    "subarray_id": 1,
-    "release_all": True,
-    "receptor_ids": [],
-}

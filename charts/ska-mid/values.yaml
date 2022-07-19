@@ -87,8 +87,6 @@ ska-oso-oet:
   rest:
     ingress:
       enabled: false
-    featureFlags:
-      discardFirstEvent: true
   resources:
     requests:
       cpu:  200m

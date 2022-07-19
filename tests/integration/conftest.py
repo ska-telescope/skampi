@@ -24,9 +24,9 @@ class SutTestSettings(SimpleNamespace):
     """Object representing env like SUT settings for fixtures in conftest."""
 
     mock_sut: bool = False
-    nr_of_subarrays = 2
+    nr_of_subarrays = 3
     subarray_id = 1
-    receptors = [1, 2]
+    receptors = [1, 2, 3, 4]
     scan_duration = 1
 
 
@@ -55,6 +55,17 @@ def fxt_run_mock_wrapper(
     return run_mock
 
 
+@pytest.fixture(name="set_exec_settings_from_env", autouse=True)
+def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
+    """Set up general execution settings during setup and teardown.
+
+    :param exec_settings: The global test execution settings as a fixture.
+    :return: test specific execution settings as a fixture
+    """
+    if os.getenv("LIVE_LOGGING_EXTENDED"):
+        exec_settings.run_with_live_logging()
+
+
 @pytest.fixture(name="integration_test_exec_settings")
 def fxt_integration_test_exec_settings(
     exec_settings: fxt_types.exec_settings,
@@ -66,9 +77,6 @@ def fxt_integration_test_exec_settings(
     """
     integration_test_exec_settings = exec_settings.replica()
 
-    if os.getenv("DEBUG"):
-        exec_settings.run_with_live_logging()
-        integration_test_exec_settings.run_with_live_logging()
     if os.getenv("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()
     if os.getenv("REPLAY_EVENTS_AFTERWARDS"):
@@ -78,6 +86,7 @@ def fxt_integration_test_exec_settings(
 
 # global when steps
 # start up
+
 
 @when("I start up the telescope")
 def i_start_up_the_telescope(

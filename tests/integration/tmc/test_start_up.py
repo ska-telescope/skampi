@@ -14,16 +14,18 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 nr_of_subarrays = 1
 
-@pytest.mark.skip(reason="Bug in switch of TMC see skb-146 removing tmc")
 @pytest.mark.skamid
 @pytest.mark.startup
+# @pytest.mark.k8s
+# @pytest.mark.onlyk8s
 @scenario("features/tmc_start_up_telescope.feature", "Start up the telescope")
 def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
 
-@pytest.mark.skip(reason="Bug in switch of TMC see skb-146 remving tmc")
 @pytest.mark.skamid
 @pytest.mark.standby
+# @pytest.mark.k8s
+# @pytest.mark.onlyk8s
 @scenario("features/tmc_start_up_telescope.feature", "Switch of the telescope")
 def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
@@ -41,7 +43,7 @@ def a_telescope_with_csp_sdp_and_dish():
 
 @given("a Telescope consisting of SDP, CSP and a Dish that is ON")
 def a_telescope_with_sdp_csp_and_dish_on():
-    """a Telescope consisting SDP, CSP and a Dish that is ON"""
+    """a Telescope consisting of SDP, CSP and a Dish that is ON"""
 
 
 # when

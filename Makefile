@@ -158,7 +158,6 @@ ifneq (,$(findstring low,$(KUBE_NAMESPACE)))
 	SUBARRAY = 'ska_low/tm_subarray_node'
 endif
 
-PUBSUB = true
 
 # Makefile target for test in ./tests/Makefile
 K8S_TEST_TARGET = test
@@ -176,7 +175,6 @@ K8S_TEST_MAKE_PARAMS = \
 	SKA_TELESCOPE=$(TELESCOPE) \
 	CENTRALNODE_FQDN=$(CENTRALNODE) \
 	SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
-	OET_READ_VIA_PUBSUB=$(PUBSUB) \
 	JIRA_AUTH=$(JIRA_AUTH) \
 	CAR_RAW_USERNAME=$(RAW_USER) \
 	CAR_RAW_PASSWORD=$(RAW_PASS) \

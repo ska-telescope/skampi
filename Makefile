@@ -48,7 +48,6 @@ ifneq ($(TESTCOUNT),)
 # run a paricular test/s multiple times. If no testcount is set then the entire
 # --count option is removed
 DASHCOUNT ?= --count=$(TESTCOUNT)
-COUNT ?= $(TESTCOUNT)
 else
 DASHCOUNT ?=
 COUNT ?= 1
@@ -192,6 +191,7 @@ K8S_TEST_MAKE_PARAMS = \
 
 
 # runs inside the test runner container after cd ./tests
+K8S_RUN_TEST_FOLDER = ./tests
 K8S_TEST_TEST_COMMAND = make -s \
 			$(K8S_TEST_MAKE_PARAMS) \
 			$(K8S_TEST_TARGET)
@@ -248,6 +248,7 @@ k8s-pre-install-chart:
 
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
+k8s-test-runner: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
 
 k8s-post-test: # post test hook for processing received reports
 	@if ! [[ -f build/status ]]; then \
@@ -257,3 +258,7 @@ k8s-post-test: # post test hook for processing received reports
 	@echo "k8s-post-test: Skampi post processing of core Skampi test reports with scripts/collect_k8s_logs.py"
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
+	
+##  ST-1258: Delete namespace and exit using the test build status
+	@kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP)
+	exit $$(cat build/status)

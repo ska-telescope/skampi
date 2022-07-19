@@ -48,7 +48,6 @@ ifneq ($(TESTCOUNT),)
 # run a paricular test/s multiple times. If no testcount is set then the entire
 # --count option is removed
 DASHCOUNT ?= --count=$(TESTCOUNT)
-COUNT ?= $(TESTCOUNT)
 else
 DASHCOUNT ?=
 COUNT ?= 1

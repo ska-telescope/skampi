@@ -104,7 +104,6 @@ def fxt_integration_test_exec_settings(
 # global when steps
 # start up
 
-
 @when("I start up the telescope")
 def i_start_up_the_telescope(
     standby_telescope: fxt_types.standby_telescope,

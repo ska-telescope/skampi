@@ -43,7 +43,7 @@ def a_telescope_on_standby_or_off_state(standby_telescope: fxt_types.standby_tel
     tel = names.TEL()
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(tel.tm.central_node)
-    assert central_node.read_attribute("telescopeState").value in ["STANDBY", "OFF"]
+    assert str(central_node.read_attribute("telescopeState").value) in ["STANDBY", "OFF"]
 
 
 @given("telescope is in ON state")
@@ -52,7 +52,7 @@ def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
     tel = names.TEL()
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(tel.tm.central_node)
-    assert central_node.read_attribute("telescopeState").value == "ON"
+    assert str(central_node.read_attribute("telescopeState").value) == "ON"
     running_telescope.disable_automatic_setdown()
 
 

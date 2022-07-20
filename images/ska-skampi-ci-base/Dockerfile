@@ -2,21 +2,26 @@
 # artefact.skao.int/ska-tango-images-pytango-builder-alpine:x.x.x
 # Provide it in PrivateRules.mak if needed locally
 ARG SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE
-ARG SKA_CI_BASE="${SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE}"
-ARG SKA_PYTHON_PYTANGO_BUILDER_IMAGE
-ARG PYTANGO_BASE="${SKA_PYTHON_PYTANGO_BUILDER_IMAGE}"
+ARG SKA_K8S_TOOLS="${SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE}"
+ARG SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE
+ARG PYTANGO_BASE="${SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE}"
 
-FROM $SKA_CI_BASE as ska_cicd_k8s_tools
-
+FROM $SKA_K8S_TOOLS as ska_cicd_k8s_tools
 FROM $PYTANGO_BASE as builder
 
 # Get all other dependencies from SKAO Default CI Image
 COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin
 
 # Install poetry and dependencies
-RUN poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes && \
-    pip install -r poetry-requirements.txt && \
-    rm poetry-requirements.txt 
+COPY ./poetry.lock* ./pyproject.toml /app/
+
+# RUN poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes && \
+#     pip install --upgrade pip && \
+#     pip install -r poetry-requirements.txt && \
+#     rm poetry-requirements.txt 
+
+# As Poetry is already available in the image, there's no point to export the requirements.txt file and install it from there
+RUN pip install --upgrade pip && poetry install
 
 LABEL \
     int.skao.application="SKA SKAMPI CI Base Image" \

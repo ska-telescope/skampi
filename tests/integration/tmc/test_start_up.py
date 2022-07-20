@@ -1,6 +1,6 @@
 """Start up the telescope from tmc feature tests."""
 import logging
-import os
+# import os
 
 import pytest
 from assertpy import assert_that
@@ -33,8 +33,8 @@ def test_tmc_off_telescope_mid():
 @given("an TMC")
 def a_tmc():
     """an TMC"""
-    tel = names.TEL()  
-    sut_settings= conftest.SutTestSettings()  
+    tel = names.TEL()    
+    sut_settings=conftest.SutTestSettings()
 
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(central_node_name)
@@ -75,9 +75,9 @@ def a_tmc():
 @given("a Telescope consisting of SDP, CSP and a Dish")
 def a_telescope_with_csp_sdp_and_dish():
     """a Telescope consisting SDP, CSP and a Dish"""
-    tel = names.TEL()   
-    sut_settings =conftest.SutTestSettings() 
-   
+    tel = names.TEL()    
+    sut_settings=conftest.SutTestSettings()
+
     csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
     result=csp_master_leaf_node.ping()
     assert result>0
@@ -116,6 +116,7 @@ def a_telescope_with_sdp_csp_and_dish_on():
     result = sdp_master_leaf_node.read_attribute("state").value
     assert_that(str(result)).is_equal_to("ON")
 
+
     for index in range(1, sut_settings.nr_of_subarrays + 1):
         csp_subarray_leaf_node=con_config.get_device_proxy(tel.tm.subarray(index).csp_leaf_node)
         result = csp_subarray_leaf_node.read_attribute("state").value
@@ -144,7 +145,7 @@ def a_telescope_with_sdp_csp_and_dish_on():
 
 
 @then("the sdp, csp and dish must be on")
-def the_sdp_csp_and_dish_must_be_on(sut_settings:conftest.SutTestSettings):
+def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
     """the sdp, csp and dish must be on."""
     tel = names.TEL()
     mid = names.Mid()
@@ -176,7 +177,7 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings:conftest.SutTestSettings):
 
 
 @then("the sdp, csp and dish must be off")
-def the_sdp_csp_and_dish_must_be_off(sut_settings:conftest.SutTestSettings):
+def the_sdp_csp_and_dish_must_be_off(sut_settings: conftest.SutTestSettings):
     """the sdp, csp and dish must be off."""
     tel = names.TEL()
     mid = names.Mid()

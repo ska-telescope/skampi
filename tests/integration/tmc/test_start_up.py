@@ -14,8 +14,7 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.k8s
-@pytest.mark.onlyk8s
+
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario("features/tmc_start_up_telescope.feature", "Start up the telescope")
@@ -23,8 +22,7 @@ def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
 
 
-@pytest.mark.k8s
-@pytest.mark.onlyk8s
+
 @pytest.mark.skamid
 @pytest.mark.standby
 @scenario("features/tmc_start_up_telescope.feature", "Switch of the telescope")
@@ -36,8 +34,6 @@ def test_tmc_off_telescope_mid():
 def a_tmc(sut_settings: conftest.SutTestSettings):
     """an TMC"""
     tel = names.TEL()    
-    sut_settings.nr_of_receptors=4
-    sut_settings.nr_of_subarrays=3
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(central_node_name)
     result=central_node.ping()
@@ -78,8 +74,6 @@ def a_tmc(sut_settings: conftest.SutTestSettings):
 def a_telescope_with_csp_sdp_and_dish(sut_settings :conftest.SutTestSettings):
     """a Telescope consisting SDP, CSP and a Dish"""
     tel = names.TEL()    
-    sut_settings.nr_of_receptors=4
-    sut_settings.nr_of_subarrays=3
     csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
     result=csp_master_leaf_node.ping()
     assert result>0
@@ -107,8 +101,6 @@ def a_telescope_with_csp_sdp_and_dish(sut_settings :conftest.SutTestSettings):
 def a_telescope_with_sdp_csp_and_dish_on(sut_settings: conftest.SutTestSettings):
     """a Telescope consisting of SDP, CSP and a Dish that is ON"""
     tel = names.TEL()    
-    sut_settings.nr_of_receptors=4
-    sut_settings.nr_of_subarrays=3
     csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
     result = csp_master_leaf_node.read_attribute("state").value
     assert_that(str(result)).is_equal_to("ON")
@@ -156,8 +148,6 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
     """the sdp, csp and dish must be on."""
     tel = names.TEL()
     mid = names.Mid()
-    sut_settings.nr_of_receptors=4
-    sut_settings.nr_of_subarrays=3
     # Check state attribute of SDP Master
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value
@@ -190,8 +180,6 @@ def the_sdp_csp_and_dish_must_be_off(sut_settings: conftest.SutTestSettings):
     """the sdp, csp and dish must be off."""
     tel = names.TEL()
     mid = names.Mid()
-    sut_settings.nr_of_receptors=4
-    sut_settings.nr_of_subarrays=3
     # Check state attribute of SDP Master
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value

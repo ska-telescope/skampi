@@ -15,8 +15,8 @@ const MVPInstance = (MVP === 'ska-mid') ? skaMid : (MVP === 'ska-low' ? skaLow :
 
 const kibanaURL = '../../kibana/app/logs/stream?' +
   'flyoutOptions=(flyoutId:!n,flyoutVisibility:hidden,surroundingLogsId:!n)&' +
-  'logPosition=(end:now,position:(tiebreaker:277595,time:1612798881864),start:now-1d,streamLive:!f)&' +
-  `logFilter=(expression:%27kubernetes.namespace:%20${NAMESPACE}%27,kind:kuery)`
+  'logPosition=(end:now,position:(tiebreaker:150737,time:1658412119029),start:now-1d,streamLive:!f)&' +
+  `logFilter=(language:kuery,query:%27kubernetes.namespace:%20${NAMESPACE}%27)`
 
 const model = {
   'MVPInstance': MVPInstance,

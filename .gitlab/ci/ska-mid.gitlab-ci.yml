@@ -274,5 +274,5 @@ mid_on_demand_deploy:
       - "build/"
     reports:
       junit: build/report.xml
-  # when: manual
+  when: manual
   allow_failure: true

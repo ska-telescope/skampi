@@ -27,8 +27,8 @@ class SutTestSettings(SimpleNamespace):
     nr_of_subarrays = 3
     subarray_id = 1
     scan_duration = 1
-    _receptors=[1,2]
-    _nr_of_receptors=2
+    _receptors=[1,2,3,4]
+    _nr_of_receptors=4
 
     @property
     def nr_of_receptors(self):

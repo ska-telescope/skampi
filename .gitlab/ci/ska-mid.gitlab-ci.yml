@@ -259,7 +259,7 @@ mid_on_demand_deploy:
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
   extends:
     - .tags_default
-    # - .deploy_chart_before
+    - .deploy_chart_before
   script:
     - make skampi-links
   environment:

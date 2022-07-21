@@ -111,7 +111,7 @@ mid_deploy_integration_k8s_test:
 
 mid_k8s_test:
   stage: test
-  image: artefact.skao.int/ska-ser-skallop:2.19.6
+  image: artefact.skao.int/ska-ser-skallop:2.19.8
   variables:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"

@@ -1,3 +1,4 @@
+manifests.yaml
 *-workspace
 .coverage
 kubeconfig

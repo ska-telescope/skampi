@@ -55,8 +55,12 @@ upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 ## VARS: none
 ##  make target for generating the URLs for accessing a Skampi deployment
 
-skampi-links: ## Create the URLs with which to access Skampi
+skampi-links: ## Create the URLs with which to access Skampi if it is available
 	@echo "############################################################################"
 	@echo "#            Access the Skampi landing page here:"
 	@echo "#            https://$(INGRESS_HOST)/$(KUBE_NAMESPACE)/start/"
 	@echo "############################################################################"
+	@if [[ -z "${LOADBALANCER_IP}" ]]; then exit 0; \
+	elif [[ $(shell curl -I -s -o /dev/null -I -w \'%{http_code}\' http$(S)://$(LOADBALANCER_IP)/$(KUBE_NAMESPACE)/start/) != '200' ]]; then \
+		echo "ERROR: http://$(LOADBALANCER_IP)/$(KUBE_NAMESPACE)/start/ unreachable"; exit 10; \
+	fi

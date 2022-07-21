@@ -17,7 +17,6 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-@pytest.mark.skip(reason="Requires TMC which is not yet enabled for SKA-Mid")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.startup
@@ -27,7 +26,6 @@ def test_telescope_startup():
     """Telescope startup test."""
 
 
-@pytest.mark.skip(reason="Requires TMC which is not yet enabled for SKA-Mid")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.standby

@@ -25,7 +25,7 @@ pytest-ordering = "^0.6"
 pipe = "^1.6.0"
 ska-ser-skallop = "2.19.10"
 ska-telescope-model = "1.3.1"
-ska-oso-oet = "^4.0.4"
+ska-oso-oet = "^4.0.5"
 atlassian-python-api = "^3.25.0"
 
 

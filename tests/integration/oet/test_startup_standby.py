@@ -17,12 +17,6 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-@pytest.fixture(name='teardown_telescope', autouse=True)
-def fxt_teardown_telescope(entry_point, context_monitoring):
-    yield
-    with context_monitoring.context_monitoring():
-        entry_point.set_telescope_to_standby()
-
 
 @pytest.mark.oet
 @pytest.mark.skamid
@@ -93,3 +87,8 @@ def check_final_state(state):
         str(final_state) == state
     ), f"Expected telescope to be {state} but instead was {final_state}"
     logger.info("Central node is in %s state", state)
+
+    # Turn telescope off at the end of startup test
+    # (only when expected state for telescope is ON)
+    if state == 'ON':
+        central_node.command_inout("TelescopeOff")

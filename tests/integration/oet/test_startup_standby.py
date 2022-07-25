@@ -17,6 +17,12 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
+@pytest.fixture(name='teardown_telescope', autouse=True)
+def fxt_teardown_telescope(entry_point, context_monitoring):
+    with context_monitoring.context_monitoring():
+        entry_point.set_telescope_to_standby()
+
+
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.startup
@@ -32,12 +38,12 @@ def test_telescope_startup():
 @pytest.mark.k8s
 @scenario("features/oet_startup_standby_telescope.feature", "Setting telescope to stand-by")
 def test_telescope_standby():
-    """Set telescope to standby test."""
+    """"et telescope to standby test."""
 
 
 @given("telescope is in STANDBY or OFF state")
 def a_telescope_on_standby_or_off_state(standby_telescope: fxt_types.standby_telescope):
-    "a telescope on standby or off state"
+    """a telescope on standby or off state"""
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     assert str(central_node.read_attribute("telescopeState").value) in ["STANDBY", "OFF"]
@@ -45,7 +51,7 @@ def a_telescope_on_standby_or_off_state(standby_telescope: fxt_types.standby_tel
 
 @given("telescope is in ON state")
 def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
-    "a telescope in the ON state"
+    """a telescope in the ON state"""
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     assert str(central_node.read_attribute("telescopeState").value) == "ON"

@@ -19,6 +19,7 @@ EXECUTOR = ScriptExecutor()
 
 @pytest.fixture(name='teardown_telescope', autouse=True)
 def fxt_teardown_telescope(entry_point, context_monitoring):
+    yield
     with context_monitoring.context_monitoring():
         entry_point.set_telescope_to_standby()
 

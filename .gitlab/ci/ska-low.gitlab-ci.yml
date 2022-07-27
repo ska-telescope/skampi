@@ -15,7 +15,7 @@ low-test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
-    TEST_ENV: "BUILD_OUT"
+    TEST_ENV: "BUILD_IN"
     COUNT: 1
     TEL: low
   extends:
@@ -53,7 +53,7 @@ clean-low-test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
-    TEST_ENV: "BUILD_OUT"
+    TEST_ENV: "BUILD_IN"
     COUNT: 1
     TEL: low
   extends:

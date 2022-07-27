@@ -116,7 +116,7 @@ Thus for **mid-test** we have
       ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
       COUNT: 1
       DISABLE_MAINTAIN_ON: "True"
-      TEST_ENV: "BUILD_OUT"
+      TEST_ENV: "BUILD_IN"
       TEL: mid
       [... more code]
 
@@ -136,7 +136,7 @@ and for **low-test** job
       SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
       ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
       DISABLE_MAINTAIN_ON: "True"
-      TEST_ENV: "BUILD_OUT"
+      TEST_ENV: "BUILD_IN"
       COUNT: 1
       TEL: low
       [... more code]

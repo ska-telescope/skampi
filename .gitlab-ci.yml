@@ -14,6 +14,7 @@ variables:
 stages:
   - build
   - test
+  - scan
   - clean_test_env
   - lint
   - publish

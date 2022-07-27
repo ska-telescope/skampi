@@ -17,13 +17,13 @@ REST_ADAPTER = RestAdapter(rest_cli_uri)
 class ScriptExecutor:
 
     @staticmethod
-    def init_script(script_uri: str, *args, **kwargs) -> ProcedureSummary:
+    def init_script(script_uri: str, create_kwargs, *args, **kwargs) -> ProcedureSummary:
         if not kwargs:
             kwargs = dict()
         if "subarray_id" not in kwargs:
             kwargs["subarray_id"] = 1
         init_args = dict(args=args, kwargs=kwargs)
-        return REST_ADAPTER.create(script_uri=script_uri, init_args=init_args)
+        return REST_ADAPTER.create(script_uri=script_uri, init_args=init_args, **create_kwargs)
 
     @staticmethod
     def start_script(pid: int, *args, **kwargs) -> ProcedureSummary:
@@ -94,7 +94,7 @@ class ScriptExecutor:
         return procedure.state
 
     @staticmethod
-    def execute_script(script: str, *script_run_args, timeout=30, script_init_kwargs={}) -> str:
+    def execute_script(script: str, *script_run_args, timeout=30, script_create_kwargs={}) -> str:
         """
         Execute the given script using OET REST client.
 
@@ -111,7 +111,7 @@ class ScriptExecutor:
         """
         LOGGER.info(f"Running script {script}")
 
-        procedure = ScriptExecutor.init_script(script, **script_init_kwargs)
+        procedure = ScriptExecutor.init_script(script, create_kwargs=script_create_kwargs)
         pid = procedure.uri.split('/')[-1]
 
         # confirm that creating the script worked and we have a valid ID

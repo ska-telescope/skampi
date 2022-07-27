@@ -36,7 +36,7 @@ def test_sbi_creation():
     """
 
 
-@pytest.mark.skip(reason="Missing transaction_id causes TMC to go to FAULT which is currently not a recoverable state and disrupts other tests")
+#@pytest.mark.skip(reason="Missing transaction_id causes TMC to go to FAULT which is currently not a recoverable state and disrupts other tests")
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_assign_resources.feature", "Allocating resources with a SBI")

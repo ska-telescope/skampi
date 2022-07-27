@@ -15,13 +15,12 @@ COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin
 # Install poetry and dependencies
 COPY ./poetry.lock* ./pyproject.toml /app/
 
-# RUN poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes && \
-#     pip install --upgrade pip && \
-#     pip install -r poetry-requirements.txt && \
-#     rm poetry-requirements.txt 
-
-# As Poetry is already available in the image, there's no point to export the requirements.txt file and install it from there
-RUN pip install --upgrade pip && poetry install
+# Need to ignore installed packages but note that this may be problematic due to versions as we are not really checking them
+# This is due to the fact that poetry is install with pip in base images
+RUN poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes && \
+    pip install --upgrade pip && \
+    pip install --ignore-installed -r poetry-requirements.txt && \
+    rm poetry-requirements.txt 
 
 LABEL \
     int.skao.application="SKA SKAMPI CI Base Image" \

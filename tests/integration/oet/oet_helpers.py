@@ -94,7 +94,7 @@ class ScriptExecutor:
         return procedure.state
 
     @staticmethod
-    def execute_script(script: str, *script_run_args, timeout=30) -> str:
+    def execute_script(script: str, *script_run_args, timeout=30, **script_run_kwargs) -> str:
         """
         Execute the given script using OET REST client.
 
@@ -123,7 +123,7 @@ class ScriptExecutor:
             return state
 
         # start execution of created script
-        ScriptExecutor.start_script(pid, *script_run_args)
+        ScriptExecutor.start_script(pid, *script_run_args, **script_run_kwargs)
 
         return ScriptExecutor.wait_for_script_state(
             pid, "COMPLETE", timeout

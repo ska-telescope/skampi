@@ -24,11 +24,11 @@ class SutTestSettings(SimpleNamespace):
     """Object representing env like SUT settings for fixtures in conftest."""
 
     mock_sut: bool = False
-    nr_of_subarrays = 2
+    nr_of_subarrays = 3
     subarray_id = 1
     scan_duration = 1
-    _receptors=[1,2]
-    _nr_of_receptors=2
+    _receptors=[1,2,3,4]
+    _nr_of_receptors=4
 
     @property
     def nr_of_receptors(self):
@@ -94,7 +94,6 @@ def fxt_integration_test_exec_settings(
     """
     integration_test_exec_settings = exec_settings.replica()
 
- 
     if os.getenv("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()
     if os.getenv("REPLAY_EVENTS_AFTERWARDS"):

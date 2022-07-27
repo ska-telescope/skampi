@@ -165,7 +165,6 @@ mid_k8s_test_uninstall:
       when: manual
   allow_failure: true
 
-
 # teardown integration on stop
 mid_uninstall_integration:
   stage: deploy_integration

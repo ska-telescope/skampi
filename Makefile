@@ -266,5 +266,7 @@ k8s-post-test: # post test hook for processing received reports
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
 	
 ##  ST-1258: Delete namespace and exit using the test build status
-	@kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP)
+	@if ! [[ $(KUBE_NAMESPACE) == *integration* ]] && ! [[ $(KUBE_NAMESPACE) == *staging* ]] ; then \
+		kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP); \
+	fi
 	exit $$(cat build/status)

@@ -1354,8 +1354,8 @@ pyasn1 = ">=0.1.3"
 
 [package.source]
 type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+url = "https://deployskallopdev:rsaigjomsv-XyU2gNji7@gitlab.com/api/v4/projects/21173098/packages/pypi/simple"
+reference = 'skallop_private_repo'
 
 [[package]]
 name = "schema"

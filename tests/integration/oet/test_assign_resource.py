@@ -111,7 +111,7 @@ def when_allocate_resources_from_sbi(
             script,
             sb_json,
             timeout=30,
-            script_create_kwargs={"git_branch": "btn-1491-fix-get-target-bug", "create_env": True}
+            script_create_kwargs={"git_args": {"git_branch": "btn-1491-fix-get-target-bug"}, "create_env": True}
         )
         assert script_completion_state == 'COMPLETE', \
             f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"

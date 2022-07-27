@@ -54,16 +54,8 @@ def a_oet():
     """an OET"""
 
 
-# @given("an telescope subarray", target_fixture="composition")
-# def an_sdp_subarray(
-#     set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition
-# ) -> conf_types.Composition:
-#     """an telescope subarray."""
-#     return base_composition
-
-
 @given("sub-array is in ObsState EMPTY")
-def the_subarray_must_be_in_empty_state(sut_settings: SutTestSettings):
+def the_subarray_must_be_in_empty_state(running_telescope: fxt_types.running_telescope, sut_settings: SutTestSettings):
     """the subarray must be in EMPTY state."""
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))

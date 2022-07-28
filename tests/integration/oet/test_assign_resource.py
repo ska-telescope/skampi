@@ -23,6 +23,17 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
+@pytest.fixture(name="oet_assign_resources_teardown", autouse=True)
+def fxt_subarray_centralnode_teardown(
+        sut_settings: conftest.SutTestSettings,
+        entry_point: fxt_types.entry_point,
+        context_monitoring: fxt_types.context_monitoring):
+    """
+    """
+    yield
+    with context_monitoring.context_monitoring():
+        entry_point.tear_down_subarray(sub_array_id)
+
 
 @pytest.mark.oet
 @pytest.mark.skamid
@@ -36,7 +47,6 @@ def test_sbi_creation():
     """
 
 
-#@pytest.mark.skip(reason="Missing transaction_id causes TMC to go to FAULT which is currently not a recoverable state and disrupts other tests")
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_assign_resources.feature", "Allocating resources with a SBI")

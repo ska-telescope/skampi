@@ -14,7 +14,7 @@ include:
 
   # Docs - only build as stress tests use 'public'
   - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/docs-build.gitlab-ci.yml"
+    file: "gitlab-ci/includes/docs.gitlab-ci.yml"
 
   # release steps
   - project: "ska-telescope/templates-repository"

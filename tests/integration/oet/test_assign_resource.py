@@ -25,7 +25,7 @@ EXECUTOR = ScriptExecutor()
 
 @pytest.fixture(name="oet_assign_resources_teardown", autouse=True)
 def fxt_subarray_centralnode_teardown(
-        sut_settings: conftest.SutTestSettings,
+        sut_settings: SutTestSettings,
         entry_point: fxt_types.entry_point,
         context_monitoring: fxt_types.context_monitoring):
     """

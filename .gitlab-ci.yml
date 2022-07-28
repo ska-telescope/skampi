@@ -24,11 +24,6 @@ stages:
   - publish
   - staging
 
-# Globally reused tags declaration for jobs
-.tags_default:
-  tags:
-    - k8srunner
-
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
   # Common template components

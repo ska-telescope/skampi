@@ -14,6 +14,8 @@ COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin
 
 # Install poetry and dependencies
 COPY ./poetry.lock* ./pyproject.toml /app/
+COPY --chown=tango:tango . /app
+USER tango
 
 # Need to ignore installed packages but note that this may be problematic due to versions as we are not really checking them
 # This is due to the fact that poetry is install with pip in base images

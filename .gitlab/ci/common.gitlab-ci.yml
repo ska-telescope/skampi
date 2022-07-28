@@ -98,7 +98,7 @@ build-changelog:
   needs:
   - job: oci-image-build
     optional: true
-  extends:
+  tags:
     - k8srunner
   before_script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE

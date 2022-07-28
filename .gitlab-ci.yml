@@ -10,6 +10,8 @@ variables:
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:$SKALLOP_VERSION
   KUBE_BRANCH: $CI_JOB_ID
   DOMAIN: "branch"
+  CI_BASE_IMAGE_VERSION: "0.1.0"
+  CI_BASE_IMAGE: "$CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-base:$CI_BASE_IMAGE_VERSION-$CI_COMMIT_SHORT_SHA"
 
 stages:
   - lint

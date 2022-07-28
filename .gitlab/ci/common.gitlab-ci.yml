@@ -29,10 +29,70 @@ oci-image-build:
   stage: .pre # We need to override the stage so that we can built the base image first
   rules:
   # Only build if there's a change in dependencies or dockerfile
-   - changes:
+  # - changes: # TODO: Enable this once the lifecycle is sorted, right now build it and tag with commit-shory-sha everytime
+  - exists:
        - images/ska-skampi-ci-base/Dockerfile
        - poetry.lock
+  - if: $REBUILD_IMAGES
 
+# Override jobs so that we can detach the dependencies by using needs keyword
+# Optional is needed as the base image won't be built everytime unless there are changes
+oci-image-lint:
+  image: $CI_BASE_IMAGE
+  needs:
+  - job: oci-image-build
+    optional: true
+
+oci-image-scan:
+  image: $CI_BASE_IMAGE
+  needs:
+  - job: oci-image-build
+    optional: true
+
+# Disable publishing for base image
+# Note that we could add build, lint and scan templates separately as an alternative
+# but this is easier to maintain
+oci-image-publish:
+  when: never
+
+helm-chart-lint:
+  image: $CI_BASE_IMAGE
+  needs:
+  - job: oci-image-build
+    optional: true
+
+helm-chart-build:
+  image: $CI_BASE_IMAGE
+  needs:
+  - job: oci-image-build
+    optional: true
+
+helm-chart-publish:
+  image: $CI_BASE_IMAGE
+  needs:
+  - job: helm-chart-build
+    optional: true
+
+docs-build:
+  image: $CI_BASE_IMAGE
+  needs:
+  - job: oci-image-build
+    optional: true
+
+docs-pages:
+  image: $CI_BASE_IMAGE
+  needs:
+  # We are rebuilding the docs here so we don't need to depend on docs-build
+  - job: oci-image-build
+    optional: true
+
+build-changelog:
+  image: $CI_BASE_IMAGE
+  needs: 
+  - job: oci-image-build
+    optional: true
+
+    
 
 # create namespace scoped credentials
 .create_k8s_creds: &create_k8s_creds

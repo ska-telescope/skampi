@@ -117,6 +117,11 @@ RELEASE_CONTEXT_DIR = $(shell pwd)
 OCI_IMAGE_BUILD_CONTEXT = $(shell pwd)
 OCI_BUILD_ADDITIONAL_ARGS = "--build-arg\ SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE=${SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE}\ --build-arg\ SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE=${SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE}"
 
+ifeq ($(CI_COMMIT_SHORT_SHA),)
+# Get first 8 characters of the current commit hash
+	CI_COMMIT_SHORT_SHA = $(shell git rev-parse --short HEAD)
+endif
+
 # add `--values <file>` for each space-separated file in VALUES that exists
 ifneq (,$(wildcard $(VALUES)))
 	K8S_CHART_PARAMS += $(foreach f,$(wildcard $(VALUES)),--values $(f))
@@ -270,3 +275,7 @@ k8s-post-test: # post test hook for processing received reports
 		kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP); \
 	fi
 	exit $$(cat build/status)
+
+# In order to fasten up the pipeline for caching, first try to pull the image
+oci-pre-build:
+	$(OCI_BUILDER) pull $(CI_BASE_IMAGE):$(CI_COMMIT_SHORT_SHA) || true

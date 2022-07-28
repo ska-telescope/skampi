@@ -5,23 +5,26 @@ ARG SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE
 ARG SKA_K8S_TOOLS="${SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE}"
 ARG SKA_PYTHON_PYTANGO_RUNTIME_ALPINE_IMAGE
 ARG PYTANGO_RUNTIME_BASE="${SKA_PYTHON_PYTANGO_RUNTIME_ALPINE_IMAGE}"
+# Needed for ONBUILD commands for pytango runtime image
+ARG SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE
+ARG PYTANGO_BUILDER_BASE="${SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE}"
 
+FROM $PYTANGO_BUILDER_BASE AS buildenv
 FROM $SKA_K8S_TOOLS as ska_cicd_k8s_tools
 FROM $PYTANGO_RUNTIME_BASE as builder
 
+USER root
 # Install runtime dependencies (copied over from SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE)
 RUN apk --update add --no-cache \
     bash make ca-certificates curl git git-lfs wget \
     jq net-tools openssh unzip zip zlib rpm \
-    python3-dev py3-pip py3-wheel py3-cryptography docker cmake \
+    docker cmake \
     # we need tar with append not the busybox version
     tar \
     # busybox cp does not include -n flag
     coreutils \
     # installing miniperl to alias perl
-    miniperl && echo 'alias perl=miniperl' >> ~/.bashrc \
-    # If python it uses python3
-    && ln -s /usr/bin/python3 /usr/bin/python
+    miniperl && echo 'alias perl=miniperl' >> ~/.bashrc 
 
 # Get all other dependencies from SKAO Default CI Image
 COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin
@@ -42,3 +45,5 @@ LABEL \
     author="SKAO Systems Team" \
     description="This image is used as a base CI Image internally" \
     license="BSD-3-Clause"
+
+USER tango

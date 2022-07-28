@@ -53,7 +53,8 @@ oci-image-scan:
 # Note that we could add build, lint and scan templates separately as an alternative
 # but this is easier to maintain
 oci-image-publish:
-  when: never
+  rules: 
+  - when: never
 
 helm-chart-lint:
   image: $CI_BASE_IMAGE

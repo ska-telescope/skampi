@@ -113,14 +113,9 @@ K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.9.1## docker image
 
 # Base Image variables
 OCI_IMAGES = ska-skampi-ci-base
-RELEASE_CONTEXT_DIR = $(shell pwd)
+RELEASE_CONTEXT_DIR = images/ska-skampi-ci-base
 OCI_IMAGE_BUILD_CONTEXT = $(shell pwd)
 OCI_BUILD_ADDITIONAL_ARGS = "--build-arg\ SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE=${SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE}\ --build-arg\ SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE=${SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE}"
-
-ifeq ($(CI_COMMIT_SHORT_SHA),)
-# Get first 8 characters of the current commit hash
-	CI_COMMIT_SHORT_SHA = $(shell git rev-parse --short HEAD)
-endif
 
 # add `--values <file>` for each space-separated file in VALUES that exists
 ifneq (,$(wildcard $(VALUES)))

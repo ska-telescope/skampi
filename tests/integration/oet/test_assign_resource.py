@@ -23,18 +23,6 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-@pytest.fixture(name="oet_assign_resources_teardown")
-def fxt_subarray_centralnode_teardown(
-        sut_settings: SutTestSettings,
-        entry_point: fxt_types.entry_point,
-        context_monitoring: fxt_types.context_monitoring):
-    """
-    """
-    yield
-    logger.info("Tearing down sub-array")
-    with context_monitoring.context_monitoring():
-        entry_point.tear_down_subarray(sut_settings.subarray_id)
-
 
 @pytest.mark.oet
 @pytest.mark.skamid
@@ -51,7 +39,7 @@ def test_sbi_creation():
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_assign_resources.feature", "Allocating resources with a SBI")
-def test_resource_allocation(oet_assign_resources_teardown):
+def test_resource_allocation():
     """
     Given an OET
     And  sub-array is in ObsState EMPTY
@@ -131,7 +119,11 @@ def check_script_completed():
 
 
 @then(parsers.parse('the sub-array goes to ObsState {obsstate}'))
-def check_final_subarray_state(obsstate,sut_settings: SutTestSettings):
+def check_final_subarray_state(
+        obsstate,
+        sut_settings: SutTestSettings,
+        entry_point: fxt_types.entry_point,
+        context_monitoring: fxt_types.context_monitoring):
     """
     Check that the final state of the sub-array is as expected.
 
@@ -144,4 +136,7 @@ def check_final_subarray_state(obsstate,sut_settings: SutTestSettings):
     assert subarray_state == obsstate, \
         f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
     logger.info("Sub-array is in ObsState %s", obsstate)
+    logger.info("Tearing down sub-array")
+    with context_monitoring.context_monitoring():
+        entry_point.tear_down_subarray(sut_settings.subarray_id)
 

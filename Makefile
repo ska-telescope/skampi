@@ -122,7 +122,7 @@ CI_REGISTRY ?= registry.gitlab.com
 # Note that these are also defined in the .gitlab-ci.yml file
 CI_COMMIT_SHORT_SHA ?= $(shell git rev-parse --short HEAD)
 CI_BASE_IMAGE_VERSION ?= $(VERSION)-dev.c$(CI_COMMIT_SHORT_SHA)
-CI_BASE_IMAGE_NAME ?= "$(CI_REGISTRY)/ska-telescope/ska-skampi/ska-skampi-base"
+CI_BASE_IMAGE_NAME ?= "$(CI_REGISTRY)/ska-telescope/ska-skampi/ska-skampi-ci-base"
 
 # add `--values <file>` for each space-separated file in VALUES that exists
 ifneq (,$(wildcard $(VALUES)))

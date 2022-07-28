@@ -11,7 +11,7 @@ variables:
   KUBE_BRANCH: $CI_JOB_ID
   DOMAIN: "branch"
   CI_BASE_IMAGE_VERSION: "0.1.0-dev.c$CI_COMMIT_SHORT_SHA"
-  CI_BASE_IMAGE_NAME: "$CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-base"
+  CI_BASE_IMAGE_NAME: "$CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci-base"
   CI_BASE_IMAGE: "$CI_BASE_IMAGE_NAME:$CI_BASE_IMAGE_VERSION"
 
 stages:

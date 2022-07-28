@@ -3,19 +3,31 @@
 # Provide it in PrivateRules.mak if needed locally
 ARG SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE
 ARG SKA_K8S_TOOLS="${SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE}"
-ARG SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE
-ARG PYTANGO_BASE="${SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE}"
+ARG SKA_PYTHON_PYTANGO_RUNTIME_ALPINE_IMAGE
+ARG PYTANGO_RUNTIME_BASE="${SKA_PYTHON_PYTANGO_RUNTIME_ALPINE_IMAGE}"
 
 FROM $SKA_K8S_TOOLS as ska_cicd_k8s_tools
-FROM $PYTANGO_BASE as builder
+FROM $PYTANGO_RUNTIME_BASE as builder
+
+# Install runtime dependencies (copied over from SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE)
+RUN apk --update add --no-cache \
+    bash make ca-certificates curl git git-lfs wget \
+    jq net-tools openssh unzip zip zlib rpm \
+    python3-dev py3-pip py3-wheel py3-cryptography docker cmake \
+    # we need tar with append not the busybox version
+    tar \
+    # busybox cp does not include -n flag
+    coreutils \
+    # installing miniperl to alias perl
+    miniperl && echo 'alias perl=miniperl' >> ~/.bashrc \
+    # If python it uses python3
+    && ln -s /usr/bin/python3 /usr/bin/python
 
 # Get all other dependencies from SKAO Default CI Image
 COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin
 
 # Install poetry and dependencies
 COPY ./poetry.lock* ./pyproject.toml /app/
-COPY --chown=tango:tango . /app
-USER tango
 
 # Need to ignore installed packages but note that this may be problematic due to versions as we are not really checking them
 # This is due to the fact that poetry is install with pip in base images
@@ -30,5 +42,3 @@ LABEL \
     author="SKAO Systems Team" \
     description="This image is used as a base CI Image internally" \
     license="BSD-3-Clause"
-
-

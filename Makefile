@@ -119,7 +119,9 @@ OCI_BUILD_ADDITIONAL_ARGS = "--build-arg\ SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAG
 
 # Set CI_REGISTRY to GitLab Registry for local usage if it's not set
 CI_REGISTRY ?= registry.gitlab.com
-CI_BASE_IMAGE_VERSION ?= $(VERSION)--dev.c$(shell git rev-parse --short HEAD)
+# Note that these are also defined in the .gitlab-ci.yml file
+CI_COMMIT_SHORT_SHA ?= $(shell git rev-parse --short HEAD)
+CI_BASE_IMAGE_VERSION ?= $(VERSION)-dev.c$(CI_COMMIT_SHORT_SHA)
 CI_BASE_IMAGE_NAME ?= "$(CI_REGISTRY)/ska-telescope/ska-skampi/ska-skampi-base"
 
 # add `--values <file>` for each space-separated file in VALUES that exists

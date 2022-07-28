@@ -30,8 +30,8 @@ include:
   - local: "/.gitlab/ci/common.gitlab-ci.yml"
   # temp comment out - only test mid
   # # All SKA Low stages
-  - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
+  # - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
   # All SKA Mid stages
   - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
   # Jobs to run on PSI Low
-  - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
+  # - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"

@@ -2,8 +2,9 @@
 # # SKA Mid CI Stages
 # ################################################
 
+
 # mid merge blocking job - must pass for pipeline success
-mid-test:
+.mid-test:
   stage: test
   variables:
     CONFIG: mid
@@ -41,7 +42,7 @@ mid-test:
     when: always
   retry: 1
 
-clean-mid-test:
+.clean-mid-test:
   stage: clean_test_env
   variables:
     CONFIG: mid
@@ -70,7 +71,7 @@ clean-mid-test:
   allow_failure: true
 
 # mid deploy to integration - on merge to default
-mid_deploy_integration_k8s_test:
+.mid_deploy_integration_k8s_test:
   stage: deploy_integration
   variables:
     CONFIG: mid
@@ -105,7 +106,7 @@ mid_deploy_integration_k8s_test:
       when: never
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
-mid_k8s_test:
+.mid_k8s_test:
   stage: test
   variables:
     CONFIG: mid
@@ -142,7 +143,7 @@ mid_k8s_test:
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
-mid_k8s_test_uninstall:
+.mid_k8s_test_uninstall:
   stage: test
   extends:
     - .tags_default
@@ -166,7 +167,7 @@ mid_k8s_test_uninstall:
   allow_failure: true
 
 # teardown integration on stop
-mid_uninstall_integration:
+.mid_uninstall_integration:
   stage: deploy_integration
   extends:
     - .tags_default
@@ -190,7 +191,7 @@ mid_uninstall_integration:
     action: stop
 
 # deploy mid staging on tag
-mid_deploy_staging:
+.mid_deploy_staging:
   stage: deploy_staging
   extends:
     - .tags_default
@@ -218,7 +219,7 @@ mid_deploy_staging:
     - if: $CI_COMMIT_TAG
 
 # teardown staging on stop
-mid_uninstall_staging:
+.mid_uninstall_staging:
   stage: deploy_staging
   extends:
     - .tags_default
@@ -244,7 +245,7 @@ mid_uninstall_staging:
   allow_failure: true
 
 # Mid on-demand deployment
-mid_on_demand_deploy:
+.mid_on_demand_deploy:
   stage: build
   variables:
     CONFIG: mid

@@ -23,7 +23,7 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-@pytest.fixture(name="oet_assign_resources_teardown", autouse=True)
+@pytest.fixture(name="oet_assign_resources_teardown")
 def fxt_subarray_centralnode_teardown(
         sut_settings: SutTestSettings,
         entry_point: fxt_types.entry_point,
@@ -31,8 +31,9 @@ def fxt_subarray_centralnode_teardown(
     """
     """
     yield
+    logger.info("Tearing down sub-array")
     with context_monitoring.context_monitoring():
-        entry_point.tear_down_subarray(sub_array_id)
+        entry_point.tear_down_subarray(sut_settings.subarray_id)
 
 
 @pytest.mark.oet
@@ -50,7 +51,7 @@ def test_sbi_creation():
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_assign_resources.feature", "Allocating resources with a SBI")
-def test_resource_allocation():
+def test_resource_allocation(oet_assign_resources_teardown):
     """
     Given an OET
     And  sub-array is in ObsState EMPTY
@@ -87,7 +88,6 @@ def when_create_sbi(
         script (str): file path to an observing script
         sb_json (str): file path to a scheduling block
     """
-    # Execute startup or standby script
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=30)
         assert (

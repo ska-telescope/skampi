@@ -278,4 +278,4 @@ k8s-post-test: # post test hook for processing received reports
 
 # In order to fasten up the pipeline for caching, first try to pull the image
 oci-pre-build:
-	$(OCI_BUILDER) pull $(CI_BASE_IMAGE):$(CI_COMMIT_SHORT_SHA) || true
+	$(OCI_BUILDER) pull $(CI_BASE_IMAGE) || true

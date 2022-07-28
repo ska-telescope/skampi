@@ -9,7 +9,6 @@ ARG PYTANGO_BUILDER_BASE="${SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE}"
 FROM $SKA_K8S_TOOLS as ska_cicd_k8s_tools
 FROM $PYTANGO_BUILDER_BASE AS builder
 
-USER root
 # Install runtime dependencies (copied over from SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE)
 RUN apk --update add --no-cache \
     bash make ca-certificates curl git git-lfs wget \
@@ -26,7 +25,7 @@ RUN apk --update add --no-cache \
 COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin
 
 # Install poetry and dependencies
-COPY --chown=tango:tango ./poetry.lock* ./pyproject.toml /app/
+COPY ./poetry.lock* ./pyproject.toml /app/
 
 # Need to ignore installed packages but note that this may be problematic due to versions as we are not really checking them
 # This is due to the fact that poetry is install with pip in base images
@@ -41,5 +40,3 @@ LABEL \
     author="SKAO Systems Team" \
     description="This image is used as a base CI Image internally" \
     license="BSD-3-Clause"
-
-USER tango

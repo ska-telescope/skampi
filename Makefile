@@ -117,6 +117,11 @@ RELEASE_CONTEXT_DIR = images/ska-skampi-ci-base
 OCI_IMAGE_BUILD_CONTEXT = $(shell pwd)
 OCI_BUILD_ADDITIONAL_ARGS = "--build-arg\ SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE=${SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE}\ --build-arg\ SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE=${SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE}"
 
+# Set CI_REGISTRY to GitLab Registry for local usage if it's not set
+CI_REGISTRY ?= registry.gitlab.com
+CI_BASE_IMAGE_VERSION ?= $(VERSION)--dev.c$(shell git rev-parse --short HEAD)
+CI_BASE_IMAGE_NAME ?= "$(CI_REGISTRY)/ska-telescope/ska-skampi/ska-skampi-base"
+
 # add `--values <file>` for each space-separated file in VALUES that exists
 ifneq (,$(wildcard $(VALUES)))
 	K8S_CHART_PARAMS += $(foreach f,$(wildcard $(VALUES)),--values $(f))
@@ -273,4 +278,5 @@ k8s-post-test: # post test hook for processing received reports
 
 # In order to fasten up the pipeline for caching, first try to pull the image
 oci-pre-build:
-	$(OCI_BUILDER) pull $(CI_BASE_IMAGE) || true
+	@echo "oci-pre-build: pulling image $(CI_BASE_IMAGE_NAME):$(VERSION) for caching to speed up the build"
+	$(OCI_BUILDER) pull $(CI_BASE_IMAGE_NAME):$(VERSION) || true

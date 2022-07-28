@@ -12,18 +12,15 @@ variables:
   DOMAIN: "branch"
 
 stages:
+  - lint
   - build
   - test
   - scan
-  - clean_test_env
-  - lint
-  - publish
-  - deploy_integration
-  - clean_integration
   - pages
-  - release
-  - deploy_staging
-  - clean_staging
+  - review
+  - integration
+  - publish
+  - staging
 
 # Globally reused tags declaration for jobs
 .tags_default:

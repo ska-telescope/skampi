@@ -112,8 +112,7 @@ def when_allocate_resources_from_sbi(
         script_completion_state = EXECUTOR.execute_script(
             script,
             sb_json,
-            timeout=300,
-            script_create_kwargs={"git_args": {"git_branch": "btn-1492-fix-resultcode-parsing"}, "create_env": True}
+            timeout=300
         )
         assert script_completion_state == 'COMPLETE', \
             f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"

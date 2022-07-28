@@ -7,6 +7,7 @@ Tests for creating SBI (XTP-779), allocating resources from SBI (XTP-777)
 import logging
 import os
 import requests
+import time
 
 import pytest
 from assertpy import assert_that
@@ -139,4 +140,7 @@ def check_final_subarray_state(
     logger.info("Tearing down sub-array")
     with context_monitoring.context_monitoring():
         entry_point.tear_down_subarray(sut_settings.subarray_id)
-
+        subarray_state = ObsState(subarray.read_attribute("obsState").value).name
+        while subarray_state != 'EMPTY':
+            time.sleep(0.5)
+            subarray_state = ObsState(subarray.read_attribute("obsState").value).name

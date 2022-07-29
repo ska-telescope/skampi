@@ -26,6 +26,8 @@ EXECUTOR = ScriptExecutor()\
 
 @pytest.fixture(autouse=True)
 def teardown(entry_point, sut_settings, context_monitoring):
+    yield
+    
     logger.info("Tearing down sub-array")
     with context_monitoring.context_monitoring():
         tel = names.TEL()

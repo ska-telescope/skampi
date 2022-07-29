@@ -25,20 +25,19 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()\
 
 @pytest.fixture(autouse=True)
-def teardown(request, entry_point, sut_settings, context_monitoring):
-    def release_resources(ep, suts, cm):
-        logger.info("Tearing down sub-array")
-        with cm.context_monitoring():
-            tel = names.TEL()
-            subarray = con_config.get_device_proxy(tel.tm.subarray(suts.subarray_id))
-            subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-            if subarray_state == 'IDLE':
-                ep.tear_down_subarray(suts.subarray_id)
-                while subarray_state != 'EMPTY':
-                    subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-                    time.sleep(0.5)
+def teardown(entry_point, sut_settings, context_monitoring):
+    logger.info("Tearing down sub-array")
+    with cm.context_monitoring():
+        tel = names.TEL()
+        subarray = con_config.get_device_proxy(tel.tm.subarray(suts.subarray_id))
+        subarray_state = ObsState(subarray.read_attribute("obsState").value).name
+        if subarray_state == 'IDLE':
+            ep.tear_down_subarray(suts.subarray_id)
+            while subarray_state != 'EMPTY':
+                subarray_state = ObsState(subarray.read_attribute("obsState").value).name
+                time.sleep(0.5)
 
-    request.addfinalizer(lambda: release_resources(entry_point, sut_settings, context_monitoring))
+    #request.addfinalizer(lambda: release_resources(entry_point, sut_settings, context_monitoring))
 
 
 @pytest.mark.oet

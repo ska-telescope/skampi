@@ -29,6 +29,7 @@ def teardown(request, entry_point, sut_settings, context_monitoring):
     def release_resources(ep, suts, cm):
         logger.info("Tearing down sub-array")
         with cm.context_monitoring():
+            tel = names.TEL()
             subarray = con_config.get_device_proxy(tel.tm.subarray(suts.subarray_id))
             subarray_state = ObsState(subarray.read_attribute("obsState").value).name
             if subarray_state == 'IDLE':

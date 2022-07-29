@@ -31,7 +31,7 @@ COPY ./poetry.lock* ./pyproject.toml /app/
 # This is due to the fact that poetry is install with pip in base images
 RUN poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes && \
     pip install --upgrade pip && \
-    pip install --ignore-installed -r poetry-requirements.txt && \
+    pip install --prefix=/usr/local --ignore-installed --force-reinstall -r poetry-requirements.txt && \
     rm poetry-requirements.txt poetry.lock requirements.txt pyproject.toml
 
 LABEL \

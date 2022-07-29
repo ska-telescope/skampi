@@ -25,18 +25,19 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()\
 
 @pytest.fixture(autouse=True, scope='module')
-def teardown(request, entry_point, sut_settings):
-    def release_resources():
+def teardown(request, entry_point, sut_settings, context_monitoring):
+    def release_resources(ep, suts, cm):
         logger.info("Tearing down sub-array")
-        with context_monitoring.context_monitoring():
+        with cm.context_monitoring():
+            subarray = con_config.get_device_proxy(tel.tm.subarray(suts.subarray_id))
             subarray_state = ObsState(subarray.read_attribute("obsState").value).name
             if subarray_state == 'IDLE':
-                entry_point.tear_down_subarray(sut_settings.subarray_id)
+                ep.tear_down_subarray(suts.subarray_id)
                 while subarray_state != 'EMPTY':
                     subarray_state = ObsState(subarray.read_attribute("obsState").value).name
                     time.sleep(0.5)
 
-    request.addfinalizer(release_resources)
+    request.addfinalizer(lambda: release_resources(entry_point, sut_settings, context_monitoring))
 
 
 @pytest.mark.oet
@@ -75,7 +76,6 @@ def the_subarray_must_be_in_empty_state(running_telescope: fxt_types.running_tel
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.EMPTY)
-
 
 
 @when(parsers.parse("I tell the OET to create SBI using script {script} and SB {sb_json}"))
@@ -120,7 +120,6 @@ def when_allocate_resources_from_sbi(
         )
         assert script_completion_state == 'COMPLETE', \
             f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
-
 
 
 @then('the script completes successfully')

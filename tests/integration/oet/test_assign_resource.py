@@ -121,7 +121,8 @@ def check_script_completed():
 def check_final_subarray_state(
         obsstate: str,
         sut_settings: SutTestSettings,
-        context_monitoring: fxt_types.context_monitoring
+        context_monitoring: fxt_types.context_monitoring,
+        entry_point: fxt_types.entry_point
 ):
     """
     Check that the final state of the sub-array is as expected.

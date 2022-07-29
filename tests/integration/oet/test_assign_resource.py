@@ -27,12 +27,12 @@ EXECUTOR = ScriptExecutor()\
 @pytest.fixture(autouse=True)
 def teardown(entry_point, sut_settings, context_monitoring):
     logger.info("Tearing down sub-array")
-    with cm.context_monitoring():
+    with context_monitoring.context_monitoring():
         tel = names.TEL()
-        subarray = con_config.get_device_proxy(tel.tm.subarray(suts.subarray_id))
+        subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
         subarray_state = ObsState(subarray.read_attribute("obsState").value).name
         if subarray_state == 'IDLE':
-            ep.tear_down_subarray(suts.subarray_id)
+            entry_point.tear_down_subarray(sut_settings.subarray_id)
             while subarray_state != 'EMPTY':
                 subarray_state = ObsState(subarray.read_attribute("obsState").value).name
                 time.sleep(0.5)

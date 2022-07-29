@@ -22,7 +22,21 @@ from ..conftest import SutTestSettings
 from .oet_helpers import ScriptExecutor
 
 logger = logging.getLogger(__name__)
-EXECUTOR = ScriptExecutor()
+EXECUTOR = ScriptExecutor()\
+
+@pytest.fixture(autouse=True, scope='module')
+def teardown(request, entry_point, sut_settings):
+    def release_resources():
+        logger.info("Tearing down sub-array")
+        with context_monitoring.context_monitoring():
+            subarray_state = ObsState(subarray.read_attribute("obsState").value).name
+            if subarray_state == 'IDLE':
+                entry_point.tear_down_subarray(sut_settings.subarray_id)
+                while subarray_state != 'EMPTY':
+                    subarray_state = ObsState(subarray.read_attribute("obsState").value).name
+                    time.sleep(0.5)
+
+    request.addfinalizer(release_resources)
 
 
 @pytest.mark.oet
@@ -120,11 +134,7 @@ def check_script_completed():
 
 
 @then(parsers.parse('the sub-array goes to ObsState {obsstate}'))
-def check_final_subarray_state(
-        obsstate,
-        sut_settings: SutTestSettings,
-        entry_point: fxt_types.entry_point,
-        context_monitoring: fxt_types.context_monitoring):
+def check_final_subarray_state(obsstate: str, sut_settings: SutTestSettings):
     """
     Check that the final state of the sub-array is as expected.
 
@@ -137,10 +147,3 @@ def check_final_subarray_state(
     assert subarray_state == obsstate, \
         f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
     logger.info("Sub-array is in ObsState %s", obsstate)
-    logger.info("Tearing down sub-array")
-    with context_monitoring.context_monitoring():
-        entry_point.tear_down_subarray(sut_settings.subarray_id)
-        subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-        while subarray_state != 'EMPTY':
-            time.sleep(0.5)
-            subarray_state = ObsState(subarray.read_attribute("obsState").value).name

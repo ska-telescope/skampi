@@ -24,23 +24,6 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()\
 
-@pytest.fixture(autouse=True)
-def teardown(entry_point, sut_settings, context_monitoring):
-    yield
-
-    logger.info("Tearing down sub-array")
-    with context_monitoring.context_monitoring():
-        tel = names.TEL()
-        subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-        subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-        if subarray_state == 'IDLE':
-            entry_point.tear_down_subarray(sut_settings.subarray_id)
-            while subarray_state != 'EMPTY':
-                subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-                time.sleep(0.5)
-
-    #request.addfinalizer(lambda: release_resources(entry_point, sut_settings, context_monitoring))
-
 
 @pytest.mark.oet
 @pytest.mark.skamid

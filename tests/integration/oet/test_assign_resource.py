@@ -24,7 +24,7 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()\
 
-@pytest.fixture(autouse=True, scope='module')
+@pytest.fixture(autouse=True)
 def teardown(request, entry_point, sut_settings, context_monitoring):
     def release_resources(ep, suts, cm):
         logger.info("Tearing down sub-array")

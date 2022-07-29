@@ -118,7 +118,11 @@ def check_script_completed():
 
 
 @then(parsers.parse('the sub-array goes to ObsState {obsstate}'))
-def check_final_subarray_state(obsstate: str, sut_settings: SutTestSettings):
+def check_final_subarray_state(
+        obsstate: str,
+        sut_settings: SutTestSettings,
+        context_monitoring: fxt_types.context_monitoring
+):
     """
     Check that the final state of the sub-array is as expected.
 

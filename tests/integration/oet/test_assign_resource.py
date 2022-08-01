@@ -142,11 +142,15 @@ def check_final_subarray_state(
     # test completes (before any test teardown).
     logger.info("Tearing down sub-array")
     with context_monitoring.context_monitoring():
-        tel = names.TEL()
-        subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-        subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-        if subarray_state == 'IDLE':
-            entry_point.tear_down_subarray(sut_settings.subarray_id)
-            while subarray_state != 'EMPTY':
-                subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-                time.sleep(0.5)
+        entry_point.tear_down_subarray(sut_settings.subarray_id)
+        entry_point.set_waiting_for_release_resources(sut_settings.subarray_id)
+        final_obsstate = ObsState(subarray.read_attribute("obsState").value).name
+        logger.info("Sub-array is in ObsState %s", final_obsstate)
+        # tel = names.TEL()
+        # subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+        # subarray_state = ObsState(subarray.read_attribute("obsState").value).name
+        # if subarray_state == 'IDLE':
+        #     entry_point.tear_down_subarray(sut_settings.subarray_id)
+        #     while subarray_state != 'EMPTY':
+        #         subarray_state = ObsState(subarray.read_attribute("obsState").value).name
+        #         time.sleep(0.5)

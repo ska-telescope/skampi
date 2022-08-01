@@ -75,9 +75,6 @@ def when_create_sbi(
     script,
     sb_json,
     context_monitoring: fxt_types.context_monitoring,
-    running_telescope: fxt_types.running_telescope,
-    sut_settings: SutTestSettings,
-    exec_settings: fxt_types.exec_settings,
 ):
     """
     Use the OET Rest API to run a script that creates SBI from given SB.
@@ -87,9 +84,6 @@ def when_create_sbi(
         sb_json (str): file path to a scheduling block
     """
     with context_monitoring.observe_while_running():
-        running_telescope.release_subarray_when_finished(
-            sut_settings.subarray_id, sut_settings.receptors, exec_settings
-        )
         script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=30)
         assert (
             script_completion_state == "COMPLETE"
@@ -105,6 +99,9 @@ def when_allocate_resources_from_sbi(
     script,
     sb_json,
     context_monitoring: fxt_types.context_monitoring,
+    running_telescope: fxt_types.running_telescope,
+    sut_settings: SutTestSettings,
+    exec_settings: fxt_types.exec_settings,
 ):
     """
     Use the OET Rest API to run script that allocates resources from given SBI.
@@ -114,6 +111,9 @@ def when_allocate_resources_from_sbi(
         sb_json (str): file path to a scheduling block
     """
     with context_monitoring.context_monitoring():
+        running_telescope.release_subarray_when_finished(
+            sut_settings.subarray_id, sut_settings.receptors, exec_settings
+        )
         script_completion_state = EXECUTOR.execute_script(
             script, sb_json, timeout=300, script_create_kwargs={"create_env": True}
         )

@@ -22,13 +22,16 @@ from ..conftest import SutTestSettings
 from .oet_helpers import ScriptExecutor
 
 logger = logging.getLogger(__name__)
-EXECUTOR = ScriptExecutor()\
+EXECUTOR = ScriptExecutor()
 
 
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
-@scenario("features/oet_assign_resources.feature", "Creating a new SBI with updated SB IDs and PB IDs")
+@scenario(
+    "features/oet_assign_resources.feature",
+    "Creating a new SBI with updated SB IDs and PB IDs",
+)
 def test_sbi_creation():
     """
     Given the SKUID service is running
@@ -55,7 +58,9 @@ def a_oet():
 
 
 @given("sub-array is in ObsState EMPTY")
-def the_subarray_must_be_in_empty_state(running_telescope: fxt_types.running_telescope, sut_settings: SutTestSettings):
+def the_subarray_must_be_in_empty_state(
+    running_telescope: fxt_types.running_telescope, sut_settings: SutTestSettings
+):
     """the subarray must be in EMPTY state."""
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
@@ -63,11 +68,16 @@ def the_subarray_must_be_in_empty_state(running_telescope: fxt_types.running_tel
     assert_that(result).is_equal_to(ObsState.EMPTY)
 
 
-@when(parsers.parse("I tell the OET to create SBI using script {script} and SB {sb_json}"))
+@when(
+    parsers.parse("I tell the OET to create SBI using script {script} and SB {sb_json}")
+)
 def when_create_sbi(
     script,
     sb_json,
     context_monitoring: fxt_types.context_monitoring,
+    running_telescope: fxt_types.running_telescope,
+    sut_settings: SutTestSettings,
+    exec_settings: fxt_types.exec_settings,
 ):
     """
     Use the OET Rest API to run a script that creates SBI from given SB.
@@ -76,18 +86,25 @@ def when_create_sbi(
         script (str): file path to an observing script
         sb_json (str): file path to a scheduling block
     """
-    with context_monitoring.context_monitoring():
+    with context_monitoring.observe_while_running():
+        running_telescope.release_subarray_when_finished(
+            sut_settings.subarray_id, sut_settings.receptors, exec_settings
+        )
         script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=30)
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected SBI creation script to be COMPLETED, instead was {script_completion_state}"
 
 
-@when(parsers.parse('I tell the OET to allocate resources using script {script} and SBI {sb_json}'))
+@when(
+    parsers.parse(
+        "I tell the OET to allocate resources using script {script} and SBI {sb_json}"
+    )
+)
 def when_allocate_resources_from_sbi(
-        script,
-        sb_json,
-        context_monitoring: fxt_types.context_monitoring,
+    script,
+    sb_json,
+    context_monitoring: fxt_types.context_monitoring,
 ):
     """
     Use the OET Rest API to run script that allocates resources from given SBI.
@@ -98,31 +115,30 @@ def when_allocate_resources_from_sbi(
     """
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(
-            script,
-            sb_json,
-            timeout=300,
-            script_create_kwargs={"create_env": True}
+            script, sb_json, timeout=300, script_create_kwargs={"create_env": True}
         )
-        assert script_completion_state == 'COMPLETE', \
-            f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
+        assert (
+            script_completion_state == "COMPLETE"
+        ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
 
 
-@then('the script completes successfully')
+@then("the script completes successfully")
 def check_script_completed():
     """
     Check that the script that was last run has completed successfully.
     """
     script = EXECUTOR.get_latest_script()
-    assert script.state == 'COMPLETE', \
-        f"Expected script to be COMPLETED, instead was {script.state}"
+    assert (
+        script.state == "COMPLETE"
+    ), f"Expected script to be COMPLETED, instead was {script.state}"
 
 
-@then(parsers.parse('the sub-array goes to ObsState {obsstate}'))
+@then(parsers.parse("the sub-array goes to ObsState {obsstate}"))
 def check_final_subarray_state(
-        obsstate: str,
-        sut_settings: SutTestSettings,
-        context_monitoring: fxt_types.context_monitoring,
-        entry_point: fxt_types.entry_point
+    obsstate: str,
+    sut_settings: SutTestSettings,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
 ):
     """
     Check that the final state of the sub-array is as expected.
@@ -133,8 +149,9 @@ def check_final_subarray_state(
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-    assert subarray_state == obsstate, \
-        f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
+    assert (
+        subarray_state == obsstate
+    ), f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
     logger.info("Sub-array is in ObsState %s", obsstate)
 
     # Release resources at the end of the test instead of a teardown function because

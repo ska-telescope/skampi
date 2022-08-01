@@ -142,8 +142,8 @@ def check_final_subarray_state(
     # test completes (before any test teardown).
     logger.info("Tearing down sub-array")
     with context_monitoring.context_monitoring():
-        entry_point.tear_down_subarray(sut_settings.subarray_id)
-        entry_point.set_waiting_for_release_resources(sut_settings.subarray_id)
+        with entry_point.set_waiting_for_release_resources(sut_settings.subarray_id):
+            entry_point.tear_down_subarray(sut_settings.subarray_id)
         final_obsstate = ObsState(subarray.read_attribute("obsState").value).name
         logger.info("Sub-array is in ObsState %s", final_obsstate)
         # tel = names.TEL()

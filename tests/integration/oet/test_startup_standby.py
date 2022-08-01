@@ -42,6 +42,7 @@ def a_telescope_on_standby_or_off_state(standby_telescope: fxt_types.standby_tel
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     assert str(central_node.read_attribute("telescopeState").value) in ["STANDBY", "OFF"]
+    standby_telescope.switch_off_after_test()
 
 
 @given("telescope is in ON state")

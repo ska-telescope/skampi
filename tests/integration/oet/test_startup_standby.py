@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 
-@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.startup
@@ -28,7 +27,6 @@ def test_telescope_startup():
     """Telescope startup test."""
 
 
-@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.standby
@@ -52,7 +50,6 @@ def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
-    running_telescope.disable_automatic_setdown()
 
 
 @when(parsers.parse("I tell the OET to run {script}"))
@@ -89,8 +86,3 @@ def check_final_state(state):
         str(final_state) == state
     ), f"Expected telescope to be {state} but instead was {final_state}"
     logger.info("Central node is in %s state", state)
-
-    # Turn telescope off at the end of startup test
-    # (only when expected state for telescope is ON)
-    if state == 'ON':
-        central_node.command_inout("TelescopeOff")

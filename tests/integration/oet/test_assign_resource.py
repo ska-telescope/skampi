@@ -137,8 +137,6 @@ def check_script_completed():
 def check_final_subarray_state(
     obsstate: str,
     sut_settings: SutTestSettings,
-    context_monitoring: fxt_types.context_monitoring,
-    entry_point: fxt_types.entry_point,
 ):
     """
     Check that the final state of the sub-array is as expected.
@@ -153,21 +151,3 @@ def check_final_subarray_state(
         subarray_state == obsstate
     ), f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
     logger.info("Sub-array is in ObsState %s", obsstate)
-
-    # Release resources at the end of the test instead of a teardown function because
-    # running_telescope fixture will turn telescope off and execute right after the
-    # test completes (before any test teardown).
-    logger.info("Tearing down sub-array")
-    with context_monitoring.context_monitoring():
-        with entry_point.set_waiting_for_release_resources(sut_settings.subarray_id):
-            entry_point.tear_down_subarray(sut_settings.subarray_id)
-        final_obsstate = ObsState(subarray.read_attribute("obsState").value).name
-        logger.info("Sub-array is in ObsState %s", final_obsstate)
-        # tel = names.TEL()
-        # subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-        # subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-        # if subarray_state == 'IDLE':
-        #     entry_point.tear_down_subarray(sut_settings.subarray_id)
-        #     while subarray_state != 'EMPTY':
-        #         subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-        #         time.sleep(0.5)

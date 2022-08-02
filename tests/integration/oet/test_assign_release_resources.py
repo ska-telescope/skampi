@@ -161,7 +161,7 @@ def when_release_resources(
     """
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(
-            script, sb_json, timeout=300, script_create_kwargs={"create_env": True}
+            script, timeout=300, script_create_kwargs={"create_env": True}
         )
         assert (
             script_completion_state == "COMPLETE"

@@ -29,7 +29,7 @@ EXECUTOR = ScriptExecutor()
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
-    "features/oet_assign_resources.feature",
+    "features/oet_assign_release_resources.feature",
     "Creating a new SBI with updated SB IDs and PB IDs",
 )
 def test_sbi_creation():
@@ -42,13 +42,24 @@ def test_sbi_creation():
 
 @pytest.mark.skamid
 @pytest.mark.k8s
-@scenario("features/oet_assign_resources.feature", "Allocating resources with a SBI")
+@scenario("features/oet_assign_release_resources.feature", "Allocating resources with a SBI")
 def test_resource_allocation():
     """
     Given an OET
     And  sub-array is in ObsState EMPTY
     When I tell the OET to allocate resources using script file:///scripts/allocate_from_file_mid_sb.py and SBI data/mid_sb_example.json
     Then the sub-array goes to ObsState IDLE
+    """
+
+
+@pytest.mark.skamid
+@pytest.mark.k8s
+@scenario("features/oet_assign_release_resources.feature", "Releasing all resources from sub-array")
+def test_resource_release():
+    """
+    Given sub-array with resources allocated to it
+    When I tell the OET to release resources using script git:///scripts/deallocate.py
+    Then the sub-array goes to ObsState EMPTY
     """
 
 
@@ -66,6 +77,17 @@ def the_subarray_must_be_in_empty_state(
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.EMPTY)
+
+
+@given("sub-array with resources allocated to it")
+def the_subarray_with_recources_allocate(
+    allocated_subarray : fxt_types.allocated_subarray, sut_settings: SutTestSettings
+):
+    """the subarray must be in IDLE state."""
+    tel = names.TEL()
+    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    result = subarray.read_attribute("obsState").value
+    assert_that(result).is_equal_to(ObsState.IDLE)
 
 
 @when(
@@ -114,6 +136,30 @@ def when_allocate_resources_from_sbi(
         running_telescope.release_subarray_when_finished(
             sut_settings.subarray_id, sut_settings.receptors, exec_settings
         )
+        script_completion_state = EXECUTOR.execute_script(
+            script, sb_json, timeout=300, script_create_kwargs={"create_env": True}
+        )
+        assert (
+            script_completion_state == "COMPLETE"
+        ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
+
+
+@when(
+    parsers.parse(
+        "I tell the OET to release resources using script {script}"
+    )
+)
+def when_release_resources(
+    script,
+    context_monitoring: fxt_types.context_monitoring,
+):
+    """
+    Use the OET Rest API to run script that releases all resources.
+
+    Args:
+        script (str): file path to an observing script
+    """
+    with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(
             script, sb_json, timeout=300, script_create_kwargs={"create_env": True}
         )

@@ -54,7 +54,6 @@ def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
-    running_telescope.disable_automatic_setdown()
 
 
 @when(parsers.parse("I tell the OET to run {script}"))

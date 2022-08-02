@@ -88,7 +88,7 @@ def the_subarray_with_recources_allocate(
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
-    
+
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
 

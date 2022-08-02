@@ -88,6 +88,9 @@ def the_subarray_with_recources_allocate(
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
+    
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    assert str(central_node.read_attribute("telescopeState").value) == "ON"
 
 
 @when(
@@ -151,6 +154,7 @@ def when_allocate_resources_from_sbi(
 )
 def when_release_resources(
     script,
+    allocated_subarray : fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
 ):
     """
@@ -159,6 +163,7 @@ def when_release_resources(
     Args:
         script (str): file path to an observing script
     """
+    allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(
             script, timeout=300, script_create_kwargs={"create_env": True}

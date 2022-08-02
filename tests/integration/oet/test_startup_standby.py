@@ -95,18 +95,29 @@ def run_standby_script(
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
 
 
-@then(parsers.parse("the central node goes to state {state}"))
-def check_final_state(state):
+@then(parsers.parse("the central node goes to state STANDBY"))
+def check_final_state_is_off():
     """
     Check that the central node device is in the expected state.
-
-    Args:
-        state (str): State central node is expected to be in
     """
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     final_state = central_node.read_attribute("telescopeState").value
     assert (
-        str(final_state) == state
-    ), f"Expected telescope to be {state} but instead was {final_state}"
-    logger.info("Central node is in %s state", state)
+        str(final_state) == "STANDBY"
+    ), f"Expected telescope to be STANDBY but instead was {final_state}"
+    logger.info("Central node is in STANDBY state")
+
+
+@then(parsers.parse("the central node goes to state ON"))
+def check_final_state_is_on():
+    """
+    Check that the central node device is in the expected state.
+    """
+    tel = names.TEL()
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    final_state = central_node.read_attribute("telescopeState").value
+    assert (
+        str(final_state) == "ON"
+    ), f"Expected telescope to be ON but instead was {final_state}"
+    logger.info("Central node is in ON state")

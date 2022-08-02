@@ -88,7 +88,6 @@ def run_standby_script(
         script (str): file path to an observing script
     """
     with context_monitoring.context_monitoring():
-        running_telescope.disable_automatic_setdown()
         script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
         assert (
             script_completion_state == "COMPLETE"

@@ -6,11 +6,12 @@ Telescope startup and standby using OET scripts
 import logging
 
 import pytest
-from assertpy import assert_that
 from pytest_bdd import given, parsers, scenario, then, when
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+
+from ..conftest import SutTestSettings
 
 from .oet_helpers import ScriptExecutor
 
@@ -31,19 +32,24 @@ def test_telescope_startup():
 @pytest.mark.skamid
 @pytest.mark.standby
 @pytest.mark.k8s
-@scenario("features/oet_startup_standby_telescope.feature", "Setting telescope to stand-by")
+@scenario(
+    "features/oet_startup_standby_telescope.feature", "Setting telescope to stand-by"
+)
 def test_telescope_standby():
-    """"et telescope to standby test."""
+    """ "et telescope to standby test."""
 
 
 @given("telescope is in STANDBY or OFF state")
 def a_telescope_on_standby_or_off_state(
-        standby_telescope: fxt_types.standby_telescope,
+    standby_telescope: fxt_types.standby_telescope,
 ):
     """a telescope on standby or off state"""
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node)
-    assert str(central_node.read_attribute("telescopeState").value) in ["STANDBY", "OFF"]
+    assert str(central_node.read_attribute("telescopeState").value) in [
+        "STANDBY",
+        "OFF",
+    ]
 
 
 @given("telescope is in ON state")
@@ -59,6 +65,7 @@ def run_startup_script(
     script,
     standby_telescope: fxt_types.standby_telescope,
     exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,
 ):
     """
@@ -67,7 +74,16 @@ def run_startup_script(
     Args:
         script (str): file path to an observing script
     """
-    with context_monitoring.context_monitoring():
+    tel = names.TEL()
+    central_node = tel.tm.central_node
+    tmc_subarray = tel.tm.subarray(sut_settings.subarray_id)
+    sdp_subarray = tel.sdp.subarray(sut_settings.subarray_id)
+    context_monitoring.set_waiting_on(central_node).for_attribute("state").and_observe()
+    context_monitoring.set_waiting_on(sdp_subarray).for_attribute("state").and_observe()
+    context_monitoring.set_waiting_on(tmc_subarray).for_attribute("state").and_observe()
+    exec_settings.run_with_live_logging()
+
+    with context_monitoring.observe_while_running(exec_settings):
         standby_telescope.switch_off_after_test(exec_settings)
         script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
         assert (

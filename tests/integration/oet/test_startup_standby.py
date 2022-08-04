@@ -4,6 +4,7 @@ test_XTP-780-781
 Telescope startup and standby using OET scripts
 """
 import logging
+import time
 
 import pytest
 from pytest_bdd import given, parsers, scenario, then, when
@@ -97,6 +98,8 @@ def run_startup_script(
 def run_standby_script(
     script,
     running_telescope: fxt_types.running_telescope,
+    exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,
 ):
     """
@@ -105,6 +108,15 @@ def run_standby_script(
     Args:
         script (str): file path to an observing script
     """
+    tel = names.TEL()
+    central_node = tel.tm.central_node
+    tmc_subarray = tel.tm.subarray(sut_settings.subarray_id)
+    sdp_subarray = tel.sdp.subarray(sut_settings.subarray_id)
+    context_monitoring.set_waiting_on(central_node).for_attribute("state").and_observe()
+    context_monitoring.set_waiting_on(sdp_subarray).for_attribute("state").and_observe()
+    context_monitoring.set_waiting_on(tmc_subarray).for_attribute("state").and_observe()
+    exec_settings.run_with_live_logging()
+
     with context_monitoring.context_monitoring():
         running_telescope.disable_automatic_setdown()
         script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
@@ -125,6 +137,7 @@ def check_final_state_is_off():
         str(final_state) == "STANDBY"
     ), f"Expected telescope to be STANDBY but instead was {final_state}"
     logger.info("Central node is in STANDBY state")
+    time.sleep(10)
 
 
 @then(parsers.parse("the central node goes to state ON"))

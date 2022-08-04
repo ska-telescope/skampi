@@ -15,6 +15,7 @@ from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from resources.models.tmc_model.entry_point import TMCEntryPoint
 
 
 logger = logging.getLogger(__name__)
@@ -52,6 +53,24 @@ def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()
 
+# setting systems online
+
+@pytest.fixture(autouse=True, scope="session")
+def fxt_set_csp_online(
+    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
+):
+    """_summary_
+
+    :param nr_of_subarrays: _description_
+    :type nr_of_subarrays: int
+    :param set_subsystem_online: _description_
+    :type set_subsystem_online: Callable[[EntryPoint], None]
+    """
+    if not os.getenv("DISABLE_SETTING_ONLINE_GLOBALLY"):
+        logging.info("setting csp components online globally")
+        TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+        entry_point = TMCEntryPoint()
+        set_subsystem_online(entry_point)
 
 @pytest.fixture(name="run_mock")
 def fxt_run_mock_wrapper(

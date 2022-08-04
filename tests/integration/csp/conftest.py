@@ -60,10 +60,11 @@ def fxt_set_csp_online(
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
     """
-    logging.info("setting csp components online")
-    CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
-    entry_point = CSPEntryPoint()
-    set_subsystem_online(entry_point)
+    if os.getenv("DISABLE_SETTING_ONLINE_GLOBALLY"):
+        logging.info("setting csp components online withing csp context")
+        CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
+        entry_point = CSPEntryPoint()
+        set_subsystem_online(entry_point)
 
 
 @pytest.fixture(name="set_csp_entry_point", autouse=True)

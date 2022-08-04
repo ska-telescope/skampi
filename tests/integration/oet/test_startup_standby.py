@@ -98,6 +98,8 @@ def run_startup_script(
 def run_standby_script(
     script,
     running_telescope: fxt_types.running_telescope,
+    exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,
 ):
     """

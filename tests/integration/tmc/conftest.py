@@ -63,11 +63,10 @@ def fxt_set_csp_online(
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
     """
-    if os.getenv("DISABLE_SETTING_ONLINE_GLOBALLY"):
-        logging.info("setting csp components online")
-        TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
-        entry_point = TMCEntryPoint()
-        set_subsystem_online(entry_point)
+    logging.info("setting csp components online")
+    TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+    entry_point = TMCEntryPoint()
+    set_subsystem_online(entry_point)
 
 
 @pytest.fixture(name="tmc_start_up_test_exec_settings", autouse=True)

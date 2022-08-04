@@ -98,7 +98,12 @@ def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
     :return: test specific execution settings as a fixture
     """
     if os.getenv("LIVE_LOGGING_EXTENDED"):
+        logger.info("running live logs globally")
         exec_settings.run_with_live_logging()
+    if os.getenv("ATTR_SYNCH_DISABLED_GLOBALLY"):
+        logger.warning("disabled attribute synchronization globally")
+        exec_settings.attr_synching = False
+
 
 
 @pytest.fixture(name="integration_test_exec_settings")
@@ -114,8 +119,13 @@ def fxt_integration_test_exec_settings(
 
     if os.getenv("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()
+        logger.info("running live logs globally")
     if os.getenv("REPLAY_EVENTS_AFTERWARDS"):
+        logger.info("replay log messages after waiting")
         integration_test_exec_settings.replay_events_afterwards()
+    if os.getenv("ATTR_SYNCH_DISABLED"):
+        logger.warning("disabled attribute synchronization")
+        exec_settings.attr_synching = False
     return integration_test_exec_settings
 
 

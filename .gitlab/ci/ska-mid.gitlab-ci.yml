@@ -16,6 +16,7 @@ mid-test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     COUNT: 1
+    ATTR_SYNCH_DISABLED: "True"
     DISABLE_MAINTAIN_ON: "True"
     OET_INGRESS_ENABLED: "true"
     TEST_ENV: "BUILD_OUT"

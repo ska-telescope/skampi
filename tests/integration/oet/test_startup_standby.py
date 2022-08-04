@@ -89,6 +89,8 @@ def run_startup_script(
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
+        # after success we marked the telescope state to be ON
+        standby_telescope.state = "ON"
 
 
 @when(parsers.parse("I tell the OET to run standby script {script}"))

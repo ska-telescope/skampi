@@ -57,7 +57,7 @@ def fxt_conftest_settings() -> SutTestSettings:
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online(
-    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
+    set_subsystem_online: Callable[[EntryPoint], None]
 ):
     """_summary_
 
@@ -68,7 +68,6 @@ def fxt_set_csp_online(
     """
     if not os.getenv("DISABLE_SETTING_ONLINE_GLOBALLY"):
         logging.info("setting csp components online globally")
-        TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
         entry_point = TMCEntryPoint()
         set_subsystem_online(entry_point)
 

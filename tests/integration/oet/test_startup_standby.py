@@ -4,6 +4,7 @@ test_XTP-780-781
 Telescope startup and standby using OET scripts
 """
 import logging
+import time
 
 import pytest
 from pytest_bdd import given, parsers, scenario, then, when
@@ -125,6 +126,7 @@ def check_final_state_is_off():
         str(final_state) == "STANDBY"
     ), f"Expected telescope to be STANDBY but instead was {final_state}"
     logger.info("Central node is in STANDBY state")
+    time.sleep(5)
 
 
 @then(parsers.parse("the central node goes to state ON"))

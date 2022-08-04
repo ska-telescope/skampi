@@ -106,6 +106,15 @@ def run_standby_script(
     Args:
         script (str): file path to an observing script
     """
+    tel = names.TEL()
+    central_node = tel.tm.central_node
+    tmc_subarray = tel.tm.subarray(sut_settings.subarray_id)
+    sdp_subarray = tel.sdp.subarray(sut_settings.subarray_id)
+    context_monitoring.set_waiting_on(central_node).for_attribute("state").and_observe()
+    context_monitoring.set_waiting_on(sdp_subarray).for_attribute("state").and_observe()
+    context_monitoring.set_waiting_on(tmc_subarray).for_attribute("state").and_observe()
+    exec_settings.run_with_live_logging()
+
     with context_monitoring.context_monitoring():
         running_telescope.disable_automatic_setdown()
         script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
@@ -126,7 +135,7 @@ def check_final_state_is_off():
         str(final_state) == "STANDBY"
     ), f"Expected telescope to be STANDBY but instead was {final_state}"
     logger.info("Central node is in STANDBY state")
-    time.sleep(5)
+    time.sleep(10)
 
 
 @then(parsers.parse("the central node goes to state ON"))

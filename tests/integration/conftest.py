@@ -53,10 +53,19 @@ def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()
 
+
 # setting systems online
+
+@pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
+def fxt_set_session_exec_settings(session_exec_settings: fxt_types.session_exec_settings):
+    if os.getenv("ATTR_SYNCH_DISABLED_GLOBALLY"):
+        #logger.warning("disabled attribute synchronization globally")
+        session_exec_settings.attr_synching = False
+
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online(
+    set_session_exec_settings,
     set_subsystem_online: Callable[[EntryPoint], None]
 ):
     """_summary_

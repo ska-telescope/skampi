@@ -15,7 +15,7 @@ low-test:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
-
+    ATTR_SYNCH_DISABLED: "True"
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
     COUNT: 1
@@ -70,7 +70,7 @@ clean-low-test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
   allow_failure: true
-  
+
 # low deploy to integration - on merge to default
 low_deploy_integration_k8s_test:
   stage: deploy_integration

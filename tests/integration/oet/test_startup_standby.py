@@ -115,7 +115,7 @@ def run_standby_script(
     """
 
     with context_monitoring.observe_while_running(integration_test_exec_settings):
-        running_telescope.disable_automatic_setdown()
+        #running_telescope.disable_automatic_setdown()
         with running_telescope.wait_for_shutting_down():
             script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
         assert (
@@ -135,10 +135,6 @@ def check_final_state_is_off():
         str(final_state) == "STANDBY"
     ), f"Expected telescope to be STANDBY but instead was {final_state}"
     logger.info("Central node is in STANDBY state")
-    sdp_master_state = con_config.get_device_proxy(tel.sdp.master).read_attribute("state").value
-    logger.info(f"SDP master is in state {sdp_master_state}")
-    csp_controller_state = con_config.get_device_proxy(tel.csp.controller).read_attribute("state").value
-    logger.info(f"CSP controller state is {csp_controller_state}")
     time.sleep(10)
 
 

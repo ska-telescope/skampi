@@ -135,6 +135,10 @@ def check_final_state_is_off():
         str(final_state) == "STANDBY"
     ), f"Expected telescope to be STANDBY but instead was {final_state}"
     logger.info("Central node is in STANDBY state")
+    sdp_master_state = con_config.get_device_proxy(tel.sdp.master).read_attribute("state").value
+    logger.info(f"SDP master is in state {sdp_master_state}")
+    csp_controller_state = con_config.get_device_proxy(tel.csp.controller).read_attribute("state").value
+    logger.info(f"CSP controller state is {csp_controller_state}")
     time.sleep(10)
 
 

@@ -46,7 +46,7 @@ def a_telescope_on_standby_or_off_state(
 ):
     """a telescope on standby or off state"""
     tel = names.TEL()
-    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    central_node = con_config.get_device_proxy(tel.tm.central_node, fast_load=True)
     assert str(central_node.read_attribute("telescopeState").value) in [
         "STANDBY",
         "OFF",
@@ -61,12 +61,25 @@ def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
 
 
+@pytest.fixture(name='setup_live_monitoring_of_telescope')
+def fxt_setup_live_monitoring_of_telescope(sut_settings: SutTestSettings, context_monitoring: fxt_types.context_monitoring):
+    
+    tel = names.TEL()
+    central_node = tel.tm.central_node
+    tmc_subarray = tel.tm.subarray(sut_settings.subarray_id)
+    sdp_subarray = tel.sdp.subarray(sut_settings.subarray_id)
+    context_monitoring.set_waiting_on(central_node).for_attribute("state").and_observe()
+    context_monitoring.set_waiting_on(central_node).for_attribute("telescopeState").and_observe()
+    context_monitoring.set_waiting_on(sdp_subarray).for_attribute("state").and_observe()
+    context_monitoring.set_waiting_on(tmc_subarray).for_attribute("state").and_observe()
+
+
 @when(parsers.parse("I tell the OET to run startup script {script}"))
 def run_startup_script(
     script,
+    setup_live_monitoring_of_telescope,
     standby_telescope: fxt_types.standby_telescope,
-    exec_settings: fxt_types.exec_settings,
-    sut_settings: SutTestSettings,
+    integration_test_exec_settings: fxt_types.exec_settings,
     context_monitoring: fxt_types.context_monitoring,
 ):
     """
@@ -75,17 +88,9 @@ def run_startup_script(
     Args:
         script (str): file path to an observing script
     """
-    tel = names.TEL()
-    central_node = tel.tm.central_node
-    tmc_subarray = tel.tm.subarray(sut_settings.subarray_id)
-    sdp_subarray = tel.sdp.subarray(sut_settings.subarray_id)
-    context_monitoring.set_waiting_on(central_node).for_attribute("state").and_observe()
-    context_monitoring.set_waiting_on(sdp_subarray).for_attribute("state").and_observe()
-    context_monitoring.set_waiting_on(tmc_subarray).for_attribute("state").and_observe()
-    exec_settings.run_with_live_logging()
 
-    with context_monitoring.observe_while_running(exec_settings):
-        standby_telescope.switch_off_after_test(exec_settings)
+    with context_monitoring.observe_while_running(integration_test_exec_settings):
+        standby_telescope.switch_off_after_test(integration_test_exec_settings)
         script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
         assert (
             script_completion_state == "COMPLETE"
@@ -97,9 +102,9 @@ def run_startup_script(
 @when(parsers.parse("I tell the OET to run standby script {script}"))
 def run_standby_script(
     script,
+    setup_live_monitoring_of_telescope,
     running_telescope: fxt_types.running_telescope,
-    exec_settings: fxt_types.exec_settings,
-    sut_settings: SutTestSettings,
+    integration_test_exec_settings: fxt_types.exec_settings,
     context_monitoring: fxt_types.context_monitoring,
 ):
     """
@@ -108,18 +113,11 @@ def run_standby_script(
     Args:
         script (str): file path to an observing script
     """
-    tel = names.TEL()
-    central_node = tel.tm.central_node
-    tmc_subarray = tel.tm.subarray(sut_settings.subarray_id)
-    sdp_subarray = tel.sdp.subarray(sut_settings.subarray_id)
-    context_monitoring.set_waiting_on(central_node).for_attribute("state").and_observe()
-    context_monitoring.set_waiting_on(sdp_subarray).for_attribute("state").and_observe()
-    context_monitoring.set_waiting_on(tmc_subarray).for_attribute("state").and_observe()
-    exec_settings.run_with_live_logging()
 
-    with context_monitoring.context_monitoring():
+    with context_monitoring.observe_while_running(integration_test_exec_settings):
         running_telescope.disable_automatic_setdown()
-        script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
+        with running_telescope.wait_for_shutting_down():
+            script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"

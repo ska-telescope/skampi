@@ -140,7 +140,7 @@ def when_allocate_resources_from_sbi(
             sut_settings.subarray_id, sut_settings.receptors, exec_settings
         )
         script_completion_state = EXECUTOR.execute_script(
-            script, sb_json, timeout=300, script_create_kwargs={"create_env": True}
+            script, sb_json, timeout=300
         )
         assert (
             script_completion_state == "COMPLETE"
@@ -166,7 +166,7 @@ def when_release_resources(
     allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(
-            script, timeout=300, script_create_kwargs={"create_env": True}
+            script, timeout=300
         )
         assert (
             script_completion_state == "COMPLETE"

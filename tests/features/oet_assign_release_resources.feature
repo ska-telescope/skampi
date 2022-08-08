@@ -12,14 +12,14 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	Scenario: Allocating resources with a SBI
 		Given an OET
 		And  sub-array is in ObsState EMPTY
-		When I tell the OET to allocate resources using script git:///scripts/allocate_from_file_mid_sb.py and SBI /tmp/oda/mid_sb_example.json
+		When I tell the OET to allocate resources using script file:///scripts/allocate_from_file_mid_sb.py and SBI /tmp/oda/mid_sb_example.json
 		Then the sub-array goes to ObsState IDLE
 
 	#Scenario: Release all resources
 	@XTP-782 @XTP-776
 	Scenario: Releasing all resources from sub-array
 		Given sub-array with resources allocated to it
-		When I tell the OET to release resources using script git:///scripts/deallocate.py
+		When I tell the OET to release resources using script file:///scripts/deallocate.py
 		Then the sub-array goes to ObsState EMPTY
 
 

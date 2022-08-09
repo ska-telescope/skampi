@@ -264,10 +264,3 @@ k8s-post-test: # post test hook for processing received reports
 		kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP); \
 	fi
 	exit $$(cat build/status)
-	
-	
-skampi-test: 
-	poetry config virtualenvs.in-project true
-	poetry install
-	pytest -m "$(DASHMARK)" $(DASHCOUNT) --no-cov -v -r fEx tests/integration
-

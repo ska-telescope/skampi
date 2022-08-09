@@ -1963,7 +1963,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "511abdaf0c38cd07d35c4845c88b01451d0dd09ac381fae40e479bdedd527632"
+content-hash = "ffb8616361b650e81f97481e17972291b0eec3543aaa3c4b2a0b7ee1b47bed9d"
 
 [metadata.files]
 aiohttp = [

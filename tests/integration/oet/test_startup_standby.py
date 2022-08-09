@@ -115,7 +115,7 @@ def run_standby_script(
     """
 
     with context_monitoring.observe_while_running(integration_test_exec_settings):
-        running_telescope.disable_automatic_setdown()
+        #running_telescope.disable_automatic_setdown()
         with running_telescope.wait_for_shutting_down():
             script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
         assert (

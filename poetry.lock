@@ -1590,7 +1590,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-oso-oet"
-version = "4.0.5"
+version = "4.0.6"
 description = "SKA Observation Execution Tool"
 category = "main"
 optional = false
@@ -1963,7 +1963,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "54a314975fd87bc0bbfc82d3348bf6c6e2ae74c9a72878018faa389851f0e19a"
+content-hash = "511abdaf0c38cd07d35c4845c88b01451d0dd09ac381fae40e479bdedd527632"
 
 [metadata.files]
 aiohttp = [
@@ -2667,8 +2667,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-oso-oet = [
-    {file = "ska-oso-oet-4.0.5.tar.gz", hash = "md5:1e2d4eb0d288a90643d9a8f9b9aa6890"},
-    {file = "ska_oso_oet-4.0.5-py3-none-any.whl", hash = "md5:e61eabc2588883ab08db3270b8758396"},
+    {file = "ska-oso-oet-4.0.6.tar.gz", hash = "md5:ab1c72ba2c643e03c4c600319353e133"},
+    {file = "ska_oso_oet-4.0.6-py3-none-any.whl", hash = "md5:f6d80d2024a5fb3e5a7f4308e75d52e6"},
 ]
 ska-ser-logging = [
     {file = "ska_ser_logging-0.4.1+0a677a67-py3-none-any.whl", hash = "md5:6dba01d139ccca7224914a95bbf7d05a"},

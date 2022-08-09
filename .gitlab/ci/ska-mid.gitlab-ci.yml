@@ -69,6 +69,10 @@ clean-mid-test:
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
   allow_failure: true
 
+cache:
+  paths:
+    - .venv/
+
 # mid deploy to integration - on merge to default
 mid_deploy_integration_k8s_test:
   stage: deploy_integration
@@ -108,6 +112,7 @@ mid_deploy_integration_k8s_test:
 
 mid_k8s_test:
   stage: test
+  image: artefact.skao.int/ska-ser-skallop:2.20.4
   variables:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"

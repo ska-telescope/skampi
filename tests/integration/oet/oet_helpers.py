@@ -3,8 +3,7 @@ import time
 from os import environ
 from typing import List, Optional
 
-from ska_oso_oet.procedure.application.application import ProcedureSummary
-from ska_oso_oet.procedure.application.restclient import RestAdapter
+from ska_oso_oet.procedure.application.restclient import RestAdapter, ProcedureSummary
 
 LOGGER = logging.getLogger(__name__)
 
@@ -68,7 +67,7 @@ class ScriptExecutor:
                 reached or FAILED if the script failed
         """
         t = timeout
-        while t != 0:
+        while t > 0:
             procedure = ScriptExecutor.get_script_by_id(pid)
 
             if procedure.state == "FAILED":
@@ -81,8 +80,8 @@ class ScriptExecutor:
                 LOGGER.info(f"Script {procedure.script['script_uri']} state changed to {state}")
                 return procedure.state
 
-            time.sleep(5)
-            t -= 5
+            time.sleep(2)
+            t -= 2
 
         LOGGER.info(
             f"Timeout occurred (> {timeout} seconds) when waiting for script "
@@ -94,7 +93,7 @@ class ScriptExecutor:
         return procedure.state
 
     @staticmethod
-    def execute_script(script: str, *script_run_args, timeout=30, script_create_kwargs={}) -> str:
+    def execute_script(script: str, *script_run_args, timeout=60, script_create_kwargs={}) -> str:
         """
         Execute the given script using OET REST client.
 
@@ -104,6 +103,8 @@ class ScriptExecutor:
             the script execution is started
             timeout: Timeout (~seconds) for how long to wait for script
             stages to complete
+            script_create_kwargs: Any keyword arguments (e.g. git related args) to pass to
+            OET rest server when creating the script
 
         Returns:
             state: The OET state for the script after execution (eg 'COMPLETE')

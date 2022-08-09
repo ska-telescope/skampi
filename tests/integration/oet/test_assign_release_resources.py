@@ -5,16 +5,12 @@ Tests for creating SBI (XTP-779), allocating resources from SBI (XTP-777)
 """
 
 import logging
-import os
-import requests
-import time
 
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, parsers, scenario, then, when
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
@@ -81,7 +77,7 @@ def the_subarray_must_be_in_empty_state(
 
 @given("sub-array with resources allocated to it")
 def the_subarray_with_recources_allocate(
-    allocated_subarray : fxt_types.allocated_subarray, sut_settings: SutTestSettings
+    allocated_subarray: fxt_types.allocated_subarray, sut_settings: SutTestSettings
 ):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
@@ -109,7 +105,7 @@ def when_create_sbi(
         sb_json (str): file path to a scheduling block
     """
     with context_monitoring.observe_while_running():
-        script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=30)
+        script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected SBI creation script to be COMPLETED, instead was {script_completion_state}"
@@ -139,9 +135,7 @@ def when_allocate_resources_from_sbi(
         running_telescope.release_subarray_when_finished(
             sut_settings.subarray_id, sut_settings.receptors, exec_settings
         )
-        script_completion_state = EXECUTOR.execute_script(
-            script, sb_json, timeout=300
-        )
+        script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
@@ -165,9 +159,7 @@ def when_release_resources(
     """
     allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
-        script_completion_state = EXECUTOR.execute_script(
-            script, timeout=300
-        )
+        script_completion_state = EXECUTOR.execute_script(script)
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"

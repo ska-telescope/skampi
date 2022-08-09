@@ -12,8 +12,6 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-from ..conftest import SutTestSettings
-
 from .oet_helpers import ScriptExecutor
 
 logger = logging.getLogger(__name__)
@@ -37,7 +35,7 @@ def test_telescope_startup():
     "features/oet_startup_standby_telescope.feature", "Setting telescope to stand-by"
 )
 def test_telescope_standby():
-    """ "et telescope to standby test."""
+    """ Set telescope to standby test."""
 
 
 @given("telescope is in STANDBY or OFF state")
@@ -61,23 +59,9 @@ def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
 
 
-@pytest.fixture(name='setup_live_monitoring_of_telescope')
-def fxt_setup_live_monitoring_of_telescope(sut_settings: SutTestSettings, context_monitoring: fxt_types.context_monitoring):
-    
-    tel = names.TEL()
-    central_node = tel.tm.central_node
-    tmc_subarray = tel.tm.subarray(sut_settings.subarray_id)
-    sdp_subarray = tel.sdp.subarray(sut_settings.subarray_id)
-    context_monitoring.set_waiting_on(central_node).for_attribute("state").and_observe()
-    context_monitoring.set_waiting_on(central_node).for_attribute("telescopeState").and_observe()
-    context_monitoring.set_waiting_on(sdp_subarray).for_attribute("state").and_observe()
-    context_monitoring.set_waiting_on(tmc_subarray).for_attribute("state").and_observe()
-
-
 @when(parsers.parse("I tell the OET to run startup script {script}"))
 def run_startup_script(
     script,
-    setup_live_monitoring_of_telescope,
     standby_telescope: fxt_types.standby_telescope,
     integration_test_exec_settings: fxt_types.exec_settings,
     context_monitoring: fxt_types.context_monitoring,
@@ -102,7 +86,6 @@ def run_startup_script(
 @when(parsers.parse("I tell the OET to run standby script {script}"))
 def run_standby_script(
     script,
-    setup_live_monitoring_of_telescope,
     running_telescope: fxt_types.running_telescope,
     integration_test_exec_settings: fxt_types.exec_settings,
     context_monitoring: fxt_types.context_monitoring,

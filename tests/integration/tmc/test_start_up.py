@@ -14,7 +14,8 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
-
+@pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario("features/tmc_start_up_telescope.feature", "Start up the telescope")
@@ -22,7 +23,8 @@ def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
 
 
-
+@pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.standby
 @scenario("features/tmc_start_up_telescope.feature", "Switch of the telescope")

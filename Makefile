@@ -264,3 +264,25 @@ k8s-post-test: # post test hook for processing received reports
 		kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP); \
 	fi
 	exit $$(cat build/status)
+
+# override the target from .make as there is a problem in using poetry in a non virtual env
+k8s-do-test-runner:
+##  Cleanup
+	@rm -fr build; mkdir build
+	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
+
+##  Install requirements
+
+	echo 'k8s-test: installing poetry dependencies'
+	poetry install
+
+
+##  Run tests
+	export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs)
+	mkdir -p build
+	cd $(K8S_RUN_TEST_FOLDER) && $(K8S_TEST_TEST_COMMAND); echo $$? > $(BASE)/build/status
+
+##  Post tests reporting
+	pip list > build/pip_list.txt
+	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
+

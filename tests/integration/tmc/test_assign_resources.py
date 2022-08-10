@@ -16,7 +16,7 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 # log capturing
-@pytest.mark.skip
+# @pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.assign
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")

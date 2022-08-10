@@ -13,7 +13,7 @@ from .. import conftest
 
 logger = logging.getLogger(__name__)
 
-
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -23,6 +23,7 @@ def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

@@ -274,7 +274,7 @@ k8s-do-test-runner:
 ##  Install requirements
 
 	echo 'k8s-test: installing poetry dependencies'
-	poetry install[bit]
+	poetry install -E bit
 
 
 ##  Run tests

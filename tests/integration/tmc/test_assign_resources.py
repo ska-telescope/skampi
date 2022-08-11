@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.assign
+@pytest.mark.skamid
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
 def test_assign_resources_to_tmc_subarray_in_mid():
     """Assign resources to tmc subarray in mid."""

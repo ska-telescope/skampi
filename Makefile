@@ -275,7 +275,7 @@ k8s-do-test-runner:
 
 	echo 'k8s-test: installing poetry dependencies'
 	ls -ll
-	. link.sh
+	. /home/tango/.local/bin/link.sh
 	poetry install -E bit
 
 

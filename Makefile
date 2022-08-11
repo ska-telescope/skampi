@@ -274,7 +274,8 @@ k8s-do-test-runner:
 ##  Install requirements (linking to embedded .venv)
 
 	echo 'k8s-test: installing poetry dependencies'
-	sh link.sh
+	ls -ll
+	. link.sh
 	poetry install -E bit
 
 

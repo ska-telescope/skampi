@@ -1,37 +1,45 @@
 # This variables is always available and resolves to
 # artefact.skao.int/ska-tango-images-pytango-builder-alpine:x.x.x
 # Provide it in PrivateRules.mak if needed locally
-ARG SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE
-ARG SKA_K8S_TOOLS="${SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE}"
-ARG SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE
-ARG PYTANGO_BUILDER_BASE="${SKA_PYTHON_PYTANGO_BUILDER_ALPINE_IMAGE}"
-
+ARG SKA_K8S_TOOLS_BUILD_DEPLOY
+ARG SKA_K8S_TOOLS="${SKA_K8S_TOOLS_BUILD_DEPLOY}"
 FROM $SKA_K8S_TOOLS as ska_cicd_k8s_tools
-FROM $PYTANGO_BUILDER_BASE AS builder
-
-# Install runtime dependencies (copied over from SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE)
-RUN apk --update add --no-cache \
-    bash make ca-certificates curl git git-lfs wget \
-    jq net-tools openssh unzip zip zlib rpm \
-    docker cmake \
-    # we need tar with append not the busybox version
-    tar \
-    # busybox cp does not include -n flag
-    coreutils \
-    # installing miniperl to alias perl
-    miniperl && echo 'alias perl=miniperl' >> ~/.bashrc 
-
-# Get all other dependencies from SKAO Default CI Image
-COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin
+FROM registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-pytango-bullseye:0.0.0-dev.c5c723b77 AS requirements-stage
 
 # Install poetry and dependencies
 COPY ./poetry.lock* ./pyproject.toml /app/
 
 # Need to ignore installed packages but note that this may be problematic due to versions as we are not really checking them
 # This is due to the fact that poetry is install with pip in base images
-RUN poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes && \
-    pip install --upgrade pip && \
-    pip install --prefix=/usr/local --ignore-installed --force-reinstall -r poetry-requirements.txt && \
+RUN poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes --dev
+
+FROM registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-pytango-bullseye:0.0.0-dev.c5c723b77 AS builder
+
+# Install runtime dependencies (copied over from SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE)
+RUN apt-get update && \
+    apt-get install -y \
+    apt-transport-https \
+    bash \
+    ca-certificates \
+    curl \
+    git \
+    git-lfs \
+    make \
+    g++ \
+    cmake \
+    rpm \
+    software-properties-common \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# Get all other dependencies from SKAO Default CI Image
+COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin
+
+COPY --from=requirements-stage /app/poetry-requirements.txt /app/
+
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir --upgrade -r poetry-requirements.txt && \
     rm poetry-requirements.txt poetry.lock requirements.txt pyproject.toml
 
 LABEL \

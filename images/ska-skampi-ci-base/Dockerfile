@@ -15,7 +15,7 @@ RUN poetry export --format requirements.txt --output poetry-requirements.txt --w
 
 FROM registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-pytango-bullseye:0.0.0-dev.c5c723b77 AS builder
 
-# Install runtime dependencies (copied over from SKA_K8S_TOOLS_BUILD_DEPLOY_ALPINE)
+# Install runtime dependencies (copied over from SKA_K8S_TOOLS_BUILD_DEPLOY)
 RUN apt-get update && \
     apt-get install -y \
     apt-transport-https \

@@ -271,9 +271,10 @@ k8s-do-test-runner:
 	@rm -fr build; mkdir build
 	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
 
-##  Install requirements
+##  Install requirements (linking to embedded .venv)
 
 	echo 'k8s-test: installing poetry dependencies'
+	sh link.sh
 	poetry install -E bit
 
 

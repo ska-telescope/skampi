@@ -3,8 +3,9 @@
 # Provide it in PrivateRules.mak if needed locally
 ARG SKA_K8S_TOOLS_BUILD_DEPLOY
 ARG SKA_K8S_TOOLS="${SKA_K8S_TOOLS_BUILD_DEPLOY}"
+ARG PYTANGO_BASE="registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-pytango:0.1.0-tc-9.3.3-bullseye-dev.ca7852e3e"
 FROM $SKA_K8S_TOOLS as ska_cicd_k8s_tools
-FROM registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-pytango-bullseye:0.0.0-dev.c5c723b77 AS requirements-stage
+FROM $PYTANGO_BASE AS requirements-stage
 
 # Install poetry and dependencies
 COPY ./poetry.lock* ./pyproject.toml /app/
@@ -13,7 +14,7 @@ COPY ./poetry.lock* ./pyproject.toml /app/
 # This is due to the fact that poetry is install with pip in base images
 RUN poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes --dev
 
-FROM registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-pytango-bullseye:0.0.0-dev.c5c723b77 AS builder
+FROM $PYTANGO_BASE
 
 # Install runtime dependencies (copied over from SKA_K8S_TOOLS_BUILD_DEPLOY)
 RUN apt-get update && \
@@ -40,7 +41,7 @@ COPY --from=requirements-stage /app/poetry-requirements.txt /app/
 
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir --upgrade -r poetry-requirements.txt && \
-    rm poetry-requirements.txt poetry.lock requirements.txt pyproject.toml
+    rm poetry-requirements.txt 
 
 LABEL \
     int.skao.application="SKA SKAMPI CI Base Image" \

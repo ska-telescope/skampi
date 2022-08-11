@@ -274,7 +274,6 @@ k8s-do-test-runner:
 ##  Install requirements (linking to embedded .venv)
 
 	echo 'k8s-test: installing poetry dependencies'
-	ls -ll
 	. /home/tango/.local/bin/link.sh
 	poetry install -E bit
 

@@ -41,11 +41,11 @@ global:
       pullPolicy: IfNotPresent
 
 ska-landingpage:
-  enabled: true
+  enabled: false
   MVPInstance: ska-mid
 
 ska-ser-skuid:
-  enabled: true
+  enabled: false
   skuid:
     use_pv: false
     config:
@@ -55,15 +55,15 @@ ska-tango-base:
   enabled: true
   vnc:
     replicas: 1
-    enabled: true
+    enabled: false
   tangorest:
-    enabled: true
+    enabled: false
     replicas: 1
   tangodb:
     use_pv: false
 
 ska-taranta:
-  enabled: true
+  enabled: false
   ingress:
     enabled: true
     nginx: true
@@ -79,7 +79,7 @@ ska-taranta:
         memory: 1024Mi # 1024Mi = 1 GB mem
 
 ska-oso-scripting:
-  enabled: true
+  enabled: false
   ingress:
     hostname: k8s.stfc.skao.int
   system: TM-mid
@@ -96,15 +96,15 @@ ska-oso-scripting:
 #telescope control
 ## mid-cbf
 ska-mid-cbf:
-  enabled: true
+  enabled: false
 
 ## mid-csp
 ska-csp-lmc-mid:
-  enabled: true
+  enabled: false
 
 ## sdp
 ska-sdp:
-  enabled: true
+  enabled: false
   lmc:
     prefix: mid
     nsubarray: 3
@@ -113,13 +113,13 @@ ska-sdp:
 
 ## tmc
 tmc-mid:
-  enabled: true
+  enabled: false
   telescope: SKA-mid
  
 ska-tango-archiver:
-  enabled: true
+  enabled: false
   dbname: default_mvp_archiver_db
 
 ## dishmasters
 ska-sim-dishmaster:
-  enabled: true
+  enabled: false

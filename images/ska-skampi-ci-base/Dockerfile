@@ -70,6 +70,3 @@ COPY --from=requirements-stage /app/poetry-requirements.txt /app/
 RUN pip install --upgrade --no-cache-dir pip && \
     pip install --no-cache-dir --upgrade -r poetry-requirements.txt && \
     rm poetry-requirements.txt 
-
-USER tango
-WORKDIR /app

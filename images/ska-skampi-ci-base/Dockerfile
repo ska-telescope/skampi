@@ -3,7 +3,7 @@
 # Provide it in PrivateRules.mak if needed locally
 ARG SKA_K8S_TOOLS_BUILD_DEPLOY
 ARG SKA_K8S_TOOLS="${SKA_K8S_TOOLS_BUILD_DEPLOY}"
-ARG PYTANGO_BASE="registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-pytango:0.1.0-tc-9.3.3-bullseye-dev.ca7852e3e"
+ARG PYTANGO_BASE="registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-pytango:0.1.0-tc-9.3.3-bullseye-dev.cefd02be3"
 FROM $SKA_K8S_TOOLS as ska_cicd_k8s_tools
 FROM $PYTANGO_BASE AS requirements-stage
 
@@ -23,9 +23,10 @@ LABEL \
     description="This image is used as a base CI Image internally" \
     license="BSD-3-Clause"
 
+USER root
 # Install runtime dependencies (copied over from SKA_K8S_TOOLS_BUILD_DEPLOY)
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install -y --no-install-recommends \
     apt-transport-https \
     bash \
     ca-certificates \
@@ -42,11 +43,12 @@ RUN apt-get update && \
     lsb-release \
     && rm -rf /var/lib/apt/lists/*
 
-RUN sudo mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+RUN set -eux; \
+    mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
     && echo \
     "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -64,7 +66,6 @@ COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin
 
 COPY --from=requirements-stage /app/poetry-requirements.txt /app/
 
-RUN pip install --upgrade pip && \
+RUN pip install --upgrade --no-cache-dir pip && \
     pip install --no-cache-dir --upgrade -r poetry-requirements.txt && \
     rm poetry-requirements.txt 
-

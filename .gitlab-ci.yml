@@ -13,6 +13,7 @@ variables:
   CI_BASE_IMAGE_VERSION: "0.1.0-dev.c$CI_COMMIT_SHORT_SHA"
   CI_BASE_IMAGE_NAME: "$CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci-base"
   CI_BASE_IMAGE: "$CI_BASE_IMAGE_NAME:$CI_BASE_IMAGE_VERSION"
+  EXPOSE_All_DS: "true"
 
 stages:
   - lint

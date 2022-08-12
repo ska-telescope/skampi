@@ -16,6 +16,13 @@ RUN poetry export --format requirements.txt --output poetry-requirements.txt --w
 
 FROM $PYTANGO_BASE
 
+LABEL \
+    int.skao.application="SKA SKAMPI CI Base Image" \
+    int.skao.team="Systems Team" \
+    author="SKAO Systems Team" \
+    description="This image is used as a base CI Image internally" \
+    license="BSD-3-Clause"
+
 # Install runtime dependencies (copied over from SKA_K8S_TOOLS_BUILD_DEPLOY)
 RUN apt-get update && \
     apt-get install -y \
@@ -31,15 +38,20 @@ RUN apt-get update && \
     rpm \
     software-properties-common \
     wget \
+    gnupg \
+    lsb-release \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
-    && apt-key fingerprint 0EBFCD88 \
-    && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+RUN sudo mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+    && echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     docker-ce \
+    docker-ce-cli \
     jq \
     net-tools \
     ssh \
@@ -56,9 +68,3 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir --upgrade -r poetry-requirements.txt && \
     rm poetry-requirements.txt 
 
-LABEL \
-    int.skao.application="SKA SKAMPI CI Base Image" \
-    int.skao.team="Systems Team" \
-    author="SKAO Systems Team" \
-    description="This image is used as a base CI Image internally" \
-    license="BSD-3-Clause"

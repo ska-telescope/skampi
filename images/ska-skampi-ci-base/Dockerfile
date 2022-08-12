@@ -7,6 +7,7 @@ ARG PYTANGO_BASE="registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-i
 FROM $SKA_K8S_TOOLS as ska_cicd_k8s_tools
 FROM $PYTANGO_BASE AS requirements-stage
 
+USER root
 # Install poetry and dependencies
 COPY ./poetry.lock* ./pyproject.toml /app/
 
@@ -69,3 +70,6 @@ COPY --from=requirements-stage /app/poetry-requirements.txt /app/
 RUN pip install --upgrade --no-cache-dir pip && \
     pip install --no-cache-dir --upgrade -r poetry-requirements.txt && \
     rm poetry-requirements.txt 
+
+USER tango
+WORKDIR /app

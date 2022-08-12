@@ -269,6 +269,7 @@ k8s-do-test-runner:
 	@rm -fr build; mkdir build
 	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
 
+	echo "Not using poetry install or pip as the dependencies are already there!"
 ##  Run tests
 	export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs)
 	mkdir -p build

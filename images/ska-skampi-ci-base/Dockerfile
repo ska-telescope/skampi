@@ -33,6 +33,19 @@ RUN apt-get update && \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
+    && apt-key fingerprint 0EBFCD88 \
+    && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    docker-ce \
+    jq \
+    net-tools \
+    ssh \
+    unzip \
+    zip \
+    && rm -rf /var/lib/apt/lists/*
 
 # Get all other dependencies from SKAO Default CI Image
 COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin

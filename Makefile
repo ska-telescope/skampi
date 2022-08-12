@@ -90,6 +90,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	--set global.exposeAllDS=$(EXPOSE_All_DS) \
 	$(SDP_PROXY_VARS)
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
@@ -186,7 +187,8 @@ K8S_TEST_MAKE_PARAMS = \
 	LIVE_LOGGING=$(LIVE_LOGGING) \
 	LIVE_LOGGING_EXTENDED=$(LIVE_LOGGING_EXTENDED) \
 	REPLAY_EVENTS_AFTERWARDS=$(REPLAY_EVENTS_AFTERWARDS) \
-	CAPTURE_LOGS=$(CAPTURE_LOGS)
+	CAPTURE_LOGS=$(CAPTURE_LOGS) \
+	TANGO_HOST=$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000
 	
 
 
@@ -264,26 +266,3 @@ k8s-post-test: # post test hook for processing received reports
 		kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP); \
 	fi
 	exit $$(cat build/status)
-
-# override the target from .make as there is a problem in using poetry in a non virtual env
-k8s-do-test-runner:
-##  Cleanup
-	@rm -fr build; mkdir build
-	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
-
-##  Install requirements (linking to embedded .venv)
-
-	echo 'k8s-test: installing poetry dependencies'
-	. /home/tango/.local/bin/link.sh
-	poetry install -E bit
-
-
-##  Run tests
-	export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs)
-	mkdir -p build
-	cd $(K8S_RUN_TEST_FOLDER) && $(K8S_TEST_TEST_COMMAND); echo $$? > $(BASE)/build/status
-
-##  Post tests reporting
-	pip list > build/pip_list.txt
-	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
-

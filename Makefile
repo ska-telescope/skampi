@@ -81,7 +81,7 @@ endif
 K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.minikube=$(MINIKUBE) \
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
-	--set global.tango_host=$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local \
+	--set global.tango_host=$(TANGO_HOST)\
 	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
 	--set global.device_server_port=$(TANGO_SERVER_PORT) \
 	--set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) \
@@ -178,7 +178,7 @@ K8S_TEST_MAKE_PARAMS = \
 	SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
 	KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
 	HELM_RELEASE=$(HELM_RELEASE) \
-	TANGO_HOST=$(TANGO_HOST) \
+	TANGO_HOST=$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local\
 	CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
 	MARK='$(MARK)' \
 	COUNT=$(COUNT) \

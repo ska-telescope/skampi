@@ -18,6 +18,8 @@ low-test:
     TEST_ENV: "BUILD_OUT"
     COUNT: 1
     TEL: low
+  rules:
+    - if: $ENABLE_BUILD_OUT_TESTING
   extends:
     - .tags_default
     - .deploy_chart_before
@@ -67,7 +69,7 @@ clean-low-test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
   allow_failure: true
-  
+
 # low deploy to integration - on merge to default
 low_deploy_integration_k8s_test:
   stage: deploy_integration

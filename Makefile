@@ -184,6 +184,7 @@ K8S_TEST_MAKE_PARAMS = \
 	TANGO_HOST=$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000
 
 # runs inside the test runner container after cd ./tests
+K8S_RUN_TEST_FOLDER = ./tests
 K8S_TEST_TEST_COMMAND = make -s \
 			$(K8S_TEST_MAKE_PARAMS) \
 			$(K8S_TEST_TARGET)
@@ -266,7 +267,7 @@ k8s-do-test-runner:
 
 ##  Install requirements (linking to embedded .venv)
 
-	echo 'k8s-test: installing poetry dependencies'
+	echo 'test: installing python dependencies'
 	pip install .
 
 ##  Run tests

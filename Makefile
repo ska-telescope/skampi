@@ -89,6 +89,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	--set global.exposeAllDS=$(EXPOSE_All_DS) \
 	$(SDP_PROXY_VARS)
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
@@ -178,7 +179,8 @@ K8S_TEST_MAKE_PARAMS = \
 	TARANTA_USER=$(TARANTA_USER) \
 	TARANTA_PASSWORD=$(TARANTA_PASSWORD) \
 	TARANTA_PASSPORT=$(TARANTA_PASSPORT) \
-	KUBE_HOST=$(KUBE_HOST)
+	KUBE_HOST=$(KUBE_HOST) \
+	TANGO_HOST=$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000
 
 # runs inside the test runner container after cd ./tests
 K8S_TEST_TEST_COMMAND = make -s \

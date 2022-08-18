@@ -1,4 +1,4 @@
-image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+image: registry.gitlab.com/ska-telescope/ska-skampi/ska-skampi-ci-base:0.1.0
 
 variables:
   MINIKUBE: "false"
@@ -10,6 +10,7 @@ variables:
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:$SKALLOP_VERSION
   KUBE_BRANCH: $CI_JOB_ID
   DOMAIN: "branch"
+  EXPOSE_All_DS: "true"
 
 stages:
   - build

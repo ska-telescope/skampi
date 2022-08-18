@@ -19,14 +19,16 @@ mid-test:
     TEL: mid
   extends:
     - .tags_default
-    - .uninstall_chart_before
-    - .deploy_chart_and_test_integration
+  script:
+    - !reference [.deploy_chart_before, before_script]
+    - !reference [.test_deployment, script]
+    - !reference [.uninstall_chart, script]
   environment:
     name: test/ska-$CONFIG-k8s-$CI_COMMIT_REF_SLUG
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

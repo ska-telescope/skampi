@@ -245,7 +245,10 @@ k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
 k8s-test-runner: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
 
 k8s-post-test: # post test hook for processing received reports
-
+	@if ! [[ -f build/status ]]; then \
+		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
+		exit 1; \
+	fi
 
 # override the target from .make as there is a problem in using poetry in a non virtual env
 k8s-do-test-runner:

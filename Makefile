@@ -50,8 +50,9 @@ ifneq ($(TESTCOUNT),)
 DASHCOUNT ?= --count=$(TESTCOUNT)
 else
 DASHCOUNT ?=
+COUNT ?= 1
 endif
-PYTHON_VARS_AFTER_PYTEST ?= -m $(DASHMARK) $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
+PYTHON_VARS_AFTER_PYTEST ?= -m "$(DASHMARK)" $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 
@@ -239,6 +240,8 @@ k8s-pre-install-chart:
 
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
+k8s-test-runner: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
+
 
 k8s-post-test: # post test hook for processing received reports
 	@if ! [[ -f build/status ]]; then \
@@ -248,3 +251,29 @@ k8s-post-test: # post test hook for processing received reports
 	@echo "k8s-post-test: Skampi post processing of core Skampi test reports with scripts/collect_k8s_logs.py"
 	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
 		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
+
+##  ST-1258: Delete namespace and exit using the test build status
+	@if ! [[ $(KUBE_NAMESPACE) == *integration* ]] && ! [[ $(KUBE_NAMESPACE) == *staging* ]] ; then \
+		kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP); \
+	fi
+	exit $$(cat build/status)
+
+# override the target from .make as there is a problem in using poetry in a non virtual env
+k8s-do-test-runner:
+##  Cleanup
+	@rm -fr build; mkdir build
+	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
+
+##  Install requirements (linking to embedded .venv)
+
+	echo 'k8s-test: installing poetry dependencies'
+	pip install .
+
+##  Run tests
+	export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs)
+	mkdir -p build
+	cd $(K8S_RUN_TEST_FOLDER) && $(K8S_TEST_TEST_COMMAND); echo $$? > $(BASE)/build/status
+
+##  Post tests reporting
+	pip list > build/pip_list.txt
+	@echo "k8s_test_command: test command exit is: $$(cat build/status)"

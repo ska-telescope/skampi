@@ -68,43 +68,6 @@ clean-low-test:
       namespace: $KUBE_NAMESPACE
   allow_failure: true
 
-# low deploy to integration - on merge to default
-low_deploy_integration_k8s_test:
-  stage: deploy_integration
-  variables:
-    CONFIG: low
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "integration-$CONFIG"
-    KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
-    SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
-    ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
-    ADDMARKS: "k8s"
-    MARK: "not infra"
-  extends:
-    - .tags_default
-    - .uninstall_chart_before
-    - .deploy_chart_and_test_integration
-  environment:
-    name: "integration-low"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
-    on_stop: low_uninstall_integration
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
-  rules:
-    - if: $STRESS_TEST_DURATION
-      when: never
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-
 # teardown integration on stop
 low_uninstall_integration:
   stage: clean_integration

@@ -18,7 +18,7 @@ const kibanaURL = 'http://logging.skao.stfc:5601/app/logs/stream?'+
   'logPosition=(end:now,position:(tiebreaker:277595,time:1612798881864),start:now-1d,streamLive:!f)&'+
   `logFilter=(expression:%27kubernetes.namespace:%20${NAMESPACE}%27,kind:kuery)`
 
-const TMCDashboardURL =`https://k8s.stfc.skao.int/${NAMESPACE}/taranta/dashboard?id=62ff59f4f937c9001852a142&mode=run`
+const TMCDashboardURL =`https://k8s.stfc.skao.int/${NAMESPACE}/taranta/dashboard?id=62fe3deef937c9001852639c&mode=run`
   
 const model = {
     'MVPInstance' : MVPInstance,

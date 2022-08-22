@@ -20,3 +20,4 @@ docopts
 requests
 coverage
 atlassian-python-api>=3.25.0
+ska-tango-base==0.13.0

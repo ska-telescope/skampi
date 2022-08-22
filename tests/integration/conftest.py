@@ -63,23 +63,6 @@ def fxt_set_session_exec_settings(session_exec_settings: fxt_types.session_exec_
         session_exec_settings.attr_synching = False
 
 
-@pytest.fixture(autouse=True, scope="session")
-def fxt_set_csp_online(
-    set_session_exec_settings,
-    set_subsystem_online: Callable[[EntryPoint], None]
-):
-    """_summary_
-
-    :param nr_of_subarrays: _description_
-    :type nr_of_subarrays: int
-    :param set_subsystem_online: _description_
-    :type set_subsystem_online: Callable[[EntryPoint], None]
-    """
-    if not os.getenv("DISABLE_SETTING_ONLINE_GLOBALLY"):
-        logging.info("setting csp components online globally")
-        entry_point = TMCEntryPoint()
-        set_subsystem_online(entry_point)
-
 @pytest.fixture(name="run_mock")
 def fxt_run_mock_wrapper(
     request, _pytest_bdd_example, conftest_settings: SutTestSettings

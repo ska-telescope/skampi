@@ -266,9 +266,8 @@ k8s-do-test-runner:
 	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
 
 ##  Install requirements (linking to embedded .venv)
-
 	echo 'test: installing python dependencies'
-	pip install .
+	bash scripts/gitlab_section.sh pip_install "Installing Pytest Requirements" pip install .; \
 
 ##  Run tests
 	export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs)

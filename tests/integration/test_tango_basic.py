@@ -12,6 +12,7 @@ from assertpy import assert_that
 from ska_ser_skallop.connectors.configuration import get_device_proxy
 
 
+@pytest.mark.skip(reason="disable test as tangobridge is no longer in use")
 @pytest.mark.skamid
 @pytest.mark.skalow
 @pytest.mark.taranta

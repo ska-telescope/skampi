@@ -37,7 +37,6 @@
     - '[ -f build/status ] || (echo "Something went wrong with the test (no build/status file); exit 1")'
     - exit $(cat build/status)
 
-
 .deploy_chart_and_test_integration:
   script:
     - bash scripts/gitlab_section.sh k8s-install-chart "make k8s-install-chart" make k8s-install-chart
@@ -88,19 +87,3 @@
     - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
     - make k8s-delete-namespace
     - make delete-sdp-namespace
-    - make skampi-upload-test-results
-
-## Not currently used!!!
-.deploy_test_destroy:
-  stage: test
-  extends:
-    - .deploy_chart_before
-    - .test_deployment
-    - .uninstall_chart_after
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always

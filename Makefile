@@ -39,7 +39,7 @@ ADDMARKS ?=## Additional Marks to add to pytests
 ifneq ($(ADDMARKS),)
 DASHMARK ?= ska$(TEL) and $(ADDMARKS)
 else
-DASHMARK ?= ska$(TEL)
+DASHMARK ?= ska$(TEL) and not onlyk8s
 endif
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
@@ -242,8 +242,6 @@ k8s-pre-install-chart:
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
 
-k8s-test-runner: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
-
 k8s-post-test: # post test hook for processing received reports
 	@if ! [[ -f build/status ]]; then \
 		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
@@ -269,3 +267,9 @@ k8s-do-test-runner:
 ##  Post tests reporting
 	pip list > build/pip_list.txt
 	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
+	
+##  ST-1258: Delete namespace and exit using the test build status
+	@if ! [[ $(KUBE_NAMESPACE) == *integration* ]] && ! [[ $(KUBE_NAMESPACE) == *staging* ]] ; then \
+		kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP); \
+	fi
+	exit $$(cat build/status)

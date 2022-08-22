@@ -29,8 +29,6 @@
     - echo "############## Running Skampi core tests"
     - make k8s-test-runner
     - find ./build
-    - echo "############## EXTRA MAKE VARS OUTPUT"
-    - make skampi-vars
     - echo "#####################################"
     - make skampi-upload-test-results
     # Exit based on the make-k8s-test-runner output which is writting in build/status file

@@ -1,17 +1,50 @@
 """Pytest fixtures and BDD step implementations specific to OET integration tests."""
 import logging
 import os
+from typing import Callable
 
 import pytest
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from .. import conftest
 
 
 LOGGER = logging.getLogger(__name__)
+
+@pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
+def fxt_nr_of_subarrays() -> int:
+    """_summary_
+
+    :return: _description_
+    :rtype: int
+    """
+    # we only work with 1 subarray as CBF low currently limits deployment of only 1
+    # cbf mid only controls the state of subarray 1 so will also limit to 1
+    tel = names.TEL()
+    if tel.skalow:
+        return 1
+    return 2
+
+@pytest.fixture(autouse=True, scope="session")
+def fxt_set_csp_online_from_tmc(
+    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
+):
+    """_summary_
+
+    :param nr_of_subarrays: _description_
+    :type nr_of_subarrays: int
+    :param set_subsystem_online: _description_
+    :type set_subsystem_online: Callable[[EntryPoint], None]
+    """
+    logging.info("setting csp components online within tmc context")
+    TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+    entry_point = TMCEntryPoint()
+    set_subsystem_online(entry_point)
 
 
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)

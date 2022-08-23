@@ -123,7 +123,8 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             self._log(
                 f"commanding {subarray_name} with AssignResources: {csp_low_configuration} "
             )
-            subarray.command_inout("AssignResources", csp_low_configuration, timeout=6)
+            subarray.set_timeout_millis(6000)
+            subarray.command_inout("AssignResources", csp_low_configuration)
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
@@ -134,7 +135,8 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             self._log(
                 f"commanding {subarray_name} with AssignResources: {csp_mid_assign_resources} "
             )
-            subarray.command_inout("AssignResources", csp_mid_configuration, timeout=6)
+            subarray.set_timeout_millis(6000)
+            subarray.command_inout("AssignResources", csp_mid_configuration)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in csp.
@@ -146,6 +148,7 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with ReleaseAllResources")
+        subarray.set_timeout_millis(6000)
         subarray.command_inout("ReleaseAllResources")
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:

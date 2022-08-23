@@ -17,8 +17,6 @@ mid-test:
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_IN"
     TEL: mid
-  rules:
-    - if: $ENABLE_BUILD_OUT_TESTING
   extends:
     - .tags_default
   script:

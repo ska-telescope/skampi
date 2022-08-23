@@ -39,7 +39,7 @@ ADDMARKS ?=## Additional Marks to add to pytests
 ifneq ($(ADDMARKS),)
 DASHMARK ?= ska$(TEL) and $(ADDMARKS)
 else
-DASHMARK ?= ska$(TEL) and not onlyk8s
+DASHMARK ?= ska$(TEL)
 endif
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
@@ -181,6 +181,7 @@ K8S_TEST_MAKE_PARAMS = \
 	TARANTA_PASSWORD=$(TARANTA_PASSWORD) \
 	TARANTA_PASSPORT=$(TARANTA_PASSPORT) \
 	KUBE_HOST=$(KUBE_HOST) \
+	TANGO_HOST=$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000 \
 	DISABLE_MAINTAIN_ON='$(DISABLE_MAINTAIN_ON)' \
 	TEST_ENV='$(TEST_ENV)' \
 	DEBUG_ENTRYPOINT=$(DEBUG_ENTRYPOINT) \
@@ -250,6 +251,7 @@ k8s-pre-install-chart:
 
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
+
 k8s-test-runner: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
 
 k8s-post-test: # post test hook for processing received reports
@@ -257,15 +259,6 @@ k8s-post-test: # post test hook for processing received reports
 		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
 		exit 1; \
 	fi
-	@echo "k8s-post-test: Skampi post processing of core Skampi test reports with scripts/collect_k8s_logs.py"
-	@python3 scripts/collect_k8s_logs.py $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP) \
-		--pp build/k8s_pretty.txt --dump build/k8s_dump.txt --tests build/k8s_tests.txt
-	
-##  ST-1258: Delete namespace and exit using the test build status
-	@if ! [[ $(KUBE_NAMESPACE) == *integration* ]] && ! [[ $(KUBE_NAMESPACE) == *staging* ]] ; then \
-		kubectl delete ns $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP); \
-	fi
-	exit $$(cat build/status)
 
 # override the target from .make as there is a problem in using poetry in a non virtual env
 k8s-do-test-runner:
@@ -274,9 +267,8 @@ k8s-do-test-runner:
 	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
 
 ##  Install requirements (linking to embedded .venv)
-
-	echo 'k8s-test: installing poetry dependencies'
-	pip install .
+	echo 'test: installing python dependencies'
+	bash scripts/gitlab_section.sh pip_install "Installing Pytest Requirements" pip install .; \
 
 ##  Run tests
 	export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs)

@@ -42,10 +42,6 @@ include:
   # Jobs to run on PSI Low
   - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
 
-  # Python tests, directly run
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/python-test.gitlab-ci.yml"
-
   # Helm Charts
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/helm-chart.gitlab-ci.yml"
@@ -61,20 +57,3 @@ include:
   # .post steps
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
-
-# overide the image because we need Python 3.9+ and a unique Namespace
-# in the python-test
-python-test:
-  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
-  variables:
-    CLUSTER_TEST_NAMESPACE: ci-$CI_JOB_ID-infra
-    PYTHON_VARS_AFTER_PYTEST: tests/unit -m infra
-  script:
-    - make python-test
-    - make k8s-delete-namespace KUBE_NAMESPACE=$CLUSTER_TEST_NAMESPACE
-    # Not necessary to upload these results
-    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
-  environment:
-    name: test/$CI_COMMIT_REF_SLUG-cluster
-    kubernetes:
-      namespace: $CLUSTER_TEST_NAMESPACE

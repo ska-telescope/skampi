@@ -53,6 +53,15 @@ def fxt_conftest_settings() -> SutTestSettings:
     return SutTestSettings()
 
 
+# setting systems online
+
+@pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
+def fxt_set_session_exec_settings(session_exec_settings: fxt_types.session_exec_settings):
+    if os.getenv("ATTR_SYNCH_DISABLED_GLOBALLY"):
+        #logger.warning("disabled attribute synchronization globally")
+        session_exec_settings.attr_synching = False
+
+
 @pytest.fixture(name="run_mock")
 def fxt_run_mock_wrapper(
     request, _pytest_bdd_example, conftest_settings: SutTestSettings
@@ -80,7 +89,12 @@ def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
     :return: test specific execution settings as a fixture
     """
     if os.getenv("LIVE_LOGGING_EXTENDED"):
+        logger.info("running live logs globally")
         exec_settings.run_with_live_logging()
+    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
+        logger.warning("enabled attribute synchronization globally")
+        exec_settings.attr_synching = True
+
 
 
 @pytest.fixture(name="integration_test_exec_settings")
@@ -96,8 +110,13 @@ def fxt_integration_test_exec_settings(
 
     if os.getenv("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()
+        logger.info("running live logs globally")
     if os.getenv("REPLAY_EVENTS_AFTERWARDS"):
+        logger.info("replay log messages after waiting")
         integration_test_exec_settings.replay_events_afterwards()
+    if os.getenv("ATTR_SYNCH_ENABLED"):
+        logger.warning("enabled attribute synchronization")
+        exec_settings.attr_synching = True
     return integration_test_exec_settings
 
 

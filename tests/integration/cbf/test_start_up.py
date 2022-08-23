@@ -92,11 +92,6 @@ def the_cbf_must_be_on(transit_checking: fxt_types.transit_checking):
         subarray = con_config.get_device_proxy(tel.csp.cbf.subarray(index))
         result = subarray.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
-    if transit_checking:
-        checker = transit_checking.checker
-        assert checker
-        logger.info(checker.print_outcome_for(checker.subject_device))
-        checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")
 
 
 # test validation

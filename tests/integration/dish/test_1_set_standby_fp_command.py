@@ -50,9 +50,7 @@ def issue_set_standby_fp_mode(dish_leaf_node, dish_manager, dish_manager_event_s
     dish_leaf_node.command_inout("SetStandbyFPMode")
 
 
-@then(
-        "dish_manager dishMode and state should report STANDBY_FP and STANDBY"
-)
+@then("dish_manager dishMode and state should report STANDBY_FP and STANDBY")
 def check_dish_mode_and_state(
     dish_manager, dish_manager_event_store,
 ):
@@ -85,10 +83,7 @@ def check_dish_mode_and_state(
     )
 
 
-@then(
-        "dish_structure operatingMode and powerState should "
-        "report STANDBY_FP and FULL_POWER"
-)
+@then("dish_structure operatingMode and powerState should report STANDBY_FP and FULL_POWER")
 def check_ds_operating_mode_and_power_state(dish_structure):
     # pylint: disable=missing-function-docstring
     current_operating_mode = retrieve_attr_value(
@@ -105,10 +100,7 @@ def check_ds_operating_mode_and_power_state(dish_structure):
     )
 
 
-@then(
-        "spf operatingMode and powerState should report "
-        "OPERATE and FULL-POWER"
-)
+@then("spf operatingMode and powerState should report OPERATE and FULL-POWER")
 def check_spf_operating_mode_and_power_state(
     spf,
 ):

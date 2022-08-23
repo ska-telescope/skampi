@@ -50,7 +50,7 @@ def fxt_set_nr_of_subarray(
 
 
 @pytest.fixture(autouse=True, scope="session")
-def fxt_set_csp_online(
+def fxt_set_csp_online_from_csp(
     set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays: int
 ):
     """_summary_
@@ -60,7 +60,7 @@ def fxt_set_csp_online(
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
     """
-    logging.info("setting csp components online")
+    logging.info("setting csp components online within csp context")
     CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
     entry_point = CSPEntryPoint()
     set_subsystem_online(entry_point)

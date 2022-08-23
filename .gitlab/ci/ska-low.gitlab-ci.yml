@@ -15,17 +15,15 @@ low-test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
-    TEST_ENV: "BUILD_OUT"
+    TEST_ENV: "BUILD_IN"
     COUNT: 1
     TEL: low
   extends:
     - .tags_default
-    - .deploy_chart_before
   script:
-    - echo "########## Running Skampi Acceptance and End to End Tests"
-    - make python-test
-  after_script:
-    - make skampi-upload-test-results SKALLOP_VERSION=$SKALLOP_VERSION CAR_PYPI_REPOSITORY_URL=$CAR_PYPI_REPOSITORY_URL
+    - !reference [.deploy_chart_before, before_script]
+    - !reference [.test_deployment, script]
+    - !reference [.uninstall_chart, script]
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:
@@ -67,43 +65,6 @@ clean-low-test:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
   allow_failure: true
-  
-# low deploy to integration - on merge to default
-low_deploy_integration_k8s_test:
-  stage: deploy_integration
-  variables:
-    CONFIG: low
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "integration-$CONFIG"
-    KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
-    SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
-    ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
-    ADDMARKS: "k8s"
-    MARK: "not infra"
-  extends:
-    - .tags_default
-    - .uninstall_chart_before
-    - .deploy_chart_and_test_integration
-  environment:
-    name: "integration-low"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
-    on_stop: low_uninstall_integration
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
-  rules:
-    - if: $STRESS_TEST_DURATION
-      when: never
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 # teardown integration on stop
 low_uninstall_integration:

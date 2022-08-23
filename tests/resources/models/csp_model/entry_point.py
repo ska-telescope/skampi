@@ -123,6 +123,7 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             self._log(
                 f"commanding {subarray_name} with AssignResources: {csp_low_configuration} "
             )
+            subarray.set_timeout_millis(6000)
             subarray.command_inout("AssignResources", csp_low_configuration)
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
@@ -134,6 +135,7 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             self._log(
                 f"commanding {subarray_name} with AssignResources: {csp_mid_assign_resources} "
             )
+            subarray.set_timeout_millis(6000)
             subarray.command_inout("AssignResources", csp_mid_configuration)
 
     def undo(self, sub_array_id: int):
@@ -214,6 +216,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
             self._log(
                 f"commanding {subarray_name} with Configure: {cbf_low_configuration} "
             )
+            subarray.set_timeout_millis(6000)
             subarray.command_inout("Configure", cbf_low_configuration)
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
@@ -222,6 +225,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
             self._log(
                 f"commanding {subarray_name} with Configure: {csp_mid_configuration} "
             )
+            subarray.set_timeout_millis(6000)
             subarray.command_inout("Configure", csp_mid_configuration)
 
     def undo(self, sub_array_id: int):

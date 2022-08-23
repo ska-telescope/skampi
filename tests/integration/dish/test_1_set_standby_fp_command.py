@@ -8,12 +8,11 @@ import logging
 
 import pytest
 import tango
+from integration.dish.dish_enums import DishMode
 from integration.dish.utils import retrieve_attr_value
 from pytest_bdd import given, scenario, then, when
 from pytest_bdd.parsers import parse
 from tango import DevState
-
-from tests.integration.dish.dish_enums import DishMode
 
 LOGGER = logging.getLogger(__name__)
 

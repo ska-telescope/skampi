@@ -3,9 +3,9 @@ from datetime import datetime, timedelta
 
 import pytest
 import tango
-from dish_enums import Band, DishMode
+from integration.dish.dish_enums import Band, DishMode
+from integration.dish.utils import EventStore
 from tango import DeviceProxy
-from utils import EventStore
 
 LOGGER = logging.getLogger(__name__)
 

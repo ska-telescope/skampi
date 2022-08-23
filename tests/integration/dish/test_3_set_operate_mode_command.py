@@ -1,14 +1,12 @@
 import logging
-import time
 
 import pytest
-from integration.dish.utils import (
-    retrieve_attr_value,
-    wait_for_change_on_resource,
-)
-from pytest_bdd import scenario, then, when
+import tango
+from integration.dish.utils import retrieve_attr_value
+from pytest_bdd import given, scenario, then, when
 from pytest_bdd.parsers import parse
-from tango import CmdArgType
+
+from tests.integration.dish.dish_enums import DishMode
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,19 +21,29 @@ def test_set_operate_mode():
     pass
 
 
-@when(parse("I issue SetOperateMode command on dish_leaf_node"))
-def set_operate_mode(dish_leaf_node_device_name, devices_under_test):
+@given(parse("dish_manager dishMode reports {dish_mode}"))
+def check_dish_manager_dish_mode(dish_mode, dish_manager, modes_helper):
     # pylint: disable=missing-function-docstring
-    dish_leaf_node_proxy = devices_under_test[dish_leaf_node_device_name]
-    dish_leaf_node_proxy.SetOperateMode()
+    modes_helper.ensure_dish_manager_mode(dish_mode)
+    current_dish_mode = retrieve_attr_value(dish_manager, "dishMode")
+    LOGGER.info(f"{dish_manager} dishMode: {current_dish_mode}")
+
+@when("I issue SetOperateMode command on dish_leaf_node")
+def set_operate_mode(dish_leaf_node, dish_manager, dish_manager_event_store):
+    # pylint: disable=missing-function-docstring
+    dish_manager.subscribe_event(
+        "dishMode",
+        tango.EventType.CHANGE_EVENT,
+        dish_manager_event_store,
+    )
+
+    dish_leaf_node.SetOperateMode()
     LOGGER.info("DishLeafNode requested to set operate mode on dish")
 
 
 @then("dish_manager dishMode should report OPERATE")
-def check_dish_manager_dish_mode(dish_manager_device_name, devices_under_test):
+def check_dish_manager_dish_mode(dish_manager, dish_manager_event_store):
     # pylint: disable=missing-function-docstring
-    dish_manager_proxy = devices_under_test[dish_manager_device_name]
-    wait_for_change_on_resource(dish_manager_proxy, "dishMode", "OPERATE")
-    current_dish_mode = retrieve_attr_value(dish_manager_proxy, "dishMode")
-    assert current_dish_mode == "OPERATE"
-    LOGGER.info(f"{dish_manager_proxy} dishMode: {current_dish_mode}")
+    dish_manager_event_store.wait_for_value(DishMode["OPERATE"], timeout=60)
+    current_dish_mode = retrieve_attr_value(dish_manager, "dishMode")
+    LOGGER.info(f"{dish_manager} dishMode: {current_dish_mode}")

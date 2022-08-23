@@ -1,26 +1,8 @@
-import time
+import queue
+from typing import Any
 
+import tango
 from tango import CmdArgType
-
-
-def wait_for_change_on_resource(
-    dev_proxy, attr_name, expected_val, timeout=120
-):
-    """Wait a while for a change in an attribute value"""
-    checkpoint = timeout / 4
-    start_time = time.time()
-    time_elapsed = 0
-
-    while time_elapsed <= timeout:
-        current_val = retrieve_attr_value(dev_proxy, attr_name)
-        # for progress attributes check for presence (in)
-        if current_val == expected_val or expected_val in current_val:
-            break
-
-        if (time_elapsed % checkpoint) == 0:
-            print(f"Waiting for {attr_name} to transition to {expected_val}")
-            time.sleep(0.8 * checkpoint)
-        time_elapsed = int(time.time() - start_time)
 
 
 def retrieve_attr_value(dev_proxy, attr_name):
@@ -33,3 +15,102 @@ def retrieve_attr_value(dev_proxy, attr_name):
     else:
         current_val = current_val.value
     return current_val
+
+
+class EventStore:
+    """Store events with useful functionality"""
+
+    def __init__(self) -> None:
+        self._queue = queue.Queue()
+
+    def push_event(self, event: tango.EventData):
+        """Store the event
+
+        :param event: Tango event
+        :type event: tango.EventData
+        """
+        self._queue.put(event)
+
+    def wait_for_value(  # pylint:disable=inconsistent-return-statements
+        self, value: Any, timeout: int = 3
+    ):
+        """Wait for a value to arrive
+
+        Wait `timeout` seconds for each fetch.
+
+        :param value: The value to check for
+        :type value: Any
+        :param timeout: the get timeout, defaults to 3
+        :type timeout: int, optional
+        :raises RuntimeError: If None are found
+        :return: True if found
+        :rtype: bool
+        """
+        try:
+            while True:
+                event = self._queue.get(timeout=timeout)
+                if not event.attr_value:
+                    continue
+                if event.attr_value.value != value:
+                    continue
+                if event.attr_value.value == value:
+                    return True
+        except queue.Empty as err:
+            raise RuntimeError(
+                f"Never got an event with value [{value}]"
+            ) from err
+
+    # pylint:disable=inconsistent-return-statements
+    def wait_for_command_result(
+        self, command_id: str, command_result: Any, timeout: int = 5
+    ):
+        """Wait for a long running command result
+
+        Wait `timeout` seconds for each fetch.
+
+        :param command_id: The long running command ID
+        :type command_id: str
+        :param timeout: the get timeout, defaults to 3
+        :type timeout: int, optional
+        :raises RuntimeError: If none are found
+        :return: The result of the long running command
+        :rtype: str
+        """
+        try:
+            while True:
+                event = self._queue.get(timeout=timeout)
+                if not event.attr_value:
+                    continue
+                if not isinstance(event.attr_value.value, tuple):
+                    continue
+                if len(event.attr_value.value) != 2:
+                    continue
+                (lrc_id, lrc_result) = event.attr_value.value
+                if command_id == lrc_id and command_result == lrc_result:
+                    return True
+        except queue.Empty as err:
+            raise RuntimeError(
+                f"Never got an LRC result from command [{command_id}]"
+            ) from err
+
+    def clear_queue(self):
+        while not self._queue.empty():
+            self._queue.get()
+
+    #  pylint: disable=unused-argument
+    def get_queue_events(self, timeout: int = 3):
+        items = []
+        try:
+            while True:
+                items.append(self._queue.get(timeout=timeout))
+        except queue.Empty:
+            return items
+
+    def get_queue_values(self, timeout: int = 3):
+        items = []
+        try:
+            while True:
+                event = self._queue.get(timeout=timeout)
+                items.append((event.attr_value.name, event.attr_value.value))
+        except queue.Empty:
+            return items

@@ -123,7 +123,7 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             self._log(
                 f"commanding {subarray_name} with AssignResources: {csp_low_configuration} "
             )
-            subarray.command_inout("AssignResources", csp_low_configuration)
+            subarray.command_inout("AssignResources", csp_low_configuration, 6)
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
@@ -134,7 +134,7 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             self._log(
                 f"commanding {subarray_name} with AssignResources: {csp_mid_assign_resources} "
             )
-            subarray.command_inout("AssignResources", csp_mid_configuration)
+            subarray.command_inout("AssignResources", csp_mid_configuration, 6)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in csp.

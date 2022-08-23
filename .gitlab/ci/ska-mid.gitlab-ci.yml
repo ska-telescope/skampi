@@ -17,7 +17,7 @@ mid-test:
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
     OET_INGRESS_ENABLED: "true"
-    TEST_ENV: "BUILD_OUT"
+    TEST_ENV: "BUILD_IN"
     TEL: mid
   extends:
     - .tags_default

@@ -64,6 +64,8 @@ def fxt_set_session_exec_settings(
     if os.getenv("ATTR_SYNCH_DISABLED_GLOBALLY"):
         # logger.warning("disabled attribute synchronization globally")
         session_exec_settings.attr_synching = False
+    session_exec_settings.run_with_live_logging()
+    return session_exec_settings
 
 
 @pytest.fixture(name="run_mock")

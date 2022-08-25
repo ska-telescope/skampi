@@ -61,9 +61,9 @@ def fxt_conftest_settings() -> SutTestSettings:
 def fxt_set_session_exec_settings(
     session_exec_settings: fxt_types.session_exec_settings,
 ):
-    if os.getenv("ATTR_SYNCH_DISABLED_GLOBALLY"):
+    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
         # logger.warning("disabled attribute synchronization globally")
-        session_exec_settings.attr_synching = False
+        session_exec_settings.attr_synching = True
     session_exec_settings.run_with_live_logging()
     return session_exec_settings
 
@@ -123,6 +123,8 @@ def fxt_integration_test_exec_settings(
         integration_test_exec_settings.replay_events_afterwards()
     if os.getenv("ATTR_SYNCH_ENABLED"):
         logger.warning("enabled attribute synchronization")
+        exec_settings.attr_synching = True
+    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
         exec_settings.attr_synching = True
     return integration_test_exec_settings
 

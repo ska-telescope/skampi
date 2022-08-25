@@ -55,31 +55,22 @@ def check_dish_mode_and_state(
     dish_manager, dish_manager_event_store,
 ):
     # pylint: disable=missing-function-docstring
-    # check that the event for requested dishMode and State were received
+    # check that the events for requested dishMode are received
     attr, val = 0, 1
     dish_evts = dish_manager_event_store.get_queue_values(timeout=60)
+    LOGGER.info(dish_evts)
 
     # DISHMODE
     dish_mode_evts = [
         evt[val]
         for evt in dish_evts
-        if evt[attr] == "dishMode"
+        if evt[attr] == "dishmode"
     ]
     assert DishMode["STANDBY_FP"] in dish_mode_evts
-
-    # STATE
-    state_evts = [
-        evt[val]
-        for evt in dish_evts
-        if evt[attr] == "State"
-    ]
-    assert DevState.STANDBY in state_evts
    
     current_dish_mode = retrieve_attr_value(dish_manager, "dishMode")
-    current_dish_state = retrieve_attr_value(dish_manager, "State")
     LOGGER.info(
         f"{dish_manager} dishMode: {current_dish_mode}, "
-        f"State: {current_dish_state}"
     )
 
 
@@ -92,15 +83,15 @@ def check_ds_operating_mode_and_power_state(dish_structure):
     current_power_state = retrieve_attr_value(
         dish_structure, "powerState"
     )
-    assert current_operating_mode == "STANDBY-FP"
-    assert current_power_state == "FULL-POWER"
+    assert current_operating_mode == "STANDBY_FP"
+    assert current_power_state == "FULL_POWER"
     LOGGER.info(
         f"{dish_structure} operatingMode: {current_operating_mode}"
         f", powerState: {current_power_state}"
     )
 
 
-@then("spf operatingMode and powerState should report OPERATE and FULL-POWER")
+@then("spf operatingMode and powerState should report OPERATE and FULL_POWER")
 def check_spf_operating_mode_and_power_state(
     spf,
 ):
@@ -108,7 +99,7 @@ def check_spf_operating_mode_and_power_state(
     current_operating_mode = retrieve_attr_value(spf, "operatingMode")
     current_power_state = retrieve_attr_value(spf, "powerState")
     assert current_operating_mode == "OPERATE"
-    assert current_power_state == "FULL-POWER"
+    assert current_power_state == "FULL_POWER"
     LOGGER.info(
         f"{spf} operatingMode: {current_operating_mode},"
         f"powerState: {current_power_state}"
@@ -119,5 +110,5 @@ def check_spf_operating_mode_and_power_state(
 def check_spfrx_operating_mode(spfrx):
     # pylint: disable=missing-function-docstring
     current_operating_mode = retrieve_attr_value(spfrx, "operatingMode")
-    assert current_operating_mode == "DATA-CAPTURE"
+    assert current_operating_mode == "DATA_CAPTURE"
     LOGGER.info(f"{spfrx} operatingMode: {current_operating_mode}")

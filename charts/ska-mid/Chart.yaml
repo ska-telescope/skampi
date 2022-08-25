@@ -18,7 +18,7 @@ dependencies:
     repository: file://../../../ska-tmc-dishleafnode/charts/ska-tmc-dishleafnode
     alias: tmc-dishleafnode
   - name: ska-mid-dish-manager
-    version: 1.0.0
+    version: 1.1.0
     repository: file://../../../ska-mid-dish-manager/charts/ska-mid-dish-manager
     alias: mid-dish-manager
   # - name: ska-mid-cbf # CIPA team

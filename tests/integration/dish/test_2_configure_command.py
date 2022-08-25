@@ -18,6 +18,7 @@ def fixture_event_subs():
     return {"evt_id": None, "cb": None}
 
 
+@pytest.mark.xfail(reason="DishLeafNode command Configure not yet implemented!")
 @pytest.mark.skamid
 @scenario(
     "dish_leaf_node_configure.feature", "Test dishleafnode Configure command"
@@ -35,6 +36,7 @@ def check_dish_manager_dish_mode(dish_mode, dish_manager, modes_helper):
 
 @when("I issue Configure command on dish_leaf_node")
 def configure_band_2(
+    dish_leaf_node,
     dish_manager,
     dish_manager_event_store,
 ):
@@ -46,10 +48,13 @@ def configure_band_2(
         dish_manager_event_store,
     )
     dish_manager_event_store.clear_queue()
-
-    # dish_leaf_node_proxy.Configure()
-    future_time = datetime.utcnow() + timedelta(days=1)
-    dish_manager.ConfigureBand2(future_time.isoformat())
+    input = (
+        '{"pointing": {"target":{"system":"ICRS","name":"Polaris Australis","RA":"21:08:47.92","dec":"-88:57:22.9"}},'
+            '"dish":{"receiverBand":"2"}}'
+    )
+    dish_leaf_node.Configure(input)
+    # future_time = datetime.utcnow() + timedelta(days=1)
+    # dish_manager.ConfigureBand2(future_time.isoformat())
     LOGGER.info("DishLeafNode requested to configureband2 on dish")
 
 @then("dish_manager dishMode should report CONFIG briefly")

@@ -1351,7 +1351,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-ser-skallop"
-version = "2.20.5"
+version = "2.20.7"
 description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
 category = "main"
 optional = false
@@ -1546,7 +1546,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "28d118d99bc72b89f2c0720df1b5199b912ba99821469678d612fdf79f03c214"
+content-hash = "f63ac2f3fe03190676ff61152a9014f5ce0f0de8e1fc3c78760c56c0553e0995"
 
 [metadata.files]
 aiohttp = [
@@ -2204,8 +2204,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-ser-skallop = [
-    {file = "ska-ser-skallop-2.20.5.tar.gz", hash = "md5:058b0cf9fe23aed7c6994498dd529391"},
-    {file = "ska_ser_skallop-2.20.5-py3-none-any.whl", hash = "md5:aa0ed8eb584c840f52c867d28eddf405"},
+    {file = "ska-ser-skallop-2.20.7.tar.gz", hash = "sha256:72b0ee29fc47a11b584cb82b37b414729ff06fb4922378a29ab5b81d02b42fa6"},
+    {file = "ska_ser_skallop-2.20.7-py3-none-any.whl", hash = "sha256:87b72d9cb6d8e0d1b6a6a1392448df741eaed8f6117663d495e13f16a1ee12a7"},
 ]
 ska-telescope-model = [
     {file = "ska-telescope-model-1.3.1.tar.gz", hash = "md5:f15441afc500f210c3f21f2474973767"},

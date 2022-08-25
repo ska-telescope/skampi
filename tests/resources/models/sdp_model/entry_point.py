@@ -320,7 +320,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("SCANNING")
+        ).to_become_equal_to("SCANNING", ignore_first=True)
         return builder
 
     def set_wait_for_undo(

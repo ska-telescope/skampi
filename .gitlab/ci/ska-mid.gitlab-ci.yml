@@ -18,6 +18,7 @@ mid-test:
     DISABLE_MAINTAIN_ON: "True"
     OET_INGRESS_ENABLED: "true"
     TEST_ENV: "BUILD_IN"
+    ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     TEL: mid
   extends:
     - .tags_default

@@ -1963,7 +1963,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "17a9e035490ece1e404cd76104aece811d1b9d2780667f12a6e21a43a8be4044"
+content-hash = "f63ac2f3fe03190676ff61152a9014f5ce0f0de8e1fc3c78760c56c0553e0995"
 
 [metadata.files]
 aiohttp = [
@@ -2686,10 +2686,6 @@ ska-ser-logging = [
 ska-ser-skallop = [
     {file = "ska-ser-skallop-2.20.7.tar.gz", hash = "sha256:72b0ee29fc47a11b584cb82b37b414729ff06fb4922378a29ab5b81d02b42fa6"},
     {file = "ska_ser_skallop-2.20.7-py3-none-any.whl", hash = "sha256:87b72d9cb6d8e0d1b6a6a1392448df741eaed8f6117663d495e13f16a1ee12a7"},
-]
-ska-ser-skuid = [
-    {file = "ska-ser-skuid-3.3.3.tar.gz", hash = "md5:8bcaf303aab53a2e9652b4cdec1a7568"},
-    {file = "ska_ser_skuid-3.3.3-py3-none-any.whl", hash = "md5:d5803861cfe56450540360b445c9dfcc"},
 ]
 ska-telescope-model = [
     {file = "ska-telescope-model-1.3.1.tar.gz", hash = "md5:f15441afc500f210c3f21f2474973767"},

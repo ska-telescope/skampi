@@ -217,6 +217,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
             self._log(
                 f"commanding {subarray_name} with Configure: {cbf_low_configuration} "
             )
+            subarray.set_timeout_millis(6000)
             subarray.command_inout("Configure", cbf_low_configuration)
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
@@ -225,6 +226,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
             self._log(
                 f"commanding {subarray_name} with Configure: {csp_mid_configuration} "
             )
+            subarray.set_timeout_millis(6000)
             subarray.command_inout("Configure", csp_mid_configuration)
 
     def undo(self, sub_array_id: int):
@@ -333,7 +335,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
         subarray_name = self._tel.csp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("SCANNING")
+        ).to_become_equal_to("SCANNING", ignore_first=True)
         return builder
 
     def set_wait_for_undo(

@@ -27,26 +27,27 @@ class SutTestSettings(SimpleNamespace):
     mock_sut: bool = False
     nr_of_subarrays = 3
     subarray_id = 1
-    scan_duration = 1
-    _receptors=[1,2,3,4]
-    _nr_of_receptors=4
+    scan_duration = 4
+    _receptors = [1, 2, 3, 4]
+    _nr_of_receptors = 4
 
     @property
     def nr_of_receptors(self):
         return self._nr_of_receptors
 
     @nr_of_receptors.setter
-    def nr_of_receptors(self,value):
-        self._nr_of_receptors=value
-        self._receptors=[i for i in range(1,value+1)]
+    def nr_of_receptors(self, value):
+        self._nr_of_receptors = value
+        self._receptors = [i for i in range(1, value + 1)]
 
     @property
     def receptors(self):
         return self._receptors
-    
+
     @receptors.setter
-    def receptors(self,receptor):
-        self._receptors=receptor
+    def receptors(self, receptor):
+        self._receptors = receptor
+
 
 @pytest.fixture(name="sut_settings")
 def fxt_conftest_settings() -> SutTestSettings:
@@ -56,11 +57,17 @@ def fxt_conftest_settings() -> SutTestSettings:
 
 # setting systems online
 
+
 @pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
-def fxt_set_session_exec_settings(session_exec_settings: fxt_types.session_exec_settings):
-    if os.getenv("ATTR_SYNCH_DISABLED_GLOBALLY"):
-        #logger.warning("disabled attribute synchronization globally")
-        session_exec_settings.attr_synching = False
+def fxt_set_session_exec_settings(
+    session_exec_settings: fxt_types.session_exec_settings,
+):
+    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
+        # logger.warning("disabled attribute synchronization globally")
+        session_exec_settings.attr_synching = True
+    if os.getenv("LIVE_LOGGING_EXTENDED"):
+        session_exec_settings.run_with_live_logging()
+    return session_exec_settings
 
 
 @pytest.fixture(name="run_mock")
@@ -95,7 +102,7 @@ def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
     if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
         logger.warning("enabled attribute synchronization globally")
         exec_settings.attr_synching = True
-
+    exec_settings.time_out = 40
 
 
 @pytest.fixture(name="integration_test_exec_settings")
@@ -108,6 +115,7 @@ def fxt_integration_test_exec_settings(
     :return: test specific execution settings as a fixture
     """
     integration_test_exec_settings = exec_settings.replica()
+    integration_test_exec_settings.time_out = 40
 
     if os.getenv("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()
@@ -118,11 +126,14 @@ def fxt_integration_test_exec_settings(
     if os.getenv("ATTR_SYNCH_ENABLED"):
         logger.warning("enabled attribute synchronization")
         exec_settings.attr_synching = True
+    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
+        exec_settings.attr_synching = True
     return integration_test_exec_settings
 
 
 # global when steps
 # start up
+
 
 @when("I start up the telescope")
 def i_start_up_the_telescope(

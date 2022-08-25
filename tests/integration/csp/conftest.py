@@ -85,7 +85,6 @@ def fxt_set_csp_entry_point(
     :type sut_settings: conftest.SutTestSettings
     """
     exec_env = set_session_exec_env
-    exec_settings.time_out = 20
     if not sut_settings.mock_sut:
         CSPEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
         exec_env.entrypoint = CSPEntryPoint

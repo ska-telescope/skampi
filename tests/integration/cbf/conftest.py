@@ -46,7 +46,6 @@ def fxt_set_cbf_entry_point(
     :type exec_settings: fxt_types.exec_settings
     """
     exec_env = set_session_exec_env
-    exec_settings.time_out = 20
     if not sut_settings.mock_sut:
         CBFEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
         exec_env.entrypoint = CBFEntryPoint

@@ -1602,7 +1602,7 @@ bit = ["pytango"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "37dca977f613dca843ada82cb1cdac6e5ef280104779191fac88eb8967386234"
+content-hash = "f63ac2f3fe03190676ff61152a9014f5ce0f0de8e1fc3c78760c56c0553e0995"
 
 [metadata.files]
 aiohttp = [

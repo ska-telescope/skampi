@@ -16,6 +16,7 @@ low-test:
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_IN"
+    ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     COUNT: 1
     TEL: low
   extends:

@@ -8,6 +8,7 @@ from pytest_bdd import given, scenario, then
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
 
@@ -21,8 +22,8 @@ logger = logging.getLogger(__name__)
 def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
 
-
-
+# marked as xfail due to SKB-170
+@pytest.mark.xfail
 @pytest.mark.skamid
 @pytest.mark.standby
 @scenario("features/tmc_start_up_telescope.feature", "Switch of the telescope")
@@ -177,11 +178,12 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
 
 
 @then("the sdp, csp and dish must be off")
-def the_sdp_csp_and_dish_must_be_off(sut_settings: conftest.SutTestSettings):
+def the_sdp_csp_and_dish_must_be_off(sut_settings: conftest.SutTestSettings, integration_test_exec_settings: fxt_types.exec_settings,):
     """the sdp, csp and dish must be off."""
     tel = names.TEL()
     mid = names.Mid()
     # Check state attribute of SDP Master
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(str(tel.tm.central_node))
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value
     assert_that(str(result)).is_equal_to("OFF")

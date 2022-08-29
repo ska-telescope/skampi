@@ -15,6 +15,7 @@ mid-test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
+    OET_INGRESS_ENABLED: "true"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     TEL: mid
@@ -25,7 +26,7 @@ mid-test:
     - !reference [.test_deployment, script]
     - !reference [.uninstall_chart, script]
   environment:
-    name: test/ska-$CONFIG-k8s-$CI_COMMIT_REF_SLUG
+    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
@@ -157,6 +158,7 @@ mid_on_demand_deploy:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+    OET_INGRESS_ENABLED: "true"
   extends:
     - .tags_default
     - .deploy_chart_before

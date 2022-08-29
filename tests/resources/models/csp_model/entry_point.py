@@ -148,6 +148,7 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with ReleaseAllResources")
+        subarray.set_timeout_millis(6000)
         subarray.command_inout("ReleaseAllResources")
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:

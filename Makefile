@@ -107,7 +107,7 @@ KUBE_APP = ska-tango-images
 CI_JOB_ID ?= local##local default for ci job id
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
-K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.9.1## docker image that will be run for testing purpose
+K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.19.6## docker image that will be run for testing purpose
 
 # import your personal semi-static config
 -include PrivateRules.mak
@@ -115,6 +115,11 @@ K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.9.1## docker image
 # add `--values <file>` for each space-separated file in VALUES that exists
 ifneq (,$(wildcard $(VALUES)))
 	K8S_CHART_PARAMS += $(foreach f,$(wildcard $(VALUES)),--values $(f))
+endif
+
+# overwrite values.yaml for OET ingress if OET_INGRESS_ENABLED is defined
+ifdef OET_INGRESS_ENABLED
+	K8S_CHART_PARAMS += --set ska-oso-oet.rest.ingress.enabled=$(OET_INGRESS_ENABLED)
 endif
 
 ifeq ($(strip $(MINIKUBE)),true)
@@ -154,7 +159,6 @@ ifneq (,$(findstring low,$(KUBE_NAMESPACE)))
 	SUBARRAY = 'ska_low/tm_subarray_node'
 endif
 
-PUBSUB = true
 
 # Makefile target for test in ./tests/Makefile
 K8S_TEST_TARGET = test
@@ -171,7 +175,6 @@ K8S_TEST_MAKE_PARAMS = \
 	SKA_TELESCOPE=$(TELESCOPE) \
 	CENTRALNODE_FQDN=$(CENTRALNODE) \
 	SUBARRAYNODE_FQDN_PREFIX=$(SUBARRAY) \
-	OET_READ_VIA_PUBSUB=$(PUBSUB) \
 	JIRA_AUTH=$(JIRA_AUTH) \
 	CAR_RAW_USERNAME=$(RAW_USER) \
 	CAR_RAW_PASSWORD=$(RAW_PASS) \
@@ -234,13 +237,6 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 	echo \$$? > build/status; pip list > build/pip_list.txt; \
 	echo \"k8s_test_command: test command exit is: \$$(cat build/status)\"; \
 	tar zcf ../results-pipe build;"
-
-python-pre-test: # must pass the current kubeconfig into the test container for infra tests
-	@if [[ "$$CI_JOB_ID" ]]; then \
-		echo "Running modified python-pre-test for CI job"; \
-		bash scripts/gitlab_section.sh pip_install "Installing Pytest Requirements" pip3 install .; \
-	fi
-
 
 # use hook to create SDP namespace
 k8s-pre-install-chart:

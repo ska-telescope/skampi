@@ -1,5 +1,0 @@
-pylint
-black
-rope
-pip-tools
-pylint_junit

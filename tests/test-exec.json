@@ -15,21 +15,6 @@
                 "XTP-4804": "XTP-4804",
                 "default": "XTP-3324"
             }
-        },
-        {
-            "select_from_tag": {
-                "XTP-3325": "XTP-6125",
-                "XTP-3324": "XTP-6104",
-                "default": "XTP-6104"
-            }
-        }
-        ,
-        {
-            "select_from_tag": {
-                "XTP-3325": "XTP-6125",
-                "XTP-3324": "XTP-5573",
-                "default": ""
-            }
         }
     ],
     "name": {
@@ -74,7 +59,7 @@
             "env": "CI_COMMIT_BRANCH",
             "maps_to": {
                 "default": "",
-                "master": "PI14"
+                "master": "PI15"
             }
         }
     ],

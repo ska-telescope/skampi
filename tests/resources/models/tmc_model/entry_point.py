@@ -1,21 +1,20 @@
 """Domain logic for the tmc."""
-import logging
-from typing import Union, List
-import os
 import json
+import logging
+import os
+from typing import List, Union
 
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import composition as comp
 from ska_ser_skallop.mvp_control.configuration import types
-from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
-    NoOpStep,
     MessageBoardBuilder,
+    NoOpStep,
 )
-from ska_ser_skallop.mvp_control.entry_points import base
-from ska_ser_skallop.event_handling.builders import get_message_board_builder
-
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +23,7 @@ class LogEnabled:
     """class that allows for logging if set by env var"""
 
     def __init__(self) -> None:
-        self._live_logging = bool(os.getenv("DEBUG"))
+        self._live_logging = bool(os.getenv("DEBUG_ENTRYPOINT"))
         self._tel = names.TEL()
 
     def _log(self, mssage: str):
@@ -35,9 +34,12 @@ class LogEnabled:
 class StartUpStep(base.ObservationStep, LogEnabled):
     """Implementation of Startup step for SDP"""
 
-    def __init__(self, nr_of_subarrays: int) -> None:
+    def __init__(
+        self, nr_of_subarrays: int = 3, receptors: list[int] = [1, 2, 3, 4]
+    ) -> None:
         super().__init__()
         self.nr_of_subarrays = nr_of_subarrays
+        self.receptors = receptors
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to TMC.
@@ -45,14 +47,14 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         This implements the set_telescope_to_running method on the entry_point.
         """
         central_node_name = self._tel.tm.central_node
-        central_node = con_config.get_device_proxy(central_node_name)
+        central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         self._log(f"Commanding {central_node_name} with TelescopeOn")
         central_node.command_inout("TelescopeOn")
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifying what needs to be waited for before startup of telescope is done."""
         brd = get_message_board_builder()
-        # TODO set what needs to be waited before start up completes
+        # set sdp master and sdp subarray to be waited before startup completes
         brd.set_waiting_on(self._tel.sdp.master).for_attribute(
             "state"
         ).to_become_equal_to("ON", ignore_first=False)
@@ -60,6 +62,28 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("ON")
+        # set csp controller and csp subarray to be waited before startup completes
+        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+            "state"
+        ).to_become_equal_to("ON", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("ON", ignore_first=False)
+        # we wait for cbf vccs to be in proper initialised state
+        brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
+            "reportVccState"
+        ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
+        # set dish master to be waited before startup completes
+        if self._tel.skamid:
+            for dish in self._tel.skamid.dishes(self.receptors):
+                brd.set_waiting_on(dish).for_attribute(
+                    "state"
+                ).to_become_equal_to("ON",ignore_first=False)
+        # set centralnode telescopeState waited before startup completes
+        brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
+            "telescopeState"
+        ).to_become_equal_to("ON", ignore_first=False)
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
@@ -77,14 +101,32 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("OFF")
+        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+            "state"
+        ).to_become_equal_to("OFF", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF", ignore_first=False)
+        # set dish master to be waited before startup completes
+        if self._tel.skamid:
+            for dish in self._tel.skamid.dishes(self.receptors):
+                brd.set_waiting_on(dish).for_attribute(
+                    "state"
+                ).to_become_equal_to("STANDBY",ignore_first=False)
+        # set centralnode telescopeState waited before startup completes
+        brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
+            "telescopeState"
+        ).to_become_equal_to("STANDBY", ignore_first=False)
         return brd
 
     def undo(self):
         """Domain logic for switching the telescope off using tmc."""
         central_node_name = self._tel.tm.central_node
-        central_node = con_config.get_device_proxy(central_node_name)
+        central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         self._log(f"Commanding {central_node_name} with TelescopeOff")
         central_node.command_inout("TelescopeOff")
+
 
 # TODO: Implement AssignResources and ReleaseResources
 class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
@@ -112,17 +154,16 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sb_id: a generic id to identify a sb to assign resources
         """
         # currently ignore composition as all types will be standard
-        subarray_name = self._tel.tm.subarray(sub_array_id)
-        subarray = con_config.get_device_proxy(subarray_name)
+        central_node_name = self._tel.tm.central_node
+        central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
+
         standard_composition = comp.generate_standard_comp(
             sub_array_id, dish_ids, sb_id
         )
-        tmc_standard_composition = json.dumps(json.loads(standard_composition)["sdp"])
-        self._log(
-            f"commanding {subarray_name} with AssignResources: {tmc_standard_composition} "
-        )
-        # TODO verify command correctness
-        subarray.command_inout("AssignResources", tmc_standard_composition)
+
+        self._log(f"Commanding {central_node_name} with AssignRescources")
+
+        central_node.command_inout("AssignResources", standard_composition)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -131,11 +172,11 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        subarray_name = self._tel.tm.subarray(sub_array_id)
-        subarray = con_config.get_device_proxy(subarray_name)
-        self._log(f"Commanding {subarray_name} to ReleaseResources")
-        # TODO verify command correctness
-        subarray.command_inout("ReleaseResources")
+        central_node_name = self._tel.tm.central_node
+        central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
+        tear_down_composition = comp.generate_tear_down_all_resources(sub_array_id)
+        self._log(f"Commanding {central_node_name} with ReleaseRescources")
+        central_node.command_inout("ReleaseResources", tear_down_composition)
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
@@ -143,7 +184,17 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
-        # TODO determine what needs to be waited for
+ 
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
         return brd
 
     def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -156,7 +207,17 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
-        # TODO determine what needs to be waited for
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+
         return brd
 
 
@@ -316,16 +377,88 @@ class ScanStep(base.ScanStep, LogEnabled):
         return None
 
 
+class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
+    """Domain logic for setting csp to online"""
+
+    def __init__(self, nr_of_subarrays: int) -> None:
+        super().__init__()
+        self.nr_of_subarrays = nr_of_subarrays
+
+    def do(self):
+        """Domain logic for setting devices in csp to online."""
+        controller_name = self._tel.csp.controller
+        controller = con_config.get_device_proxy(controller_name, fast_load=True)
+        self._log(f"Setting adminMode for {controller_name} to '0' (ONLINE)")
+        controller.write_attribute("adminmode", 0)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray_name = self._tel.csp.subarray(index)
+            subarray = con_config.get_device_proxy(subarray_name, fast_load=True)
+            self._log(f"Setting adminMode for {subarray_name} to '0' (ONLINE)")
+            subarray.write_attribute("adminmode", 0)
+
+    def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
+        """Domain logic for waiting for setting to online to be complete."""
+        controller_name = self._tel.csp.controller
+        builder = get_message_board_builder()
+        builder.set_waiting_on(controller_name).for_attribute(
+            "adminMode"
+        ).to_become_equal_to("ONLINE", ignore_first=False)
+        builder.set_waiting_on(controller_name).for_attribute(
+            "state"
+        ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray = self._tel.csp.subarray(index)
+            builder.set_waiting_on(subarray).for_attribute(
+                "adminMode"
+            ).to_become_equal_to("ONLINE", ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
+                ["OFF", "ON"], ignore_first=False
+            )
+        return builder
+
+    def undo(self):
+        """Domain logic for setting devices in csp to offline."""
+        controller_name = self._tel.csp.controller
+        controller = con_config.get_device_proxy(controller_name, fast_load=True)
+        self._log(f"Setting adminMode for {controller_name} to '1' (OFFLINE)")
+        controller.write_attribute("adminmode", 1)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray_name = self._tel.csp.subarray(index)
+            subarray = con_config.get_device_proxy(subarray_name, fast_load=True)
+            self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
+            subarray.write_attribute("adminmode", 1)
+
+    def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
+        """Domain logic for waiting for setting to offline to be complete."""
+        controller_name = self._tel.csp.controller
+        builder = get_message_board_builder()
+        builder.set_waiting_on(controller_name).for_attribute(
+            "adminMode"
+        ).to_become_equal_to("OFFLINE", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray = self._tel.csp.subarray(index)
+            builder.set_waiting_on(subarray).for_attribute(
+                "adminMode"
+            ).to_become_equal_to("OFFLINE", ignore_first=False)
+        return builder
+
+    def set_wait_for_doing(self) -> MessageBoardBuilder:
+        """Not implemented."""
+        raise NotImplementedError()
+
+
 class TMCEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2
+    nr_of_receptors = 4
+    receptors = [1, 2, 3, 4]
 
     def __init__(self) -> None:
         """Init Object"""
         super().__init__()
-        self.set_online_step = NoOpStep()
-        self.start_up_step = StartUpStep(self.nr_of_subarrays)
+        self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
+        self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
         self.assign_resources_step = AssignResourcesStep()
         self.configure_scan_step = ConfigureStep()
         self.scan_step = ScanStep()

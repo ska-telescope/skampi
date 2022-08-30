@@ -78,20 +78,22 @@ ska-taranta:
         cpu: 1000m # 1000m = 1 CPU
         memory: 1024Mi # 1024Mi = 1 GB mem
 
-ska-oso-scripting:
+ska-oso-oet:
   enabled: true
-  ingress:
-    hostname: k8s.stfc.skao.int
   system: TM-mid
   telescope: SKA-mid
   central_node: ska_mid/tm_central/central_node
   subarray: ska_mid/tm_subarray_node
-  jupyter:
-    featureFlags:
-      readViaPubSub: true
   rest:
-    featureFlags:
-      readViaPubSub: true
+    ingress:
+      enabled: false
+  resources:
+    requests:
+      cpu:  200m
+      memory: 256Mi
+    limits:
+      cpu:  2000m
+      memory: 1024Mi
 
 #telescope control
 ## mid-cbf
@@ -113,25 +115,9 @@ ska-sdp:
 
 ## tmc
 tmc-mid:
-  enabled: false
+  enabled: true
   telescope: SKA-mid
-  deviceServers:
-    centralnode:
-      enabled: true
-
-    subarraynode:
-      enabled: true
-
-    sdpsubarrayleafnode:
-      enabled: true
-
-    sdpmasterleafnode:
-      enabled: true
-
-    mocks:
-      enabled: true
-
-
+ 
 ska-tango-archiver:
   enabled: true
   dbname: default_mvp_archiver_db

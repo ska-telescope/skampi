@@ -147,6 +147,21 @@ For an understanding of how Helm Charts are used in the SKAMPI project, please g
 ## Development
 The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.
 
+### Setting up your development environment
+Development environments are not being dictated at the SKA. However, the development environment can be provisioned for VSCode developers by using a combination of the `.devcontainer` and the `.vscode` settings (launch configurations and environment setup).
+
+Developers should take care not to confuse localised development environments with the environments provided by the standard deployment and testing container images used in CI Pipelines, as these represent supported dependencies in as many as possible maintained by the System Team.
+
+To run from the `.devcontainer` provided, copy the `/resources/vscode/devcontainer` folder to `<skampi-root>/.devcontainer`, and `/resources/vscode/vscode` to `<skampi-root>/.vscode`. This can also be done by using 
+
+``` make dev-vscode```
+
+If not running in a Dev Container, do:
+- Copy the `settings` object from `.devcontainer.json` to `.vscode/settings.json`;
+- Look at what is installed in the Dockerfile under the `.devcontainer/` directory and install these packages;
+- Install one by one the VSCode plugins listed under `"extensions"` in `.devcontainer/devcontainer.json`;
+- Run the commands in the `.devcontainer/devcontainer.json` file's `"postCreateCommand":` object (such as setting up the `poetry` virtualenvironment in your project - this is used in the linter setup);
+
 ### Adding a new product/component
 This is an example of how the deployment would look, if a new application ("Application three"), were to be added to the minimal deployment described in the section on [Modifying deployment configuration](#modifying-deployment-configuration):
 ```{mermaid}

@@ -27,7 +27,7 @@ class LogEnabled:
     """class that allows for logging if set by env var"""
 
     def __init__(self) -> None:
-        self._live_logging = bool(os.getenv("DEBUG"))
+        self._live_logging = bool(os.getenv("DEBUG_ENTRYPOINT"))
         self._tel = names.TEL()
 
     def _log(self, mssage: str):
@@ -320,7 +320,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("SCANNING")
+        ).to_become_equal_to("SCANNING", ignore_first=True)
         return builder
 
     def set_wait_for_undo(

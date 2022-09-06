@@ -1,0 +1,20 @@
+{
+  "gain_cal": {
+    "reference_frame": "J2000",
+    "target_name": "B1646-50",
+    "ra": "16:50:16.635",
+    "dec": " -50:44:48.37",
+    "on_source": "30.0",
+    "expect_flux":"2.5",
+    "profile": "flat"
+  },
+  "science_1": {
+    "reference_frame": "J2000",
+    "target_name": "SDC335.572-0.292",
+    "ra": "16:30:58.638",
+    "dec": "-48:43:51.70",
+    "on_source": "300.0",
+    "expect_flux":"0.05",
+    "profile": "gaussian"
+  }
+}

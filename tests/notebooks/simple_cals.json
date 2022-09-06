@@ -1,0 +1,20 @@
+{
+  "flux_cal": {
+    "reference_frame": "ICRS",
+    "target_name": "B1934-638",
+    "ra": "19:39:25.026",
+    "dec": "-63:42:45.63",
+    "on_source": "100.0",
+    "expect_flux":"5.0",
+    "profile": "flat"
+  },
+  "bandpass_cal": {
+    "reference_frame": "ICRS",
+    "target_name": "B1253-055",
+    "ra": "12:56:11.167",
+    "dec": "-63:42:45.63",
+    "on_source": "200.0",
+    "expect_flux":"12.0",
+    "profile": "flat"
+  }
+}

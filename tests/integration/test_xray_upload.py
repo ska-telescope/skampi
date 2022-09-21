@@ -13,7 +13,7 @@ from pytest_bdd import (
 )
 
 # declare pytestmark globally so that the whole scenario can be marked as infra
-pytestmark = pytest.mark.infra
+# pytestmark = pytest.mark.infra
 
 
 # @scenario("features/xray_upload.feature", "SKAMPI CI Pipeline tests execute on SKAMPI")

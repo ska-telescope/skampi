@@ -41,6 +41,8 @@ include:
   - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
   # Jobs to run on PSI Low
   - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
+  # Jobs to run on PSI Mid
+  - local: "/.gitlab/ci/psi-mid.gitlab-ci.yml"
 
   # Helm Charts
   - project: "ska-telescope/templates-repository"

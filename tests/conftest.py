@@ -37,7 +37,6 @@ def pytest_addoption(parser):
         ),
     )
 
-
 # @pytest.fixture
 # def tango_context(devices_to_load, request):
 #     true_context = request.config.getoption("--true-context")

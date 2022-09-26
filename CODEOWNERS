@@ -8,7 +8,7 @@
 # by the rest of the file 
 # Members:
 # - All
-* @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @ska-telescope/ska-dev/skao-team-system 
+* @adb-42 @mmarquar @ben.mort @majashdown @gerhardlr @adam-avison @scpmw @abridger @sonja.vrcic @tjuerges @ska-telescope/ska-dev/skao-team-system 
 
 # Other
 # Members:
@@ -38,7 +38,7 @@
 # Members (POs/PMs, caretakers):
 # - AIV Low: Malte Marquarding
 # - AIV Mid: Adriaan De Beer
-# - Caretakers: Juande, Santander-Vela, Ben Mort, Gerhard LeRoux, Adam Avison
+# - Caretakers: Ben Mort, Gerhard LeRoux, Adam Avison, Mark Ashdown
 # ---------------------------------------- #
 # Tests Reviewers, A2, and Test Management Reviewers, H2
 # Description:
@@ -89,13 +89,13 @@
 
 ## Assignments
 # A1
-/charts/ @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
-.release @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison 
+/charts/ @adb-42 @mmarquar @ben.mort @gerhardlr @majashdown @adam-avison 
+.release @adb-42 @mmarquar @ben.mort @gerhardlr @majashdown @adam-avison 
 
 # H1
-/charts/ska-mid/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison
-/charts/ska-low/values.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison
-pipeline.yaml @adb-42 @mmarquar @juandesant @ben.mort @gerhardlr @adam-avison
+/charts/ska-mid/values.yaml @adb-42 @mmarquar @ben.mort @gerhardlr @adam-avison
+/charts/ska-low/values.yaml @adb-42 @mmarquar @ben.mort @gerhardlr @adam-avison
+pipeline.yaml @adb-42 @mmarquar @ben.mort @gerhardlr @adam-avison
 
 # A2
 /tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr

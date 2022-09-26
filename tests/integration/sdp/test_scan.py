@@ -58,6 +58,7 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
     result = sdp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.SCANNING)
     # afterwards it must be ready
+    context_monitoring.re_init_builder()
     context_monitoring.wait_for(sdp_subarray_name).for_attribute(
         "obsstate"
     ).to_become_equal_to(

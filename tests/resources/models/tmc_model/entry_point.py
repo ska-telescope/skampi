@@ -47,7 +47,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         This implements the set_telescope_to_running method on the entry_point.
         """
         central_node_name = self._tel.tm.central_node
-        central_node = con_config.get_device_proxy(central_node_name)
+        central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         self._log(f"Commanding {central_node_name} with TelescopeOn")
         central_node.command_inout("TelescopeOn")
 
@@ -79,7 +79,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             for dish in self._tel.skamid.dishes(self.receptors):
                 brd.set_waiting_on(dish).for_attribute(
                     "state"
-                ).to_become_equal_to("ON")
+                ).to_become_equal_to("ON",ignore_first=False)
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -113,7 +113,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             for dish in self._tel.skamid.dishes(self.receptors):
                 brd.set_waiting_on(dish).for_attribute(
                     "state"
-                ).to_become_equal_to("STANDBY")
+                ).to_become_equal_to("STANDBY",ignore_first=False)
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -123,7 +123,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
     def undo(self):
         """Domain logic for switching the telescope off using tmc."""
         central_node_name = self._tel.tm.central_node
-        central_node = con_config.get_device_proxy(central_node_name)
+        central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         self._log(f"Commanding {central_node_name} with TelescopeOff")
         central_node.command_inout("TelescopeOff")
 
@@ -155,7 +155,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         # currently ignore composition as all types will be standard
         central_node_name = self._tel.tm.central_node
-        central_node = con_config.get_device_proxy(central_node_name)
+        central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
 
         standard_composition = comp.generate_standard_comp(
             sub_array_id, dish_ids, sb_id
@@ -173,7 +173,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         central_node_name = self._tel.tm.central_node
-        central_node = con_config.get_device_proxy(central_node_name)
+        central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         tear_down_composition = comp.generate_tear_down_all_resources(sub_array_id)
         self._log(f"Commanding {central_node_name} with ReleaseRescources")
         central_node.command_inout("ReleaseResources", tear_down_composition)
@@ -207,7 +207,6 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
-
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("EMPTY")
@@ -388,12 +387,12 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
     def do(self):
         """Domain logic for setting devices in csp to online."""
         controller_name = self._tel.csp.controller
-        controller = con_config.get_device_proxy(controller_name)
+        controller = con_config.get_device_proxy(controller_name, fast_load=True)
         self._log(f"Setting adminMode for {controller_name} to '0' (ONLINE)")
         controller.write_attribute("adminmode", 0)
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.csp.subarray(index)
-            subarray = con_config.get_device_proxy(subarray_name)
+            subarray = con_config.get_device_proxy(subarray_name, fast_load=True)
             self._log(f"Setting adminMode for {subarray_name} to '0' (ONLINE)")
             subarray.write_attribute("adminmode", 0)
 
@@ -420,12 +419,12 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
     def undo(self):
         """Domain logic for setting devices in csp to offline."""
         controller_name = self._tel.csp.controller
-        controller = con_config.get_device_proxy(controller_name)
+        controller = con_config.get_device_proxy(controller_name, fast_load=True)
         self._log(f"Setting adminMode for {controller_name} to '1' (OFFLINE)")
         controller.write_attribute("adminmode", 1)
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.csp.subarray(index)
-            subarray = con_config.get_device_proxy(subarray_name)
+            subarray = con_config.get_device_proxy(subarray_name, fast_load=True)
             self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
             subarray.write_attribute("adminmode", 1)
 

@@ -34,29 +34,20 @@ the SKA Regional Centres.
 OET (Observation Execution Tool)
 ================================
 
-The OET is an application, which provides on-demand Python script
+The OET is an application providing on-demand Python script
 (telescope control script) execution for the SKA.
 
-- |oet_rest_layers|
-- |oet_scripts|
-- |script_execution|
-- |oet_jupyter|
+- |oet_cli|
+- |oet_architecture|
 
-.. |oet_rest_layers| raw:: html
+.. |oet_cli| raw:: html
 
-    <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-oet/en/latest/index.html" target="_blank">OET Rest layers</a>
+    <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-oet/en/latest/cli.html" target="_blank">OET command line tool and usage</a>
 
-.. |oet_scripts| raw:: html
+.. |oet_architecture| raw:: html
 
-    <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/index.html" target="_blank">OET scripts</a>
+    <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-oet/en/latest/architecture_backend_candc.html" target="_blank">OET architecture</a>
 
-.. |script_execution| raw:: html
-
-    <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/script_execution.html" target="_blank">Telescope control script execution</a>
-
-.. |oet_jupyter| raw:: html
-
-    <a href="https://developer.skao.int/projects/ska-telescope-ska-oso-scripting/en/latest/oet_with_skampi.html#accessing-jupyter-on-skampi" target="_blank">OET Jupyter Notebooks for direct SKAMPI interactions</a>
 
 Taranta
 ===============

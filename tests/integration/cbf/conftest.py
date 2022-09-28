@@ -1,11 +1,14 @@
 """Pytest fixtures and bdd step implementations specific to cbf integration tests."""
+import logging
 import os
 import pytest
+from typing import Callable
 
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.cbf_model.entry_point import CBFEntryPoint
 from resources.models.cbf_model.mocking import setup_cbf_mock
 
@@ -29,6 +32,25 @@ def fxt_set_nr_of_subarray(
     :type sut_settings: conftest.SutTestSettings
     """
     sut_settings.nr_of_subarrays = nr_of_subarrays
+
+
+@pytest.fixture(autouse=True, scope="session")
+def fxt_set_cbf_online_from_cbf(
+    set_session_exec_settings: fxt_types.session_exec_settings,
+    set_subsystem_online: Callable[[EntryPoint], None],
+    nr_of_subarrays: int
+):
+    """_summary_
+
+    :param nr_of_subarrays: _description_
+    :type nr_of_subarrays: int
+    :param set_subsystem_online: _description_
+    :type set_subsystem_online: Callable[[EntryPoint], None]
+    """
+    logging.info("setting csp components online within csp context")
+    CBFEntryPoint.nr_of_subarrays = nr_of_subarrays
+    entry_point = CBFEntryPoint()
+    set_subsystem_online(entry_point)
 
 
 @pytest.fixture(name="set_cbf_entry_point", autouse=True)

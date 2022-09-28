@@ -29,7 +29,7 @@ class LogEnabled:
     """class that allows for logging if set by env var"""
 
     def __init__(self) -> None:
-        self._live_logging = bool(os.getenv("DEBUG"))
+        self._live_logging = bool(os.getenv("DEBUG_ENTRYPOINT"))
         self._tel = names.TEL()
 
     def _log(self, mssage: str):

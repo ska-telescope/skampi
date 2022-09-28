@@ -449,7 +449,7 @@ class CBFEntryPoint(CompositeEntryPoint):
     def __init__(self) -> None:
         """Init Object"""
         super().__init__()
-        self.set_online_step = CBFSetOnlineStep()
+        self.set_online_step = CBFSetOnlineStep(self.nr_of_subarrays)
         self.start_up_step = StartUpStep(self.nr_of_subarrays)
         self.assign_resources_step = CbfAsignResourcesStep()
         self.configure_scan_step = CbfConfigureStep()

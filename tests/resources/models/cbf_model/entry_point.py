@@ -468,7 +468,6 @@ cbf_low_start_scan = {
 }
 
 cbf_low_assign_resources = {
-    "common": {"subarrayID": 1},
     "lowcbf": {
         "resources": [
             {"device": "fsp_01", "fw_image": "pst", "fw_mode": "unused"},

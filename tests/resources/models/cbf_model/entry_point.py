@@ -471,10 +471,8 @@ cbf_low_assign_resources = {
     "common": {"subarrayID": 1},
     "lowcbf": {
         "resources": [
-            {"device": "fsp_01", "shared": true,
-                "fw_image": "pst", "fw_mode": "unused"},
-            {"device": "p4_01", "shared": true,
-                "fw_image": "p4.bin", "fw_mode": "p4"}
+            {"device": "fsp_01", "fw_image": "pst", "fw_mode": "unused"},
+            {"device": "p4_01", "fw_image": "p4.bin", "fw_mode": "p4"}
         ],
     },
 }

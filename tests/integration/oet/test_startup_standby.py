@@ -75,7 +75,11 @@ def run_startup_script(
 
     with context_monitoring.observe_while_running(integration_test_exec_settings):
         standby_telescope.switch_off_after_test(integration_test_exec_settings)
-        script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
+        script_completion_state = EXECUTOR.execute_script(
+            script=script,
+            timeout=30,
+            script_create_kwargs={"create_env": True, "git_args": {"git_branch": "btn-681-observingtask-refactor"}}
+        )
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
@@ -100,7 +104,11 @@ def run_standby_script(
     with context_monitoring.observe_while_running(integration_test_exec_settings):
         running_telescope.disable_automatic_setdown()
         with running_telescope.wait_for_shutting_down():
-            script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
+            script_completion_state = EXECUTOR.execute_script(
+                script=script,
+                timeout=30,
+                script_create_kwargs={"create_env": True, "git_args": {"git_branch": "btn-681-observingtask-refactor"}}
+            )
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"

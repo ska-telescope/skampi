@@ -105,7 +105,11 @@ def when_create_sbi(
         sb_json (str): file path to a scheduling block
     """
     with context_monitoring.observe_while_running():
-        script_completion_state = EXECUTOR.execute_script(script, sb_json)
+        script_completion_state = EXECUTOR.execute_script(
+            script,
+            sb_json,
+            script_create_kwargs={"create_env": True, "git_branch": "btn-681-observingtask-refactor"}
+        )
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected SBI creation script to be COMPLETED, instead was {script_completion_state}"
@@ -135,7 +139,11 @@ def when_allocate_resources_from_sbi(
         running_telescope.release_subarray_when_finished(
             sut_settings.subarray_id, sut_settings.receptors, exec_settings
         )
-        script_completion_state = EXECUTOR.execute_script(script, sb_json)
+        script_completion_state = EXECUTOR.execute_script(
+            script,
+            sb_json,
+            script_create_kwargs={"create_env": True, "git_branch": "btn-681-observingtask-refactor"}
+        )
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
@@ -159,7 +167,10 @@ def when_release_resources(
     """
     allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
-        script_completion_state = EXECUTOR.execute_script(script)
+        script_completion_state = EXECUTOR.execute_script(
+            script,
+            script_create_kwargs={"create_env": True, "git_branch": "btn-681-observingtask-refactor"}
+        )
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"

@@ -108,7 +108,7 @@ def when_create_sbi(
         script_completion_state = EXECUTOR.execute_script(
             script,
             sb_json,
-            script_create_kwargs={"create_env": True, "git_branch": "btn-681-observingtask-refactor"}
+            script_create_kwargs={"create_env": True, "git_args": {"git_branch": "btn-681-observingtask-refactor"}}
         )
         assert (
             script_completion_state == "COMPLETE"
@@ -142,7 +142,7 @@ def when_allocate_resources_from_sbi(
         script_completion_state = EXECUTOR.execute_script(
             script,
             sb_json,
-            script_create_kwargs={"create_env": True, "git_branch": "btn-681-observingtask-refactor"}
+            script_create_kwargs={"create_env": True, "git_args": {"git_branch": "btn-681-observingtask-refactor"}}
         )
         assert (
             script_completion_state == "COMPLETE"
@@ -169,7 +169,7 @@ def when_release_resources(
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(
             script,
-            script_create_kwargs={"create_env": True, "git_branch": "btn-681-observingtask-refactor"}
+            script_create_kwargs={"create_env": True, "git_args": {"git_branch": "btn-681-observingtask-refactor"}}
         )
         assert (
             script_completion_state == "COMPLETE"

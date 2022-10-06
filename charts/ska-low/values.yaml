@@ -122,10 +122,10 @@ ska-tmc-centralnode:
 
 ska-low-cbf:
   enabled: true
-  cbf:
-    image:
-      registry: registry.gitlab.com/ska-telescope/low-cbf/ska-low-cbf
-      tag: 0.5.4-dev.c8ce9203f
+  #cbf:
+   # image:
+    #  registry: registry.gitlab.com/ska-telescope/low-cbf/ska-low-cbf
+    #  tag: 0.5.4-dev.c8ce9203f
 
 ska-low-cbf-proc:
   enabled: true

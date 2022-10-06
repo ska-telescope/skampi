@@ -468,24 +468,10 @@ cbf_low_start_scan = {
 }
 
 cbf_low_assign_resources = {
-    "common": {"subarrayID": 1},
     "lowcbf": {
-        "stations": [
-            {"station_id": 1, "sub_station_id": 1},
-            {"station_id": 3, "sub_station_id": 1},
-            {"station_id": 3, "sub_station_id": 2},
-        ],
-        "station_beams": [
-            {
-                "station_beam_id": 1,
-                "channels": [1, 2, 3, 4, 5, 6, 7, 8],
-                "pst_beams": [{"pst_beam_id": 1}, {"pst_beam_id": 2}],
-            },
-            {
-                "station_beam_id": 2,
-                "channels": [9, 10, 11, 12, 13, 14, 15],
-                "pst_beams": [{"pst_beam_id": 3}],
-            },
+        "resources": [
+            {"device": "fsp_01", "shared": True, "fw_image": "pst", "fw_mode": "unused"},
+            {"device": "p4_01", "shared": True, "fw_image": "p4.bin", "fw_mode": "p4"}
         ],
     },
 }

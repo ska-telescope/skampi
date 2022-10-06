@@ -121,11 +121,11 @@
         "pb_id": "pb-mvp01-20200325-09059",
         "workflow": {
           "kind": "realtime",
-          "name": "test_receive_addresses",
-          "version": "0.3.6"
+          "name": "test-receive-addresses",
+          "version": "0.4.0"
         },
         "parameters": {
-          
+
         }
       }
     ]

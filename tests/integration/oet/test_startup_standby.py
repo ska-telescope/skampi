@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 
+@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.startup
@@ -27,6 +28,7 @@ def test_telescope_startup():
     """Telescope startup test."""
 
 
+@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.standby

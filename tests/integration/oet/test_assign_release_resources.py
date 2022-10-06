@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 
+@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -36,6 +37,7 @@ def test_sbi_creation():
     """
 
 
+@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_assign_release_resources.feature", "Allocating resources with a SBI")
@@ -48,6 +50,7 @@ def test_resource_allocation():
     """
 
 
+@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_assign_release_resources.feature", "Releasing all resources from sub-array")

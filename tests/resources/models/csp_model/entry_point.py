@@ -16,6 +16,8 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
+from ..cbf_model.entry_point import CBFSetOnlineStep
+
 logger = logging.getLogger(__name__)
 
 # scan duration needs to be a singleton in order to keep track of scan
@@ -348,15 +350,16 @@ class CspScanStep(base.ScanStep, LogEnabled):
         return None
 
 
-class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
+class CSPSetOnlineStep(CBFSetOnlineStep, LogEnabled):
     """Domain logic for setting csp to online"""
 
     def __init__(self, nr_of_subarrays: int) -> None:
-        super().__init__()
-        self.nr_of_subarrays = nr_of_subarrays
-
+        super().__init__(nr_of_subarrays)
+        
     def do(self):
         """Domain logic for setting devices in csp to online."""
+        # first set cbf to online
+        super().do()
         controller_name = self._tel.csp.controller
         controller = con_config.get_device_proxy(controller_name)
         self._log(f"Setting adminMode for {controller_name} to '0' (ONLINE)")
@@ -368,9 +371,11 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
             subarray.write_attribute("adminmode", 0)
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic for waiting for setting to online to be complete."""
+        """Domain logic for waiting for setting to online to be complete."""  
+        # first setup waits for cbf   
+        builder = super().set_wait_for_do()
+        assert builder
         controller_name = self._tel.csp.controller
-        builder = get_message_board_builder()
         builder.set_waiting_on(controller_name).for_attribute(
             "adminMode"
         ).to_become_equal_to("ONLINE", ignore_first=False)
@@ -389,6 +394,8 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
 
     def undo(self):
         """Domain logic for setting devices in csp to offline."""
+        # first do cbf
+        super().do()
         controller_name = self._tel.csp.controller
         controller = con_config.get_device_proxy(controller_name)
         self._log(f"Setting adminMode for {controller_name} to '1' (OFFLINE)")
@@ -401,8 +408,10 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic for waiting for setting to offline to be complete."""
+        # first setup waiting for cbf
+        builder = super().set_wait_for_undo()
+        assert builder
         controller_name = self._tel.csp.controller
-        builder = get_message_board_builder()
         builder.set_waiting_on(controller_name).for_attribute(
             "adminMode"
         ).to_become_equal_to("OFFLINE", ignore_first=False)

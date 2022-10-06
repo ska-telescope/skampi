@@ -111,7 +111,7 @@ def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
     return composition
 
 @pytest.fixture(name="cbf_base_configuration")
-def fxt_csp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
+def fxt_cbf_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
     """Setup a base scan configuration to use for csp/cbf.
 
     :param tmp_path: a temporary path for sending configuration as a file.

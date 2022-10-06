@@ -4,7 +4,7 @@ xauthority: "~/.Xauthority"
 tags:
   taranta_auth: false
   taranta_dashboard: false
-  
+
 global:
   minikube: true
   annotations:
@@ -109,6 +109,7 @@ ska-sdp:
   enabled: true
   lmc:
     prefix: mid
+    newDeviceNames: false
     nsubarray: 3
   ska-tango-base:
     enabled: false
@@ -117,7 +118,7 @@ ska-sdp:
 tmc-mid:
   enabled: true
   telescope: SKA-mid
- 
+
 ska-tango-archiver:
   enabled: true
   dbname: default_mvp_archiver_db

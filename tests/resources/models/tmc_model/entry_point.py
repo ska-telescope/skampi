@@ -457,7 +457,7 @@ class TMCEntryPoint(CompositeEntryPoint):
     def __init__(self) -> None:
         """Init Object"""
         super().__init__()
-        self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
+        # self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
         self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
         self.assign_resources_step = AssignResourcesStep()
         self.configure_scan_step = ConfigureStep()

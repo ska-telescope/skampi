@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 # log capturing
 
+@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.skamid
 @pytest.mark.assign
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")

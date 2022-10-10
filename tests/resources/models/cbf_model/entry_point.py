@@ -238,7 +238,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         if self._tel.skalow:
             subarray_name = self._tel.skalow.csp.cbf.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            cast(dict[str, Any], cbf_low_configure_scan["common"])["subarray_id"] = 1
+            #cast(dict[str, Any], cbf_low_configure_scan["common"])["subarray_id"] = 1
             cbf_low_configuration = json.dumps(cbf_low_configure_scan)
             self._log(
                 f"commanding {subarray_name} with ConfigureScan: {cbf_low_configuration} "

@@ -141,7 +141,7 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             subarray.command_inout("AssignResources", cbf_low_configuration)
 
     def undo(self, sub_array_id: int):
-        """Domain logic for releasing resources on a subarray in sdp.
+        """Domain logic for releasing resources on a subarray in cbf.
 
         This implments the tear_down_subarray method on the entry_point.
 
@@ -254,8 +254,8 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         """
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        self._log(f"commanding {subarray_name} with command GoToIdle")
-        subarray.command_inout("GoToIdle")
+        self._log(f"commanding {subarray_name} with command End")
+        subarray.command_inout("End")
 
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -333,7 +333,7 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
         return builder
 
     def undo(self):
-        """Domain logic for setting devices in csp to offline."""
+        """Domain logic for setting devices in cbf to offline."""
         controller_name = self._tel.csp.cbf.controller
         controller = con_config.get_device_proxy(controller_name)
         self._log(f"Setting adminMode for {controller_name} to '1' (OFFLINE)")

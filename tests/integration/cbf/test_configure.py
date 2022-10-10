@@ -60,11 +60,11 @@ def an_cbf_subarray_in_idle_state(
 # @when("I configure it for a scan")
 
 
-@then("the CBF subarray must be in READY state ")
+@then("the CBF subarray must be in READY state")
 def the_subarray_must_be_in_the_ready_state(
     allocated_subarray: fxt_types.allocated_subarray,
 ):
-    """the CBF subarray must be in READY state ."""
+    """the CBF subarray must be in READY state."""
     sub_array_id = allocated_subarray.id
     tel = names.TEL()
     cbf_subarray = con_config.get_device_proxy(tel.csp.cbf.subarray(sub_array_id))

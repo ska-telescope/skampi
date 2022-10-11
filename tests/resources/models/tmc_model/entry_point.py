@@ -103,7 +103,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             ).to_become_equal_to("OFF")
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
             "state"
-        ).to_become_equal_to(["OFF", "DISABLE"], ignore_first=False)
+        ).to_become_equal_to("OFF", ignore_first=False)
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"

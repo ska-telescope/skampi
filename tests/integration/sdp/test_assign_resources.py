@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
-@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
@@ -28,7 +27,6 @@ def test_assign_resources_to_sdp_subarray_in_low():
     """Assign resources to sdp subarray in low."""
 
 
-@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.skamid
 @pytest.mark.assign
 @scenario(
@@ -64,7 +62,6 @@ def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
 # mock tests
 
 
-@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_assign_resources(

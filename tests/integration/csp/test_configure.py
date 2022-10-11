@@ -8,7 +8,6 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 logger = logging.getLogger(__name__)
 
-@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.configure
@@ -19,7 +18,6 @@ logger = logging.getLogger(__name__)
 def test_configure_csp_mid_subarray():
     """Configure CSP low subarray."""
 
-@pytest.mark.skip(reason="Temporary skips for testing")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.configure

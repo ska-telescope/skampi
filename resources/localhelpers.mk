@@ -62,7 +62,7 @@ skampi-links: ## Create the URLs with which to access Skampi if it is available
 	@echo "#            https://$(INGRESS_HOST)/$(KUBE_NAMESPACE)/start/"
 	@echo "############################################################################"
 	@if [[ -z "${LOADBALANCER_IP}" ]]; then exit 0; \
-	elif [[ "${CI_JOB_NAME}" == "psi_mid_on_demand_deploy" ]]; then echo "NOTE: Above link will only work if you can reach $(INGRESS_HOST)" && exit 0; \
+	elif [[ "${CI_JOB_NAME}" == "psi_mid_on_demand_deploy" ]]; then echo "NOTE: Above link will only work if you can reach $(INGRESS_HOST). Replace $(INGRESS_HOST) with the IP address of the Loadbalancer if you have it on hand, and try reaching it. Otherwise, contact the System Administrator." && exit 0; \
 	elif [[ $(shell curl -I -s -o /dev/null -I -w \'%{http_code}\' http$(S)://$(LOADBALANCER_IP)/$(KUBE_NAMESPACE)/start/) != '200' ]]; then \
 		echo "ERROR: http://$(LOADBALANCER_IP)/$(KUBE_NAMESPACE)/start/ unreachable"; exit 10; \
 	fi

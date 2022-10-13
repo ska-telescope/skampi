@@ -30,7 +30,7 @@ def test_assign_resources_to_csp_low_subarray():
 def test_assign_resources_to_csp_mid_subarray():
     """Assign resources to CSP mid subarray."""
 
-
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign
@@ -41,7 +41,7 @@ def test_assign_resources_to_csp_mid_subarray():
 def test_release_resources_to_csp_low_subarray():
     """Release resources assigned to an CSP low subarray"""
 
-
+@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.assign

@@ -93,8 +93,6 @@ def fxt_tmc_assign_resources_exec_settings(
 
 
 # log checking
-
-
 @pytest.fixture(name="set_up_subarray_log_checking_for_tmc", autouse=True)
 @pytest.mark.usefixtures("set_tmc_entry_point")
 def fxt_set_up_log_capturing_for_cbf(

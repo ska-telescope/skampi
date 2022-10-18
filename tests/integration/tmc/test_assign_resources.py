@@ -16,7 +16,7 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 # log capturing
-@pytest.mark.skip
+#@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

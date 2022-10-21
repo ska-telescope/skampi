@@ -12,7 +12,6 @@ from resources.models.mvp_model.states import ObsState
 
 from .. import conftest
 
-
 @pytest.mark.skalow
 @pytest.mark.scan
 @scenario("features/sdp_scan.feature", "Run a scan on sdp subarray in low")

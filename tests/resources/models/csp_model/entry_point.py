@@ -16,7 +16,8 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
-from tests.resources.models.obsconfig.config import Observation
+from ..obsconfig.config import Observation
+
 
 logger = logging.getLogger(__name__)
 

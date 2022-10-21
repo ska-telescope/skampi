@@ -1,15 +1,15 @@
 """Pytest fixtures and bdd step implementations specific to tmc integration tests."""
 
-import pytest
 import os
+import pytest
 
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-
-from resources.models.tmc_model.leafnodes.sdpln_entry_point import SDPLnEntryPoint
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from resources.models.tmc_model.leafnodes.sdpln_entry_point import (
+    SDPLnEntryPoint
+)
 
 from ... import conftest
-
 
 @pytest.fixture(name="set_sdp_ln_entry_point", autouse=True)
 def fxt_set_entry_point(
@@ -31,8 +31,9 @@ def fxt_set_entry_point(
 
 @pytest.fixture(name="set_up_subarray_log_checking_for_sdp_ln", autouse=True)
 @pytest.mark.usefixtures("set_sdp_ln_entry_point")
-def fxt_set_up_log_capturing_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+def fxt_set_up_log_capturing_for_sdp(
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 

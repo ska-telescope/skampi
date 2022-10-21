@@ -30,7 +30,7 @@ def a_sdp():
 
 @given("an SDP leaf node")
 def a_sdp_ln():
-    """a SDP."""
+    """a SDP leaf node."""
 
 
 # when

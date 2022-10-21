@@ -189,8 +189,11 @@ class ProcessingSpecs(TargetSpecs):
 class ProcessingBlockSpec(ProcessingSpecs):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(args, **kwargs)
+
+    @property
+    def processing_blocks(self):
         processing_specs = self.get_processing_script_from_target_spec()
-        self._processing_blocks = [
+        return [
             ProcessingBlockConfiguration(
                 pb_id=self.pb_id,
                 script=processing_spec.script,
@@ -221,13 +224,19 @@ class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields):
         )
         if context is None:
             context = {}
+        self._context = context
+        self._max_length = max_length
 
+    @property
+    def execution_block(self):
+        context = self._context
+        max_length = self._max_length
         scan_types = self.get_scan_types_from_target_specs()
         beams = self._get_beam_configurations_from_scantypes(scan_types)
         channels = self.get_channelisation_from_target_specs()
         polarisations = self.get_polarisations_from_target_specs()
         fields = self.get_fields_from_target_specs()
-        self._execution_block = ExecutionBlockConfiguration(
+        return ExecutionBlockConfiguration(
             eb_id=self.eb_id,
             context=context,
             max_length=max_length,
@@ -247,8 +256,8 @@ class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
         return SDPConfiguration(
             interface=self.sdp_assign_resources_schema,
             resources=self.get_dish_resource_allocation_from_target_spec(),
-            execution_block=self._execution_block,
-            processing_blocks=self._processing_blocks,
+            execution_block=self.execution_block,
+            processing_blocks=self.processing_blocks,
         )
 
     def _generate_sdp_scan_config(self, target_id: str | None = None):

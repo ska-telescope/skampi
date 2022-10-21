@@ -1,4 +1,5 @@
-from typing import NamedTuple, OrderedDict
+from typing import NamedTuple
+from collections import OrderedDict
 from ska_tmc_cdm.messages.subarray_node.configure.core import (
     ReceiverBand,
     Target,

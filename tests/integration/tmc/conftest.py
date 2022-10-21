@@ -47,9 +47,9 @@ def fxt_nr_of_subarrays() -> int:
         return 1
     return 2
 
-# @pytest.fixture(autouse=True)
-# def override_timeouts(exec_settings):
-#     exec_settings.time_out = 3
+@pytest.fixture(autouse=True)
+def override_timeouts(exec_settings):
+    exec_settings.time_out = 3
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -143,4 +143,4 @@ def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 
 @pytest.fixture(autouse=True)
 def override_timeouts(exec_settings):
-    exec_settings.time_out = 200
+    exec_settings.time_out = 100

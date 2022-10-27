@@ -23,14 +23,14 @@ def test_configure_scan_on_tmc_subarray_in_mid():
 @given("a telescope subarray in IDLE state", target_fixture="configuration")
 def an_telescope_subarray_in_idle_state(
     set_up_subarray_log_checking_for_tmc,
-    telescope_base_configuration: conf_types.ScanConfiguration,
+    base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: SutTestSettings,
 ) -> conf_types.ScanConfiguration:
     """a telescope subarray in IDLE state."""
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
-    return telescope_base_configuration
+    return base_configuration
 
 
 #@when("I configure it for scan")

@@ -131,7 +131,6 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         central_node.command_inout("TelescopeOff")
 
 
-# TODO: Implement AssignResources and ReleaseResources
 class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
     """Implementation of Assign Resources Step."""
 
@@ -256,9 +255,6 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         standard_configuration = conf.generate_standard_conf(
             sub_array_id, sb_id, duration
         )
-        # tmc_standard_configuration = json.dumps(
-        #     json.loads(standard_configuration)["sdp"]
-        # )
         self._log(
             f"commanding {subarray_name} with Configure: {standard_configuration} "
         )

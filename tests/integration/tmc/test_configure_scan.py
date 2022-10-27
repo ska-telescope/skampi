@@ -43,11 +43,9 @@ def a_subarray_in_the_idle_state():
 
 @then("the subarray must be in the READY state")
 def the_subarray_must_be_in_the_ready_state(
-    # allocated_subarray: fxt_types.allocated_subarray,
     sut_settings: SutTestSettings
 ):
     """the subarray must be in the READY state."""
-    # sub_array_id = allocated_subarray.id
     tel = names.TEL()
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = tmc_subarray.read_attribute("obsState").value

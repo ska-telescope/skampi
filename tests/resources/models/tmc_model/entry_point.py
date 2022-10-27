@@ -7,6 +7,7 @@ from typing import List, Union
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import composition as comp
+from ska_ser_skallop.mvp_control.configuration import configuration as conf
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import base
@@ -248,20 +249,19 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         """
         # scan duration needs to be a memorized for future objects that may require it
         # Memo(scan_duration=duration)
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # subarray = con_config.get_device_proxy(subarray_name)
-        # standard_configuration = conf.generate_standard_conf(
-        #     sub_array_id, sb_id, duration
-        # )
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        standard_configuration = conf.generate_standard_conf(
+            sub_array_id, sb_id, duration
+        )
         # tmc_standard_configuration = json.dumps(
         #     json.loads(standard_configuration)["sdp"]
         # )
-        # self._log(
-        #     f"commanding {subarray_name} with Configure: {tmc_standard_configuration} "
-        # )
-        # TODO determine correct  command
-        #  subarray.command_inout("Configure", tmc_standard_configuration)
-        raise NotImplementedError()
+        self._log(
+            f"commanding {subarray_name} with Configure: {standard_configuration} "
+        )
+        
+        subarray.command_inout("Configure", standard_configuration)
 
     def undo(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in sdp.
@@ -270,12 +270,10 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # subarray = con_config.get_device_proxy(subarray_name)
-        # self._log(f"commanding {subarray_name} with End command")
-        # TODO determine correct  command
-        # subarray.command_inout("End")
-        raise NotImplementedError()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with End command")
+        subarray.command_inout("End")
 
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -287,7 +285,18 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         # builder = get_message_board_builder()
 
         # return builder
-        raise NotImplementedError()
+        brd = get_message_board_builder()
+
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
+        return brd
 
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
@@ -303,10 +312,18 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
         """
-        builder = get_message_board_builder()
-        # TODO determine what needs to be waited for
-        return builder
+        brd = get_message_board_builder()
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
 
+        return brd
 
 class ScanStep(base.ScanStep, LogEnabled):
 

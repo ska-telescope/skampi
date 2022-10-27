@@ -7,30 +7,18 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
-
 from resources.models.mvp_model.states import ObsState
-
 from ..conftest import SutTestSettings
 
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skamid
 @pytest.mark.skamid
 @pytest.mark.configure
-@scenario("features/tmc_configure_scan.feature", "Configure scan on telescope subarray in mid")
-def test_configure_scan_on_tmc_subarray_in_mid():
-    """Configure scan on telescope subarray in mid."""
+@scenario("features/tmc_configure_scan.feature", "Configure the mid telescope subarray using TMC")
+def test_configure_scan_on_mid_tmc_subarray():
+    """Configure scan on mid telescope subarray."""
 
-
-# @given("a telescope subarray in IDLE state", target_fixture="configuration")
-# def an_telescope_subarray_in_idle_state(
-#     set_up_subarray_log_checking_for_tmc,
-#     base_configuration: conf_types.ScanConfiguration,
-#     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-#     sut_settings: SutTestSettings,
-# ) -> conf_types.ScanConfiguration:
-#     """a telescope subarray in IDLE state."""
-#     subarray_allocation_spec.receptors = sut_settings.receptors
-#     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
-#     return base_configuration
 
 @given("an TMC")
 def a_tmc():

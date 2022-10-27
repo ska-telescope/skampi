@@ -1,6 +1,6 @@
-Feature: Configure scan on telescope subarray
+Feature: Configure the subarray using TMC
 
-	Scenario: Configure scan on telescope subarray in mid
+	Scenario: Configure the mid telescope subarray using TMC
 		Given an TMC
 		Given an telescope subarray
 		Given a subarray in the IDLE state

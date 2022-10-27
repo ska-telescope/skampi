@@ -3,6 +3,8 @@ import json
 import logging
 import os
 from typing import List, Union
+from ska_ser_skallop.utils.singleton import Memo
+from ska_ser_skallop.mvp_control.configuration import configuration as conf 
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -169,7 +171,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
 
-        This implments the tear_down_subarray method on the entry_point.
+        This implements the tear_down_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -244,7 +246,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration paramaters
+        :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         # scan duration needs to be a memorized for future objects that may require it
@@ -266,7 +268,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
     def undo(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in sdp.
 
-        This implments the clear_configuration method on the entry_point.
+        This implements the clear_configuration method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -282,7 +284,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        # builder = get_message_board_builder()
+        brd = get_message_board_builder()
 
         # return builder
         brd = get_message_board_builder()
@@ -302,7 +304,19 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
         """Not implemented."""
-        raise NotImplementedError()
+        brd = get_message_board_builder()
+
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("CONFIGURING")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("CONFIGURING")
+
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("CONFIGURING")
+        return brd
 
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]

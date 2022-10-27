@@ -20,7 +20,7 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-
+@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -35,7 +35,7 @@ def test_sbi_creation():
     Then the script completes successfully
     """
 
-
+@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_assign_release_resources.feature", "Allocating resources with a SBI")
@@ -47,7 +47,7 @@ def test_resource_allocation():
     Then the sub-array goes to ObsState IDLE
     """
 
-
+@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_assign_release_resources.feature", "Releasing all resources from sub-array")

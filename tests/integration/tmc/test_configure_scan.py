@@ -20,20 +20,36 @@ def test_configure_scan_on_tmc_subarray_in_mid():
     """Configure scan on telescope subarray in mid."""
 
 
-@given("a telescope subarray in IDLE state", target_fixture="configuration")
-def an_telescope_subarray_in_idle_state(
-    set_up_subarray_log_checking_for_tmc,
-    base_configuration: conf_types.ScanConfiguration,
-    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-    sut_settings: SutTestSettings,
-) -> conf_types.ScanConfiguration:
-    """a telescope subarray in IDLE state."""
-    subarray_allocation_spec.receptors = sut_settings.receptors
-    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
-    return base_configuration
+# @given("a telescope subarray in IDLE state", target_fixture="configuration")
+# def an_telescope_subarray_in_idle_state(
+#     set_up_subarray_log_checking_for_tmc,
+#     base_configuration: conf_types.ScanConfiguration,
+#     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
+#     sut_settings: SutTestSettings,
+# ) -> conf_types.ScanConfiguration:
+#     """a telescope subarray in IDLE state."""
+#     subarray_allocation_spec.receptors = sut_settings.receptors
+#     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
+#     return base_configuration
+
+@given("an TMC")
+def a_tmc():
+    """an TMC"""
 
 
-#@when("I configure it for scan")
+@given("an telescope subarray", target_fixture="composition")
+def an_telescope_subarray(
+    set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition
+) -> conf_types.Composition:
+    """an telescope subarray."""
+    return base_composition
+
+
+@given("a subarray in the IDLE state")
+def a_subarray_in_the_idle_state():
+    """a subarray in the IDLE state."""
+
+# @when("I configure it for scan")
 
 
 @then("the subarray must be in the READY state")

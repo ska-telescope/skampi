@@ -1,5 +1,5 @@
 Feature: Configure the subarray using TMC
-
+	@XTP-14719
 	Scenario: Configure the mid telescope subarray using TMC
 		Given an TMC
 		Given an telescope subarray

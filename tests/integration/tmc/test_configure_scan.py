@@ -16,8 +16,8 @@ from ..conftest import SutTestSettings
 @pytest.mark.skamid
 @pytest.mark.configure
 @scenario("features/tmc_configure_scan.feature", "Configure the mid telescope subarray using TMC")
-def test_configure_scan_on_mid_tmc_subarray():
-    """Configure scan on mid telescope subarray."""
+def test_tmc_configure_scan_on_mid_subarray():
+    """Configure scan on TMC mid telescope subarray."""
 
 
 @given("an TMC")

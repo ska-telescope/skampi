@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def test_sdp_start_up_telescope_mid():
     """Start up the sdp in mid."""
 
-
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.startup
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in low")

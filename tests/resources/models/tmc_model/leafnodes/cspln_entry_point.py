@@ -66,7 +66,7 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
 
-        csp_standard_composition = json.dumps(json.loads(assignresources_csp))
+        csp_standard_composition = json.dumps(assignresources_csp)
         self._log(
             f"commanding {csp_subarray_ln_name} with AssignResources: {csp_standard_composition} "
         )

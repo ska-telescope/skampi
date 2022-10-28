@@ -38,7 +38,7 @@ class StartLnUpStep(StartUpStep):
 
     def undo(self):
         """Domain logic for switching the CSP LN off."""
-        self._log(f"commanding {self._csp_master_name} to Off")
+        self._log(f"commanding {self._csp_master_ln_name} to Off")
         csp_master_ln = con_config.get_device_proxy(self._csp_master_ln_name)  # type: ignore
         csp_master_ln.command_inout("Off")
 
@@ -65,10 +65,8 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         # currently ignore composition as all types will be standard
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
-        standard_composition = comp.generate_standard_comp(
-            sub_array_id, dish_ids, sb_id
-        )
-        csp_standard_composition = json.dumps(json.loads(standard_composition)["csp"])
+
+        csp_standard_composition = json.dumps(json.loads(assignresources_csp))
         self._log(
             f"commanding {csp_subarray_ln_name} with AssignResources: {csp_standard_composition} "
         )
@@ -83,8 +81,8 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         """
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(subarray_name)  # type: ignore
-        self._log(f"Commanding {csp_subarray_ln_name} to ReleaseResources")
-        csp_subarray_ln.command_inout("ReleaseResources")
+        self._log(f"Commanding {csp_subarray_ln_name} to ReleaseAllResources")
+        csp_subarray_ln.command_inout("ReleaseAllResources")
 
 
 class CspLnConfigureStep(CspConfigureStep):
@@ -210,3 +208,15 @@ class CSPLnEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = CspLnAssignResourcesStep()
         self.configure_scan_step = CspLnConfigureStep()
         self.scan_step = CSPLnScanStep()
+
+
+assignresources_csp = {
+  "interface": "https: //schema.skao.int/ska-mid-csp-assignresources/2.0",
+  "subarray_id": 1,
+  "dish": {
+    "receptor_ids": [
+      "0001",
+      "0002"
+    ]
+  }
+}

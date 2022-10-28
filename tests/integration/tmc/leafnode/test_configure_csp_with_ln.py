@@ -21,7 +21,7 @@ def test_configure_cspsubarray_for_a_scan_in_mid():
     """Configure cspsubarray for a scan in mid using the csp leaf node."""
 
 
-@given("an CSP subarray leaf node", target_fixture="configuration")
+@given("a CSP leaf node", target_fixture="configuration")
 def an_csp_subarray_leaf_node():
     """an CSP subarray leaf node."""
     tel = names.TEL()
@@ -38,7 +38,7 @@ def an_csp_subarray_leaf_node():
 def a_csp():
     """a CSP."""
 
-# @when("I configure csp subarray for a scan") from ...conftest
+# @when("I configure it for a scan") from ...conftest
 
 @then("the csp subarray must be in READY state")
 def the_subarray_must_be_in_the_ready_state(

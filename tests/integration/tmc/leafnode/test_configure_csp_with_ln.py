@@ -34,6 +34,10 @@ def an_csp_subarray_leaf_node():
         result = csp_subarray_leaf_node.ping()
         assert result > 0
 
+@given("a CSP")
+def a_csp():
+    """a CSP."""
+
 # @when("I configure csp subarray for a scan") from ...conftest
 
 @then("the csp subarray must be in READY state")

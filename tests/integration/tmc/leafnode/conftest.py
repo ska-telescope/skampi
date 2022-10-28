@@ -9,7 +9,7 @@ from resources.models.tmc_model.leafnodes.cspln_entry_point import (
     CSPLnEntryPoint
 )
 
-from ... import conftest
+from tests.integration import conftest
 
 @pytest.fixture(name="set_csp_ln_entry_point", autouse=True)
 def fxt_set_entry_point(

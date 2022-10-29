@@ -109,12 +109,10 @@ class CspLnConfigureStep(CspConfigureStep):
         Memo(scan_duration=duration)
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
-        standard_configuration = conf.generate_standard_conf(
-            sub_array_id, sb_id, duration
-        )
-        csp_standard_configuration = json.dumps(
-            json.loads(standard_configuration)["csp"]
-        )
+        # standard_configuration = conf.generate_standard_conf(
+        #     sub_array_id, sb_id, duration
+        # )
+        csp_standard_configuration = json.dumps(configure_csp)
         self._log(
             f"commanding {csp_subarray_ln_name} with Configure: {csp_standard_configuration} "
         )
@@ -218,5 +216,111 @@ assignresources_csp = {
       "0001",
       "0002"
     ]
+  }
+}
+
+
+configure_csp = {
+  "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+  "subarray": {
+    "subarray_name": "science period 23"
+  },
+  "common": {
+    "config_id": "sbi-mvp01-20200325-00001-science_A",
+    "frequency_band": "1",
+    "subarray_id": "1"
+  },
+  "cbf": {
+    "delay_model_subscription_point": "ska_mid/tm_leaf_node/csp_subarray01/delayModel",
+    "fsp": [
+      {
+        "fsp_id": 1,
+        "function_mode": "CORR",
+        "frequency_slice_id": 1,
+        "integration_factor": 1,
+        "zoom_factor": 0,
+        "channel_averaging_map": [
+          [
+            0,
+            2
+          ],
+          [
+            744,
+            0
+          ]
+        ],
+        "channel_offset": 0,
+        "output_link_map": [
+          [
+            0,
+            0
+          ],
+          [
+            200,
+            1
+          ]
+        ],
+        
+      },
+      {
+        "fsp_id": 2,
+        "function_mode": "CORR",
+        "frequency_slice_id": 2,
+        "integration_factor": 1,
+        "zoom_factor": 1,
+        "zoom_window_tuning": 650000,
+        "channel_averaging_map": [
+          [
+            0,
+            2
+          ],
+          [
+            744,
+            0
+          ]
+        ],
+        "channel_offset": 744,
+        "output_link_map": [
+          [
+            0,
+            4
+          ],
+          [
+            200,
+            5
+          ]
+        ],
+        "output_host": [
+          [
+            0,
+            "192.168.1.1"
+          ]
+        ],
+        "output_port": [
+          [
+            0,
+            9744,
+            1
+          ]
+        ]
+      }
+    ],
+    "vlbi": {
+      
+    }
+  },
+  "pss": {
+    
+  },
+  "pst": {
+    
+  },
+  "pointing": {
+    "target": {
+      "reference_frame": "ICRS",
+      "target_name": "Polaris Australis",
+      "ra": "21:08:47.92",
+      "dec": "-88:57:22.9"
+    }
   }
 }

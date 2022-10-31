@@ -9,6 +9,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip("This test is skipped temporarily.")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign
@@ -20,6 +21,7 @@ def test_assign_resources_to_csp_low_subarray():
     """Assign resources to CSP low subarray."""
 
 
+@pytest.mark.skip("This test is skipped temporarily.")
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.assign
@@ -31,6 +33,7 @@ def test_assign_resources_to_csp_mid_subarray():
     """Assign resources to CSP mid subarray."""
 
 
+@pytest.mark.skip("This test is skipped temporarily.")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign
@@ -42,6 +45,7 @@ def test_release_resources_to_csp_low_subarray():
     """Release resources assigned to an CSP low subarray"""
 
 
+@pytest.mark.skip("This test is skipped temporarily.")
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.assign

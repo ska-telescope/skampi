@@ -20,7 +20,6 @@ from .. import conftest
 def test_configure_scan_on_sdp_subarray_in_low():
     """Configure scan on sdp subarray in low."""
 
-@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.configure
 @scenario(

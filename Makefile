@@ -91,6 +91,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
+	--set sdp-storage.namespace=$(KUBE_NAMESPACE_SDP) \
 	$(SDP_PROXY_VARS)
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
@@ -242,6 +243,7 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 k8s-pre-install-chart:
 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+	helm install -n $(KUBE_NAMESPACE_SDP) charts/sdp-storage
 
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)

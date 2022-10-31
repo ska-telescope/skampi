@@ -1,14 +1,14 @@
-from .target_spec import TargetSpecs
 from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     CBFConfiguration,
+    CommonConfiguration,
     CSPConfiguration,
     FSPConfiguration,
     FSPFunctionMode,
     SubarrayConfiguration,
-    CommonConfiguration,
 )
 
 from .base import encoded
+from .target_spec import TargetSpecs
 
 
 class CSPconfig(TargetSpecs):

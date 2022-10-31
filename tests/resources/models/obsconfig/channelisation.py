@@ -1,5 +1,7 @@
 from typing import Any
-from ska_tmc_cdm.messages.central_node.sdp import ChannelConfiguration, Channel
+
+from ska_tmc_cdm.messages.central_node.sdp import Channel, ChannelConfiguration
+
 from .target_spec import TargetSpecs
 
 DEFAULT_CHANNELS = {
@@ -24,19 +26,50 @@ class Channelization(TargetSpecs):
     def __init__(
         self,
         additional_channels: list[ChannelConfiguration] | None = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
-        self.channels = DEFAULT_CHANNELS
+        self._channel_configurations = DEFAULT_CHANNELS
         if additional_channels is not None:
-            self.channels = {
-                **self.channels,
+            self._channel_configurations = {
+                **self._channel_configurations,
                 **{
                     additional_channel.channels_id: additional_channel
                     for additional_channel in additional_channels
                 },
             }
 
-    def get_channelisation_from_target_specs(self):
-        unique_keys = {target.channelisation for target in self.target_specs.values()}
-        return [self.channels[key] for key in unique_keys]
+    def add_channel_configuration(
+        self, config_name: str, spectral_windows: list[Channel]
+    ):
+        assert (
+            self._channel_configurations.get(config_name) is None
+        ), f"configuration {config_name} already exists."
+        self._channel_configurations[config_name] = ChannelConfiguration(
+            channels_id=config_name, spectral_windows=spectral_windows
+        )
+
+    @property
+    def channel_configurations(self) -> list[str]:
+        return list(self._channel_configurations.keys())
+
+    def get_channel_configuration(self, config_name: str) -> ChannelConfiguration:
+        assert (
+            self._channel_configurations.get(config_name) is not None
+        ), f"configuration {config_name} does not exist."
+        return self._channel_configurations[config_name]
+
+    @property
+    def target_spec_channels(self):
+        return {target.channelisation for target in self.target_specs.values()}
+
+    @property
+    def channels(self) -> list[ChannelConfiguration]:
+        unique_keys = self.target_spec_channels
+        return [
+            channel_config
+            for channel_config in [
+                self._channel_configurations.get(key) for key in unique_keys
+            ]
+            if channel_config
+        ]

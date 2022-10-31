@@ -13,8 +13,9 @@ from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
-    NoOpStep,
 )
+
+from ..obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
 
@@ -77,9 +78,9 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         # set dish master to be waited before startup completes
         if self._tel.skamid:
             for dish in self._tel.skamid.dishes(self.receptors):
-                brd.set_waiting_on(dish).for_attribute(
-                    "state"
-                ).to_become_equal_to("ON",ignore_first=False)
+                brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
+                    "ON", ignore_first=False
+                )
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -111,9 +112,9 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         # set dish master to be waited before startup completes
         if self._tel.skamid:
             for dish in self._tel.skamid.dishes(self.receptors):
-                brd.set_waiting_on(dish).for_attribute(
-                    "state"
-                ).to_become_equal_to("STANDBY",ignore_first=False)
+                brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
+                    "STANDBY", ignore_first=False
+                )
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -132,10 +133,11 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
     """Implementation of Assign Resources Step."""
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init object."""
         super().__init__()
         self._tel = names.TEL()
+        self.observation = observation
 
     def do(
         self,
@@ -157,13 +159,11 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
 
-        standard_composition = comp.generate_standard_comp(
-            sub_array_id, dish_ids, sb_id
-        )
+        config = self.observation.generate_assign_resources_config(sub_array_id).as_json
 
-        self._log(f"Commanding {central_node_name} with AssignRescources")
+        self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
 
-        central_node.command_inout("AssignResources", standard_composition)
+        central_node.command_inout("AssignResources", config)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -174,9 +174,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-        tear_down_composition = comp.generate_tear_down_all_resources(sub_array_id)
-        self._log(f"Commanding {central_node_name} with ReleaseRescources")
-        central_node.command_inout("ReleaseResources", tear_down_composition)
+        central_node.command_inout("ReleaseResources", "[]")
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
@@ -184,7 +182,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
- 
+
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("IDLE")
@@ -224,10 +222,11 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
 class ConfigureStep(base.ConfigureStep, LogEnabled):
     """Implementation of Configure Scan Step for SDP."""
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init object."""
         super().__init__()
         self._tel = names.TEL()
+        self.observation = observation
 
     def do(
         self,
@@ -312,10 +311,11 @@ class ScanStep(base.ScanStep, LogEnabled):
 
     """Implementation of Scan Step for SDP."""
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init object."""
         super().__init__()
         self._tel = names.TEL()
+        self.observation = observation
 
     def do(self, sub_array_id: int):
         """Domain logic for running a scan on subarray in sdp.
@@ -454,11 +454,14 @@ class TMCEntryPoint(CompositeEntryPoint):
     nr_of_receptors = 4
     receptors = [1, 2, 3, 4]
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation | None = None) -> None:
         """Init Object"""
         super().__init__()
+        if not observation:
+            observation = Observation()
+        self.observation = observation
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
         self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
-        self.assign_resources_step = AssignResourcesStep()
-        self.configure_scan_step = ConfigureStep()
-        self.scan_step = ScanStep()
+        self.assign_resources_step = AssignResourcesStep(observation)
+        self.configure_scan_step = ConfigureStep(observation)
+        self.scan_step = ScanStep(observation)

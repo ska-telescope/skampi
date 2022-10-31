@@ -1,6 +1,7 @@
-from datetime import datetime
 import json
+from datetime import datetime
 from typing import Any, Callable, Generic, NamedTuple, ParamSpec, TypeVar
+
 from ska_tmc_cdm.schemas import CODEC
 
 
@@ -9,7 +10,7 @@ class SB(NamedTuple):
     pb: str
 
 
-def load_nex_sb():
+def load_next_sb():
     date = datetime.now()
     unique = f"{date.year}{date.month}{date.day}-{str(int(date.timestamp()))[5:]}"
     pb = f"pb-mvp01-{unique}"
@@ -19,7 +20,12 @@ def load_nex_sb():
 
 class SchedulingBlock:
     def __init__(self, *_: Any, **__: Any) -> None:
-        eb_id, pb_id = load_nex_sb()
+        eb_id, pb_id = load_next_sb()
+        self.eb_id = eb_id
+        self.pb_id = pb_id
+
+    def load_next_sb(self):
+        eb_id, pb_id = load_next_sb()
         self.eb_id = eb_id
         self.pb_id = pb_id
 

@@ -16,10 +16,15 @@ from ... import conftest
 @pytest.mark.configure
 @scenario(
     "features/sdpln_configure_scan.feature",
-    "Configure scan on sdp subarray in mid using the leaf node"
+    "Configure scan on sdp subarray in mid using the leaf node",
 )
 def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid using the leaf node."""
+
+
+@given("an SDP")
+def a_sdp():
+    """a SDP."""
 
 
 @given("an SDP subarray leaf node", target_fixture="configuration")
@@ -35,7 +40,9 @@ def an_sdp_subarray_leaf_node():
         result = sdp_subarray_leaf_node.ping()
         assert result > 0
 
+
 # @when("I configure it for a scan") from ...conftest
+
 
 @then("the subarray must be in the READY state")
 def the_subarray_must_be_in_the_ready_state(

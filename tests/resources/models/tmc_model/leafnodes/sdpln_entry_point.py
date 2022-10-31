@@ -15,7 +15,12 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     MessageBoardBuilder,
 )
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
-from ...sdp_model.entry_point import StartUpStep, SdpAsignResourcesStep, SdpConfigureStep, SDPScanStep
+from ...sdp_model.entry_point import (
+    StartUpStep,
+    SdpAssignResourcesStep,
+    SdpConfigureStep,
+    SDPScanStep,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +58,7 @@ class StartLnUpStep(StartUpStep):
         sdp_master_ln.command_inout("Off")
 
 
-class SdpLnAsignResourcesStep(SdpAsignResourcesStep):
+class SdpLnAsignResourcesStep(SdpAssignResourcesStep):
     """Implementation of Assign Resources Step for SDP LN."""
 
     def do(

@@ -17,6 +17,7 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
+
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.startup
@@ -24,6 +25,7 @@ EXECUTOR = ScriptExecutor()
 @scenario("features/oet_startup_standby_telescope.feature", "Starting up telescope")
 def test_telescope_startup():
     """Telescope startup test."""
+
 
 @pytest.mark.oet
 @pytest.mark.skamid

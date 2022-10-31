@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: $k
+  name: {{ $k }}
 spec:
   storageClassName: nfss1
   accessModes:
   - ReadWriteMany
   resources:
     requests:
-      storage: $v.size
+      storage: {{ $v.size }}
 {{- end }}
 
 

@@ -1,6 +1,10 @@
-Feature: Verification of OET scripts being executed successfully during an observation for configure command on subarray node
+Feature: Verification of configure a scan using a predefined config on subarray node
+ 
+  Scenario: Configure a scan using a predefined config
+    Given subarray <subarray_id> that has been allocated <nr_of_dishes> according to <SB_config>
+    When I configure the subarray to perform a <scan_config> scan
+    Then the subarray is in the condition to run a scan
 
-    Scenario: Configure scan with a SBI on OET subarray in mid
-        Given an OET
-        When I tell the OET to scan SBI using script file:///scripts/observe_sb.py --subarray_id=1 and SB /tmp/oda/mid_sb_example.json
-        Then the sub-array goes to ObsState READY   
+    Examples:
+      | scan_config |
+      | standard    |

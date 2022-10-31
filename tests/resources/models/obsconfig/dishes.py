@@ -1,24 +1,39 @@
-from typing import Any
-from .target_spec import TargetSpecs
+from typing import Any, Literal, TypedDict
+
 from ska_tmc_cdm.messages.central_node.common import DishAllocation
-from ska_tmc_cdm.messages.central_node.sdp import ResourceConfiguration
 from ska_tmc_cdm.messages.subarray_node.configure.core import (
-    PointingConfiguration,
     DishConfiguration,
+    PointingConfiguration,
 )
+
+from .target_spec import TargetSpecs
+
+ReceptorName = Literal[
+    "SKA0001",
+    "SKA0002",
+    "SKA0003",
+    "SKA0004",
+    "SKA0005",
+    "SKA0006",
+    "SKA0007" "SKA0008" "SKA0009",
+]
+
+
+class ResourceConfiguration(TypedDict):
+    receptors: list[ReceptorName]
 
 
 class Dishes(TargetSpecs):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.dish_specs = {
+        self.dish_specs: dict[str, list[ReceptorName]] = {
             "two": ["SKA0001", "SKA0002"],
-            "three": ["SKA0001", "SKA0002", "SKA003"],
-            "four": ["SKA0001", "SKA0002", "SKA003", "SKA004"],
+            "three": ["SKA0001", "SKA0002", "SKA0003"],
+            "four": ["SKA0001", "SKA0002", "SKA0003", "SKA0004"],
         }
 
     @property
-    def allocated_dishes(self) -> list[str]:
+    def dishes(self) -> list[ReceptorName]:
         return list(
             {
                 dish
@@ -27,11 +42,13 @@ class Dishes(TargetSpecs):
             }
         )
 
-    def get_dish_allocation_from_target_spec(self):
-        return DishAllocation(self.allocated_dishes)
+    @property
+    def dish_allocation(self):
+        return DishAllocation(self.dishes)
 
-    def get_dish_resource_allocation_from_target_spec(self):
-        return ResourceConfiguration(receptors=self.allocated_dishes)
+    @property
+    def resource_configuration(self):
+        return ResourceConfiguration(receptors=self.dishes)
 
     def get_pointing_configuration(self, target_id: str | None = None):
         return PointingConfiguration(self.get_target_spec(target_id).target)

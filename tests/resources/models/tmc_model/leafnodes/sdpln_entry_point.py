@@ -21,7 +21,7 @@ from ...sdp_model.entry_point import (
     SdpConfigureStep,
     SDPScanStep,
 )
-from ..obsconfig.config import Observation
+from ...obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
 

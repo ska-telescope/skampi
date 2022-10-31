@@ -26,7 +26,7 @@ def test_resource_scan():
     """
     Given A running telescope with 2 dishes are allocated to sub-array for executing observations
     When I tell the OET to configure a sub-array and perform scan using script
-    file:///app/scripts/observe.py --subarray_id=3 and data/mid_sb_example.json
+    file:///app/scripts/observe.py --subarray_id=1 and data/mid_sb_example.json
     Then the sub-array passes through ObsStates IDLE, CONFIGURING, SCANNING, READY
     """
 

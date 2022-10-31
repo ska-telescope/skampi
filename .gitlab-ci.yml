@@ -1,4 +1,4 @@
-image: registry.gitlab.com/ska-telescope/ska-skampi/ska-skampi-ci-base:0.1.0
+image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.32
 
 variables:
   MINIKUBE: "false"

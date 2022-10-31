@@ -21,6 +21,7 @@ from ...sdp_model.entry_point import (
     SdpConfigureStep,
     SDPScanStep,
 )
+from ..obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
 
@@ -217,11 +218,14 @@ class SDPLnEntryPoint(CompositeEntryPoint):
 
     nr_of_subarrays = 2
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation = None) -> None:
         """Init Object"""
         super().__init__()
+        if not observation:
+            observation = Observation()
+        self.observation = observation
         self.set_online_step = NoOpStep()
         self.start_up_step = StartLnUpStep(self.nr_of_subarrays)
-        self.assign_resources_step = SdpLnAsignResourcesStep()
-        self.configure_scan_step = SdpLnConfigureStep()
-        self.scan_step = SDPLnScanStep()
+        self.assign_resources_step = SdpLnAsignResourcesStep(observation)
+        self.configure_scan_step = SdpLnConfigureStep(observation)
+        self.scan_step = SDPLnScanStep(observation)

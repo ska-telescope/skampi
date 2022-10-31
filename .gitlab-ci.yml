@@ -30,6 +30,24 @@ stages:
   tags:
     - k8srunner
 
+build-base-image:
+  stage: .pre
+  image: docker:19.03.12
+  tags:
+    - k8srunner
+  before_script:
+    - ""
+  rules:
+    - changes:
+        - docker/Dockerfile
+    - if: $REBUILD_IMAGES
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ci:latest docker/
+    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ci:latest
+
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
   # Common template components

@@ -1,8 +1,6 @@
-@XTP-9991
-Feature: Configure the CSP for a scan using csp leaf node
-	@XTP-9992 @XTP-9993 @XTP-9994
-	Scenario: Configure the csp mid using csp leaf node
-		Given a CSP
-		Given a CSP leaf node
-		When I configure it for a scan
-		Then the csp subarray must be in READY state
+@XTP-13145
+Scenario: Configure the csp mid using csp leaf node
+	Given a TMC CSP subarray Leaf Node
+	Given a CSP subarray in the IDLE state
+	When I command the leaf node to configure a scan on the CSP
+	Then the CSP subarray shall go from IDLE to READY state

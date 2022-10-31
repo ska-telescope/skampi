@@ -17,15 +17,8 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-SUBARRAY_USED = 'subarray_node'
-SCHEDULING_BLOCK = 'Scheduling Block'
-STATE_CHECK = 'State Transitions'
 
-EXECUTOR = ScriptExecutor()
-
-LOGGER = logging.getLogger(__name__)
-
-
+@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_configure_scan.feature", "Configure scan with a SBI on OET subarray in mid")
@@ -46,16 +39,15 @@ def a_oet():
 
 @when(
     parsers.parse(
-        "I tell the OET to configure a sub-array and perform scan using script  {script} and SBI {sb_json}"
+        "I tell the OET to scan SBI using script  {script} and SB {sb_json}"
     )
 )
 def when_configure_resources_from_sbi(
     script,
     sb_json,
     context_monitoring: fxt_types.context_monitoring,
-    running_telescope: fxt_types.running_telescope,
+    configured_subarray: fxt_types.configured_subarray,
     sut_settings: SutTestSettings,
-    exec_settings: fxt_types.exec_settings
 ):
     """
     Use the OET Rest API to run script that configure resources from given SBI.
@@ -65,8 +57,8 @@ def when_configure_resources_from_sbi(
         sb_json (str): file path to a scheduling block
     """
     with context_monitoring.context_monitoring():
-        running_telescope.release_subarray_when_finished(
-            sut_settings.subarray_id, sut_settings.receptors, exec_settings
+        configured_subarray.check_configuration_when_finished(
+            sut_settings.subarray_id, sut_settings.receptors, sut_settings
         )
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (

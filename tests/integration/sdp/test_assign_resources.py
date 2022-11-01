@@ -18,11 +18,7 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
-<<<<<<< HEAD
-@pytest.mark.skip("This test is skipped temporarily.")
-=======
 @pytest.mark.skip(reason="unable to teardown correctly see TBD bug")
->>>>>>> 165057ec01cdfce0caf28d664b05c55aa4492120
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
@@ -32,11 +28,7 @@ def test_assign_resources_to_sdp_subarray_in_low():
     """Assign resources to sdp subarray in low."""
 
 
-<<<<<<< HEAD
-@pytest.mark.skip("This test is skipped temporarily.")
-=======
 @pytest.mark.skip(reason="unable to teardown correctly see TBD bug")
->>>>>>> 165057ec01cdfce0caf28d664b05c55aa4492120
 @pytest.mark.skamid
 @pytest.mark.assign
 @scenario(

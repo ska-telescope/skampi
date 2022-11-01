@@ -19,11 +19,7 @@ from resources.models.mvp_model.states import ObsState
 def test_configure_scan_on_sdp_subarray_in_low():
     """Configure scan on sdp subarray in low."""
 
-<<<<<<< HEAD
 @pytest.mark.skip("This test is skipped temporarily.")
-=======
-
->>>>>>> 165057ec01cdfce0caf28d664b05c55aa4492120
 @pytest.mark.skamid
 @pytest.mark.configure
 @scenario(

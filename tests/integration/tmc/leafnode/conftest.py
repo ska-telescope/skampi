@@ -6,12 +6,13 @@ import pytest
 from pytest_bdd import given
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.tmc_model.leafnodes.sdpln_entry_point import (
     SDPLnEntryPoint
 )
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from ... import conftest
+
 
 @pytest.fixture(name="set_sdp_ln_entry_point", autouse=True)
 def fxt_set_entry_point(
@@ -50,6 +51,19 @@ def fxt_set_up_log_capturing_for_sdp(
                 for index in range(1, sut_settings.nr_of_subarrays + 1)
             ]
             log_checking.capture_logs_from_devices(*subarrays)
+
+
+@pytest.fixture(name="sdp_base_configuration")
+def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
+    """Setup a base scan configuration to use for sdp.
+
+    :param tmp_path: a temporary path for sending configuration as a file.
+    :return: the configuration settings.
+    """
+    configuration = conf_types.ScanConfigurationByFile(
+        tmp_path, conf_types.ScanConfigurationType.STANDARD
+    )
+    return configuration
 
 
 @given("an SDP subarray in the IDLE state", target_fixture="configuration")

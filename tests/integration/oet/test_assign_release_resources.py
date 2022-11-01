@@ -37,10 +37,12 @@ def test_sbi_creation():
     """
 
 
-@pytest.mark.skip("This test is skipped temporarily.")
+@pytest.mark.skip("currently failing")
 @pytest.mark.skamid
 @pytest.mark.k8s
-@scenario("features/oet_assign_release_resources.feature", "Allocating resources with a SBI")
+@scenario(
+    "features/oet_assign_release_resources.feature", "Allocating resources with a SBI"
+)
 def test_resource_allocation():
     """
     Given an OET
@@ -50,10 +52,13 @@ def test_resource_allocation():
     """
 
 
-@pytest.mark.skip("This test is skipped temporarily.")
+@pytest.mark.skip("currently failing")
 @pytest.mark.skamid
 @pytest.mark.k8s
-@scenario("features/oet_assign_release_resources.feature", "Releasing all resources from sub-array")
+@scenario(
+    "features/oet_assign_release_resources.feature",
+    "Releasing all resources from sub-array",
+)
 def test_resource_release():
     """
     Given sub-array with resources allocated to it
@@ -144,14 +149,10 @@ def when_allocate_resources_from_sbi(
         ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
 
 
-@when(
-    parsers.parse(
-        "I tell the OET to release resources using script {script}"
-    )
-)
+@when(parsers.parse("I tell the OET to release resources using script {script}"))
 def when_release_resources(
     script,
-    allocated_subarray : fxt_types.allocated_subarray,
+    allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
 ):
     """

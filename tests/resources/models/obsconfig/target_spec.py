@@ -1,9 +1,7 @@
-from typing import NamedTuple
 from collections import OrderedDict
-from ska_tmc_cdm.messages.subarray_node.configure.core import (
-    ReceiverBand,
-    Target,
-)
+from typing import NamedTuple
+
+from ska_tmc_cdm.messages.subarray_node.configure.core import ReceiverBand, Target
 
 from .base import SchedulingBlock
 
@@ -21,9 +19,9 @@ class TargetSpec(NamedTuple):
 
 DEFAULT_TARGET_SPECS = OrderedDict(
     {
-        ".default": TargetSpec(
+        "target:a": TargetSpec(
             Target("12:29:06.699 degrees", "02:03:08.598 degrees"),
-            ".default",
+            "target:a",
             ReceiverBand.BAND_2,
             "vis_channels",
             "all",
@@ -31,9 +29,9 @@ DEFAULT_TARGET_SPECS = OrderedDict(
             "test-receive-addresses",
             "two",
         ),
-        "target:a": TargetSpec(
+        ".default": TargetSpec(
             Target("12:29:06.699 degrees", "02:03:08.598 degrees"),
-            "target:a",
+            ".default",
             ReceiverBand.BAND_2,
             "vis_channels",
             "all",

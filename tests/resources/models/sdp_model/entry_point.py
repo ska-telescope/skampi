@@ -327,7 +327,7 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
 
     nr_of_subarrays = 2
 
-    def __init__(self, observation: Observation = None) -> None:
+    def __init__(self, observation: Observation | None = None) -> None:
         """Init Object"""
         super().__init__()
         if not observation:

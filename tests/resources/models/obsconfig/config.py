@@ -1,13 +1,13 @@
 import json
-from ska_tmc_cdm.messages.central_node.assign_resources import (
-    AssignResourcesRequest,
-)
+
+from ska_tmc_cdm.messages.central_node.assign_resources import AssignResourcesRequest
 from ska_tmc_cdm.messages.subarray_node.configure import ConfigureRequest
-from .sdp_config import SdpConfig
-from .dishes import Dishes
+
+from .base import encoded
 from .csp import CSPconfig
+from .dishes import Dishes
+from .sdp_config import SdpConfig
 from .tmc_config import TmcConfig
-from .base import T, encoded
 
 
 class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
@@ -15,13 +15,12 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
     assign_resources_schema = "https://schema.skao.int/ska-tmc-assignresources/2.1"
 
     def _generate_assign_resources_config(self, subarray_id: int = 1):
-        assign_request = AssignResourcesRequest()
-        assign_request.interface = self.assign_resources_schema
-        assign_request.sdp_config = (
-            self.generate_sdp_assign_resources_config().as_object
+        assign_request = AssignResourcesRequest(
+            subarray_id=subarray_id,
+            dish_allocation=self.dish_allocation,
+            sdp_config=self.generate_sdp_assign_resources_config().as_object,
+            interface=self.assign_resources_schema,
         )
-        assign_request.subarray_id = subarray_id
-        assign_request.dish = self.get_dish_allocation_from_target_spec()
         return assign_request
 
     def _generate_scan_config(

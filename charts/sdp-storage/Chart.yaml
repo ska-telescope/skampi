@@ -1,0 +1,6 @@
+apiVersion: v2
+name: sdp-storage
+description: A Helm chart for creating pvcs for use by SDP scripts
+type: application
+version: 0.1.0
+appVersion: 0.1.0

@@ -14,3 +14,8 @@ Feature: Assign resources to sdp subarray
 		Given an SDP subarray
 		When I assign resources to it
 		Then the subarray must be in IDLE state
+	
+	Scenario: Releasing all resources from sdp sub-array in mid
+		Given an SDP subarray in IDLE state
+		When I release all resources assigned to it
+		Then the subarray must be in EMPTY state	

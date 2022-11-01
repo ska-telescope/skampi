@@ -15,7 +15,13 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     MessageBoardBuilder,
 )
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
-from ...sdp_model.entry_point import StartUpStep, SdpAssignResourcesStep, SdpConfigureStep, SDPScanStep
+from ...sdp_model.entry_point import (
+    StartUpStep,
+    SdpAssignResourcesStep,
+    SdpConfigureStep,
+    SDPScanStep,
+)
+from ...obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
 
@@ -75,14 +81,9 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
         subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-        standard_composition = comp.generate_standard_comp(
-            sub_array_id, dish_ids, sb_id
-        )
-        sdp_standard_composition = json.dumps(json.loads(standard_composition)["sdp"])
-        self._log(
-            f"commanding {subarray_name} with AssignResources: {sdp_standard_composition} "
-        )
-        subarray.command_inout("AssignResources", sdp_standard_composition)
+        config = self.observation.generate_sdp_assign_resources_config().as_json
+        self._log(f"commanding {subarray_name} with AssignResources: {config} ")
+        subarray.command_inout("AssignResources", config)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -94,7 +95,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
         subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
         self._log(f"Commanding {subarray_name} to ReleaseResources")
-        subarray.command_inout("ReleaseResources")
+        subarray.command_inout("ReleaseResources", "[]")
 
 
 class SdpLnConfigureStep(SdpConfigureStep):
@@ -121,16 +122,9 @@ class SdpLnConfigureStep(SdpConfigureStep):
         Memo(scan_duration=duration)
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
         subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-        standard_configuration = conf.generate_standard_conf(
-            sub_array_id, sb_id, duration
-        )
-        sdp_standard_configuration = json.dumps(
-            json.loads(standard_configuration)["sdp"]
-        )
-        self._log(
-            f"commanding {subarray_name} with Configure: {sdp_standard_configuration} "
-        )
-        subarray.command_inout("Configure", sdp_standard_configuration)
+        config = self.observation.generate_sdp_scan_config().as_json
+        self._log(f"commanding {subarray_name} with Configure: {config} ")
+        subarray.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in sdp LN.
@@ -156,7 +150,7 @@ class SDPLnScanStep(SDPScanStep):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        scan_config = json.dumps({"id": 1})
+        scan_config = self.observation.generate_sdp_run_scan().as_json
         scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
         subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
@@ -212,9 +206,12 @@ class SDPLnEntryPoint(CompositeEntryPoint):
 
     nr_of_subarrays = 2
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation = None) -> None:
         """Init Object"""
         super().__init__()
+        if not observation:
+            observation = Observation()
+        self.observation = observation
         self.set_online_step = NoOpStep()
         self.start_up_step = StartLnUpStep(self.nr_of_subarrays)
         self.assign_resources_step = SdpLnAssignResourcesStep()

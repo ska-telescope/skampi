@@ -64,7 +64,6 @@ def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
 # mock tests
 
 
-@pytest.mark.skip("This test is skipped temporarily.")
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_assign_resources(

@@ -13,7 +13,6 @@ from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 
 
-@pytest.mark.skip("This test is skipped temporarily.")
 @pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.assign

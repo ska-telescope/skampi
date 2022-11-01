@@ -438,10 +438,6 @@ class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
     def _generate_sdp_assign_resources_config(self):
         return SDPConfiguration(
             interface=self.sdp_assign_resources_schema,
-<<<<<<< HEAD
-            resources=cast(dict[Any, Any], self.resource_configuration),
-=======
->>>>>>> 165057ec01cdfce0caf28d664b05c55aa4492120
             execution_block=self.execution_block,
             resources=cast(dict[Any, Any], self.resource_configuration),
             processing_blocks=self.processing_blocks,

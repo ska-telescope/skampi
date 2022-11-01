@@ -54,7 +54,6 @@ def fxt_set_up_log_capturing_for_sdp(
 
 @given("an SDP subarray in the IDLE state", target_fixture="configuration")
 def an_sdp_subarray_in_idle_state(
-    set_up_log_capturing_for_sdp,
     sdp_base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,

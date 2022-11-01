@@ -1,4 +1,11 @@
-release=0.9.0
-tag=0.9.0
+release=0.10.0
+tag=0.10.0
 tag_description=
-baseline skamid chart
+**Charts:**
+**1. ska-mid 0.9.0 - 0.10.0:**
+
+    **1.1 tmc-mid - 0.5.18 - 0.5.21:
+
+            a.   Update tmc to do configure scan
+
+

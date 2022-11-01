@@ -45,8 +45,8 @@ build-base-image:
       when: never
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ci:1.0.0 docker/
-    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ci:1.0.0
+    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ci:1.0.1 docker/
+    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ci:1.0.1
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
   # Common template components

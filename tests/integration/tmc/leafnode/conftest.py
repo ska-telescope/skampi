@@ -3,11 +3,13 @@
 import os
 import pytest
 
+from pytest_bdd import given
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.tmc_model.leafnodes.sdpln_entry_point import (
     SDPLnEntryPoint
 )
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from ... import conftest
 
@@ -48,3 +50,18 @@ def fxt_set_up_log_capturing_for_sdp(
                 for index in range(1, sut_settings.nr_of_subarrays + 1)
             ]
             log_checking.capture_logs_from_devices(*subarrays)
+
+
+@given("an SDP subarray in the IDLE state", target_fixture="configuration")
+def an_sdp_subarray_in_idle_state(
+    set_up_subarray_log_checking_for_sdp,
+    sdp_base_configuration: conf_types.ScanConfiguration,
+    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
+    sut_settings: conftest.SutTestSettings,
+) -> conf_types.ScanConfiguration:
+    """an SDP subarray in the IDLE state."""
+    subarray_allocation_spec.receptors = sut_settings.receptors
+    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
+    # will use default composition for the allocated subarray
+    # subarray_allocation_spec.composition
+    return sdp_base_configuration

@@ -22,23 +22,12 @@ def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid using the leaf node."""
 
 
-@given("an SDP")
-def a_sdp():
-    """a SDP."""
+# @given("an SDP subarray in the IDLE state") from .conftest
 
 
-@given("an SDP subarray leaf node", target_fixture="configuration")
-def an_sdp_subarray_leaf_node():
-    """an SDP subarray leaf node."""
-    tel = names.TEL()
-    sut_settings = conftest.SutTestSettings()
-
-    for index in range(1, sut_settings.nr_of_subarrays + 1):
-        sdp_subarray_leaf_node = con_config.get_device_proxy(
-            tel.tm.subarray(index).sdp_leaf_node
-        )
-        result = sdp_subarray_leaf_node.ping()
-        assert result > 0
+@given("a TMC SDP subarray Leaf Node")
+def a_sdp_sln():
+    """a TMC SDP subarray Leaf Node."""
 
 
 # @when("I configure it for a scan") from ...conftest

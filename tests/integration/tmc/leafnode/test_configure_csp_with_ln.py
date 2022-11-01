@@ -40,12 +40,6 @@ def a_csp():
 
 # @when("I configure it for a scan") from ...conftest
 
-
-@when("When I command the leaf node to configure a scan on the CSP")
-@pytest.mark.usefixtures("I configure it for a scan")
-def call_configure_on_csp_ln():
-    """When I command the leaf node to configure a scan on the CSP"""
-
 @then("the CSP subarray shall go from IDLE to READY state")
 def the_csp_subarray_shall_go_from_idle_to_ready_state(
     allocated_subarray: fxt_types.allocated_subarray,

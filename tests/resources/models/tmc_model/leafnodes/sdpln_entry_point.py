@@ -214,6 +214,6 @@ class SDPLnEntryPoint(CompositeEntryPoint):
         self.observation = observation
         self.set_online_step = NoOpStep()
         self.start_up_step = StartLnUpStep(self.nr_of_subarrays)
-        self.assign_resources_step = SdpLnAssignResourcesStep()
-        self.configure_scan_step = SdpLnConfigureStep()
-        self.scan_step = SDPLnScanStep()
+        self.assign_resources_step = SdpLnAssignResourcesStep(observation)
+        self.configure_scan_step = SdpLnConfigureStep(observation)
+        self.scan_step = SDPLnScanStep(observation)

@@ -20,6 +20,9 @@ from tests.integration import conftest
 def test_configure_cspsubarray_for_a_scan_in_mid():
     """Configure cspsubarray for a scan in mid using the csp leaf node."""
 
+@given("a CSP subarray in the IDLE state")
+def a_csp():
+    """a CSP subarray in the IDLE state."""
 
 @given("a TMC CSP subarray Leaf Node", target_fixture="configuration")
 def a_tmc_csp_subarray_leaf_node():
@@ -33,10 +36,6 @@ def a_tmc_csp_subarray_leaf_node():
         )
         result = csp_subarray_leaf_node.ping()
         assert result > 0
-
-@given("a CSP subarray in the IDLE state")
-def a_csp():
-    """a CSP subarray in the IDLE state."""
 
 # @when("I configure it for a scan") from ...conftest
 

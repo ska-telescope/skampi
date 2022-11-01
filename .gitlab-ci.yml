@@ -1,4 +1,4 @@
-image: $CI_REGISTRY/ska-telescope/ska-skampi/ci:1.0.0
+image: $CI_REGISTRY/ska-telescope/ska-skampi/ci:1.0.1
 
 variables:
   MINIKUBE: "false"

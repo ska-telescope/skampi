@@ -246,14 +246,10 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         # Memo(scan_duration=duration)
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        standard_configuration = conf.generate_standard_conf(
-            sub_array_id, sb_id, duration
-        )
-        self._log(
-            f"commanding {subarray_name} with Configure: {standard_configuration} "
-        )
+        config = self.observation.generate_scan_config().as_json
+        self._log(f"commanding {subarray_name} with Configure: {config} ")
 
-        subarray.command_inout("Configure", standard_configuration)
+        subarray.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in sdp.

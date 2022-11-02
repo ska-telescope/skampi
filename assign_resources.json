@@ -3,8 +3,8 @@
     "subarray_id": 1,
     "dish": {
         "receptor_ids": [
-            "0001",
-            "0002"
+            "SKA0001",
+            "SKA0002"
         ]
     },
     "sdp": {

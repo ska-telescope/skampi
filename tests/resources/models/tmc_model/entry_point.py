@@ -156,7 +156,9 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
 
-        config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+        config = self.observation.generate_assign_resources_config_adapted_for_csp(
+            sub_array_id
+        )
 
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
 
@@ -171,7 +173,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-        central_node.command_inout("ReleaseResources", "[]")
+        self._log(f"Commanding {central_node_name} with ReleaseAllResources")
+        central_node.command_inout("ReleaseAllResources")
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.

@@ -173,8 +173,13 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-        self._log(f"Commanding {central_node_name} with ReleaseAllResources")
-        central_node.command_inout("ReleaseAllResources")
+        config = (
+            self.observation.generate_release_all_resources_config_for_central_node(
+                sub_array_id
+            )
+        )
+        self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
+        central_node.command_inout("ReleaseResources", config)
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.

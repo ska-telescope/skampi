@@ -45,6 +45,19 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
         config["dish"]["receptor_ids"] = updated_dish_ids
         return json.dumps(config)
 
+    def generate_release_all_resources_config_for_central_node(
+        self, subarray_id: int = 1
+    ) -> str:
+        config = {
+            "interface": "https://schema.skao.int/ska-tmc-releaseresources/2.1",
+            "transaction_id": "txn-....-00001",
+            "subarray_id": subarray_id,
+            "release_all": "true",
+            "receptor_ids": [],
+        }
+
+        return json.dumps(config)
+
     @encoded
     def generate_scan_config(
         self, target_id: str | None = None, scan_duration: float = 6

@@ -42,7 +42,7 @@ def a_sdp_sln():
     """a TMC SDP subarray Leaf Node."""
 
 
-# @when("I run a scan on the SDP") from ...conftest
+# @when("I command it to scan for a given period") from ...conftest
 
 
 @then("the SDP subarray shall go from READY to SCANNING")

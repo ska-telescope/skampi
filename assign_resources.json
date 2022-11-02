@@ -1,4 +1,4 @@
-'{
+{
     "interface": "https://schema.skao.int/ska-tmc-assignresources/2.1",
     "subarray_id": 1,
     "dish": {
@@ -181,4 +181,4 @@
             }
         ]
     }
-}'
+}

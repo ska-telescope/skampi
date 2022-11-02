@@ -244,6 +244,9 @@ k8s-pre-install-chart:
 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 	 
+
+k8s-post-install-chart:
+	kubectl -n $(KUBE_NAMESPACE) exec ska-sdp-console-0 -- ska-sdp create deployment shared helm '{"chart": "buffer", "values": {"size": "10Gi", "class": "nfss1"}}'
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
 

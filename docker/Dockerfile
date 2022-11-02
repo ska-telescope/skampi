@@ -4,4 +4,4 @@ FROM artefact.skao.int/ska-tango-images-pytango-builder:9.3.32
 
 COPY --from=ska_cicd_k8s_tools /usr/local/bin /usr/local/bin
 
-RUN apt-get update && apt-get install -y net-tools
+RUN apt-get update && apt-get install -y net-tools jq

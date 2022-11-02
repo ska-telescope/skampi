@@ -15,7 +15,6 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
-
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario("features/tmc_start_up_telescope.feature", "Start up the telescope")
@@ -34,14 +33,14 @@ def test_tmc_off_telescope_mid():
 @given("an TMC")
 def a_tmc():
     """an TMC"""
-    tel = names.TEL()    
+    tel = names.TEL()
     sut_settings=conftest.SutTestSettings()
 
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(central_node_name)
     result=central_node.ping()
     assert result>0
-    
+
     for index in range(1, sut_settings.nr_of_subarrays + 1):
         subarray_node= con_config.get_device_proxy(tel.tm.subarray(index))
         result=subarray_node.ping()
@@ -76,7 +75,7 @@ def a_tmc():
 @given("a Telescope consisting of SDP, CSP and a Dish")
 def a_telescope_with_csp_sdp_and_dish():
     """a Telescope consisting SDP, CSP and a Dish"""
-    tel = names.TEL()    
+    tel = names.TEL()
     sut_settings=conftest.SutTestSettings()
 
     csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
@@ -105,9 +104,9 @@ def a_telescope_with_csp_sdp_and_dish():
 @given("a Telescope consisting of SDP, CSP and a Dish that is ON")
 def a_telescope_with_sdp_csp_and_dish_on():
     """a Telescope consisting of SDP, CSP and a Dish that is ON"""
-    tel = names.TEL()    
+    tel = names.TEL()
     sut_settings=conftest.SutTestSettings()
-    
+
     csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
     result = csp_master_leaf_node.read_attribute("state").value
     assert_that(str(result)).is_equal_to("ON")

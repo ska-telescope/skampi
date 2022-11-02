@@ -13,6 +13,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
+from ska_oso_scripting.objects import SubArray
 from ..conftest import SutTestSettings
 
 from .oet_helpers import ScriptExecutor
@@ -197,3 +198,46 @@ def check_final_subarray_state(
         subarray_state == obsstate
     ), f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
     logger.info("Sub-array is in ObsState %s", obsstate)
+
+
+@pytest.mark.skamid
+@pytest.mark.k8s
+@scenario(
+    "features/oet_assign_release_resources.feature",
+    "Allocate resources using oet scripting interface",
+)
+def test_oet__scripting_resource_allocation():
+    """
+    Given an OET
+                And oet subarray object in state EMPTY
+                When I assign resources to it
+                Then the sub-array goes to ObsState IDLE
+    """
+
+
+@given("an oet subarray object in state EMPTY", target_fixture="subarray")
+def an_oet_subarray_object_in_state_empty(
+    running_telescope: fxt_types.running_telescope, sut_settings: SutTestSettings
+) -> SubArray:
+    return SubArray(sut_settings.subarray_id)
+
+
+@when("I assign resources to it")
+def i_assign_resources_to_it(
+    running_telescope: fxt_types.running_telescope,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    subarray: SubArray,
+):
+    """I assign resources to it."""
+
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    observation = sut_settings.observation
+    with context_monitoring.context_monitoring():
+        with running_telescope.wait_for_allocating_a_subarray(
+            subarray_id, receptors, integration_test_exec_settings
+        ):
+            config = observation.generate_assign_resources_config().as_object
+            subarray.assign_from_cdm(config)

@@ -1,3 +1,0 @@
-storageVolumes:
-  receive-data:
-    size: 5Gi

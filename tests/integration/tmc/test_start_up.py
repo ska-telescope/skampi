@@ -1,5 +1,6 @@
 """Start up the telescope from tmc feature tests."""
 import logging
+
 # import os
 
 import pytest
@@ -15,11 +16,14 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario("features/tmc_start_up_telescope.feature", "Start up the telescope")
 def test_tmc_start_up_telescope_mid():
     """Start up the telescope in mid."""
+
 
 # marked as xfail due to SKB-170
 @pytest.mark.xfail
@@ -34,103 +38,110 @@ def test_tmc_off_telescope_mid():
 def a_tmc():
     """an TMC"""
     tel = names.TEL()
-    sut_settings=conftest.SutTestSettings()
+    sut_settings = conftest.SutTestSettings()
 
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(central_node_name)
-    result=central_node.ping()
-    assert result>0
+    result = central_node.ping()
+    assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        subarray_node= con_config.get_device_proxy(tel.tm.subarray(index))
-        result=subarray_node.ping()
-        assert result>0
+        subarray_node = con_config.get_device_proxy(tel.tm.subarray(index))
+        result = subarray_node.ping()
+        assert result > 0
 
     csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
-    result=csp_master_leaf_node.ping()
-    assert result>0
+    result = csp_master_leaf_node.ping()
+    assert result > 0
 
     sdp_master_leaf_node = con_config.get_device_proxy(tel.tm.sdp_leaf_node)
-    result=sdp_master_leaf_node.ping()
-    assert result>0
+    result = sdp_master_leaf_node.ping()
+    assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        csp_subarray_leaf_node=con_config.get_device_proxy(tel.tm.subarray(index).csp_leaf_node)
-        result=csp_subarray_leaf_node.ping()
-        assert result>0
+        csp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).csp_leaf_node
+        )
+        result = csp_subarray_leaf_node.ping()
+        assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        sdp_subarray_leaf_node=con_config.get_device_proxy(tel.tm.subarray(index).sdp_leaf_node)
-        result=sdp_subarray_leaf_node.ping()
-        assert result>0
+        sdp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).sdp_leaf_node
+        )
+        result = sdp_subarray_leaf_node.ping()
+        assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        dish_leaf_nodes=con_config.get_device_proxy(tel.tm.dish_leafnode(index))
-        result=dish_leaf_nodes.ping()
-        assert result>0
-
-
+        dish_leaf_nodes = con_config.get_device_proxy(tel.tm.dish_leafnode(index))
+        result = dish_leaf_nodes.ping()
+        assert result > 0
 
 
 @given("a Telescope consisting of SDP, CSP and a Dish")
 def a_telescope_with_csp_sdp_and_dish():
     """a Telescope consisting SDP, CSP and a Dish"""
     tel = names.TEL()
-    sut_settings=conftest.SutTestSettings()
+    sut_settings = conftest.SutTestSettings()
 
     csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
-    result=csp_master_leaf_node.ping()
-    assert result>0
+    result = csp_master_leaf_node.ping()
+    assert result > 0
 
     sdp_master_leaf_node = con_config.get_device_proxy(tel.tm.sdp_leaf_node)
-    result=sdp_master_leaf_node.ping()
-    assert result>0
+    result = sdp_master_leaf_node.ping()
+    assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        csp_subarray_leaf_node=con_config.get_device_proxy(tel.tm.subarray(index).csp_leaf_node)
-        result=csp_subarray_leaf_node.ping()
-        assert result>0
+        csp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).csp_leaf_node
+        )
+        result = csp_subarray_leaf_node.ping()
+        assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        sdp_subarray_leaf_node=con_config.get_device_proxy(tel.tm.subarray(index).sdp_leaf_node)
-        result=sdp_subarray_leaf_node.ping()
-        assert result>0
+        sdp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).sdp_leaf_node
+        )
+        result = sdp_subarray_leaf_node.ping()
+        assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        dish_leaf_nodes=con_config.get_device_proxy(tel.tm.dish_leafnode(index))
-        result=dish_leaf_nodes.ping()
-        assert result>0
+        dish_leaf_nodes = con_config.get_device_proxy(tel.tm.dish_leafnode(index))
+        result = dish_leaf_nodes.ping()
+        assert result > 0
+
 
 @given("a Telescope consisting of SDP, CSP and a Dish that is ON")
 def a_telescope_with_sdp_csp_and_dish_on():
     """a Telescope consisting of SDP, CSP and a Dish that is ON"""
     tel = names.TEL()
-    sut_settings=conftest.SutTestSettings()
+    sut_settings = conftest.SutTestSettings()
 
     csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
     result = csp_master_leaf_node.read_attribute("state").value
     assert_that(str(result)).is_equal_to("ON")
 
-
     sdp_master_leaf_node = con_config.get_device_proxy(tel.tm.sdp_leaf_node)
     result = sdp_master_leaf_node.read_attribute("state").value
     assert_that(str(result)).is_equal_to("ON")
 
-
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        csp_subarray_leaf_node=con_config.get_device_proxy(tel.tm.subarray(index).csp_leaf_node)
+        csp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).csp_leaf_node
+        )
         result = csp_subarray_leaf_node.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
 
-
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        sdp_subarray_leaf_node=con_config.get_device_proxy(tel.tm.subarray(index).sdp_leaf_node)
+        sdp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).sdp_leaf_node
+        )
         result = sdp_subarray_leaf_node.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
 
-
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        dish_leaf_nodes=con_config.get_device_proxy(tel.tm.dish_leafnode(index))
+        dish_leaf_nodes = con_config.get_device_proxy(tel.tm.dish_leafnode(index))
         result = dish_leaf_nodes.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
 
@@ -177,12 +188,17 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
 
 
 @then("the sdp, csp and dish must be off")
-def the_sdp_csp_and_dish_must_be_off(sut_settings: conftest.SutTestSettings, integration_test_exec_settings: fxt_types.exec_settings,):
+def the_sdp_csp_and_dish_must_be_off(
+    sut_settings: conftest.SutTestSettings,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
     """the sdp, csp and dish must be off."""
     tel = names.TEL()
     mid = names.Mid()
     # Check state attribute of SDP Master
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(str(tel.tm.central_node))
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+        str(tel.tm.central_node)
+    )
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value
     assert_that(str(result)).is_equal_to("OFF")

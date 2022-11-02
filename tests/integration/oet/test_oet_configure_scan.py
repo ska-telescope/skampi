@@ -19,18 +19,18 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 
-
+@pytest.mark.oet
+@pytest.mark.skamid
+@pytest.mark.k8s
 @scenario("features/oet_configure_scan.feature", "Configure a scan using a predefined config")
 def test_configure_subarray():
     """
     Test that we can configure a scan using a predefined configuration.
 
-        Scenario: Configure a scan using a predefined config
-            Given subarray <subarray_id> that has been allocated
-                <nr_of_dishes> according to <SB_config>
-            When I configure the subarray to perform a <scan_config>
-                scan
-            Then the subarray is in the condition to run a scan
+    Scenario: Configure a scan using a predefined config
+        Given A running telescope for executing observations on a subarray
+        When I tell the OET to scan SBI using script file:///scripts/observe_sb.py --subarray_id=3 and SB /tmp/oda/mid_sb_example.json
+        Then the sub-array goes to ObsState READY
     """
 
 @given("A running telescope for executing observations on a subarray")

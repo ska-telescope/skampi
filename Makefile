@@ -246,8 +246,8 @@ k8s-pre-install-chart:
 	 
 
 k8s-post-install-chart:
-	@helm install  sdp-storage charts/sdp-storage -n $(KUBE_NAMESPACE_SDP)
-`
+	helm install  sdp-storage charts/sdp-storage -n $(KUBE_NAMESPACE_SDP)
+
 
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)

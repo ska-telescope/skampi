@@ -20,7 +20,7 @@ EXECUTOR = ScriptExecutor()
 
 
 
-@scenario("oet_configure_scan.feature", "Configure a scan using a predefined config")
+@scenario("features/oet_configure_scan.feature", "Configure a scan using a predefined config")
 def test_configure_subarray():
     """
     Test that we can configure a scan using a predefined configuration.

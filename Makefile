@@ -243,7 +243,11 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 k8s-pre-install-chart:
 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
-	helm install  sdp-storage charts/sdp-storage -n $(KUBE_NAMESPACE_SDP) 
+	 
+
+k8s-post-install-chart:
+	@helm install  sdp-storage charts/sdp-storage -n $(KUBE_NAMESPACE_SDP)
+`
 
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)

@@ -61,7 +61,7 @@ def when_configure_resources_from_sbi(
         # configured_subarray.configure(sut_settings.subarray_id, sut_settings.receptors, exec_settings)
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (
-            script_completion_state == "COMPLETE"
+            script_completion_state != "COMPLETE"
         ), f"Expected configure script to be COMPLETED, instead was {script_completion_state}"
 
 

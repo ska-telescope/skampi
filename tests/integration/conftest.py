@@ -16,6 +16,7 @@ from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.tmc_model.entry_point import TMCEntryPoint
+from resources.models.obsconfig.config import Observation
 
 
 logger = logging.getLogger(__name__)
@@ -30,13 +31,14 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 4
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
+    observation = Observation()
 
     @property
     def nr_of_receptors(self):
         return self._nr_of_receptors
 
     @nr_of_receptors.setter
-    def nr_of_receptors(self, value):
+    def nr_of_receptors(self, value: int):
         self._nr_of_receptors = value
         self._receptors = [i for i in range(1, value + 1)]
 
@@ -45,7 +47,7 @@ class SutTestSettings(SimpleNamespace):
         return self._receptors
 
     @receptors.setter
-    def receptors(self, receptor):
+    def receptors(self, receptor: list[int]):
         self._receptors = receptor
 
 

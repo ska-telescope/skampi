@@ -13,7 +13,7 @@ from resources.models.tmc_model.leafnodes.cspln_entry_point import CSPLnEntryPoi
 from ... import conftest
 
 
-@pytest.fixture(name="set_sdp_ln_entry_point", autouse=True)
+@pytest.fixture(name="set_sdp_ln_entry_point")
 def fxt_set_sdp_ln_entry_point(
     nr_of_subarrays: int,
     set_session_exec_env: fxt_types.set_session_exec_env,
@@ -31,7 +31,7 @@ def fxt_set_sdp_ln_entry_point(
     ]
 
 
-@pytest.fixture(name="set_csp_ln_entry_point", autouse=True)
+@pytest.fixture(name="set_csp_ln_entry_point")
 def fxt_set_csp_ln_entry_point(
     nr_of_subarrays: int,
     set_session_exec_env: fxt_types.set_session_exec_env,

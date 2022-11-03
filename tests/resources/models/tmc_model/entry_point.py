@@ -156,9 +156,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
 
-        config = self.observation.generate_assign_resources_config_adapted_for_csp(
-            sub_array_id
-        )
+        config = self.observation.generate_assign_resources_config(sub_array_id).as_json
 
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
 

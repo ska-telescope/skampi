@@ -2,12 +2,19 @@
 # piped command is the value of the last (rightmost) commnand to exit with a
 # non-zero status. This lets us pipe output into tee but still exit on test
 # failures.
+EXIT_AT_FAIL ?=false## set python test to exit at the first failed test
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 
 all: test
 
 .PHONY: all test install start_log_consumer remove_log_consumer setup_ipython config_git check_running get_mem_usage get_cpu_usage
+
+ifneq ($(EXIT_AT_FAIL),false)
+EXIT = -x
+else
+EXIT = 
+endif
 
 test: install
 	# make start_log_consumer # does not start:
@@ -21,7 +28,7 @@ test: install
 	pytest --version; \
 	PYTHONPATH=/app:/app/skampi:/app/skampi/test KUBE_NAMESPACE=$(KUBE_NAMESPACE) pytest -v -r fEx \
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
-		--disable-pytest-warnings $(FILE) --count=$(COUNT) tests | tee pytest.stdout; \
+		--disable-pytest-warnings $(FILE) --count=$(COUNT) tests $(EXIT)| tee pytest.stdout; \
 	status=$$?; \
 	echo "test: status is ($$status)"; \
 	cp -r ./build/* tests/build/; \

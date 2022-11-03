@@ -76,3 +76,7 @@ class TargetSpecs(SchedulingBlock, Scan):
         if target_id is not None:
             return self.target_specs[target_id]
         return list(self.target_specs.values())[0]
+
+    @property
+    def next_target_id(self) -> str:
+        return list(self.target_specs.keys())[0]

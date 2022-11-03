@@ -1,4 +1,5 @@
 import json
+from typing import Any, cast
 
 from ska_tmc_cdm.messages.central_node.assign_resources import AssignResourcesRequest
 from ska_tmc_cdm.messages.subarray_node.configure import ConfigureRequest
@@ -26,6 +27,8 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
     def _generate_scan_config(
         self, target_id: str | None = None, scan_duration: float = 6
     ):
+        if target_id is None:
+            target_id = self.next_target_id
         return ConfigureRequest(
             pointing=self.get_pointing_configuration(target_id),
             dish=self.get_dish_configuration(target_id),
@@ -37,13 +40,6 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
     @encoded
     def generate_assign_resources_config(self, subarray_id: int = 1):
         return self._generate_assign_resources_config(subarray_id)
-
-    def generate_assign_resources_config_adapted_for_csp(self, subarray_id: int = 1):
-        config = self.generate_assign_resources_config(subarray_id).as_dict
-        dish_ids: list[str] = config["dish"]["receptor_ids"]
-        updated_dish_ids = [dish_id.replace("SKA", "") for dish_id in dish_ids]
-        config["dish"]["receptor_ids"] = updated_dish_ids
-        return json.dumps(config)
 
     def generate_release_all_resources_config_for_central_node(
         self, subarray_id: int = 1
@@ -67,3 +63,16 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
     @encoded
     def generate_run_scan_conf(self):
         return self.get_scan_id()
+
+    def generate_scan_config_parsed_for_csp(
+        self,
+        target_id: str | None = None,
+        subarray_id: int = 1,
+        scan_duration: float = 6,
+    ) -> str:
+        config = cast(
+            dict[str, Any], self.generate_scan_config(target_id, scan_duration).as_dict
+        )
+        csp_config = config["csp"]
+        csp_config["pointing"] = config["pointing"]
+        return json.dumps(csp_config)

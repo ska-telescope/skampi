@@ -239,5 +239,5 @@ def i_assign_resources_to_it(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            config = observation.generate_assign_resources_config().as_object
+            config = observation.generate_assign_resources_config(subarray_id).as_object
             subarray.assign_from_cdm(config)

@@ -9,10 +9,6 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
-from ska_ser_skallop.mvp_fixtures.context_management import (
-    SubarrayContext,
-    TelescopeContext,
-)
 from .oet_helpers import ScriptExecutor
 
 logger = logging.getLogger(__name__)
@@ -33,7 +29,8 @@ def test_configure_subarray():
     """
 
 @given("A running telescope for executing observations on a subarray")
-def a_running_telescope(running_telescope: TelescopeContext):
+def a_running_telescope():
+    """an running telescope"""
     pass
 
 @when(
@@ -45,7 +42,7 @@ def when_configure_resources_from_sbi(
     script,
     sb_json,
     context_monitoring: fxt_types.context_monitoring,
-    subarray: SubarrayContext,
+    configured_subarray: fxt_types.configured_subarray,
     exec_settings: fxt_types.exec_settings,
 ):
     """
@@ -56,7 +53,7 @@ def when_configure_resources_from_sbi(
         sb_json (str): file path to a scheduling block
     """
     with context_monitoring.context_monitoring():
-        subarray.clear_configuration_when_finished(exec_settings)
+        configured_subarray.clear_configuration_when_finished(exec_settings)
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (
             script_completion_state == "COMPLETE"

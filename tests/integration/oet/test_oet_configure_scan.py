@@ -43,6 +43,8 @@ def when_configure_resources_from_sbi(
     sb_json,
     context_monitoring: fxt_types.context_monitoring,
     configured_subarray: fxt_types.configured_subarray,
+    running_telescope: fxt_types.running_telescope,
+    sut_settings: SutTestSettings,
     exec_settings: fxt_types.exec_settings,
 ):
     """
@@ -53,11 +55,14 @@ def when_configure_resources_from_sbi(
         sb_json (str): file path to a scheduling block
     """
     with context_monitoring.context_monitoring():
-        configured_subarray.clear_configuration_when_finished(exec_settings)
+    #     running_telescope.release_subarray_when_finished(
+    #         sut_settings.subarray_id, sut_settings.receptors, exec_settings
+    #     )
+        # configured_subarray.configure(sut_settings.subarray_id, sut_settings.receptors, exec_settings)
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (
             script_completion_state == "COMPLETE"
-        ), f"Expected configure resource allocation script to be COMPLETED, instead was {script_completion_state}"
+        ), f"Expected configure script to be COMPLETED, instead was {script_completion_state}"
 
 
 @then(parsers.parse("the sub-array goes to ObsState {obsstate}"))

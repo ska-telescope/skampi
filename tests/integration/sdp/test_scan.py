@@ -12,12 +12,14 @@ from resources.models.mvp_model.states import ObsState
 
 from .. import conftest
 
+@pytest.mark.skip(reason="Skipped Temporarily")
 @pytest.mark.skalow
 @pytest.mark.scan
 @scenario("features/sdp_scan.feature", "Run a scan on sdp subarray in low")
 def test_run_a_scan_on_sdp_subarray_in_low():
     """CRun a scan on sdp subarray in low."""
 
+@pytest.mark.skip(reason="Skipped Temporarily")
 @pytest.mark.skamid
 @pytest.mark.scan
 @scenario("features/sdp_scan.feature", "Run a scan on sdp subarray in mid")

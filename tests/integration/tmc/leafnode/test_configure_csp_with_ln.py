@@ -12,6 +12,7 @@ from resources.models.mvp_model.states import ObsState
 from ... import conftest
 
 
+@pytest.mark.skip(reason="Skipped Temporarily")
 @pytest.mark.skamid
 @scenario(
     "features/tmc_cspln_configure.feature", "Configure the csp mid using csp leaf node"

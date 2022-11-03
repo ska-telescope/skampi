@@ -12,6 +12,7 @@ from resources.models.mvp_model.states import ObsState
 from ... import conftest
 
 
+@pytest.mark.skip(reason="Skipped Temporarily")
 @pytest.mark.skamid
 @pytest.mark.configure
 @scenario(

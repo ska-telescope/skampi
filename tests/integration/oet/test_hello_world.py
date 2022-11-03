@@ -5,6 +5,7 @@ from .oet_helpers import ScriptExecutor
 
 EXECUTOR = ScriptExecutor()
 
+@pytest.mark.skip(reason="Skipped Temporarily")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

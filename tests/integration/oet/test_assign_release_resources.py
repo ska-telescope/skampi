@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 
+@pytest.mark.skip(reason="Skipped Temporarily")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

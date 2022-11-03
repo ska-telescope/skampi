@@ -44,7 +44,8 @@ class Dishes(TargetSpecs):
 
     @property
     def dish_allocation(self):
-        return DishAllocation(self.dishes)
+        adapted_dishes = [dish.replace("SKA", "") for dish in self.dishes]
+        return DishAllocation(adapted_dishes)
 
     @property
     def resource_configuration(self):

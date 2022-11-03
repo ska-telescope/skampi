@@ -132,7 +132,7 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            config = self.observation.generate_assign_resources_config()
+            config = self.observation.generate_assign_resources_config().as_json
             self._log(f"commanding {subarray_name} with AssignResources: {config} ")
             subarray.set_timeout_millis(6000)
             subarray.command_inout("AssignResources", config)

@@ -1,4 +1,5 @@
 import json
+from typing import Any, cast
 
 from ska_tmc_cdm.messages.central_node.assign_resources import AssignResourcesRequest
 from ska_tmc_cdm.messages.subarray_node.configure import ConfigureRequest
@@ -62,3 +63,16 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
     @encoded
     def generate_run_scan_conf(self):
         return self.get_scan_id()
+
+    def generate_scan_config_parsed_for_csp(
+        self,
+        target_id: str | None = None,
+        subarray_id: int = 1,
+        scan_duration: float = 6,
+    ) -> str:
+        config = cast(
+            dict[str, Any], self.generate_scan_config(target_id, scan_duration).as_dict
+        )
+        csp_config = config["csp"]
+        csp_config["pointing"] = config["pointing"]
+        return json.dumps(csp_config)

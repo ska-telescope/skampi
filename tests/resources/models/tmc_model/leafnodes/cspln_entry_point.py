@@ -112,7 +112,7 @@ class CspLnConfigureStep(CspConfigureStep):
         Memo(scan_duration=duration)
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
-        config = self.observation.generate_csp_scan_config().as_json
+        config = self.observation.generate_scan_config_parsed_for_csp()
         self._log(f"commanding {csp_subarray_ln_name} with Configure: {config}")
         csp_subarray_ln.command_inout("Configure", config)
 

@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 
-@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_configure_scan.feature", "Configure a scan using a predefined config")
@@ -39,7 +38,7 @@ def a_running_telescope(running_telescope: TelescopeContext):
 
 @when(
     parsers.parse(
-        "I tell the OET to scan SBI using script  {script} and SB {sb_json}"
+        "I tell the OET to config SBI using script {script} and SB {sb_json}"
     )
 )
 def when_configure_resources_from_sbi(

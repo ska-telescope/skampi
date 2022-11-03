@@ -45,29 +45,33 @@ def a_sdp_sln():
 # @when("I command it to scan for a given period") from ...conftest
 
 
-@then("the SDP subarray shall go from READY to SCANNING")
-def the_subarray_shall_be_in_the_scanning_state(
+# @then("the SDP subarray shall go from READY to SCANNING")
+# def the_subarray_shall_be_in_the_scanning_state(
+#     configured_subarray: fxt_types.configured_subarray,
+# ):
+#     """the SDP subarray shall go from READY to SCANNING."""
+#     tel = names.TEL()
+#     sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
+#     sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
+
+#     result = sdp_subarray.read_attribute("obsstate").value
+#     assert_that(result).is_equal_to(ObsState.SCANNING)
+
+
+@then("the SDP subarray must be in the SCANNING state until finished")
+def the_sdp_subarray_must_be_in_the_scanning_state(
     configured_subarray: fxt_types.configured_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """the SDP subarray shall go from READY to SCANNING."""
+    """the SDP subarray must be in the SCANNING state until finished."""
     tel = names.TEL()
     sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
     sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
 
     result = sdp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.SCANNING)
-
-
-@then("the SDP shall go back to READY when finished")
-def the_subarray_goes_back_to_ready_state(
-    configured_subarray: fxt_types.configured_subarray,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
-):
-    """The SDP goes back to READY state when finished"""
-    tel = names.TEL()
-    sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
-    sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
+    # afterwards it must be ready
     context_monitoring.re_init_builder()
     context_monitoring.wait_for(sdp_subarray_name).for_attribute(
         "obsstate"

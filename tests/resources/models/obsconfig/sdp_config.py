@@ -454,7 +454,7 @@ class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
         )
 
     def _generate_sdp_run_scan(self):
-        return self.get_scan_id()
+        return self.get_scan_id(backwards=True)
 
     @encoded
     def generate_sdp_run_scan(self):

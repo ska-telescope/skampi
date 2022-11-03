@@ -150,7 +150,7 @@ class SDPLnScanStep(SDPScanStep):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        scan_config = self.observation.generate_sdp_run_scan().as_json
+        scan_config = self.observation.generate_sdp_scan_config().as_json
         scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
         subarray = con_config.get_device_proxy(subarray_name)  # type: ignore

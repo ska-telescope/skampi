@@ -22,11 +22,11 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-csp-lmc-mid.enabled
   - name: ska-sdp
-    version: 0.12.1
+    version: 0.9.1
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
   - name: ska-tmc-mid
-    version: 0.5.22
+    version: 0.5.21
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tmc-mid.enabled
     alias: tmc-mid

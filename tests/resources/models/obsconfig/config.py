@@ -68,7 +68,7 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
         self,
         target_id: str | None = None,
         subarray_id: int = 1,
-        scan_duration: float = 6,
+        scan_duration: float = 4,
     ) -> str:
         config = cast(
             dict[str, Any], self.generate_scan_config(target_id, scan_duration).as_dict

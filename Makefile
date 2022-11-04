@@ -246,6 +246,7 @@ k8s-pre-install-chart:
 	 
 
 k8s-post-install-chart:
+	kubectl wait deployment -n $(KUBE_NAMESPACE) ska-sdp-console --for condition=Available=True --timeout=90s
 	kubectl -n $(KUBE_NAMESPACE) exec ska-sdp-console-0 -- ska-sdp create deployment shared helm '{"chart": "buffer", "values": {"size": "10Gi", "class": "nfss1"}}'
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
@@ -276,3 +277,6 @@ k8s-do-test-runner:
 ##  Post tests reporting
 	pip list > build/pip_list.txt
 	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
+
+temp:
+	scripts/deploy_sdp_buffer.sh

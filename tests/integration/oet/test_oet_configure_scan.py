@@ -22,7 +22,7 @@ EXECUTOR = ScriptExecutor()
 def test_configure_subarray():
     """
         Given an OET
-        When I tell the OET to scan SBI using script file:///scripts/observe_sb.py and SB /tmp/oda/mid_sb_example.json
+        When I tell the OET to scan SBI using script file:///scripts/observe_mid_sb.py and SB /tmp/oda/mid_sb_example.json
         Then the sub-array goes to ObsState CONFIGURING,READY
     """
 

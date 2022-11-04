@@ -3,4 +3,4 @@ Feature: Verification of configure a scan using a predefined config on subarray 
   Scenario: Configure a scan using a predefined config
     Given an OET
     When I tell the OET to config SBI using script file:///scripts/observe_mid_sb.py and SB /tmp/oda/mid_sb_example.json
-    Then the sub-array goes to ObsState CONFIGURING,READY
+    Then the sub-array goes to ObsState READY

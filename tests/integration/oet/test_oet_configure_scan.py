@@ -15,7 +15,7 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-
+@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_configure_scan.feature", "Configure a scan using a predefined config")
@@ -32,17 +32,6 @@ def test_configure_subarray():
 @given("an OET")
 def a_oet():
     """an OET"""
-
-
-@given("sub-array is in ObsState EMPTY")
-def the_subarray_must_be_in_empty_state(
-    running_telescope: fxt_types.running_telescope, sut_settings: SutTestSettings
-):
-    """the subarray must be in EMPTY state."""
-    tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.EMPTY)
 
 @when(
     parsers.parse(

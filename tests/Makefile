@@ -26,7 +26,7 @@ test: install
 	find . -name "*.pyc" -type f -delete && \
 	cd .. && \
 	pytest --version; \
-	PYTHONPATH=/app:/app/skampi:/app/skampi/test KUBE_NAMESPACE=$(KUBE_NAMESPACE) pytest -r fEx \
+	PYTHONPATH=/app:/app/skampi:/app/skampi/test KUBE_NAMESPACE=$(KUBE_NAMESPACE) pytest -v -r fEx \
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
 		--disable-pytest-warnings $(FILE) --count=$(COUNT) tests $(EXIT)| tee pytest.stdout; \
 	status=$$?; \

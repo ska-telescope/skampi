@@ -12,14 +12,17 @@ from resources.models.mvp_model.states import ObsState
 
 @pytest.mark.skalow
 @pytest.mark.configure
+@pytest.mark.sdp
 @scenario(
     "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in low"
 )
 def test_configure_scan_on_sdp_subarray_in_low():
     """Configure scan on sdp subarray in low."""
 
+
 @pytest.mark.skamid
 @pytest.mark.configure
+@pytest.mark.sdp
 @scenario(
     "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in mid"
 )

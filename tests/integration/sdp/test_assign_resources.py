@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.skalow
 @pytest.mark.assign
+@pytest.mark.sdp
 @scenario(
     "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in low"
 )
@@ -29,6 +30,7 @@ def test_assign_resources_to_sdp_subarray_in_low():
 
 @pytest.mark.skamid
 @pytest.mark.assign
+@pytest.mark.sdp
 @scenario(
     "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in mid"
 )

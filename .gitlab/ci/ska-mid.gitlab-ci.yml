@@ -23,7 +23,7 @@ mid-test:
     CAPTURE_LOGS: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
-    COUNT: 100
+    COUNT: 1
 
   extends:
     - .tags_default

@@ -38,7 +38,7 @@ def an_sdp_subarray_in_ready_state(
 
 
 @given("a TMC SDP subarray Leaf Node")
-def a_sdp_sln():
+def a_sdp_sln(set_sdp_ln_entry_point):
     """a TMC SDP subarray Leaf Node."""
 
 

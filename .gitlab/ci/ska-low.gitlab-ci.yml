@@ -21,6 +21,7 @@ low-test:
     TEL: low
     EXIT_AT_FAIL: "true"
     CAPTURE_LOGS: "True"
+    DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
   extends:

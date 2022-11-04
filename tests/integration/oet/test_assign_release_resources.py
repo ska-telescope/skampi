@@ -107,7 +107,7 @@ def when_create_sbi(
     with context_monitoring.observe_while_running():
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (
-            script_completion_state == "FAILED"
+            script_completion_state == "COMPLETE"
         ), f"Expected SBI creation script to be COMPLETED, instead was {script_completion_state}"
 
 

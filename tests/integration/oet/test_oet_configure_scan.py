@@ -51,7 +51,7 @@ def when_configure_resources_from_sbi(
         # )
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (
-            script_completion_state == "COMPLETE"
+            script_completion_state == "FAILED"
         ), f"Expected configure script to be COMPLETED, instead was {script_completion_state}"
 
 

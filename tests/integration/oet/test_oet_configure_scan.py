@@ -13,33 +13,22 @@ from .oet_helpers import ScriptExecutor
 EXECUTOR = ScriptExecutor()
 
 @pytest.mark.k8s
-@pytest.mark.k8sonly
-@pytest.mark.skamid
 @pytest.mark.skamid
 @pytest.mark.configure
 @scenario("features/oet_configure_scan.feature", "Configure a scan using a predefined config")
 def test_configure_subarray():
     """
-    Test that we can configure a scan using a predefined configuration.
-
-    Scenario: Configure a scan using a predefined config
-        Given A running telescope for executing observations on a subarray
-        When I tell the OET to scan SBI using script file:///scripts/observe_sb.py --subarray_id=3 and SB /tmp/oda/mid_sb_example.json
-        Then the sub-array goes to ObsState READY
+        Given an OET
+        When I tell the OET to scan SBI using script file:///scripts/observe_sb.py and SB /tmp/oda/mid_sb_example.json
+        Then the sub-array goes to ObsState CONFIGURING,READY
     """
 
 @given("an OET")
 def a_oet():
     """an OET"""
 
-@given("a subarray in the IDLE state")
-def a_subarray_in_the_idle_state():
-    """a subarray in the IDLE state."""
-
 @when(
-    parsers.parse(
-        "I tell the OET to config SBI using script {script} and SB {sb_json}"
-    )
+    parsers.parse("I tell the OET to config SBI using script {script} and SB {sb_json}")
 )
 def when_configure_resources_from_sbi(
     script,

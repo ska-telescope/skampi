@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
-@pytest.mark.suspect
+@pytest.mark.sdp
 @pytest.mark.skamid
 @pytest.mark.assign
 @scenario(

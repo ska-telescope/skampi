@@ -19,6 +19,11 @@ low-test:
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     COUNT: 1
     TEL: low
+    EXIT_AT_FAIL: "true"
+    CAPTURE_LOGS: "True"
+    DEBUG_ENTRYPOINT: "True"
+    DEBUG_ENTRYPOINT_EXTENDED: "True"
+    LIVE_LOGGING_EXTENDED: "True"
   extends:
     - .tags_default
   script:

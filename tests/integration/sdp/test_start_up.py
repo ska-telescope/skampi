@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.skamid
 @pytest.mark.startup
+@pytest.mark.sdp
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in mid")
 def test_sdp_start_up_telescope_mid():
     """Start up the sdp in mid."""
@@ -22,6 +23,7 @@ def test_sdp_start_up_telescope_mid():
 
 @pytest.mark.skalow
 @pytest.mark.startup
+@pytest.mark.sdp
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in low")
 def test_sdp_start_up_telescope_low():
     """Start up the sdp in low."""

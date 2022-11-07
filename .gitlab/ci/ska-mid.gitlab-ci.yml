@@ -24,8 +24,6 @@ mid-test:
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
-    ADDMARKS: "sdp"
-    COUNT: 100
 
   extends:
     - .tags_default

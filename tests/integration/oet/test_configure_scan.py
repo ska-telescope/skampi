@@ -38,7 +38,7 @@ def a_oet():
     """an OET"""
 
 
-@given("sub-array is in the ObsState IDLE and resources allocated to it")
+@given("sub-array is in the ObsState IDLE")
 def the_subarray_with_recources_allocate(
         allocated_subarray: fxt_types.allocated_subarray, sut_settings: SutTestSettings
 ):

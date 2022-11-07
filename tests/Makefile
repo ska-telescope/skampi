@@ -2,7 +2,7 @@
 # piped command is the value of the last (rightmost) commnand to exit with a
 # non-zero status. This lets us pipe output into tee but still exit on test
 # failures.
-EXIT_AT_FAIL ?=## set python test to exit at the first failed test
+EXIT_AT_FAIL ?=false## set python test to exit at the first failed test
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
 

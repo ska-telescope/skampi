@@ -26,20 +26,19 @@ EXECUTOR = ScriptExecutor()
 @scenario("features/oet_configure_scan.feature", "Observing a Scheduling Block")
 def test_observing_sbi():
     """
-    Given an OET
-    AND sub-array is in the ObsState IDLE and resources allocated to it
+    Given sub-array is in the ObsState IDLE
     When I tell the OET to observe using script file:///scripts/observe_mid_sb.py and SBI /tmp/oda/mid_sb_example.json
     Then the sub-array goes to ObsState READY
     """
 
-
-@given("an OET")
-def a_oet():
-    """an OET"""
+#
+# @given("an OET")
+# def a_oet():
+#     """an OET"""
 
 
 @given("sub-array is in the ObsState IDLE")
-def the_subarray_with_recources_allocate(
+def the_subarray_must_be_in_idle_state(
         allocated_subarray: fxt_types.allocated_subarray, sut_settings: SutTestSettings
 ):
     """the subarray must be in IDLE state."""

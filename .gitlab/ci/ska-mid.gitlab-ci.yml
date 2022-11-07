@@ -24,8 +24,7 @@ mid-test:
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
-    ADDMARKS: "suspect"
-    COUNT: 100
+    COUNT: 1
 
   extends:
     - .tags_default

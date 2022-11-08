@@ -43,7 +43,7 @@ def fxt_setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
     setup_sdp_mock(mock_entry_point)
 
 
-@pytest.fixture(name="sdp_start_up_test_exec_settings", autouse=True)
+@pytest.fixture(name="sdp_start_up_test_exec_settings")
 def fxt_sdp_start_up_test_exec_settings(
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
@@ -54,7 +54,7 @@ def fxt_sdp_start_up_test_exec_settings(
     integration_test_exec_settings.time_out = 30
 
 
-@pytest.fixture(name="assign_resources_test_exec_settings", autouse=True)
+@pytest.fixture(name="assign_resources_test_exec_settings")
 def fxt_sdp_assign_resources_exec_settings(
     integration_test_exec_settings: fxt_types.exec_settings,
 ):

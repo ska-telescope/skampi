@@ -201,6 +201,7 @@ def check_final_subarray_state(
 
 
 @pytest.mark.skamid
+@pytest.mark.suspect
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",

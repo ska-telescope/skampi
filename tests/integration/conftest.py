@@ -108,7 +108,7 @@ def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
     if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
         logger.warning("enabled attribute synchronization globally")
         exec_settings.attr_synching = True
-    exec_settings.time_out = 40
+    exec_settings.time_out = 150
 
 
 @pytest.fixture(name="integration_test_exec_settings")
@@ -121,7 +121,7 @@ def fxt_integration_test_exec_settings(
     :return: test specific execution settings as a fixture
     """
     integration_test_exec_settings = exec_settings.replica()
-    integration_test_exec_settings.time_out = 40
+    integration_test_exec_settings.time_out = 150
 
     if os.getenv("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()

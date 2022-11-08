@@ -3,7 +3,7 @@ import logging
 from types import SimpleNamespace
 import os
 
-from typing import Callable
+from typing import Any, Callable
 from mock import patch, Mock
 
 import pytest
@@ -31,7 +31,11 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 4
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
-    observation = Observation()
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        logger.info("initialising sut settings")
+        self.observation = Observation()
 
     @property
     def nr_of_receptors(self):
@@ -51,7 +55,7 @@ class SutTestSettings(SimpleNamespace):
         self._receptors = receptor
 
 
-@pytest.fixture(name="sut_settings")
+@pytest.fixture(name="sut_settings", scope="function")
 def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()

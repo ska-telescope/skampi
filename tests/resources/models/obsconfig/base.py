@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime
 from typing import Any, Callable, Generic, NamedTuple, ParamSpec, TypeVar
 
@@ -12,7 +13,7 @@ class SB(NamedTuple):
 
 def load_next_sb():
     date = datetime.now()
-    unique = f"{date.year}{date.month}{date.day}-{str(int(date.timestamp()))[5:]}"
+    unique = f"{date.year}{date.month}{date.day}-{str(int(date.timestamp()*100))[-5:]}"
     pb = f"pb-mvp01-{unique}"
     eb = f"eb-mvp01-{unique}"
     return SB(eb, pb)
@@ -20,6 +21,7 @@ def load_next_sb():
 
 class SchedulingBlock:
     def __init__(self, *_: Any, **__: Any) -> None:
+        logging.info("initialising scheduling block")
         eb_id, pb_id = load_next_sb()
         self.eb_id = eb_id
         self.pb_id = pb_id

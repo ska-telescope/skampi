@@ -240,4 +240,5 @@ def i_assign_resources_to_it(
             subarray_id, receptors, integration_test_exec_settings
         ):
             config = observation.generate_assign_resources_config(subarray_id).as_object
+            logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
             subarray.assign_from_cdm(config)

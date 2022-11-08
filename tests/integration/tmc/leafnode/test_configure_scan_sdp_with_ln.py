@@ -9,8 +9,6 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from resources.models.mvp_model.states import ObsState
 
-from ... import conftest
-
 
 @pytest.mark.skamid
 @pytest.mark.configure

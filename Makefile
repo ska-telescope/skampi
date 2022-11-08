@@ -277,6 +277,3 @@ k8s-do-test-runner:
 ##  Post tests reporting
 	pip list > build/pip_list.txt
 	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
-
-temp:
-	scripts/deploy_sdp_buffer.sh

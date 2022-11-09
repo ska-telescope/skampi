@@ -41,6 +41,10 @@ DASHMARK ?= ska$(TEL) and $(ADDMARKS)
 else
 DASHMARK ?= ska$(TEL)
 endif
+ARCHIVER_HOST_NAME = timescaledb.ska-eda-mid-db.svc.cluster.local
+ARCHIVER_PORT=5432
+ARCHIVER_DB_USER=admin
+ARCHIVER_DB_PWD=admin
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
 ifneq ($(TESTCOUNT),)

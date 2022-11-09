@@ -41,6 +41,7 @@ DASHMARK ?= ska$(TEL) and $(ADDMARKS)
 else
 DASHMARK ?= ska$(TEL)
 endif
+
 ARCHIVER_HOST_NAME = timescaledb.ska-eda-mid-db.svc.cluster.local
 ARCHIVER_PORT=5432
 ARCHIVER_DB_USER=admin
@@ -48,6 +49,7 @@ ARCHIVER_DB_PWD=admin
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
 CONFIG_MANAGER= mid-eda/cm/01
 ARCHWIZARD_CONFIG?= $(ARCHWIZARD_VIEW_DBNAME)=tango://$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000/$(CONFIG_MANAGER)
+
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
 ifneq ($(TESTCOUNT),)
 # Dashcount is a synthesis of testcount as input user variable and is used to
@@ -97,6 +99,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
+	--set archwizard_config=$(ARCHWIZARD_CONFIG) \
 	$(SDP_PROXY_VARS)
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes

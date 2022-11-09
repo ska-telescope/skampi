@@ -45,7 +45,9 @@ ARCHIVER_HOST_NAME = timescaledb.ska-eda-mid-db.svc.cluster.local
 ARCHIVER_PORT=5432
 ARCHIVER_DB_USER=admin
 ARCHIVER_DB_PWD=admin
-
+ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
+CONFIG_MANAGER= mid-eda/cm/01
+ARCHWIZARD_CONFIG?= $(ARCHWIZARD_VIEW_DBNAME)=tango://$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000/$(CONFIG_MANAGER)
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
 ifneq ($(TESTCOUNT),)
 # Dashcount is a synthesis of testcount as input user variable and is used to

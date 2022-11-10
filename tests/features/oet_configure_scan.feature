@@ -4,9 +4,9 @@ Feature: Verification of OET scripts being executed successfully during an obser
     #Scenario: Observing a SBI
 	@XTP-778 @XTP-776
 	Scenario: Observing a Scheduling Block
-		Given sub-array is in the ObsState IDLE
+		Given Subarray is in the ObsState IDLE
 		When I tell the OET to observe using script "<script>" and SBI "<sb_json>"
-		Then the sub-array goes to ObsState READY
+		Then the Subarray goes to ObsState READY
 
     Examples:
     |script                             |sb_json                     |

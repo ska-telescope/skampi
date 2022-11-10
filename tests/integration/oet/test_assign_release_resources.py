@@ -12,8 +12,8 @@ from pytest_bdd import given, parsers, scenario, then, when
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from resources.models.mvp_model.states import ObsState
 from ska_oso_scripting.objects import SubArray
+from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 
 from .oet_helpers import ScriptExecutor
@@ -74,7 +74,8 @@ def a_oet():
 
 @given("sub-array is in ObsState EMPTY")
 def the_subarray_must_be_in_empty_state(
-    running_telescope: fxt_types.running_telescope, sut_settings: SutTestSettings
+    running_telescope: fxt_types.running_telescope,
+    sut_settings: SutTestSettings
 ):
     """the subarray must be in EMPTY state."""
     tel = names.TEL()
@@ -85,7 +86,8 @@ def the_subarray_must_be_in_empty_state(
 
 @given("sub-array with resources allocated to it")
 def the_subarray_with_recources_allocate(
-    allocated_subarray: fxt_types.allocated_subarray, sut_settings: SutTestSettings
+    allocated_subarray: fxt_types.allocated_subarray,
+    sut_settings: SutTestSettings
 ):
     """the subarray must be in IDLE state."""
     tel = names.TEL()

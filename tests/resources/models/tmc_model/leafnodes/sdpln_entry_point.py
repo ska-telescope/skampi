@@ -26,7 +26,7 @@ from ...obsconfig.config import Observation
 logger = logging.getLogger(__name__)
 
 
-class StartLnUpStep(StartUpStep):
+class StartUpLnStep(StartUpStep):
     """Implementation of Startup step for SDP LN"""
 
     def __init__(self, nr_of_subarrays: int) -> None:
@@ -213,7 +213,7 @@ class SDPLnEntryPoint(CompositeEntryPoint):
             observation = Observation()
         self.observation = observation
         self.set_online_step = NoOpStep()
-        self.start_up_step = StartLnUpStep(self.nr_of_subarrays)
+        self.start_up_step = StartUpLnStep(self.nr_of_subarrays)
         self.assign_resources_step = SdpLnAssignResourcesStep(observation)
         self.configure_scan_step = SdpLnConfigureStep(observation)
         self.scan_step = SDPLnScanStep(observation)

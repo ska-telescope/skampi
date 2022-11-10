@@ -3,13 +3,13 @@ Feature: Start up the sdp using sdp leaf node
 
 	Scenario: Start up the sdp in low using the leaf node
 		Given an SDP
-		Given an SDP leaf node
+		And an SDP leaf node
 		When I start up the telescope
-		Then the sdp must be on	
+		Then the sdp must be on
 
 	@XTP-14547
 	Scenario: Start up the sdp in mid using the leaf node
 		Given an SDP
-		Given an SDP leaf node
+		And an SDP leaf node
 		When I start up the telescope
 		Then the sdp must be on

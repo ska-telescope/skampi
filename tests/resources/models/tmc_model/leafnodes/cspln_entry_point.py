@@ -25,7 +25,7 @@ from ...obsconfig.config import Observation
 logger = logging.getLogger(__name__)
 
 
-class StartLnUpStep(StartUpStep):
+class StartUpLnStep(StartUpStep):
     """Implementation of Startup step for CSP LN"""
 
     def __init__(self, nr_of_subarrays: int) -> None:
@@ -203,7 +203,7 @@ class CSPLnEntryPoint(CompositeEntryPoint):
         if observation is None:
             observation = Observation()
         self.set_online_step = NoOpStep()
-        self.start_up_step = StartLnUpStep(self.nr_of_subarrays)
+        self.start_up_step = StartUpLnStep(self.nr_of_subarrays)
         self.assign_resources_step = CspLnAssignResourcesStep(observation)
         self.configure_scan_step = CspLnConfigureStep(observation)
         self.scan_step = CSPLnScanStep(observation)

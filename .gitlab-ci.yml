@@ -1,4 +1,5 @@
-image: $CI_REGISTRY/ska-telescope/ska-skampi/ci:1.0.2
+# TODO: Make this image version dynamic per pipeline as it's hard-coded here
+image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.3
 
 variables:
   MINIKUBE: "false"
@@ -32,21 +33,21 @@ stages:
 
 build-base-image:
   stage: .pre
-  image: docker:19.03.12
+  image: $SKA_K8S_TOOLS_BUILD_DEPLOY
   tags:
     - k8srunner
   before_script:
     - ""
   rules:
     - changes:
-        - images/ci/Dockerfile
+        - images/ska-skampi-ci/Dockerfile
     - if: $REBUILD_IMAGES
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ci:1.0.2 images/ci/
-    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ci:1.0.2
+    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.3 images/ska-skampi-ci/
+    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.3
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:

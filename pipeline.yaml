@@ -12,6 +12,8 @@ ska-taranta:
   enabled: true
 ska-ser-skuid:
   enabled: true
+ska-tango-archiver:
+  enabled: true
 ska-landingpage:
   enabled: true
 

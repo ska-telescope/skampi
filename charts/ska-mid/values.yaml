@@ -20,8 +20,6 @@ global:
       enabled: false
     ska-taranta:
       enabled: false
-    ska-tango-archiver:
-      enabled: true
   retry:
     - "--sleep=1"
     - "--tries=100"

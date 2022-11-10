@@ -1,6 +1,10 @@
-Feature: Verification of configure a scan using a predefined config on subarray node
- 
-  Scenario: Configure a scan using a predefined config
-    Given an OET
-    When I tell the OET to config SBI using script file:///scripts/observe_mid_sb.py and SB /tmp/oda/mid_sb_example.json
-    Then the sub-array goes to ObsState EMPTY
+@VTS-225
+Feature: Verification of OET scripts being executed successfully during an observation
+
+    #Scenario: Observing a SBI
+	@XTP-778 @XTP-776
+	Scenario: Observing a Scheduling Block
+		Given sub-array is in the ObsState IDLE
+		When I tell the OET to observe using script file:///scripts/observe_mid_sb.py and SBI /tmp/oda/mid_sb_example.json
+		Then the sub-array goes to ObsState READY
+

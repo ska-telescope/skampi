@@ -8,35 +8,33 @@ from pytest_bdd import given, scenario, then
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 
-from .. import conftest
+from ... import conftest
 
 logger = logging.getLogger(__name__)
 
 
 @pytest.mark.skamid
 @pytest.mark.startup
-@pytest.mark.sdp
-@scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in mid")
-def test_sdp_start_up_telescope_mid(sdp_start_up_test_exec_settings):
-    """Start up the sdp in mid."""
-
-
-@pytest.mark.skalow
-@pytest.mark.startup
-@pytest.mark.sdp
-@scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in low")
-def test_sdp_start_up_telescope_low(sdp_start_up_test_exec_settings):
-    """Start up the sdp in low."""
+@scenario(
+    "features/sdpln_start_up_telescope.feature",
+    "Start up the sdp in mid using the leaf node",
+)
+def test_sdpln_start_up_telescope_mid():
+    """Start up the sdp in mid using the ln."""
 
 
 @given("an SDP")
 def a_sdp():
     """a SDP."""
-    foo = "bar"
+
+
+@given("an SDP leaf node")
+def a_sdp_ln():
+    """a SDP leaf node."""
 
 
 # when
-# use @when("I start up the telescope") from ..shared_startup
+# use @when("I start up the telescope") from ...conftest
 
 # thens
 
@@ -52,13 +50,3 @@ def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
         subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
         result = subarray.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
-
-
-# test validation
-
-
-@pytest.mark.test_tests
-@pytest.mark.usefixtures("setup_sdp_mock")
-def test_test_sdp_startup(run_mock):
-    """Test the test using a mock SUT"""
-    run_mock(test_sdp_start_up_telescope_mid)

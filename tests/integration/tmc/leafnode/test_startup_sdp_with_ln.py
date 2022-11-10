@@ -13,7 +13,6 @@ from ... import conftest
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.tmc
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario(

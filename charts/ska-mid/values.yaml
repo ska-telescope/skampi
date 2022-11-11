@@ -119,8 +119,10 @@ ska-sdp:
       resources:
         limits:
           cpu: 2000m
+          memory: 1024Mi
         requests:
           cpu: 750m
+          memory: 500Mi
       livenessProbe:
         initialDelaySeconds: 30
         failureThreshold: 5

@@ -118,6 +118,8 @@ ska-sdp:
     kafka:
       resources:
         limits:
+          cpu: 2000m
+        requests:
           cpu: 750m
       livenessProbe:
         initialDelaySeconds: 30

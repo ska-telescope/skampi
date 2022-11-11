@@ -25,12 +25,21 @@ def fxt_set_entry_point(
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
-    sut_settings.nr_of_receptors=4
+    sut_settings.nr_of_receptors = 4
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     TMCEntryPoint.receptors = sut_settings.receptors
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["tm", "mid", "sdp", "csp","tmc scope", "csp scope", "csp control", "sdp control"]
+    exec_env.scope = [
+        "tm",
+        "mid",
+        "sdp",
+        "csp",
+        "tmc scope",
+        "csp scope",
+        "csp control",
+        "sdp control",
+    ]
 
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
@@ -46,6 +55,7 @@ def fxt_nr_of_subarrays() -> int:
     if tel.skalow:
         return 1
     return 2
+
 
 @pytest.fixture(autouse=True)
 def override_timeouts(exec_settings):
@@ -104,11 +114,13 @@ def fxt_set_up_log_capturing_for_cbf(
 
     :param log_checking: The skallop log_checking fixture to use
     """
+    index = sut_settings.subarray_id
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
-        subarray = str(tel.tm.subarray(sut_settings.subarray_id))
-        sdp_subarray1 = str(tel.sdp.subarray(1))
-        log_checking.capture_logs_from_devices(subarray, sdp_subarray1)
+        subarray = str(tel.tm.subarray(index))
+        sdp_subarray1 = str(tel.sdp.subarray(index))
+        subarray_ln = str(tel.skamid.tm.subarray(index).sdp_leaf_node)
+        log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
 
 
 # resource configurations

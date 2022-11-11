@@ -19,6 +19,13 @@ mid-test:
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     TEL: mid
+    EXIT_AT_FAIL: "false"
+    CAPTURE_LOGS: "True"
+    DEBUG_ENTRYPOINT: "True"
+    DEBUG_ENTRYPOINT_EXTENDED: "True"
+    LIVE_LOGGING_EXTENDED: "True"
+    COUNT: 1
+
   extends:
     - .tags_default
   script:

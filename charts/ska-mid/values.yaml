@@ -116,6 +116,9 @@ ska-sdp:
     enabled: true
   ska-sdp-qa:
     kafka:
+      livenessProbe:
+        initialDelaySeconds: 30
+        failureThreshold: 5
       zookeeper:
         resources:
           requests:

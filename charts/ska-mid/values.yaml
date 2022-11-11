@@ -116,15 +116,16 @@ ska-sdp:
     enabled: true
   ska-sdp-qa:
     kafka:
+      resources:
+        limits:
+          cpu: 750m
       livenessProbe:
         initialDelaySeconds: 30
         failureThreshold: 5
       zookeeper:
         resources:
-          limits:
-            cpu: 750m
           requests:
-            cpu: 250m
+            cpu: 100m
 
 ## tmc
 tmc-mid:

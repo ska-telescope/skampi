@@ -115,6 +115,13 @@ ska-sdp:
   console:
     enabled: true
 
+ska-sdp-qa:
+  kafka:
+    zookeeper:
+      resources:
+        requests:
+          cpu: 100m
+
 ## tmc
 tmc-mid:
   enabled: true

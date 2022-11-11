@@ -78,7 +78,7 @@ def when_observe_sbi(
 
 @then("the Subarray goes to ObsState {obsstate}")
 def check_final_subarray_state(
-        subarray_obsstate: str,
+        obsstate: str,
         sut_settings: SutTestSettings,
 ):
     """
@@ -89,8 +89,8 @@ def check_final_subarray_state(
     """
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    subarray_state = ObsState(subarray.read_attribute("obsState").value).name
+    subarray_obsstate = ObsState(subarray.read_attribute("obsState").value).name
     assert (
-            subarray_state == subarray_obsstate
-    ), f"Expected Subarray to be in {subarray_obsstate} but instead was in {subarray_state}"
-    logger.info("Subarray is in ObsState %s", subarray_obsstate)
+            subarray_obsstate == obsstate
+    ), f"Expected Subarray to be in {obsstate} but instead was in {subarray_obsstate}"
+    logger.info("Subarray is in ObsState %s", obsstate)

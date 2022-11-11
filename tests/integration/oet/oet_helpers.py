@@ -3,7 +3,7 @@ import time
 from os import environ
 from typing import List, Optional
 
-from ska_oso_oet_client.restclient import RestAdapter, ProcedureSummary
+from ska_oso_oet.procedure.application.restclient import RestAdapter, ProcedureSummary
 
 LOGGER = logging.getLogger(__name__)
 
@@ -14,15 +14,18 @@ REST_ADAPTER = RestAdapter(rest_cli_uri)
 
 
 class ScriptExecutor:
-
     @staticmethod
-    def init_script(script_uri: str, create_kwargs, *args, **kwargs) -> ProcedureSummary:
+    def init_script(
+        script_uri: str, create_kwargs, *args, **kwargs
+    ) -> ProcedureSummary:
         if not kwargs:
             kwargs = dict()
         if "subarray_id" not in kwargs:
             kwargs["subarray_id"] = 1
         init_args = dict(args=args, kwargs=kwargs)
-        return REST_ADAPTER.create(script_uri=script_uri, init_args=init_args, **create_kwargs)
+        return REST_ADAPTER.create(
+            script_uri=script_uri, init_args=init_args, **create_kwargs
+        )
 
     @staticmethod
     def start_script(pid: int, *args, **kwargs) -> ProcedureSummary:
@@ -72,12 +75,16 @@ class ScriptExecutor:
 
             if procedure.state == "FAILED":
                 stacktrace = procedure.history["stacktrace"]
-                LOGGER.info(f"Script {procedure.script['script_uri']} (PID={pid}) failed. Stacktrace follows:")
+                LOGGER.info(
+                    f"Script {procedure.script['script_uri']} (PID={pid}) failed. Stacktrace follows:"
+                )
                 LOGGER.exception(stacktrace)
                 return procedure.state
 
             if procedure.state == state:
-                LOGGER.info(f"Script {procedure.script['script_uri']} state changed to {state}")
+                LOGGER.info(
+                    f"Script {procedure.script['script_uri']} state changed to {state}"
+                )
                 return procedure.state
 
             time.sleep(2)
@@ -93,7 +100,9 @@ class ScriptExecutor:
         return procedure.state
 
     @staticmethod
-    def execute_script(script: str, *script_run_args, timeout=60, script_create_kwargs={}) -> str:
+    def execute_script(
+        script: str, *script_run_args, timeout=60, script_create_kwargs={}
+    ) -> str:
         """
         Execute the given script using OET REST client.
 
@@ -112,20 +121,18 @@ class ScriptExecutor:
         """
         LOGGER.info(f"Running script {script}")
 
-        procedure = ScriptExecutor.init_script(script, create_kwargs=script_create_kwargs)
-        pid = procedure.uri.split('/')[-1]
+        procedure = ScriptExecutor.init_script(
+            script, create_kwargs=script_create_kwargs
+        )
+        pid = procedure.uri.split("/")[-1]
 
         # confirm that creating the script worked and we have a valid ID
         state = ScriptExecutor.wait_for_script_state(pid, "READY", timeout)
         if state != "READY":
-            LOGGER.info(
-                f"Script {script} did not reach READY state"
-            )
+            LOGGER.info(f"Script {script} did not reach READY state")
             return state
 
         # start execution of created script
         ScriptExecutor.start_script(pid, *script_run_args)
 
-        return ScriptExecutor.wait_for_script_state(
-            pid, "COMPLETE", timeout
-        )
+        return ScriptExecutor.wait_for_script_state(pid, "COMPLETE", timeout)

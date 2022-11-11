@@ -22,4 +22,12 @@ Feature: Verification of OET scripts being executed successfully during an obser
 		When I tell the OET to release resources using script file:///scripts/deallocate.py
 		Then the sub-array goes to ObsState EMPTY
 
+	#Scenario: Allocate resources using oet scripting interface
+	@XTP-777 @XTP-776
+	Scenario: Allocate resources using oet scripting interface
+		Given an OET
+		And an oet subarray object in state EMPTY
+		When I assign resources to it
+		Then the sub-array goes to ObsState IDLE
+
 

@@ -16,11 +16,14 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
+from ..obsconfig.config import Observation
+
+
 logger = logging.getLogger(__name__)
 
 # scan duration needs to be a singleton in order to keep track of scan
 # settings between configure scan and run scan
-SCAN_DURATION = 1
+SCAN_DURATION = 4
 
 
 class LogEnabled:
@@ -95,9 +98,10 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
     """Implementation of Assign Resources Step for CSP."""
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init object."""
         super().__init__()
+        self.observation = observation
         self._tel = names.TEL()
 
     def do(
@@ -128,15 +132,10 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            dis_id_str = [f"{dish_id:0>3}" for dish_id in dish_ids]
-            csp_mid_assign_resources = csp_mid_assign_resources_template.copy()
-            csp_mid_assign_resources["dish"]["receptor_ids"] = dis_id_str
-            csp_mid_configuration = json.dumps(csp_mid_assign_resources)
-            self._log(
-                f"commanding {subarray_name} with AssignResources: {csp_mid_assign_resources} "
-            )
+            config = self.observation.generate_assign_resources_config().as_json
+            self._log(f"commanding {subarray_name} with AssignResources: {config} ")
             subarray.set_timeout_millis(6000)
-            subarray.command_inout("AssignResources", csp_mid_configuration)
+            subarray.command_inout("AssignResources", config)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in csp.
@@ -186,9 +185,10 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
 class CspConfigureStep(base.ConfigureStep, LogEnabled):
     """Implementation of Configure Scan Step for CSP."""
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init object."""
         super().__init__()
+        self.observation = observation
         self._tel = names.TEL()
 
     def do(
@@ -222,7 +222,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            csp_mid_configuration = json.dumps(csp_mid_configure_scan_template)
+            csp_mid_configuration = self.observation.generate_csp_scan_config().as_json
             self._log(
                 f"commanding {subarray_name} with Configure: {csp_mid_configuration} "
             )
@@ -281,9 +281,10 @@ class CspScanStep(base.ScanStep, LogEnabled):
 
     """Implementation of Scan Step for CBF."""
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init object."""
         super().__init__()
+        self.observation = observation
         self._tel = names.TEL()
 
     def do(self, sub_array_id: int):
@@ -296,7 +297,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
         if self._tel.skalow:
             scan_config_arg = json.dumps(csp_low_scan)
         elif self._tel.skamid:
-            scan_config_arg = json.dumps({"scan_id": 1})
+            scan_config_arg = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -423,14 +424,17 @@ class CSPEntryPoint(CompositeEntryPoint):
 
     nr_of_subarrays = 2
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation | None = None) -> None:
         """Init Object"""
         super().__init__()
+        if observation is None:
+            observation = Observation()
+        self.observation = observation
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)
         self.start_up_step = StartUpStep(self.nr_of_subarrays)
-        self.assign_resources_step = CspAsignResourcesStep()
-        self.configure_scan_step = CspConfigureStep()
-        self.scan_step = CspScanStep()
+        self.assign_resources_step = CspAsignResourcesStep(observation)
+        self.configure_scan_step = CspConfigureStep(observation)
+        self.scan_step = CspScanStep(observation)
 
 
 csp_mid_assign_resources_template = {

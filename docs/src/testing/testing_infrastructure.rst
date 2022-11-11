@@ -27,6 +27,25 @@ Testing SKAMPI using the Testing Runway (SKALLOP)
 
 .. todo:: step by step instructions to follow.
 
-This is currently still in progress but stabilising quickly.
+Integration tests (tests that verify end to end behaviour involving one or more components) are done in BDD
+cucumber style using to a large degree fixtures and helper functions coming from skallop repo. 
+
+These tests are defined in terms of two domains:
+
+1. Test control and orchestration (bdd step functions using automatic setup and teardown from skallop)
+2. Test domain logic based on the particular "entry point" in which the testing script exercises the SUT
+
+The link between 1 and 2 is based on the concept of an abstract (and stateless) object capable of performing
+generric control commands on the SUT. Therefore the concrete instance of this object id determined by the domain
+logic or the model of the system when looked at from a specific entrypoint. These models can be found under tests/resources/models.
+
+The definition of 1 is seperated into domains mapping largely to the subcomponents of the mcp (tmc, sdp etc), each with
+its own conftest defining specific fixtures and shared step functions.
+
+There are two options for running tests:
+1. Exit immediately at the first failed test
+2. Continue with attempts at teardown after failure
+
+To enable immediate exit you need to set EXIT_AT_FAIL to "true"
 
 Refer to the `Confluence page on installation of SKALLOP for BDD tests <https://confluence.skatelescope.org/display/SE/Skallop+installation+for+BDD+tests>`_ in the meantime.

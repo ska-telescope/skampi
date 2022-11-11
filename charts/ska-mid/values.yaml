@@ -121,8 +121,10 @@ ska-sdp:
         failureThreshold: 5
       zookeeper:
         resources:
+          limits:
+            cpu: 750m
           requests:
-            cpu: 100m
+            cpu: 250m
 
 ## tmc
 tmc-mid:

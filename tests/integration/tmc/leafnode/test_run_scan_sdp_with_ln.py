@@ -1,37 +1,30 @@
-"""Configure scan on subarray feature tests."""
+"""Run scan on subarray feature tests."""
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
 
 from ska_ser_skallop.connectors import configuration as con_config
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from resources.models.mvp_model.states import ObsState
 
-from .. import conftest
-
-
-@pytest.mark.skalow
-@pytest.mark.scan
-@pytest.mark.sdp
-@scenario("features/sdp_scan.feature", "Run a scan on sdp subarray in low")
-def test_run_a_scan_on_sdp_subarray_in_low():
-    """CRun a scan on sdp subarray in low."""
+from ... import conftest
 
 
 @pytest.mark.skamid
-@pytest.mark.scan
-@pytest.mark.sdp
-@scenario("features/sdp_scan.feature", "Run a scan on sdp subarray in mid")
-def test_run_a_scan_on_sdp_subarray_in_mid():
-    """Run a scan on sdp subarray in mid."""
+@pytest.mark.configure
+@scenario(
+    "features/sdpln_run_scan.feature",
+    "Run scan on sdp subarray in mid using the leaf node",
+)
+def test_run_scan_on_sdp_subarray_in_mid():
+    """Run scan on sdp subarray in mid using the leaf node."""
 
 
 @given("an SDP subarray in READY state")
 def an_sdp_subarray_in_ready_state(
-    set_up_subarray_log_checking_for_sdp,
     sdp_base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,
@@ -44,24 +37,37 @@ def an_sdp_subarray_in_ready_state(
     return sdp_base_configuration
 
 
-# use when from global conftest
-# @when("I command it to scan for a given period")
+@given("a TMC SDP subarray Leaf Node")
+def a_sdp_sln(set_sdp_ln_entry_point):
+    """a TMC SDP subarray Leaf Node."""
 
 
-@then("the SDP subarray must be in the SCANNING state until finished")
-def the_sdp_subarray_must_be_in_the_scanning_state(
+# @when("I command it to scan for a given period") from ...conftest
+
+
+@then("the SDP subarray shall go from READY to SCANNING")
+def the_subarray_shall_be_in_the_scanning_state(
     configured_subarray: fxt_types.configured_subarray,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """the SDP subarray must be in the SCANNING state until finished."""
+    """the SDP subarray shall go from READY to SCANNING."""
     tel = names.TEL()
     sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
     sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
 
     result = sdp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.SCANNING)
-    # afterwards it must be ready
+
+
+@then("the SDP shall go back to READY when finished")
+def the_subarray_goes_back_to_ready_state(
+    configured_subarray: fxt_types.configured_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """The SDP goes back to READY state when finished"""
+    tel = names.TEL()
+    sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
+    sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
     context_monitoring.re_init_builder()
     context_monitoring.wait_for(sdp_subarray_name).for_attribute(
         "obsstate"

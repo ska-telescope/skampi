@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 # scan duration needs to be a singleton in order to keep track of scan
 # settings between configure scan and run scan
-SCAN_DURATION = 1
+SCAN_DURATION = 4
 
 
 class LogEnabled:

@@ -14,7 +14,6 @@ from .. import conftest
 
 logger = logging.getLogger(__name__)
 
-
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.startup
@@ -32,7 +31,6 @@ def test_csp_start_up_telescope_low():
 
 
 # log checking
-
 
 @pytest.fixture(name="set_up_log_checking_for_csp")
 @pytest.mark.usefixtures("set_csp_entry_point")
@@ -78,8 +76,6 @@ def the_csp_must_be_on(
 
 
 # test validation
-
-
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_csp_mock")
 def test_test_csp_startup(run_mock):

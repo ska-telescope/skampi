@@ -3,7 +3,7 @@ import logging
 from types import SimpleNamespace
 import os
 
-from typing import Callable
+from typing import Any, Callable
 from mock import patch, Mock
 
 import pytest
@@ -16,6 +16,7 @@ from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.tmc_model.entry_point import TMCEntryPoint
+from resources.models.obsconfig.config import Observation
 
 
 logger = logging.getLogger(__name__)
@@ -31,12 +32,17 @@ class SutTestSettings(SimpleNamespace):
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
 
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        logger.info("initialising sut settings")
+        self.observation = Observation()
+
     @property
     def nr_of_receptors(self):
         return self._nr_of_receptors
 
     @nr_of_receptors.setter
-    def nr_of_receptors(self, value):
+    def nr_of_receptors(self, value: int):
         self._nr_of_receptors = value
         self._receptors = [i for i in range(1, value + 1)]
 
@@ -45,11 +51,11 @@ class SutTestSettings(SimpleNamespace):
         return self._receptors
 
     @receptors.setter
-    def receptors(self, receptor):
+    def receptors(self, receptor: list[int]):
         self._receptors = receptor
 
 
-@pytest.fixture(name="sut_settings")
+@pytest.fixture(name="sut_settings", scope="function")
 def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()
@@ -102,7 +108,7 @@ def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
     if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
         logger.warning("enabled attribute synchronization globally")
         exec_settings.attr_synching = True
-    exec_settings.time_out = 40
+    exec_settings.time_out = 150
 
 
 @pytest.fixture(name="integration_test_exec_settings")
@@ -115,7 +121,7 @@ def fxt_integration_test_exec_settings(
     :return: test specific execution settings as a fixture
     """
     integration_test_exec_settings = exec_settings.replica()
-    integration_test_exec_settings.time_out = 40
+    integration_test_exec_settings.time_out = 150
 
     if os.getenv("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()

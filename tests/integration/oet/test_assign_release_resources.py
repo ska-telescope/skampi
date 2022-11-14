@@ -12,6 +12,7 @@ from pytest_bdd import given, parsers, scenario, then, when
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_oso_scripting.objects import SubArray
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 
@@ -36,9 +37,12 @@ def test_sbi_creation():
     """
 
 
+@pytest.mark.skip(reason="oet not compatible with tmc config changes yet")
 @pytest.mark.skamid
 @pytest.mark.k8s
-@scenario("features/oet_assign_release_resources.feature", "Allocating resources with a SBI")
+@scenario(
+    "features/oet_assign_release_resources.feature", "Allocating resources with a SBI"
+)
 def test_resource_allocation():
     """
     Given an OET
@@ -48,9 +52,13 @@ def test_resource_allocation():
     """
 
 
+@pytest.mark.skip(reason="oet not compatible with tmc config changes yet")
 @pytest.mark.skamid
 @pytest.mark.k8s
-@scenario("features/oet_assign_release_resources.feature", "Releasing all resources from sub-array")
+@scenario(
+    "features/oet_assign_release_resources.feature",
+    "Releasing all resources from sub-array",
+)
 def test_resource_release():
     """
     Given sub-array with resources allocated to it
@@ -66,7 +74,8 @@ def a_oet():
 
 @given("sub-array is in ObsState EMPTY")
 def the_subarray_must_be_in_empty_state(
-    running_telescope: fxt_types.running_telescope, sut_settings: SutTestSettings
+    running_telescope: fxt_types.running_telescope,
+    sut_settings: SutTestSettings
 ):
     """the subarray must be in EMPTY state."""
     tel = names.TEL()
@@ -77,7 +86,8 @@ def the_subarray_must_be_in_empty_state(
 
 @given("sub-array with resources allocated to it")
 def the_subarray_with_recources_allocate(
-    allocated_subarray: fxt_types.allocated_subarray, sut_settings: SutTestSettings
+    allocated_subarray: fxt_types.allocated_subarray,
+    sut_settings: SutTestSettings
 ):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
@@ -141,14 +151,10 @@ def when_allocate_resources_from_sbi(
         ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
 
 
-@when(
-    parsers.parse(
-        "I tell the OET to release resources using script {script}"
-    )
-)
+@when(parsers.parse("I tell the OET to release resources using script {script}"))
 def when_release_resources(
     script,
-    allocated_subarray : fxt_types.allocated_subarray,
+    allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
 ):
     """
@@ -194,3 +200,47 @@ def check_final_subarray_state(
         subarray_state == obsstate
     ), f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
     logger.info("Sub-array is in ObsState %s", obsstate)
+
+
+@pytest.mark.skamid
+@pytest.mark.k8s
+@scenario(
+    "features/oet_assign_release_resources.feature",
+    "Allocate resources using oet scripting interface",
+)
+def test_oet__scripting_resource_allocation():
+    """
+    Given an OET
+                And oet subarray object in state EMPTY
+                When I assign resources to it
+                Then the sub-array goes to ObsState IDLE
+    """
+
+
+@given("an oet subarray object in state EMPTY", target_fixture="subarray")
+def an_oet_subarray_object_in_state_empty(
+    running_telescope: fxt_types.running_telescope, sut_settings: SutTestSettings
+) -> SubArray:
+    return SubArray(sut_settings.subarray_id)
+
+
+@when("I assign resources to it")
+def i_assign_resources_to_it(
+    running_telescope: fxt_types.running_telescope,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    subarray: SubArray,
+):
+    """I assign resources to it."""
+
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    observation = sut_settings.observation
+    with context_monitoring.context_monitoring():
+        with running_telescope.wait_for_allocating_a_subarray(
+            subarray_id, receptors, integration_test_exec_settings
+        ):
+            config = observation.generate_assign_resources_config(subarray_id).as_object
+            logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
+            subarray.assign_from_cdm(config)

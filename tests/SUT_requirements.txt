@@ -1,3 +1,2 @@
 --extra-index-url https://artefact.skao.int/repository/pypi-internal
-ska-oso-oet==4.0.7
 ska-oso-oet-client=0.1.0

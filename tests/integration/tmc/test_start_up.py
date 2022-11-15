@@ -15,6 +15,7 @@ from .. import conftest
 
 logger = logging.getLogger(__name__)
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

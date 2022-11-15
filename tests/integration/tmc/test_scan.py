@@ -11,12 +11,12 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 
-
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.scan
-@scenario("features/tmc_scan.feature", "Run a scan on mid telescope subarray using TMC")
+@scenario("features/tmc_scan.feature", "Run a scan from TMC")
 def test_tmc_scan_on_mid_subarray():
     """Run a scan on TMC mid telescope subarray."""
 

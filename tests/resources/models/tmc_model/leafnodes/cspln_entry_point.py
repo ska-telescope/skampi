@@ -147,7 +147,7 @@ class CSPLnScanStep(CspScanStep):
         try:
             csp_subarray_ln.command_inout("Scan", scan_config)
             sleep(scan_duration)
-            csp_subarray_ln.command_inout("EndScan")
+            # csp_subarray_ln.command_inout("EndScan") # end scan is automatically invoked so no need to invoke here 
         except Exception as exception:
             logger.exception(exception)
             raise exception
@@ -165,6 +165,7 @@ class CSPLnScanStep(CspScanStep):
 
         :param sub_array_id: The index id of the subarray to control
         """
+        
 
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]

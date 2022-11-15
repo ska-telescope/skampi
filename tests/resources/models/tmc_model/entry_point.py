@@ -3,6 +3,8 @@ import json
 import logging
 import os
 from typing import List, Union
+from time import sleep
+from ska_ser_skallop.utils.singleton import Memo
 from ska_ser_skallop.mvp_control.configuration import configuration as conf
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -334,8 +336,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
 
 class ScanStep(base.ScanStep, LogEnabled):
-
-    """Implementation of Scan Step for SDP."""
+    """Implementation of Scan Step for TMC."""
 
     def __init__(self, observation: Observation) -> None:
         """Init object."""
@@ -353,13 +354,26 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        scan_config = json.dumps({"interface":"https://schema.skao.intg/ska-tmc-scan/2.0","transaction_id":"txn-....-00001","scan_id":1}) # may be modified
-        # scan_duration = Memo().get("scan_duration")
-        subarray_name = self._tel.tm.subarray(sub_array_id)
-        subarray = con_config.get_device_proxy(subarray_name)
+        # scan_config = json.dumps({"interface":"https://schema.skao.intg/ska-tmc-scan/2.0","transaction_id":"txn-....-00001","scan_id":1}) # may be modified
+        # # scan_duration = Memo().get("scan_duration")
+        # subarray_name = self._tel.tm.subarray(sub_array_id)
+        # subarray = con_config.get_device_proxy(subarray_name)
+        # self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
+        # try:
+        #     subarray.command_inout("Scan", scan_config)
+        # except Exception as exception:
+        #     logger.exception(exception)
+        #     raise exception
+
+        scan_config = self.observation.generate_run_scan_conf().as_json
+        scan_duration = Memo().get("scan_duration")
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
+        subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
         self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         try:
             subarray.command_inout("Scan", scan_config)
+            sleep(scan_duration)
+            subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception
@@ -371,18 +385,18 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        brd = get_message_board_builder()
-        subarray_name = self._tel.tm.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("READY")
-        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("READY")
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("READY")
-        return brd
+        # brd = get_message_board_builder()
+        # subarray_name = self._tel.tm.subarray(sub_array_id)
+        # brd.set_waiting_on(subarray_name).for_attribute(
+        #     "obsState"
+        # ).to_become_equal_to("READY")
+        # brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+        #     "obsState"
+        # ).to_become_equal_to("READY")
+        # brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+        #     "obsState"
+        # ).to_become_equal_to("READY")
+        # return brd
 
     def undo(self, sub_array_id: int):
         """This is a no-op as no undo for scan is needed

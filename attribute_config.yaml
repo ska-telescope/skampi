@@ -1,0 +1,83 @@
+db: "databaseds-tango-base:10000"
+manager: mid-eda/cm/01
+archiver: mid-eda/es/01
+
+configuration:
+  - class: CentralNodeMid
+    attributes:
+      state:
+        code_push_event: true
+      telescopestate:
+        archive_period: 3000
+        polling_period: 1000
+      internalModel:
+        code_push_event: true
+        polling_period: 2000
+      lastDeviceInfoChanged:
+        code_push_event: true
+        polling_period: 3000
+      transformedInternalModel:
+        code_push_event: true
+        polling_period: 1000
+
+  - class: SubarrayNodeMid
+    attributes:
+      state:
+        code_push_event: true
+        polling_period: 1000
+      internalModel:
+        code_push_event: true
+        polling_period: 1000
+      transformedInternalModel:
+        code_push_event: true
+        polling_period: 1000
+      assignedResources:
+        code_push_event: true
+        polling_period: 1000
+      lastDeviceInfoChanged:
+        code_push_event: true
+        polling_period: 1000
+    
+  - class: CspMasterLeafNode
+    attributes:
+      state:
+        code_push_event: true
+  - class: CspSubarrayLeafNode
+    attributes:
+      state:
+        code_push_event: true
+
+  - class: SdpMasterLeafNode
+    attributes:
+      state:
+        code_push_event: true
+
+  - class: SdpSubarrayLeafNode
+    attributes:
+      state:
+        code_push_event: true
+
+  - class: DishLeafNode
+    filtering:
+      device: "ska_mid/tm_leaf_node/d0001"
+    attributes:
+      state:
+        archive_period: 1000
+  - class: DishLeafNode
+    filtering:
+      device: "ska_mid/tm_leaf_node/d0003"
+    attributes:
+      state:
+        archive_period: 2000
+  - class: DishLeafNode
+    filtering:
+      device: "ska_mid/tm_leaf_node/d0004"
+    attributes:
+      state:
+        archive_period: 3000
+  - class: DishLeafNode
+    filtering:
+      device: "ska_mid/tm_leaf_node/d0002"
+    attributes:
+      state:
+        archive_period: 1000

@@ -9,8 +9,6 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from resources.models.mvp_model.states import ObsState
 
-from ... import conftest
-
 
 @pytest.mark.skamid
 @pytest.mark.configure
@@ -26,7 +24,7 @@ def test_configure_scan_on_sdp_subarray_in_mid():
 
 
 @given("a TMC SDP subarray Leaf Node")
-def a_sdp_sln():
+def a_sdp_sln(set_sdp_ln_entry_point):
     """a TMC SDP subarray Leaf Node."""
 
 

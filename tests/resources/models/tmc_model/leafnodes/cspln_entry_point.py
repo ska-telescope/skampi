@@ -124,7 +124,7 @@ class CspLnConfigureStep(CspConfigureStep):
         """
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
-        self._log(f"commanding {csp_subarray_ln_name} with End command")
+        self._log(f"commanding {csp_subarray_ln_name} with the End command")
         csp_subarray_ln.command_inout("End")
 
 

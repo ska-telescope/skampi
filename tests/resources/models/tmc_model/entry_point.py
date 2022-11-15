@@ -1,4 +1,5 @@
 """Domain logic for the tmc."""
+import json
 import logging
 import os
 from typing import List, Union
@@ -336,32 +337,31 @@ class ScanStep(base.ScanStep, LogEnabled):
 
     """Implementation of Scan Step for SDP."""
 
-    def __init__(self, observation: Observation) -> None:
+    def __init__(self) -> None:
         """Init object."""
         super().__init__()
         self._tel = names.TEL()
-        self.observation = observation
 
     def do(self, sub_array_id: int):
-        """Domain logic for running a scan on subarray in sdp.
+        """Domain logic for configuring a scan on subarray in sdp.
 
-        This implments the scan method on the entry_point.
+        This implements the compose_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :param dish_ids: this dish indices (in case of mid) to control
+        :param composition: The assign resources configuration parameters
+        :param sb_id: a generic ide to identify a sb to assign resources
         """
-        # scan_config = json.dumps({"id": 1})
+        scan_config = json.dumps({"id": 1}) # may be modified
         # scan_duration = Memo().get("scan_duration")
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # subarray = con_config.get_device_proxy(subarray_name)
-        # self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
-        raise NotImplementedError()
-        # try:
-        #     subarray.command_inout("Scan", scan_config)
-        #     sleep(scan_duration)
-        #     subarray.command_inout("EndScan")
-        # except Exception as exception:
-        #     logger.exception(exception)
-        #     raise exception
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
+        try:
+            subarray.command_inout("Scan", scan_config)
+        except Exception as exception:
+            logger.exception(exception)
+            raise exception
 
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -370,6 +370,18 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
+        brd = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        brd.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
+        return brd
 
     def undo(self, sub_array_id: int):
         """This is a no-op as no undo for scan is needed
@@ -384,13 +396,18 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        builder = get_message_board_builder()
-        # TODO  determine what needs to be waited for
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # builder.set_waiting_on(subarray_name).for_attribute(
-        #     "obsState"
-        # ).to_become_equal_to("SCANNING")
-        return builder
+        brd = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        brd.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        return brd
 
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]

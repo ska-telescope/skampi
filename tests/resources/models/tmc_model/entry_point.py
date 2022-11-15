@@ -337,10 +337,11 @@ class ScanStep(base.ScanStep, LogEnabled):
 
     """Implementation of Scan Step for SDP."""
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init object."""
         super().__init__()
         self._tel = names.TEL()
+        self.observation = observation
 
     def do(self, sub_array_id: int):
         """Domain logic for configuring a scan on subarray in sdp.

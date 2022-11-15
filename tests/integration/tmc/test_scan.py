@@ -21,7 +21,7 @@ def test_tmc_scan_on_mid_subarray():
     """Run a scan on TMC mid telescope subarray."""
 
 
-@given("a TMC")
+@given("an TMC")
 def a_tmc():
     """an TMC"""
 
@@ -33,7 +33,7 @@ def a_subarray_in_ready_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """a subarray in READY state."""
+    """a subarray in READY state"""
     return base_configuration
     
 

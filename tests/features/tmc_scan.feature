@@ -1,7 +1,7 @@
 Feature: Scan the subarray using TMC
 	@XTP-13150
 	Scenario: Run a scan from TMC
-		Given a TMC
+		Given an TMC
         Given a subarray in READY state
         When I command it to scan for a given period
         Then the telescope subarray shall go from READY to SCANNING state

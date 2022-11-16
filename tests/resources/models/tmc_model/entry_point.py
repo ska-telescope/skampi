@@ -355,12 +355,14 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         scan_config = json.dumps({"interface":"https://schema.skao.intg/ska-tmc-scan/2.0","transaction_id":"txn-....-00001","scan_id":1}) # may be modified
-        # scan_duration = Memo().get("scan_duration")
+        scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         try:
             subarray.command_inout("Scan", scan_config)
+            sleep(scan_duration)
+            subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception

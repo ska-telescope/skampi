@@ -13,7 +13,8 @@ low-test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "${CONFIG}_archiver_db_${CI_JOB_ID}"
+    BRANCH_NAME: $(echo $CI_COMMIT_REF_NAME | tr '-' '_'|tr '.' '_')
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db_$BRANCH_NAME"
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
@@ -55,7 +56,8 @@ clean-low-test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "${CONFIG}_archiver_db_$CI_JOB_ID"
+    BRANCH_NAME: $(echo $CI_COMMIT_REF_NAME | tr '-' '_'|tr '.' '_')
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db_$BRANCH_NAME"
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
     COUNT: 1
@@ -157,7 +159,8 @@ low_on_demand_deploy:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
-    ARCHIVER_DBNAME: "${CONFIG}_archiver_db_${CI_JOB_ID}"
+    BRANCH_NAME: $(echo $CI_COMMIT_REF_NAME | tr '-' '_'|tr '.' '_')
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db_$BRANCH_NAME"
   extends:
     - .tags_default
     - .deploy_chart_before

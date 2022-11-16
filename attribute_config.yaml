@@ -7,6 +7,8 @@ configuration:
     attributes:
       state:
         code_push_event: true
+      healthState:
+        code_push_event: true
       telescopestate:
         archive_period: 3000
         polling_period: 1000
@@ -19,12 +21,19 @@ configuration:
       transformedInternalModel:
         code_push_event: true
         polling_period: 1000
+      telescopeHealthState:
+        code_push_event: true
+   
 
   - class: SubarrayNodeMid
     attributes:
       state:
         code_push_event: true
         polling_period: 1000
+      healthState:
+        code_push_event: true
+      obsState:
+        code_push_event: true
       internalModel:
         code_push_event: true
         polling_period: 1000
@@ -37,24 +46,34 @@ configuration:
       lastDeviceInfoChanged:
         code_push_event: true
         polling_period: 1000
+      
     
   - class: CspMasterLeafNode
     attributes:
       state:
         code_push_event: true
+      healthState:
+        code_push_event: true
+
   - class: CspSubarrayLeafNode
     attributes:
       state:
+        code_push_event: true
+      healthState:
         code_push_event: true
 
   - class: SdpMasterLeafNode
     attributes:
       state:
         code_push_event: true
+      healthState:
+        code_push_event: true
 
   - class: SdpSubarrayLeafNode
     attributes:
       state:
+        code_push_event: true
+      healthState:
         code_push_event: true
 
   - class: DishLeafNode
@@ -63,21 +82,32 @@ configuration:
     attributes:
       state:
         archive_period: 1000
+      healthState:
+        code_push_event: true
+
   - class: DishLeafNode
     filtering:
       device: "ska_mid/tm_leaf_node/d0003"
     attributes:
       state:
         archive_period: 2000
+      healthState:
+        code_push_event: true
+
   - class: DishLeafNode
     filtering:
       device: "ska_mid/tm_leaf_node/d0004"
     attributes:
       state:
         archive_period: 3000
+      healthState:
+        code_push_event: true
+
   - class: DishLeafNode
     filtering:
       device: "ska_mid/tm_leaf_node/d0002"
     attributes:
       state:
         archive_period: 1000
+      healthState:
+        code_push_event: true

@@ -58,8 +58,10 @@ def the_telescope_subarray_shall_go_back_to_ready_when_finished_scanning(
 ):
     """the telescope subarray shall go back to READY when finished scanning"""
     tel = names.TEL()
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+        str(tel.tm.subarray(sut_settings.subarray_id)))
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-     # afterwards it must be ready
+    # afterwards it must be ready
     context_monitoring.re_init_builder()
     context_monitoring.wait_for(tmc_subarray).for_attribute(
         "obsState"

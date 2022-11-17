@@ -7,6 +7,7 @@ from pytest_bdd import scenario
 
 logger = logging.getLogger(__name__)
 
+
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.configure
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 )
 def test_configure_csp_mid_subarray():
     """Configure CSP low subarray."""
+
 
 @pytest.mark.skalow
 @pytest.mark.csp

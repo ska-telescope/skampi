@@ -36,7 +36,7 @@ def a_subarray_in_ready_state(
     return base_configuration
     
 
-# @when("I command the TMC to run a scan")
+# @when("I command it to scan for a given period")
 
 @then("the subarray must be in the SCANNING state until finished")
 def the_sdp_subarray_must_be_in_the_scanning_state(

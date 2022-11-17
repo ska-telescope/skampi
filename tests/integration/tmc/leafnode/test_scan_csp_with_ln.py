@@ -2,10 +2,9 @@
 import pytest
 import time
 from assertpy import assert_that
-from pytest_bdd import given, scenario, then
+from pytest_bdd import given, scenario, then, when
 
 from ska_ser_skallop.connectors import configuration as con_config
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
@@ -26,36 +25,18 @@ def test_scan_cspsubarray_for_a_scan_in_mid():
 def a_csp():
     """a CSP subarray in the READY state."""
 
-@given("an CSP subarray in READY state")
-def an_csp_subarray_in_ready_state(
-    csp_base_configuration: conf_types.ScanConfiguration,
-    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-    sut_settings: conftest.SutTestSettings,
-) -> conf_types.ScanConfiguration:
-    """an CSP subarray in READY state."""
-    subarray_allocation_spec.receptors = sut_settings.receptors
-    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
-    # will use default composition for the allocated subarray
-    # subarray_allocation_spec.composition
-    return csp_base_configuration
-
 @given("a TMC CSP subarray Leaf Node", target_fixture="configuration")
 def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
     """a tmc CSP subarray leaf node."""
+    # tel = names.TEL()
+    # sut_settings = conftest.SutTestSettings()
 
-
-# @given("a TMC CSP subarray Leaf Node", target_fixture="configuration")
-# def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
-#     """a tmc CSP subarray leaf node."""
-#     # tel = names.TEL()
-#     # sut_settings = conftest.SutTestSettings()
-
-#     # for index in range(1, sut_settings.nr_of_subarrays + 1):
-#     #     csp_subarray_leaf_node = con_config.get_device_proxy(
-#     #         tel.tm.subarray(index).csp_leaf_node
-#     #     )
-#     #     result = csp_subarray_leaf_node.ping()
-#     #     assert result > 0
+    # for index in range(1, sut_settings.nr_of_subarrays + 1):
+    #     csp_subarray_leaf_node = con_config.get_device_proxy(
+    #         tel.tm.subarray(index).csp_leaf_node
+    #     )
+    #     result = csp_subarray_leaf_node.ping()
+    #     assert result > 0
 
 
 
@@ -71,34 +52,34 @@ def the_csp_subarray_shall_go_from_ready_to_scanning_state(
     assert_that(result).is_equal_to(ObsState.SCANNING)
 
 
-# @then("the CSP shall go back to READY when finished")
-# def the_csp_subarray_shall_go_from_scanning_to_ready_state(
-#     allocated_subarray: fxt_types.allocated_subarray,
-# ):
-#     """the CSP shall go back to READY when finished."""
-#     sub_array_id = allocated_subarray.id
-#     tel = names.TEL()
-#     csp_subarray = con_config.get_device_proxy(tel.csp.subarray(sub_array_id))
-#     time.sleep(5)
-#     result = csp_subarray.read_attribute("obsState").value
-#     assert_that(result).is_equal_to(ObsState.READY)
-
-
 @then("the CSP shall go back to READY when finished")
-def the_csp_subarray_goes_back_to_ready_state(
-    configured_subarray: fxt_types.configured_subarray,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
+def the_csp_subarray_shall_go_from_scanning_to_ready_state(
+    allocated_subarray: fxt_types.allocated_subarray,
 ):
-    """The CSP goes back to READY state when finished"""
+    """the CSP shall go back to READY when finished."""
+    sub_array_id = allocated_subarray.id
     tel = names.TEL()
-    csp_subarray = tel.csp.subarray(configured_subarray.id)
-    csp_subarray = con_config.get_device_proxy(csp_subarray)
-    context_monitoring.re_init_builder()
-    context_monitoring.wait_for(csp_subarray).for_attribute(
-        "obsState"
-    ).to_become_equal_to(
-        "READY", ignore_first=False, settings=integration_test_exec_settings
-    )
+    csp_subarray = con_config.get_device_proxy(tel.csp.subarray(sub_array_id))
+    # time.sleep(5)
     result = csp_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.READY)
+
+
+# @then("the CSP shall go back to READY when finished")
+# def the_csp_subarray_goes_back_to_ready_state(
+#     configured_subarray: fxt_types.configured_subarray,
+#     context_monitoring: fxt_types.context_monitoring,
+#     integration_test_exec_settings: fxt_types.exec_settings,
+# ):
+#     """The CSP goes back to READY state when finished"""
+#     tel = names.TEL()
+#     csp_subarray = tel.csp.subarray(configured_subarray.id)
+#     csp_subarray = con_config.get_device_proxy(csp_subarray)
+#     context_monitoring.re_init_builder()
+#     context_monitoring.wait_for(csp_subarray).for_attribute(
+#         "obsState"
+#     ).to_become_equal_to(
+#         "READY", ignore_first=False, settings=integration_test_exec_settings
+#     )
+#     result = csp_subarray.read_attribute("obsState").value
+#     assert_that(result).is_equal_to(ObsState.READY)

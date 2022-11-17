@@ -42,11 +42,11 @@ def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
 
 @then("the CSP subarray shall go from READY to SCANNING")
 def the_csp_subarray_shall_go_from_ready_to_scanning_state(
-    allocated_subarray: fxt_types.allocated_subarray,
+    configured_subarray: fxt_types.configured_subarray,
 ):
     """the CSP subarray shall go from READY to SCANNING."""
-    sub_array_id = allocated_subarray.id
     tel = names.TEL()
+    sub_array_id = configured_subarray.id
     csp_subarray = con_config.get_device_proxy(tel.csp.subarray(sub_array_id))
     result = csp_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.SCANNING)
@@ -75,8 +75,9 @@ def the_csp_subarray_goes_back_to_ready_state(
     tel = names.TEL()
     csp_subarray = tel.csp.subarray(configured_subarray.id)
     csp_subarray = con_config.get_device_proxy(csp_subarray)
-    result = csp_subarray.read_attribute("obsstate").value
-    assert_that(result).is_equal_to(ObsState.SCANNING)
+
+    # result = csp_subarray.read_attribute("obsstate").value
+    # assert_that(result).is_equal_to(ObsState.SCANNING)
     context_monitoring.re_init_builder()
     context_monitoring.wait_for(csp_subarray).for_attribute(
         "obsState"

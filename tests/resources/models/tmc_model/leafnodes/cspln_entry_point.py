@@ -198,7 +198,7 @@ class CSPLnEntryPoint(CompositeEntryPoint):
 
     nr_of_subarrays = 2
 
-    def __init__(self, observation: Observation | None = None) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init Object"""
         super().__init__()
         if observation is None:

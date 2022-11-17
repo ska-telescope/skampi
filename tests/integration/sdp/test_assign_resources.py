@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 # log capturing
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -27,7 +26,6 @@ logger = logging.getLogger(__name__)
 def test_assign_resources_to_sdp_subarray_in_low(assign_resources_test_exec_settings):
     """Assign resources to sdp subarray in low."""
 
-@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp

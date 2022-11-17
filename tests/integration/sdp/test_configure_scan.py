@@ -9,7 +9,6 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from resources.models.mvp_model.states import ObsState
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.configure
 @pytest.mark.sdp
@@ -19,7 +18,6 @@ from resources.models.mvp_model.states import ObsState
 def test_configure_scan_on_sdp_subarray_in_low():
     """Configure scan on sdp subarray in low."""
 
-@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.sdp

@@ -230,6 +230,15 @@ def i_command_it_to_scan(
     configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
+@when("I command the TMC to run a scan")
+def i_command_the_tmc_to_run_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I configure the TMC for a scan."""
+    configured_subarray.scan(integration_test_exec_settings)
+
+
 @when("I release all resources assigned to it")
 def i_release_all_resources_assigned_to_it(
     allocated_subarray: fxt_types.allocated_subarray,

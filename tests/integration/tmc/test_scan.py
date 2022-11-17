@@ -36,8 +36,7 @@ def a_subarray_in_ready_state(
     return base_configuration
     
 
-# @when("I command it to scan for a given period")
-
+# @when("I command the TMC to run a scan")
 
 @then("the telescope subarray shall go from READY to SCANNING state")
 def the_telescope_subarray_shall_go_from_ready_to_scanning_state(
@@ -73,6 +72,6 @@ def the_telescope_subarray_shall_go_back_to_ready_when_finished_scanning(
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
         str(tel.tm.subarray(sut_settings.subarray_id)))
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    time.sleep(5)
+    # time.sleep(5)
     result = tmc_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.READY)

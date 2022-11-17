@@ -8,7 +8,8 @@ configuration:
       state:
         code_push_event: true
       healthState:
-        code_push_event: true
+        archive_period: 3000
+        polling_period: 1000
       telescopestate:
         archive_period: 3000
         polling_period: 1000
@@ -22,7 +23,8 @@ configuration:
         code_push_event: true
         polling_period: 1000
       telescopeHealthState:
-        code_push_event: true
+        archive_period: 3000
+        polling_period: 1000
    
 
   - class: SubarrayNodeMid
@@ -60,21 +62,26 @@ configuration:
       state:
         code_push_event: true
       healthState:
-        code_push_event: true
+        archive_period: 3000
+        polling_period: 1000
 
   - class: SdpMasterLeafNode
     attributes:
       state:
         code_push_event: true
       healthState:
-        code_push_event: true
+        archive_period: 3000
+        polling_period: 1000
+
 
   - class: SdpSubarrayLeafNode
     attributes:
       state:
         code_push_event: true
       healthState:
-        code_push_event: true
+        archive_period: 3000
+        polling_period: 1000
+
 
   - class: DishLeafNode
     filtering:

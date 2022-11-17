@@ -3,7 +3,7 @@ import time
 from os import environ
 from typing import List, Optional
 
-from ska_oso_oet.procedure.application.restclient import RestAdapter, ProcedureSummary
+from ska_oso_oet_client.restclient import RestAdapter, ProcedureSummary
 
 LOGGER = logging.getLogger(__name__)
 

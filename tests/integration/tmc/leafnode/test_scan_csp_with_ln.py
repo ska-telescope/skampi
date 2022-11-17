@@ -1,8 +1,7 @@
 
 import pytest
-import time
 from assertpy import assert_that
-from pytest_bdd import given, scenario, then, when
+from pytest_bdd import given, scenario, then
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -38,8 +37,6 @@ def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
     #     result = csp_subarray_leaf_node.ping()
     #     assert result > 0
 
-
-
 @then("the CSP subarray shall go from READY to SCANNING")
 def the_csp_subarray_shall_go_from_ready_to_scanning_state(
     configured_subarray: fxt_types.configured_subarray,
@@ -51,20 +48,6 @@ def the_csp_subarray_shall_go_from_ready_to_scanning_state(
     result = csp_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.SCANNING)
 
-
-# @then("the CSP shall go back to READY when finished")
-# def the_csp_subarray_shall_go_from_scanning_to_ready_state(
-#     allocated_subarray: fxt_types.allocated_subarray,
-# ):
-#     """the CSP shall go back to READY when finished."""
-#     sub_array_id = allocated_subarray.id
-#     tel = names.TEL()
-#     csp_subarray = con_config.get_device_proxy(tel.csp.subarray(sub_array_id))
-#     time.sleep(5)
-#     result = csp_subarray.read_attribute("obsState").value
-#     assert_that(result).is_equal_to(ObsState.READY)
-
-
 @then("the CSP shall go back to READY when finished")
 def the_csp_subarray_goes_back_to_ready_state(
     configured_subarray: fxt_types.configured_subarray,
@@ -74,10 +57,7 @@ def the_csp_subarray_goes_back_to_ready_state(
     """The CSP goes back to READY state when finished"""
     tel = names.TEL()
     csp_subarray_name = tel.csp.subarray(configured_subarray.id)
-    csp_subarray = con_config.get_device_proxy(csp_subarray)
-
-    # result = csp_subarray.read_attribute("obsstate").value
-    # assert_that(result).is_equal_to(ObsState.SCANNING)
+    csp_subarray = con_config.get_device_proxy(csp_subarray_name)
     context_monitoring.re_init_builder()
     context_monitoring.wait_for(csp_subarray_name).for_attribute(
         "obsstate"

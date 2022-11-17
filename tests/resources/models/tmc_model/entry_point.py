@@ -252,7 +252,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         # scan duration needs to be a memorized for future objects that may require it
-        # Memo(scan_duration=duration)
+        Memo(scan_duration=duration)
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         config = self.observation.generate_scan_config().as_json
@@ -345,9 +345,9 @@ class ScanStep(base.ScanStep, LogEnabled):
         self.observation = observation
 
     def do(self, sub_array_id: int):
-        """Domain logic for configuring a scan on subarray in sdp.
+        """Domain logic for running a scan on subarray in tmc.
 
-        This implements the compose_subarray method on the entry_point.
+        This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
@@ -355,11 +355,14 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         scan_config = self.observation.generate_run_scan_conf().as_json
+        scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         try:
             subarray.command_inout("Scan", scan_config)
+            sleep(scan_duration)
+            subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception

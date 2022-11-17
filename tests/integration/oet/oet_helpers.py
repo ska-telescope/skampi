@@ -3,13 +3,13 @@ import time
 from os import environ
 from typing import List, Optional
 
-from ska_oso_oet.procedure.application.restclient import RestAdapter, ProcedureSummary
+from ska_oso_oet_client.restclient import RestAdapter, ProcedureSummary
 
 LOGGER = logging.getLogger(__name__)
 
 kube_namespace = environ.get("KUBE_NAMESPACE", "test")
 kube_host = environ.get("KUBE_HOST")
-rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0/procedures"
+rest_cli_uri = f"http://{kube_host}/{kube_namespace}/ska-oso-oet/api/v1.0/procedures"
 REST_ADAPTER = RestAdapter(rest_cli_uri)
 
 

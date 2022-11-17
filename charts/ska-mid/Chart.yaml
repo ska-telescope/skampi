@@ -26,7 +26,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
   - name: ska-tmc-mid
-    version: 0.5.22
+    version: 0.6.1
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tmc-mid.enabled
     alias: tmc-mid
@@ -81,6 +81,6 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
   - name: ska-oso-oet
-    version: 4.0.7
+    version: 4.0.6
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-oso-oet.enabled

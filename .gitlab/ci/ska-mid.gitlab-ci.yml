@@ -28,10 +28,8 @@ mid-test:
 
   extends:
     - .tags_default
+    - .set_dbname
   script:
-    - branch_name=$(echo $CI_COMMIT_REF_NAME | tr '-' '_'|tr '.' '_')
-    - DB_NAME=${CONFIG}_archiver_db_$branch_name
-    - ARCHIVER_DBNAME=$(echo $DB_NAME | cut -c -50)
     - !reference [.deploy_chart_before, before_script]
     - !reference [.test_deployment, script]
     - !reference [.uninstall_chart, script]
@@ -170,12 +168,10 @@ mid_on_demand_deploy:
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     OET_INGRESS_ENABLED: "true"
   extends:
+    - .set_dbname
     - .tags_default
     - .deploy_chart_before
   script:
-    - branch_name=$(echo $CI_COMMIT_REF_NAME | tr '-' '_'|tr '.' '_')
-    - DB_NAME=${CONFIG}_archiver_db_$branch_name
-    - ARCHIVER_DBNAME=$(echo $DB_NAME | cut -c -50)
     - make skampi-links
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG

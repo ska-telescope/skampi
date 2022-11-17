@@ -73,13 +73,13 @@ def the_csp_subarray_goes_back_to_ready_state(
 ):
     """The CSP goes back to READY state when finished"""
     tel = names.TEL()
-    csp_subarray = tel.csp.subarray(configured_subarray.id)
+    csp_subarray_name = tel.csp.subarray(configured_subarray.id)
     csp_subarray = con_config.get_device_proxy(csp_subarray)
 
     # result = csp_subarray.read_attribute("obsstate").value
     # assert_that(result).is_equal_to(ObsState.SCANNING)
     context_monitoring.re_init_builder()
-    context_monitoring.wait_for(csp_subarray).for_attribute(
+    context_monitoring.wait_for(csp_subarray_name).for_attribute(
         "obsstate"
     ).to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings

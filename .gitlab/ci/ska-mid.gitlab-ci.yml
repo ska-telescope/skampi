@@ -29,7 +29,7 @@ mid-test:
   extends:
     - .tags_default
   script:
-    - export ARCHIVER_DBNAME="${CONFIG}_archiver_db_${$CI_COMMIT_REF_NAME}"
+    - export ARCHIVER_DBNAME=${CONFIG}_archiver_db_$CI_COMMIT_REF_NAME
     - !reference [.deploy_chart_before, before_script]
     - !reference [.test_deployment, script]
     - !reference [.uninstall_chart, script]

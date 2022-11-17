@@ -1,15 +1,12 @@
-release=0.11.0
-tag=0.11.0
+release=0.12.0
+tag=0.12.0
 tag_description=
 **Charts:**
-**1. ska-mid 0.10.0 - 0.11.0:**
+**1. ska-mid 0.11.0 - 0.12.0:**
 
-    **1.1 ska-tmc-mid - 0.5.21 - 0.5.22:
+    **1.1 ska-tmc-mid - 0.5.22 - 0.6.1:
 
-            a.   Update tmc to handle new configuration schemas for sdp and updated names
+            a.   Update tmc to perform scan commands
 
-    **1.2 ska-sdp 0.9.1 - 0.12.1:
-
-            a.   Update sdp with latest stable version reflecting new names and config schema
 
 

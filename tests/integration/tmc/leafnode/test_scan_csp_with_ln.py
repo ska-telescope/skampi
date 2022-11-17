@@ -27,15 +27,15 @@ def a_csp():
 @given("a TMC CSP subarray Leaf Node", target_fixture="configuration")
 def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
     """a tmc CSP subarray leaf node."""
-    # tel = names.TEL()
-    # sut_settings = conftest.SutTestSettings()
+    tel = names.TEL()
+    sut_settings = conftest.SutTestSettings()
 
-    # for index in range(1, sut_settings.nr_of_subarrays + 1):
-    #     csp_subarray_leaf_node = con_config.get_device_proxy(
-    #         tel.tm.subarray(index).csp_leaf_node
-    #     )
-    #     result = csp_subarray_leaf_node.ping()
-    #     assert result > 0
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        csp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).csp_leaf_node
+        )
+        result = csp_subarray_leaf_node.ping()
+        assert result > 0
 
 @then("the CSP subarray shall go from READY to SCANNING")
 def the_csp_subarray_shall_go_from_ready_to_scanning_state(

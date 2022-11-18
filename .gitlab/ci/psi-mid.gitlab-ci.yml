@@ -11,9 +11,8 @@
   when: manual
 
 .psi_mid_deploy:
-  extends:
-    - .deploy_chart_before
   script:
+    - !reference [.deploy_chart_before, before_script]
     - make skampi-links
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
@@ -38,7 +37,6 @@
 
 psi_mid_on_demand_deploy:
   extends:
-    - .set_dbname
     - .psi_mid_branch_job
     - .psi_mid_deploy
 
@@ -53,6 +51,7 @@ psi_mid_on_demand_uninstall:
 .psi_mid_integration_job:
   stage: deploy_integration
   extends:
+    - .set_dbname
     - .psi_mid_base
   variables:
     HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"

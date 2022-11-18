@@ -14,7 +14,7 @@ from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, De
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 def test_init():
-  print("Init test archiver")
+  logging.info("Init test archiver")
   archiver_helper = ArchiverHelper()
   archiver_helper.start_archiving()
 

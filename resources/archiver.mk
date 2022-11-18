@@ -2,7 +2,7 @@
 
 
 ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
-
+FILE_NAME ?= attribute_config.yaml
 
 
 

@@ -7,6 +7,8 @@
   - bash scripts/gitlab_section.sh creds "Create K8s Credentials" make skampi-credentials
 
 .set_dbname:
+  variables:
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
   before_script:
     - branch_name=$(echo $CI_COMMIT_REF_NAME | tr '-' '_'|tr '.' '_')
     - DB_NAME=${CONFIG}_archiver_db_$branch_name

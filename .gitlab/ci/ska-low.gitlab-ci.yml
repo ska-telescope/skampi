@@ -13,7 +13,7 @@ low-test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "${CONFIG}_archiver_db_${CI_JOB_ID}"
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
@@ -55,7 +55,7 @@ clean-low-test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "${CONFIG}_archiver_db_$CI_JOB_ID"
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
     COUNT: 1
@@ -86,7 +86,7 @@ low_uninstall_integration:
     KUBE_NAMESPACE: "integration-$CONFIG"
     KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
-    ARCHIVER_DBNAME: "integration_${CONFIG}_archiver_db"
+    ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
     KEEP_NAMESPACE: "true"
   rules:
     - if: $CI_COMMIT_TAG
@@ -110,7 +110,7 @@ low_deploy_staging:
     KUBE_NAMESPACE: "staging-$CONFIG"
     KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
-    ARCHIVER_DBNAME: "staging_${CONFIG}_archiver_db"
+    ARCHIVER_DBNAME: "staging_$CONFIG_archiver_db"
     MARK: "not infra"
     KEEP_NAMESPACE: "true"
   environment:
@@ -137,7 +137,7 @@ low_uninstall_staging:
     KUBE_NAMESPACE: "staging-$CONFIG"
     KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
-    ARCHIVER_DBNAME: "staging_${CONFIG}_archiver_db"
+    ARCHIVER_DBNAME: "staging_$CONFIG_archiver_db"
     KEEP_NAMESPACE: "true"
   rules:
     - if: $CI_COMMIT_TAG
@@ -157,7 +157,7 @@ low_on_demand_deploy:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
-    ARCHIVER_DBNAME: "${CONFIG}_archiver_db_${CI_JOB_ID}"
+    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
   extends:
     - .tags_default
     - .deploy_chart_before

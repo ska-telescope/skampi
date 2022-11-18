@@ -398,7 +398,7 @@ Use the `MARK` parameter to run specific tests. All tests are marked with a `@py
 More information should be available in the [Documentation](https://developer.skao.int/projects/ska-skampi/en/latest/testing.html).
 
 ## EDA 
-The EDA solution is based on HDB++ archiver with TimescaleDB as the backend database. The HDB++ Configuration Manager configures the attributes to be archived and defines which Event Subscriber is responsible for a set of Tango attributes to be archived. It also provides diagnostics data. Configuration Manager Tango device server assists in the operations of adding, editing, moving and deleting an attribute to/from the HDB++ archiving system. For more detail information on EDA please click [here](https://ska-tango-archiver.readthedocs.io/en/latest/)
+The EDA solution is based on HDB++ archiver with TimescaleDB as the backend database. The HDB++ Configuration Manager configures the attributes to be archived and defines which Event Subscriber is responsible for a set of Tango attributes to be archived. For more detail information on EDA please click [here](https://ska-tango-archiver.readthedocs.io/en/latest/)
 
 ## Troubleshooting / FAQ
 Finding issues with SKAMPI deployments can sometimes be difficult, and knowledge of Kubernetes and Tango are essential. Some excellent troubleshooting tips for Kubernetes can be found at https://kubernetes.io/docs/tasks/debug-application-cluster/troubleshooting.

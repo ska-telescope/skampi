@@ -168,8 +168,6 @@ mid_on_demand_deploy:
   extends:
     - .tags_default
     - .deploy_chart_before
-  before_script:
-    - !reference [.set_dbname]
   script:
     - make skampi-links
   environment:

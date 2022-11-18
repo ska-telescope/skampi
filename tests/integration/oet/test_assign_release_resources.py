@@ -21,7 +21,7 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-@pytest.mark.skip
+
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -201,7 +201,7 @@ def check_final_subarray_state(
     ), f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
     logger.info("Sub-array is in ObsState %s", obsstate)
 
-@pytest.mark.skip
+
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(

@@ -12,7 +12,7 @@ from resources.models.mvp_model.states import ObsState
 
 from ..conftest import SutTestSettings
 
-@pytest.mark.skip
+
 @pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.assign
@@ -22,7 +22,7 @@ from ..conftest import SutTestSettings
 def test_assign_resources_to_cbf_mid_subarray():
     """Assign resources to CBF mid subarray."""
 
-@pytest.mark.skip
+
 @pytest.mark.skip(reason="cbf low not integrated")
 @pytest.mark.skalow
 @pytest.mark.cbf

@@ -4,7 +4,7 @@ from pytest_bdd import given, scenario, then, when
 from .oet_helpers import ScriptExecutor
 
 EXECUTOR = ScriptExecutor()
-@pytest.mark.skip
+
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

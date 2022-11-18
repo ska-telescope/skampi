@@ -168,8 +168,8 @@ mid_on_demand_deploy:
   extends:
     - .tags_default
     - .set_dbname
+    - .deploy_chart_before
   script:
-    - !reference [.deploy_chart_before]
     - make skampi-links
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG

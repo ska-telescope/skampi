@@ -75,22 +75,12 @@ def when_observe_sbi(
         #         script_completion_state == "COMPLETE"
         # ), f"Expected observing script to be COMPLETED, instead was {script_completion_state}"
 
-
 @then("the Subarray goes to ObsState READY")
 def check_final_subarray_state(
-        obsstate: str,
-        sut_settings: SutTestSettings,
+    sut_settings: SutTestSettings
 ):
-    """
-    Check that the final state of the Subarray is as expected.
-
-    Args:
-        obsstate (str): Subarray Tango device ObsState
-    """
+    """the subarray must be in READY state."""
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    subarray_obsstate = ObsState(subarray.read_attribute("obsState").value).name
-    assert (
-            subarray_obsstate == obsstate
-    ), f"Expected Subarray to be in {obsstate} but instead was in {subarray_obsstate}"
-    logger.info("Subarray is in ObsState %s", obsstate)
+    result = subarray.read_attribute("obsState").value
+    assert_that(result).is_equal_to(ObsState.READY)

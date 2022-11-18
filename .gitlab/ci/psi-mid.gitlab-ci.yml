@@ -35,8 +35,8 @@
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
-  before_script:
-    - !reference [.set_dbname,before_script]
+  script:
+    - !reference [.set_dbname, before_script]
 
 psi_mid_on_demand_deploy:
   extends:

@@ -167,8 +167,9 @@ mid_on_demand_deploy:
     OET_INGRESS_ENABLED: "true"
   extends:
     - .tags_default
-    - .deploy_chart_before
+    - .set_dbname
   script:
+    - !reference [.deploy_chart_before]
     - make skampi-links
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG

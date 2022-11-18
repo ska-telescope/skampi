@@ -11,8 +11,9 @@
   when: manual
 
 .psi_mid_deploy:
+  extends:
+    - .deploy_chart_before
   script:
-    - !reference [.deploy_chart_before, before_script]
     - make skampi-links
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
@@ -31,7 +32,7 @@
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
     KUBE_NAMESPACE_SDP: "$KUBE_NAMESPACE-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
-    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db_${CI_JOB_ID}"
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
@@ -51,7 +52,6 @@ psi_mid_on_demand_uninstall:
 .psi_mid_integration_job:
   stage: deploy_integration
   extends:
-    - .set_dbname
     - .psi_mid_base
   variables:
     HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"

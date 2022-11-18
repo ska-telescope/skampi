@@ -27,7 +27,6 @@
   stage: build
   extends:
     - .psi_mid_base
-    - .set_dbname
   variables:
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
@@ -35,6 +34,8 @@
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+  before_script:
+    - !reference [.set_dbname,before_script]
 
 psi_mid_on_demand_deploy:
   extends:

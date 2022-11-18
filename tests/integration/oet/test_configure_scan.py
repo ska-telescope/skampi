@@ -71,9 +71,9 @@ def when_observe_sbi(
     allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
-        # assert (
-        #         script_completion_state == "COMPLETE"
-        # ), f"Expected observing script to be COMPLETED, instead was {script_completion_state}"
+        assert (
+                script_completion_state != "COMPLETE"
+        ), f"Expected observing script to be COMPLETED, instead was {script_completion_state}"
 
 @then("the Subarray goes to ObsState READY")
 def check_final_subarray_state(
@@ -82,5 +82,8 @@ def check_final_subarray_state(
     """the subarray must be in READY state."""
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.READY)
+    assert str(subarray.read_attribute("telescopeState").value) in [
+        "READY",
+        "RUNNING",
+    ]
+

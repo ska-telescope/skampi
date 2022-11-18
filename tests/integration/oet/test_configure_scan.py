@@ -76,7 +76,7 @@ def when_observe_sbi(
         # ), f"Expected observing script to be COMPLETED, instead was {script_completion_state}"
 
 
-@then("the Subarray goes to ObsState {obsstate}")
+@then("the Subarray goes to ObsState READY")
 def check_final_subarray_state(
         obsstate: str,
         sut_settings: SutTestSettings,

@@ -22,7 +22,7 @@ from ..conftest import SutTestSettings
 def test_assign_resources_to_cbf_mid_subarray():
     """Assign resources to CBF mid subarray."""
 
-
+@pytest.mark.skip
 @pytest.mark.skip(reason="cbf low not integrated")
 @pytest.mark.skalow
 @pytest.mark.cbf

@@ -8,7 +8,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 logger = logging.getLogger(__name__)
 
-
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign

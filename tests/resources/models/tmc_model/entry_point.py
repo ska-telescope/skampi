@@ -1,7 +1,10 @@
 """Domain logic for the tmc."""
+import json
 import logging
 import os
 from typing import List, Union
+from time import sleep
+from ska_ser_skallop.utils.singleton import Memo
 from ska_ser_skallop.mvp_control.configuration import configuration as conf
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -31,7 +34,7 @@ class LogEnabled:
 
 
 class StartUpStep(base.ObservationStep, LogEnabled):
-    """Implementation of Startup step for SDP"""
+    """Implementation of Startup step for TMC"""
 
     def __init__(
         self, nr_of_subarrays: int = 3, receptors: list[int] = [1, 2, 3, 4]
@@ -128,7 +131,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
 
 class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
-    """Implementation of Assign Resources Step."""
+    """Implementation of Assign Resources Step for TMC"""
 
     def __init__(self, observation: Observation) -> None:
         """Init object."""
@@ -223,7 +226,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
 
 
 class ConfigureStep(base.ConfigureStep, LogEnabled):
-    """Implementation of Configure Scan Step for SDP."""
+    """Implementation of Configure Scan Step for TMC."""
 
     def __init__(self, observation: Observation) -> None:
         """Init object."""
@@ -249,7 +252,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         # scan duration needs to be a memorized for future objects that may require it
-        # Memo(scan_duration=duration)
+        Memo(scan_duration=duration)
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         config = self.observation.generate_scan_config().as_json
@@ -333,8 +336,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
 
 class ScanStep(base.ScanStep, LogEnabled):
-
-    """Implementation of Scan Step for SDP."""
+    """Implementation of Scan Step for TMC."""
 
     def __init__(self, observation: Observation) -> None:
         """Init object."""
@@ -343,25 +345,27 @@ class ScanStep(base.ScanStep, LogEnabled):
         self.observation = observation
 
     def do(self, sub_array_id: int):
-        """Domain logic for running a scan on subarray in sdp.
+        """Domain logic for running a scan on subarray in tmc.
 
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :param dish_ids: this dish indices (in case of mid) to control
+        :param composition: The assign resources configuration parameters
+        :param sb_id: a generic ide to identify a sb to assign resources
         """
-        # scan_config = json.dumps({"id": 1})
-        # scan_duration = Memo().get("scan_duration")
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # subarray = con_config.get_device_proxy(subarray_name)
-        # self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
-        raise NotImplementedError()
-        # try:
-        #     subarray.command_inout("Scan", scan_config)
-        #     sleep(scan_duration)
-        #     subarray.command_inout("EndScan")
-        # except Exception as exception:
-        #     logger.exception(exception)
-        #     raise exception
+        scan_config = self.observation.generate_run_scan_conf().as_json
+        scan_duration = Memo().get("scan_duration")
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
+        try:
+            subarray.command_inout("Scan", scan_config)
+            sleep(scan_duration)
+            subarray.command_inout("EndScan")
+        except Exception as exception:
+            logger.exception(exception)
+            raise exception
 
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -370,7 +374,7 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-
+    
     def undo(self, sub_array_id: int):
         """This is a no-op as no undo for scan is needed
 
@@ -384,13 +388,18 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        builder = get_message_board_builder()
-        # TODO  determine what needs to be waited for
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # builder.set_waiting_on(subarray_name).for_attribute(
-        #     "obsState"
-        # ).to_become_equal_to("SCANNING")
-        return builder
+        brd = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        brd.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        return brd
 
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]

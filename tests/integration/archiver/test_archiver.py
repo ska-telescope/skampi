@@ -6,7 +6,7 @@ import sys
 import pytest
 import logging
 from time import sleep
-from resources import ArchiverHelper
+from ..resources import ArchiverHelper
 from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
 
 

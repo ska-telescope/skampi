@@ -167,8 +167,9 @@ mid_on_demand_deploy:
     OET_INGRESS_ENABLED: "true"
   extends:
     - .tags_default
-    - !reference [.set_dbname]
     - .deploy_chart_before
+  before_script:
+    - !reference [.set_dbname]
   script:
     - make skampi-links
   environment:

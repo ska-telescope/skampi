@@ -20,4 +20,6 @@ endif
 	kubectl  --kubeconfig=$(KUBECONFIG) logs job.batch/archiver-configuration -n $(KUBE_NAMESPACE)
 	rm charts/configuration_job.yaml
 
-
+#Incase of error
+delete_archiver_config_job:
+	kubectl --kubeconfig=$(KUBECONFIG) delete job archiver-configuration

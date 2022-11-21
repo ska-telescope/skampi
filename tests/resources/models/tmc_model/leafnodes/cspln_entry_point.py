@@ -142,11 +142,11 @@ class CSPLnScanStep(CspScanStep):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        scan_config = self.observation.generate_run_scan_conf(backwards=True).as_json
+        scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
-        self._log(f"Commanding {csp_subarray_ln_name} to Scan with {scan_csp}")
+        self._log(f"Commanding {csp_subarray_ln_name} to Scan with {scan_config}")
         try:
             csp_subarray_ln.command_inout("Scan", scan_config)
             sleep(scan_duration)
@@ -265,8 +265,3 @@ configure_csp = {
         }
     },
 }
-
-# scan_csp = {
-#   "interface": "https://schema.skao.int/ska-mid-csp-scan/2.0",
-#   "scan_id": 1
-# }

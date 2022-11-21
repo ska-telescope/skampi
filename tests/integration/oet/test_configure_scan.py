@@ -28,7 +28,7 @@ def test_observing_sbi():
     """
 		Given Subarray is in the ObsState IDLE
 		When I tell the OET to observe using script "<script>" and SBI "<sb_json>"
-		Then the Subarray goes to ObsState READY
+		Then the Subarray goes to ObsState CONFIGURING
 
     Examples:
     |script                             |sb_json                     |
@@ -72,7 +72,7 @@ def when_observe_sbi(
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (
-                script_completion_state != "COMPLETE"
+                script_completion_state == "COMPLETE"
         ), f"Expected observing script to be COMPLETED, instead was {script_completion_state}"
 
 @then(parsers.parse("the Subarray goes to ObsState {obsstate}"))

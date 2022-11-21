@@ -5,6 +5,9 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	@XTP-778 @XTP-776
 	Scenario: Observing a Scheduling Block
 		Given Subarray is in the ObsState IDLE
-		When I tell the OET to observe using script file:///scripts/observe_mid_sb.py and SBI /tmp/oda/mid_sb_example.json
+		When I tell the OET to observe using script <script> and SBI <sb_json>
 		Then the Subarray goes to ObsState CONFIGURING
 
+    Examples:
+    |script                             |sb_json                     |
+    |file:///scripts/observe_mid_sb.py  |/tmp/oda/mid_sb_example.json|

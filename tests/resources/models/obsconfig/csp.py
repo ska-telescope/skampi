@@ -70,9 +70,9 @@ class CSPconfig(TargetSpecs):
         config = self.get_scan_id()
         csp_run_scan_config = cast(
             CSPrunScanConfig,
-            **{
+            {
                 **config,
                 **{"interface": "https://schema.skao.int/ska-mid-csp-scan/2.0"},
-            }
+            },
         )
         return csp_run_scan_config

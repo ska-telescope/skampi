@@ -268,5 +268,3 @@ configure_csp = {
         }
     },
 }
-
-scan_csp = {"interface": "https://schema.skao.int/ska-mid-csp-scan/2.0", "scan_id": 1}

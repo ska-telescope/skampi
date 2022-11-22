@@ -75,7 +75,7 @@ def when_observe_sbi(
                 script_completion_state == "RUNNING"
         ), f"Expected observing script to be RUNNING, instead was {script_completion_state}"
 
-@then(parsers.parse("the Subarray goes to ObsState {obsstate}"))
+@then("the Subarray goes to ObsState {obsstate}")
 def check_final_subarray_state(
     obsstate: str,
     sut_settings: SutTestSettings,

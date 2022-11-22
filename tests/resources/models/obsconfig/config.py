@@ -61,8 +61,8 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
         return self._generate_scan_config(target_id, scan_duration)
 
     @encoded
-    def generate_run_scan_conf(self):
-        return self.get_scan_id()
+    def generate_run_scan_conf(self, backwards: bool = False):
+        return self.get_scan_id(backwards)
 
     def generate_scan_config_parsed_for_csp(
         self,

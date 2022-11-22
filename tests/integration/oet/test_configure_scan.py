@@ -70,7 +70,7 @@ def when_observe_sbi(
     """
     allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
-        script_completion_state = EXECUTOR.execute_script(script, sb_json,timeout=300)
+        script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (
                 script_completion_state == "COMPLETE"
         ), f"Expected observing script to be COMPLETE, instead was {script_completion_state}"
@@ -81,10 +81,10 @@ def check_final_subarray_state(
     sut_settings: SutTestSettings,
 ):
     """
-    Check that the final state of the sub-array is as expected.
+    Check that the final state of the Subarray is as expected.
 
     Args:
-        obsstate (str): Sub-array Tango device ObsState
+        obsstate (str): Subarray Tango device ObsState
     """
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))

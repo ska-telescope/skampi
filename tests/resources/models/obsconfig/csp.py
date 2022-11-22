@@ -1,3 +1,4 @@
+from typing import TypedDict, cast
 from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     CBFConfiguration,
     CommonConfiguration,
@@ -9,6 +10,11 @@ from ska_tmc_cdm.messages.subarray_node.configure.csp import (
 
 from .base import encoded
 from .target_spec import TargetSpecs
+
+
+class CSPrunScanConfig(TypedDict):
+    scan_id: int
+    interface: str
 
 
 class CSPconfig(TargetSpecs):
@@ -57,3 +63,16 @@ class CSPconfig(TargetSpecs):
         self, target_id: str | None = None, subarray_id: int = 1
     ):
         return self._generate_csp_scan_config(target_id, subarray_id)
+
+    def generate_csp_run_scan_config(
+        self, target_id: str | None = None, subarray_id: int = 1
+    ) -> CSPrunScanConfig:
+        config = self.get_scan_id()
+        csp_run_scan_config = cast(
+            CSPrunScanConfig,
+            {
+                **config,
+                **{"interface": "https://schema.skao.int/ska-mid-csp-scan/2.0"},
+            },
+        )
+        return csp_run_scan_config

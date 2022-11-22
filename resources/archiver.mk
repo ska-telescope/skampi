@@ -23,3 +23,11 @@ endif
 #Incase of error
 delete_archiver_config_job:
 	kubectl --kubeconfig=$(KUBECONFIG) delete job archiver-configuration
+
+#VPN is required
+#provides ip and port for archwizard console
+ARCHWIZ_IP=$(shell kubectl --kubeconfig=$(KUBECONFIG) get svc| grep archwizard | awk '{print $$4}')
+ARCHWIZ_PORT=$(shell kubectl --kubeconfig=$(KUBECONFIG) get svc|grep archwizard |awk '{print $$5}'| cut -d ":" -f 1)
+get_archwizard_link:
+	@echo "http://$(ARCHWIZ_IP):$(ARCHWIZ_PORT)"
+ 

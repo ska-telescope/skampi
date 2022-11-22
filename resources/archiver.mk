@@ -11,7 +11,7 @@ ATTR_CONFIG_FILE ?= attribute_config.yaml
 # Requries paramater KUBECONFIG,ATTR_CONFIG_FILE,KUBE_NAMESPACE
 # ATTR_CONFIG_FILE= attribute configuration yaml file
 configure-archiver:  ##configure attributes to archive
-	curl https://gitlab.com/ska-telescope/ska-tango-archiver/-/raw/2.0.0/charts/configuration_job.yaml?inline=false > charts/configuration_job.yaml
+	curl https://gitlab.com/ska-telescope/ska-tango-archiver/-/raw/2.2.1/charts/configuration_job.yaml?inline=false > charts/configuration_job.yaml
 ifneq ($(ATTR_CONFIG_FILE),attribute_config.yaml)
 	mv $(ATTR_CONFIG_FILE) attribute_config.yaml
 endif
@@ -29,9 +29,14 @@ delete_archiver_config_job:
 
 ARCHWIZ_IP=$(shell kubectl --kubeconfig=$(KUBECONFIG) get svc| grep archwizard | awk '{print $$4}')
 ARCHWIZ_PORT=$(shell kubectl --kubeconfig=$(KUBECONFIG) get svc|grep archwizard |awk '{print $$5}'| cut -d ":" -f 1)
+ARCHVIEWER_IP=$(shell kubectl --kubeconfig=$(KUBECONFIG) get svc| grep archviewer| awk '{print $$4}')
+ARCHVIEWER_PORT=$(shell kubectl --kubeconfig=$(KUBECONFIG) get svc|grep archviewer |awk '{print $$5}'| cut -d ":" -f 1)
 #VPN is required
 #Provides ip and port for archwizard console
 #Requries paramater KUBECONFIG
 get_archwizard_link:
 	@echo "http://$(ARCHWIZ_IP):$(ARCHWIZ_PORT)"
  
+
+get_archviewer_link:
+	@echo "http://$(ARCHVIEWER_IP):$(ARCHVIEWER_PORT)"

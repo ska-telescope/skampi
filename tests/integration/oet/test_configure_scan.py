@@ -69,7 +69,7 @@ def when_observe_sbi(
         script (str): file path to an observing script
         sb_json (str): file path to a scheduling block
     """
-    allocated_subarray.disable_automatic_teardown()
+    # allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=300)
         assert (

@@ -8,6 +8,7 @@ ATTR_CONFIG_FILE ?= attribute_config.yaml
 
 # This script configures the archiver for attribute archival defined in yaml.
 # It will run a job to configure attributes using yaml2archiving tool.
+# Requries paramater KUBECONFIG,ATTR_CONFIG_FILE,KUBE_NAMESPACE
 # ATTR_CONFIG_FILE= attribute configuration yaml file
 configure-archiver:  ##configure attributes to archive
 	curl https://gitlab.com/ska-telescope/ska-tango-archiver/-/raw/2.0.0/charts/configuration_job.yaml?inline=false > charts/configuration_job.yaml
@@ -21,13 +22,16 @@ endif
 	rm charts/configuration_job.yaml
 
 #Incase of error
+#Requries parameter KUBECONFIG
 delete_archiver_config_job:
 	kubectl --kubeconfig=$(KUBECONFIG) delete job archiver-configuration
 
-#VPN is required
-#provides ip and port for archwizard console
+
 ARCHWIZ_IP=$(shell kubectl --kubeconfig=$(KUBECONFIG) get svc| grep archwizard | awk '{print $$4}')
 ARCHWIZ_PORT=$(shell kubectl --kubeconfig=$(KUBECONFIG) get svc|grep archwizard |awk '{print $$5}'| cut -d ":" -f 1)
+#VPN is required
+#Provides ip and port for archwizard console
+#Requries paramater KUBECONFIG
 get_archwizard_link:
 	@echo "http://$(ARCHWIZ_IP):$(ARCHWIZ_PORT)"
  

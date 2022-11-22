@@ -70,10 +70,10 @@ def when_observe_sbi(
     """
     allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
-        script_completion_state = EXECUTOR.execute_script(script, sb_json)
+        script_completion_state = EXECUTOR.execute_script(script, sb_json,timeout=300)
         assert (
-                script_completion_state == "RUNNING"
-        ), f"Expected observing script to be RUNNING, instead was {script_completion_state}"
+                script_completion_state == "COMPLETE"
+        ), f"Expected observing script to be COMPLETE, instead was {script_completion_state}"
 
 @then(parsers.parse("the Subarray goes to ObsState {obsstate}"))
 def check_final_subarray_state(

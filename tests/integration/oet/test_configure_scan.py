@@ -28,7 +28,7 @@ def test_observing_sbi():
     """
 		Given Subarray is in the ObsState IDLE
 		When I tell the OET to observe using script "<script>" and SBI "<sb_json>"
-		Then the Subarray goes to ObsState READY
+		Then the Subarray goes to ObsState CONFIGURING
 
     Examples:
     |script                             |sb_json                     |
@@ -70,16 +70,15 @@ def when_observe_sbi(
     """
     allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
-        script_completion_state = EXECUTOR.execute_script(script, sb_json)
+        script_completion_state = EXECUTOR.execute_script(script, sb_json,timeout=300)
         assert (
                 script_completion_state == "COMPLETE"
-        ), f"Expected observing script to be COMPLETED, instead was {script_completion_state}"
+        ), f"Expected observing script to be COMPLETE, instead was {script_completion_state}"
 
-
-@then("the Subarray goes to ObsState {obsstate}")
+@then(parsers.parse("the Subarray goes to ObsState {obsstate}"))
 def check_final_subarray_state(
-        obsstate: str,
-        sut_settings: SutTestSettings,
+    obsstate: str,
+    sut_settings: SutTestSettings,
 ):
     """
     Check that the final state of the Subarray is as expected.
@@ -89,8 +88,9 @@ def check_final_subarray_state(
     """
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    subarray_obsstate = ObsState(subarray.read_attribute("obsState").value).name
+    subarray_state = ObsState(subarray.read_attribute("obsState").value).name
     assert (
-            subarray_obsstate == obsstate
-    ), f"Expected Subarray to be in {obsstate} but instead was in {subarray_obsstate}"
+        subarray_state == obsstate
+    ), f"Expected Subarray to be in {obsstate} but instead was in {subarray_state}"
     logger.info("Subarray is in ObsState %s", obsstate)
+

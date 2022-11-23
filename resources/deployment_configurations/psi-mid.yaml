@@ -1,1 +1,3 @@
 # This values file is used when deploying to PSI Mid from GitLab CI. See .gitlab/ci/psi-mid.gitlab-ci.yml
+hostInfo:
+  environment: "mid-psi"

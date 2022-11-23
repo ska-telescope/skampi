@@ -15,8 +15,7 @@ from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.entry_point import TMCEntryPoint
-from resources.models.obsconfig.config import Observation
+from resources.models.mvp_model.env import init_observation_config, Observation
 
 
 logger = logging.getLogger(__name__)
@@ -34,8 +33,10 @@ class SutTestSettings(SimpleNamespace):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.tel = TEL()
         logger.info("initialising sut settings")
-        self.observation = Observation()
+        self.observation = init_observation_config()
+        self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
 
     @property
     def nr_of_receptors(self):
@@ -135,6 +136,11 @@ def fxt_integration_test_exec_settings(
     if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
         exec_settings.attr_synching = True
     return integration_test_exec_settings
+
+
+@pytest.fixture(name="observation_config")
+def fxt_observation_config(sut_settings: SutTestSettings) -> Observation:
+    return sut_settings.observation
 
 
 # global when steps

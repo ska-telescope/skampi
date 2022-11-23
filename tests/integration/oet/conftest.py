@@ -68,7 +68,8 @@ def fxt_set_entry_point(
         "calibration_B",
         {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}}
     )
-    exec_env.entrypoint = TMCEntryPoint(obs)
+    exec_env.entrypoint = TMCEntryPoint
+    exec_env.entrypoint.observation = obs
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = ["tmc", "mid"]
 

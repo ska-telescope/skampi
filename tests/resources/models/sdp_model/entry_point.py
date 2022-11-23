@@ -15,7 +15,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
-from ..obsconfig.config import Observation
+from ..mvp_model.env import get_observation_config, Observation
 
 
 logger = logging.getLogger(__name__)
@@ -331,7 +331,7 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
         """Init Object"""
         super().__init__()
         if not observation:
-            observation = Observation()
+            observation = get_observation_config()
         self.observation = observation
         self.set_online_step = NoOpStep()
         self.start_up_step = StartUpStep(self.nr_of_subarrays)

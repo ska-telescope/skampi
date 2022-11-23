@@ -16,7 +16,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
-from ..obsconfig.config import Observation
+from ..mvp_model.env import get_observation_config, Observation
 
 
 logger = logging.getLogger(__name__)
@@ -428,7 +428,7 @@ class CSPEntryPoint(CompositeEntryPoint):
         """Init Object"""
         super().__init__()
         if observation is None:
-            observation = Observation()
+            observation = get_observation_config()
         self.observation = observation
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)
         self.start_up_step = StartUpStep(self.nr_of_subarrays)

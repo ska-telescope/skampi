@@ -26,3 +26,8 @@ Feature: Assign resources to CSP subarray
 		Given an CSP subarray in IDLE state
 		When I release all resources assigned to it
 		Then the CSP subarray must be in EMPTY state
+
+	Scenario: Assign resources with duplicate id
+		Given an CSP subarray
+		When I assign resources with a duplicate sb id
+		Then the subarray should throw an exception and remain in the previous state

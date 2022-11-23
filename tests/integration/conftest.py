@@ -5,18 +5,17 @@ import os
 
 from typing import Any, Callable
 from mock import patch, Mock
-
+from assertpy import assert_that
 import pytest
-from pytest_bdd import when, given
+from pytest_bdd import when, then
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_management import telescope_management as tel
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
+from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting
+from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.entry_point import TMCEntryPoint
-from resources.models.obsconfig.config import Observation
+from ska_ser_skallop.connectors import configuration as con_config
+from resources.models.mvp_model.env import get_observation_config, Observation
+from resources.models.mvp_model.states import ObsState
 
 
 logger = logging.getLogger(__name__)
@@ -34,8 +33,10 @@ class SutTestSettings(SimpleNamespace):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.tel = TEL()
         logger.info("initialising sut settings")
-        self.observation = Observation()
+        self.observation = get_observation_config()
+        self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
 
     @property
     def nr_of_receptors(self):
@@ -137,6 +138,11 @@ def fxt_integration_test_exec_settings(
     return integration_test_exec_settings
 
 
+@pytest.fixture(name="observation_config")
+def fxt_observation_config() -> Observation:
+    return get_observation_config()
+
+
 # global when steps
 # start up
 
@@ -230,7 +236,6 @@ def i_command_it_to_scan(
     configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
-
 @when("I release all resources assigned to it")
 def i_release_all_resources_assigned_to_it(
     allocated_subarray: fxt_types.allocated_subarray,
@@ -246,3 +251,72 @@ def i_release_all_resources_assigned_to_it(
             integration_test_exec_settings
         ):
             entry_point.tear_down_subarray(sub_array_id)
+
+
+@when("I assign resources with a duplicate sb id", target_fixture="exception_info")
+def when_i_assign_resources_with_a_duplicate_sb_id(
+    running_telescope: fxt_types.running_telescope,
+    allocated_subarray: fxt_types.allocated_subarray,
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    composition: conf_types.Composition,
+    sb_config: fxt_types.sb_config,
+    sut_settings: SutTestSettings,
+):
+    subarray_id = allocated_subarray.id
+    settings = integration_test_exec_settings
+    receptors = allocated_subarray.receptors
+    subarray = sut_settings.default_subarray_name
+    with context_monitoring.context_monitoring():
+        context_monitoring.builder.set_waiting_on(subarray).for_attribute(
+            "obsstate"
+        ).to_become_equal_to("RESOURCING")
+        exception_info = None
+        try:
+            settings.time_out = 1
+            with context_monitoring.wait_before_complete(settings):
+                with pytest.raises(Exception) as exception_info:
+                    entry_point.compose_subarray(
+                        subarray_id, receptors, composition, sb_config.sbid
+                    )
+        except EWhilstWaiting:
+            if exception_info:
+                return exception_info
+            pytest.fail(
+                "expected timeout waiting for resourcing ocurred but no expected command exception thrown"
+            )
+    # this means we did not have a time out waiting for RESOURCING so now we
+    # will attempt to wait for the next state IDLE
+    with context_monitoring.context_monitoring():
+        context_monitoring.builder.set_waiting_on(subarray).for_attribute(
+            "obsstate"
+        ).to_become_equal_to("RESOURCING")
+        try:
+            settings.time_out = 100
+            with context_monitoring.wait_before_complete(settings):
+                pass
+        except EWhilstWaiting:
+            # this means we are stuck in RESOURCING so will attempt to reset
+            pytest.fail(
+                "timeout waiting for resourcing did not occur but it seems to be stuck in RESOURCING"
+            )
+    pytest.fail("timeout waiting for resourcing did not occur")
+
+
+# thens
+@then("the subarray should throw an exception and remain in the previous state")
+def the_subarray_should_throw_an_exception_remain_in_the_previous_state(
+    exception_info,  # type: ignore
+    sut_settings: SutTestSettings,
+    allocated_subarray: fxt_types.allocated_subarray,
+):
+    # if we are here then it means an exception was thrown
+    logging.info(exception_info)  # type: ignore
+    # we have to wait for a limited time to ensure any state transitions are stable
+    subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
+    result = subarray.read_attribute("obsstate").value
+    if result == ObsState.EMPTY:
+        logger.warning("Disabling subarray teardown as it is already EMPTY")
+        allocated_subarray.disable_automatic_teardown()
+    assert_that(result).is_equal_to(ObsState.IDLE)

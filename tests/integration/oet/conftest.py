@@ -10,6 +10,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 
+from resources.models.obsconfig.config import Observation
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from .. import conftest
 
@@ -58,6 +59,15 @@ def fxt_set_entry_point(
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = 1
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+    obs = Observation()
+    obs.add_scan_type_configuration(
+        "science_A",
+        {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}}
+    )
+    obs.add_scan_type_configuration(
+        "calibration_B",
+        {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}}
+    )
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = ["tmc", "mid"]

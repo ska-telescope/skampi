@@ -35,8 +35,10 @@ ARCHVIEWER_PORT=$(shell kubectl --kubeconfig=$(KUBECONFIG) get svc|grep archview
 #Provides ip and port for archwizard console
 #Requries paramater KUBECONFIG
 get_archwizard_link:
+	$(info User must connect to VPN and click below link to access archwizard)
 	@echo "http://$(ARCHWIZ_IP):$(ARCHWIZ_PORT)"
  
 
 get_archviewer_link:
+	$(info User must connect to VPN and click below link to access archviewer)	
 	@echo "http://$(ARCHVIEWER_IP):$(ARCHVIEWER_PORT)"

@@ -14,7 +14,7 @@ from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting
 from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.connectors import configuration as con_config
-from resources.models.mvp_model.env import get_observation_config, Observation
+from resources.models.mvp_model.env import init_observation_config, Observation
 from resources.models.mvp_model.states import ObsState
 
 
@@ -35,7 +35,7 @@ class SutTestSettings(SimpleNamespace):
         super().__init__(**kwargs)
         self.tel = TEL()
         logger.info("initialising sut settings")
-        self.observation = get_observation_config()
+        self.observation = init_observation_config()
         self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
 
     @property
@@ -54,6 +54,18 @@ class SutTestSettings(SimpleNamespace):
     @receptors.setter
     def receptors(self, receptor: list[int]):
         self._receptors = receptor
+
+
+@pytest.fixture(name="assign_resources_test_exec_settings")
+def fxt_sdp_assign_resources_exec_settings(
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """Set up test specific execution settings.
+
+    :param exec_settings: The global test execution settings as a fixture.
+    :return: test specific execution settings as a fixture
+    """
+    return integration_test_exec_settings
 
 
 @pytest.fixture(name="sut_settings", scope="function")

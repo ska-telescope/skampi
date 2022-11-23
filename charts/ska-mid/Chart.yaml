@@ -14,10 +14,6 @@ dependencies:
     version: 0.1.3
     repository:  https://artefact.skao.int/repository/helm-internal
     condition: ska-mid-cbf.enabled
-  - name: ska-mid-cbf-tmleafnode
-    version: 0.3.6
-    repository:  https://artefact.skao.int/repository/helm-internal
-    condition: ska-mid-cbf.enabled
   - name: ska-tango-util
     version: 0.3.16
     repository: https://artefact.skao.int/repository/helm-internal

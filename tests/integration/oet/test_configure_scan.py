@@ -32,7 +32,7 @@ def test_observing_sbi(observation_config: Observation):
     Then the sub-array goes to ObsState READY
     """
     observation_config.add_scan_type_configuration(
-        "science_A", {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}}
+        "science_A", ("vis0", "default_beam_type")
     )
 
 

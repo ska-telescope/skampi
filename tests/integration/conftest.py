@@ -56,7 +56,7 @@ class SutTestSettings(SimpleNamespace):
         self._receptors = receptor
 
 
-@pytest.fixture(name="sut_settings", scope="function", autouse=True)
+@pytest.fixture(name="sut_settings", scope="function")
 def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()

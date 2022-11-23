@@ -56,7 +56,7 @@ def test_release_resources_to_csp_mid_subarray():
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
-@scenario("features/sdp_assign_resources.feature", "Assign resources with duplicate id")
+@scenario("features/csp_assign_resources.feature", "Assign resources with duplicate id")
 def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings):  # type: ignore
     """Assign resources with duplicate id."""
 

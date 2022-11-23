@@ -43,12 +43,12 @@ def test_configure_attribute():
       configure_attribute(attribute)
       break
     except DevFailed as df:
-      logging.info("configure_attribute exception: " + str(sys.exc_info()))
+      logging.error(f"configure_attribute exception: {sys.exc_info()}")
       try:
         deviceAdm = DeviceProxy("dserver/hdbppcm-srv/01")
         deviceAdm.RestartServer()
       except:
-        logging.info("reset_conf_manager exception: " + str(sys.exc_info()[0]))
+        logging.error(f"reset_conf_manager exception: {sys.exc_info()[0]}")
       if(x == (max_retries - 1)):
         raise df
 

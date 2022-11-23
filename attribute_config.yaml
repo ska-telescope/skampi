@@ -8,46 +8,45 @@ configuration:
       state:
         code_push_event: true
       healthState:
-        archive_period: 3000
-        polling_period: 1000
+        code_push_event: true
       telescopestate:
         archive_period: 3000
         polling_period: 1000
       internalModel:
-        code_push_event: true
-        polling_period: 2000
+        archive_period: 3000
+        polling_period: 3000
       lastDeviceInfoChanged:
-        code_push_event: true
+        archive_period: 3000
         polling_period: 3000
       transformedInternalModel:
-        code_push_event: true
-        polling_period: 1000
+        archive_period: 3000
+        polling_period: 3000
       telescopeHealthState:
         archive_period: 3000
-        polling_period: 1000
+        polling_period: 3000
    
 
   - class: SubarrayNodeMid
     attributes:
       state:
         code_push_event: true
-        polling_period: 1000
       healthState:
-        code_push_event: true
+        archive_period: 3000
+        polling_period: 3000
       obsState:
         code_push_event: true
       internalModel:
-        code_push_event: true
-        polling_period: 1000
+        archive_period: 3000
+        polling_period: 3000
       transformedInternalModel:
-        code_push_event: true
-        polling_period: 1000
+        archive_period: 3000
+        polling_period: 3000
       assignedResources:
-        code_push_event: true
-        polling_period: 1000
+        archive_period: 3000
+        polling_period: 3000
       lastDeviceInfoChanged:
-        code_push_event: true
-        polling_period: 1000
+        archive_period: 3000
+        polling_period: 3000
       
     
   - class: CspMasterLeafNode
@@ -55,9 +54,10 @@ configuration:
       state:
         code_push_event: true
       healthState:
-        code_push_event: true
+        archive_period: 3000
+        polling_period: 3000
 
-  - class: CspSubarrayLeafNode
+  - class: CspSubarrayLeafNode 
     attributes:
       state:
         code_push_event: true
@@ -89,6 +89,7 @@ configuration:
     attributes:
       state:
         archive_period: 1000
+        polling_period: 1000
       healthState:
         code_push_event: true
 
@@ -98,6 +99,7 @@ configuration:
     attributes:
       state:
         archive_period: 2000
+        polling_period: 1000
       healthState:
         code_push_event: true
 
@@ -107,6 +109,7 @@ configuration:
     attributes:
       state:
         archive_period: 3000
+        polling_period: 1000
       healthState:
         code_push_event: true
 
@@ -116,5 +119,6 @@ configuration:
     attributes:
       state:
         archive_period: 1000
+        polling_period: 1000
       healthState:
         code_push_event: true

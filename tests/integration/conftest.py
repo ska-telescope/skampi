@@ -56,7 +56,7 @@ class SutTestSettings(SimpleNamespace):
         self._receptors = receptor
 
 
-@pytest.fixture(name="sut_settings", scope="function")
+@pytest.fixture(name="sut_settings", scope="function", autouse=True)
 def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()
@@ -234,7 +234,6 @@ def i_command_it_to_scan(
 ):
     """I configure it for a scan."""
     configured_subarray.set_to_scanning(integration_test_exec_settings)
-
 
 
 @when("I release all resources assigned to it")

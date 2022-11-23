@@ -11,6 +11,7 @@ from pytest_bdd import when, given
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management import telescope_management as tel
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
@@ -33,7 +34,7 @@ class SutTestSettings(SimpleNamespace):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.tel = TEL()
+        self.tel = names.TEL()
         logger.info("initialising sut settings")
         self.observation = init_observation_config()
         self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
@@ -56,7 +57,7 @@ class SutTestSettings(SimpleNamespace):
         self._receptors = receptor
 
 
-@pytest.fixture(name="sut_settings", scope="function")
+@pytest.fixture(name="sut_settings", scope="function", autouse=True)
 def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()

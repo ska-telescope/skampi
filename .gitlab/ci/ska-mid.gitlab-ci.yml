@@ -13,7 +13,7 @@ mid-test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
     OET_INGRESS_ENABLED: "true"
     TEST_ENV: "BUILD_IN"
@@ -29,6 +29,7 @@ mid-test:
 
   extends:
     - .tags_default
+    - .set_dbname
   script:
     - !reference [.deploy_chart_before, before_script]
     - !reference [.test_deployment, script]
@@ -58,12 +59,13 @@ clean-mid-test:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     COUNT: 1
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
     TEL: mid
   extends:
+    - .set_dbname
     - .tags_default
   script:
     - !reference [.uninstall_chart_after, after_script]
@@ -90,7 +92,7 @@ mid_uninstall_integration:
     KUBE_NAMESPACE: "integration-$CONFIG"
     KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
-    ARCHIVER_DBNAME: "integration_$CONFIG_archiver_db"
+    ARCHIVER_DBNAME: "integration_${CONFIG}_archiver_db"
     KEEP_NAMESPACE: "true"
   rules:
     - if: $DELETE == "true"
@@ -115,7 +117,7 @@ mid_deploy_staging:
     KUBE_NAMESPACE: "staging-$CONFIG"
     KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
-    ARCHIVER_DBNAME: "staging_$CONFIG_archiver_db"
+    ARCHIVER_DBNAME: "staging_${CONFIG}_archiver_db"
     MARK: "not infra"
     KEEP_NAMESPACE: "true"
   environment:
@@ -142,7 +144,7 @@ mid_uninstall_staging:
     KUBE_NAMESPACE: "staging-$CONFIG"
     KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
-    ARCHIVER_DBNAME: "staging_$CONFIG_archiver_db"
+    ARCHIVER_DBNAME: "staging_${CONFIG}_archiver_db"
     KEEP_NAMESPACE: "true"
   rules:
     - if: $CI_COMMIT_TAG
@@ -165,12 +167,13 @@ mid_on_demand_deploy:
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     OET_INGRESS_ENABLED: "true"
   extends:
     - .tags_default
-    - .deploy_chart_before
+    - .set_dbname
   script:
+    - !reference [.deploy_chart_before, before_script]
     - make skampi-links
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG

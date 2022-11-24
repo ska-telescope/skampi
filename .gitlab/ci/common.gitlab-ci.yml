@@ -6,6 +6,12 @@
 .create_k8s_creds: &create_k8s_creds
   - bash scripts/gitlab_section.sh creds "Create K8s Credentials" make skampi-credentials
 
+.set_dbname:
+  before_script:
+    - branch_name=$(echo $CI_COMMIT_REF_NAME | tr '-' '_'|tr '.' '_')
+    - DB_NAME=${CONFIG}_archiver_db_$branch_name
+    - ARCHIVER_DBNAME=$(echo $DB_NAME | cut -c -50)
+    
 # must have K8S_CHART set correctly
 .deploy_chart_before:
   before_script:

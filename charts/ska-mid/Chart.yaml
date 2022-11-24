@@ -6,7 +6,7 @@ version: 0.11.0
 appVersion: 0.11.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
-  - name: ska-tango-baseska-oso-oet = "4.0.6"
+  - name: ska-tango-base
     version: 0.3.16
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-base.enabled

@@ -3,7 +3,7 @@ import logging
 from types import SimpleNamespace
 import os
 
-from typing import Any, Callable
+from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
 from mock import patch, Mock
 from assertpy import assert_that
 import pytest
@@ -151,8 +151,40 @@ def fxt_integration_test_exec_settings(
 
 
 @pytest.fixture(name="observation_config")
-def fxt_observation_config() -> Observation:
-    return get_observation_config()
+def fxt_observation_config(sut_settings: SutTestSettings) -> Observation:
+    return sut_settings.observation
+
+
+T = TypeVar("T")
+P = ParamSpec("P")
+R = TypeVar("R")
+
+
+def _inject_method(
+    injectable: T, method: Callable[Concatenate[T, P], R]
+) -> Callable[P, R]:
+    def _replaced_method(*args: P.args, **kwargs: P.kwargs) -> R:
+        return method(injectable, *args, **kwargs)
+
+    return _replaced_method
+
+
+ObservationConfigInterjector = Callable[
+    [Callable[Concatenate[Observation, P], R]], None
+]
+
+
+@pytest.fixture(name="interject_into_observation_config")
+def fxt_observation_config_interjector(
+    observation_config: Observation,
+) -> ObservationConfigInterjector[P, R]:
+
+    obs = observation_config
+
+    def interject_observation_method(intj_fn: Callable[Concatenate[Observation, P], R]):
+        _inject_method(obs, intj_fn)
+
+    return interject_observation_method
 
 
 # global when steps

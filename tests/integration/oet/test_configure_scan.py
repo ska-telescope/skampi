@@ -25,21 +25,26 @@ EXECUTOR = ScriptExecutor()
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_configure_scan.feature", "Observing a Scheduling Block")
-def test_observing_sbi(observation_config: Observation):
+def test_observing_sbi():
     """
+    Given an OET
     Given sub-array is in the ObsState IDLE
     When I tell the OET to observe using script file:///scripts/observe_mid_sb.py and SBI /tmp/oda/mid_sb_example.json
     Then the sub-array goes to ObsState READY
     """
+
+
+@given("an OET")
+def a_oet(observation_config: Observation):
+    """an OET"""
+    # This step has to executed before allocated_subarray fixture is used so that
+    # additional scan types are recognised.
     observation_config.add_scan_type_configuration(
         "science_A", ("vis0", "default_beam_type")
     )
-
-
-#
-# @given("an OET")
-# def a_oet():
-#     """an OET"""
+    observation_config.add_scan_type_configuration(
+        "calibration_B", ("vis0", "default_beam_type")
+    )
 
 
 @given("sub-array is in the ObsState IDLE")

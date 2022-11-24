@@ -155,6 +155,11 @@ def fxt_observation_config(sut_settings: SutTestSettings) -> Observation:
     return sut_settings.observation
 
 
+@pytest.fixture(name="mocked_observation_config")
+def fxt_mocked_observation_config(observation_config: Observation) -> Mock:
+    return Mock(spec=Observation, wraps=observation_config)
+
+
 T = TypeVar("T")
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -170,19 +175,24 @@ def _inject_method(
 
 
 ObservationConfigInterjector = Callable[
-    [Callable[Concatenate[Observation, P], R]], None
+    [str, Callable[Concatenate[Observation, P], R]], None
 ]
 
 
 @pytest.fixture(name="interject_into_observation_config")
 def fxt_observation_config_interjector(
-    observation_config: Observation,
+    observation_config: Observation, mocked_observation_config: Mock
 ) -> ObservationConfigInterjector[P, R]:
 
     obs = observation_config
 
-    def interject_observation_method(intj_fn: Callable[Concatenate[Observation, P], R]):
-        _inject_method(obs, intj_fn)
+    def interject_observation_method(
+        method_name: str, intj_fn: Callable[Concatenate[Observation, P], R]
+    ):
+        injected_method = _inject_method(obs, intj_fn)
+        mocked_observation_config.configure_mock(
+            **{f"{method_name}.side_effect": injected_method}
+        )
 
     return interject_observation_method
 

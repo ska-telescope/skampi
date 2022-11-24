@@ -15,6 +15,11 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 from resources.models.mvp_model.env import Observation
+from tests.resources.models.obsconfig.target_spec import (
+    TargetSpec,
+    Target,
+    ReceiverBand,
+)
 
 from .oet_helpers import ScriptExecutor
 
@@ -45,6 +50,30 @@ def a_oet(observation_config: Observation):
     observation_config.add_scan_type_configuration(
         "calibration_B", ("vis0", "default_beam_type")
     )
+    observation_config.target_specs = {}
+    updated_target_specs = {
+        "science_A": TargetSpec(
+            Target("12:29:06.699 degrees", "02:03:08.598 degrees"),
+            "science_A",
+            ReceiverBand.BAND_2,
+            "vis_channels",
+            "all",
+            "field_a",
+            "test-receive-addresses",
+            "two",
+        ),
+        "calibration_B": TargetSpec(
+            Target("12:29:06.699 degrees", "02:03:08.598 degrees"),
+            "calibration_B",
+            ReceiverBand.BAND_2,
+            "vis_channels",
+            "all",
+            "field_a",
+            "test-receive-addresses",
+            "two",
+        ),
+    }
+    observation_config.add_target_specs(updated_target_specs)
 
 
 @given("sub-array is in the ObsState IDLE")

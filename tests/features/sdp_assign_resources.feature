@@ -21,7 +21,8 @@ Feature: Assign resources to sdp subarray
 		When I release all resources assigned to it
 		Then the subarray must be in EMPTY state
 
-	Scenario: Assign resources with duplicate id
+	@XTP-16111
+	Scenario: Assign resources with duplicate id to SDP
 		Given an SDP subarray
 		When I assign resources with a duplicate sb id
 		Then the subarray should throw an exception and remain in the previous state

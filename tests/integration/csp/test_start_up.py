@@ -13,7 +13,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from .. import conftest
 
 logger = logging.getLogger(__name__)
-
+@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.startup
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 def test_csp_start_up_telescope_mid():
     """Start up the csp in mid."""
 
-
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.startup
@@ -76,6 +76,7 @@ def the_csp_must_be_on(
 
 
 # test validation
+@pytest.mark.skip
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_csp_mock")
 def test_test_csp_startup(run_mock):

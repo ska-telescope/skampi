@@ -11,7 +11,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.mvp_model.states import ObsState
 
 from ..conftest import SutTestSettings
-
+@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.assign

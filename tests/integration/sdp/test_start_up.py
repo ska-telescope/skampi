@@ -12,7 +12,7 @@ from .. import conftest
 
 logger = logging.getLogger(__name__)
 
-
+@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.startup
 @pytest.mark.sdp
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def test_sdp_start_up_telescope_mid(sdp_start_up_test_exec_settings):
     """Start up the sdp in mid."""
 
-
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.startup
 @pytest.mark.sdp
@@ -55,7 +55,7 @@ def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
 
 
 # test validation
-
+@pytest.mark.skip
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_startup(run_mock):

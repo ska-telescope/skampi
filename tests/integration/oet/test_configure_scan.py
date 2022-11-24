@@ -72,7 +72,7 @@ def when_observe_sbi(
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
         assert (
-                script_completion_state == "COMPLETE"
+                script_completion_state == "RUNNING"
         ), f"Expected observing script to be COMPLETE, instead was {script_completion_state}"
 
 @then(parsers.parse("the Subarray goes to ObsState {obsstate}"))

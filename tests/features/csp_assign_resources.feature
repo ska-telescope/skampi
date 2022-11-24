@@ -26,3 +26,8 @@ Feature: Assign resources to CSP subarray
 		Given an CSP subarray in IDLE state
 		When I release all resources assigned to it
 		Then the CSP subarray must be in EMPTY state
+
+	Scenario: Assign resources with invalid config to CSP
+		Given an CSP subarray
+		When I assign resources with invalid config
+		Then the subarray should throw an exception and remain in the previous state

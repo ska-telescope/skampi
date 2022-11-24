@@ -14,7 +14,11 @@ from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting
 from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.connectors import configuration as con_config
-from resources.models.mvp_model.env import init_observation_config, Observation
+from resources.models.mvp_model.env import (
+    init_observation_config,
+    Observation,
+    interject_observation_config,
+)
 from resources.models.mvp_model.states import ObsState
 
 
@@ -37,6 +41,7 @@ class SutTestSettings(SimpleNamespace):
         logger.info("initialising sut settings")
         self.observation = init_observation_config()
         self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
+        self.previous_state: Any = None
 
     @property
     def nr_of_receptors(self):
@@ -157,7 +162,9 @@ def fxt_observation_config(sut_settings: SutTestSettings) -> Observation:
 
 @pytest.fixture(name="mocked_observation_config")
 def fxt_mocked_observation_config(observation_config: Observation) -> Mock:
-    return Mock(spec=Observation, wraps=observation_config)
+    mocked_config = Mock(spec=Observation, wraps=observation_config)
+    with interject_observation_config(mocked_config):
+        yield mocked_config
 
 
 T = TypeVar("T")
@@ -307,6 +314,105 @@ def i_release_all_resources_assigned_to_it(
             entry_point.tear_down_subarray(sub_array_id)
 
 
+@when("I assign resources with invalid config", target_fixture="exception_info")
+def when_i_assign_resources_with_invalid_config(
+    running_telescope: fxt_types.running_telescope,
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    composition: conf_types.Composition,
+    sb_config: fxt_types.sb_config,
+    sut_settings: SutTestSettings,
+):
+    subarray_id = sut_settings.subarray_id
+    sut_settings.previous_state = ObsState.EMPTY
+    receptors = sut_settings.receptors
+    expected_exception_raised = _assign_resources_with_invalid_config(
+        subarray_id,
+        receptors,
+        entry_point,
+        context_monitoring,
+        integration_test_exec_settings,
+        composition,
+        sb_config,
+        sut_settings,
+    )
+    if not expected_exception_raised:
+        subarray_device = con_config.get_device_proxy(
+            sut_settings.default_subarray_name
+        )
+        result = subarray_device.read_attribute("obsstate").value
+        if result == ObsState.EMPTY:
+            pytest.fail(
+                "exception not raised when calling assign but it did return back to EMPTY"
+            )
+        else:
+            running_telescope.release_subarray_when_finished(
+                subarray_id, receptors, integration_test_exec_settings
+            )
+            pytest.fail(
+                "exception not raised when calling assign but it did successfully go to IDLE"
+                "Are you sure the config is invalid?"
+            )
+
+
+def _assign_resources_with_invalid_config(
+    subarray_id: int,
+    receptors: list[int],
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    composition: conf_types.Composition,
+    sb_config: fxt_types.sb_config,
+    sut_settings: SutTestSettings,
+):
+    settings = integration_test_exec_settings
+    sut_settings.previous_state = ObsState.IDLE
+    subarray = sut_settings.default_subarray_name
+    expected_exception_raised = False
+    with context_monitoring.context_monitoring():
+        context_monitoring.builder.set_waiting_on(subarray).for_attribute(
+            "obsstate"
+        ).to_become_equal_to("RESOURCING")
+        try:
+            settings.time_out = 1
+            with context_monitoring.wait_before_complete(settings):
+                try:
+                    entry_point.compose_subarray(
+                        subarray_id, receptors, composition, sb_config.sbid
+                    )
+                except Exception:
+                    expected_exception_raised = True
+        except EWhilstWaiting:
+            if not expected_exception_raised:
+                pytest.fail(
+                    "expected timeout waiting for resourcing ocurred but no expected command exception thrown"
+                )
+            return expected_exception_raised
+    # this means we did not have a time out waiting for RESOURCING so now we
+    # will attempt to wait for the next state IDLE or alternatively EMPTY if it reverted
+    context_monitoring.re_init_builder()
+    with context_monitoring.context_monitoring():
+        context_monitoring.builder.set_waiting_on(subarray).for_attribute(
+            "obsstate"
+        ).to_become_equal_to(["EMPTY", "IDLE"], ignore_first=False)
+        try:
+            settings.time_out = 100
+            with context_monitoring.wait_before_complete(settings):
+                pass
+        except EWhilstWaiting:
+            # this means we are stuck in RESOURCING so will attempt to reset
+            if expected_exception_raised:
+                pytest.fail(
+                    "exception raised when calling assign but it seems be stuck in RESOURCING"
+                )
+            else:
+                pytest.fail(
+                    "exception not raised when calling assign but it seems to be stuck in RESOURCING"
+                )
+    return expected_exception_raised
+
+
 @when("I assign resources with a duplicate sb id", target_fixture="exception_info")
 def when_i_assign_resources_with_a_duplicate_sb_id(
     running_telescope: fxt_types.running_telescope,
@@ -319,58 +425,41 @@ def when_i_assign_resources_with_a_duplicate_sb_id(
     sut_settings: SutTestSettings,
 ):
     subarray_id = allocated_subarray.id
-    settings = integration_test_exec_settings
     receptors = allocated_subarray.receptors
-    subarray = sut_settings.default_subarray_name
-    with context_monitoring.context_monitoring():
-        context_monitoring.builder.set_waiting_on(subarray).for_attribute(
-            "obsstate"
-        ).to_become_equal_to("RESOURCING")
-        exception_info = None
-        try:
-            settings.time_out = 1
-            with context_monitoring.wait_before_complete(settings):
-                with pytest.raises(Exception) as exception_info:
-                    entry_point.compose_subarray(
-                        subarray_id, receptors, composition, sb_config.sbid
-                    )
-        except EWhilstWaiting:
-            if exception_info:
-                return exception_info
+    expected_exception_raised = _assign_resources_with_invalid_config(
+        subarray_id,
+        receptors,
+        entry_point,
+        context_monitoring,
+        integration_test_exec_settings,
+        composition,
+        sb_config,
+        sut_settings,
+    )
+    if not expected_exception_raised:
+        subarray_device = con_config.get_device_proxy(
+            sut_settings.default_subarray_name
+        )
+        result = subarray_device.read_attribute("obsstate").value
+        if result == ObsState.EMPTY:
+            allocated_subarray.disable_automatic_teardown()
             pytest.fail(
-                "expected timeout waiting for resourcing ocurred but no expected command exception thrown"
+                "exception not raised when calling assign but it did return back to EMPTY"
             )
-    # this means we did not have a time out waiting for RESOURCING so now we
-    # will attempt to wait for the next state IDLE
-    with context_monitoring.context_monitoring():
-        context_monitoring.builder.set_waiting_on(subarray).for_attribute(
-            "obsstate"
-        ).to_become_equal_to("RESOURCING")
-        try:
-            settings.time_out = 100
-            with context_monitoring.wait_before_complete(settings):
-                pass
-        except EWhilstWaiting:
-            # this means we are stuck in RESOURCING so will attempt to reset
+        else:
             pytest.fail(
-                "timeout waiting for resourcing did not occur but it seems to be stuck in RESOURCING"
+                "exception not raised when calling assign but it did successfully go to IDLE"
+                "Are you sure the config is invalid?"
             )
-    pytest.fail("timeout waiting for resourcing did not occur")
 
 
 # thens
 @then("the subarray should throw an exception and remain in the previous state")
 def the_subarray_should_throw_an_exception_remain_in_the_previous_state(
-    exception_info,  # type: ignore
     sut_settings: SutTestSettings,
-    allocated_subarray: fxt_types.allocated_subarray,
 ):
     # if we are here then it means an exception was thrown
-    logging.info(exception_info)  # type: ignore
     # we have to wait for a limited time to ensure any state transitions are stable
     subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
     result = subarray.read_attribute("obsstate").value
-    if result == ObsState.EMPTY:
-        logger.warning("Disabling subarray teardown as it is already EMPTY")
-        allocated_subarray.disable_automatic_teardown()
-    assert_that(result).is_equal_to(ObsState.IDLE)
+    assert_that(result).is_equal_to(sut_settings.previous_state)

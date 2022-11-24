@@ -15,7 +15,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 from resources.models.mvp_model.env import Observation
-from tests.resources.models.obsconfig.target_spec import (
+from resources.models.obsconfig.target_spec import (
     TargetSpec,
     Target,
     ReceiverBand,

@@ -16,3 +16,9 @@ Feature: Assign resources to subarray using TMC
 		Given a subarray in the IDLE state
 		When I release all resources assigned to it
 		Then the subarray must be in EMPTY state
+
+	Scenario: Assign resources with duplicate id
+		Given an TMC
+		Given an telescope subarray
+		When I assign resources with a duplicate sb id
+		Then the subarray should throw an exception and remain in the previous state

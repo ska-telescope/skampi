@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 # log capturing
 
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -37,6 +38,14 @@ def test_release_resources_from_tmc_subarray_in_mid():
     """Release resources from tmc subarrays in mid."""
 
 
+@pytest.mark.skamid
+@pytest.mark.assign
+@pytest.mark.sdp
+@scenario("features/tmc_assign_resources.feature", "Assign resources with duplicate id")
+def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings):  # type: ignore
+    """Assign resources with duplicate id."""
+
+
 @given("an TMC")
 def a_tmc():
     """an TMC"""
@@ -44,11 +53,22 @@ def a_tmc():
 
 @given("an telescope subarray", target_fixture="composition")
 def an_telescope_subarray(
-    set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition  # type: ignore
+    set_up_subarray_log_checking_for_tmc,  # type: ignore
+    base_composition: conf_types.Composition,
+    sut_settings: SutTestSettings,
 ) -> conf_types.Composition:
     """an telescope subarray."""
+    sut_settings.default_subarray_name = sut_settings.tel.tm.subarray(
+        sut_settings.subarray_id
+    )
     return base_composition
 
+
+# use when from ..conftest
+# @when("I assign resources with a duplicate sb id"
+
+# use then from ..conftest
+# @then("the subarray should throw an exception and remain in the previous state")
 
 # use when from ..shared_assign_resources
 # @when("I assign resources to it")

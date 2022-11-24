@@ -14,3 +14,9 @@ Feature: Configure scan on sdp subarray
 		Given an SDP subarray in IDLE state
 		When I configure it for a scan
 		Then the subarray must be in the READY state
+
+	@XTP-16152
+	Scenario: Configure invalid scan on sdp subarray in mid
+		Given an SDP subarray in IDLE state
+		When I configure it for a scan with an invalid configuration
+		Then the subarray should throw an exception and remain in the previous state

@@ -131,4 +131,7 @@ def an_sdp_subarray_in_idle_state(
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     # will use default composition for the allocated subarray
     # subarray_allocation_spec.composition
+    sut_settings.default_subarray_name = sut_settings.tel.sdp.subarray(
+        sut_settings.subarray_id
+    )
     return sdp_base_configuration

@@ -78,7 +78,7 @@ def fxt_set_obs_config_as_invalid(
     "features/csp_assign_resources.feature",
     "Assign resources with invalid config to CSP",
 )
-def test_assign_resources_with_invalid_config_to_csp(set_obs_config_as_invalid):  # type: ignore
+def test_assign_resources_with_invalid_config_to_csp():  # type: ignore
     """Assign resources with invalid config to CSP"""
 
 

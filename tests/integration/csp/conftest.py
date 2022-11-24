@@ -177,6 +177,9 @@ def an_csp_subarray_in_idle_state(
     """an CSP subarray in IDLE state."""
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
+    sut_settings.default_subarray_name = sut_settings.tel.csp.subarray(
+        sut_settings.subarray_id
+    )
     return csp_base_configuration
 
 

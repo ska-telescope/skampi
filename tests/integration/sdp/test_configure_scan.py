@@ -30,11 +30,28 @@ def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid."""
 
 
+@pytest.mark.skamid
+@pytest.mark.configure
+@pytest.mark.sdp
+@scenario(
+    "features/sdp_configure_scan.feature",
+    "Configure invalid scan on sdp subarray in mid",
+)
+def test_configure_invalid_scan_on_sdp_subarray_in_mid():
+    """Configure invalid scan on sdp subarray in mid."""
+
+
 # use from local conftest
 # @given("an SDP subarray in IDLE state", target_fixture="configuration")
 
 # use when from global conftest
 # @when("I configure it for a scan")
+
+# use when from global conftest
+# @when("I configure it for a scan with an invalid configuration")
+
+# use then from global conftest
+# @then("the subarray should throw an exception and remain in the previous state")
 
 
 @then("the subarray must be in the READY state")

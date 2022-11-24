@@ -27,6 +27,7 @@ Feature: Assign resources to CSP subarray
 		When I release all resources assigned to it
 		Then the CSP subarray must be in EMPTY state
 
+	@XTP-16154
 	Scenario: Assign resources with invalid config to CSP
 		Given an CSP subarray
 		When I assign resources with invalid config

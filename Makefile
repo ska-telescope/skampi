@@ -277,3 +277,7 @@ k8s-do-test-runner:
 ##  Post tests reporting
 	pip list > build/pip_list.txt
 	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
+
+## copy test_data into oet pod
+k8s-copy-test-data-in-oet:
+    kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-$(HELM_RELEASE):/tmp/oda

@@ -26,6 +26,7 @@
   script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - make k8s-copy-test-data-in-oet
     - echo "############## Running Skampi core tests"
     - make k8s-test-runner
     - find ./build

@@ -22,7 +22,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-csp-lmc-mid.enabled
   - name: ska-sdp
-    version: 0.12.2
+    version: 0.12.3
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
   - name: ska-tmc-mid
@@ -68,10 +68,10 @@ dependencies:
     version: 2.0.2
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sim-dishmaster.enabled
-  # - name: ska-tango-archiver
-  #   version: 0.1.8
-  #   repository: https://artefact.skao.int/repository/helm-internal
-  #   condition: ska-tango-archiver.enabled
+  - name: ska-tango-archiver
+    version: 2.2.1
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-tango-archiver.enabled
   # ## DISH LMC Prototype was disabled in the old version of skampi
   # # - name: dsh-lmc-prototype
   # #   version: 0.0.1

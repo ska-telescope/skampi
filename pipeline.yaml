@@ -13,7 +13,7 @@ ska-taranta:
 ska-ser-skuid:
   enabled: true
 ska-tango-archiver:
-  enabled: false
+  enabled: true
 ska-landingpage:
   enabled: true
 

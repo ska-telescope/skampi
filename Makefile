@@ -280,4 +280,5 @@ k8s-do-test-runner:
 
 ## copy test_data into oet pod
 k8s-copy-test-data-in-oet:
+    @echo "kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-$(HELM_RELEASE):/tmp/oda"
     kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-$(HELM_RELEASE):/tmp/oda

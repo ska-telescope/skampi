@@ -1,0 +1,352 @@
+{
+  "interface": "https://schema.skao.int/ska-oso-pdm-sbd/0.1",
+  "sbd_id": "sbi-mvp01-20200325-00001",
+  "telescope": "ska_mid",
+  "metadata": {
+    "version": 1,
+    "created_by": "Liz Bartlett",
+    "created_on": "2022-03-28T15:43:53.971548",
+    "last_modified_on": "2022-03-28T15:43:53.971548",
+    "last_modified_by": "Liz Bartlett"
+  },
+  "activities": {
+    "allocate": {
+      "procedure_type": "filesystemscript",
+      "path": "/path/to/allocatescript.py",
+      "default_args": {
+        "init": {
+          "args": [
+            "posarg1",
+            "posarg2"
+          ],
+          "kwargs": {
+            "argname": "argval"
+          }
+        },
+        "run": {
+          "args": [
+            "posarg1",
+            "posarg2"
+          ],
+          "kwargs": {
+            "argname": "argval"
+          }
+        }
+      }
+    },
+    "observe": {
+      "procedure_type": "gitscript",
+      "path": "/relative/path/to/scriptinsiderepo.py",
+      "repo": "https://gitlab.com/script_repo/operational_scripts",
+      "branch": "main",
+      "default_args": {
+        "init": {
+          "args": [
+            "posarg1",
+            "posarg2"
+          ],
+          "kwargs": {
+            "argname": "argval"
+          }
+        },
+        "run": {
+          "args": [
+            "posarg1",
+            "posarg2"
+          ],
+          "kwargs": {
+            "argname": "argval"
+          }
+        }
+      }
+    }
+  },
+  "scan_definitions": [
+    {
+      "scan_definition_id": "calibrator scan",
+      "scan_duration": 60000,
+      "field_configuration": "calibrator field",
+      "dish_configuration": "dci_mvp01-20220329-00001",
+      "scan_type": "calibration_B",
+      "csp_configuration": "csp-mvp01-20220329-00001"
+    },
+    {
+      "scan_duration": 60000,
+      "field_configuration": "science field",
+      "dish_configuration": "dci_mvp01-20220329-00001",
+      "scan_type": "science_A",
+      "scan_definition_id": "science scan",
+      "csp_configuration": "csp-mvp01-20220329-00001"
+    }
+  ],
+  "scan_sequence": [
+    "calibrator scan",
+    "science scan",
+    "science scan",
+    "calibrator scan"
+  ],
+  "field_configurations": [
+    {
+      "field_id": "calibrator field",
+      "targets": [
+        {
+          "target_id": "my calibrator target",
+          "kind": "sidereal",
+          "target_name": "Polaris Australis",
+          "reference_frame": "ICRS",
+          "ra": "21:08:47.92",
+          "dec": "-88:57:22.9"
+        }
+      ]
+    },
+    {
+      "field_id": "science field",
+      "targets": [
+        {
+          "target_id": "my science target",
+          "kind": "sidereal",
+          "target_name": "Polaris Australis",
+          "reference_frame": "ICRS",
+          "ra": "21:08:47.92",
+          "dec": "-88:57:22.9"
+        }
+      ]
+    }
+  ],
+  "sdp_configuration": {
+    "eb_id": "eb-mvp01-20200325-00001",
+    "max_length": 100.0,
+    "scan_types": [
+      {
+        "scan_type_id": "science_A",
+        "target": "my science target",
+        "channels": [
+          {
+            "count": 744,
+            "start": 0,
+            "stride": 2,
+            "freq_min": 0.35e9,
+            "freq_max": 0.368e9,
+            "link_map": [
+              [
+                0,
+                0
+              ],
+              [
+                200,
+                1
+              ],
+              [
+                744,
+                2
+              ],
+              [
+                944,
+                3
+              ]
+            ]
+          },
+          {
+            "count": 744,
+            "start": 2000,
+            "stride": 1,
+            "freq_min": 0.36e9,
+            "freq_max": 0.368e9,
+            "link_map": [
+              [
+                2000,
+                4
+              ],
+              [
+                2200,
+                5
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "scan_type_id": "calibration_B",
+        "target": "my calibrator target",
+        "channels": [
+          {
+            "count": 744,
+            "start": 0,
+            "stride": 2,
+            "freq_min": 0.35e9,
+            "freq_max": 0.368e9,
+            "link_map": [
+              [
+                0,
+                0
+              ],
+              [
+                200,
+                1
+              ],
+              [
+                744,
+                2
+              ],
+              [
+                944,
+                3
+              ]
+            ]
+          },
+          {
+            "count": 744,
+            "start": 2000,
+            "stride": 1,
+            "freq_min": 0.36e9,
+            "freq_max": 0.368e9,
+            "link_map": [
+              [
+                2000,
+                4
+              ],
+              [
+                2200,
+                5
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "processing_blocks": [
+      {
+        "pb_id": "pb-mvp01-20200325-00001",
+        "workflow": {
+          "name": "vis_receive",
+          "kind": "realtime",
+          "version": "0.1.0"
+        },
+        "parameters": {}
+      },
+      {
+        "pb_id": "pb-mvp01-20200325-00002",
+        "workflow": {
+          "name": "test_receive_addresses",
+          "kind": "realtime",
+          "version": "0.3.2"
+        },
+        "parameters": {}
+      },
+      {
+        "pb_id": "pb-mvp01-20200325-00003",
+        "workflow": {
+          "name": "ical",
+          "kind": "batch",
+          "version": "0.1.0"
+        },
+        "parameters": {},
+        "dependencies": [
+          {
+            "pb_id": "pb-mvp01-20200325-00001",
+            "kind": [
+              "visibilities"
+            ]
+          }
+        ]
+      },
+      {
+        "pb_id": "pb-mvp01-20200325-00004",
+        "workflow": {
+          "name": "dpreb",
+          "kind": "batch",
+          "version": "0.1.0"
+        },
+        "parameters": {},
+        "dependencies": [
+          {
+            "kind": [
+              "calibration"
+            ],
+            "pb_id": "pb-mvp01-20200325-00003"
+          }
+        ]
+      }
+    ]
+  },
+  "csp_configurations": [
+    {
+      "config_id": "csp-mvp01-20220329-00001",
+      "subarray": {
+        "subarray_name": "science period 23"
+      },
+      "common": {
+        "subarray_id": 1,
+        "band_5_tuning": [
+          5.85,
+          7.25
+        ]
+      },
+      "cbf": {
+        "fsp": [
+          {
+            "fsp_id": 1,
+            "function_mode": "CORR",
+            "frequency_slice_id": 1,
+            "integration_factor": 1,
+            "zoom_factor": 0,
+            "channel_averaging_map": [
+              [
+                0,
+                2
+              ],
+              [
+                744,
+                0
+              ]
+            ],
+            "channel_offset": 0,
+            "output_link_map": [
+              [
+                0,
+                0
+              ],
+              [
+                200,
+                1
+              ]
+            ]
+          },
+          {
+            "fsp_id": 2,
+            "function_mode": "CORR",
+            "frequency_slice_id": 2,
+            "integration_factor": 1,
+            "zoom_factor": 1,
+            "zoom_window_tuning": 650000,
+            "output_link_map": [
+              [
+                0,
+                0
+              ],
+              [
+                200,
+                1
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "dish_allocations": {
+    "receptor_ids": [
+      "0001",
+      "0002"
+    ]
+  },
+  "dish_configurations": [
+    {
+      "dish_configuration_id": "dci_mvp01-20220329-00001",
+      "receiver_band": "1"
+    }
+  ],
+  "target_beam_configurations": [],
+  "subarray_beam_configurations": [],
+  "mccs_allocation": null
+}

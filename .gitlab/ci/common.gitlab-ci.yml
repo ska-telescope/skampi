@@ -28,12 +28,16 @@
     - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
     - make skampi-wait-all
 
+.post_deploy_chart:
+  script:
+    - echo "############## Running Skampi core tests"
+    - make k8s-copy-test-data-in-oet
+
 .test_deployment:
   script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
     - echo "############## Running Skampi core tests"
-    - make k8s-copy-test-data-in-oet
     - make k8s-test-runner
     - find ./build
     - echo "#####################################"

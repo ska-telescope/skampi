@@ -391,12 +391,16 @@ def _assign_resources_with_invalid_config(
     sut_settings.previous_state = ObsState.IDLE
     subarray = sut_settings.default_subarray_name
     expected_exception_raised = False
+
     with context_monitoring.context_monitoring():
         context_monitoring.builder.set_waiting_on(subarray).for_attribute(
             "obsstate"
         ).to_become_equal_to("RESOURCING")
         try:
             settings.time_out = 2
+            # we force attr synching to False to prevent
+            # to prevent reverts to state causing inconsistent interpretations
+            settings.attr_synching = False
             with context_monitoring.wait_before_complete(settings):
                 try:
                     entry_point.compose_subarray(

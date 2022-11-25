@@ -246,8 +246,8 @@ k8s-pre-install-chart:
 	 
 # copy test_data into oet pod
 k8s-copy-test-data-in-oet:
-	@echo "kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-$(HELM_RELEASE):/tmp/oda"
-	kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-$(HELM_RELEASE):/tmp/oda
+	@echo "kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-rest-$(HELM_RELEASE)-0:/tmp/oda"
+	kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-rest-$(HELM_RELEASE)-0:/tmp/oda
 
 k8s-post-install-chart:
 	kubectl rollout status -n $(KUBE_NAMESPACE) --watch --timeout=90s statefulset/ska-sdp-console

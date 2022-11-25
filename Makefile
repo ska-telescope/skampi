@@ -244,6 +244,10 @@ k8s-pre-install-chart:
 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 	 
+# copy test_data into oet pod
+k8s-copy-test-data-in-oet:
+	@echo "kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-$(HELM_RELEASE):/tmp/oda"
+	kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-$(HELM_RELEASE):/tmp/oda
 
 k8s-post-install-chart:
 	kubectl rollout status -n $(KUBE_NAMESPACE) --watch --timeout=90s statefulset/ska-sdp-console
@@ -278,7 +282,3 @@ k8s-do-test-runner:
 	pip list > build/pip_list.txt
 	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
 
-## copy test_data into oet pod
-k8s-copy-test-data-in-oet:
-    @echo "kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-$(HELM_RELEASE):/tmp/oda"
-    kubectl -n $(KUBE_NAMESPACE) cp tests/integration/oet/test_data/mid_sb_example.json ska-oso-oet-$(HELM_RELEASE):/tmp/oda

@@ -30,6 +30,7 @@ def test_configure_csp_low_subarray():
     """Configure CSP low subarray."""
 
 
+@pytest.mark.xfail
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.csp

@@ -532,6 +532,9 @@ def i_configure_it_for_a_scan_with_an_invalid_config(
         ).to_become_equal_to("CONFIGURING")
         try:
             settings.time_out = 1
+            # we force attr synching to False to prevent
+            # reverts to state causing inconsistent interpretations
+            settings.attr_synching = False
             with context_monitoring.wait_before_complete(settings):
                 try:
                     entry_point.configure_subarray(

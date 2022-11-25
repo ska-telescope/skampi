@@ -118,6 +118,7 @@ def when_observe_sbi(
 def check_final_subarray_state(
     obsstate: str,
     sut_settings: SutTestSettings,
+    integration_test_exec_settings: fxt_types.exec_settings
 ):
     """
     Check that the final state of the sub-array is as expected.
@@ -126,8 +127,12 @@ def check_final_subarray_state(
         obsstate (str): Sub-array Tango device ObsState
     """
     tel = names.TEL()
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+        str(tel.tm.subarray(sut_settings.subarray_id)))
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     subarray_state = ObsState(subarray.read_attribute("obsState").value).name
+    result = tmc_subarray.read_attribute("obsState").value
+    assert_that(result).is_equal_to(ObsState.READY)
     assert (
         subarray_state == obsstate
     ), f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"

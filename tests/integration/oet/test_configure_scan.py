@@ -131,9 +131,7 @@ def check_final_subarray_state(
         str(tel.tm.subarray(sut_settings.subarray_id)))
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-    result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.READY)
+    logger.info("Sub-array is in ObsState %s", subarray_state)
     assert (
         subarray_state == obsstate
     ), f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
-    logger.info("Sub-array is in ObsState %s", obsstate)

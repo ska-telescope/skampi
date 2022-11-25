@@ -320,6 +320,19 @@ def generate_invalid_config(observation: Observation):
     return EncodedObject(incorrect_config)
 
 
+@pytest.fixture(name="invalid_assign_config_interjected")
+def fxt_invalid_assign_config_interjected(
+    interject_into_observation_config: ObservationConfigInterjector[
+        [], EncodedObject[dict[str, Any]]
+    ],
+    entry_point: fxt_types.entry_point,
+):
+    interject_into_observation_config(
+        "generate_assign_resources_config", generate_invalid_config
+    )
+    entry_point.__init__()
+
+
 @when("I assign resources with invalid config", target_fixture="exception_info")
 def when_i_assign_resources_with_invalid_config(
     running_telescope: fxt_types.running_telescope,
@@ -329,14 +342,9 @@ def when_i_assign_resources_with_invalid_config(
     composition: conf_types.Composition,
     sb_config: fxt_types.sb_config,
     sut_settings: SutTestSettings,
-    interject_into_observation_config: ObservationConfigInterjector[
-        [], EncodedObject[dict[str, Any]]
-    ],
+    invalid_assign_config_interjected,  # type: ignore this creates an empty assign config
 ):
-    interject_into_observation_config(
-        "generate_assign_resources_config", generate_invalid_config
-    )
-    entry_point.__init__()
+
     subarray_id = sut_settings.subarray_id
     sut_settings.previous_state = ObsState.EMPTY
     receptors = sut_settings.receptors
@@ -388,7 +396,7 @@ def _assign_resources_with_invalid_config(
             "obsstate"
         ).to_become_equal_to("RESOURCING")
         try:
-            settings.time_out = 1
+            settings.time_out = 2
             with context_monitoring.wait_before_complete(settings):
                 try:
                     entry_point.compose_subarray(
@@ -466,27 +474,25 @@ def when_i_assign_resources_with_a_duplicate_sb_id(
             )
 
 
-@when("I configure it for a scan with an invalid configuration")
-def i_configure_it_for_a_scan_with_an_invalid_config(
+@pytest.fixture(name="invalid_scan_config_interjected")
+def fxt_invalid_scan_config_interjected(
     allocated_subarray: fxt_types.allocated_subarray,
-    entry_point: fxt_types.entry_point,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
-    configuration: conf_types.ScanConfiguration,
-    sut_settings: SutTestSettings,
     interject_into_observation_config: ObservationConfigInterjector[
         [], EncodedObject[dict[str, Any]]
     ],
+    entry_point: fxt_types.entry_point,
+    sut_settings: SutTestSettings,
 ):
+    subarray_name = str(sut_settings.default_subarray_name)
     subarray_id = allocated_subarray.id
-    sb_id = allocated_subarray.sb_config.sbid
-    subarray = sut_settings.default_subarray_name
-    receptors = allocated_subarray.receptors
-    if str(subarray) == str(sut_settings.tel.sdp.subarray(subarray_id)):
+    sdp_subarray_name = str(sut_settings.tel.sdp.subarray(subarray_id))
+    csp_subarray_name = str(sut_settings.tel.csp.subarray(subarray_id))
+
+    if subarray_name == sdp_subarray_name:
         interject_into_observation_config(
             "generate_sdp_scan_config", generate_invalid_config
         )
-    elif str(subarray) == str(sut_settings.tel.csp.subarray(subarray_id)):
+    elif subarray_name == csp_subarray_name:
         interject_into_observation_config(
             "generate_csp_scan_config", generate_invalid_config
         )
@@ -495,9 +501,26 @@ def i_configure_it_for_a_scan_with_an_invalid_config(
             "generate_scan_config", generate_invalid_config
         )
     entry_point.__init__()
+
+
+@when("I configure it for a scan with an invalid configuration")
+def i_configure_it_for_a_scan_with_an_invalid_config(
+    allocated_subarray: fxt_types.allocated_subarray,
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    configuration: conf_types.ScanConfiguration,
+    sut_settings: SutTestSettings,
+    invalid_scan_config_interjected,  # type: ignore this causes an empty scan config
+):
+    subarray_id = allocated_subarray.id
+    sb_id = allocated_subarray.sb_config.sbid
+    subarray = sut_settings.default_subarray_name
+    receptors = allocated_subarray.receptors
     settings = integration_test_exec_settings
     sut_settings.previous_state = ObsState.IDLE
     duration = sut_settings.scan_duration
+    # setup a normal context and specifically wait for CONFIGURING
     expected_exception_raised = False
     with context_monitoring.context_monitoring():
         context_monitoring.builder.set_waiting_on(subarray).for_attribute(

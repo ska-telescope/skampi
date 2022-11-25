@@ -71,6 +71,7 @@ def fxt_set_obs_config_as_invalid(
     )
 
 
+@pytest.mark.xfail
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.assign

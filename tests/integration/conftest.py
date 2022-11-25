@@ -399,7 +399,7 @@ def _assign_resources_with_invalid_config(
         try:
             settings.time_out = 2
             # we force attr synching to False to prevent
-            # to prevent reverts to state causing inconsistent interpretations
+            # reverts to state causing inconsistent interpretations
             settings.attr_synching = False
             with context_monitoring.wait_before_complete(settings):
                 try:

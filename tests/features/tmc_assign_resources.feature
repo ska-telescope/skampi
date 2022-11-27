@@ -23,3 +23,11 @@ Feature: Assign resources to subarray using TMC
 		Given an telescope subarray
 		When I assign resources with a duplicate sb id
 		Then the subarray should throw an exception and remain in the previous state
+
+	@XTP-16234
+	Scenario: Command assign resources twice in order
+		Given an TMC
+		Given an telescope subarray
+		When I command the assign resources twice in consecutive fashion
+		Then the subarray should throw an exception and continue with first command
+		Then the subarray must be in IDLE state

@@ -46,6 +46,16 @@ def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings)
     """Assign resources with duplicate id."""
 
 
+@pytest.mark.skamid
+@pytest.mark.assign
+@pytest.mark.sdp
+@scenario(
+    "features/sdp_assign_resources.feature", "Command assign resources twice in order"
+)
+def test_assign_resources_duplicate_commands(assign_resources_test_exec_settings):  # type: ignore
+    """Command assign resources twice in order."""
+
+
 @given("an SDP subarray", target_fixture="composition")
 def an_sdp_subarray(
     set_up_subarray_log_checking_for_sdp,  # type: ignore
@@ -64,6 +74,9 @@ def an_sdp_subarray(
 
 # use when from ..conftest
 # @when("I assign resources with a duplicate sb id"
+
+# use when from ..conftest
+# @when("I command the assign resources twice in consecutive fashion"
 
 
 # use then from ..conftest

@@ -47,6 +47,16 @@ def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings)
     """Assign resources with duplicate id."""
 
 
+@pytest.mark.skamid
+@pytest.mark.assign
+@pytest.mark.sdp
+@scenario(
+    "features/tmc_assign_resources.feature", "Command assign resources twice in order"
+)
+def test_assign_resources_duplicate_commands(assign_resources_test_exec_settings):  # type: ignore
+    """Assign resources with duplicate id."""
+
+
 @given("an TMC")
 def a_tmc():
     """an TMC"""

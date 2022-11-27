@@ -43,6 +43,7 @@ class SutTestSettings(SimpleNamespace):
         self.observation = init_observation_config()
         self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
         self.previous_state: Any = None
+        self.next_state: Any = None
 
     @property
     def nr_of_receptors(self):
@@ -388,7 +389,6 @@ def _assign_resources_with_invalid_config(
     sut_settings: SutTestSettings,
 ):
     settings = integration_test_exec_settings
-    sut_settings.previous_state = ObsState.IDLE
     subarray = sut_settings.default_subarray_name
     expected_exception_raised = False
 
@@ -451,6 +451,7 @@ def when_i_assign_resources_with_a_duplicate_sb_id(
 ):
     subarray_id = allocated_subarray.id
     receptors = allocated_subarray.receptors
+    sut_settings.previous_state = ObsState.IDLE
     expected_exception_raised = _assign_resources_with_invalid_config(
         subarray_id,
         receptors,
@@ -588,7 +589,56 @@ def i_configure_it_for_a_scan_with_an_invalid_config(
             )
 
 
+@when(
+    "I command the assign resources twice in consecutive fashion",
+    target_fixture="expected_exception",
+)
+def i_command_the_assign_resources_twice_in_consecutive_fashion(
+    running_telescope: fxt_types.running_telescope,
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    composition: conf_types.Composition,
+    sb_config: fxt_types.sb_config,
+    sut_settings: SutTestSettings,
+):
+    """I assign resources to it."""
+
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    expected_exception_raised = None
+    sut_settings.next_state = ObsState.IDLE
+    with context_monitoring.context_monitoring():
+        with running_telescope.wait_for_allocating_a_subarray(
+            subarray_id, receptors, integration_test_exec_settings
+        ):
+            entry_point.compose_subarray(
+                subarray_id, receptors, composition, sb_config.sbid
+            )
+            try:
+                entry_point.compose_subarray(
+                    subarray_id, receptors, composition, sb_config.sbid
+                )
+            except Exception as exception:
+                expected_exception_raised = exception
+    return expected_exception_raised
+
+
 # thens
+@then("the subarray should throw an exception and continue with first command")
+def the_subarray_should_throw_an_exception_and_continue_with_first_command(
+    expected_exception: None | Exception,
+    sut_settings: SutTestSettings,
+):
+    assert (
+        expected_exception is not None
+    ), "No exception was raised after commanding the assign resources twice"
+    logger.info(f"exception successfully raised with {expected_exception}")
+    subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
+    result = subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(sut_settings.next_state)
+
+
 @then("the subarray should throw an exception and remain in the previous state")
 def the_subarray_should_throw_an_exception_remain_in_the_previous_state(
     sut_settings: SutTestSettings,

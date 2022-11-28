@@ -30,7 +30,7 @@
 
 .post_deploy_chart:
   script:
-    - echo "############## Running Skampi core tests"
+    - echo "############## copying tests data inside OET pod"
     - make k8s-copy-test-data-in-oet
 
 .test_deployment:

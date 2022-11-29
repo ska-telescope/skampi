@@ -53,7 +53,7 @@ def fxt_set_nr_of_subarray(
 def fxt_set_csp_online_from_csp(
     set_session_exec_settings: fxt_types.session_exec_settings,
     set_subsystem_online: Callable[[EntryPoint], None],
-    nr_of_subarrays: int
+    nr_of_subarrays: int,
 ):
     """_summary_
 
@@ -108,23 +108,24 @@ def fxt_set_up_log_checking_for_csp(
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
-        csp_subarray = str(tel.csp.subarray(sut_settings.subarray_id))
-        log_checking.capture_logs_from_devices(csp_subarray)
+        subarray_id = sut_settings.subarray_id
+        csp_subarray = str(tel.csp.subarray(subarray_id))
+        cbf_subarray = str(tel.csp.cbf.subarray(subarray_id))
+        log_checking.capture_logs_from_devices(csp_subarray, cbf_subarray)
+
 
 # transition monitoring
 
 
 @pytest.fixture(autouse=True)
-def fxt_setup_transition_monitoring(
-    context_monitoring: fxt_types.context_monitoring
-):
+def fxt_setup_transition_monitoring(context_monitoring: fxt_types.context_monitoring):
     tel = names.TEL()
     (
-        context_monitoring.
-        set_waiting_on(tel.csp.cbf.subarray(1)).
-        for_attribute('obsstate').
-        and_observe()
+        context_monitoring.set_waiting_on(tel.csp.cbf.subarray(1))
+        .for_attribute("obsstate")
+        .and_observe()
     )
+
 
 @pytest.fixture(name="csp_base_composition")
 def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
@@ -179,16 +180,15 @@ def an_csp_subarray_in_idle_state(
 
 @then(parsers.parse("the CSP subarray must be in {obsstate} state"))
 def the_csp_subarray_must_be_in_some_obsstate(
-    sut_settings: SutTestSettings, obsstate: ObsState,
-    integration_test_exec_settings: fxt_types.exec_settings
+    sut_settings: SutTestSettings,
+    obsstate: ObsState,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
     csp_subarray_name = tel.csp.subarray(sut_settings.subarray_id)
     recorder = integration_test_exec_settings.recorder
     recorder.assert_no_devices_transitioned_after(str(csp_subarray_name))
-    csp_subarray = con_config.get_device_proxy(
-        csp_subarray_name, fast_load=True
-    )
+    csp_subarray = con_config.get_device_proxy(csp_subarray_name, fast_load=True)
     result = csp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(eval(f"ObsState.{obsstate}"))

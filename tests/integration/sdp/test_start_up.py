@@ -32,7 +32,6 @@ def test_sdp_start_up_telescope_low(sdp_start_up_test_exec_settings):
 @given("an SDP")
 def a_sdp():
     """a SDP."""
-    foo = "bar"
 
 
 # when
@@ -55,6 +54,7 @@ def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
 
 
 # test validation
+
 
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_sdp_mock")

@@ -34,3 +34,6 @@ Feature: Assign resources to sdp subarray
 		Then the subarray should throw an exception and continue with first command
 		Then the subarray must be in IDLE state
 
+		
+
+

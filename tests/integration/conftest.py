@@ -7,7 +7,7 @@ from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
 from mock import patch, Mock
 from assertpy import assert_that
 import pytest
-from pytest_bdd import when, then
+from pytest_bdd import when, then, given
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting
@@ -206,6 +206,18 @@ def fxt_observation_config_interjector(
     return interject_observation_method
 
 
+# global given steps
+
+
+@given("an subarray busy scanning")
+def an_subarray_busy_scanning(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """an subarray busy scanning"""
+    configured_subarray.set_to_scanning(integration_test_exec_settings)
+
+
 # global when steps
 # start up
 
@@ -297,6 +309,25 @@ def i_command_it_to_scan(
 ):
     """I configure it for a scan."""
     configured_subarray.set_to_scanning(integration_test_exec_settings)
+
+
+@when("I command it to Abort")
+def i_command_it_to_abort(
+    context_monitoring: fxt_types.context_monitoring,
+    configured_subarray: fxt_types.configured_subarray,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    subarray = sut_settings.default_subarray_name
+    sub_array_id = sut_settings.subarray_id
+    context_monitoring.builder.set_waiting_on(subarray).for_attribute(
+        "obsstate"
+    ).to_become_equal_to("ABORTED")
+    with context_monitoring.context_monitoring():
+        configured_subarray.reset_after_test(integration_test_exec_settings)
+        entry_point.abort_subarray(sub_array_id)
+    integration_test_exec_settings.touch()
 
 
 @when("I release all resources assigned to it")

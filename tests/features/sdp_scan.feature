@@ -14,3 +14,7 @@ Feature: Run a scan on sdp subarray
 		Given an SDP subarray in READY state
 		When I command it to scan for a given period
 		Then the SDP subarray must be in the SCANNING state until finished
+
+	Scenario: Abort scanning
+		Given an subarray busy scanning
+		When I command it to Abort

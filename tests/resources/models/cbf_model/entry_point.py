@@ -48,9 +48,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
     def do(self):
         """Domain logic for starting up a telescope on the interface to CBF.
 
-        This implments the set_telescope_to_running method on the entry_point.
-        """
-        self.cbf_controller.adminmode = 0   # set online
+        This implements the set_telescope_to_running method on the entry_point."""
         self.cbf_controller.command_inout("On")
         if self._tel.skalow:
             # cbf low needs to start up subarrays individually
@@ -430,6 +428,7 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
     def set_wait_for_doing(self) -> MessageBoardBuilder:
         """Not implemented."""
         raise NotImplementedError()
+
 
 class CBFEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""

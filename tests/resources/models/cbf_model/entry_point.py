@@ -29,7 +29,7 @@ class LogEnabled:
     """class that allows for logging if set by env var"""
 
     def __init__(self) -> None:
-        self._live_logging = bool(os.getenv("DEBUG"))
+        self._live_logging = bool(os.getenv("DEBUG_ENTRYPOINT"))
         self._tel = names.TEL()
 
     def _log(self, mssage: str):
@@ -49,10 +49,12 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """Domain logic for starting up a telescope on the interface to CBF.
 
         This implements the set_telescope_to_running method on the entry_point."""
+        self._log(f"Commanding {self._tel.csp.cbf.controller} On")
         self.cbf_controller.command_inout("On")
         if self._tel.skalow:
             # cbf low needs to start up subarrays individually
             for index in range(1, self.nr_of_subarrays + 1):
+                self._log(f"Commanding {self._tel.csp.cbf.subarray(index)} On")
                 subarray = con_config.get_device_proxy(
                     self._tel.csp.cbf.subarray(index)
                 )
@@ -94,6 +96,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
     def undo(self):
         """Domain logic for switching the cbf off."""
+        self._log(f"Commanding {self._tel.csp.cbf.controller} Off")
         self.cbf_controller.command_inout("Off")
         if self._tel.skalow:
             for index in range(1, self.nr_of_subarrays + 1):
@@ -101,6 +104,9 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 subarray = con_config.get_device_proxy(subarray_name)
                 self._log(f"commanding {subarray_name} to Off")
                 subarray.command_inout(("Off"))
+        # we sleep for 5 seconds because of an async error between
+        # reading OFF event and directly reading it
+        sleep(5)
 
 
 class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):

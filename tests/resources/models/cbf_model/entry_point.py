@@ -65,6 +65,9 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
             "state"
         ).to_become_equal_to("ON", ignore_first=False)
+        brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
+            "reportVccState"
+        ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
         # subarrays
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.cbf.subarray(index)).for_attribute(

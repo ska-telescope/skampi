@@ -33,6 +33,14 @@ def test_configure_scan_on_sdp_subarray_in_mid():
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.sdp
+@scenario("features/sdp_configure_scan.feature", "Abort configuring")
+def test_abort_configure_scan_on_sdp_subarray_in_mid():
+    """Abort configuring."""
+
+
+@pytest.mark.skamid
+@pytest.mark.configure
+@pytest.mark.sdp
 @scenario(
     "features/sdp_configure_scan.feature",
     "Configure invalid scan on sdp subarray in mid",

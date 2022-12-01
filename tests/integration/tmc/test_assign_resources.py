@@ -47,6 +47,7 @@ def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings)
     """Assign resources with duplicate id."""
 
 
+@pytest.mark.xfail
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp

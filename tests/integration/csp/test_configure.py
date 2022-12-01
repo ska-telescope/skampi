@@ -42,6 +42,14 @@ def test_configure_invalid_scan_on_csp_subarray_in_mid():
     """Configure invalid scan on csp subarray in mid."""
 
 
+@pytest.mark.skamid
+@pytest.mark.configure
+@pytest.mark.csp
+@scenario("features/csp_configure_scan.feature", "Abort configuring")
+def test_abort_configure_scan_on_csp_subarray_in_mid():
+    """Abort configuring."""
+
+
 # use from local conftest
 # @given("an SDP subarray in IDLE state", target_fixture="configuration")
 

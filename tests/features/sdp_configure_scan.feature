@@ -20,3 +20,9 @@ Feature: Configure scan on sdp subarray
 		Given an SDP subarray in IDLE state
 		When I configure it for a scan with an invalid configuration
 		Then the subarray should throw an exception and remain in the previous state
+
+	@XTP-16343
+	Scenario: Abort configuring
+        Given an subarray busy configuring
+        When I command it to Abort
+        Then the subarray should go into an aborted state

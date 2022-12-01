@@ -36,6 +36,15 @@ def test_configure_invalid_scan_on_tmc_subarray_in_mid():
     """Configure invalid scan on tmc subarray in mid."""
 
 
+@pytest.mark.skip(reason="feature not yet implemented")
+@pytest.mark.skamid
+@pytest.mark.configure
+@pytest.mark.tmc
+@scenario("features/tmc_configure_scan.feature", "Abort configuring")
+def test_abort_configure_scan_on_tmc_subarray_in_mid():
+    """Abort configuring."""
+
+
 @given("an TMC")
 def a_tmc():
     """an TMC"""

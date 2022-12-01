@@ -1,11 +1,9 @@
 """Domain logic for the tmc."""
-import json
 import logging
 import os
 from typing import List, Union
 from time import sleep
 from ska_ser_skallop.utils.singleton import Memo
-from ska_ser_skallop.mvp_control.configuration import configuration as conf
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import types
@@ -14,9 +12,12 @@ from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
+    AbortStep,
+    ObsResetStep,
 )
 
 from ..mvp_model.env import get_observation_config, Observation
+from ..mvp_model.states import ObsState
 
 logger = logging.getLogger(__name__)
 
@@ -303,7 +304,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
-        ).to_become_equal_to("CONFIGURING")
+        ).to_become_equal_to(["CONFIGURING", "READY"])
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("CONFIGURING")
@@ -362,7 +363,9 @@ class ScanStep(base.ScanStep, LogEnabled):
         try:
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)
-            subarray.command_inout("EndScan")
+            current_state = subarray.read_attribute("obsState")
+            if current_state.value == ObsState.SCANNING:
+                subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception
@@ -481,6 +484,40 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
+class TMCAbortStep(AbortStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Abort command")
+        subarray.command_inout("Abort")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        return builder
+
+
+class TMCObsResetStep(ObsResetStep, LogEnabled):
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE", ignore_first=True)
+        return builder
+
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ObsReset command")
+        subarray.command_inout("Obsreset")
+
+
 class TMCEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
@@ -499,3 +536,5 @@ class TMCEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = AssignResourcesStep(observation)
         self.configure_scan_step = ConfigureStep(observation)
         self.scan_step = ScanStep(observation)
+        self.abort_step = TMCAbortStep()
+        self.obsreset_step = TMCObsResetStep()

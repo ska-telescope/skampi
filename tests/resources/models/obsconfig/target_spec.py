@@ -56,8 +56,8 @@ class Scan:
     def get_scan_id(self, backwards: bool = False):
         self._inc()
         if backwards:
-            return {"id": str(self._instance_count)}
-        return {"scan_id": str(self._instance_count)}
+            return {"id": self._instance_count}
+        return {"scan_id": self._instance_count}
 
 
 class TargetSpecs(SchedulingBlock, Scan):

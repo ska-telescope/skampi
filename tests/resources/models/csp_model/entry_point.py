@@ -294,20 +294,23 @@ class CspScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
+        scan_config_arg: dict[str, str | int] = {}
         if self._tel.skalow:
             scan_config_arg = json.dumps(csp_low_scan)
         elif self._tel.skamid:
-            scan_config_arg = self.observation.generate_run_scan_conf().as_json
+            scan_config_arg = self.observation.generate_run_scan_conf().as_dict
+        scan_config_arg["scan_id"] = str(scan_config_arg["scan_id"])
+        scan_config_arg_json = json.dumps(scan_config_arg)
         scan_duration = Memo().get("scan_duration")
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(
-            f"Commanding {subarray_name} to Scan with {scan_config_arg}"
+            f"Commanding {subarray_name} to Scan with {scan_config_arg_json}"
             f", (scan duration = {scan_duration})"
         )
         try:
-            subarray.command_inout("Scan", scan_config_arg)
+            subarray.command_inout("Scan", scan_config_arg_json)
             sleep(scan_duration)
             subarray.command_inout("EndScan")
         except Exception as exception:

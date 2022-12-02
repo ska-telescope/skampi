@@ -106,7 +106,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 subarray.command_inout(("Off"))
         # we sleep for 5 seconds because of an async error between
         # reading OFF event and directly reading it
-        sleep(5)
+        # sleep(5)
 
 
 class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):

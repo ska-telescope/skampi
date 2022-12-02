@@ -224,11 +224,12 @@ def i_configure_it_for_a_scan(
 @when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
+    context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """I configure it for a scan."""
-    configured_subarray.set_to_scanning(integration_test_exec_settings)
-
+    with context_monitoring.context_monitoring():
+        configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
 @when("I release all resources assigned to it")

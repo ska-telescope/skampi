@@ -302,7 +302,10 @@ class CspScanStep(base.ScanStep, LogEnabled):
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg}")
+        self._log(
+            f"Commanding {subarray_name} to Scan with {scan_config_arg}"
+            f", (scan duration = {scan_duration})"
+        )
         try:
             subarray.command_inout("Scan", scan_config_arg)
             sleep(scan_duration)

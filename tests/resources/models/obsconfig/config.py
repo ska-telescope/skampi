@@ -64,6 +64,11 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
     def generate_run_scan_conf(self, backwards: bool = False):
         return self.get_scan_id(backwards)
 
+    @encoded
+    def generate_run_scan_conf_cbf_compatible(self) -> dict[str, str]:
+        config = self.get_scan_id()
+        return cast(dict[str, str], {**config, **{"scan_id": str(config["scan_id"])}})
+
     def generate_scan_config_parsed_for_csp(
         self,
         target_id: str | None = None,

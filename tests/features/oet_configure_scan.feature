@@ -7,5 +7,6 @@ Feature: Verification of OET scripts being executed successfully during an obser
 		Given an OET
 		Given sub-array is in the ObsState IDLE
 		When I tell the OET to observe using script file:///scripts/observe_mid_sb.py and SBI /tmp/oda/mid_sb_example.json
-		Then the sub-array goes to ObsState IDLE
+		Then the OET will execute the script correctly
+		AND the sub-array goes to ObsState IDLE
 

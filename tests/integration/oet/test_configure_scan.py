@@ -91,8 +91,8 @@ def the_subarray_must_be_in_idle_state(
 
 
 @when(
-    parsers.parse("I tell the OET to observe using script {script} and SBI {sb_json}",
-                  target_fixture="script_completion_state")
+    parsers.parse("I tell the OET to observe using script {script} and SBI {sb_json}"),
+    target_fixture="script_completion_state"
 )
 def when_observe_sbi(
         script,

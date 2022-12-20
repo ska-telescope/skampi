@@ -90,7 +90,7 @@ def the_subarray_must_be_in_idle_state(
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
 
 
-@given(
+@when(
     parsers.parse("I tell the OET to observe using script {script} and SBI {sb_json}"),
     target_fixture="script_completion_state")
 def when_observe_sbi(

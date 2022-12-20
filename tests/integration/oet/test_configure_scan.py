@@ -90,9 +90,9 @@ def the_subarray_must_be_in_idle_state(
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
 
 
-@when(
-    parsers.parse("I tell the OET to observe using script {script} and SBI {sb_json}")
-)
+@given(
+    parsers.parse("I tell the OET to observe using script {script} and SBI {sb_json}"),
+    target_fixture="script_completion_state")
 def when_observe_sbi(
         script,
         sb_json,
@@ -106,12 +106,18 @@ def when_observe_sbi(
         script (str): file path to an observing script
         sb_json (str): file path to a scheduling block
     """
-    # allocated_subarray.disable_automatic_teardown()
+    script_completion_state = "UNKNOWN"
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=300)
-        assert (
-                script_completion_state == "COMPLETE"
-        ), f"Expected observing script to be COMPLETED, instead was {script_completion_state}"
+    logger.info(f"observing script execution status set to {script_completion_state}")
+    return script_completion_state
+
+
+@when("the OET will execute the script correctly")
+def the_oet_will_execute_the_script_correctly(script_completion_state: str):
+    assert (
+            script_completion_state == "COMPLETE"
+    ), f"Expected observing script to be COMPLETED, instead was {script_completion_state}"
 
 
 @then(parsers.parse("the sub-array goes to ObsState {obsstate}"))

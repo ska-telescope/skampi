@@ -117,7 +117,7 @@ def when_observe_sbi(
     return script_completion_state
 
 
-@when("the OET will execute the script correctly")
+@then("the OET will execute the script correctly")
 def the_oet_will_execute_the_script_correctly(script_completion_state: str):
     assert (
             script_completion_state == "COMPLETE"

@@ -56,6 +56,7 @@ def the_subarray_shall_be_in_the_scanning_state(
 
     result = sdp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.SCANNING)
+    assert False
 
 
 @then("the SDP shall go back to READY when finished")

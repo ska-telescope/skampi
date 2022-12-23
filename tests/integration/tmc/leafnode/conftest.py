@@ -26,10 +26,7 @@ def fxt_set_sdp_ln_entry_point(
     SDPLnEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     exec_env.entrypoint = SDPLnEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = [
-        "sdp",
-        "sdp control",
-    ]
+    exec_env.scope = ["sdp", "sdp control", "csp", "csp control"]
 
 
 @pytest.fixture(name="set_csp_ln_entry_point")

@@ -13,9 +13,30 @@ from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from resources.models.obsconfig.config import Observation
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from .. import conftest
+from ..conftest import CoreV1Api
+from tests.resources.utils.kubernetes_helpers import (
+    get_kube_namespace,
+    search_for_pod,
+    cp_str_json_file_to_pod,
+)
 
 
 LOGGER = logging.getLogger(__name__)
+
+
+@pytest.fixture(name="set_oet_rest_oda", autouse=True, scope="session")
+def fxt_set_oet_rest_oda(k8s_core_v1_api: CoreV1Api):
+
+    namespace = get_kube_namespace()
+    app = "ska-oso-oet"
+    component = "rest"
+    pod_name = search_for_pod(k8s_core_v1_api, app=app, component=component)
+    assert pod_name, f"Unable to find pod with app = {app} and component = {component}"
+    source_file = "./tests/integration/oet/test_data/mid_sb_example.json"
+    destination_path = "/tmp/oda/mid_sb_example.json"
+    cp_str_json_file_to_pod(
+        k8s_core_v1_api, source_file, pod_name, namespace, destination_path
+    )
 
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
@@ -61,12 +82,11 @@ def fxt_set_entry_point(
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     obs = Observation()
     obs.add_scan_type_configuration(
-        "science_A",
-        {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}}
+        "science_A", {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}}
     )
     obs.add_scan_type_configuration(
         "calibration_B",
-        {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}}
+        {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}},
     )
     exec_env.entrypoint = TMCEntryPoint
     exec_env.entrypoint.observation = obs

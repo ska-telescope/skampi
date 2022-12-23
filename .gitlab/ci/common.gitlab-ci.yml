@@ -11,7 +11,7 @@
     - branch_name=$(echo $CI_COMMIT_REF_NAME | tr '-' '_'|tr '.' '_')
     - DB_NAME=${CONFIG}_archiver_db_$branch_name
     - ARCHIVER_DBNAME=$(echo $DB_NAME | cut -c -50)
-    
+
 # must have K8S_CHART set correctly
 .deploy_chart_before:
   before_script:
@@ -31,7 +31,6 @@
 .post_deploy_chart:
   script:
     - echo "############## Running Skampi core tests"
-    - make k8s-copy-test-data-in-oet
 
 .test_deployment:
   script:

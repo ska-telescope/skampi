@@ -14,7 +14,7 @@ from resources.models.obsconfig.config import Observation
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from .. import conftest
 from ..conftest import CoreV1Api
-from tests.resources.utils.kubernetes_helpers import (
+from ..utils.kubernetes_helpers import (
     get_kube_namespace,
     search_for_pod,
     cp_str_json_file_to_pod,

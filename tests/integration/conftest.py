@@ -7,16 +7,14 @@ from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
 from mock import patch, Mock
 
 import pytest
-from pytest_bdd import when, given
-
+from pytest_bdd import when
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_management import telescope_management as tel
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
+
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.mvp_model.env import init_observation_config, Observation
+from kubernetes import config, client
+from kubernetes.client.api.core_v1_api import CoreV1Api
 
 
 logger = logging.getLogger(__name__)
@@ -55,6 +53,12 @@ class SutTestSettings(SimpleNamespace):
     @receptors.setter
     def receptors(self, receptor: list[int]):
         self._receptors = receptor
+
+
+@pytest.fixture(name="k8s_core_v1_api", scope="session")
+def fxt_k8s_core_v1_api() -> CoreV1Api:
+    config.load_config()
+    return client.CoreV1Api()
 
 
 @pytest.fixture(name="sut_settings", scope="function", autouse=True)

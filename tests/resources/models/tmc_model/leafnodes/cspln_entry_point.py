@@ -87,30 +87,6 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         self._log(f"Commanding {csp_subarray_ln_name} to ReleaseAllResources")
         csp_subarray_ln.command_inout("ReleaseAllResources")
 
-    def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
-        builder = super().set_wait_for_do(sub_array_id)
-        assert self._tel.skamid
-        csp_subarray_leaf_node = self._tel.skamid.tm.subarray(
-            sub_array_id
-        ).csp_leaf_node
-        assert csp_subarray_leaf_node
-        builder.set_waiting_on(csp_subarray_leaf_node).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
-        return builder
-
-    def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
-        builder = super().set_wait_for_do(sub_array_id)
-        assert self._tel.skamid
-        csp_subarray_leaf_node = self._tel.skamid.tm.subarray(
-            sub_array_id
-        ).csp_leaf_node
-        assert csp_subarray_leaf_node
-        builder.set_waiting_on(csp_subarray_leaf_node).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY")
-        return builder
-
 
 class CspLnConfigureStep(CspConfigureStep):
     """Implementation of Configure Scan Step for CSP LN."""
@@ -142,20 +118,6 @@ class CspLnConfigureStep(CspConfigureStep):
         self._log(f"commanding {csp_subarray_ln_name} with Configure: {config}")
         csp_subarray_ln.command_inout("Configure", config)
 
-    def set_wait_for_do(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> MessageBoardBuilder:
-        builder = super().set_wait_for_do(sub_array_id, receptors)
-        assert self._tel.skamid
-        csp_subarray_leaf_node = self._tel.skamid.tm.subarray(
-            sub_array_id
-        ).csp_leaf_node
-        assert csp_subarray_leaf_node
-        builder.set_waiting_on(csp_subarray_leaf_node).for_attribute(
-            "obsState"
-        ).to_become_equal_to("READY")
-        return builder
-
     def undo(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in csp LN.
 
@@ -167,20 +129,6 @@ class CspLnConfigureStep(CspConfigureStep):
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
         self._log(f"commanding {csp_subarray_ln_name} with the End command")
         csp_subarray_ln.command_inout("End")
-
-    def set_wait_for_undo(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> MessageBoardBuilder:
-        builder = super().set_wait_for_do(sub_array_id, receptors)
-        assert self._tel.skamid
-        csp_subarray_leaf_node = self._tel.skamid.tm.subarray(
-            sub_array_id
-        ).csp_leaf_node
-        assert csp_subarray_leaf_node
-        builder.set_waiting_on(csp_subarray_leaf_node).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
-        return builder
 
 
 class CSPLnScanStep(CspScanStep):

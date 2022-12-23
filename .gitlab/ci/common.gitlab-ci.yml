@@ -28,10 +28,6 @@
     - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
     - make skampi-wait-all
 
-.post_deploy_chart:
-  script:
-    - echo "############## Running Skampi core tests"
-
 .test_deployment:
   script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE

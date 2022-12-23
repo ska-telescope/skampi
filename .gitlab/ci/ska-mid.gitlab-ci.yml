@@ -31,7 +31,6 @@ mid-test:
     - .set_dbname
   script:
     - !reference [.deploy_chart_before, before_script]
-    - !reference [.post_deploy_chart, script]
     - !reference [.test_deployment, script]
     - !reference [.uninstall_chart, script]
   environment:

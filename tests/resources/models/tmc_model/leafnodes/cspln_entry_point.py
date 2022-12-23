@@ -152,7 +152,7 @@ class CspLnConfigureStep(CspConfigureStep):
         ).csp_leaf_node
         assert csp_subarray_leaf_node
         builder.set_waiting_on(csp_subarray_leaf_node).for_attribute(
-            "obsstate"
+            "obsState"
         ).to_become_equal_to("READY")
         return builder
 
@@ -178,7 +178,7 @@ class CspLnConfigureStep(CspConfigureStep):
         ).csp_leaf_node
         assert csp_subarray_leaf_node
         builder.set_waiting_on(csp_subarray_leaf_node).for_attribute(
-            "obsstate"
+            "obsState"
         ).to_become_equal_to("IDLE")
         return builder
 

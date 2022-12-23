@@ -97,6 +97,30 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         self._log(f"Commanding {subarray_name} to ReleaseResources")
         subarray.command_inout("ReleaseResources", "[]")
 
+    def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
+        builder = super().set_wait_for_do(sub_array_id)
+        assert self._tel.skamid
+        sdp_subarray_leaf_node = self._tel.skamid.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
+        assert sdp_subarray_leaf_node
+        builder.set_waiting_on(sdp_subarray_leaf_node).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        return builder
+
+    def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
+        builder = super().set_wait_for_do(sub_array_id)
+        assert self._tel.skamid
+        sdp_subarray_leaf_node = self._tel.skamid.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
+        assert sdp_subarray_leaf_node
+        builder.set_waiting_on(sdp_subarray_leaf_node).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+        return builder
+
 
 class SdpLnConfigureStep(SdpConfigureStep):
     """Implementation of Configure Scan Step for SDP LN."""
@@ -137,6 +161,34 @@ class SdpLnConfigureStep(SdpConfigureStep):
         subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
         self._log(f"commanding {subarray_name} with End command")
         subarray.command_inout("End")
+
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> MessageBoardBuilder:
+        builder = super().set_wait_for_do(sub_array_id, receptors)
+        assert self._tel.skamid
+        sdp_subarray_leaf_node = self._tel.skamid.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
+        assert sdp_subarray_leaf_node
+        builder.set_waiting_on(sdp_subarray_leaf_node).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
+        return builder
+
+    def set_wait_for_undo(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> MessageBoardBuilder:
+        builder = super().set_wait_for_do(sub_array_id, receptors)
+        assert self._tel.skamid
+        sdp_subarray_leaf_node = self._tel.skamid.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
+        assert sdp_subarray_leaf_node
+        builder.set_waiting_on(sdp_subarray_leaf_node).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        return builder
 
 
 class SDPLnScanStep(SDPScanStep):

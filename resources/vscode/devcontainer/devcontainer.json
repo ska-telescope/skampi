@@ -21,7 +21,6 @@
         "python.formatting.provider": "black",
         "python.linting.enabled": true,
         "python.linting.flake8Enabled": true,
-        "python.linting.pylintEnabled": true,
         "python.testing.pytestArgs": [
             "./tests/integration/",
         ],
@@ -31,10 +30,9 @@
         "yaml.customTags": [
             "!reference sequence"
         ],
-        "python.formatting.blackPath": ".venv/bin/black",
+        "python.formatting.blackPath": "/home/tango/.local/bin/black",
         "autoDocstring.docstringFormat": "sphinx",
-        "python.linting.flake8Path": ".venv/bin/flake8",
-        "python.linting.pylintPath": ".venv/bin/pylint",
+        "python.linting.flake8Path": "/home/tango/.local/bin/flake8",
         "gitPrefix.pattern": "(\\w+-\\d+).*",
         "gitPrefix.replacement": "p1.replace(/(\\w+)/, function(v) { return v.toUpperCase();})+\": \"",
         "gitPrefix.replacementIsFunction": true
@@ -57,5 +55,5 @@
     // Use 'postCreateCommand' to run commands after the container is created.
     "postCreateCommand": "poetry config virtualenvs.in-project true",
     // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-    "remoteUser": "vscode"
+    "remoteUser": "tango"
 }

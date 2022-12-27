@@ -21,7 +21,7 @@ speedups = ["Brotli", "aiodns", "cchardet"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "aiosignal"
@@ -37,7 +37,7 @@ frozenlist = ">=1.1.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "appnope"
@@ -50,7 +50,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "assertpy"
@@ -63,7 +63,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "astroid"
@@ -83,7 +83,7 @@ wrapt = [
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "astropy"
@@ -109,7 +109,7 @@ test-all = ["coverage", "ipython (>=4.2)", "objgraph", "pytest (>=7.0)", "pytest
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "async-timeout"
@@ -122,7 +122,7 @@ python-versions = ">=3.6"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "atlassian-python-api"
@@ -145,7 +145,7 @@ kerberos = ["requests-kerberos"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "atomicwrites"
@@ -158,7 +158,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "attrs"
@@ -177,7 +177,7 @@ tests-no-zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy 
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "backcall"
@@ -190,7 +190,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "black"
@@ -221,7 +221,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "cachetools"
@@ -234,7 +234,7 @@ python-versions = "~=3.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "certifi"
@@ -247,7 +247,7 @@ python-versions = ">=3.6"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "charset-normalizer"
@@ -263,7 +263,7 @@ unicode-backport = ["unicodedata2"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "click"
@@ -279,7 +279,7 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "clickclick"
@@ -296,7 +296,7 @@ PyYAML = ">=3.11"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "colorama"
@@ -309,7 +309,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "connexion"
@@ -340,7 +340,7 @@ tests = ["MarkupSafe (>=0.23)", "aiohttp (>=2.3.10,<4)", "aiohttp-jinja2 (>=0.14
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "contextlib2"
@@ -353,7 +353,7 @@ python-versions = ">=3.6"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "coverage"
@@ -372,7 +372,7 @@ toml = ["tomli"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "debugpy"
@@ -385,7 +385,7 @@ python-versions = ">=3.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "decorator"
@@ -398,7 +398,7 @@ python-versions = ">=3.5"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "deepdiff"
@@ -417,7 +417,7 @@ cli = ["clevercsv (==0.7.1)", "click (==8.0.3)", "pyyaml (==5.4.1)", "toml (==0.
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "deprecated"
@@ -436,7 +436,7 @@ dev = ["PyTest", "PyTest (<5)", "PyTest-Cov", "PyTest-Cov (<2.6)", "bump2version
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "dill"
@@ -452,7 +452,7 @@ graph = ["objgraph (>=1.7.2)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "docopt"
@@ -465,7 +465,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "docopts"
@@ -481,7 +481,7 @@ docopt = "0.6.1"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "execnet"
@@ -497,7 +497,7 @@ testing = ["pre-commit"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "fire"
@@ -514,7 +514,7 @@ termcolor = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "flake8"
@@ -532,7 +532,7 @@ pyflakes = ">=2.4.0,<2.5.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "flask"
@@ -555,7 +555,7 @@ dotenv = ["python-dotenv"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "frozenlist"
@@ -568,7 +568,7 @@ python-versions = ">=3.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "gitdb"
@@ -584,7 +584,7 @@ smmap = ">=3.0.1,<6"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "gitpython"
@@ -600,7 +600,7 @@ gitdb = ">=4.0.1,<5"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "glob2"
@@ -613,7 +613,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "google-auth"
@@ -638,7 +638,7 @@ reauth = ["pyu2f (>=0.1.5)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "idna"
@@ -651,7 +651,7 @@ python-versions = ">=3.5"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "inflection"
@@ -664,7 +664,7 @@ python-versions = ">=3.5"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "iniconfig"
@@ -677,7 +677,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ipython"
@@ -715,7 +715,7 @@ test = ["ipykernel", "nbformat", "nose (>=0.10.1)", "numpy (>=1.17)", "pygments"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "isort"
@@ -734,7 +734,7 @@ requirements-deprecated-finder = ["pip-api", "pipreqs"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "itsdangerous"
@@ -747,7 +747,7 @@ python-versions = ">=3.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "jedi"
@@ -767,7 +767,7 @@ testing = ["Django (<3.1)", "colorama", "docopt", "pytest (<7.0.0)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "jinja2"
@@ -786,7 +786,7 @@ i18n = ["Babel (>=2.7)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "jsonpickle"
@@ -804,7 +804,7 @@ testing-libs = ["simplejson", "ujson", "yajl"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "jsonschema"
@@ -825,7 +825,7 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "junit-xml-2"
@@ -841,7 +841,7 @@ six = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "katversion"
@@ -854,7 +854,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, <4"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "kubernetes"
@@ -882,7 +882,7 @@ adal = ["adal (>=1.0.2)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "lazy-object-proxy"
@@ -895,7 +895,7 @@ python-versions = ">=3.6"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "mako"
@@ -916,7 +916,7 @@ testing = ["pytest"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "markupsafe"
@@ -929,7 +929,7 @@ python-versions = ">=3.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "marshmallow"
@@ -951,7 +951,7 @@ tests = ["pytest", "pytz", "simplejson"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "marshmallow-enum"
@@ -967,7 +967,7 @@ marshmallow = ">=2.0.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "marshmallow-oneofschema"
@@ -988,7 +988,7 @@ tests = ["mock", "pytest"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "matplotlib-inline"
@@ -1004,7 +1004,7 @@ traitlets = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "mccabe"
@@ -1017,7 +1017,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "mock"
@@ -1035,7 +1035,7 @@ test = ["pytest (<5.4)", "pytest-cov"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "multidict"
@@ -1048,7 +1048,7 @@ python-versions = ">=3.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "mypy-extensions"
@@ -1061,7 +1061,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "numpy"
@@ -1074,7 +1074,7 @@ python-versions = ">=3.8"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "oauthlib"
@@ -1092,7 +1092,7 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ordered-set"
@@ -1108,7 +1108,7 @@ dev = ["black", "mypy", "pytest"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "packaging"
@@ -1124,7 +1124,7 @@ pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "parse"
@@ -1137,7 +1137,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "parse-type"
@@ -1158,7 +1158,7 @@ docs = ["sphinx (>=1.2)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "parso"
@@ -1175,7 +1175,7 @@ testing = ["docopt", "pytest (<6.0.0)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pathspec"
@@ -1188,7 +1188,7 @@ python-versions = ">=3.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pexpect"
@@ -1204,7 +1204,7 @@ ptyprocess = ">=0.5"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pickleshare"
@@ -1217,7 +1217,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pipe"
@@ -1230,7 +1230,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "platformdirs"
@@ -1247,7 +1247,7 @@ test = ["appdirs (==1.4.4)", "pytest (>=6)", "pytest-cov (>=2.7)", "pytest-mock 
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pluggy"
@@ -1264,7 +1264,7 @@ testing = ["pytest", "pytest-benchmark"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "prompt-toolkit"
@@ -1280,7 +1280,7 @@ wcwidth = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ptyprocess"
@@ -1293,7 +1293,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "py"
@@ -1306,7 +1306,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pyasn1"
@@ -1319,7 +1319,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pyasn1-modules"
@@ -1335,7 +1335,7 @@ pyasn1 = ">=0.4.6,<0.5.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pycodestyle"
@@ -1348,7 +1348,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pyerfa"
@@ -1368,7 +1368,7 @@ test = ["pytest", "pytest-doctestplus (>=0.7)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pyflakes"
@@ -1381,7 +1381,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pygments"
@@ -1397,7 +1397,7 @@ plugins = ["importlib-metadata"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pylint"
@@ -1424,7 +1424,7 @@ testutils = ["gitpython (>3)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pylint-junit"
@@ -1441,7 +1441,7 @@ pylint = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pyparsing"
@@ -1457,7 +1457,7 @@ diagrams = ["jinja2", "railroad-diagrams"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pypubsub"
@@ -1470,7 +1470,7 @@ python-versions = ">=3.3, <4"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pyrsistent"
@@ -1483,7 +1483,7 @@ python-versions = ">=3.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytango"
@@ -1499,7 +1499,7 @@ six = ">=1.10"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest"
@@ -1525,7 +1525,7 @@ testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xm
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest-bdd"
@@ -1546,7 +1546,7 @@ pytest = ">=4.3"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest-cov"
@@ -1566,7 +1566,7 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtuale
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest-forked"
@@ -1583,7 +1583,7 @@ pytest = ">=3.10"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest-json-report"
@@ -1600,7 +1600,7 @@ pytest-metadata = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest-metadata"
@@ -1616,7 +1616,7 @@ pytest = ">=2.9.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest-mock"
@@ -1635,7 +1635,7 @@ dev = ["pre-commit", "pytest-asyncio", "tox"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest-ordering"
@@ -1651,7 +1651,7 @@ pytest = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest-repeat"
@@ -1667,7 +1667,7 @@ pytest = ">=3.6"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest-timeout"
@@ -1683,7 +1683,7 @@ pytest = ">=5.0.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pytest-xdist"
@@ -1706,7 +1706,7 @@ testing = ["filelock"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "python-dateutil"
@@ -1722,7 +1722,7 @@ six = ">=1.5"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "python-graphql-client"
@@ -1743,7 +1743,7 @@ dev = ["black", "flake8", "flake8-black", "flake8-docstrings", "flake8-isort", "
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "pyyaml"
@@ -1756,7 +1756,7 @@ python-versions = ">=3.6"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "requests"
@@ -1779,7 +1779,7 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "requests-oauthlib"
@@ -1799,7 +1799,7 @@ rsa = ["oauthlib[signedtoken] (>=3.0.0)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "rsa"
@@ -1815,7 +1815,7 @@ pyasn1 = ">=0.1.3"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "schema"
@@ -1831,11 +1831,11 @@ contextlib2 = ">=0.5.5"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "setuptools"
-version = "65.5.0"
+version = "65.5.1"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "main"
 optional = false
@@ -1843,13 +1843,13 @@ python-versions = ">=3.7"
 
 [package.extras]
 docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-hoverxref (<2)", "sphinx-inline-tabs", "sphinx-notfound-page (==0.8.3)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
-testing = ["build[virtualenv]", "filelock (>=3.4.0)", "flake8 (<5)", "flake8-2020", "ini2toml[lite] (>=0.9)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "mock", "pip (>=19.1)", "pip-run (>=8.8)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)", "pytest-perf", "pytest-xdist", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
+testing = ["build[virtualenv]", "filelock (>=3.4.0)", "flake8 (<5)", "flake8-2020", "ini2toml[lite] (>=0.9)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pip (>=19.1)", "pip-run (>=8.8)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)", "pytest-perf", "pytest-timeout", "pytest-xdist", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
 testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
 
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "six"
@@ -1862,7 +1862,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ska-oso-oet"
@@ -1889,7 +1889,7 @@ tblib = ">=1.7.0,<2.0.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ska-oso-pdm"
@@ -1910,7 +1910,7 @@ python-dateutil = ">=2.8.2,<3.0.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ska-oso-scripting"
@@ -1934,7 +1934,7 @@ ska-tmc-cdm = ">=7.0.0,<8.0.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ska-ser-log-transactions"
@@ -1952,7 +1952,7 @@ ska-ser-skuid = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ska-ser-logging"
@@ -1968,7 +1968,7 @@ dev = ["black", "isort", "prospector[with-pyroma]"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ska-ser-skallop"
@@ -1996,7 +1996,7 @@ bit = ["pytango (==9.3.3)"]
 [package.source]
 type = "legacy"
 url = "https://deployskallopdev:rsaigjomsv-XyU2gNji7@gitlab.com/api/v4/projects/21173098/packages/pypi/simple"
-reference = 'skallop_private_repo'
+reference = "skallop_private_repo"
 
 [[package]]
 name = "ska-ser-skuid"
@@ -2013,7 +2013,7 @@ ska-ser-logging = ">=0.4.1,<0.5.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ska-tango-base"
@@ -2034,7 +2034,7 @@ transitions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ska-tango-testing"
@@ -2050,7 +2050,7 @@ pytango = ">=9.3,<10.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ska-telescope-model"
@@ -2069,7 +2069,7 @@ dev = ["isort", "prospector[with-pyroma]", "yapf"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "ska-tmc-cdm"
@@ -2090,7 +2090,7 @@ ska-telescope-model = ">=1.3.1,<2.0.0"
 [package.source]
 type = "legacy"
 url = "https://gitlab.com/api/v4/projects/12884227/packages/pypi/simple"
-reference = 'cdm'
+reference = "cdm"
 
 [[package]]
 name = "smmap"
@@ -2103,7 +2103,7 @@ python-versions = ">=3.6"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "sseclient"
@@ -2120,7 +2120,7 @@ six = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "tabulate"
@@ -2136,7 +2136,7 @@ widechars = ["wcwidth"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "tblib"
@@ -2149,7 +2149,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "termcolor"
@@ -2165,7 +2165,7 @@ tests = ["pytest", "pytest-cov"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "toml"
@@ -2178,7 +2178,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "tomli"
@@ -2191,7 +2191,7 @@ python-versions = ">=3.6"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "tomlkit"
@@ -2204,7 +2204,7 @@ python-versions = ">=3.6,<4.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "traitlets"
@@ -2220,7 +2220,7 @@ test = ["pre-commit", "pytest"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "transitions"
@@ -2240,7 +2240,7 @@ test = ["pytest"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "typing-extensions"
@@ -2253,7 +2253,7 @@ python-versions = ">=3.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "urllib3"
@@ -2271,7 +2271,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "wcwidth"
@@ -2284,7 +2284,7 @@ python-versions = "*"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "websocket-client"
@@ -2302,7 +2302,7 @@ test = ["websockets"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "websockets"
@@ -2315,7 +2315,7 @@ python-versions = ">=3.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "werkzeug"
@@ -2334,7 +2334,7 @@ watchdog = ["watchdog"]
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "wrapt"
@@ -2347,7 +2347,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [[package]]
 name = "yarl"
@@ -2364,12 +2364,12 @@ multidict = ">=4.0"
 [package.source]
 type = "legacy"
 url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
+reference = "ska"
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "a52ce84d19c50efcbd2624cda4f1eba1461d6089c0fe7db76e4ef926e0f40f38"
+content-hash = "9746e13ecdb2bfb00b25b50dbf7bc8bc856bd5c562f6a5fefe4822bf6d4f753c"
 
 [metadata.files]
 aiohttp = [
@@ -3261,8 +3261,8 @@ schema = [
     {file = "schema-0.7.5.tar.gz", hash = "sha256:f06717112c61895cabc4707752b88716e8420a8819d71404501e114f91043197"},
 ]
 setuptools = [
-    {file = "setuptools-65.5.0-py3-none-any.whl", hash = "sha256:f62ea9da9ed6289bfe868cd6845968a2c854d1427f8548d52cae02a42b4f0356"},
-    {file = "setuptools-65.5.0.tar.gz", hash = "sha256:512e5536220e38146176efb833d4a62aa726b7bbff82cfbc8ba9eaa3996e0b17"},
+    {file = "setuptools-65.5.1-py3-none-any.whl", hash = "sha256:d0b9a8433464d5800cbe05094acf5c6d52a91bfac9b52bcfc4d41382be5d5d31"},
+    {file = "setuptools-65.5.1.tar.gz", hash = "sha256:e197a19aa8ec9722928f2206f8de752def0e4c9fc6953527360d1c36d94ddb2f"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

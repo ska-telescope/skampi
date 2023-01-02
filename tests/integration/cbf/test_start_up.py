@@ -15,7 +15,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skamid
+#@pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.startup
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in mid")

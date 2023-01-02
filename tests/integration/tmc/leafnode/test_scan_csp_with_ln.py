@@ -12,7 +12,7 @@ from resources.models.mvp_model.states import ObsState
 from tests.integration import conftest
 
 
-@pytest.mark.skamid
+#@pytest.mark.skamid
 @scenario(
     "features/tmc_cspln_scan.feature",
     "Scan the csp mid using csp leaf node"

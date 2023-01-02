@@ -130,6 +130,6 @@ ska-csp-lmc-low:
   enabled: true
 
 ## tmc
-tmc-low:
+ska-tmc-low:
   enabled: true
   telescope: SKA-low

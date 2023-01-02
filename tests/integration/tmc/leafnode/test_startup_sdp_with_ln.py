@@ -23,6 +23,16 @@ def test_sdpln_start_up_telescope_mid():
     """Start up the sdp in mid using the ln."""
 
 
+@pytest.mark.skalow
+@pytest.mark.startup
+@scenario(
+    "features/sdpln_start_up_telescope.feature",
+    "Start up the sdp in low using the leaf node",
+)
+def test_sdpln_start_up_telescope_low():
+    """Start up the sdp in low using the ln."""
+
+
 @given("an SDP")
 def a_sdp():
     """a SDP."""
@@ -37,7 +47,6 @@ def a_sdp_ln():
 # use @when("I start up the telescope") from ...conftest
 
 # thens
-
 
 @then("the sdp must be on")
 def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):

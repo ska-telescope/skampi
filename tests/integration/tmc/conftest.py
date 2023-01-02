@@ -119,7 +119,7 @@ def fxt_set_up_log_capturing_for_cbf(
         tel = names.TEL()
         subarray = str(tel.tm.subarray(index))
         sdp_subarray1 = str(tel.sdp.subarray(index))
-        if not tel.skamid:
+        if tel.skamid:
             subarray_ln = str(tel.skamid.tm.subarray(index).sdp_leaf_node)
             log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
         else:

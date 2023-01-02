@@ -33,7 +33,7 @@ DOMAIN ?= branch## Required by Skallop
 TEL ?= $(CONFIG)## Required by Skallop
 KUBE_BRANCH ?= local## Required by Skallop
 NAME ?= $(CONFIG)## The name of the telescope
-ADDMARKS ?=-x## Additional Marks to add to pytests
+ADDMARKS ?=## Additional Marks to add to pytests
 # Dishmark is a synthesis of marks to add to test, it will always start with the tests for the appropriate
 # telescope (e.g. TEL=mid or TEL-low) thereafter followed by additional filters
 ifneq ($(ADDMARKS),)

@@ -34,7 +34,7 @@ def test_sdpln_start_up_telescope_low():
 
 
 @given("an SDP")
-def a_sdp():
+def a_sdp(set_sdp_ln_entry_point):
     """a SDP."""
 
 

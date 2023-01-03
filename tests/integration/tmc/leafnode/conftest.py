@@ -68,6 +68,13 @@ def fxt_set_up_log_capturing_for_sdp(
                 for index in range(1, sut_settings.nr_of_subarrays + 1)
             ]
             log_checking.capture_logs_from_devices(*subarrays)
+        elif tel.skalow:
+            subarrays = [
+                str(tel.skalow.tm.subarray(index).sdp_leaf_node)
+                for index in range(1, sut_settings.nr_of_subarrays + 1)
+            ]
+            log_checking.capture_logs_from_devices(*subarrays)
+
 
 
 @pytest.fixture(name="set_up_subarray_log_checking_for_csp_ln", autouse=True)

@@ -31,13 +31,11 @@ def test_sdpln_start_up_telescope_mid():
 )
 def test_sdpln_start_up_telescope_low():
     """Start up the sdp in low using the ln."""
-    logger.info("Started test execution")
 
 
 @given("an SDP")
 def a_sdp(set_sdp_ln_entry_point):
     """a SDP."""
-    logger.info("Entry point set to %s", set_sdp_ln_entry_point)
 
 
 @given("an SDP leaf node")
@@ -46,7 +44,7 @@ def a_sdp_ln():
 
 
 # when
-# use @when("I start up the telescope") from .conftest
+# use @when("I start up the telescope") from ...conftest
 
 # thens
 

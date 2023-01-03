@@ -70,6 +70,12 @@ def fxt_set_up_log_capturing_for_sdp(
                 for index in range(1, sut_settings.nr_of_subarrays + 1)
             ]
             log_checking.capture_logs_from_devices(*subarrays)
+        else:
+            subarrays = [
+                str(tel.skalow.tm.subarray(index).sdp_leaf_node)
+                for index in range(1, sut_settings.nr_of_subarrays + 1)
+            ]
+            log_checking.capture_logs_from_devices(*subarrays)
 
 
 @pytest.fixture(name="set_up_subarray_log_checking_for_csp_ln", autouse=True)
@@ -118,14 +124,3 @@ def an_sdp_subarray_in_idle_state(
     # subarray_allocation_spec.composition
     return sdp_base_configuration
 
-
-@when("I start up the telescope")
-def i_start_up_the_telescope(
-    standby_telescope: fxt_types.standby_telescope,
-    entry_point: fxt_types.entry_point,
-    integration_test_exec_settings: fxt_types.exec_settings,
-):
-    """I start up the telescope."""
-    with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
-        logger.info("The entry point being used is : %s", entry_point)
-        entry_point.set_telescope_to_running()

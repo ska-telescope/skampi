@@ -115,16 +115,14 @@ def fxt_set_up_log_capturing_for_cbf(
     :param log_checking: The skallop log_checking fixture to use
     """
     index = sut_settings.subarray_id
-    tel = names.TEL()
     if os.getenv("CAPTURE_LOGS"):
+        tel = names.TEL()
         if tel.skamid:
-            tel = names.TEL()
             subarray = str(tel.tm.subarray(index))
             sdp_subarray1 = str(tel.sdp.subarray(index))
             subarray_ln = str(tel.skamid.tm.subarray(index).sdp_leaf_node)
             log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
         elif tel.skalow:
-            tel = names.TEL()
             subarray = str(tel.sdp.subarray(index))
             sdp_subarray1 = str(tel.sdp.subarray(index))
             subarray_ln = str(tel.skalow.tm.subarray(index).sdp_leaf_node)

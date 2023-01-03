@@ -130,11 +130,6 @@ ska-csp-lmc-low:
   enabled: true
 
 ## tmc
-# Temporarily disabled
 ska-tmc-low:
-  enabled: false
-  telescope: SKA-low
-
-# Used for testing
-ska-tmc-sdpleafnodes:
+  enabled: true
   telescope: SKA-low

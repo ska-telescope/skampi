@@ -31,8 +31,7 @@ class StartUpLnStep(StartUpStep):
 
     def __init__(self, nr_of_subarrays: int) -> None:
         super().__init__(nr_of_subarrays)
-        # Temporary Hardcoding
-        self._sdp_master_ln_name = "ska_low/tm_leaf_node/sdp_master"  # type: ignore
+        self._sdp_master_ln_name = self._tel.tm.sdp_leaf_node  # type: ignore
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to SDP LN.
@@ -41,7 +40,7 @@ class StartUpLnStep(StartUpStep):
         """
         for index in range(1, self.nr_of_subarrays + 1):
             # Temporary Hardcoding
-            subarray_name = f"ska_low/tm_leaf_node/sdp_subarray0{index}"  # type: ignore
+            subarray_name = self._tel.tm.subarray(index).sdp_leaf_node  # type: ignore
             subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
             self._log(f"commanding {subarray_name} to On")
             subarray.command_inout("On")
@@ -52,7 +51,7 @@ class StartUpLnStep(StartUpStep):
     def undo(self):
         """Domain logic for switching the SDP LN off."""
         for index in range(1, self.nr_of_subarrays + 1):
-            subarray_name = f"ska_low/tm_leaf_node/sdp_subarray0{index}"  # type: ignore
+            subarray_name = self._tel.tm.subarray(index).sdp_leaf_node  # type: ignore
             subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
             self._log(f"commanding {subarray_name} to Off")
             subarray.command_inout("Off")

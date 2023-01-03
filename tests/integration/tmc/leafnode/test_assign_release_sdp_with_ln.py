@@ -15,7 +15,7 @@ from ...conftest import SutTestSettings
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
-    "features/sdpln_assign_resource.feature",
+    "features/sdpln_assign_release.feature",
     "Assign Release resource on sdp subarray in low using the leaf node",
 )
 

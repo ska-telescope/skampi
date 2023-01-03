@@ -116,7 +116,7 @@ def fxt_set_up_log_capturing_for_cbf(
     """
     index = sut_settings.subarray_id
     if os.getenv("CAPTURE_LOGS"):
-        if tel.skamid
+        if tel.skamid:
             tel = names.TEL()
             subarray = str(tel.tm.subarray(index))
             sdp_subarray1 = str(tel.sdp.subarray(index))

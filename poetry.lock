@@ -1487,7 +1487,7 @@ reference = 'ska'
 
 [[package]]
 name = "pytango"
-version = "9.3.3"
+version = "9.4.0.dev0"
 description = "A python binding for the Tango control system"
 category = "main"
 optional = false
@@ -1878,7 +1878,7 @@ Flask = ">=2.0.3,<3.0.0"
 GitPython = ">=3.1.27,<4.0.0"
 jsonpickle = ">=2.1.0,<3.0.0"
 PyPubSub = ">=4.0.3,<5.0.0"
-pytango = "9.3.3"
+pytango = "9.4.0.dev0"
 requests = ">=2.27.1,<3.0.0"
 ska-ser-logging = ">=0.4.1,<0.5.0"
 ska-ser-skuid = ">=3.3.3,<4.0.0"
@@ -1972,7 +1972,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-ser-skallop"
-version = "2.21.1+dev.c98a01c20"
+version = "2.21.4+dev.cae89f688"
 description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
 category = "main"
 optional = false
@@ -3288,10 +3288,7 @@ ska-ser-logging = [
     {file = "ska_ser_logging-0.4.1+0a677a67-py3-none-any.whl", hash = "sha256:8b2bf14e9981966c22503b6b6477b6386dec1def1f71295579f0686d55b83841"},
     {file = "ska_ser_logging-0.4.1+0a677a67.tar.gz", hash = "sha256:558622000db39668d3a35b6986af9d70dac36635826636ef2c07f816a149a06d"},
 ]
-ska-ser-skallop = [
-    {file = "ska-ser-skallop-2.21.1+dev.c98a01c20.tar.gz", hash = "sha256:579c136092417093d87cd8ed39553e087f09256d9090b10aba50a4655165b73c"},
-    {file = "ska_ser_skallop-2.21.1+dev.c98a01c20-py3-none-any.whl", hash = "sha256:2a89c38a2f41575b4741860765705af516321e4a3c4e3acdceb40bd0bd79021f"},
-]
+
 ska-ser-skuid = [
     {file = "ska-ser-skuid-3.3.3.tar.gz", hash = "sha256:91ad1dda3e3a397e39dbb362046888f5a80e4f5ef022628cde7ccc93c4d9b057"},
     {file = "ska_ser_skuid-3.3.3-py3-none-any.whl", hash = "sha256:743a4170024d208be49d262af2a326644356ef0933dd001cada05bbfcb1f67cd"},
@@ -3299,6 +3296,10 @@ ska-ser-skuid = [
 ska-tango-base = [
     {file = "ska_tango_base-0.13.3-py3-none-any.whl", hash = "sha256:5f64037af3cf7f3b5a7fb84afadc7f7da485d3f1f66430b84edc99f2741ca756"},
     {file = "ska_tango_base-0.13.3.tar.gz", hash = "sha256:a1f32c9ac4cf73765ae757dcae92e2cab1af09211f1ad5bacc88a21f86c12de4"},
+]
+ska-ser-skallop = [
+    {file = "ska-ser-skallop-2.21.4+dev.cae89f688.tar.gz", hash = "sha256:3d727a8351658881942207cd94d3a36568b9e9faafff34bae023f4df4e7ff7eb"},
+    {file = "ska_ser_skallop-2.21.4+dev.cae89f688-py3-none-any.whl", hash = "sha256:eb7e7b4b8ab9e1743c46347e5b556830f7c8e73643a7467226bfc62bab5160e1"},
 ]
 ska-tango-testing = [
     {file = "ska-tango-testing-0.4.1.tar.gz", hash = "sha256:c41c1d6593b59de15aa7a11e05a61b39f08e900e824d4325afb053327bc21e63"},

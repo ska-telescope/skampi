@@ -128,3 +128,8 @@ ska-low-cbf-proc:
 
 ska-csp-lmc-low:
   enabled: true
+
+## tmc
+ska-tmc-low:
+  enabled: true
+  telescope: SKA-low

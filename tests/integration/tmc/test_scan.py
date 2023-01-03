@@ -1,5 +1,5 @@
 """Run scan on telescope subarray feature tests."""
-import time 
+import time
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
@@ -13,7 +13,7 @@ from ..conftest import SutTestSettings
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skamid
+#@pytest.mark.skamid
 @pytest.mark.scan
 @scenario("features/tmc_scan.feature", "Run a scan from TMC")
 def test_tmc_scan_on_mid_subarray():
@@ -27,14 +27,14 @@ def a_tmc():
 
 @given("a subarray in READY state", target_fixture="scan")
 def a_subarray_in_ready_state(
-    set_up_subarray_log_checking_for_tmc, 
-    base_configuration: conf_types.ScanConfiguration,  
+    set_up_subarray_log_checking_for_tmc,
+    base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: SutTestSettings,
 ) -> conf_types.ScanConfiguration:
     """a subarray in READY state"""
     return base_configuration
-    
+
 
 # @when("I command it to scan for a given period")
 

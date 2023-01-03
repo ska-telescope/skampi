@@ -62,7 +62,7 @@ def override_timeouts(exec_settings):
     exec_settings.time_out = 3
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=False, scope="session")
 def fxt_set_csp_online_from_tmc(
     set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
 ):

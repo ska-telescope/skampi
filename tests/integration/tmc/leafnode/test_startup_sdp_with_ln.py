@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
     "features/sdpln_start_up_telescope.feature",
     "Start up the sdp in mid using the leaf node",
 )
-def test_sdpln_start_up_telescope_mid(set_sdp_ln_entry_point):
+def test_sdpln_start_up_telescope_mid():
     """Start up the sdp in mid using the ln."""
 
 
@@ -29,13 +29,15 @@ def test_sdpln_start_up_telescope_mid(set_sdp_ln_entry_point):
     "features/sdpln_start_up_telescope.feature",
     "Start up the sdp in low using the leaf node",
 )
-def test_sdpln_start_up_telescope_low(set_sdp_ln_entry_point):
+def test_sdpln_start_up_telescope_low():
     """Start up the sdp in low using the ln."""
+    logger.info("Started test execution")
 
 
 @given("an SDP")
 def a_sdp(set_sdp_ln_entry_point):
     """a SDP."""
+    logger.info("Entry point set to %s", set_sdp_ln_entry_point)
 
 
 @given("an SDP leaf node")

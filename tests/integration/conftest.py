@@ -151,6 +151,7 @@ def i_start_up_the_telescope(
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+            logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
 

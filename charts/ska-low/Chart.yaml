@@ -22,6 +22,9 @@ dependencies:
     version: 0.12.3
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
+  - name: ska-tmc-sdpleafnodes
+    version: 0.8.24
+    repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-tmc-low
     version: 0.4.0
     repository: https://artefact.skao.int/repository/helm-internal

@@ -1,6 +1,7 @@
 
 Feature: Start up the sdp using sdp leaf node
 
+	@XTP-14547
 	Scenario: Start up the sdp in low using the leaf node
 		Given an low SDP
 		And an low SDP leaf node

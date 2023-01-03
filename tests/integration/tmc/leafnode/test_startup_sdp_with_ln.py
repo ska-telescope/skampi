@@ -37,13 +37,16 @@ def test_sdpln_start_up_telescope_low():
 def a_sdp(set_sdp_ln_entry_point):
     """a SDP."""
 
+
 @given("an low SDP")
 def a_low_sdp(set_sdp_ln_entry_point):
     """a SDP."""
 
+
 @given("an SDP leaf node")
 def a_sdp_ln():
     """a SDP leaf node."""
+
 
 @given("an low SDP leaf node")
 def a_low_sdp_ln():

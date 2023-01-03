@@ -45,7 +45,7 @@ def the_subarray_must_be_in_the_ready_state(
 
 
 
-#@pytest.mark.skalow
+@pytest.mark.skalow
 @pytest.mark.configure
 @scenario(
     "features/tmc_sdpln_configure.feature",

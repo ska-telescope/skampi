@@ -25,6 +25,7 @@ def test_assign_release_on_sdp_subarray_in_low():
 
 @given("an SDP subarray in Empty state")
 def an_sdp_subarray_in_empty_state(
+    set_sdp_ln_entry_point,
     sdp_base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,

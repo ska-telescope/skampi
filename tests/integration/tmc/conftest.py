@@ -115,6 +115,7 @@ def fxt_set_up_log_capturing_for_cbf(
     :param log_checking: The skallop log_checking fixture to use
     """
     index = sut_settings.subarray_id
+    tel = names.TEL()
     if os.getenv("CAPTURE_LOGS"):
         if tel.skamid:
             tel = names.TEL()

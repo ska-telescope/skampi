@@ -1,9 +1,9 @@
 
-Feature: Assign resources on sdp leaf node
+Feature: Assign Release resources on sdp leaf node
 
 
       @XTP-16191
-      Scenario: Assign resources on sdp subarray in low using the leaf node
+      Scenario:  Assign Release resources on sdp subarray in low using the leaf node
         Given a SDP subarray in the EMPTY state
         Given a TMC SDP subarray Leaf Node
         When I assign resources to it

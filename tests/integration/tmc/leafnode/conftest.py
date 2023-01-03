@@ -2,8 +2,9 @@
 
 import os
 import pytest
+import logging
 
-from pytest_bdd import given
+from pytest_bdd import given, when
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
@@ -12,6 +13,7 @@ from resources.models.tmc_model.leafnodes.cspln_entry_point import CSPLnEntryPoi
 
 from ... import conftest
 
+logger = logging.getLogger(__name__)
 
 @pytest.fixture(name="set_sdp_ln_entry_point")
 def fxt_set_sdp_ln_entry_point(
@@ -115,3 +117,15 @@ def an_sdp_subarray_in_idle_state(
     # will use default composition for the allocated subarray
     # subarray_allocation_spec.composition
     return sdp_base_configuration
+
+
+@when("I start up the telescope")
+def i_start_up_the_telescope(
+    standby_telescope: fxt_types.standby_telescope,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I start up the telescope."""
+    with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+        logger.info("The entry point being used is : %s", entry_point)
+        entry_point.set_telescope_to_running()

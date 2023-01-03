@@ -8,7 +8,7 @@ from pytest_bdd import given, scenario, then
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 
-from ... import conftest
+from . import conftest
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ def a_sdp_ln():
 
 
 # when
-# use @when("I start up the telescope") from ...conftest
+# use @when("I start up the telescope") from .conftest
 
 # thens
 

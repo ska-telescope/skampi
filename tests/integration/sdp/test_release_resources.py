@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.mark.sdp
-@pytest.mark.skamid
+#@pytest.mark.skamid
 @pytest.mark.assign
 @scenario(
     "features/sdp_assign_resources.feature",

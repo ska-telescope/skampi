@@ -56,7 +56,7 @@ def test_configure_scan_on_sdp_subarray_in_low():
 
 # @given("an SDP subarray in the IDLE state") from .conftest
 
-@given("a TMC SDP subarray Leaf Node", target_fixture="configuration")
+@given("a TMC SDP subarray Leaf Node")
 def a_tmc_sdp_subarray_leaf_node(set_sdp_ln_entry_point):  # type: ignore
     """a tmc SDP subarray leaf node."""
 

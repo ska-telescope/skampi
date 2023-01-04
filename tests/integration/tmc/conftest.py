@@ -15,6 +15,8 @@ from resources.models.tmc_model.entry_point import TMCEntryPoint
 
 from .. import conftest
 
+logger = logging.getLogger(__name__)
+
 
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
 def fxt_set_entry_point(
@@ -123,6 +125,7 @@ def fxt_set_up_log_capturing_for_cbf(
             subarray_ln = str(tel.skamid.tm.subarray(index).sdp_leaf_node)
             log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
         else:
+            logger.debug("The logging is being set from set_up_log_capturing_for_cbf")
             subarray_ln = str(tel.skalow.tm.subarray(index).sdp_leaf_node)
             log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
 

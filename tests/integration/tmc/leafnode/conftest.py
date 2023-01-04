@@ -81,7 +81,7 @@ def fxt_set_up_log_capturing_for_sdp(
             ]
             log_checking.capture_logs_from_devices(*subarrays)
         else:
-            logger.debug("The logging is being set from set_up_log_capturing_for_sdp")
+            logger.info("The logging is being set from set_up_log_capturing_for_sdp")
             subarrays = [
                 str(tel.skalow.tm.subarray(index).sdp_leaf_node)
                 for index in range(1, sut_settings.nr_of_subarrays + 1)

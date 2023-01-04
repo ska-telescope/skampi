@@ -79,11 +79,19 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sb_id: a generic id to identify a sb to assign resources
         """
         # currently ignore composition as all types will be standard
-        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-        subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-        config = self.observation.generate_sdp_assign_resources_config().as_json
-        self._log(f"commanding {subarray_name} with AssignResources: {config} ")
-        subarray.command_inout("AssignResources", config)
+        if self._tel.skamid:
+            subarray_name = self._tel.skamid.tm.subarray(sub_array_id).sdp_leaf_node #self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
+            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
+            config = self.observation.generate_sdp_assign_resources_config().as_json
+            self._log(f"commanding {subarray_name} with AssignResources: {config} ")
+            subarray.command_inout("AssignResources", config)
+        elif self._tel.skalow:
+            subarray_name = self._tel.skalow.tm.subarray(sub_array_id).sdp_leaf_node #self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
+            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
+            config = self.observation.generate_sdp_assign_resources_config().as_json
+            self._log(f"commanding {subarray_name} with AssignResources: {config} ")
+            subarray.command_inout("AssignResources", config)
+
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -120,11 +128,19 @@ class SdpLnConfigureStep(SdpConfigureStep):
         """
         # scan duration needs to be a memorised for future objects that mnay require it
         Memo(scan_duration=duration)
-        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-        subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-        config = self.observation.generate_sdp_scan_config().as_json
-        self._log(f"commanding {subarray_name} with Configure: {config} ")
-        subarray.command_inout("Configure", config)
+        if self._tel.skamid:
+            subarray_name = self._tel.skamid.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
+            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
+            config = self.observation.generate_sdp_scan_config().as_json
+            self._log(f"commanding {subarray_name} with Configure: {config} ")
+            subarray.command_inout("Configure", config)
+        elif self._tel.skalow:
+            subarray_name = self._tel.skalow.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
+            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
+            config = self.observation.generate_sdp_scan_config().as_json
+            self._log(f"commanding {subarray_name} with Configure: {config} ")
+            subarray.command_inout("Configure", config)
+
 
     def undo(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in sdp LN.

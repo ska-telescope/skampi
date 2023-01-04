@@ -39,10 +39,7 @@ class StartUpLnStep(StartUpStep):
         This implments the set_telescope_to_running method on the entry_point.
         """
         for index in range(1, self.nr_of_subarrays + 1):
-            if self._tel.skamid:
-                subarray_name = self._tel.skamid.tm.subarray(index).sdp_leaf_node  # type: ignore
-            elif self._tel.skalow:
-                subarray_name = self._tel.skalow.tm.subarray(index).sdp_leaf_node
+            subarray_name = self._tel.tm.subarray(index).sdp_leaf_node  # type: ignore
             subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
             self._log(f"commanding {subarray_name} to On")
             subarray.command_inout("On")
@@ -53,10 +50,7 @@ class StartUpLnStep(StartUpStep):
     def undo(self):
         """Domain logic for switching the SDP LN off."""
         for index in range(1, self.nr_of_subarrays + 1):
-            if self._tel.skamid:
-                subarray_name = self._tel.skamid.tm.subarray(index).sdp_leaf_node  # type: ignore
-            elif self._tel.skalow:
-                subarray_name = self._tel.skalow.tm.subarray(index).sdp_leaf_node
+            subarray_name = self._tel.tm.subarray(index).sdp_leaf_node  # type: ignore
             subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
             self._log(f"commanding {subarray_name} to Off")
             subarray.command_inout("Off")
@@ -85,19 +79,11 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sb_id: a generic id to identify a sb to assign resources
         """
         # currently ignore composition as all types will be standard
-        if self._tel.skamid:
-            subarray_name = self._tel.skamid.tm.subarray(sub_array_id).sdp_leaf_node #self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-            config = self.observation.generate_sdp_assign_resources_config().as_json
-            self._log(f"commanding {subarray_name} with AssignResources: {config} ")
-            subarray.command_inout("AssignResources", config)
-        elif self._tel.skalow:
-            subarray_name = self._tel.skalow.tm.subarray(sub_array_id).sdp_leaf_node #self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-            config = self.observation.generate_sdp_assign_resources_config().as_json
-            self._log(f"commanding {subarray_name} with AssignResources: {config} ")
-            subarray.command_inout("AssignResources", config)
-
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
+        subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
+        config = self.observation.generate_sdp_assign_resources_config().as_json
+        self._log(f"commanding {subarray_name} with AssignResources: {config} ")
+        subarray.command_inout("AssignResources", config)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -106,17 +92,10 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        if self._tel.skamid:
-            subarray_name = self._tel.skamid.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-            self._log(f"Commanding {subarray_name} to ReleaseResources")
-            subarray.command_inout("ReleaseResources", "[]")
-        elif self._tel.skalow:
-            subarray_name = self._tel.skalow.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-            self._log(f"Commanding {subarray_name} to ReleaseResources")
-            subarray.command_inout("ReleaseResources", "[]")
-
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
+        subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
+        self._log(f"Commanding {subarray_name} to ReleaseResources")
+        subarray.command_inout("ReleaseResources", "[]")
 
 
 class SdpLnConfigureStep(SdpConfigureStep):
@@ -141,19 +120,11 @@ class SdpLnConfigureStep(SdpConfigureStep):
         """
         # scan duration needs to be a memorised for future objects that mnay require it
         Memo(scan_duration=duration)
-        if self._tel.skamid:
-            subarray_name = self._tel.skamid.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-            config = self.observation.generate_sdp_scan_config().as_json
-            self._log(f"commanding {subarray_name} with Configure: {config} ")
-            subarray.command_inout("Configure", config)
-        elif self._tel.skalow:
-            subarray_name = self._tel.skalow.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-            config = self.observation.generate_sdp_scan_config().as_json
-            self._log(f"commanding {subarray_name} with Configure: {config} ")
-            subarray.command_inout("Configure", config)
-
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
+        subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
+        config = self.observation.generate_sdp_scan_config().as_json
+        self._log(f"commanding {subarray_name} with Configure: {config} ")
+        subarray.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in sdp LN.
@@ -162,16 +133,10 @@ class SdpLnConfigureStep(SdpConfigureStep):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        if self._tel.skamid:
-            subarray_name = self._tel.skamid.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-            self._log(f"commanding {subarray_name} with End command")
-            subarray.command_inout("End")
-        elif self._tel.skalow:
-            subarray_name = self._tel.skalow.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-            subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-            self._log(f"commanding {subarray_name} with End command")
-            subarray.command_inout("End")
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
+        subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
+        self._log(f"commanding {subarray_name} with End command")
+        subarray.command_inout("End")
 
 
 class SDPLnScanStep(SDPScanStep):
@@ -187,10 +152,7 @@ class SDPLnScanStep(SDPScanStep):
         """
         scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
-        if self._tel.skamid:
-            subarray_name = self._tel.skamid.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
-        elif self._tel.skalow:
-            subarray_name = self._tel.skalow.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
         subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
         self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         try:

@@ -13,7 +13,7 @@ from resources.models.mvp_model.states import ObsState
 from ... import conftest
 
 
-#@pytest.mark.skamid
+@pytest.mark.skamid
 @pytest.mark.configure
 @scenario(
     "features/sdpln_run_scan.feature",

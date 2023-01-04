@@ -13,7 +13,7 @@ from ..conftest import SutTestSettings
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-#@pytest.mark.skamid
+@pytest.mark.skamid
 @pytest.mark.scan
 @scenario("features/tmc_scan.feature", "Run a scan from TMC")
 def test_tmc_scan_on_mid_subarray():

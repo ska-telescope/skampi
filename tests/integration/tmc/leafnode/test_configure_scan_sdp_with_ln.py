@@ -54,13 +54,9 @@ def the_subarray_must_be_in_the_ready_state(
 def test_configure_scan_on_sdp_subarray_in_low():
     """Configure scan on sdp subarray in low using the leaf node."""
 
-@given("a SDP subarray in the IDLE state")
-def a_sdp():
-    """a SDP subarray in the IDLE state."""
-
 @given("a TMC SDP subarray Leaf Node", target_fixture="configuration")
 def a_tmc_sdp_subarray_leaf_node(set_sdp_ln_entry_point):  # type: ignore
-    """a tmc CSP subarray leaf node."""
+    """a tmc SDP subarray leaf node."""
 
 
 # @when("I configure it for a scan") from ...conftest

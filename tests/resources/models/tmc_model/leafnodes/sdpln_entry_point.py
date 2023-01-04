@@ -39,7 +39,6 @@ class StartUpLnStep(StartUpStep):
         This implments the set_telescope_to_running method on the entry_point.
         """
         for index in range(1, self.nr_of_subarrays + 1):
-            # Temporary Hardcoding
             subarray_name = self._tel.tm.subarray(index).sdp_leaf_node  # type: ignore
             subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
             self._log(f"commanding {subarray_name} to On")

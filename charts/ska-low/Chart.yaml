@@ -19,7 +19,7 @@ dependencies:
     alias: central_node
     condition: ska-tmc-centralnode.enabled
   - name: ska-sdp
-    version: 0.9.1
+    version: 0.12.3
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
   # - name: ska-tmc-low
@@ -30,11 +30,11 @@ dependencies:
   #   version: 0.8.3
   #   repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-tango-taranta
-    version: 1.3.4
+    version: 1.3.6
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-taranta.enabled
   - name: ska-tango-tangogql
-    version: 1.3.4
+    version: 1.3.6
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-taranta.enabled
   - name: ska-ser-skuid
@@ -42,7 +42,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-ser-skuid.enabled
   - name: ska-landingpage
-    version: 0.8.2
+    version: 0.8.3
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
   # - name: ska-tango-archiver

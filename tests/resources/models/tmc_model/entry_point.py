@@ -3,18 +3,20 @@ import json
 import logging
 import os
 from typing import List, Union
-
+from time import sleep
+from ska_ser_skallop.utils.singleton import Memo
+from ska_ser_skallop.mvp_control.configuration import configuration as conf
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
-from ska_ser_skallop.mvp_control.configuration import composition as comp
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
-    NoOpStep,
 )
+
+from ..obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +34,7 @@ class LogEnabled:
 
 
 class StartUpStep(base.ObservationStep, LogEnabled):
-    """Implementation of Startup step for SDP"""
+    """Implementation of Startup step for TMC"""
 
     def __init__(
         self, nr_of_subarrays: int = 3, receptors: list[int] = [1, 2, 3, 4]
@@ -77,9 +79,9 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         # set dish master to be waited before startup completes
         if self._tel.skamid:
             for dish in self._tel.skamid.dishes(self.receptors):
-                brd.set_waiting_on(dish).for_attribute(
-                    "state"
-                ).to_become_equal_to("ON",ignore_first=False)
+                brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
+                    "ON", ignore_first=False
+                )
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -111,9 +113,9 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         # set dish master to be waited before startup completes
         if self._tel.skamid:
             for dish in self._tel.skamid.dishes(self.receptors):
-                brd.set_waiting_on(dish).for_attribute(
-                    "state"
-                ).to_become_equal_to("STANDBY",ignore_first=False)
+                brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
+                    "STANDBY", ignore_first=False
+                )
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
             "telescopeState"
@@ -128,14 +130,14 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         central_node.command_inout("TelescopeOff")
 
 
-# TODO: Implement AssignResources and ReleaseResources
 class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
-    """Implementation of Assign Resources Step."""
+    """Implementation of Assign Resources Step for TMC"""
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init object."""
         super().__init__()
         self._tel = names.TEL()
+        self.observation = observation
 
     def do(
         self,
@@ -157,26 +159,28 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
 
-        standard_composition = comp.generate_standard_comp(
-            sub_array_id, dish_ids, sb_id
-        )
+        config = self.observation.generate_assign_resources_config(sub_array_id).as_json
 
-        self._log(f"Commanding {central_node_name} with AssignRescources")
+        self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
 
-        central_node.command_inout("AssignResources", standard_composition)
+        central_node.command_inout("AssignResources", config)
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
 
-        This implments the tear_down_subarray method on the entry_point.
+        This implements the tear_down_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-        tear_down_composition = comp.generate_tear_down_all_resources(sub_array_id)
-        self._log(f"Commanding {central_node_name} with ReleaseRescources")
-        central_node.command_inout("ReleaseResources", tear_down_composition)
+        config = (
+            self.observation.generate_release_all_resources_config_for_central_node(
+                sub_array_id
+            )
+        )
+        self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
+        central_node.command_inout("ReleaseResources", config)
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
@@ -184,7 +188,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
- 
+
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("IDLE")
@@ -222,12 +226,13 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
 
 
 class ConfigureStep(base.ConfigureStep, LogEnabled):
-    """Implementation of Configure Scan Step for SDP."""
+    """Implementation of Configure Scan Step for TMC."""
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init object."""
         super().__init__()
         self._tel = names.TEL()
+        self.observation = observation
 
     def do(
         self,
@@ -243,39 +248,29 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration paramaters
+        :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         # scan duration needs to be a memorized for future objects that may require it
-        # Memo(scan_duration=duration)
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # subarray = con_config.get_device_proxy(subarray_name)
-        # standard_configuration = conf.generate_standard_conf(
-        #     sub_array_id, sb_id, duration
-        # )
-        # tmc_standard_configuration = json.dumps(
-        #     json.loads(standard_configuration)["sdp"]
-        # )
-        # self._log(
-        #     f"commanding {subarray_name} with Configure: {tmc_standard_configuration} "
-        # )
-        # TODO determine correct  command
-        #  subarray.command_inout("Configure", tmc_standard_configuration)
-        raise NotImplementedError()
+        Memo(scan_duration=duration)
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        config = self.observation.generate_scan_config().as_json
+        self._log(f"commanding {subarray_name} with Configure: {config} ")
+
+        subarray.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in sdp.
 
-        This implments the clear_configuration method on the entry_point.
+        This implements the clear_configuration method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
         """
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # subarray = con_config.get_device_proxy(subarray_name)
-        # self._log(f"commanding {subarray_name} with End command")
-        # TODO determine correct  command
-        # subarray.command_inout("End")
-        raise NotImplementedError()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with End command")
+        subarray.command_inout("End")
 
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -284,16 +279,39 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        # builder = get_message_board_builder()
+        brd = get_message_board_builder()
 
         # return builder
-        raise NotImplementedError()
+        brd = get_message_board_builder()
+
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
+        return brd
 
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
         """Not implemented."""
-        raise NotImplementedError()
+        brd = get_message_board_builder()
+
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("CONFIGURING")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("CONFIGURING")
+
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("CONFIGURING")
+        return brd
 
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]
@@ -303,40 +321,51 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
         """
-        builder = get_message_board_builder()
-        # TODO determine what needs to be waited for
-        return builder
+        brd = get_message_board_builder()
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+
+        return brd
 
 
 class ScanStep(base.ScanStep, LogEnabled):
+    """Implementation of Scan Step for TMC."""
 
-    """Implementation of Scan Step for SDP."""
-
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation) -> None:
         """Init object."""
         super().__init__()
         self._tel = names.TEL()
+        self.observation = observation
 
     def do(self, sub_array_id: int):
-        """Domain logic for running a scan on subarray in sdp.
+        """Domain logic for running a scan on subarray in tmc.
 
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :param dish_ids: this dish indices (in case of mid) to control
+        :param composition: The assign resources configuration parameters
+        :param sb_id: a generic ide to identify a sb to assign resources
         """
-        # scan_config = json.dumps({"id": 1})
-        # scan_duration = Memo().get("scan_duration")
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # subarray = con_config.get_device_proxy(subarray_name)
-        # self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
-        raise NotImplementedError()
-        # try:
-        #     subarray.command_inout("Scan", scan_config)
-        #     sleep(scan_duration)
-        #     subarray.command_inout("EndScan")
-        # except Exception as exception:
-        #     logger.exception(exception)
-        #     raise exception
+        scan_config = self.observation.generate_run_scan_conf().as_json
+        scan_duration = Memo().get("scan_duration")
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
+        try:
+            subarray.command_inout("Scan", scan_config)
+            sleep(scan_duration)
+            subarray.command_inout("EndScan")
+        except Exception as exception:
+            logger.exception(exception)
+            raise exception
 
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -345,7 +374,7 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-
+    
     def undo(self, sub_array_id: int):
         """This is a no-op as no undo for scan is needed
 
@@ -359,13 +388,18 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        builder = get_message_board_builder()
-        # TODO  determine what needs to be waited for
-        # subarray_name = self._tel.tm.subarray(sub_array_id)
-        # builder.set_waiting_on(subarray_name).for_attribute(
-        #     "obsState"
-        # ).to_become_equal_to("SCANNING")
-        return builder
+        brd = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        brd.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING")
+        return brd
 
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]
@@ -454,11 +488,14 @@ class TMCEntryPoint(CompositeEntryPoint):
     nr_of_receptors = 4
     receptors = [1, 2, 3, 4]
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation | None = None) -> None:
         """Init Object"""
         super().__init__()
+        if not observation:
+            observation = Observation()
+        self.observation = observation
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
         self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
-        self.assign_resources_step = AssignResourcesStep()
-        self.configure_scan_step = ConfigureStep()
-        self.scan_step = ScanStep()
+        self.assign_resources_step = AssignResourcesStep(observation)
+        self.configure_scan_step = ConfigureStep(observation)
+        self.scan_step = ScanStep(observation)

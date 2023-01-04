@@ -4,7 +4,7 @@ xauthority: "~/.Xauthority"
 tags:
   taranta_auth: false
   taranta_dashboard: false
-  
+
 global:
   minikube: true
   annotations:
@@ -89,10 +89,10 @@ ska-oso-oet:
       enabled: false
   resources:
     requests:
-      cpu:  200m
+      cpu: 200m
       memory: 256Mi
     limits:
-      cpu:  2000m
+      cpu: 2000m
       memory: 1024Mi
 
 #telescope control
@@ -112,12 +112,30 @@ ska-sdp:
     nsubarray: 3
   ska-tango-base:
     enabled: false
+  console:
+    enabled: true
+  ska-sdp-qa:
+    kafka:
+      resources:
+        limits:
+          cpu: 750m
+          memory: 1024Mi
+        requests:
+          cpu: 250m
+          memory: 500Mi
+      livenessProbe:
+        initialDelaySeconds: 30
+        failureThreshold: 5
+      zookeeper:
+        resources:
+          requests:
+            cpu: 100m
 
 ## tmc
 tmc-mid:
   enabled: true
   telescope: SKA-mid
- 
+
 ska-tango-archiver:
   enabled: true
   dbname: default_mvp_archiver_db

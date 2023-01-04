@@ -1,49 +1,24 @@
-release=0.8.2
-tag=0.8.2
+release=0.12.0
+tag=0.12.0
 tag_description=
 **Charts:**
+**1. ska-mid 0.11.0 - 0.12.0:**
 
-**1. ska-mid 0.7.0 - 0.8.0:**
+    **1.1 ska-tmc-mid - 0.5.22 - 0.6.1:
 
-    **1.1 tmc-mid - 0.2.7 - 0.3.2:
+            a.   Update tmc to perform scan commands
 
-        a.   Renamed tmc-prototype to ska-tmc to support ADR-25
-        b. KATPoint(1.0a1) upgrades on DishLeafNode and CspSubarrayLeafnode
-        c. Bug fixes for SKB-46, SKB-54 and SKB-64
+    **1.2 ska-sdp  0.12.1 - 0.12.2:
 
+            a. Add initial sdp qa back ends
+    
+    **1.3 ska-tango-taranta  1.3.5 - 1.3.6:
 
-    **1.2. taranta - 1.0.16 - 1.0.21:**
+            a. fix bug blocking attribute writer
 
-        a.  see https://taranta.readthedocs.io/en/latest/history.html
+    **1.4 ska-tango-tangogql 1.3.4 - 1.3.6:
 
-    **1.3. skuid - 0.1.0 - 0.2.0:**
-
-        a. allow local transaction id generation if remote fail
-
-    **1.4 ska-archiver added - 0.1.8:
-
-        a. ability for tango devices to archive attributes and events
+            a. fix bug blocking attribute writer
 
 
-    **1.5 oet-scripts - 0.3.6 - 0.3.8:
 
-        a. fix obsreset and restart commands when using pub/sub
-
-**2. Ska-low 0.4.0 - 0.5.0:**
-
-    **2.1. tmc-low - 0.1.8 - 0.1.9:
-
-        a.  renaming of tmc-prototype to ska-tmc to support ADR-25
-
-    **2.2. taranta - 1.0.16 - 1.0.21:**
-
-        c. see https://taranta.readthedocs.io/en/latest/history.html
-
-
-    **2.3 ska-archiver added - 0.1.8:
-
-        a. ability for tango devices to archive attributes and events
-
-    **2.4 oet-scripts - 0.3.6 - 0.3.8:
-
-        a. fix obsreset and restart commands when using pub/sub

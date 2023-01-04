@@ -1,4 +1,5 @@
-image: registry.gitlab.com/ska-telescope/ska-skampi/ska-skampi-ci-base:0.1.0
+# TODO: Make this image version dynamic per pipeline as it's hard-coded here
+image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.3
 
 variables:
   MINIKUBE: "false"
@@ -30,6 +31,24 @@ stages:
   tags:
     - k8srunner
 
+build-base-image:
+  stage: .pre
+  image: $SKA_K8S_TOOLS_BUILD_DEPLOY
+  tags:
+    - k8srunner
+  before_script:
+    - ""
+  rules:
+    - changes:
+        - images/ska-skampi-ci/Dockerfile
+    - if: $REBUILD_IMAGES
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.3 images/ska-skampi-ci/
+    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.3
+
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
   # Common template components
@@ -41,6 +60,8 @@ include:
   - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
   # Jobs to run on PSI Low
   - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
+  # Jobs to run on PSI Mid
+  - local: "/.gitlab/ci/psi-mid.gitlab-ci.yml"
 
   # Helm Charts
   - project: "ska-telescope/templates-repository"

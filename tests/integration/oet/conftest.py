@@ -16,6 +16,7 @@ from .. import conftest
 
 LOGGER = logging.getLogger(__name__)
 
+
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
 def fxt_nr_of_subarrays() -> int:
     """_summary_
@@ -29,6 +30,7 @@ def fxt_nr_of_subarrays() -> int:
     if tel.skalow:
         return 1
     return 2
+
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online_from_tmc(
@@ -58,8 +60,7 @@ def fxt_set_entry_point(
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
-    exec_env.scope = ["tmc","mid"]
-
+    exec_env.scope = ["tmc", "mid"]
 
 
 # log checking
@@ -76,5 +77,5 @@ def fxt_set_up_log_capturing_for_cbf(
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
-        subarray = str(tel.tm.central_node)
+        subarray = str(tel.tm.subarray(1))
         log_checking.capture_logs_from_devices(subarray)

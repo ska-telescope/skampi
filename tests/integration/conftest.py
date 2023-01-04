@@ -1,4 +1,5 @@
-"""pytest global settings, fixtures and global bdd step implementations for integration tests."""
+"""pytest global settings, fixtures and global bdd step implementations for
+integration tests."""
 import logging
 from types import SimpleNamespace
 import os
@@ -7,15 +8,10 @@ from typing import Any, Callable
 from mock import patch, Mock
 
 import pytest
-from pytest_bdd import when, given
+from pytest_bdd import when
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_management import telescope_management as tel
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
 
 

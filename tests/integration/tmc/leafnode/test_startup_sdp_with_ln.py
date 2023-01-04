@@ -39,7 +39,7 @@ def a_sdp(set_sdp_ln_entry_point):
 
 
 @given("an SDP leaf node")
-def a_sdp_ln(set_up_subarray_log_checking_for_sdp_ln):
+def a_sdp_ln():
     """a SDP leaf node."""
 
 

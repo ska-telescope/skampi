@@ -2,8 +2,8 @@
 tests."""
 
 import os
-import pytest
 import logging
+import pytest
 
 from pytest_bdd import given
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -43,6 +43,7 @@ def fxt_set_sdp_ln_entry_point(
 
 
 @pytest.fixture(name="set_csp_ln_entry_point")
+@pytest.mark.usefixtures("set_up_subarray_log_checking_for_csp_ln")
 def fxt_set_csp_ln_entry_point(
     nr_of_subarrays: int,
     set_session_exec_env: fxt_types.set_session_exec_env,
@@ -61,8 +62,7 @@ def fxt_set_csp_ln_entry_point(
     ]
 
 
-@pytest.fixture(name="set_up_subarray_log_checking_for_sdp_ln", autouse=True)
-@pytest.mark.usefixtures("set_sdp_ln_entry_point")
+@pytest.fixture(name="set_up_subarray_log_checking_for_sdp_ln")
 def fxt_set_up_log_capturing_for_sdp(
     log_checking: fxt_types.log_checking,
     sut_settings: conftest.SutTestSettings
@@ -81,7 +81,6 @@ def fxt_set_up_log_capturing_for_sdp(
             ]
             log_checking.capture_logs_from_devices(*subarrays)
         else:
-            logger.info("The logging is being set from set_up_log_capturing_for_sdp")
             subarrays = [
                 str(tel.skalow.tm.subarray(index).sdp_leaf_node)
                 for index in range(1, sut_settings.nr_of_subarrays + 1)
@@ -89,8 +88,7 @@ def fxt_set_up_log_capturing_for_sdp(
             log_checking.capture_logs_from_devices(*subarrays)
 
 
-@pytest.fixture(name="set_up_subarray_log_checking_for_csp_ln", autouse=True)
-@pytest.mark.usefixtures("set_csp_ln_entry_point")
+@pytest.fixture(name="set_up_subarray_log_checking_for_csp_ln")
 def fxt_set_up_log_capturing_for_csp(
     log_checking: fxt_types.log_checking,
     sut_settings: conftest.SutTestSettings

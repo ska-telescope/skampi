@@ -1,9 +1,10 @@
-"""Pytest fixtures and bdd step implementations specific to tmc integration tests."""
+"""Pytest fixtures and bdd step implementations specific to tmc integration
+tests."""
 import os
 
 import logging
-import pytest
 from typing import Callable
+import pytest
 
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
@@ -24,7 +25,8 @@ def fxt_set_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
     sut_settings: conftest.SutTestSettings,
 ):
-    """Fixture to use for setting up the entry point as from only the interface to sdp."""
+    """Fixture to use for setting up the entry point as from only the
+    interface to sdp."""
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
     sut_settings.nr_of_receptors = 4
@@ -51,7 +53,8 @@ def fxt_nr_of_subarrays() -> int:
     :return: _description_
     :rtype: int
     """
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
+    # we only work with 1 subarray as CBF low currently limits deployment of
+    # only 1.
     # cbf mid only controls the state of subarray 1 so will also limit to 1
     tel = names.TEL()
     if tel.skalow:
@@ -59,12 +62,8 @@ def fxt_nr_of_subarrays() -> int:
     return 2
 
 
-@pytest.fixture(autouse=True)
-def override_timeouts(exec_settings):
-    exec_settings.time_out = 3
-
-
 @pytest.fixture(autouse=True, scope="session")
+@pytest.mark.usefixtures("set_up_subarray_log_checking_for_tmc")
 def fxt_set_csp_online_from_tmc(
     set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
 ):
@@ -107,10 +106,10 @@ def fxt_tmc_assign_resources_exec_settings(
 # log checking
 
 
-@pytest.fixture(name="set_up_subarray_log_checking_for_tmc", autouse=False)
-@pytest.mark.usefixtures("set_tmc_entry_point")
+@pytest.fixture(name="set_up_subarray_log_checking_for_tmc")
 def fxt_set_up_log_capturing_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
@@ -123,11 +122,14 @@ def fxt_set_up_log_capturing_for_cbf(
         sdp_subarray1 = str(tel.sdp.subarray(index))
         if tel.skamid:
             subarray_ln = str(tel.skamid.tm.subarray(index).sdp_leaf_node)
-            log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
+            log_checking.capture_logs_from_devices(
+                subarray, sdp_subarray1, subarray_ln
+            )
         else:
-            logger.info("The logging is being set from set_up_log_capturing_for_cbf")
             subarray_ln = str(tel.skalow.tm.subarray(index).sdp_leaf_node)
-            log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
+            log_checking.capture_logs_from_devices(
+                subarray, sdp_subarray1, subarray_ln
+            )
 
 
 # resource configurations
@@ -164,4 +166,5 @@ def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 
 @pytest.fixture(autouse=True)
 def override_timeouts(exec_settings):
+    """Sets timeout for test environment."""
     exec_settings.time_out = 100

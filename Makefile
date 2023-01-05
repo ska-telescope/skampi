@@ -231,6 +231,7 @@ K8S_TEST_TEST_COMMAND = make -s \
 # include Skampi extension make targets
 -include resources/skampi.mk
 -include resources/archiver.mk
+-include resources/alarmhandler.mk
 
 k8s_test_command = /bin/bash -o pipefail -c "\
 	mkfifo results-pipe && tar zx --warning=all && \

@@ -6,7 +6,7 @@ from .oet_helpers import ScriptExecutor
 EXECUTOR = ScriptExecutor()
 
 @pytest.mark.oet
-## @pytest.mark.skamid
+@pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_basic.feature", "Run the hello_world test script")
 def test_hello_world():

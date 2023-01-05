@@ -12,7 +12,7 @@ from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, De
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-## @pytest.mark.skamid
+@pytest.mark.skamid
 def test_init():
   logging.info("Init test archiver")
   archiver_helper = ArchiverHelper()
@@ -31,7 +31,7 @@ def configure_attribute(attribute):
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-## @pytest.mark.skamid
+@pytest.mark.skamid
 def test_configure_attribute():
   attribute = "sys/tg_test/1/double_scalar"
   sleep_time = 20

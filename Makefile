@@ -249,7 +249,7 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 k8s-pre-install-chart:
 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
-
+	
 
 k8s-post-install-chart:
 	kubectl rollout status -n $(KUBE_NAMESPACE) --watch --timeout=90s statefulset/ska-sdp-console

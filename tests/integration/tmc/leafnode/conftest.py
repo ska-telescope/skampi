@@ -1,32 +1,34 @@
-"""Pytest fixtures and bdd step implementations specific to tmc integration tests."""
+"""Pytest fixtures and bdd step implementations specific to tmc integration
+tests."""
 
 import os
+import logging
 import pytest
-from assertpy import assert_that
-from pytest_bdd import given, then
-from ska_ser_skallop.connectors import configuration as con_config
+from pytest_bdd import given
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.leafnodes.sdpln_entry_point import SDPLnEntryPoint
-from resources.models.tmc_model.leafnodes.cspln_entry_point import CSPLnEntryPoint
-from resources.models.mvp_model.states import ObsState
-
+from resources.models.tmc_model.leafnodes.sdpln_entry_point import (
+    SDPLnEntryPoint
+)
+from resources.models.tmc_model.leafnodes.cspln_entry_point import (
+    CSPLnEntryPoint
+)
 
 from ... import conftest
 
+logger = logging.getLogger(__name__)
 
-@given("a TMC SDP subarray Leaf Node")
-def a_sdp_sln(set_sdp_ln_entry_point):
-    """a TMC SDP subarray Leaf Node."""
 
 @pytest.fixture(name="set_sdp_ln_entry_point")
+@pytest.mark.usefixtures("set_up_subarray_log_checking_for_sdp_ln")
 def fxt_set_sdp_ln_entry_point(
     nr_of_subarrays: int,
     set_session_exec_env: fxt_types.set_session_exec_env,
     sut_settings: conftest.SutTestSettings,
 ):
-    """Fixture to use for setting up the entry point as from only the interface to sdp."""
+    """Fixture to use for setting up the entry point as from only the
+    interface to sdp."""
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
     sut_settings.scan_duration = 6
@@ -40,12 +42,14 @@ def fxt_set_sdp_ln_entry_point(
 
 
 @pytest.fixture(name="set_csp_ln_entry_point")
+@pytest.mark.usefixtures("set_up_subarray_log_checking_for_csp_ln")
 def fxt_set_csp_ln_entry_point(
     nr_of_subarrays: int,
     set_session_exec_env: fxt_types.set_session_exec_env,
     sut_settings: conftest.SutTestSettings,
 ):
-    """Fixture to use for setting up the entry point as from only the interface to csp."""
+    """Fixture to use for setting up the entry point as from only the
+    interface to csp."""
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
     CSPLnEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
@@ -57,10 +61,10 @@ def fxt_set_csp_ln_entry_point(
     ]
 
 
-@pytest.fixture(name="set_up_subarray_log_checking_for_sdp_ln", autouse=True)
-@pytest.mark.usefixtures("set_sdp_ln_entry_point")
+@pytest.fixture(name="set_up_subarray_log_checking_for_sdp_ln")
 def fxt_set_up_log_capturing_for_sdp(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
@@ -75,7 +79,7 @@ def fxt_set_up_log_capturing_for_sdp(
                 for index in range(1, sut_settings.nr_of_subarrays + 1)
             ]
             log_checking.capture_logs_from_devices(*subarrays)
-        elif tel.skalow:
+        else:
             subarrays = [
                 str(tel.skalow.tm.subarray(index).sdp_leaf_node)
                 for index in range(1, sut_settings.nr_of_subarrays + 1)
@@ -83,11 +87,10 @@ def fxt_set_up_log_capturing_for_sdp(
             log_checking.capture_logs_from_devices(*subarrays)
 
 
-
-@pytest.fixture(name="set_up_subarray_log_checking_for_csp_ln", autouse=True)
-@pytest.mark.usefixtures("set_csp_ln_entry_point")
+@pytest.fixture(name="set_up_subarray_log_checking_for_csp_ln")
 def fxt_set_up_log_capturing_for_csp(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings
 ):
     """Set up log capturing (if enabled by CAPTURE_LOGS).
 
@@ -131,48 +134,6 @@ def an_sdp_subarray_in_idle_state(
     return sdp_base_configuration
 
 
-@given("an SDP subarray in READY state")
-def an_sdp_subarray_in_ready_state(
-    sdp_base_configuration: conf_types.ScanConfiguration,
-    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-    sut_settings: conftest.SutTestSettings,
-) -> conf_types.ScanConfiguration:
-    """an SDP subarray in READY state."""
-    subarray_allocation_spec.receptors = sut_settings.receptors
-    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
-    # will use default composition for the allocated subarray
-    # subarray_allocation_spec.composition
-    return sdp_base_configuration
-
-@then("the SDP subarray shall go from READY to SCANNING")
-def the_subarray_shall_be_in_the_scanning_state(
-    configured_subarray: fxt_types.configured_subarray,
-):
-    """the SDP subarray shall go from READY to SCANNING."""
-    tel = names.TEL()
-    sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
-    sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
-
-    result = sdp_subarray.read_attribute("obsstate").value
-    assert_that(result).is_equal_to(ObsState.SCANNING)
 
 
-@then("the SDP shall go back to READY when finished")
-def the_subarray_goes_back_to_ready_state(
-    configured_subarray: fxt_types.configured_subarray,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
-):
-    """The SDP goes back to READY state when finished"""
-    tel = names.TEL()
-    sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
-    sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
-    context_monitoring.re_init_builder()
-    context_monitoring.wait_for(sdp_subarray_name).for_attribute(
-        "obsstate"
-    ).to_become_equal_to(
-        "READY", ignore_first=False, settings=integration_test_exec_settings
-    )
-    result = sdp_subarray.read_attribute("obsstate").value
-    assert_that(result).is_equal_to(ObsState.READY)
 

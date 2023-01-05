@@ -137,3 +137,35 @@ def an_sdp_subarray_in_ready_state(
     # subarray_allocation_spec.composition
     return sdp_base_configuration
 
+@then("the SDP subarray shall go from READY to SCANNING")
+def the_subarray_shall_be_in_the_scanning_state(
+    configured_subarray: fxt_types.configured_subarray,
+):
+    """the SDP subarray shall go from READY to SCANNING."""
+    tel = names.TEL()
+    sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
+    sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
+
+    result = sdp_subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(ObsState.SCANNING)
+
+
+@then("the SDP shall go back to READY when finished")
+def the_subarray_goes_back_to_ready_state(
+    configured_subarray: fxt_types.configured_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """The SDP goes back to READY state when finished"""
+    tel = names.TEL()
+    sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
+    sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
+    context_monitoring.re_init_builder()
+    context_monitoring.wait_for(sdp_subarray_name).for_attribute(
+        "obsstate"
+    ).to_become_equal_to(
+        "READY", ignore_first=False, settings=integration_test_exec_settings
+    )
+    result = sdp_subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(ObsState.READY)
+

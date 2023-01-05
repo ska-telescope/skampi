@@ -25,10 +25,10 @@ def test_assign_resources_on_sdp_in_low():
 @given("a SDP subarray in the EMPTY state")
 def an_sdp_subarray_in_empty_state(
     set_sdp_ln_entry_point,
-    sdp_base_composition: conf_types.Composition
+    base_composition: conf_types.Composition
 ) -> conf_types.Composition:
     """an SDP subarray in Empty state."""
-    return sdp_base_composition
+    return base_composition
 
 
 @given("a TMC SDP subarray Leaf Node")

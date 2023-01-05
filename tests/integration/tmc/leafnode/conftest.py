@@ -2,8 +2,8 @@
 
 import os
 import pytest
-
-from pytest_bdd import given
+from assertpy import assert_that
+from pytest_bdd import given, then
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
@@ -12,6 +12,10 @@ from resources.models.tmc_model.leafnodes.cspln_entry_point import CSPLnEntryPoi
 
 from ... import conftest
 
+
+@given("a TMC SDP subarray Leaf Node")
+def a_sdp_sln(set_sdp_ln_entry_point):
+    """a TMC SDP subarray Leaf Node."""
 
 @pytest.fixture(name="set_sdp_ln_entry_point")
 def fxt_set_sdp_ln_entry_point(

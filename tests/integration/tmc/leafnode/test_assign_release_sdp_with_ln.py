@@ -25,16 +25,10 @@ def test_assign_resources_on_sdp_in_low():
 @given("a SDP subarray in the EMPTY state")
 def an_sdp_subarray_in_empty_state(
     set_sdp_ln_entry_point,
-    sdp_base_configuration: conf_types.ScanConfiguration,
-    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-    sut_settings: SutTestSettings,
-) -> conf_types.ScanConfiguration:
+    sdp_base_composition: conf_types.Composition
+) -> conf_types.Composition:
     """an SDP subarray in Empty state."""
-    subarray_allocation_spec.receptors = sut_settings.receptors
-    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
-    # will use default composition for the allocated subarray
-    # subarray_allocation_spec.composition
-    return sdp_base_configuration
+    return sdp_base_composition
 
 
 @given("a TMC SDP subarray Leaf Node")

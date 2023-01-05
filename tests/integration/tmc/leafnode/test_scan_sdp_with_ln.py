@@ -71,7 +71,7 @@ def the_subarray_goes_back_to_ready_state(
 @pytest.mark.skalow
 @pytest.mark.configure
 @scenario(
-    "features/sdpln_run_scan.feature",
+    "features/tmc_sdpln_scan.feature",
     "Scan the sdp low using csp leaf node",
 )
 def test_run_scan_on_sdp_subarray_in_low():

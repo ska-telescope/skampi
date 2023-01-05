@@ -13,7 +13,7 @@ all: test
 ifneq ($(EXIT_AT_FAIL),false)
 EXIT = -x
 else
-EXIT =
+EXIT = 
 endif
 
 test: install

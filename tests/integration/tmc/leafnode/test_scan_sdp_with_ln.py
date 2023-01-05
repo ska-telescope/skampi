@@ -89,7 +89,7 @@ def test_run_scan_on_sdp_subarray_in_low():
     """Run scan on sdp subarray in low using the leaf node."""
 
 
-@given("an SDP subarray in READY state")
+@given("an SDP subarray in the READY state")
 def an_sdp_subarray_in_ready_state(
     sdp_base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,

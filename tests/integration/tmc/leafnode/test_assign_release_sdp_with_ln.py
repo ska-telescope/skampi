@@ -22,7 +22,7 @@ def test_assign_resources_on_sdp_in_low():
     """AssignResources on sdp subarray in low using the leaf node."""
 
 
-@given("a SDP subarray in the EMPTY state")
+@given("a SDP subarray in the EMPTY state", target_fixture="composition")
 def an_sdp_subarray_in_empty_state(
     set_sdp_ln_entry_point,
     base_composition: conf_types.Composition

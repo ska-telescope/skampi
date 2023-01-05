@@ -5,4 +5,3 @@ Scenario: Scan the sdp low using csp leaf node
     When I command it to scan for a given period
     Then the SDP subarray shall go from READY to SCANNING
     Then the SDP shall go back to READY when finished
-    

@@ -29,6 +29,6 @@ ska-sim-dishmaster:
 
 # Low specific products
 ska-tmc-low:
-  enabled: false
+  enabled: true
 ska-low-mccs:
   enabled: false

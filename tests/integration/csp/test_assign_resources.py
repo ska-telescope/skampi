@@ -31,7 +31,7 @@ def test_assign_resources_to_csp_mid_subarray():
     """Assign resources to CSP mid subarray."""
 
 
-@pytest.mark.skalow
+#@pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign
 @scenario(

@@ -1,7 +1,6 @@
 @XTP-16179
 Feature: TMC Integration Tests for Low
 
-
     @XTP-16192
     Scenario: Configure the SDP low using SDP leaf node
         Given an SDP subarray in the IDLE state

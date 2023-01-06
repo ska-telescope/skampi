@@ -11,3 +11,4 @@ configure-alarmhandler:
 	kubectl  --kubeconfig=$(KUBECONFIG) logs job.batch/alarm-configuration -n $(KUBE_NAMESPACE)
 	rm charts/configuration_job.sh
 	rm resources/alarm_configure.py 
+	rm charts/configuration_job.yaml

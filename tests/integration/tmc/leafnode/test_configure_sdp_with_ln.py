@@ -41,10 +41,12 @@ def a_sdp_sln(set_sdp_ln_entry_point):
 
 
 @then("the subarray must be in the READY state")
+@then("the SDP subarray shall go from IDLE to READY state")
 def the_subarray_must_be_in_the_ready_state(
     allocated_subarray: fxt_types.allocated_subarray,
 ):
     """the subarray must be in the READY state."""
+    """the SDP subarray shall go from IDLE to READY state."""
     sub_array_id = allocated_subarray.id
     tel = names.TEL()
     sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(sub_array_id))

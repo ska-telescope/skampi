@@ -45,7 +45,6 @@ def a_sdp_sln(set_sdp_ln_entry_point):
 def the_subarray_must_be_in_the_ready_state(
     allocated_subarray: fxt_types.allocated_subarray,
 ):
-    """the subarray must be in the READY state."""
     """the SDP subarray shall go from IDLE to READY state."""
     sub_array_id = allocated_subarray.id
     tel = names.TEL()

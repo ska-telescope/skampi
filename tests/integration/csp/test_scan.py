@@ -65,4 +65,3 @@ def the_csp_subarray_must_be_in_the_scanning_state(
     )
     result = csp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)
-

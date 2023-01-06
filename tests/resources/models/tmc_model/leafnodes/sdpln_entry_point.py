@@ -66,7 +66,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         self,
         sub_array_id: int,
         dish_ids: List[int],
-        composition: types.Composition,  # pylint: disable=
+        composition: types.Composition,
         sb_id: str,
     ):
         """Domain logic for assigning resources to a subarray in sdp LN.

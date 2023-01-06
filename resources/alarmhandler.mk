@@ -1,6 +1,8 @@
 .PHONY: configure-alarmhandler
 
 # This script configures the alarmhandler with the rules defined in text file.
+# Requries paramater KUBECONFIG, FILE_NAME, ALARM_HANDLER_FQDN, KUBE_NAMESPACE, TANGO_HOST
+# FILE_NAME is a text file containing alarm rules to configure the Elettra Alarm Handler
 configure-alarmhandler:
 	curl https://gitlab.com/ska-telescope/ska-tango-alarmhandler/-/raw/0.1.1/charts/configuration_job.sh?inline=false > charts/configuration_job.sh
 	curl https://gitlab.com/ska-telescope/ska-tango-alarmhandler/-/raw/0.1.1/charts/ska-tango-alarmhandler/data/alarm_configure.py?inline=false > resources/alarm_configure.py 

@@ -42,6 +42,8 @@ else
 DASHMARK ?= ska$(TEL)
 endif
 
+# Elettra alarm handler device
+ALARM_HANDLER_FQDN= "alarm/handler/01"
 
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
 CONFIG_MANAGER= mid-eda/cm/01

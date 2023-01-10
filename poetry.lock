@@ -3315,6 +3315,10 @@ ska-tango-base = [
     {file = "ska_tango_base-0.13.3-py3-none-any.whl", hash = "sha256:5f64037af3cf7f3b5a7fb84afadc7f7da485d3f1f66430b84edc99f2741ca756"},
     {file = "ska_tango_base-0.13.3.tar.gz", hash = "sha256:a1f32c9ac4cf73765ae757dcae92e2cab1af09211f1ad5bacc88a21f86c12de4"},
 ]
+ska-ser-skallop = [
+    {file = "ska-ser-skallop-2.21.4+dev.cae89f688.tar.gz", hash = "sha256:3d727a8351658881942207cd94d3a36568b9e9faafff34bae023f4df4e7ff7eb"},
+    {file = "ska_ser_skallop-2.21.4+dev.cae89f688-py3-none-any.whl", hash = "sha256:eb7e7b4b8ab9e1743c46347e5b556830f7c8e73643a7467226bfc62bab5160e1"},
+]
 ska-tango-testing = [
     {file = "ska_tango_testing-0.5.0-py3-none-any.whl", hash = "sha256:99c6ab14c441e06bf22d3ffc20832371cb1a98aa9ea233a56ac55e1761eef8d0"},
     {file = "ska_tango_testing-0.5.0.tar.gz", hash = "sha256:a8e1019fa4fc1d4c62f42aa865bfeaf5bd82d1ec44e0c61ddb20fee0366884bf"},

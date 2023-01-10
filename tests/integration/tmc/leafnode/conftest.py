@@ -4,7 +4,6 @@ tests."""
 import os
 import logging
 import pytest
-
 from pytest_bdd import given
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
@@ -133,3 +132,4 @@ def an_sdp_subarray_in_idle_state(
     # will use default composition for the allocated subarray
     # subarray_allocation_spec.composition
     return sdp_base_configuration
+    

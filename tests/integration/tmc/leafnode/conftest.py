@@ -132,3 +132,4 @@ def an_sdp_subarray_in_idle_state(
     # will use default composition for the allocated subarray
     # subarray_allocation_spec.composition
     return sdp_base_configuration
+    

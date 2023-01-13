@@ -404,50 +404,50 @@ class CSP(_NameBase):
         return DeviceName(self._name(f"/subarray/{index:0>2}"), *self.tags)
 
 
-class MCCS(_NameBase):
+# class MCCS(_NameBase):
 
-    tags = ("mccs scope", "mccs")
+#     tags = ("mccs scope", "mccs")
 
-    def __init__(self, tag) -> None:
-        self._shim = f"{tag}-mccs"
-        self.master = DeviceName(
-            self._name("/control/control"),
-            *{"master domain", "mccs master", *self.tags},
-        )
+#     def __init__(self, tag) -> None:
+#         self._shim = f"{tag}-mccs"
+#         self.master = DeviceName(
+#             self._name("/control/control"),
+#             *{"master domain", "mccs master", *self.tags},
+#         )
 
-    def subarray(self, index: int) -> DeviceName:
-        return DeviceName(
-            self._name(f"/subarray/{index:0>2}"), *{"subarrays", *self.tags}
-        )
+#     def subarray(self, index: int) -> DeviceName:
+#         return DeviceName(
+#             self._name(f"/subarray/{index:0>2}"), *{"subarrays", *self.tags}
+#         )
 
-    def antenna(self, index: int) -> DeviceName:
-        return DeviceName(
-            self._name(f"/antenna/{index:0>6}"), *{"antennae", *self.tags}
-        )
+#     def antenna(self, index: int) -> DeviceName:
+#         return DeviceName(
+#             self._name(f"/antenna/{index:0>6}"), *{"antennae", *self.tags}
+#         )
 
-    def apiu(self, index: int) -> DeviceName:
-        return DeviceName(self._name(f"/apiu/{index:0>3}"), *{"apius", *self.tags})
+#     def apiu(self, index: int) -> DeviceName:
+#         return DeviceName(self._name(f"/apiu/{index:0>3}"), *{"apius", *self.tags})
 
-    def beam(self, index: int) -> DeviceName:
-        return DeviceName(self._name(f"/beam/{index:0>3}"), *{"beams", *self.tags})
+#     def beam(self, index: int) -> DeviceName:
+#         return DeviceName(self._name(f"/beam/{index:0>3}"), *{"beams", *self.tags})
 
-    def station(self, index: int) -> DeviceName:
-        return DeviceName(
-            self._name(f"/station/{index:0>3}"), *{"stations", *self.tags}
-        )
+#     def station(self, index: int) -> DeviceName:
+#         return DeviceName(
+#             self._name(f"/station/{index:0>3}"), *{"stations", *self.tags}
+#         )
 
-    def subarraybeam(self, index: int) -> DeviceName:
-        return DeviceName(
-            self._name(f"/subarraybeam/{index:0>2}"), *{"subarraybeams", *self.tags}
-        )
+#     def subarraybeam(self, index: int) -> DeviceName:
+#         return DeviceName(
+#             self._name(f"/subarraybeam/{index:0>2}"), *{"subarraybeams", *self.tags}
+#         )
 
-    def subrack(self, index: int) -> DeviceName:
-        return DeviceName(
-            self._name(f"/subrack/{index:0>2}"), *{"subracks", *self.tags}
-        )
+#     def subrack(self, index: int) -> DeviceName:
+#         return DeviceName(
+#             self._name(f"/subrack/{index:0>2}"), *{"subracks", *self.tags}
+#         )
 
-    def tile(self, index: int) -> DeviceName:
-        return DeviceName(self._name(f"/tile/{index:0>4}"), *{"tiles", *self.tags})
+#     def tile(self, index: int) -> DeviceName:
+#         return DeviceName(self._name(f"/tile/{index:0>4}"), *{"tiles", *self.tags})
 
 
 class TMSubarrayMid(_NameBase, DeviceName):
@@ -847,30 +847,30 @@ class Sensors(DomainList):
         )
 
 
-class MCCSDevices(DomainList):
-    """low only"""
+# class MCCSDevices(DomainList):
+#     """low only"""
 
-    nr_antenna = 8
-    nr_apiu = 2
-    nr_beam = 4
-    nr_station = 2
-    nr_subarray_beam = 4
-    nr_tile = 4
+#     nr_antenna = 8
+#     nr_apiu = 2
+#     nr_beam = 4
+#     nr_station = 2
+#     nr_subarray_beam = 4
+#     nr_tile = 4
 
-    def _generate_list(self, index: int):
-        assert env.telescope_type_is_low()
-        self._list = (
-            [Low.mccs.antenna(num) for num in range(1, self.nr_antenna + 1)]
-            + [Low.mccs.apiu(num) for num in range(1, self.nr_apiu + 1)]
-            + [Low.mccs.beam(num) for num in range(1, self.nr_beam + 1)]
-            + [Low.mccs.station(num) for num in range(1, self.nr_station + 1)]
-            + [
-                Low.mccs.subarraybeam(num)
-                for num in range(1, self.nr_subarray_beam + 1)
-            ]
-            + [Low.mccs.subrack(1)]
-            + [Low.mccs.tile(num) for num in range(1, self.nr_tile + 1)]
-        )
+#     def _generate_list(self, index: int):
+#         assert env.telescope_type_is_low()
+#         self._list = (
+#             [Low.mccs.antenna(num) for num in range(1, self.nr_antenna + 1)]
+#             + [Low.mccs.apiu(num) for num in range(1, self.nr_apiu + 1)]
+#             + [Low.mccs.beam(num) for num in range(1, self.nr_beam + 1)]
+#             + [Low.mccs.station(num) for num in range(1, self.nr_station + 1)]
+#             + [
+#                 Low.mccs.subarraybeam(num)
+#                 for num in range(1, self.nr_subarray_beam + 1)
+#             ]
+#             + [Low.mccs.subrack(1)]
+#             + [Low.mccs.tile(num) for num in range(1, self.nr_tile + 1)]
+#         )
 
 
 def _skamid_subarrays(nr_of_fsps: int, index: int) -> List[DeviceName]:

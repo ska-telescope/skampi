@@ -34,6 +34,7 @@ def fxt_set_entry_point(
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     TMCEntryPoint.receptors = sut_settings.receptors
     exec_env.entrypoint = TMCEntryPoint
+    exec_env.maintain_on = True
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = [
         "tm",

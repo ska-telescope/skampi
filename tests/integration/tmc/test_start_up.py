@@ -5,7 +5,7 @@ import logging
 
 import pytest
 from assertpy import assert_that
-from pytest_bdd import given, scenario, then, when
+from pytest_bdd import given, scenario, then
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -257,20 +257,20 @@ def a_telescope_with_sdp_and_csp_on():
 # use @when("I switch off the telescope") from ..conftest
 
 # thens
-@when("I start up the telescope for low")
-def i_start_up_the_telescope(
-    entry_point: fxt_types.entry_point,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
-):
-    """I start up the telescope for low."""
-    logging.info("I started up the telescope")
-    telescope_context = TelescopeContext
-    logging.info("found telescope context")
-    with context_monitoring.context_monitoring():
-        with telescope_context.wait_for_starting_up(integration_test_exec_settings):
-            logger.info("The entry point being used is : %s", entry_point)
-            entry_point.set_telescope_to_running()
+# @when("I start up the telescope for low")
+# def i_start_up_the_telescope(
+#     entry_point: fxt_types.entry_point,
+#     context_monitoring: fxt_types.context_monitoring,
+#     integration_test_exec_settings: fxt_types.exec_settings,
+# ):
+#     """I start up the telescope for low."""
+#     logging.info("I started up the telescope")
+#     telescope_context = TelescopeContext
+#     logging.info("found telescope context")
+#     with context_monitoring.context_monitoring():
+#         with telescope_context.wait_for_starting_up(settings=integration_test_exec_settings):
+#             logger.info("The entry point being used is : %s", entry_point)
+#             entry_point.set_telescope_to_running()
 
 
 @then("the sdp, csp and dish must be on")

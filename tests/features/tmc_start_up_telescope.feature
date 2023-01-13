@@ -20,5 +20,5 @@ Feature: Start up the telescope using TMC
 	Scenario: Start up the telescope in low 
 		Given an TMCLow
 		Given a Telescope consisting of SDP and CSP
-		When I start up the telescope for low
+		When I start up the telescope
 		Then the sdp and csp must be on

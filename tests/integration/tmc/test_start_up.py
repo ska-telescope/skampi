@@ -48,6 +48,7 @@ def test_tmc_off_telescope_mid():
 @given("an TMC")
 def a_tmc():
     """an TMC"""
+    logger.info("I am in TMC")
     tel = names.TEL()
     sut_settings = conftest.SutTestSettings()
 
@@ -91,6 +92,7 @@ def a_tmc():
 @given("an TMCLow")
 def a_tmc_low():
     """an TMCLow"""
+    logger.info("I am in TMClow")
     tel = names.TEL()
     sut_settings = conftest.SutTestSettings()
 

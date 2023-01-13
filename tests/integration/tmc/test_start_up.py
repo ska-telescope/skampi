@@ -85,9 +85,9 @@ def a_tmc():
         result = dish_leaf_nodes.ping()
         assert result > 0
 
-@given("an TMClow")
+@given("an TMCLow")
 def a_tmc_low():
-    """an TMClow"""
+    """an TMCLow"""
     tel = names.TEL()
     sut_settings = conftest.SutTestSettings()
 

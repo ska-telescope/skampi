@@ -36,11 +36,9 @@ def fxt_set_entry_point(
     exec_env.entrypoint = TMCEntryPoint
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = [
-        "tm",
         "mid",
         "sdp",
         "csp",
-        "tmc scope",
         "csp scope",
         "csp control",
         "sdp control",

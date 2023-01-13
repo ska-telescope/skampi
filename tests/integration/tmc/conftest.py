@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
-# @pytest.mark.usefixtures("set_up_subarray_log_checking_for_tmc")
+@pytest.mark.usefixtures("set_up_subarray_log_checking_for_tmc")
 def fxt_set_entry_point(
     nr_of_subarrays: int,
     set_session_exec_env: fxt_types.set_session_exec_env,

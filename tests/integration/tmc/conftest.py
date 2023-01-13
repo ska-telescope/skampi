@@ -6,7 +6,7 @@ import logging
 from typing import Callable
 import pytest
 
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from tests.integration.tmc import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 

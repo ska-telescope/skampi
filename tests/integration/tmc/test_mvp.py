@@ -490,10 +490,6 @@ class TMSubarrayLow(_NameBase, DeviceName):
             self._name(f"leaf_node/csp_subarray{self.index:0>2}"),
             *{"leaf nodes", "csp domain", *self.tags},
         )
-        self.mccs_leaf_node = DeviceName(
-            self._name(f"leaf_node/mccs_subarray{self.index:0>2}"),
-            *{"leaf nodes", "mccs domain", *self.tags},
-        )
         super().__init__(self._name(f"subarray_node/{self.index}"), *self.tags)
 
 
@@ -636,8 +632,6 @@ class Low(_NameBase):
 
     tag = "low"
 
-    mccs = MCCS(tag)
-
     tm = TMLow(tag)
 
     sdp = SDP(tag)
@@ -776,7 +770,12 @@ def _mid_masters() -> List[DeviceName]:
 
 
 def _low_masters() -> List[DeviceName]:
-    return [Low.mccs.master, Low.tm.central_node, Low.tm.mccs_leaf_node, Low.sdp.master]
+    return [
+        Low.csp.controller,
+        Low.sdp.master,
+        Low.tm.central_node,
+        Low.tm.csp_leaf_node,
+    ]
 
 
 class Masters(DomainList):
@@ -896,9 +895,11 @@ def _skamid_subarrays(nr_of_fsps: int, index: int) -> List[DeviceName]:
 
 def _skalow_subarrays(index: int) -> List[DeviceName]:
     return [
-        Low.tm.subarray(index),
-        Low.tm.subarray(index).mccs_leaf_node,
-        Low.mccs.subarray(index),
+            Low.tm.subarray(index),
+            Low.tm.subarray(index).csp_leaf_node,
+            Low.tm.subarray(index).sdp_leaf_node,
+            Low.csp.subarray(index),
+            Low.sdp.subarray(index),
     ]
 
 

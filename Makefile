@@ -42,6 +42,11 @@ else
 DASHMARK ?= ska$(TEL)
 endif
 
+
+ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
+CONFIG_MANAGER= mid-eda/cm/01
+ARCHWIZARD_CONFIG?= $(ARCHWIZARD_VIEW_DBNAME)=tango://$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000/$(CONFIG_MANAGER)
+
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
 ifneq ($(TESTCOUNT),)
 # Dashcount is a synthesis of testcount as input user variable and is used to
@@ -91,7 +96,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
-	--set sdp-storage.namespace=$(KUBE_NAMESPACE_SDP) \
+	--set ska-tango-archiver.archwizard_config=$(ARCHWIZARD_CONFIG) \
 	$(SDP_PROXY_VARS)
 
 K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
@@ -225,6 +230,7 @@ K8S_TEST_TEST_COMMAND = make -s \
 
 # include Skampi extension make targets
 -include resources/skampi.mk
+-include resources/archiver.mk
 
 k8s_test_command = /bin/bash -o pipefail -c "\
 	mkfifo results-pipe && tar zx --warning=all && \
@@ -243,7 +249,6 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 k8s-pre-install-chart:
 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
-	 
 
 k8s-post-install-chart:
 	kubectl rollout status -n $(KUBE_NAMESPACE) --watch --timeout=90s statefulset/ska-sdp-console

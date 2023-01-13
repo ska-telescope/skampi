@@ -27,8 +27,8 @@ docs/Pipfile.lock
 /PrivateRules.mak
 /PrivateRules.mak_bu
 /tmp
-/build
-/builds
+build
+builds
 ansible-playbooks
 **/.idea
 /test-harness/tests/acceptance_tests/__pycache__

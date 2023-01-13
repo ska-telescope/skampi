@@ -18,4 +18,5 @@ Feature: Start up the telescope using TMC
 
 
 	Scenario: Start up the telescope in low 
-		Given an TMC_Low
+		Given an TMCLow
+		Given a Telescope consisting of SDP and CSP

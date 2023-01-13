@@ -85,9 +85,9 @@ def a_tmc():
         result = dish_leaf_nodes.ping()
         assert result > 0
 
-@given("an TMC_low")
+@given("an TMClow")
 def a_tmc_low():
-    """an TMC_low"""
+    """an TMClow"""
     tel = names.TEL()
     sut_settings = conftest.SutTestSettings()
 
@@ -156,6 +156,33 @@ def a_telescope_with_csp_sdp_and_dish():
         result = dish_leaf_nodes.ping()
         assert result > 0
 
+@given("a Telescope consisting of SDP and CSP")
+def a_telescope_with_csp_and_sdp():
+    """a Telescope consisting of SDP and CSP"""
+    tel = names.TEL()
+    sut_settings = conftest.SutTestSettings()
+
+    csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
+    result = csp_master_leaf_node.ping()
+    assert result > 0
+
+    sdp_master_leaf_node = con_config.get_device_proxy(tel.tm.sdp_leaf_node)
+    result = sdp_master_leaf_node.ping()
+    assert result > 0
+
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        csp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).csp_leaf_node
+        )
+        result = csp_subarray_leaf_node.ping()
+        assert result > 0
+
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        sdp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).sdp_leaf_node
+        )
+        result = sdp_subarray_leaf_node.ping()
+        assert result > 0
 
 @given("a Telescope consisting of SDP, CSP and a Dish that is ON")
 def a_telescope_with_sdp_csp_and_dish_on():

@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
-@pytest.mark.usefixtures("set_up_subarray_log_checking_for_tmc")
+# @pytest.mark.usefixtures("set_up_subarray_log_checking_for_tmc")
 def fxt_set_entry_point(
     nr_of_subarrays: int,
     set_session_exec_env: fxt_types.set_session_exec_env,
@@ -35,7 +35,7 @@ def fxt_set_entry_point(
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     TMCEntryPoint.receptors = sut_settings.receptors
     exec_env.entrypoint = TMCEntryPoint
-    exec_env.maintain_on = True
+    # exec_env.maintain_on = True
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = [
         "tm",

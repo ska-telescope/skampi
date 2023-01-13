@@ -29,7 +29,7 @@ def test_tmc_start_up_telescope_mid():
 @pytest.mark.skalow
 @pytest.mark.startup
 @scenario("features/tmc_start_up_telescope.feature", "Start up the telescope in low")
-def test_tmc_start_up_telescope_low():
+def test_aatmc_start_up_telescope_low():
     """Start up the telescope in low."""
 
 

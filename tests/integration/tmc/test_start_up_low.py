@@ -44,15 +44,19 @@ def a_tmc_low():
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
         subarray_node = con_config.get_device_proxy(tel.tm.subarray(index))
+        logger.info("I am in SN ping")
         result = subarray_node.ping()
+        logger.info("I am in SN ping")
         assert result > 0
 
     csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
     result = csp_master_leaf_node.ping()
+    logger.info("I am in CSPMLN ping")
     assert result > 0
 
     sdp_master_leaf_node = con_config.get_device_proxy(tel.tm.sdp_leaf_node)
     result = sdp_master_leaf_node.ping()
+    logger.info("I am in SDPMLN ping")
     assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
@@ -60,6 +64,7 @@ def a_tmc_low():
             tel.tm.subarray(index).csp_leaf_node
         )
         result = csp_subarray_leaf_node.ping()
+        logger.info("I am in CSPSLN ping")
         assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
@@ -67,6 +72,7 @@ def a_tmc_low():
             tel.tm.subarray(index).sdp_leaf_node
         )
         result = sdp_subarray_leaf_node.ping()
+        logger.info("I am in SDPSLN ping")
         assert result > 0
 
 @given("a Telescope consisting of SDP and CSP")
@@ -77,10 +83,12 @@ def a_telescope_with_csp_and_sdp():
 
     csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
     result = csp_master_leaf_node.ping()
+    logger.info("I am in cspMLN ping")
     assert result > 0
 
     sdp_master_leaf_node = con_config.get_device_proxy(tel.tm.sdp_leaf_node)
     result = sdp_master_leaf_node.ping()
+    logger.info("I am in sdpMLN ping")
     assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
@@ -88,6 +96,7 @@ def a_telescope_with_csp_and_sdp():
             tel.tm.subarray(index).csp_leaf_node
         )
         result = csp_subarray_leaf_node.ping()
+        logger.info("I am in cspSLN ping")
         assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
@@ -95,6 +104,7 @@ def a_telescope_with_csp_and_sdp():
             tel.tm.subarray(index).sdp_leaf_node
         )
         result = sdp_subarray_leaf_node.ping()
+        logger.info("I am in sdpSLN ping")
         assert result > 0
 
 

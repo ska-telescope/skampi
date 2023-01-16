@@ -8,7 +8,7 @@ from assertpy import assert_that
 from pytest_bdd import given, scenario, then
 
 from ska_ser_skallop.connectors import configuration as con_config
-from tests.integration.tmc import mvp_names as names
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from ska_ser_skallop.mvp_fixtures.context_management import (
@@ -32,11 +32,14 @@ def a_tmc_low():
     """an TMCLow"""
     logger.info("I am in TMClow")
     tel = names.TEL()
+    logger.info("I am in Tel")
     sut_settings = conftest.SutTestSettings()
 
     central_node_name = tel.tm.central_node
+    logger.info("I am in CN")
     central_node = con_config.get_device_proxy(central_node_name)
     result = central_node.ping()
+    logger.info("I am in CN ping")
     assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):

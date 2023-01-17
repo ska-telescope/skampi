@@ -150,9 +150,7 @@ def i_start_up_the_telescope(
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """I start up the telescope."""
-    logger.info("I am in  when")
     with context_monitoring.context_monitoring():
-        logger.info("I am in context_monitoring")
         with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()

@@ -73,9 +73,10 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 "state"
             ).to_become_equal_to("ON", ignore_first=False)
         # we wait for cbf vccs to be in proper initialised state
-        brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
-            "reportVccState"
-        ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
+        if self._tel.skamid:
+            brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
+                "reportVccState"
+            ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
         # set dish master to be waited before startup completes
         if self._tel.skamid:
             for dish in self._tel.skamid.dishes(self.receptors):
@@ -117,9 +118,14 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                     "STANDBY", ignore_first=False
                 )
         # set centralnode telescopeState waited before startup completes
-        brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
-            "telescopeState"
-        ).to_become_equal_to("STANDBY", ignore_first=False)
+        if self._tel.skamid:
+            brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
+                "telescopeState"
+            ).to_become_equal_to("STANDBY", ignore_first=False)
+        else:
+            brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
+                "telescopeState"
+            ).to_become_equal_to("OFF", ignore_first=False)
         return brd
 
     def undo(self):

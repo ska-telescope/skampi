@@ -11,6 +11,7 @@ KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 TANGO_DATABASE_DS ?= databaseds-tango-base## Stable name for the Tango DB
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
+SKA_TANGO_OPERATOR ?= true
 TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
 HELM_RELEASE ?= test## release name of the chart
 MINIKUBE ?= true## Minikube or not

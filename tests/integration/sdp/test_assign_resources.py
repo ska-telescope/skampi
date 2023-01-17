@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 # log capturing
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp

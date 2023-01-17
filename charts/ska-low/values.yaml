@@ -3,6 +3,7 @@ xauthority: "~/.Xauthority"
 
 global:
   minikube: true
+  operator: true
   annotations:
     skampi: "true"
     app.gitlab.com/app: skampi

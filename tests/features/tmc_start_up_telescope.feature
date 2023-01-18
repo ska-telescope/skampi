@@ -29,4 +29,5 @@ Feature: Start up the telescope using TMC
 		Given an TMC
 		Given a Telescope consisting of SDP and CSP that is ON
 		When I switch off the telescope
-		Then the sdp and csp must be off
+		Then the sdp and csp must be off 
+		

@@ -164,8 +164,13 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # currently ignore composition as all types will be standard
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-
-        config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+        
+        if self._tel.skamid:
+            config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM 
+            with open('tests/resources/test_data/TMC_integration/assign_resource_low.json') as f:
+                config = json.loads(f.read())
 
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
 
@@ -180,11 +185,20 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-        config = (
-            self.observation.generate_release_all_resources_config_for_central_node(
-                sub_array_id
+        if self._tel.skamid:
+            config = (
+                self.observation.generate_release_all_resources_config_for_central_node(
+                    sub_array_id
+                )
             )
-        )
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM 
+            config = {
+                "interface": "https://schema.skao.int/ska-low-tmc-releaseresources/3.0",
+                "transaction_id": "txn-....-00001",
+                "subarray_id": 1,
+                "release_all": true
+            }
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         central_node.command_inout("ReleaseResources", config)
 

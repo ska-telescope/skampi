@@ -36,16 +36,14 @@ def test_tmc_start_up_telescope_mid():
 def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
 
-@pytest.mark.k8s
-@pytest.mark.k8sonly
+
 @pytest.mark.skalow
 @pytest.mark.startup
 @scenario("features/tmc_start_up_telescope.feature", "Start up the telescope in low")
 def test_tmc_start_up_telescope_low():
     """Start up the telescope in low."""
 
-@pytest.mark.k8s
-@pytest.mark.k8sonly
+
 @pytest.mark.skalow
 @pytest.mark.standby
 @scenario("features/tmc_start_up_telescope.feature", "Switch of the telescope in low")
@@ -243,5 +241,5 @@ def the_sdp_csp_and_dish_must_be_off(
     result = central_node.read_attribute("telescopeState").value
     if tel.skamid:
         assert_that(str(result)).is_equal_to("STANDBY")
-    else:
+    elif tel.skalow:
         assert_that(str(result)).is_equal_to("OFF")

@@ -75,3 +75,4 @@ def test_test_sdp_assign_resources(
     mock_entry_point.spy.compose_subarray.assert_called()
     mock_entry_point.model.sdp.master.spy.command_inout.assert_called()
     mock_entry_point.model.sdp.subarray1.spy.command_inout.assert_called()
+    

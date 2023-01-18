@@ -81,3 +81,4 @@ def the_csp_must_be_on(
 def test_test_csp_startup(run_mock):
     """Test the test using a mock SUT"""
     run_mock(test_csp_start_up_telescope_mid)
+    

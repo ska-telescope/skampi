@@ -168,8 +168,9 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         if self._tel.skamid:
             config = self.observation.generate_assign_resources_config(sub_array_id).as_json
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM 
-            with open('tests/resources/test_data/TMC_integration/assign_resource_low.json') as f:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration", "assign_resource_low.json")  
+            with open(json_file_path) as f:
                 config = f.read()
 
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
@@ -192,8 +193,10 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
                 )
             )
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM 
-            config = '{"interface": "https://schema.skao.int/ska-low-tmc-releaseresources/3.0","transaction_id": "txn-....-00001","subarray_id": 1,"release_all": True}'
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration", "release_resource_low.json") 
+            with open(json_file_path) as f:
+                config = f.read()
         
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         central_node.command_inout("ReleaseResources", config)

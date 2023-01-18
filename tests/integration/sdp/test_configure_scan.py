@@ -57,4 +57,3 @@ def the_subarray_must_be_in_the_ready_state(
 def test_test_sdp_configure_scan(run_mock):
     """Test the test using a mock SUT"""
     run_mock(test_configure_scan_on_sdp_subarray_in_mid)
-    

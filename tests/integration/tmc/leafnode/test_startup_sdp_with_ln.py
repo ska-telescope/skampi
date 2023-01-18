@@ -59,4 +59,3 @@ def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
         subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
         result = subarray.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
-        

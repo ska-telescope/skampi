@@ -66,4 +66,3 @@ def the_csp_subarray_goes_back_to_ready_state(
     )
     result = csp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)
-    

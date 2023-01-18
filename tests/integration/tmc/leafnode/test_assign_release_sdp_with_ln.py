@@ -48,4 +48,3 @@ def the_sdp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
-    

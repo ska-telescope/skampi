@@ -17,13 +17,15 @@ Feature: Start up the telescope using TMC
 		Then the sdp, csp and dish must be off
 
 
-	Scenario: Start up the telescope in low 
+	@XTP-16178 @XTP-16179 @XTP-3325
+	Scenario: Start up the low telescope using TMC
 		Given an TMC
 		Given a Telescope consisting of SDP and CSP
 		When I start up the telescope
 		Then the sdp and csp must be on
 
-	Scenario: Switch of the telescope in low
+	@XTP-16182 @XTP-16179 @XTP-3325
+	Scenario: Switch off the low telescope using TMC
 		Given an TMC
 		Given a Telescope consisting of SDP and CSP that is ON
 		When I switch off the telescope

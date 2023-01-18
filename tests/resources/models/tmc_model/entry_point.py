@@ -122,7 +122,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
                 "telescopeState"
             ).to_become_equal_to("STANDBY", ignore_first=False)
-        else:
+        elif self._tel.skalow:
             brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
                 "telescopeState"
             ).to_become_equal_to("OFF", ignore_first=False)

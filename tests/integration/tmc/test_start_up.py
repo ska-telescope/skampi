@@ -48,7 +48,7 @@ def test_tmc_start_up_telescope_low():
 @pytest.mark.standby
 @scenario("features/tmc_start_up_telescope.feature", "Switch off the low telescope using TMC")
 def test_tmc_off_telescope_low():
-    """Off the telescope in low."""
+    """Switch Off the telescope in low."""
 
 
 @given("an TMC")

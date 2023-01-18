@@ -37,12 +37,16 @@ def fxt_set_entry_point(
     # exec_env.maintain_on = True
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = [
+        # "tm",
+        # "mid",
         "sdp",
         "csp",
+        # "tmc scope",
         "csp scope",
         "csp control",
         "sdp control",
     ]
+
 
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")

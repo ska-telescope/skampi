@@ -61,4 +61,4 @@ def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
 def test_test_sdp_startup(run_mock):
     """Test the test using a mock SUT"""
     run_mock(test_sdp_start_up_telescope_mid)
-    
+       

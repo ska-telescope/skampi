@@ -94,6 +94,7 @@ def a_tmc():
             result = dish_leaf_nodes.ping()
             assert result > 0
 
+
 @given("a Telescope consisting of SDP and CSP")
 @given("a Telescope consisting of SDP, CSP and a Dish")
 def a_telescope_with_csp_sdp_and_dish():
@@ -127,6 +128,7 @@ def a_telescope_with_csp_sdp_and_dish():
             dish_leaf_nodes = con_config.get_device_proxy(tel.tm.dish_leafnode(index))
             result = dish_leaf_nodes.ping()
             assert result > 0
+
 
 @given("a Telescope consisting of SDP and CSP that is ON")
 @given("a Telescope consisting of SDP, CSP and a Dish that is ON")
@@ -169,6 +171,7 @@ def a_telescope_with_sdp_csp_and_dish_on():
 # when
 # use @when("I switch off the telescope") from ..conftest
 
+
 @then("the sdp and csp must be on")
 @then("the sdp, csp and dish must be on")
 def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
@@ -201,6 +204,7 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     result = central_node.read_attribute("telescopeState").value
     assert_that(str(result)).is_equal_to("ON")
+
 
 @then("the sdp and csp must be off")
 @then("the sdp, csp and dish must be off")

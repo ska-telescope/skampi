@@ -25,7 +25,7 @@
         "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
         "execution_block":
         {
-            "eb_id": "eb-mvp01-20200325-00002",
+            "eb_id": "eb-mvp01-20210623-00000",
             "max_length": 100.0,
             "context":
             {},
@@ -127,8 +127,8 @@
                             "count": 744,
                             "start": 0,
                             "stride": 2,
-                            "freq_min": 350000000,
-                            "freq_max": 368000000,
+                            "freq_min": 350000000.0,
+                            "freq_max": 368000000.0,
                             "link_map":
                             [
                                 [
@@ -154,8 +154,8 @@
                             "count": 744,
                             "start": 2000,
                             "stride": 1,
-                            "freq_min": 360000000,
-                            "freq_max": 368000000,
+                            "freq_min": 360000000.0,
+                            "freq_max": 368000000.0,
                             "link_map":
                             [
                                 [
@@ -173,8 +173,8 @@
                             "count": 744,
                             "start": 4000,
                             "stride": 1,
-                            "freq_min": 360000000,
-                            "freq_max": 361000000,
+                            "freq_min": 360000000.0,
+                            "freq_max": 361000000.0,
                             "link_map":
                             [
                                 [
@@ -197,8 +197,8 @@
                             "spectral_window_id": "pulsar_fsp_channels",
                             "count": 744,
                             "start": 0,
-                            "freq_min": 350000000,
-                            "freq_max": 368000000
+                            "freq_min": 350000000.0,
+                            "freq_max": 368000000.0
                         }
                     ]
                 }
@@ -229,7 +229,7 @@
                         ],
                         "dec":
                         [
-                            123,
+                            80,
                             0.1
                         ],
                         "reference_time": "...",
@@ -242,7 +242,7 @@
         "processing_blocks":
         [
             {
-                "pb_id": "pb-mvp01-20200325-00001",
+                "pb_id": "pb-mvp01-20210623-00000",
                 "sbi_ids":
                 [
                     "sbi-mvp01-20200325-00001"
@@ -250,37 +250,54 @@
                 "script":
                 {
                     "kind": "realtime",
-                    "name": "test-receive-addresses",
-                    "version": "0.5.0"
+                    "name": "vis_receive",
+                    "version": "0.1.0"
                 },
                 "parameters":
-                {},
-                "dependencies": [{
-                    "pb_id": "pb-mvp01-20210623-00002",
-                    "kind": ["calibration"]
-                }]
+                {}
             },
             {
-                "pb_id": "pb-mvp01-20200325-00002",
+                "pb_id": "pb-mvp01-20210623-00001",
+                "sbi_ids":
+                [
+                    "sbi-mvp01-20200325-00001"
+                ],
+                "script":
+                {
+                    "kind": "realtime",
+                    "name": "test_realtime",
+                    "version": "0.1.0"
+                },
+                "parameters":
+                {}
+            },
+            {
+                "pb_id": "pb-mvp01-20210623-00002",
                 "sbi_ids":
                 [
                     "sbi-mvp01-20200325-00002"
                 ],
                 "script":
                 {
-                    "kind": "realtime",
-                    "name": "test-receive-addresses",
-                    "version": "0.5.0"
+                    "kind": "batch",
+                    "name": "ical",
+                    "version": "0.1.0"
                 },
                 "parameters":
                 {},
-                "dependencies": [{
-                    "pb_id": "pb-mvp01-20210623-00003",
-                    "kind": ["calibration"]
-                }]
+                "dependencies":
+                [
+                    {
+                        "pb_id": "pb-mvp01-20210623-00000",
+                        "kind":
+                        [
+                            "visibilities"
+                        ]
+                    }
+                ]
             },
             {
-                "pb_id": "pb-mvp01-20200325-00003",
+                "pb_id": "pb-mvp01-20210623-00003",
                 "sbi_ids":
                 [
                     "sbi-mvp01-20200325-00001",
@@ -288,16 +305,22 @@
                 ],
                 "script":
                 {
-                    "kind": "realtime",
-                    "name": "test-receive-addresses",
-                    "version": "0.5.0"
+                    "kind": "batch",
+                    "name": "dpreb",
+                    "version": "0.1.0"
                 },
                 "parameters":
                 {},
-                "dependencies": [{
-                    "pb_id": "pb-mvp01-20210623-00004",
-                    "kind": ["calibration"]
-                }]
+                "dependencies":
+                [
+                    {
+                        "pb_id": "pb-mvp01-20210623-00002",
+                        "kind":
+                        [
+                            "calibration"
+                        ]
+                    }
+                ]
             }
         ],
         "resources":
@@ -312,7 +335,69 @@
             "receptors":
             [
                 "FS4",
-                "FS8"
+                "FS8",
+                "FS16",
+                "FS17",
+                "FS22",
+                "FS23",
+                "FS30",
+                "FS31",
+                "FS32",
+                "FS33",
+                "FS36",
+                "FS52",
+                "FS56",
+                "FS57",
+                "FS59",
+                "FS62",
+                "FS66",
+                "FS69",
+                "FS70",
+                "FS72",
+                "FS73",
+                "FS78",
+                "FS80",
+                "FS88",
+                "FS89",
+                "FS90",
+                "FS91",
+                "FS98",
+                "FS108",
+                "FS111",
+                "FS132",
+                "FS144",
+                "FS146",
+                "FS158",
+                "FS165",
+                "FS167",
+                "FS176",
+                "FS183",
+                "FS193",
+                "FS200",
+                "FS345",
+                "FS346",
+                "FS347",
+                "FS348",
+                "FS349",
+                "FS350",
+                "FS351",
+                "FS352",
+                "FS353",
+                "FS354",
+                "FS355",
+                "FS356",
+                "FS429",
+                "FS430",
+                "FS431",
+                "FS432",
+                "FS433",
+                "FS434",
+                "FS465",
+                "FS466",
+                "FS467",
+                "FS468",
+                "FS469",
+                "FS470"
             ],
             "receive_nodes": 10
         }

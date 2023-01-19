@@ -8,6 +8,7 @@ tags:
 global:
   minikube: true
   operator: true
+  exposeAllDS: true
   annotations:
     skampi: "true"
     app.gitlab.com/app: skampi

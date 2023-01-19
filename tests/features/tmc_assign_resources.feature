@@ -17,12 +17,14 @@ Feature: Assign resources to subarray using TMC
 		When I release all resources assigned to it
 		Then the subarray must be in EMPTY state
 
+	@XTP-16183
 	Scenario: Assign resources to low subarray
 		Given an TMC
 		Given an telescope subarray
 		When I assign resources to it
 		Then the subarray must be in IDLE state
 
+	@XTP-16184
 	Scenario: Release resources from low subarray
 		Given an TMC
 		Given an telescope subarray

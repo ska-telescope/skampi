@@ -26,7 +26,7 @@
         "execution_block":
         {
             "eb_id": "eb-mvp01-20200325-00002",
-            "max_length": 100,
+            "max_length": 100.0,
             "context":
             {},
             "beams":

@@ -255,8 +255,10 @@
                 },
                 "parameters":
                 {},
-                "dependencies":
-                {}
+                "dependencies": [{
+                    "pb_id": "pb-mvp01-20210623-00002",
+                    "kind": ["calibration"]
+                }]
             },
             {
                 "pb_id": "pb-mvp01-20200325-00002",
@@ -272,8 +274,10 @@
                 },
                 "parameters":
                 {},
-                "dependencies":
-                {}
+                "dependencies": [{
+                    "pb_id": "pb-mvp01-20210623-00003",
+                    "kind": ["calibration"]
+                }]
             },
             {
                 "pb_id": "pb-mvp01-20200325-00003",
@@ -283,11 +287,17 @@
                     "sbi-mvp01-20200325-00002"
                 ],
                 "script":
-                {},
+                {
+                    "kind": "realtime",
+                    "name": "test-receive-addresses",
+                    "version": "0.5.0"
+                },
                 "parameters":
                 {},
-                "dependencies":
-                {}
+                "dependencies": [{
+                    "pb_id": "pb-mvp01-20210623-00004",
+                    "kind": ["calibration"]
+                }]
             }
         ],
         "resources":

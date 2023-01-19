@@ -7,7 +7,7 @@ tags:
 
 global:
   minikube: true
-  operator: true
+  operator: false
   annotations:
     skampi: "true"
     app.gitlab.com/app: skampi

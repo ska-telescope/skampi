@@ -22,7 +22,7 @@
     },
     "sdp":
     {
-        "eb_id": "eb-mvp01-20230119-87777",
+        "eb_id": "eb-mvp01-20230119-87778",
         "resources":
         {
             "receptors":
@@ -35,10 +35,10 @@
         "processing_blocks":
         [
             {
-                "pb_id": "pb-mvp01-20230119-87777",
+                "pb_id": "pb-mvp01-20230119-87779",
                 "sbi_ids":
                 [
-                    "eb-mvp01-20230119-87777"
+                    "eb-mvp01-20230119-87779"
                 ],
                 "script":
                 {
@@ -52,7 +52,7 @@
         ],
         "execution_block":
         {
-            "eb_id": "eb-mvp01-20230119-87777",
+            "eb_id": "eb-mvp01-20230119-87779",
             "max_length": 100.0,
             "scan_types":
             [

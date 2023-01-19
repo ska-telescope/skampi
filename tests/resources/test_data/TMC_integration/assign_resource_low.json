@@ -25,7 +25,7 @@
         "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
         "execution_block":
         {
-            "eb_id": "eb-mvp01-20200325-00001",
+            "eb_id": "eb-mvp01-20200325-00002",
             "max_length": 100,
             "context":
             {},
@@ -248,7 +248,11 @@
                     "sbi-mvp01-20200325-00001"
                 ],
                 "script":
-                {},
+                {
+                    "kind": "realtime",
+                    "name": "test-receive-addresses",
+                    "version": "0.5.0"
+                },
                 "parameters":
                 {},
                 "dependencies":
@@ -261,7 +265,11 @@
                     "sbi-mvp01-20200325-00002"
                 ],
                 "script":
-                {},
+                {
+                    "kind": "realtime",
+                    "name": "test-receive-addresses",
+                    "version": "0.5.0"
+                },
                 "parameters":
                 {},
                 "dependencies":

@@ -15,6 +15,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
 )
+from ska_ser_skallop.utils.nrgen import get_id
 
 from ..obsconfig.config import Observation
 
@@ -144,6 +145,16 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
+        
+    def _generate_unique_eb_sb_ids(self, config_json):
+        """
+        Args:
+            config_json (Dict): Config json for Assign Resource command
+        """
+        config_json["sdp"]["execution_block"]["eb_id"] = get_id("eb-test-********-*****")
+        for pb in config_json["sdp"]["processing_blocks"]:
+            pb["pb_id"] = get_id("pb-test-********-*****")
+        return
 
     def do(
         self,
@@ -164,7 +175,6 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # currently ignore composition as all types will be standard
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-        
         if self._tel.skamid:
             config = self.observation.generate_assign_resources_config(sub_array_id).as_json
         elif self._tel.skalow:
@@ -172,6 +182,9 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
             json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration", "assign_resource_low.json")  
             with open(json_file_path) as f:
                 config = f.read()
+                config_json = json.loads(config)
+                self._generate_unique_eb_sb_ids(config_json)
+                config = json.dumps(config_json)
 
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
 

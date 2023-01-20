@@ -1,7 +1,6 @@
 """Assign resources to subarray feature tests."""
 import logging
 import pytest
-import time
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
 
@@ -76,7 +75,6 @@ def a_subarray_in_the_idle_state():
 def the_subarray_must_be_in_empty_state(sut_settings: SutTestSettings):
     """the subarray must be in EMPTY state."""
     tel = names.TEL()
-    time.sleep(20)
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.EMPTY)

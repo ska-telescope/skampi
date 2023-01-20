@@ -147,7 +147,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         self.observation = observation
         
     def _generate_unique_eb_sb_ids(self, config_json):
-        """
+        """This method will generate unique eb and sb ids.
+        Update it in config json
         Args:
             config_json (Dict): Config json for Assign Resource command
         """

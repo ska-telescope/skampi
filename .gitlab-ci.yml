@@ -12,6 +12,7 @@ variables:
   KUBE_BRANCH: $CI_JOB_ID
   DOMAIN: "branch"
   EXPOSE_All_DS: "true"
+  CONFIG: "common"
 
 stages:
   - build

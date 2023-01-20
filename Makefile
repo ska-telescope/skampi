@@ -155,7 +155,7 @@ K8S_TEST_RUNNER = test-runner-$(CI_JOB_ID)##name of the pod running the k8s_test
 #
 BIGGER_THAN ?= ## k8s-get-size-images parameter: if not empty check if images are bigger than this (in MB)
 
-CASED_CONFIG = $(echo $(CONFIG) sed -e "s/\b\(.\)/\u\1/g")
+CASED_CONFIG = $(shell echo $(CONFIG) sed -e "s/\b\(.\)/\u\1/g")
 TELESCOPE = 'SKA-$(CASED_CONFIG)'
 CENTRALNODE = 'ska_$(CONFIG)/tm_central/central_node'
 SUBARRAY = 'ska_$(CONFIG)/tm_subarray_node'

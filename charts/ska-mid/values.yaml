@@ -85,8 +85,15 @@ ska-oso-oet:
   central_node: ska_mid/tm_central/central_node
   subarray: ska_mid/tm_subarray_node
   rest:
+    image:
+      registry: registry.gitlab.com
+      image: ska-telescope/oso/ska-oso-oet/ska-oso-oet
+      tag: 4.0.7-dev.cdc76f194
     ingress:
       enabled: false
+    oda:
+      backendType: rest
+      url: https://k8s.stfc.skao.int/button-dev-ska-db-oda/api/v1
   resources:
     requests:
       cpu: 200m

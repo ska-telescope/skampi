@@ -15,11 +15,17 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_oso_scripting.objects import SubArray
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
-
+from ska_oso_oet_client.activityclient import ActivityAdapter
+from os import environ
 from .oet_helpers import ScriptExecutor
 
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
+
+kube_namespace = environ.get("KUBE_NAMESPACE", "test")
+kube_host = environ.get("KUBE_HOST")
+rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0"
+activity_adapter = ActivityAdapter(rest_cli_uri)
 
 
 @pytest.mark.oet

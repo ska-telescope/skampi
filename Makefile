@@ -155,8 +155,8 @@ K8S_TEST_RUNNER = test-runner-$(CI_JOB_ID)##name of the pod running the k8s_test
 #
 BIGGER_THAN ?= ## k8s-get-size-images parameter: if not empty check if images are bigger than this (in MB)
 
-CASED_CONFIG = $(shell echo $(CONFIG) sed -e "s/\b\(.\)/\u\1/g")
-TELESCOPE = 'SKA-$(CASED_CONFIG)'
+CONFIG_CASED = $(shell echo $(CONFIG) | sed -e "s/\b\(.\)/\u\1/g")
+TELESCOPE = 'SKA-$(CONFIG_CASED)'
 CENTRALNODE = 'ska_$(CONFIG)/tm_central/central_node'
 SUBARRAY = 'ska_$(CONFIG)/tm_subarray_node'
 
@@ -276,3 +276,6 @@ k8s-do-test-runner:
 ##  Post tests reporting
 	pip list > build/pip_list.txt
 	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
+
+foo:
+	@echo $(CASED_CONFIG)

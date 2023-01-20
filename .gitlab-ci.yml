@@ -53,7 +53,6 @@ build-base-image:
 include:
   # Common template components
   - local: "/.gitlab/ci/common.gitlab-ci.yml"
-  # temp comment out - only test mid
   # # All SKA Low stages
   - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
   # All SKA Mid stages

@@ -197,42 +197,19 @@
         },
         "lowcbf":
         {
-            "stations":
+            "resources":
             [
                 {
-                    "station_id": 1,
-                    "sub_station_id": 1
+                    "device": "fsp_01",
+                    "shared": true,
+                    "fw_image": "pst",
+                    "fw_mode": "unused"
                 },
                 {
-                    "station_id": 3,
-                    "sub_station_id": 1
-                },
-                {
-                    "station_id": 3,
-                    "sub_station_id": 2
-                }
-            ],
-            "station_beams":
-            [
-                {
-                    "station_beam_id": 1,
-                    "channels":
-                    [
-                        1,
-                        2,
-                        3,
-                        4,
-                        5,
-                        6,
-                        7,
-                        8
-                    ],
-                    "pst_beams":
-                    [
-                        {
-                            "pst_beam_id": 1
-                        }
-                    ]
+                    "device": "p4_01",
+                    "shared": true,
+                    "fw_image": "p4.bin",
+                    "fw_mode": "p4"
                 }
             ]
         }

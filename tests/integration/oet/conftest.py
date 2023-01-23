@@ -13,9 +13,28 @@ from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from resources.models.obsconfig.config import Observation
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from .. import conftest
-
+from ..conftest import CoreV1Api
+from ..utils.kubernetes_helpers import (
+    get_kube_namespace,
+    search_for_pod,
+    cp_str_json_file_to_pod,
+)
 
 LOGGER = logging.getLogger(__name__)
+
+
+@pytest.fixture(name="set_oet_rest_oda", autouse=True, scope="session")
+def fxt_set_oet_rest_oda(k8s_core_v1_api: CoreV1Api):
+    namespace = get_kube_namespace()
+    app = "ska-oso-oet"
+    component = "rest"
+    pod_name = search_for_pod(k8s_core_v1_api, app=app, component=component)
+    assert pod_name, f"Unable to find pod with app = {app} and component = {component}"
+    source_file = "./tests/integration/oet/test_data/mid_sb_example.json"
+    destination_path = "/tmp/oda/mid_sb_example.json"
+    cp_str_json_file_to_pod(
+        k8s_core_v1_api, source_file, pod_name, namespace, destination_path
+    )
 
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
@@ -35,7 +54,7 @@ def fxt_nr_of_subarrays() -> int:
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online_from_tmc(
-    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
+        set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
 ):
     """_summary_
 
@@ -52,8 +71,8 @@ def fxt_set_csp_online_from_tmc(
 
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
 def fxt_set_entry_point(
-    set_session_exec_env: fxt_types.set_session_exec_env,
-    sut_settings: conftest.SutTestSettings,
+        set_session_exec_env: fxt_types.set_session_exec_env,
+        sut_settings: conftest.SutTestSettings,
 ):
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
@@ -80,7 +99,7 @@ def fxt_set_entry_point(
 @pytest.fixture(name="set_up_tmc_log_checking", autouse=True)
 @pytest.mark.usefixtures("set_tmc_entry_point")
 def fxt_set_up_log_capturing_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+        log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 

@@ -40,9 +40,9 @@ def fxt_set_entry_point(
         # "tm",
         # "mid",
         "sdp",
-        # "csp",
+        "csp",
         # "tmc scope",
-        # "csp scope",
+        "csp scope",
         "csp control",
         "sdp control",
     ]

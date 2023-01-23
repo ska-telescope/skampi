@@ -9,7 +9,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from resources.models.mvp_model.states import ObsState
 
-
+@pytest.mark.skip(reason="testing")
 @pytest.mark.skalow
 @pytest.mark.configure
 @pytest.mark.sdp

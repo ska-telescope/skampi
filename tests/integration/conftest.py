@@ -170,6 +170,7 @@ def the_telescope_is_on(
             integration_test_exec_settings):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
+   
             
 @when("I switch off the telescope")
 def i_switch_off_the_telescope(

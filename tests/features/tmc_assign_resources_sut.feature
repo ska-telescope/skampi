@@ -12,4 +12,3 @@ Feature: Assign resources to subarray using TMC
                 Examples:  
                 | subarray_id | resources_list                   |
                 | 1          | P4, alveo 01, pst, csp_receptors  |
-				| 3          | alveo 02, pss, sdp_receptors      |

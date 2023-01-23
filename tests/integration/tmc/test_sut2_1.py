@@ -70,12 +70,18 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
         config = f.read()
         config_json = json.loads(config)
         sdp_resources = config_json["sdp"]["resources"]
+        # csp_resources = config_json["csp"]["lowcbf"]["resources"]
         tel = names.TEL()
         sdpsubarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
+        # cspsubarray = con_config.get_device_proxy(tel.csp.cbf.subarray(subarray_id))
         
     result = sdpsubarray.read_attribute("Resources").value
+    # result_1 = cspsubarray.read_attribute("FSP resource table").value
     logging.info(result)
+    # logging.info(result_1)
     sdp_resources = str(sdp_resources).replace("\'", "\"")
+    # csp_resources = str(csp_resources)
     assert_that(result).is_equal_to(sdp_resources)
+    # assert_that(result_1).is_equal_to(csp_resources)
         
 

@@ -1,0 +1,1 @@
+This is a fake file for creating a fake commit so that we can use SKAMPI env.

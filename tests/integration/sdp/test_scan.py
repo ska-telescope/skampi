@@ -12,7 +12,7 @@ from resources.models.mvp_model.states import ObsState
 
 from .. import conftest
 
-@pytest.mark.skip(reason="testing")
+
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.sdp

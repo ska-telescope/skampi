@@ -38,7 +38,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
     """Implementation of Startup step for TMC"""
 
     def __init__(
-        self, nr_of_subarrays: int = 3, receptors: list[int] = [1, 2, 3, 4]
+        self, nr_of_subarrays: int = 2, receptors: list[int] = [1, 2, 3, 4]
     ) -> None:
         super().__init__()
         self.nr_of_subarrays = nr_of_subarrays

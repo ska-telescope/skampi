@@ -87,6 +87,6 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
     sdp_resources = str(sdp_resources).replace("\'", "\"")
     csp_resources = str(csp_resources)
     assert_that(result).is_equal_to(sdp_resources)
-    assert_that(result_1).is_equal_to(var[::-1])
+    assert_that(result_1).is_equal_to(tuple(var[::-1]))
         
 

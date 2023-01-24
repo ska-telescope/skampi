@@ -39,10 +39,6 @@ url = 'https://artefact.skatelescope.org/repository/pypi-all/simple'
 name = 'cdm'
 url = 'https://gitlab.com/api/v4/projects/12884227/packages/pypi/simple'
 
-[[tool.poetry.source]]
-name = 'skallop_private_repo'
-url = 'https://deployskallopdev:rsaigjomsv-XyU2gNji7@gitlab.com/api/v4/projects/21173098/packages/pypi/simple'
-
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"

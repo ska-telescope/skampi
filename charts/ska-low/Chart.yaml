@@ -53,7 +53,7 @@ dependencies:
     version: 0.3.1
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-low-cbf
-    version: 0.5.7
+    version: 0.5.5
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-low-cbf-proc
     version: 0.8.0

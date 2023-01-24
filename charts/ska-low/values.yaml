@@ -114,7 +114,7 @@ ska-tango-archiver:
   dbname: default_mvp_archiver_db
 
 ska-tmc-centralnode:
-  enabled: true
+  enabled: false
   telescope: SKA-low
   deviceServers:
     centralnode:
@@ -128,3 +128,8 @@ ska-low-cbf-proc:
 
 ska-csp-lmc-low:
   enabled: true
+
+## tmc
+ska-tmc-low:
+  enabled: true
+  telescope: SKA-low

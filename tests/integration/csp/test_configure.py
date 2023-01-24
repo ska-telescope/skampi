@@ -19,6 +19,7 @@ def test_configure_csp_mid_subarray():
     """Configure CSP low subarray."""
 
 
+@pytest.mark.skip(reason="cbf low not integrated")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.configure

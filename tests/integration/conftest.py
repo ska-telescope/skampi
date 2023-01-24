@@ -159,12 +159,13 @@ def i_start_up_the_telescope(
 
 @given("the Telescope is in ON state")
 def the_telescope_is_on(
-    standby_telescope: fxt_types.standby_telescope,
+   standby_telescope : fxt_types.standby_telescope,
     entry_point: fxt_types.entry_point,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """I start up the telescope."""
+    standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(
             integration_test_exec_settings):
@@ -190,7 +191,7 @@ def i_switch_off_the_telescope(
 # resource assignment
 @when(parsers.parse("I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"))
 def assign_resources_with_subarray_id(
-    running_telescope: fxt_types.running_telescope,
+    telescope_context: fxt_types.telescope_context,
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
     sb_config: fxt_types.sb_config,
@@ -205,12 +206,15 @@ def assign_resources_with_subarray_id(
     #subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
     with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_allocating_a_subarray(
+        with telescope_context.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
             entry_point.compose_subarray(
                 subarray_id, receptors, composition, sb_config.sbid
             )
+
+
+            
 
 
 @when("I assign resources to it")

@@ -1,16 +1,23 @@
-"""pytest global settings, fixtures and global bdd step implementations for integration tests."""
+"""pytest global settings, fixtures and global bdd step implementations for
+integration tests."""
 import logging
 from types import SimpleNamespace
 import os
 
-from typing import Callable
+from typing import Any, Callable
 from mock import patch, Mock
 
 import pytest
-from pytest_bdd import when, given
+from pytest_bdd import when
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_management import telescope_management as tel
+from ska_ser_skallop.mvp_fixtures.base import ExecSettings
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from resources.models.tmc_model.entry_point import TMCEntryPoint
+from resources.models.obsconfig.config import Observation
 
 
 logger = logging.getLogger(__name__)
@@ -20,16 +27,54 @@ class SutTestSettings(SimpleNamespace):
     """Object representing env like SUT settings for fixtures in conftest."""
 
     mock_sut: bool = False
-    nr_of_subarrays = 2
+    nr_of_subarrays = 3
     subarray_id = 1
-    receptors = [1, 2]
-    scan_duration = 1
+    scan_duration = 4
+    _receptors = [1, 2, 3, 4]
+    _nr_of_receptors = 4
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        logger.info("initialising sut settings")
+        self.observation = Observation()
+
+    @property
+    def nr_of_receptors(self):
+        return self._nr_of_receptors
+
+    @nr_of_receptors.setter
+    def nr_of_receptors(self, value: int):
+        self._nr_of_receptors = value
+        self._receptors = [i for i in range(1, value + 1)]
+
+    @property
+    def receptors(self):
+        return self._receptors
+
+    @receptors.setter
+    def receptors(self, receptor: list[int]):
+        self._receptors = receptor
 
 
-@pytest.fixture(name="sut_settings")
+@pytest.fixture(name="sut_settings", scope="function")
 def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()
+
+
+# setting systems online
+
+
+@pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
+def fxt_set_session_exec_settings(
+    session_exec_settings: fxt_types.session_exec_settings,
+):
+    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
+        # logger.warning("disabled attribute synchronization globally")
+        session_exec_settings.attr_synching = True
+    if os.getenv("LIVE_LOGGING_EXTENDED"):
+        session_exec_settings.run_with_live_logging()
+    return session_exec_settings
 
 
 @pytest.fixture(name="run_mock")
@@ -51,6 +96,22 @@ def fxt_run_mock_wrapper(
     return run_mock
 
 
+@pytest.fixture(name="set_exec_settings_from_env", autouse=True)
+def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
+    """Set up general execution settings during setup and teardown.
+
+    :param exec_settings: The global test execution settings as a fixture.
+    :return: test specific execution settings as a fixture
+    """
+    if os.getenv("LIVE_LOGGING_EXTENDED"):
+        logger.info("running live logs globally")
+        exec_settings.run_with_live_logging()
+    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
+        logger.warning("enabled attribute synchronization globally")
+        exec_settings.attr_synching = True
+    exec_settings.time_out = 150
+
+
 @pytest.fixture(name="integration_test_exec_settings")
 def fxt_integration_test_exec_settings(
     exec_settings: fxt_types.exec_settings,
@@ -61,13 +122,19 @@ def fxt_integration_test_exec_settings(
     :return: test specific execution settings as a fixture
     """
     integration_test_exec_settings = exec_settings.replica()
-    if os.getenv("DEBUG"):
-        exec_settings.run_with_live_logging()
+    integration_test_exec_settings.time_out = 150
+
+    if os.getenv("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()
-    elif os.getenv("LIVE_LOGGING"):
-        integration_test_exec_settings.run_with_live_logging()
-    elif os.getenv("REPLAY_EVENTS_AFTERWARDS"):
+        logger.info("running live logs globally")
+    if os.getenv("REPLAY_EVENTS_AFTERWARDS"):
+        logger.info("replay log messages after waiting")
         integration_test_exec_settings.replay_events_afterwards()
+    if os.getenv("ATTR_SYNCH_ENABLED"):
+        logger.warning("enabled attribute synchronization")
+        exec_settings.attr_synching = True
+    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
+        exec_settings.attr_synching = True
     return integration_test_exec_settings
 
 
@@ -85,6 +152,7 @@ def i_start_up_the_telescope(
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+            logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
 
@@ -166,3 +234,21 @@ def i_command_it_to_scan(
 ):
     """I configure it for a scan."""
     configured_subarray.set_to_scanning(integration_test_exec_settings)
+
+
+
+@when("I release all resources assigned to it")
+def i_release_all_resources_assigned_to_it(
+    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I release all resources assigned to it."""
+    sub_array_id = allocated_subarray.id
+
+    with context_monitoring.context_monitoring():
+        with allocated_subarray.wait_for_releasing_a_subarray(
+            integration_test_exec_settings
+        ):
+            entry_point.tear_down_subarray(sub_array_id)

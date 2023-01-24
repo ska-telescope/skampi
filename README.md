@@ -51,9 +51,20 @@ For information on Kubernetes and Kubectl, a quick list of references is availab
 ## Deployment
 
 ### Makefile Targets
-Deployment of SKAMPI is supported by Make targets, exactly as is the case with [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/). To check which targets are available and what default values are set for variables used by Make, run
+Deployment of SKAMPI is supported by Make targets, exactly as is the case with [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/).
+
+Note that the variable `CONFIG` is required and should be set to `mid` for the MID telescope or `low` for LOW.
+The best place is to use `PrivateRules.mak`, e.g.
 ```
-$ make
+$ echo CONFIG=mid >> PrivateRules.mak
+```
+or via environment variables
+```
+$ export CONFIG=mid
+```
+To check which targets are available and what default values are set for variables used by Make. 
+```
+$ make 
 ```
 
 ### Environment Settings
@@ -147,6 +158,21 @@ For an understanding of how Helm Charts are used in the SKAMPI project, please g
 ## Development
 The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.
 
+### Setting up your development environment
+Development environments are not being dictated at the SKA. However, the development environment can be provisioned for VSCode developers by using a combination of the `.devcontainer` and the `.vscode` settings (launch configurations and environment setup).
+
+Developers should take care not to confuse localised development environments with the environments provided by the standard deployment and testing container images used in CI Pipelines, as these represent supported dependencies in as many as possible maintained by the System Team.
+
+To run from the `.devcontainer` provided, copy the `/resources/vscode/devcontainer` folder to `<skampi-root>/.devcontainer`, and `/resources/vscode/vscode` to `<skampi-root>/.vscode`. This can also be done by using 
+
+``` make dev-vscode```
+
+If not running in a Dev Container, do:
+- Copy the `settings` object from `.devcontainer.json` to `.vscode/settings.json`;
+- Look at what is installed in the Dockerfile under the `.devcontainer/` directory and install these packages;
+- Install one by one the VSCode plugins listed under `"extensions"` in `.devcontainer/devcontainer.json`;
+- Run the commands in the `.devcontainer/devcontainer.json` file's `"postCreateCommand":` object (such as setting up the `poetry` virtualenvironment in your project - this is used in the linter setup);
+
 ### Adding a new product/component
 This is an example of how the deployment would look, if a new application ("Application three"), were to be added to the minimal deployment described in the section on [Modifying deployment configuration](#modifying-deployment-configuration):
 ```{mermaid}
@@ -237,6 +263,8 @@ VALUES=values.yaml
 ```
 
 The values.yaml file controls all the variables that are used by Helm when interpreting the templates written for each of the Charts. In other words, if you want to modify the deployment of `SKAMPI` in any way, the simplest method would be to modify the appropriate variables in your own `yaml` file, and tell `Make` about this file. As a convenience, there is already a `yaml` file specified in `.gitignore`, so that you won't unnecessarily commit your local file.
+
+**NOTE** the following assumes that `CONFIG=mid` was set. Replace the `mid` with `low` if needed.
 
 1. Set your `VALUES` to this file and populate this file with a harmless default and check that Helm doesn't complain:
     ```
@@ -381,6 +409,10 @@ make k8s_test MARK=ping
 Use the `MARK` parameter to run specific tests. All tests are marked with a `@pytest.mark.<some-test-marker>`, and by specifying the `MARK` variable by `<some-test-marker>`, you tell `pytest` to only run those tests. Note that this test will fail for the deployment described above, as there is no central node deployed.
 
 More information should be available in the [Documentation](https://developer.skao.int/projects/ska-skampi/en/latest/testing.html).
+
+## EDA 
+The EDA solution is based on HDB++ archiver with TimescaleDB as the backend database. The HDB++ Configuration Manager configures the attributes to be archived and defines which Event Subscriber is responsible for a set of Tango attributes to be archived. For more detail information on EDA please click [here](https://ska-tango-archiver.readthedocs.io/en/latest/)
+
 ## Troubleshooting / FAQ
 Finding issues with SKAMPI deployments can sometimes be difficult, and knowledge of Kubernetes and Tango are essential. Some excellent troubleshooting tips for Kubernetes can be found at https://kubernetes.io/docs/tasks/debug-application-cluster/troubleshooting.
 

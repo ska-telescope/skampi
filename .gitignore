@@ -9,6 +9,8 @@ my_local_values.yaml
 gitlab_values.yaml
 /ska-cicd-deploy-minikube/
 docs/venv
+docs/Pipfile
+docs/Pipfile.lock
 /.vagrant
 /ansible.log
 /playbooks/ansible.log
@@ -25,8 +27,8 @@ docs/venv
 /PrivateRules.mak
 /PrivateRules.mak_bu
 /tmp
-/build
-/builds
+build
+builds
 ansible-playbooks
 **/.idea
 /test-harness/tests/acceptance_tests/__pycache__
@@ -65,10 +67,10 @@ post-deployment/resources/test_data/polaris_b1_no_cam.json
 post-deployment/build
 post-deployment/.pytest_cache
 post-deployment/resources/test_data/polaris_b1_no_cam.json
-.vscode/settings.json
 docs/src/_build/
 post-deployment/venv
 .vscode/settings.json
+.vscode/launch.json
 gilab_values.yaml
 gitlab_values.yaml
 KUBECONFIG

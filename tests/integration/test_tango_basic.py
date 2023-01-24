@@ -1,7 +1,8 @@
 """Default feature tests."""
 import os
 from typing import NamedTuple
-from assertpy.assertpy import assert_that
+import json
+import logging
 
 import requests
 import pytest
@@ -11,19 +12,27 @@ from assertpy import assert_that
 from ska_ser_skallop.connectors.configuration import get_device_proxy
 
 
+@pytest.mark.skip(reason="disable test as tangobridge is no longer in use")
 @pytest.mark.skamid
 @pytest.mark.skalow
 @pytest.mark.taranta
-@pytest.mark.k8s
 @scenario("features/taranta_basic.feature", "TangoGQL service available")
 def test_tangogql_service_available():
     """TangoGQL service available."""
 
 
-@given("a configuration to access a tango device remotely")
-def a_configuration_to_access_a_tango_device_remotely():
-    """a configuration to access a tango device remotely."""
+@pytest.fixture(name="inject_build_out")
+def fxt_inject_build_out():
+    """Inject a value into os env for using build out"""
+    original_value = os.environ["TEST_ENV"]
     os.environ["TEST_ENV"] = "BUILD_OUT"
+    yield
+    os.environ["TEST_ENV"] = original_value
+
+
+@given("a configuration to access a tango device remotely")
+def a_configuration_to_access_a_tango_device_remotely(inject_build_out):
+    """a configuration to access a tango device remotely."""
 
 
 @when("I send a ping command to the tango database device server")
@@ -73,7 +82,7 @@ def a_deployed_taranta_web_dashboard_service(env: ENV) -> str:
 @pytest.mark.skalow
 @pytest.mark.k8s
 @scenario("features/taranta_basic.feature", "taranta devices service available")
-def test_taranta_devices_service_available(env: ENV) -> str:
+def test_taranta_devices_service_available(env: ENV):
     """taranta devices service available."""
 
 

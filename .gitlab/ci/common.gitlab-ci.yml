@@ -6,6 +6,12 @@
 .create_k8s_creds: &create_k8s_creds
   - bash scripts/gitlab_section.sh creds "Create K8s Credentials" make skampi-credentials
 
+.set_dbname:
+  before_script:
+    - branch_name=$(echo $CI_COMMIT_REF_NAME | tr '-' '_'|tr '.' '_')
+    - DB_NAME=${CONFIG}_archiver_db_$branch_name
+    - ARCHIVER_DBNAME=$(echo $DB_NAME | cut -c -50)
+    
 # must have K8S_CHART set correctly
 .deploy_chart_before:
   before_script:
@@ -27,27 +33,23 @@
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
     - echo "############## Running Skampi core tests"
-    - make k8s-test
-    - echo "############## Running Skampi component tests"
-    - make skampi-component-tests
-    - echo "############## Build Output"
+    - make k8s-test-runner
     - find ./build
-    - echo "############## EXTRA MAKE VARS OUTPUT"
-    - make skampi-vars
     - echo "#####################################"
     - make skampi-upload-test-results
+    # Exit based on the make-k8s-test-runner output which is writting in build/status file
+    - '[ -f build/status ] || (echo "Something went wrong with the test (no build/status file); exit 1")'
+    - exit $(cat build/status)
 
 .deploy_chart_and_test_integration:
   script:
-    - make k8s-install-chart
+    - bash scripts/gitlab_section.sh k8s-install-chart "make k8s-install-chart" make k8s-install-chart
     - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-    - make skampi-wait-all
+    - bash scripts/gitlab_section.sh skampi-wait-all "make skampi-wait-all" make skampi-wait-all
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
-    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
-    - echo "############## Running Skampi core tests"
-    - make k8s-test
-    - echo "############## Running Skampi component tests"
-    - make skampi-component-tests
+    - bash scripts/gitlab_section.sh vars "Make vars" make vars
+    - echo "############## Running Skampi tests"
+    - make k8s-test-runner
     - echo "############## Build Output"
     - find ./build
     - echo "############## EXTRA MAKE VARS OUTPUT"
@@ -56,6 +58,9 @@
     - |-
       [[ ! -z $NO_SKAMPI_LINKS ]] || make skampi-links
     - make skampi-upload-test-results
+    # Exit based on the make-k8s-test-runner output which is writting in build/status file
+    - '[ -f build/status ] || (echo "Something went wrong with the test (no build/status file); exit 1")'
+    - exit $(cat build/status)
 
 .uninstall_chart_before:
   before_script:
@@ -86,19 +91,3 @@
     - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
     - make k8s-delete-namespace
     - make delete-sdp-namespace
-    - make skampi-upload-test-results
-
-## Not currently used!!!
-.deploy_test_destroy:
-  stage: test
-  extends:
-    - .deploy_chart_before
-    - .test_deployment
-    - .uninstall_chart_after
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always

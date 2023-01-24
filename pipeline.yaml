@@ -13,15 +13,15 @@ ska-taranta:
 ska-ser-skuid:
   enabled: true
 ska-tango-archiver:
-  enabled: false
+  enabled: true
 ska-landingpage:
   enabled: true
 
 # Mid specific products
 ska-mid-cbf:
-  enabled: false
+  enabled: true
 ska-csp-lmc-mid:
-  enabled: false
+  enabled: true
 ska-tmc-mid:
   enabled: true
 ska-sim-dishmaster:
@@ -29,6 +29,6 @@ ska-sim-dishmaster:
 
 # Low specific products
 ska-tmc-low:
-  enabled: false
+  enabled: true
 ska-low-mccs:
   enabled: false

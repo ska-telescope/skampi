@@ -20,7 +20,7 @@ You can also see a `deployment diagram for SKAMPI <https://confluence.skatelesco
 .. toctree::
    :maxdepth: 1
 
-   deployment
+   pipelines
    subsystems
    testing
    integrating

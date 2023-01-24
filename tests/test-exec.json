@@ -2,6 +2,10 @@
     "test_plans": [
         {
             "select_from_tag": {
+                "XTP-5539": "XTP-5539",
+                "XTP-5573": "XTP-5573",
+                "XTP-5589": "XTP-5589",
+                "XTP-5590": "XTP-5590",
                 "XTP-3348": "XTP-3348",
                 "XTP-3616": "XTP-3616",
                 "XTP-3324": "XTP-3324",
@@ -52,11 +56,10 @@
     "description": "Test execution results as generated from https://gitlab.com/ska-telescope/ska-skampi\n",
     "versions": [
         {
-            "env": "K8S_CHART",
+            "env": "CI_COMMIT_BRANCH",
             "maps_to": {
-                "ska-mid": "ska-mid-0.12.5-dirty-dev.123",
-                "ska-low": "ska-low-0.12.5-dirty-dev.123",
-                "default": "ska-mid-0.12.5-dirty-dev.123"
+                "default": "",
+                "master": "PI17"
             }
         }
     ],

@@ -15,6 +15,7 @@ low-test:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
     TEST_ENV: "BUILD_IN"
+    DISABLE_MAINTAIN_ON: "True"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     COUNT: 1
     EXIT_AT_FAIL: "false"

@@ -62,7 +62,7 @@ dependencies:
     version: 0.1.6
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
-- name: ska-oso-oet
+  - name: ska-oso-oet
     version: 4.0.6
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-oso-oet.enabled

@@ -65,7 +65,7 @@ def the_subarray_must_be_in_idle_state(subarray_id, sut_settings: SutTestSetting
 @then(parsers.parse("the correct resources {resources_list} are assigned"))
 def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
-    var = []
+    resources_list = []
     json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration", "assign_resource_low.json")  
     with open(json_file_path) as f:
         config = f.read()
@@ -74,19 +74,19 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
         csp_resources = config_json["csp"]["lowcbf"]["resources"]
 
         for resources in csp_resources:
-            var.append(resources["device"])
+            resources_list.append(resources["device"])
 
         tel = names.TEL()
         sdpsubarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
         cspsubarray = con_config.get_device_proxy(tel.csp.cbf.subarray(subarray_id))
         
-    result = sdpsubarray.read_attribute("Resources").value
-    result_1 = cspsubarray.read_attribute("assignedResources").value
-    logging.info(result)
-    logging.info(result_1)
+    result_sdp = sdpsubarray.read_attribute("Resources").value
+    result_csp = cspsubarray.read_attribute("assignedResources").value
+    logging.info(result_sdp)
+    logging.info(result_csp)
     sdp_resources = str(sdp_resources).replace("\'", "\"")
     csp_resources = str(csp_resources)
-    assert_that(result).is_equal_to(sdp_resources)
-    assert_that(result_1).is_equal_to(tuple(var[::-1]))
+    assert_that(result_sdp).is_equal_to(sdp_resources)
+    assert_that(result_csp).is_equal_to(tuple(resources_list[::-1]))
         
 

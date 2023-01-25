@@ -16,7 +16,7 @@
     },
     "mounts": [
         "source=${localEnv:HOME}${localEnv:USERPROFILE},target=/home/host/,type=bind,consistency=cached",
-        "source=${localEnv:HOME}${localEnv:USERPROFILE/.kube/,target=/home/node/.kube/,type=bind,consistency=cached"
+        //"source=${localEnv:HOME}${localEnv:USERPROFILE/.kube/,target=/home/node/.kube/,type=bind,consistency=cached"
     ],
     // Set *default* container specific settings.json values on container create.
     "settings": {

@@ -70,6 +70,25 @@ ska-tango-base:
   tangodb:
     use_pv: false
 
+ska-oso-oet:
+  enabled: true
+  system: TM-low
+  telescope: SKA-low
+  central_node: ska_low/tm_central/central_node
+  subarray: ska_low/tm_subarray_node
+  rest:
+    ingress:
+      enabled: false
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 2000m
+      memory: 1024Mi
+
+
+
 # mccs:
 #   ska-tango-base:
 #     enabled: false

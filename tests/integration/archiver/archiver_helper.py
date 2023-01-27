@@ -22,7 +22,7 @@ class ArchiverHelper:
         return False
 
     def attribute_list(self):
-        return self.evt_subscriber_proxy.read_attribute("AttributeList").value
+        return self.evt_subscriber_proxy.AttributeList
 
     def is_already_archived(self, fqdn):
         attr_list = self.attribute_list()
@@ -34,7 +34,7 @@ class ArchiverHelper:
 
     def start_archiving(self, fqdn=None, polling_period=1000, period_event=3000):
         if(fqdn is not None):
-            self.attribute_add(fqdn,polling_period,period_event)
+            self.attribute_add(fqdn, polling_period, period_event)
         return self.evt_subscriber_proxy.Start()
 
     def stop_archiving(self, fqdn):
@@ -50,7 +50,7 @@ class ArchiverHelper:
     def is_started(self, fqdn):
         return "Archiving          : Started" in self.evt_subscriber_attribute_status(fqdn)
 
-    def wait_for_start(self,fqdn,sleep_time=0.1,max_retries=30):
+    def wait_for_start(self, fqdn, sleep_time=0.1, max_retries=30):
         total_sleep_time = 0
         for x in range(0, max_retries):
             try:

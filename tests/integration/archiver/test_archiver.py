@@ -6,8 +6,9 @@ import sys
 import pytest
 import logging
 from time import sleep
-from resources.test_support.archiver_helper import ArchiverHelper
+from archiver_helper import ArchiverHelper
 from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
+
 
 @pytest.mark.post_deployment
 @pytest.mark.SKA_low

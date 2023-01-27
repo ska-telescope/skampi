@@ -44,6 +44,7 @@ def a_csp_sln():
 @then("the CSP subarray must be in IDLE state")
 def the_csp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the CSP Subarray must be in IDLE state."""
+    logger.info("the CSP Subarray must be in IDLE state")
     tel = names.TEL()
     subarray = con_config.get_device_proxy(
         tel.csp.subarray(sut_settings.subarray_id)

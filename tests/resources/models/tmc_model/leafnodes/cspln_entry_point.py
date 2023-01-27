@@ -22,6 +22,7 @@ from ...csp_model.entry_point import (
 )
 
 from ...obsconfig.config import Observation
+from ska_ser_skallop.utils.nrgen import get_id
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +53,16 @@ class StartUpLnStep(StartUpStep):
 class CspLnAssignResourcesStep(CspAsignResourcesStep):
     """Implementation of Assign Resources Step for CSP LN."""
 
+    def _generate_unique_eb_sb_ids(self, config_json):
+        """This method will generate unique eb and sb ids.
+        Update it in config json
+        Args:
+            config_json (Dict): Config json for Assign Resource command
+        """
+        config_json["sdp"]["execution_block"]["eb_id"] = get_id("eb-test-********-*****")
+        for pb in config_json["sdp"]["processing_blocks"]:
+            pb["pb_id"] = get_id("pb-test-********-*****")
+        return
     def do(
         self,
         sub_array_id: int,
@@ -86,7 +97,7 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
             with open(json_file_path) as f:
                 config = f.read()
                 config_json = json.loads(config)
-                #self._generate_unique_eb_sb_ids(config_json)
+                self._generate_unique_eb_sb_ids(config_json)
                 config = json.dumps(config_json)
 
         self._log(f"commanding {csp_subarray_ln_name} with AssignResources: {config} ")

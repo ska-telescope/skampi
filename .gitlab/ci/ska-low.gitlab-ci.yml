@@ -61,7 +61,7 @@ clean-low-test:
     COUNT: 1
     TEL: low
   extends:
-   - .set_dbname
+    - .set_dbname
     - .tags_default
   script:
     - !reference [.uninstall_chart_after, after_script]

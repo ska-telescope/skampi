@@ -86,7 +86,7 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
             with open(json_file_path) as f:
                 config = f.read()
                 config_json = json.loads(config)
-                self._generate_unique_eb_sb_ids(config_json)
+                #self._generate_unique_eb_sb_ids(config_json)
                 config = json.dumps(config_json)
 
         self._log(f"commanding {csp_subarray_ln_name} with AssignResources: {config} ")

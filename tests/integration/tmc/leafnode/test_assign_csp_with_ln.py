@@ -32,16 +32,16 @@ def a_csp():
 @given("a TMC CSP subarray Leaf Node", target_fixture="assign")
 def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point,base_composition: conf_types.Composition):
     """a tmc CSP subarray leaf node."""
-    # tel = names.TEL()
-    # sut_settings = conftest.SutTestSettings()
-    #
-    # for index in range(1, sut_settings.nr_of_subarrays + 1):
-    #     csp_subarray_leaf_node = con_config.get_device_proxy(
-    #         tel.tm.subarray(index).csp_leaf_node
-    #     )
-    #     result = csp_subarray_leaf_node.ping()
-    #     assert result > 0
-    return base_composition
+    tel = names.TEL()
+    sut_settings = conftest.SutTestSettings()
+
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        csp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).csp_leaf_node
+        )
+        result = csp_subarray_leaf_node.ping()
+        assert result > 0
+    #return base_composition
 
 
 

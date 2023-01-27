@@ -12,27 +12,22 @@ from resources.models.mvp_model.states import ObsState
 from tests.integration import conftest
 
 
-@pytest.mark.skamid
-@scenario(
-    "features/tmc_cspln_scan.feature",
-    "Scan the csp mid using csp leaf node"
-)
-def test_scan_cspsubarray_for_a_scan_in_mid():
-    """Scan cspsubarray for a scan in mid using the csp leaf node."""
 
 
+
+@pytest.mark.trupti
 @pytest.mark.skalow
 @scenario(
-    "features/tmc_cspln_scan.feature",
-    "Scan the csp low using csp leaf node"
+    "features/tmc_cspln_assign.feature",
+    "Assign resources to csp low subarray using TMC leaf node"
 )
-def test_scan_cspsubarray_for_a_scan_in_low():
+def test_scan_cspsubarray_for_assign_in_low():
     """Scan cspsubarray for a scan in low using the csp leaf node."""
 
 
-@given("a CSP subarray in the READY state")
+@given("a CSP subarray in the EMPTY state")
 def a_csp():
-    """a CSP subarray in the READY state."""
+    """a CSP subarray in the EMPTY state."""
 
 @given("a TMC CSP subarray Leaf Node", target_fixture="configuration")
 def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
@@ -47,19 +42,10 @@ def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
         result = csp_subarray_leaf_node.ping()
         assert result > 0
 
-@then("the CSP subarray shall go from READY to SCANNING")
-def the_csp_subarray_shall_go_from_ready_to_scanning_state(
-    configured_subarray: fxt_types.configured_subarray,
-):
-    """the CSP subarray shall go from READY to SCANNING."""
-    tel = names.TEL()
-    sub_array_id = configured_subarray.id
-    csp_subarray = con_config.get_device_proxy(tel.csp.subarray(sub_array_id))
-    result = csp_subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.SCANNING)
 
-@then("the CSP shall go back to READY when finished")
-def the_csp_subarray_goes_back_to_ready_state(
+
+@then("the CSP subarray must be in IDLE state")
+def the_csp_subarray_must_be_in_idle_state(
     configured_subarray: fxt_types.configured_subarray,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
@@ -72,7 +58,7 @@ def the_csp_subarray_goes_back_to_ready_state(
     context_monitoring.wait_for(csp_subarray_name).for_attribute(
         "obsstate"
     ).to_become_equal_to(
-        "READY", ignore_first=False, settings=integration_test_exec_settings
+        "IDLE", ignore_first=False, settings=integration_test_exec_settings
     )
     result = csp_subarray.read_attribute("obsstate").value
-    assert_that(result).is_equal_to(ObsState.READY)
+    assert_that(result).is_equal_to(ObsState.IDLE)

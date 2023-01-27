@@ -126,7 +126,7 @@ ska-low-cbf:
     enabled: false
 
 ska-low-cbf-proc:
-  enabled: false
+  enabled: true
 
 ska-csp-lmc-low:
   enabled: true

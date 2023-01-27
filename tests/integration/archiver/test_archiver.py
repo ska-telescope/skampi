@@ -11,14 +11,14 @@ from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, De
 
 
 @pytest.mark.post_deployment
-@pytest.mark.SKA_low
+@pytest.mark.skalow
 def test_init_low():
   logging.info("Init test archiver low device")
   archiver_helper = ArchiverHelper(conf_manager="low-eda/cm/01", eventsubscriber="low-eda/es/01")
   archiver_helper.start_archiving()
 
 @pytest.mark.post_deployment
-@pytest.mark.SKA_mid
+@pytest.mark.skamid
 def test_init():
   logging.info("Init test archiver mid")
   archiver_helper = ArchiverHelper()
@@ -62,7 +62,7 @@ def test_configure_attribute(cm,es):
     logging.info("Slept for " + str(total_slept*sleep_time) + 's for the test configuration!')
 
 @pytest.mark.post_deployment
-@pytest.mark.SKA_mid
+@pytest.mark.skamid
 def test_config_attribute_mid():
   try:
     test_configure_attribute("mid-eda/cm/01", "mid-eda/es/01")
@@ -70,7 +70,7 @@ def test_config_attribute_mid():
     logging.error(e)
     
 @pytest.mark.post_deployment
-@pytest.mark.SKA_low
+@pytest.mark.skalow
 def test_config_attribute_low():
   try:
     test_configure_attribute("low-eda/cm/01", "low-eda/es/01")

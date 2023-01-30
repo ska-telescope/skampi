@@ -164,12 +164,19 @@ class CSPLnScanStep(CspScanStep):
         """
         # scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
-        csp_run_scan_config = self.observation.generate_csp_run_scan_config()
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+
+
+        if self._tel.skamid:
+            csp_run_scan_config = self.observation.generate_csp_run_scan_config()
+
+        elif self._tel.skalow:
+            csp_run_scan_config=copy.deepcopy(SCAN_CSP_JSON_LOW)
+
         self._log(
-            f"Commanding {csp_subarray_ln_name} to Scan with {csp_run_scan_config}"
-        )
+                f"Commanding {csp_subarray_ln_name} to Scan with {csp_run_scan_config}"
+            )
         try:
             csp_subarray_ln.command_inout("Scan", json.dumps(csp_run_scan_config))
             sleep(scan_duration)
@@ -310,5 +317,15 @@ ASSIGN_RESOURCE_CSP_JSON_LOW={
         "fw_mode": "p4"
       }
     ]
+  }
+}
+
+SCAN_CSP_JSON_LOW = {
+  "common": {
+    "subarray_id": 1
+  },
+  "lowcbf": {
+    "scan_id": 987654321,
+    "scan_seconds": 30
   }
 }

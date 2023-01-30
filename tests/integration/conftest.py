@@ -188,12 +188,10 @@ def i_assign_resources_to_it(
 
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
-    logger.info("i_assign_resources_to_it")
     with context_monitoring.context_monitoring():
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            logger.info("compose_subarray")
             entry_point.compose_subarray(
                 subarray_id, receptors, composition, sb_config.sbid
             )

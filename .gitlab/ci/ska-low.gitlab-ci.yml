@@ -176,4 +176,3 @@ low_on_demand_deploy:
       junit: build/report.xml
   when: manual
   allow_failure: true
-  

@@ -2,10 +2,16 @@
 Feature: Start the SUT's components,assign resources,configure a scan,wait for completion,then check SDP results through the QA interface
 
   @XTP-17103
-  Scenario: Verify QA interface of the SDP
-    Given the SUT's components have started
-    And resources have been assigned
-    When a scan is configured
-    And the running scan is completed
-    Then SDP results are as expected
-    And the metrics are displayed in the QA Display
+  Scenario Outline: Verify QA interface of the SDP
+    Given the Telescope is in ON state
+    And the subarray <subarray_id> obsState is READY
+    When I issue the scan command with a <scan_ID> to the subarray <subarray_id>
+    Then the subarray <subarray_id> obsState is SCANNING
+    And the subarray <subarray_id> obsState is READY when the scan completes
+    And the measurement set is present
+    And the <scan_ID> is correctly represented in the measurement set
+
+    Examples:
+      | <subarray_id> | <scan_ID> |
+      | 01            | tbd       |
+      | 01            | tbd       |

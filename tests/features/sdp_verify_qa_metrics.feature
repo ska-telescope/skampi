@@ -2,7 +2,7 @@
 Feature: Start the SUT's components,assign resources,configure a scan,wait for completion,then check SDP results through the QA interface
 
   @XTP-17103
-  Scenario Outline: Verify QA interface of the SDP
+  Scenario Outline: Run a scan on a subarray - happy flow
     Given the Telescope is in ON state
     And the subarray <subarray_id> obsState is READY
     When I issue the scan command with a <scan_ID> to the subarray <subarray_id>

@@ -1,0 +1,8 @@
+# This chart is used to deploy ODA system for
+
+ska-db-oda:
+  enabled: False
+  postgresql:
+    primary:
+      persistence:
+        enabled: False

@@ -10,6 +10,9 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 
+from ska_oso_pdm.entities.common.sb_definition import SBDefinition
+from ska_oso_pdm.schemas import CODEC
+
 from resources.models.obsconfig.config import Observation
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from .. import conftest
@@ -90,3 +93,9 @@ def fxt_set_up_log_capturing_for_cbf(
         tel = names.TEL()
         subarray = str(tel.tm.subarray(1))
         log_checking.capture_logs_from_devices(subarray)
+
+@pytest.fixture
+def test_sbd() -> SBDefinition:
+    cwd, _ = os.path.split(__file__)
+    path = os.path.join(cwd, "data/mid_sb.json")
+    return CODEC.load_from_file(SBDefinition, path)

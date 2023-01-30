@@ -22,6 +22,11 @@
     - bash scripts/gitlab_section.sh get_all "Check all k8s resources in $KUBE_NAMESPACE" kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
     - bash scripts/gitlab_section.sh wait_for_it "Wait for all config jobs to complete" make skampi-wait-all
 
+.deploy_test_oda:
+  before_script:
+    - helm upgrade --install $HELM_RELEASE charts/ska-test-oda --namespace $KUBE_NAMESPACE
+
+
 .deploy_chart:
   script:
     - make k8s-install-chart

@@ -86,22 +86,32 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         # config = self.observation.generate_assign_resources_config(sub_array_id).as_json
         # self._log(f"commanding {csp_subarray_ln_name} with AssignResources: {config} ")
         # csp_subarray_ln.command_inout("AssignResources", config)
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
-        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
-        if self._tel.skamid:
-            config = self.observation.generate_assign_resources_config(sub_array_id).as_json
-        elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM
-            json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration",
-                                          "assign_resource_low.json")
-            with open(json_file_path) as f:
-                config = f.read()
-                config_json = json.loads(config)
-                self._generate_unique_eb_sb_ids(config_json)
-                config = json.dumps(config_json)
+        try:
 
-        self._log(f"commanding {csp_subarray_ln_name} with AssignResources: {config} ")
-        csp_subarray_ln.command_inout("AssignResources", config)
+            csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
+            csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+            if self._tel.skamid:
+                config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+            elif self._tel.skalow:
+                # TODO Low json from CDM is not available. Once it is available pull json from CDM
+                json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration",
+                                              "assign_resource_low.json")
+                with open(json_file_path) as f:
+                    config = f.read()
+                    config_json = json.loads(config)
+                    self._generate_unique_eb_sb_ids(config_json)
+                    config = json.dumps(config_json)
+
+            logger.info(f"commanding {csp_subarray_ln_name} with AssignResources: {config} ")
+            #self._log(f"commanding {csp_subarray_ln_name} with AssignResources: {config} ")
+            csp_subarray_ln.command_inout("AssignResources", config)
+            logger.info("Command Completed")
+
+        except Exception as exception:
+            logger.info("exception")
+            logger.exception(exception)
+            raise exception
+
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in csp.

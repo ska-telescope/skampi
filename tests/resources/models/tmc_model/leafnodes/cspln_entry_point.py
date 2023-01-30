@@ -3,7 +3,9 @@ import logging
 from typing import Union, List
 import json
 from time import sleep
-
+import copy
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.utils.nrgen import get_id
 from ska_ser_skallop.utils.singleton import Memo
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.connectors import configuration as con_config
@@ -51,6 +53,11 @@ class StartUpLnStep(StartUpStep):
 class CspLnAssignResourcesStep(CspAsignResourcesStep):
     """Implementation of Assign Resources Step for CSP LN."""
 
+    def __init__(self, observation: Observation) -> None:
+        """Init object."""
+        super().__init__()
+        self._tel = names.TEL()
+
     def do(
         self,
         sub_array_id: int,
@@ -70,8 +77,12 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         # currently ignore composition as all types will be standard
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
-
-        config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+        if self._tel.skamid:
+            config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            config = copy.deepcopy(assignresources_csp_low)
+      
         self._log(f"commanding {csp_subarray_ln_name} with AssignResources: {config} ")
         csp_subarray_ln.command_inout("AssignResources", config)
 
@@ -112,9 +123,14 @@ class CspLnConfigureStep(CspConfigureStep):
         Memo(scan_duration=duration)
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
-        config = self.observation.generate_scan_config_parsed_for_csp(
-            scan_duration=duration
-        )
+        if self._tel.skamid:
+            config = self.observation.generate_scan_config_parsed_for_csp(sub_array_id).as_json
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+              config = copy.deepcopy(configure_csp_low)
+        # config = self.observation.generate_scan_config_parsed_for_csp(
+        #     scan_duration=duration
+        # )
         self._log(f"commanding {csp_subarray_ln_name} with Configure: {config}")
         csp_subarray_ln.command_inout("Configure", config)
 
@@ -219,6 +235,30 @@ assignresources_csp = {
     "dish": {"receptor_ids": ["0001", "0002"]},
 }
 
+assignresources_csp_low = {
+    "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",
+    "common": {
+      "subarray_id": 1
+    },
+    "lowcbf": {
+      "resources": [
+        {
+          "device": "fsp_01",
+          "shared": true,
+          "fw_image": "pst",
+          "fw_mode": "unused"
+        },
+        {
+          "device": "p4_01",
+          "shared": true,
+          "fw_image": "p4.bin",
+          "fw_mode": "p4"
+        }
+      ]
+    }
+  }
+
+
 
 configure_csp = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
@@ -267,4 +307,48 @@ configure_csp = {
             "dec": "-88:57:22.9",
         }
     },
+}
+
+configure_csp_low = {
+  "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+  "subarray": {
+    "subarray_name": "science period 23"
+  },
+  "common": {
+    "config_id": "sbi-mvp01-20200325-00001-science_A",
+    "subarray_id": 1
+  },
+  "lowcbf": {
+    "stations": {
+      "stns": [
+        [1,0],
+        [2,0],
+        [3,0],
+        [4,0]
+      ],
+      "stn_beams": [
+        {
+          "beam_id": 1,
+          "freq_ids": [64,65,66,67,68,69,70,71],
+          "boresight_dly_poly": "url"
+        }
+      ]
+    },
+    "timing_beams": {
+      "beams": [
+        {
+          "pst_beam_id": 13,
+          "stn_beam_id": 1,
+          "offset_dly_poly": "url",
+          "stn_weights": [0.9,1.0,1.0,0.9],
+          "jones": "url",
+          "dest_chans": [128,256],
+          "rfi_enable": [true,true,true],
+          "rfi_static_chans": [1,206,997],
+          "rfi_dynamic_chans": [242,1342],
+          "rfi_weighted": 0.87
+        }
+      ]
+    },
+  }
 }

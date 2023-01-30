@@ -42,7 +42,7 @@ def test_tmc_off_telescope_mid():
 def test_tmc_start_up_telescope_low():
     """Start up the telescope in low."""
 
-@pytest.skip(reason="cbf low not integrated")
+@pytest.mark.skip(reason="cbf low not integrated")
 @pytest.mark.skalow
 @pytest.mark.standby
 @scenario("features/tmc_start_up_telescope.feature", "Switch off the low telescope using TMC")

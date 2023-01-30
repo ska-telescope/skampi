@@ -155,7 +155,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         config_json["sdp"]["execution_block"]["eb_id"] = get_id("eb-test-********-*****")
         for pb in config_json["sdp"]["processing_blocks"]:
             pb["pb_id"] = get_id("pb-test-********-*****")
-        return
+
 
     def do(
         self,

@@ -8,7 +8,7 @@ from typing import Any, Callable
 from mock import patch, Mock
 
 import pytest
-from pytest_bdd import when,given,parsers
+from pytest_bdd import when, given, parsers
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management import telescope_management as tel
@@ -203,7 +203,6 @@ def assign_resources_with_subarray_id(
 ):
     """I assign resources to it."""
 
-    #subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
     with context_monitoring.context_monitoring():
         with telescope_context.wait_for_allocating_a_subarray(

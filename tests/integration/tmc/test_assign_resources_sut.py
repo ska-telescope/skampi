@@ -3,7 +3,7 @@ import logging
 import pytest
 import json,os
 from assertpy import assert_that
-from pytest_bdd import given, scenario, then,parsers
+from pytest_bdd import given, scenario, then, parsers
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -50,7 +50,7 @@ def subarray_obstate_is_empty(subarray_id, sut_settings: SutTestSettings,
 
 
 
-# use when from ..shared_assign_resources
+# using when from conftest
 # @when("I issue the assignResources command with the {resources_list} to the subarray {subarray_id}")
 
 
@@ -82,10 +82,9 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
         
     result_sdp = sdpsubarray.read_attribute("Resources").value
     result_csp = cspsubarray.read_attribute("assignedResources").value
-    logging.info(result_sdp)
-    logging.info(result_csp)
     sdp_resources = str(sdp_resources).replace("\'", "\"")
     csp_resources = str(csp_resources)
+
     assert_that(result_sdp).is_equal_to(sdp_resources)
     assert_that(result_csp).is_equal_to(tuple(resources_list[::-1]))
         

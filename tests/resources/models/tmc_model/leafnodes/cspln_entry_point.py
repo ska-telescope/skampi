@@ -244,13 +244,13 @@ assignresources_csp_low = {
       "resources": [
         {
           "device": "fsp_01",
-          "shared": true,
+          "shared": True,
           "fw_image": "pst",
           "fw_mode": "unused"
         },
         {
           "device": "p4_01",
-          "shared": true,
+          "shared": True,
           "fw_image": "p4.bin",
           "fw_mode": "p4"
         }
@@ -343,7 +343,7 @@ configure_csp_low = {
           "stn_weights": [0.9,1.0,1.0,0.9],
           "jones": "url",
           "dest_chans": [128,256],
-          "rfi_enable": [true,true,true],
+          "rfi_enable": [True,True,True],
           "rfi_static_chans": [1,206,997],
           "rfi_dynamic_chans": [242,1342],
           "rfi_weighted": 0.87

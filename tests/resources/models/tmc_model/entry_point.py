@@ -16,7 +16,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     MessageBoardBuilder,
 )
 
-from ..obsconfig.config import Observation
+from ..mvp_model.env import get_observation_config, Observation
 
 logger = logging.getLogger(__name__)
 
@@ -374,7 +374,7 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-    
+
     def undo(self, sub_array_id: int):
         """This is a no-op as no undo for scan is needed
 
@@ -390,9 +390,9 @@ class ScanStep(base.ScanStep, LogEnabled):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("SCANNING")
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "SCANNING"
+        )
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("SCANNING")
@@ -492,7 +492,7 @@ class TMCEntryPoint(CompositeEntryPoint):
         """Init Object"""
         super().__init__()
         if not observation:
-            observation = Observation()
+            observation = get_observation_config()
         self.observation = observation
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
         self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)

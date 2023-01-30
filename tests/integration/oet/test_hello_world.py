@@ -1,13 +1,8 @@
 import pytest
 from pytest_bdd import given, scenario, then, when, parsers
 
-from .oet_helpers import ScriptExecutor
-from ska_oso_oet_client.activityclient import ActivityAdapter
+from .oet_helpers import ScriptExecutor, ACTIVITY_ADAPTER
 from os import environ
-kube_namespace = environ.get("KUBE_NAMESPACE", "test")
-kube_host = environ.get("KUBE_HOST")
-rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0"
-activity_adapter = ActivityAdapter(f"{rest_cli_uri}/activities")
 
 EXECUTOR = ScriptExecutor()
 
@@ -37,27 +32,35 @@ def hello_world_script_ran():
 
 @when(
     parsers.parse(
-        "I tell the OET to allocate resources for SBI {sbd_id}"
+        "I tell the OET to run {activity_name} activity for SBI {sbd_id}"
     )
 )
 def when_allocate_resources_from_activity(
+    activity_name,
     sbd_id,
 ):
     """
     """
-
-    activity_adapter.run(
-        "allocate",
+    ACTIVITY_ADAPTER.run(
+        allocate,
         sbd_id,
     )
-    summaries = activity_adapter.list()
     assert ( summaries[0].state == "REQUESTED" ),\
         f"Expected resource allocation script to be COMPLETED, instead was {summaries[0].state}"
+
+@then("script started by the activity completes successfully")
+def hello_world_script_complete():
+    "script execution completes successfully"
+
+    summaries = ACTIVITY_ADAPTER.list()
+    pid = summaries[0].procedure_id
+    procedure_status = EXECUTOR.wait_for_script_state(pid, "COMPLETE", timeout=20)
+
+    assert procedure_status == "COMPLETE"
 
 @then("script execution completes successfully")
 def hello_world_script_complete():
     "script execution completes successfully"
-    latest_task = EXECUTOR.get_latest_script()
+    procedure = EXECUTOR.get_latest_script()
 
-    assert latest_task
-    assert latest_task.state == "COMPLETE"
+    assert procedure.state == "COMPLETE"

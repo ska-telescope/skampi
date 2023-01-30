@@ -1,4 +1,4 @@
-"""Assign Resource on a SDP Subarray"""
+"""Assign Resource on a CSP Subarray"""
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then

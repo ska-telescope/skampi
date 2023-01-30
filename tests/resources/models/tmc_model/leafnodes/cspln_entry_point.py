@@ -1,6 +1,7 @@
 """Domain logic for the cdp."""
 import logging
 import os
+import copy
 from typing import Union, List
 import json
 from time import sleep
@@ -77,12 +78,14 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
                 config = self.observation.generate_assign_resources_config(sub_array_id).as_json
             elif self._tel.skalow:
                 # TODO Low json from CDM is not available. Once it is available pull json from CDM
-                json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration",
-                                              "assign_resource_low_csp.json")
-                with open(json_file_path) as f:
-                    config = f.read()
-                    config_json = json.loads(config)
-                    config = json.dumps(config_json)
+                # json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration",
+                #                               "assign_resource_low_csp.json")
+                # with open(json_file_path) as f:
+                #     config = f.read()
+                #     config_json = json.loads(config)
+                #     config = json.dumps(config_json)
+                config_json = copy.deepcopy(ASSIGN_RESOURCE_CSP_JSON_LOW)
+                config = json.dumps(config_json)
 
             logger.info(f"commanding {csp_subarray_ln_name} with AssignResources: {config} ")
             csp_subarray_ln.command_inout("AssignResources", config)
@@ -283,4 +286,29 @@ configure_csp = {
             "dec": "-88:57:22.9",
         }
     },
+}
+
+
+
+ASSIGN_RESOURCE_CSP_JSON_LOW={
+  "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",
+  "common": {
+    "subarray_id": 1
+  },
+  "lowcbf": {
+    "resources": [
+      {
+        "device": "fsp_01",
+        "shared": True,
+        "fw_image": "pst",
+        "fw_mode": "unused"
+      },
+      {
+        "device": "p4_01",
+        "shared": True,
+        "fw_image": "p4.bin",
+        "fw_mode": "p4"
+      }
+    ]
+  }
 }

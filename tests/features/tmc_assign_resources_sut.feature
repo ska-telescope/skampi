@@ -10,6 +10,6 @@ Feature: Assign resources to subarray using TMC
                 Then the subarray <subarray_id> obsState is IDLE
                 And the correct resources <resources_list> are assigned
                 Examples:  
-                | subarray_id | resources_list                   |
-                | 1          | P4, alveo 01, pst, csp_receptors  |
-				| 1          | alveo 02, pss, sdp_receptors      |
+                | subarray_id | resources_list               |
+                | 1          | P4, alveo 01, pst, receptors  |
+				| 1          | alveo 02, pss, receptors      |

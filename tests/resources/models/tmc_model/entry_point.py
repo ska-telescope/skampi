@@ -206,7 +206,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
             )
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
-            config = RELEASE_RESOURCE_JSON_LOW
+            config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
         
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         central_node.command_inout("ReleaseResources", config)

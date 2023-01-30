@@ -253,7 +253,7 @@ k8s-pre-install-chart:
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 	helm repo add ska-tango-images https://gitlab.com/api/v4/projects/9027158/packages/helm/dev && \
 	helm upgrade --install tango-base0 \
-	$(K8S_CHART_PARAMS) ska-tango-images/ska-tango-base --namespace $(KUBE_NAMESPACE) --version 0.4.1-dev.c4d9b4cfa && \
+	$(K8S_CHART_PARAMS) ska-tango-images/ska-tango-base --namespace $(KUBE_NAMESPACE) --version 0.4.1-dev.ce2034932 && \
 	kubectl wait databaseds.tango.tango-controls.org -n $(KUBE_NAMESPACE) --timeout=${K8S_TIMEOUT} --for=jsonpath='{.status.state}'=Running $$(kubectl get databaseds.tango.tango-controls.org -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.name}')
 	 
 

@@ -284,9 +284,13 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         Memo(scan_duration=duration)
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        config = self.observation.generate_scan_config().as_json
-        self._log(f"commanding {subarray_name} with Configure: {config} ")
+        if self._tel.skamid:
+            config = self.observation.generate_scan_config().as_json
 
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            config = json.dumps(CONFIGURE_JSON_LOW)
+        self._log(f"commanding {subarray_name} with Configure: {config} ")
         subarray.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
@@ -754,3 +758,152 @@ RELEASE_RESOURCE_JSON_LOW = {
     "subarray_id": 1,
     "release_all": True
 }
+
+CONFIGURE_JSON_LOW = {
+    "interface": "https://schema.skao.int/ska-low-tmc-configure/3.0",
+    "transaction_id": "txn-....-00001",
+    "mccs": {
+      "stations": [
+        {
+          "station_id": 1
+        },
+        {
+          "station_id": 2
+        }
+      ],
+      "subarray_beams": [
+        {
+          "subarray_beam_id": 1,
+          "station_ids": [
+            1,
+            2
+          ],
+          "update_rate": 0.0,
+          "channels": [
+            [
+              0,
+              8,
+              1,
+              1
+            ],
+            [
+              8,
+              8,
+              2,
+              1
+            ],
+            [
+              24,
+              16,
+              2,
+              1
+            ]
+          ],
+          "antenna_weights": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "phase_centre": [
+            0.0,
+            0.0
+          ],
+          "target": {
+            "reference_frame": "HORIZON",
+            "target_name": "DriftScan",
+            "az": 180.0,
+            "el": 45.0
+          }
+        }
+      ]
+    },
+    "sdp": {
+      "interface": "https://schema.skao.int/ska-sdp-configure/0.4",
+      "scan_type": "science_A"
+    },
+    "csp": {
+      "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+      "subarray": {
+        "subarray_name": "science period 23"
+      },
+      "common": {
+        "config_id": "sbi-mvp01-20200325-00001-science_A"
+      },
+      "lowcbf": {
+        "stations": {
+          "stns": [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              3,
+              0
+            ],
+            [
+              4,
+              0
+            ]
+          ],
+          "stn_beams": [
+            {
+              "beam_id": 1,
+              "freq_ids": [
+                64,
+                65,
+                66,
+                67,
+                68,
+                68,
+                70,
+                71
+              ],
+              "boresight_dly_poly": "url"
+            }
+          ]
+        },
+        "timing_beams": {
+          "beams": [
+            {
+              "pst_beam_id": 13,
+              "stn_beam_id": 1,
+              "offset_dly_poly": "url",
+              "stn_weights": [
+                0.9,
+                1.0,
+                1.0,
+                0.9
+              ],
+              "jones": "url",
+              "dest_chans": [
+                128,
+                256
+              ],
+              "rfi_enable": [
+                true,
+                true,
+                true
+              ],
+              "rfi_static_chans": [
+                1,
+                206,
+                997
+              ],
+              "rfi_dynamic_chans": [
+                242,
+                1342
+              ],
+              "rfi_weighted": 0.87
+            }
+          ]
+        }
+      }
+    },
+    "tmc": {
+      "scan_duration": 10.0
+    }
+  }

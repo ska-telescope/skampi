@@ -2,7 +2,6 @@ import pytest
 from pytest_bdd import given, scenario, then, when, parsers
 
 from ska_db_oda.unit_of_work.restunitofwork import RESTUnitOfWork
-from ska_oso_pdm.entities.common import SBDefinition
 
 from .oet_helpers import ScriptExecutor, ACTIVITY_ADAPTER
 from os import environ

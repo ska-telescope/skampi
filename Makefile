@@ -42,6 +42,10 @@ else
 DASHMARK ?= ska$(CONFIG)
 endif
 
+EVENT_SUBSCRIBER = "$(CONFIG)-eda/es/01"
+ARCHIVER_TIMESCALE_HOST_NAME = timescaledb.ska-eda-$(CONFIG)-db.svc.cluster.local#for testing 
+
+
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
 CONFIG_MANAGER= $(CONFIG)-eda/cm/01
 ATTR_CONFIG_FILE = attribute_config_$(CONFIG).yaml

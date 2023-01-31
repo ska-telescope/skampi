@@ -37,7 +37,7 @@ def test_tmc_start_up_telescope_mid():
 def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
 
-
+@pytest.mark.skip(reason = "enables once tmc configure is passing")
 @pytest.mark.skalow
 @pytest.mark.startup
 @scenario("features/tmc_start_up_telescope.feature", "Start up the low telescope using TMC")

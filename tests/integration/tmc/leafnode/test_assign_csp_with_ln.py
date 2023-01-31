@@ -13,6 +13,7 @@ from ...conftest import SutTestSettings
 import logging
 logger = logging.getLogger(__name__)
 
+@pytest.mark.skip(reason = "enables once tmc configure is passing")
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(

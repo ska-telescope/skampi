@@ -9,6 +9,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
+
 @pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
 @pytest.mark.skalow
 @pytest.mark.scan

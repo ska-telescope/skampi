@@ -141,14 +141,15 @@ class CspLnConfigureStep(CspConfigureStep):
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
         if self._tel.skamid:
-            config = self.observation.generate_scan_config_parsed_for_csp(sub_array_id).as_json
+            config = self.observation.generate_scan_config_parsed_for_csp(
+                scan_duration=duration
+            )
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM
-              config = copy.deepcopy(configure_csp_low)
-        # config = self.observation.generate_scan_config_parsed_for_csp(
-        #     scan_duration=duration
-        # )
-        self._log(f"commanding {csp_subarray_ln_name} with Configure: {config}")
+            config_json = copy.deepcopy(CONFIGURE_CSP_JSON_LOW)
+            config = json.dumps(config_json)
+
+
+        logger.info(f"commanding {csp_subarray_ln_name} with Configure: {config}")
         csp_subarray_ln.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
@@ -176,12 +177,19 @@ class CSPLnScanStep(CspScanStep):
         """
         # scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
-        csp_run_scan_config = self.observation.generate_csp_run_scan_config()
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+
+
+        if self._tel.skamid:
+            csp_run_scan_config = self.observation.generate_csp_run_scan_config()
+
+        elif self._tel.skalow:
+            csp_run_scan_config=copy.deepcopy(SCAN_CSP_JSON_LOW)
+
         self._log(
-            f"Commanding {csp_subarray_ln_name} to Scan with {csp_run_scan_config}"
-        )
+                f"Commanding {csp_subarray_ln_name} to Scan with {csp_run_scan_config}"
+            )
         try:
             csp_subarray_ln.command_inout("Scan", json.dumps(csp_run_scan_config))
             sleep(scan_duration)
@@ -325,7 +333,18 @@ ASSIGN_RESOURCE_CSP_JSON_LOW={
   }
 }
 
-configure_csp_low = {
+SCAN_CSP_JSON_LOW = {
+  "common": {
+    "subarray_id": 1
+  },
+  "lowcbf": {
+    "scan_id": 987654321,
+    "scan_seconds": 30
+  }
+}
+
+
+CONFIGURE_CSP_JSON_LOW = {
   "interface": "https://schema.skao.int/ska-csp-configure/2.0",
   "subarray": {
     "subarray_name": "science period 23"

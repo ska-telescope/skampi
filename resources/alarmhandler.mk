@@ -1,5 +1,6 @@
 .PHONY: skampi-configure-alarm
 
+# This is a temporary target created to configure alarms(for PI#17 scope), will get removed/modified in next PIs
 # This script configures the alarmhandler with the rules defined in text file.
 # Requries paramater KUBECONFIG, FILE_NAME, ALARM_HANDLER_FQDN, KUBE_NAMESPACE, TANGO_HOST
 # FILE_NAME is a text file containing alarm rules to configure the Elettra Alarm Handler

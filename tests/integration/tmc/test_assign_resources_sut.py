@@ -62,7 +62,7 @@ def the_subarray_must_be_in_idle_state(subarray_id, sut_settings: SutTestSetting
 
 @then(parsers.parse("the correct resources {resources_list} are assigned"))
 def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
-    """the subarray must be in IDLE state."""
+    """Check assigned resources on sdp and csp subsystems."""
     resources_list = []
     config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
     sdp_resources = config_json["sdp"]["resources"]

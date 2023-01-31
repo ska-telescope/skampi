@@ -242,13 +242,13 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 	tar zcf ../results-pipe build;"
 
 # use hook to create SDP namespace
-k8s-pre-install-chart:
-	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
-	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
-	helm repo add ska-tango-images https://gitlab.com/api/v4/projects/9027158/packages/helm/dev && \
-	helm upgrade --install tango-base0 \
-	$(K8S_CHART_PARAMS) ska-tango-images/ska-tango-base --namespace $(KUBE_NAMESPACE) --version 0.4.1-dev.c2fea13f0 && \
-	kubectl wait databaseds.tango.tango-controls.org -n $(KUBE_NAMESPACE) --timeout=${K8S_TIMEOUT} --for=jsonpath='{.status.state}'=Running $$(kubectl get databaseds.tango.tango-controls.org -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.name}')
+# k8s-pre-install-chart:
+# 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
+# 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+# 	helm repo add ska-tango-images https://gitlab.com/api/v4/projects/9027158/packages/helm/dev && \
+# 	helm upgrade --install tango-base0 \
+# 	$(K8S_CHART_PARAMS) ska-tango-images/ska-tango-base --namespace $(KUBE_NAMESPACE) --version 0.4.1-dev.c8540d170 && \
+# 	kubectl wait databaseds.tango.tango-controls.org -n $(KUBE_NAMESPACE) --timeout=${K8S_TIMEOUT} --for=jsonpath='{.status.state}'=Running $$(kubectl get databaseds.tango.tango-controls.org -n $(KUBE_NAMESPACE) -o jsonpath='{.items[*].metadata.name}')
 	 
 
 k8s-post-install-chart:

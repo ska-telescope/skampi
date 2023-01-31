@@ -8,12 +8,13 @@ from pytest_bdd import given, scenario, then, parsers
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from tests.resources.models.tmc_model.entry_point import ASSIGN_RESOURCE_JSON_LOW
+from resources.models.tmc_model.entry_point import ASSIGN_RESOURCE_JSON_LOW
 from resources.models.mvp_model.states import ObsState
 
 from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
+
 
 
 @pytest.mark.k8s
@@ -63,9 +64,6 @@ def the_subarray_must_be_in_idle_state(subarray_id, sut_settings: SutTestSetting
 def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
     resources_list = []
-    # json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration", "assign_resource_low.json")  
-    # with open(json_file_path) as f:
-    # config = f.read()
     config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
     sdp_resources = config_json["sdp"]["resources"]
     csp_resources = config_json["csp"]["lowcbf"]["resources"]

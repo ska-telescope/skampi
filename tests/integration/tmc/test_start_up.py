@@ -11,6 +11,9 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
+from ska_ser_skallop.mvp_fixtures.context_management import (
+    TelescopeContext,
+)
 from .. import conftest
 
 logger = logging.getLogger(__name__)
@@ -32,6 +35,21 @@ def test_tmc_start_up_telescope_mid():
 @scenario("features/tmc_start_up_telescope.feature", "Switch of the telescope")
 def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
+
+
+@pytest.mark.skalow
+@pytest.mark.startup
+@scenario("features/tmc_start_up_telescope.feature", "Start up the low telescope using TMC")
+def test_tmc_start_up_telescope_low():
+    """Start up the telescope in low."""
+
+
+@pytest.mark.skip(reason="OFF command is not supported in LOW CBF 0.5.7")
+@pytest.mark.skalow
+@pytest.mark.standby
+@scenario("features/tmc_start_up_telescope.feature", "Switch off the low telescope using TMC")
+def test_tmc_off_telescope_low():
+    """Switch Off the telescope in low."""
 
 
 @given("an TMC")
@@ -71,13 +89,14 @@ def a_tmc():
         )
         result = sdp_subarray_leaf_node.ping()
         assert result > 0
+    if tel.skamid:
+        for index in range(1, sut_settings.nr_of_subarrays + 1):
+            dish_leaf_nodes = con_config.get_device_proxy(tel.tm.dish_leafnode(index))
+            result = dish_leaf_nodes.ping()
+            assert result > 0
 
-    for index in range(1, sut_settings.nr_of_subarrays + 1):
-        dish_leaf_nodes = con_config.get_device_proxy(tel.tm.dish_leafnode(index))
-        result = dish_leaf_nodes.ping()
-        assert result > 0
 
-
+@given("a Telescope consisting of SDP and CSP")
 @given("a Telescope consisting of SDP, CSP and a Dish")
 def a_telescope_with_csp_sdp_and_dish():
     """a Telescope consisting SDP, CSP and a Dish"""
@@ -105,13 +124,14 @@ def a_telescope_with_csp_sdp_and_dish():
         )
         result = sdp_subarray_leaf_node.ping()
         assert result > 0
+    if tel.skamid:
+        for index in range(1, sut_settings.nr_of_subarrays + 1):
+            dish_leaf_nodes = con_config.get_device_proxy(tel.tm.dish_leafnode(index))
+            result = dish_leaf_nodes.ping()
+            assert result > 0
 
-    for index in range(1, sut_settings.nr_of_subarrays + 1):
-        dish_leaf_nodes = con_config.get_device_proxy(tel.tm.dish_leafnode(index))
-        result = dish_leaf_nodes.ping()
-        assert result > 0
 
-
+@given("a Telescope consisting of SDP and CSP that is ON")
 @given("a Telescope consisting of SDP, CSP and a Dish that is ON")
 def a_telescope_with_sdp_csp_and_dish_on():
     """a Telescope consisting of SDP, CSP and a Dish that is ON"""
@@ -139,11 +159,11 @@ def a_telescope_with_sdp_csp_and_dish_on():
         )
         result = sdp_subarray_leaf_node.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
-
-    for index in range(1, sut_settings.nr_of_subarrays + 1):
-        dish_leaf_nodes = con_config.get_device_proxy(tel.tm.dish_leafnode(index))
-        result = dish_leaf_nodes.read_attribute("state").value
-        assert_that(str(result)).is_equal_to("ON")
+    if tel.skamid:
+        for index in range(1, sut_settings.nr_of_subarrays + 1):
+            dish_leaf_nodes = con_config.get_device_proxy(tel.tm.dish_leafnode(index))
+            result = dish_leaf_nodes.read_attribute("state").value
+            assert_that(str(result)).is_equal_to("ON")
 
 
 # when
@@ -152,9 +172,8 @@ def a_telescope_with_sdp_csp_and_dish_on():
 # when
 # use @when("I switch off the telescope") from ..conftest
 
-# thens
 
-
+@then("the sdp and csp must be on")
 @then("the sdp, csp and dish must be on")
 def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
     """the sdp, csp and dish must be on."""
@@ -177,16 +196,18 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
         result = subarray.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
     # Check state attribute of Dish Masters
-    for dish_id in sut_settings.receptors:
-        dish = con_config.get_device_proxy(mid.dish(dish_id))
-        result = dish.read_attribute("state").value
-        assert_that(str(result)).is_equal_to("ON")
+    if tel.skamid:
+        for dish_id in sut_settings.receptors:
+            dish = con_config.get_device_proxy(mid.dish(dish_id))
+            result = dish.read_attribute("state").value
+            assert_that(str(result)).is_equal_to("ON")
     # Check telescopeState attribute of Central Node
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     result = central_node.read_attribute("telescopeState").value
     assert_that(str(result)).is_equal_to("ON")
 
 
+@then("the sdp and csp must be off")
 @then("the sdp, csp and dish must be off")
 def the_sdp_csp_and_dish_must_be_off(
     sut_settings: conftest.SutTestSettings,
@@ -215,11 +236,15 @@ def the_sdp_csp_and_dish_must_be_off(
         result = subarray.read_attribute("state").value
         assert_that(str(result)).is_equal_to("OFF")
     # Check state attribute of Dish Masters
-    for dish_id in sut_settings.receptors:
-        dish = con_config.get_device_proxy(mid.dish(dish_id))
-        result = dish.read_attribute("state").value
-        assert_that(str(result)).is_equal_to("STANDBY")
+    if tel.skamid:
+        for dish_id in sut_settings.receptors:
+            dish = con_config.get_device_proxy(mid.dish(dish_id))
+            result = dish.read_attribute("state").value
+            assert_that(str(result)).is_equal_to("STANDBY")
     # Check telescopeState attribute of Central Node
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     result = central_node.read_attribute("telescopeState").value
-    assert_that(str(result)).is_equal_to("STANDBY")
+    if tel.skamid:
+        assert_that(str(result)).is_equal_to("STANDBY")
+    elif tel.skalow:
+        assert_that(str(result)).is_equal_to("OFF")

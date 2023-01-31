@@ -80,14 +80,16 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """Domain logic for what needs to be waited for switching the csp off."""
         brd = get_message_board_builder()
         # controller
-        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-            "state"
-        ).to_become_equal_to("OFF", ignore_first=False)
-        # subarrays
-        for index in range(1, self.nr_of_subarrays + 1):
-            brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+        # the low telescope does not switch off so there is no wait
+        if self._tel.skamid:
+            brd.set_waiting_on(self._tel.csp.controller).for_attribute(
                 "state"
             ).to_become_equal_to("OFF", ignore_first=False)
+            # subarrays
+            for index in range(1, self.nr_of_subarrays + 1):
+                brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+                    "state"
+                ).to_become_equal_to("OFF", ignore_first=False)
         return brd
 
     def undo(self):
@@ -496,18 +498,15 @@ csp_low_assign_resources = {
     "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",
     "common": {"subarray_id": 1},
     "lowcbf": {
-        "stations": [
-            {"station_id": 1, "sub_station_id": 1},
-            {"station_id": 3, "sub_station_id": 1},
-            {"station_id": 3, "sub_station_id": 2},
-        ],
-        "station_beams": [
+        "resources": [
             {
-                "station_beam_id": 1,
-                "channels": [1, 2, 3, 4, 5, 6, 7, 8],
-                "pst_beams": [{"pst_beam_id": 1}],
-            }
-        ],
+                "device": "fsp_01",
+                "shared": True,
+                "fw_image": "pst",
+                "fw_mode": "unused",
+            },
+            {"device": "p4_01", "shared": True, "fw_image": "p4.bin", "fw_mode": "p4"},
+        ]
     },
 }
 

@@ -16,7 +16,7 @@ TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local 
 HELM_RELEASE ?= test## release name of the chart
 MINIKUBE ?= true## Minikube or not
 UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
-CONFIG ?= mid## telescope - mid or low
+CONFIG ?= $(error Please specify CONFIG=mid or CONFIG=low)## telescope - mid or low
 K8S_CHART ?= ska-$(CONFIG)
 DEPLOYMENT_CONFIGURATION ?= ska-$(CONFIG)## umbrella chart to work with
 ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
@@ -36,16 +36,16 @@ KUBE_BRANCH ?= local## Required by Skallop
 NAME ?= $(CONFIG)## The name of the telescope
 ADDMARKS ?=## Additional Marks to add to pytests
 # Dishmark is a synthesis of marks to add to test, it will always start with the tests for the appropriate
-# telescope (e.g. TEL=mid or TEL-low) thereafter followed by additional filters
+# telescope (e.g. TEL=mid or TEL=low) thereafter followed by additional filters
 ifneq ($(ADDMARKS),)
-DASHMARK ?= ska$(TEL) and $(ADDMARKS)
+DASHMARK ?= ska$(CONFIG) and $(ADDMARKS)
 else
-DASHMARK ?= ska$(TEL)
+DASHMARK ?= ska$(CONFIG)
 endif
 
-
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
-CONFIG_MANAGER= mid-eda/cm/01
+CONFIG_MANAGER= $(CONFIG)-eda/cm/01
+ATTR_CONFIG_FILE = attribute_config_$(CONFIG).yaml
 ARCHWIZARD_CONFIG?= $(ARCHWIZARD_VIEW_DBNAME)=tango://$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000/$(CONFIG_MANAGER)
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
@@ -101,7 +101,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.archwizard_config=$(ARCHWIZARD_CONFIG) \
 	$(SDP_PROXY_VARS)
 
-K8S_CHART ?= ska-mid##Default chart set to Mid for testing purposes
+K8S_CHART ?= ska-$(CONFIG)##Default chart
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
 
 HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
@@ -157,16 +157,10 @@ K8S_TEST_RUNNER = test-runner-$(CI_JOB_ID)##name of the pod running the k8s_test
 #
 BIGGER_THAN ?= ## k8s-get-size-images parameter: if not empty check if images are bigger than this (in MB)
 
-TELESCOPE = 'SKA-Mid'
-CENTRALNODE = 'ska_mid/tm_central/central_node'
-SUBARRAY = 'ska_mid/tm_subarray_node'
-# Define environmenvariables required by OET
-ifneq (,$(findstring low,$(KUBE_NAMESPACE)))
-	TELESCOPE = 'SKA-Low'
-	CENTRALNODE = 'ska_low/tm_central/central_node'
-	SUBARRAY = 'ska_low/tm_subarray_node'
-endif
-
+CONFIG_CASED = $(shell echo $(CONFIG) | sed -e "s/\b\(.\)/\u\1/g")
+TELESCOPE = 'SKA-$(CONFIG_CASED)'
+CENTRALNODE = 'ska_$(CONFIG)/tm_central/central_node'
+SUBARRAY = 'ska_$(CONFIG)/tm_subarray_node'
 
 # Makefile target for test in ./tests/Makefile
 K8S_TEST_TARGET = test
@@ -289,3 +283,6 @@ k8s-do-test-runner:
 ##  Post tests reporting
 	pip list > build/pip_list.txt
 	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
+
+foo:
+	@echo $(CASED_CONFIG)

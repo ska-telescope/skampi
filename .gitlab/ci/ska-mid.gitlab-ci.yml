@@ -7,11 +7,8 @@ mid-test:
   stage: test
   variables:
     CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
@@ -51,17 +48,13 @@ clean-mid-test:
   stage: clean_test_env
   variables:
     CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     COUNT: 1
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_OUT"
-    TEL: mid
   extends:
     - .set_dbname
     - .tags_default
@@ -84,11 +77,8 @@ mid_uninstall_integration:
     - .uninstall_chart
   variables:
     CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "integration-$CONFIG"
-    KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
     ARCHIVER_DBNAME: "integration_${CONFIG}_archiver_db"
     KEEP_NAMESPACE: "true"
@@ -109,11 +99,8 @@ mid_deploy_staging:
     - .deploy_chart
   variables:
     CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "staging-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "staging-$CONFIG"
-    KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
     ARCHIVER_DBNAME: "staging_${CONFIG}_archiver_db"
     MARK: "not infra"
@@ -136,11 +123,8 @@ mid_uninstall_staging:
     - .uninstall_chart
   variables:
     CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "staging-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "staging-$CONFIG"
-    KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
     ARCHIVER_DBNAME: "staging_${CONFIG}_archiver_db"
     KEEP_NAMESPACE: "true"
@@ -159,11 +143,8 @@ mid_on_demand_deploy:
   stage: build
   variables:
     CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     OET_INGRESS_ENABLED: "true"

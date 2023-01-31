@@ -109,14 +109,12 @@ This is because otherwise you are implying that persistent volume claims are goi
 If your host can satisfy persistent storage claims, skip the above step.
 
 Next, you need to set the environment variables to configure the deployment.
-In particular you need to choose the namespaces to be used for the control system (```KUBE_NAMESPACE``)
-and SDP dynamic deployments (```KUBE_NAMESPACE_SDP``). You should choose them so your deployment
-won't collide with someone else's, e.g.:
+In particular you need to choose the namespaces to be used for the control system (```KUBE_NAMESPACE``).
+You should choose it so your deployment won't collide with someone else's, e.g.:
 
 .. code-block:: console
 
     export KUBE_NAMESPACE=skampi-<myname>
-    export KUBE_NAMESPACE_SDP=skampi-<myname>-sdp
 
 You may also specify these in a ``PrivateRules.mak`` file created at the project root by running:
 

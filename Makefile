@@ -3,21 +3,24 @@ THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/
 DISPLAY := $(THIS_HOST):0##for GUI applications
 XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
 
+# Main control variable
+CONFIG ?= $(error Please specify CONFIG=mid or CONFIG=low)## telescope - mid or low
+
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-skampi-chart
 
 INGRESS_HOST ?= k8s.stfc.skao.int## default ingress host
 KUBE_NAMESPACE ?= integration#namespace to be used
-KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
+KUBE_NAMESPACE_SDP ?= $(KUBE_NAMESPACE)-sdp#namespace to be used
 TANGO_DATABASE_DS ?= databaseds-tango-base## Stable name for the Tango DB
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
 TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
 HELM_RELEASE ?= test## release name of the chart
 MINIKUBE ?= true## Minikube or not
-UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
-CONFIG ?= $(error Please specify CONFIG=mid or CONFIG=low)## telescope - mid or low
+NAME ?= $(CONFIG)## The name of the telescope
 K8S_CHART ?= ska-$(CONFIG)
 DEPLOYMENT_CONFIGURATION ?= ska-$(CONFIG)## umbrella chart to work with
+UMBRELLA_CHART_PATH ?= ./charts/$(DEPLOYMENT_CONFIGURATION)/##Path of the umbrella chart to install
 ITANGO_ENABLED ?= false## ITango enabled in ska-tango-base
 TARANTA_USER ?= user1## the username for authentication to taranta services
 TARANTA_PASSWORD ?= abc123## the password for authentication to taranta services
@@ -32,7 +35,6 @@ KUBE_HOST ?= $(LOADBALANCER_IP)## Required by Skallop
 DOMAIN ?= branch## Required by Skallop
 TEL ?= $(CONFIG)## Required by Skallop
 KUBE_BRANCH ?= local## Required by Skallop
-NAME ?= $(CONFIG)## The name of the telescope
 ADDMARKS ?=## Additional Marks to add to pytests
 # Dishmark is a synthesis of marks to add to test, it will always start with the tests for the appropriate
 # telescope (e.g. TEL=mid or TEL=low) thereafter followed by additional filters
@@ -99,10 +101,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.archwizard_config=$(ARCHWIZARD_CONFIG) \
 	$(SDP_PROXY_VARS)
 
-K8S_CHART ?= ska-$(CONFIG)##Default chart
-SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
-
-HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
+HELM_CHARTS_TO_PUBLISH ?= ska-mid ska-low ska-landingpage
 
 OCI_IMAGES_TO_PUBLISH =
 
@@ -113,7 +112,7 @@ KUBE_APP = ska-tango-images
 CI_JOB_ID ?= local##local default for ci job id
 #
 # K8S_TEST_IMAGE_TO_TEST defines the tag of the Docker image to test
-K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.19.6## docker image that will be run for testing purpose
+K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:2.21.4## docker image that will be run for testing purpose
 
 # import your personal semi-static config
 -include PrivateRules.mak

@@ -95,8 +95,7 @@ Configuration and the way SKAMPI pipelines will proceed is managed by different 
 
 This is also true when selecting the telescopes. CI/CD is aligned in such a way that MID and LOW should be handled through configuration options only.
 The **mid-test** job defined in **.gitlab/ci/ska-mid.gitlab-ci.yml** and the 
-**low-test** job defined in **.gitlab/ci/ska-low.gitlab-ci.yml** differ only through the use of selecting "mid" or "low" in the CONFIG and
-TEL keys when setting the variables.
+**low-test** job defined in **.gitlab/ci/ska-low.gitlab-ci.yml** differ only through the use of selecting "mid" or "low" in the CONFIG.
 
 Thus for **mid-test** we have
 
@@ -108,10 +107,8 @@ Thus for **mid-test** we have
     variables:
       CONFIG: mid
       DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-      K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
       HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
       KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
-      KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
       SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
       ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
       COUNT: 1
@@ -128,10 +125,8 @@ and for **low-test** job
     variables:
       CONFIG: low
       DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-      K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
       HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
       KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
-      KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
       SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
       ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
       DISABLE_MAINTAIN_ON: "True"

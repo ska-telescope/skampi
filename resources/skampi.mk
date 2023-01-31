@@ -35,14 +35,14 @@ skampi-vars: k8s-vars ## Display Skampi deployment context variables
 ## SYNOPSIS: make skampi-update-chart-versions
 ## HOOKS: none
 ## VARS:
-##       SKAMPI_K8S_CHARTS=<list of helm chart directories under ./charts/>
+##       HELM_CHARTS_TO_PUBLISH=<list of helm chart directories under ./charts/>
 ##       K8S_HELM_REPOSITORY=helm chart repository
 ##
-##  Inspects the list of charts defined in SKAMPI_K8S_CHARTS and then updates
+##  Inspects the list of charts defined in HELM_CHARTS_TO_PUBLISH and then updates
 ##  the dependencies in Chart.yaml to the latest found in K8S_HELM_REPOSITORY .
 
 skampi-update-chart-versions: helm-install-yq ## update Skampi chart dependencies to latest versions eg: ska-tango-base etc.
-	@for chart in $(SKAMPI_K8S_CHARTS); do \
+	@for chart in $(HELM_CHARTS_TO_PUBLISH); do \
 		echo "update-chart-versions: inspecting charts/$$chart/Chart.yaml";  \
 		for upd in $$(/usr/local/bin/yq e '.dependencies[].name' charts/$$chart/Chart.yaml | grep -v ska-landingpage); do \
 			cur_version=$$(cat charts/$$chart/Chart.yaml | /usr/local/bin/yq e ".dependencies[] | select(.name == \"$$upd\") | .version" -); \

@@ -53,10 +53,10 @@ class StartUpLnStep(StartUpStep):
 class CspLnAssignResourcesStep(CspAsignResourcesStep):
     """Implementation of Assign Resources Step for CSP LN."""
 
-    def __init__(self, observation: Observation) -> None:
-        """Init object."""
-        super().__init__()
-        self._tel = names.TEL()
+    # def __init__(self, observation: Observation) -> None:
+    #     """Init object."""
+    #     super().__init__()
+    #     self._tel = names.TEL()
 
     def do(
         self,

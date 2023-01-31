@@ -133,10 +133,16 @@ class CspLnConfigureStep(CspConfigureStep):
         Memo(scan_duration=duration)
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
-        config = self.observation.generate_scan_config_parsed_for_csp(
-            scan_duration=duration
-        )
-        self._log(f"commanding {csp_subarray_ln_name} with Configure: {config}")
+        if self._tel.skamid:
+            config = self.observation.generate_scan_config_parsed_for_csp(
+                scan_duration=duration
+            )
+        elif self._tel.skalow:
+            config_json = copy.deepcopy(CONFIGURE_CSP_JSON_LOW)
+            config = json.dumps(config_json)
+
+
+        logger.info(f"commanding {csp_subarray_ln_name} with Configure: {config}")
         csp_subarray_ln.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
@@ -327,5 +333,50 @@ SCAN_CSP_JSON_LOW = {
   "lowcbf": {
     "scan_id": 987654321,
     "scan_seconds": 30
+  }
+}
+
+
+CONFIGURE_CSP_JSON_LOW = {
+  "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+  "subarray": {
+    "subarray_name": "science period 23"
+  },
+  "common": {
+    "config_id": "sbi-mvp01-20200325-00001-science_A",
+    "subarray_id": 1
+  },
+  "lowcbf": {
+    "stations": {
+      "stns": [
+        [1,0],
+        [2,0],
+        [3,0],
+        [4,0]
+      ],
+      "stn_beams": [
+        {
+          "beam_id": 1,
+          "freq_ids": [64,65,66,67,68,69,70,71],
+          "boresight_dly_poly": "url"
+        }
+      ]
+    },
+    "timing_beams": {
+      "beams": [
+        {
+          "pst_beam_id": 13,
+          "stn_beam_id": 1,
+          "offset_dly_poly": "url",
+          "stn_weights": [0.9,1.0,1.0,0.9],
+          "jones": "url",
+          "dest_chans": [128,256],
+          "rfi_enable": [True,True,True],
+          "rfi_static_chans": [1,206,997],
+          "rfi_dynamic_chans": [242,1342],
+          "rfi_weighted": 0.87
+        }
+      ]
+    },
   }
 }

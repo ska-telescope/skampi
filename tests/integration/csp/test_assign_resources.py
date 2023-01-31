@@ -9,7 +9,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
+# @pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign

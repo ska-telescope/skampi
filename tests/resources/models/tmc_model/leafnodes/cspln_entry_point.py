@@ -1,6 +1,5 @@
 """Domain logic for the cdp."""
 import logging
-import os
 import copy
 from typing import Union, List
 import json
@@ -23,7 +22,7 @@ from ...csp_model.entry_point import (
 )
 
 from ...obsconfig.config import Observation
-from ska_ser_skallop.utils.nrgen import get_id
+
 
 logger = logging.getLogger(__name__)
 

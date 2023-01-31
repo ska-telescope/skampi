@@ -159,12 +159,18 @@ class CSPLnScanStep(CspScanStep):
         """
         # scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
-        csp_run_scan_config = self.observation.generate_csp_run_scan_config()
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+
+        if self._tel.skamid:
+            csp_run_scan_config = self.observation.generate_csp_run_scan_config()
+
+        elif self._tel.skalow:
+            csp_run_scan_config=copy.deepcopy(SCAN_CSP_JSON_LOW)
+
         self._log(
-            f"Commanding {csp_subarray_ln_name} to Scan with {csp_run_scan_config}"
-        )
+                f"Commanding {csp_subarray_ln_name} to Scan with {csp_run_scan_config}"
+            )
         try:
             csp_subarray_ln.command_inout("Scan", json.dumps(csp_run_scan_config))
             sleep(scan_duration)
@@ -307,3 +313,59 @@ ASSIGN_RESOURCE_CSP_JSON_LOW={
     ]
   }
 }
+
+SCAN_CSP_JSON_LOW = {
+  "common": {
+    "subarray_id": 1
+  },
+  "lowcbf": {
+    "scan_id": 987654321,
+    "scan_seconds": 30
+  }
+}
+
+
+CONFIGURE_CSP_JSON_LOW = {
+  "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+  "subarray": {
+    "subarray_name": "science period 23"
+  },
+  "common": {
+    "config_id": "sbi-mvp01-20200325-00001-science_A",
+    "subarray_id": 1
+  },
+  "lowcbf": {
+    "stations": {
+      "stns": [
+        [1,0],
+        [2,0],
+        [3,0],
+        [4,0]
+      ],
+      "stn_beams": [
+        {
+          "beam_id": 1,
+          "freq_ids": [64,65,66,67,68,69,70,71],
+          "boresight_dly_poly": "url"
+        }
+      ]
+    },
+    "timing_beams": {
+      "beams": [
+        {
+          "pst_beam_id": 13,
+          "stn_beam_id": 1,
+          "offset_dly_poly": "url",
+          "stn_weights": [0.9,1.0,1.0,0.9],
+          "jones": "url",
+          "dest_chans": [128,256],
+          "rfi_enable": [True,True,True],
+          "rfi_static_chans": [1,206,997],
+          "rfi_dynamic_chans": [242,1342],
+          "rfi_weighted": 0.87
+        }
+      ]
+    },
+  }
+}
+

@@ -1,23 +1,19 @@
 """Assign resources to subarray feature tests."""
 import logging
 import pytest
-import json,os
+import copy
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, parsers
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-
-# from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
+from tests.resources.models.tmc_model.entry_point import ASSIGN_RESOURCE_JSON_LOW
 from resources.models.mvp_model.states import ObsState
 
 from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
-
-# log capturing
 
 
 @pytest.mark.k8s
@@ -38,7 +34,7 @@ def test_assign_resources_from_tmc_subarray_in_low():
 def subarray_obstate_is_empty(subarray_id, sut_settings: SutTestSettings,
                               set_up_subarray_log_checking_for_tmc,
                               base_composition):
-    """an telescope subarray."""
+    """a telescope subarray in EMPTY obsState."""
     sut_settings.subarray_id = subarray_id
     tel = names.TEL()
     subarray = con_config.get_device_proxy(
@@ -62,23 +58,24 @@ def the_subarray_must_be_in_idle_state(subarray_id, sut_settings: SutTestSetting
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
+
 @then(parsers.parse("the correct resources {resources_list} are assigned"))
 def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
     resources_list = []
-    json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration", "assign_resource_low.json")  
-    with open(json_file_path) as f:
-        config = f.read()
-        config_json = json.loads(config)
-        sdp_resources = config_json["sdp"]["resources"]
-        csp_resources = config_json["csp"]["lowcbf"]["resources"]
+    # json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration", "assign_resource_low.json")  
+    # with open(json_file_path) as f:
+    # config = f.read()
+    config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
+    sdp_resources = config_json["sdp"]["resources"]
+    csp_resources = config_json["csp"]["lowcbf"]["resources"]
 
-        for resources in csp_resources:
-            resources_list.append(resources["device"])
+    for resources in csp_resources:
+        resources_list.append(resources["device"])
 
-        tel = names.TEL()
-        sdpsubarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
-        cspsubarray = con_config.get_device_proxy(tel.csp.cbf.subarray(subarray_id))
+    tel = names.TEL()
+    sdpsubarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
+    cspsubarray = con_config.get_device_proxy(tel.csp.cbf.subarray(subarray_id))
         
     result_sdp = sdpsubarray.read_attribute("Resources").value
     result_csp = cspsubarray.read_attribute("assignedResources").value

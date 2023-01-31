@@ -16,6 +16,9 @@ mid-test:
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
     OET_INGRESS_ENABLED: "true"
+    SKA_TELESCOPE: "SKA-Mid"
+    CENTRALNODE_FQDN: "ska_mid/tm_central/central_node"
+    SUBARRAYNODE_FQDN_PREFIX: "ska_mid/tm_subarray_node"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     TEL: mid
@@ -119,6 +122,9 @@ mid_deploy_staging:
     ARCHIVER_DBNAME: "staging_${CONFIG}_archiver_db"
     MARK: "not infra"
     KEEP_NAMESPACE: "true"
+    SKA_TELESCOPE: "SKA-Mid"
+    CENTRALNODE_FQDN: "ska_mid/tm_central/central_node"
+    SUBARRAYNODE_FQDN_PREFIX: "ska_mid/tm_subarray_node"
   environment:
     name: "staging-mid"
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
@@ -168,6 +174,9 @@ mid_on_demand_deploy:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     OET_INGRESS_ENABLED: "true"
+    SKA_TELESCOPE: "SKA-Mid"
+    CENTRALNODE_FQDN: "ska_mid/tm_central/central_node"
+    SUBARRAYNODE_FQDN_PREFIX: "ska_mid/tm_subarray_node"
   extends:
     - .tags_default
     - .set_dbname

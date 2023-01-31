@@ -282,11 +282,3 @@ k8s-do-test-runner:
 ##  Post tests reporting
 	pip list > build/pip_list.txt
 	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
-
-
-k8s-deploy-test-oda:
-	helm upgrade --install $(HELM_RELEASE) charts/ska-test-oda --namespace $(KUBE_NAMESPACE) \
-										--set ska-db-oda.enabled=true \
-										--set ska-taranta.tangogql.replicas=1 \
-										--set global.taranta_auth_enabled=true \
-										--set global.taranta_dashboard_enabled=true

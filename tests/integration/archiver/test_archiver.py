@@ -2,34 +2,29 @@
 """
 Test archiver
 """
-import sys, os
+import sys
 import pytest
 import logging
 from time import sleep
 from archiver_helper import ArchiverHelper
-from tango import DevFailed, DeviceProxy, ApiUtil
+from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
 
-
-def set_device_names():
-  conf_manager=os.getenv("CONF_MANAGER")
-  event_subscriber=os.getenv("EVENT_SUBSCRIBER")
-  return str(conf_manager), str(event_subscriber)
-  
-
+CONF_MANAGER_LOW="low-eda/cm/01"
+EVENT_SUBSCRIBER_LOW="low-eda/es/01"
+CONF_MANAGER="mid-eda/cm/01"
+EVENT_SUBSCRIBER="mid-eda/es/01"
 @pytest.mark.post_deployment
 @pytest.mark.skalow
 def test_init_low():
   logging.info("Init test archiver low device")
-  conf_manager,event_subscriber=set_device_names()
-  archiver_helper = ArchiverHelper(conf_manager, event_subscriber)
+  archiver_helper = ArchiverHelper(CONF_MANAGER_LOW, EVENT_SUBSCRIBER_LOW)
   archiver_helper.start_archiving()
 
 @pytest.mark.post_deployment
 @pytest.mark.skamid
-def test_init(set_device_names):
+def test_init():
   logging.info("Init test archiver mid")
-  conf_manager,event_subscriber=set_device_names()
-  archiver_helper = ArchiverHelper(conf_manager, event_subscriber)
+  archiver_helper = ArchiverHelper(CONF_MANAGER, EVENT_SUBSCRIBER)
   archiver_helper.start_archiving()
   
 def configure_attribute(attribute, cm, es):
@@ -43,7 +38,7 @@ def configure_attribute(attribute, cm, es):
   archiver_helper.stop_archiving(attribute)
 
 
-def test_configure_attribute(cm,es):
+def test_configure_attribute(cm, es):
   attribute = "sys/tg_test/1/double_scalar"
   sleep_time = 20
   max_retries = 3
@@ -73,7 +68,7 @@ def test_configure_attribute(cm,es):
 @pytest.mark.skamid
 def test_config_attribute_mid():
   try:
-    test_configure_attribute("mid-eda/cm/01", "mid-eda/es/01")
+    test_configure_attribute(CONF_MANAGER, EVENT_SUBSCRIBER)
   except Exception as e:
     logging.error(e)
     
@@ -81,6 +76,6 @@ def test_config_attribute_mid():
 @pytest.mark.skalow
 def test_config_attribute_low():
   try:
-    test_configure_attribute("low-eda/cm/01", "low-eda/es/01")
+    test_configure_attribute(CONF_MANAGER_LOW, EVENT_SUBSCRIBER_LOW)
   except Exception as e:
     logging.error(e)

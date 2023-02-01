@@ -12,6 +12,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_oso_scripting.objects import Telescope
+from ska_ser_skallop.utils import env
 
 from .oet_helpers import ScriptExecutor
 
@@ -56,7 +57,7 @@ def a_low_telescope_on_standby_or_off_state(
     standby_telescope: fxt_types.standby_telescope,
 ):
     """a low telescope on standby or off state"""
-    tel = names.TEL("low")
+    tel = names.TEL(Low())
     central_node = con_config.get_device_proxy(tel.tm.central_node, fast_load=True)
     assert str(central_node.read_attribute("telescopeState").value) in [
         "STANDBY",
@@ -73,7 +74,8 @@ def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
 @given("telescope is in ON state")
 def a_low_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
     """a telescope in the ON state"""
-    tel = names.TEL("low")
+    print(env.telescope_type_is_low())
+    tel = names.TEL(Low())
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
 
@@ -176,7 +178,7 @@ def check_final_state_is_on_low():
     """
     Check that the central node device is in the expected state.
     """
-    tel = names.TEL("low")
+    tel = names.TEL(Low())
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     final_state = central_node.read_attribute("telescopeState").value
     assert (
@@ -189,7 +191,7 @@ def check_final_state_is_off_low():
     """
     Check that the central node device is in the expected state.
     """
-    tel = names.TEL("low")
+    tel = names.TEL(Low())
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     final_state = central_node.read_attribute("telescopeState").value
     assert (

@@ -43,7 +43,7 @@ delete_archiver_config_job:
 
 #Incase of error
 #Requries parameter KUBECONFIG
-delete_archiver_config_job:
+delete_archiver_get_config_job:
 	kubectl --kubeconfig=$(KUBECONFIG) delete job get-configuration
 
 ARCHWIZ_IP=$(shell kubectl --kubeconfig=$(KUBECONFIG) get svc| grep archwizard | awk '{print $$4}')

@@ -142,7 +142,7 @@ kubeconfig: Configured
 Now install SKAMPI. Take note: all default values of variables will be used if none are set. Read more about this under [Modifying deployment configuration](#modifying-deployment-configuration).
 ```
 $ cd .. # this is to go back to the root of the SKAMPI repo after the above commands
-$ make install-or-upgrade
+$ make k8s-install-chart
 $ make wait
 $ make skampi-links
 ```
@@ -360,7 +360,7 @@ The values.yaml file controls all the variables that are used by Helm when inter
     ```
 5. Now update the deployment:
     ```
-    $ make install-or-upgrade
+    $ make k8s-install-chart
     ```
 6. You should now see the landing page being added to the cluster:
     ```

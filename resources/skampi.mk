@@ -31,7 +31,23 @@ skampi-vars: k8s-vars ## Display Skampi deployment context variables
 	@echo "TEL:                        $(TEL)"
 	@echo "TEST_ENV:                   $(TEST_ENV)"
 
-## TARGET: skampi-update-chart-versions
+## TARGET: skampi-k8s-cleanup
+## SYNOPSIS: make skampi-k8s-cleanup
+## HOOKS: none
+## VARS:
+##       KUBE_NAMESPACE=the namespace of the deployed charts
+##       KUBE_NAMESPACE_SDP=the SDP namespace of the deployed charts
+##
+##  Cleans up all charts and the namespaces in $KUBE_NAMESPACE and $KUBE_NAMESPACE_SDP
+
+skampi-k8s-cleanup: k8s-uninstall-chart ## clean up all SKAMPI charts and the namespaces
+	@for ns in $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP); do \
+		echo "skampi-k8s-cleanup: ; \
+		kubectl -n $$ns delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found \
+		make k8s-delete-namespace KUBE_NAMESPACE=$$ns \
+	done
+
+## TARGET: skampi-k8s-cleanup
 ## SYNOPSIS: make skampi-update-chart-versions
 ## HOOKS: none
 ## VARS:
@@ -177,7 +193,7 @@ skampi-k8s-test: skampi-k8s-pre-test skampi-k8s-do-test skampi-k8s-post-test  ##
 ##  These tests are run directly after k8s-test.
 ##  The report.xml and cucumber.json are concatenated across the test runs.
 
-skampi-component-tests:  ## iterate over Skampi component tests defined as make targets
+skampi-component-tests:  ## iterate over Skampi component tests defined as make targets - UNUSED
 	@which junitparser >/dev/null 2>&1 || pip3 install junitparser
 	@mkdir -p build.previous build
 	@if compgen -G "build/*" > /dev/null; then \

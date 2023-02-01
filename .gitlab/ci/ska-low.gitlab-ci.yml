@@ -73,7 +73,6 @@ low_uninstall_integration:
     - .uninstall_chart
   variables:
     CONFIG: low
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "integration-$CONFIG"
     SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"

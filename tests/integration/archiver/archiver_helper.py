@@ -3,7 +3,7 @@ from time import sleep
 
 class ArchiverHelper:
 
-    def __init__(self,conf_manager='mid-eda/cm/01', eventsubscriber='mid-eda/es/01'):
+    def __init__(self,conf_manager, eventsubscriber):
         self.conf_manager = conf_manager
         self.eventsubscriber = eventsubscriber
         self.conf_manager_proxy = DeviceProxy(self.conf_manager)

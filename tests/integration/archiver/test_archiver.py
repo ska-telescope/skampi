@@ -2,26 +2,34 @@
 """
 Test archiver
 """
-import sys
+import sys, os
 import pytest
 import logging
 from time import sleep
 from archiver_helper import ArchiverHelper
-from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
+from tango import DevFailed, DeviceProxy, ApiUtil
 
+
+def set_device_names():
+  conf_manager=os.getenv("CONF_MANAGER")
+  event_subscriber=os.getenv("EVENT_SUBSCRIBER")
+  return str(conf_manager), str(event_subscriber)
+  
 
 @pytest.mark.post_deployment
 @pytest.mark.skalow
 def test_init_low():
   logging.info("Init test archiver low device")
-  archiver_helper = ArchiverHelper(conf_manager="low-eda/cm/01", eventsubscriber="low-eda/es/01")
+  conf_manager,event_subscriber=set_device_names()
+  archiver_helper = ArchiverHelper(conf_manager, event_subscriber)
   archiver_helper.start_archiving()
 
 @pytest.mark.post_deployment
 @pytest.mark.skamid
-def test_init():
+def test_init(set_device_names):
   logging.info("Init test archiver mid")
-  archiver_helper = ArchiverHelper()
+  conf_manager,event_subscriber=set_device_names()
+  archiver_helper = ArchiverHelper(conf_manager, event_subscriber)
   archiver_helper.start_archiving()
   
 def configure_attribute(attribute, cm, es):

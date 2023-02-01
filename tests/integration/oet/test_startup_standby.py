@@ -33,7 +33,7 @@ def test_telescope_startup():
 @pytest.mark.startup
 @pytest.mark.k8s
 @scenario("features/oet_startup_standby_telescope.feature", "Starting up low telescope")
-def test_telescope_startup():
+def test_low_telescope_startup():
     """Low Telescope startup test."""
 
 
@@ -54,7 +54,7 @@ def test_telescope_standby():
 @scenario(
     "features/oet_startup_standby_telescope.feature", "Setting up low telescope to stand-by"
 )
-def test_telescope_standby():
+def test_low_telescope_standby():
     """ Set telescope to standby test."""
 
 

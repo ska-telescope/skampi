@@ -11,6 +11,7 @@ from pytest_bdd import given, parsers, scenario, then, when
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_oso_scripting.objects import Telescope
 
 from .oet_helpers import ScriptExecutor
 
@@ -50,11 +51,29 @@ def a_telescope_on_standby_or_off_state(
         "OFF",
     ]
 
+@given("telescope is in STANDBY or OFF state")
+def a_low_telescope_on_standby_or_off_state(
+    standby_telescope: fxt_types.standby_telescope,
+):
+    """a low telescope on standby or off state"""
+    tel = names.TEL("low")
+    central_node = con_config.get_device_proxy(tel.tm.central_node, fast_load=True)
+    assert str(central_node.read_attribute("telescopeState").value) in [
+        "STANDBY",
+        "OFF",
+    ]
 
 @given("telescope is in ON state")
 def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
     """a telescope in the ON state"""
     tel = names.TEL()
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    assert str(central_node.read_attribute("telescopeState").value) == "ON"
+
+@given("telescope is in ON state")
+def a_low_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
+    """a telescope in the ON state"""
+    tel = names.TEL("low")
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
 
@@ -81,6 +100,24 @@ def run_startup_script(
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
         # after success we marked the telescope state to be ON
         standby_telescope.state = "ON"
+
+
+@when(parsers.parse("I turn telescope to ON state"))
+def startup_telescope():
+    """
+    Use the OET OSO Scripting to Turn On Telescope
+    """
+    telescope = Telescope()
+    telescope.on()
+    
+
+@when(parsers.parse("I turn telescope to OFF state"))
+def standby_telescope():
+    """
+    Use the OET OSO Scripting to Turn Off Telescope
+    """
+    telescope = Telescope()
+    telescope.off()
 
 
 @when(parsers.parse("I tell the OET to run standby script {script}"))
@@ -133,3 +170,30 @@ def check_final_state_is_on():
         str(final_state) == "ON"
     ), f"Expected telescope to be ON but instead was {final_state}"
     logger.info("Central node is in ON state")
+
+@then(parsers.parse("the central node goes to state ON"))
+def check_final_state_is_on_low():
+    """
+    Check that the central node device is in the expected state.
+    """
+    tel = names.TEL("low")
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    final_state = central_node.read_attribute("telescopeState").value
+    assert (
+        str(final_state) == "ON"
+    ), f"Expected telescope to be ON but instead was {final_state}"
+    logger.info("Central node is in ON state")
+
+@then(parsers.parse("the central node goes to state STANDBY"))
+def check_final_state_is_off_low():
+    """
+    Check that the central node device is in the expected state.
+    """
+    tel = names.TEL("low")
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    final_state = central_node.read_attribute("telescopeState").value
+    assert (
+        str(final_state) == "STANDBY"
+    ), f"Expected telescope to be STANDBY but instead was {final_state}"
+    logger.info("Central node is in STANDBY state")
+    time.sleep(10)

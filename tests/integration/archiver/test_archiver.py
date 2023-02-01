@@ -77,7 +77,7 @@ def test_config_attribute_mid():
 @pytest.mark.post_deployment
 @pytest.mark.skalow
 @pytest.mark.parametrize(
-  "attribute", "strategy", [("sys/tg_test/1/double_scalar", "SetPeriodEvent"),
+  "attribute, strategy", [("sys/tg_test/1/double_scalar", "SetPeriodEvent"),
   ("ska_low/tm_central/central_node/state", "SetCodePushedEvent"),
   ("ska_low/tm_central/central_node/healthstate", "SetRelativeEvent")
   ("ska_low/tm_central/central_node/telescopestate", "SetAbsoluteEvent")

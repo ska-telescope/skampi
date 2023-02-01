@@ -43,8 +43,7 @@ skampi-vars: k8s-vars ## Display Skampi deployment context variables
 skampi-k8s-cleanup: k8s-uninstall-chart ## clean up all SKAMPI charts and the namespaces
 	@for ns in $(KUBE_NAMESPACE) $(KUBE_NAMESPACE_SDP); do \
 		echo "skampi-k8s-cleanup:  $$ns"; \
-		kubectl delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found; \
-		echo "debug"; \
+		kubectl -n $$ns delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found; \
 		make k8s-delete-namespace KUBE_NAMESPACE=$$ns; \
 	done
 

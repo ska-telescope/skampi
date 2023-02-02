@@ -1,6 +1,6 @@
 Feature: Assign resources to subarray using TMC
 
-@XTP-17275 @XTP-16540
+@XTP-17275 @XTP-16540 @XTP-3325
 Scenario: Assign resources to subarray - happy flow
         Given the Telescope is in ON state
         And the subarray <subarray_id> obsState is EMPTY

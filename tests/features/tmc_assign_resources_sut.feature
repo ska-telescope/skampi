@@ -1,5 +1,3 @@
-
-@XTP-16540
 Feature: Assign resources to subarray using TMC
 
 @XTP-17275 @XTP-16540

@@ -49,7 +49,6 @@ def fxt_set_entry_point(
 
 
 
-
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
 def fxt_nr_of_subarrays() -> int:
     """_summary_

@@ -45,7 +45,6 @@ endif
 EVENT_SUBSCRIBER = "$(CONFIG)-eda/es/01"
 ARCHIVER_TIMESCALE_HOST_NAME = timescaledb.ska-eda-$(CONFIG)-db.svc.cluster.local#for testing 
 
-
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
 CONFIG_MANAGER= $(CONFIG)-eda/cm/01
 ATTR_CONFIG_FILE = attribute_config_$(CONFIG).yaml
@@ -94,7 +93,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.device_server_port=$(TANGO_SERVER_PORT) \
 	--set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) \
 	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
-	--set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) \
+	--set ska-tango-archiver.hostname=$(ARCHIVER_TIMESCALE_HOST_NAME) \
 	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
@@ -247,6 +246,7 @@ k8s_test_command = /bin/bash -o pipefail -c "\
 k8s-pre-install-chart:
 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+    bash ./attribute_config_low.sh
 
 k8s-post-install-chart:
 	kubectl rollout status -n $(KUBE_NAMESPACE) --watch --timeout=90s statefulset/ska-sdp-console

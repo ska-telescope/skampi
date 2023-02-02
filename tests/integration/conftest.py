@@ -187,8 +187,7 @@ def i_switch_off_the_telescope(
         with running_telescope.wait_for_shutting_down(integration_test_exec_settings):
             entry_point.set_telescope_to_standby()
 
-
-# resource assignment
+#Currently, resources_list is not utilised, raised SKB for the same:https://jira.skatelescope.org/browse/SKB-202
 @when(parsers.parse("I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"))
 def assign_resources_with_subarray_id(
     telescope_context: fxt_types.telescope_context,

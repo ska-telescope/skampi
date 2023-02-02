@@ -377,6 +377,10 @@ CONFIGURE_CSP_JSON_LOW = {
           "offset_dly_poly": "url",
           "stn_weights": [0.9,1.0,1.0,0.9],
           "jones": "url",
+          "dest_ip": [
+            "10.22.0.1:2345",
+            "10.22.0.3:3456"
+          ],
           "dest_chans": [128,256],
           "rfi_enable": [True,True,True],
           "rfi_static_chans": [1,206,997],
@@ -385,5 +389,7 @@ CONFIGURE_CSP_JSON_LOW = {
         }
       ]
     },
+    "search_beams": "tbd",
+    "zooms": "tbd"
   }
 }

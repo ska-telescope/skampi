@@ -438,9 +438,19 @@ csp_low_scan = {
     "common": {"subarray_id": 1},
     "lowcbf": {
         "scan_id": 987654321,
-        "unix_epoch_seconds": 1616971738,
-        "timestamp_ns": 987654321,
-        "packet_offset": 123456789,
         "scan_seconds": 30,
     },
 }
+
+
+# csp_low_scan = {
+#     "common": {"subarray_id": 1},
+#     "lowcbf": {
+#         "scan_id": 987654321,
+#         "unix_epoch_seconds": 1616971738,
+#         "timestamp_ns": 987654321,
+#         "packet_offset": 123456789,
+#         "scan_seconds": 30,
+#     },
+# }
+

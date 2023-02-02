@@ -1,4 +1,7 @@
-db: "databaseds-tango-base:10000"
+#Example file for attribute configuration in EDA MID.
+#Use database name as:
+#db:<TANGO_HOST_NAME>.<KUBE_NAMESPACE>.svc.cluster.local:10000
+db: "databaseds-tango-base.<KUBE_NAMESPACE>.svc.cluster.local:10000"
 manager: mid-eda/cm/01
 archiver: mid-eda/es/01
 

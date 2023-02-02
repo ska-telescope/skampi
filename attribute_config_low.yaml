@@ -1,4 +1,7 @@
-db: databaseds-tango-base.ci-ska-skampi-hm-150-low.svc.cluster.local:10000
+#Example file for attribute configuration in EDA LOW.
+#Use database name as:
+#db:<TANGO_HOST_NAME>.<KUBE_NAMESPACE>.svc.cluster.local:10000
+db: databaseds-tango-base.<KUBE_NAMESPACE>.svc.cluster.local:10000
 manager: low-eda/cm/01
 archiver: low-eda/es/01
 

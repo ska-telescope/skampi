@@ -36,8 +36,8 @@ get_config:
 	kubectl  --kubeconfig=$(KUBECONFIG) create -f charts/get_configurations.yaml -n $(KUBE_NAMESPACE)
 	-kubectl  --kubeconfig=$(KUBECONFIG) wait --for=condition=Complete job/get-configuration --timeout=30s -n $(KUBE_NAMESPACE)
 	kubectl  --kubeconfig=$(KUBECONFIG) logs job.batch/get-configuration -n $(KUBE_NAMESPACE) > attribute_configuration.yaml
-    rm get_configurations.sh
-    rm get_configurations.yaml
+	rm get_configurations.sh
+	rm get_configurations.yaml
 
 #Incase of error
 #Requries parameter KUBECONFIG

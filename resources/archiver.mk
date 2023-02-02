@@ -27,14 +27,17 @@ configure-archiver:  ##configure attributes to archive
 	-kubectl  --kubeconfig=$(KUBECONFIG) wait --for=condition=Complete job/add-configuration -n $(KUBE_NAMESPACE) --timeout=30s
 	kubectl  --kubeconfig=$(KUBECONFIG) logs job.batch/add-configuration -n $(KUBE_NAMESPACE)
 	rm charts/configuration_job.yaml
-#this unables
+	rm charts/configuration_job.sh
+
+#this job provides user archived attributes data
 get_config:
 	curl -o charts/get_configurations.sh   https://gitlab.com/ska-telescope/ska-tango-archiver/-/raw/master/charts/get_configurations.sh?inline=false
 	bash ./charts/get_configurations.sh $(EVENT_SUBSCRIBER) $(TANGO_HOST)
 	kubectl  --kubeconfig=$(KUBECONFIG) create -f charts/get_configurations.yaml -n $(KUBE_NAMESPACE)
 	-kubectl  --kubeconfig=$(KUBECONFIG) wait --for=condition=Complete job/get-configuration --timeout=30s -n $(KUBE_NAMESPACE)
 	kubectl  --kubeconfig=$(KUBECONFIG) logs job.batch/get-configuration -n $(KUBE_NAMESPACE) > attribute_configuration.yaml
-
+    rm get_configurations.sh
+    rm get_configurations.yaml
 
 #Incase of error
 #Requries parameter KUBECONFIG

@@ -56,12 +56,12 @@ def test_configure_attribute(configuration_manager, event_subscriber, attribute,
             configure_attribute(attribute, configuration_manager, event_subscriber, strategy)
             break
         except DevFailed as df:
-            logging.info("configure_attribute exception: " + str(sys.exc_info()))
+            logging.error("configure_attribute exception: " + str(sys.exc_info()))
             try:
                 deviceAdm = DeviceProxy(CM_SERVER)
                 deviceAdm.RestartServer()
             except:
-                logging.info("reset_conf_manager exception: " + str(sys.exc_info()[0]))
+                logging.error("reset_conf_manager exception: " + str(sys.exc_info()[0]))
             if (x == (max_retries - 1)):
                 raise df
 

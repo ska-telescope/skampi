@@ -146,7 +146,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
-        
+
     def _generate_unique_eb_sb_ids(self, config_json):
         """This method will generate unique eb and sb ids.
         Update it in config json
@@ -207,7 +207,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
             config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
-        
+
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         central_node.command_inout("ReleaseResources", config)
 
@@ -383,11 +383,16 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
+        if self._tel.skamid:
+            scan_config = self.observation.generate_run_scan_conf().as_json
+
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            scan_config = json.dumps(SCAN_JSON_LOW)
         try:
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)
@@ -403,7 +408,7 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-    
+
     def undo(self, sub_array_id: int):
         """This is a no-op as no undo for scan is needed
 
@@ -753,4 +758,166 @@ RELEASE_RESOURCE_JSON_LOW = {
     "transaction_id": "txn-....-00001",
     "subarray_id": 1,
     "release_all": True
+}
+
+CONFIGURE_JSON_LOW = {
+  "interface": "https://schema.skao.int/ska-low-tmc-configure/3.0",
+  "transaction_id": "txn-....-00001",
+  "mccs": {
+    "stations": [
+      {
+        "station_id": 1
+      },
+      {
+        "station_id": 2
+      }
+    ],
+    "subarray_beams": [
+      {
+        "subarray_beam_id": 1,
+        "station_ids": [
+          1,
+          2
+        ],
+        "update_rate": 0.0,
+        "channels": [
+          [
+            0,
+            8,
+            1,
+            1
+          ],
+          [
+            8,
+            8,
+            2,
+            1
+          ],
+          [
+            24,
+            16,
+            2,
+            1
+          ]
+        ],
+        "antenna_weights": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_centre": [
+          0.0,
+          0.0
+        ],
+        "target": {
+          "reference_frame": "HORIZON",
+          "target_name": "DriftScan",
+          "az": 180.0,
+          "el": 45.0
+        }
+      }
+    ]
+  },
+  "sdp": {
+    "interface": "https://schema.skao.int/ska-sdp-configure/0.4",
+    "scan_type": "target:a"
+  },
+  "csp": {
+    "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+    "subarray": {
+      "subarray_name": "science period 23"
+    },
+    "common": {
+      "config_id": "sbi-mvp01-20200325-00001-science_A",
+      "subarray_id": 1
+    },
+    "lowcbf": {
+      "stations": {
+        "stns": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ],
+        "stn_beams": [
+          {
+            "beam_id": 1,
+            "freq_ids": [
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71
+            ],
+            "boresight_dly_poly": "url"
+          }
+        ]
+      },
+      "timing_beams": {
+        "beams": [
+          {
+            "pst_beam_id": 13,
+            "stn_beam_id": 1,
+            "offset_dly_poly": "url",
+            "stn_weights": [
+              0.9,
+              1.0,
+              1.0,
+              0.9
+            ],
+            "jones": "url",
+            "dest_ip": [
+              "10.22.0.1:2345",
+              "10.22.0.3:3456"
+            ],
+            "dest_chans": [
+              128,
+              256
+            ],
+            "rfi_enable": [
+              True,
+              True,
+              True
+            ],
+            "rfi_static_chans": [
+              1,
+              206,
+              997
+            ],
+            "rfi_dynamic_chans": [
+              242,
+              1342
+            ],
+            "rfi_weighted": 0.87
+          }
+        ]
+      }
+    }
+  },
+  "tmc": {
+    "scan_duration": 10.0
+  }
+}
+
+
+SCAN_JSON_LOW = {
+    "interface": "https://schema.skao.int/ska-low-tmc-scan/3.0",
+    "transaction_id": "txn-....-00001",
+    "scan_id": 1
+
 }

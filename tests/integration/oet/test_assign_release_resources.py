@@ -221,7 +221,7 @@ def check_final_subarray_state(
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",
-    "Release all resources",
+    "Release all resources low",
 )
 
 def test_oet__scripting_resource_allocation():
@@ -283,7 +283,7 @@ def i_assign_resources_to_it_low(
             subarray.assign_from_cdm(config)
 
 @when("I tell the OET to release resources")
-def i_assign_resources_to_it_low(
+def i_release_resources_low(
     running_telescope: fxt_types.running_telescope,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,

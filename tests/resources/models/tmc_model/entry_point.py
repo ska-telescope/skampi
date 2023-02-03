@@ -827,7 +827,8 @@ CONFIGURE_JSON_LOW = {
       "subarray_name": "science period 23"
     },
     "common": {
-      "config_id": "sbi-mvp01-20200325-00001-science_A"
+      "config_id": "sbi-mvp01-20200325-00001-science_A",
+      "subarray_id": 1
     },
     "lowcbf": {
       "stations": {

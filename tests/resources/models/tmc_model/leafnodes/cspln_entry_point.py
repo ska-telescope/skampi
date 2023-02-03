@@ -1,6 +1,5 @@
 """Domain logic for the cdp."""
 import logging
-import os
 import copy
 from typing import Union, List
 import json
@@ -23,7 +22,7 @@ from ...csp_model.entry_point import (
 )
 
 from ...obsconfig.config import Observation
-from ska_ser_skallop.utils.nrgen import get_id
+
 
 logger = logging.getLogger(__name__)
 
@@ -78,12 +77,7 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
                 config = self.observation.generate_assign_resources_config(sub_array_id).as_json
             elif self._tel.skalow:
                 # TODO Low json from CDM is not available. Once it is available pull json from CDM
-                # json_file_path = os.path.join("tests", "resources", "test_data", "TMC_integration",
-                #                               "assign_resource_low_csp.json")
-                # with open(json_file_path) as f:
-                #     config = f.read()
-                #     config_json = json.loads(config)
-                #     config = json.dumps(config_json)
+
                 config_json = copy.deepcopy(ASSIGN_RESOURCE_CSP_JSON_LOW)
                 config = json.dumps(config_json)
 

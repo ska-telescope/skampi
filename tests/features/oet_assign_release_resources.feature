@@ -38,7 +38,7 @@ Feature: Verification of OET scripts being executed successfully during an obser
 		Then the sub-array goes to ObsState IDLE
 
 	#Scenario: Release all resources low
-	Scenario: Releasing all resources from sub-array
+	Scenario: Release all resources low
 		Given sub-array with resources allocated to it
 		When I tell the OET to release resources
 		Then the sub-array goes to ObsState EMPTY

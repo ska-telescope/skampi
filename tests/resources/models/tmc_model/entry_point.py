@@ -828,7 +828,6 @@ CONFIGURE_JSON_LOW = {
     },
     "common": {
       "config_id": "sbi-mvp01-20200325-00001-science_A",
-      "subarray_id": 1
     },
     "lowcbf": {
       "stations": {

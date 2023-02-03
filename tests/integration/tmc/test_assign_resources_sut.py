@@ -66,7 +66,7 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
     sdp_resources = config_json["sdp"]["resources"]
     csp_resources = config_json["csp"]["lowcbf"]["resources"]
 
-    resources_list = tuple(csp["device"] for csp in csp_resources)
+    resources = tuple(csp["device"] for csp in csp_resources)
 
     tel = names.TEL()
     sdpsubarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
@@ -78,6 +78,6 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
     csp_resources = str(csp_resources)
 
     assert_that(result_sdp).is_equal_to(sdp_resources)
-    assert_that(result_csp).is_equal_to(resources_list[::-1])
+    assert_that(result_csp).is_equal_to(resources[::-1])
         
 

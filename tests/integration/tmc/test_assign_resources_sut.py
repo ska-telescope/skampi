@@ -16,7 +16,6 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
-
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -63,13 +62,11 @@ def the_subarray_must_be_in_idle_state(subarray_id, sut_settings: SutTestSetting
 @then(parsers.parse("the correct resources {resources_list} are assigned"))
 def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
     """Check assigned resources on sdp and csp subsystems."""
-    resources_list = []
     config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
     sdp_resources = config_json["sdp"]["resources"]
     csp_resources = config_json["csp"]["lowcbf"]["resources"]
 
-    for resources in csp_resources:
-        resources_list.append(resources["device"])
+    resources_list = tuple(csp["device"] for csp in csp_resources)
 
     tel = names.TEL()
     sdpsubarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
@@ -81,6 +78,6 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
     csp_resources = str(csp_resources)
 
     assert_that(result_sdp).is_equal_to(sdp_resources)
-    assert_that(result_csp).is_equal_to(tuple(resources_list[::-1]))
+    assert_that(result_csp).is_equal_to(resources_list[::-1])
         
 

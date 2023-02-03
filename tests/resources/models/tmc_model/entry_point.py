@@ -819,18 +819,7 @@ CONFIGURE_JSON_LOW = {
   },
   "sdp": {
     "interface": "https://schema.skao.int/ska-sdp-configure/0.4",
-    "scan_type": [
-                {
-                    "scan_type_id": ".default",
-                    "beams":
-                    {
-                        "vis0":
-                        {
-                            "channels_id": "vis_channels",
-                            "polarisations_id": "all"
-                        }
-                    }
-                }]
+    "scan_type": "target:a"
   },
   "csp": {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",

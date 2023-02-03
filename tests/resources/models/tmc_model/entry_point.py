@@ -905,9 +905,7 @@ CONFIGURE_JSON_LOW = {
             "rfi_weighted": 0.87
           }
         ]
-      },
-      "search_beams": "tbd",
-      "zooms": "tbd"
+      }
     }
   },
   "tmc": {

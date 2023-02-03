@@ -47,7 +47,7 @@ ARCHIVER_TIMESCALE_HOST_NAME = timescaledb.ska-eda-$(CONFIG)-db.svc.cluster.loca
 
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
 CONFIG_MANAGER= $(CONFIG)-eda/cm/01
-ATTR_CONFIG_FILE = attribute_config_$(CONFIG).yaml
+ATTR_CONFIG ?= attribute_config_$(CONFIG).yaml
 ARCHWIZARD_CONFIG?= $(ARCHWIZARD_VIEW_DBNAME)=tango://$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000/$(CONFIG_MANAGER)
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs

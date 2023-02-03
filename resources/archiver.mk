@@ -3,24 +3,24 @@
 
 ARCHIVER_DBNAME ?= default_mvp_archiver_db # Deafult database name used if not provided by user while deploying the archiver
 
-
+#OPTIONS are add/remove/update
 OPTION ?= "add"
 
 
 # This script configures the archiver for attribute archival defined in yaml.
 # It will run a job to configure attributes using yaml2archiving tool.
-# Requries paramater KUBECONFIG,ATTR_CONFIG_FILE,KUBE_NAMESPACE
-# ATTR_CONFIG_FILE= attribute configuration yaml file
+# Requries paramater KUBECONFIG,ATTR_CONFIG_FILE,KUBE_NAMESPACE,TANGO_HOST,CONFIG,OPTION
+# ATTR_CONFIG= attribute configuration yaml file or folder that contains multiple yaml files.
 configure-archiver:  ##configure attributes to archive
 	curl -o charts/configuration_job.sh  https://gitlab.com/ska-telescope/ska-tango-archiver/-/raw/2.3.0/charts/configuration_job.sh?inline=false
 
 	bash ./charts/configuration_job.sh $(OPTION)
 	@if [ $(OPTION) = "remove" ]; then\
 		make get_config;\
-		python3 resources/remove_attributes.py --attr_conf=$(ATTR_CONFIG_FILE) --archived_file=attribute_configuration.yaml --conf_manager=$(CONFIG_MANAGER);\
+		python3 resources/remove_attributes.py --attr_conf=$(ATTR_CONFIG) --archived_file=attribute_configuration.yaml --conf_manager=$(CONFIG_MANAGER);\
 		kubectl  --kubeconfig=$(KUBECONFIG) create configmap y2a-config --from-file attribute_configuration.yaml -o yaml -n $(KUBE_NAMESPACE) --dry-run=client | kubectl apply -f -;\
 	else\
-		kubectl  --kubeconfig=$(KUBECONFIG) create configmap y2a-config --from-file $(ATTR_CONFIG_FILE) -o yaml -n $(KUBE_NAMESPACE) --dry-run=client | kubectl apply -f - ;\
+		kubectl  --kubeconfig=$(KUBECONFIG) create configmap y2a-config --from-file $(ATTR_CONFIG) -o yaml -n $(KUBE_NAMESPACE) --dry-run=client | kubectl apply -f - ;\
 	fi
 
 	kubectl  --kubeconfig=$(KUBECONFIG) create -f charts/configuration_job.yaml -n $(KUBE_NAMESPACE)
@@ -29,15 +29,17 @@ configure-archiver:  ##configure attributes to archive
 	rm charts/configuration_job.yaml
 	rm charts/configuration_job.sh
 
-#this job provides user archived attributes data
+#this job provides user archived attributes yaml file
+#to utilise same file for configuration user can update configuration manager name and use it.
+#Requires paramater TANGO_HOST, KUBECONFIG, KUBE_NAMESPACE, EVENT_SUBSCRIBER
 get_config:
 	curl -o charts/get_configurations.sh   https://gitlab.com/ska-telescope/ska-tango-archiver/-/raw/master/charts/get_configurations.sh?inline=false
 	bash ./charts/get_configurations.sh $(EVENT_SUBSCRIBER) $(TANGO_HOST)
 	kubectl  --kubeconfig=$(KUBECONFIG) create -f charts/get_configurations.yaml -n $(KUBE_NAMESPACE)
 	-kubectl  --kubeconfig=$(KUBECONFIG) wait --for=condition=Complete job/get-configuration --timeout=30s -n $(KUBE_NAMESPACE)
 	kubectl  --kubeconfig=$(KUBECONFIG) logs job.batch/get-configuration -n $(KUBE_NAMESPACE) > attribute_configuration.yaml
-	rm get_configurations.sh
-	rm get_configurations.yaml
+	rm charts/get_configurations.sh
+	rm charts/get_configurations.yaml
 
 #Incase of error
 #Requries parameter KUBECONFIG

@@ -23,6 +23,21 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
             interface=self.assign_resources_schema,
         )
         return assign_request
+    
+    low_assign_resources_schema = "https://schema.skao.int/ska-low-tmc-assignresources/3.0"
+
+    def _generate_low_assign_resources_config(self, subarray_id: int = 1):
+        transaction_id = "txn-....-00001"
+        assign_request = AssignResourcesRequest(
+            interface=self.low_assign_resources_schema,
+            transaction_id=transaction_id,
+            subarray_id=subarray_id,
+            mccs=self.generate_mccs_assign_resources_config().as_object,
+            sdp_config=self.generate_sdp_assign_resources_config().as_object,
+            csp_config=self.generate_csp_assign_resources_config().as_object
+        )
+        return assign_request
+
 
     def _generate_scan_config(
         self, target_id: str | None = None, scan_duration: float = 6
@@ -41,6 +56,10 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
     def generate_assign_resources_config(self, subarray_id: int = 1):
         return self._generate_assign_resources_config(subarray_id)
 
+    @encoded
+    def generate_low_assign_resources_config(self, subarray_id: int = 1):
+        return self._generate_low_assign_resources_config(subarray_id)
+
     def generate_release_all_resources_config_for_central_node(
         self, subarray_id: int = 1
     ) -> str:
@@ -53,6 +72,18 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
         }
 
         return json.dumps(config)
+
+    def generate_low_release_all_resources_config_for_central_node(self, subarray_id: int = 1) -> str:
+        config = {
+            "interface": "https://schema.skao.int/ska-low-tmc-releaseresources/3.0",
+            "transaction_id": "txn-....-00001",
+            "subarray_id": subarray_id,
+            "release_all": "true",
+            "receptor_ids": [],
+        }
+
+        return json.dumps(config)
+
 
     @encoded
     def generate_scan_config(

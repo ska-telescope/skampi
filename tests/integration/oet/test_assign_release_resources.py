@@ -208,6 +208,22 @@ def check_final_subarray_state(
     "features/oet_assign_release_resources.feature",
     "Allocate resources using oet scripting interface",
 )
+@pytest.mark.skip(reason="skipped for all the systems to be on same platform")
+@pytest.mark.skalow
+@pytest.mark.k8s
+@scenario(
+    "features/oet_assign_release_resources.feature",
+    "Allocate resources using oet scripting interface",
+)
+
+@pytest.mark.skip(reason="skipped for all the systems to be on same platform")
+@pytest.mark.skalow
+@pytest.mark.k8s
+@scenario(
+    "features/oet_assign_release_resources.feature",
+    "Release all resources",
+)
+
 def test_oet__scripting_resource_allocation():
     """
     Given an OET
@@ -242,5 +258,47 @@ def i_assign_resources_to_it(
             subarray_id, receptors, integration_test_exec_settings
         ):
             config = observation.generate_assign_resources_config(subarray_id).as_object
+            logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
+            subarray.assign_from_cdm(config)
+
+@when("I assign resources to it")
+def i_assign_resources_to_it_low(
+    running_telescope: fxt_types.running_telescope,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    subarray: SubArray,
+):
+    """I assign resources to it."""
+
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    observation = sut_settings.observation
+    with context_monitoring.context_monitoring():
+        with running_telescope.wait_for_allocating_a_subarray(
+            subarray_id, receptors, integration_test_exec_settings
+        ):
+            config = observation.generate_low_assign_resources_config(subarray_id).as_object
+            logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
+            subarray.assign_from_cdm(config)
+
+@when("I tell the OET to release resources")
+def i_assign_resources_to_it_low(
+    running_telescope: fxt_types.running_telescope,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    subarray: SubArray,
+):
+    """I assign resources to it."""
+
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    observation = sut_settings.observation
+    with context_monitoring.context_monitoring():
+        with running_telescope.wait_for_allocating_a_subarray(
+            subarray_id, receptors, integration_test_exec_settings
+        ):
+            config = observation.generate_low_release_all_resources_config_for_central_node(subarray_id).as_object
             logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
             subarray.assign_from_cdm(config)

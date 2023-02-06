@@ -388,16 +388,15 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        subarray_name = self._tel.tm.subarray(sub_array_id)
-        subarray = con_config.get_device_proxy(subarray_name)
-        self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         if self._tel.skamid:
             scan_config = self.observation.generate_run_scan_conf().as_json
-
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
             scan_config = json.dumps(SCAN_JSON_LOW)
         scan_duration = Memo().get("scan_duration")
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         try:
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)

@@ -52,9 +52,7 @@ def test_telescope_startup_in_low():
 @pytest.mark.skalow
 @pytest.mark.standby
 @pytest.mark.k8s
-@scenario(
-    "features/oet_startup_standby_telescope.feature", "Setting up low telescope to stand-by"
-)
+@scenario("features/oet_startup_standby_telescope.feature", "Setting up low telescope to stand-by")
 def test_telescope_standby_in_low():
     """ Set telescope to standby test."""
 

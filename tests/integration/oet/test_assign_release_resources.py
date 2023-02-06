@@ -296,22 +296,17 @@ def test_oet_scripting_release_resource_in_low():
     """
 
 @when("I tell the OET to release resources")
-def i_release_resources_low(
-    running_telescope: fxt_types.running_telescope,
+def i_release_all_resources_assigned_to_it_in_low(
+    allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
     integration_test_exec_settings: fxt_types.exec_settings,
-    sut_settings: SutTestSettings,
-    subarray: SubArray,
 ):
-    """I assign resources to it."""
+    """I tell the OET to release resources"""
+    sub_array_id = allocated_subarray.id
 
-    subarray_id = sut_settings.subarray_id
-    receptors = sut_settings.receptors
-    observation = sut_settings.observation
     with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_allocating_a_subarray(
-            subarray_id, receptors, integration_test_exec_settings
+        with allocated_subarray.wait_for_releasing_a_subarray(
+            integration_test_exec_settings
         ):
-            config = observation.generate_low_release_all_resources_config_for_central_node(subarray_id).as_object
-            logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
-            subarray.release(config)
+            entry_point.tear_down_subarray(sub_array_id)

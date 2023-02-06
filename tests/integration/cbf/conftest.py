@@ -77,11 +77,12 @@ def fxt_set_cbf_online_from_cbf(
     :type set_subsystem_online: Callable[[EntryPoint], None]
     """
     if not online:
-        logging.info("setting cbf components online within cbf context")
-        CBFEntryPoint.nr_of_subarrays = nr_of_subarrays
-        entry_point = CBFEntryPoint()
-        set_subsystem_online(entry_point)
-        online.set_true()
+        if names.TEL().skalow:
+            logging.info("setting cbf components online within cbf context")
+            CBFEntryPoint.nr_of_subarrays = nr_of_subarrays
+            entry_point = CBFEntryPoint()
+            set_subsystem_online(entry_point)
+            online.set_true()
 
 
 # log checking

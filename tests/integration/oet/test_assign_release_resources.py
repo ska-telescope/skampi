@@ -216,6 +216,21 @@ def test_oet__scripting_resource_allocation():
                 Then the sub-array goes to ObsState IDLE
     """
 
+@pytest.mark.oet
+@pytest.mark.skalow
+@pytest.mark.assign
+@pytest.mark.k8s
+@scenario(
+    "features/oet_assign_release_resources.feature",
+    "Allocate resources using oet scripting interface low",
+)
+def test_oet_scripting_resource_allocation_in_low():
+    """
+    Given an OET
+                And an oet subarray object in state EMPTY
+                When I assign resources to it low
+                Then the sub-array goes to ObsState IDLE
+    """
 
 @given("an oet subarray object in state EMPTY", target_fixture="subarray")
 def an_oet_subarray_object_in_state_empty(
@@ -242,5 +257,26 @@ def i_assign_resources_to_it(
             subarray_id, receptors, integration_test_exec_settings
         ):
             config = observation.generate_assign_resources_config(subarray_id).as_object
+            logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
+            subarray.assign_from_cdm(config)
+
+@when("I assign resources to it in low")
+def i_assign_resources_to_it_low(
+    running_telescope: fxt_types.running_telescope,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    subarray: SubArray,
+):
+    """I assign resources to it."""
+
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    observation = sut_settings.observation
+    with context_monitoring.context_monitoring():
+        with running_telescope.wait_for_allocating_a_subarray(
+            subarray_id, receptors, integration_test_exec_settings
+        ):
+            config = observation.generate_low_assign_resources_config(subarray_id).as_object
             logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
             subarray.assign_from_cdm(config)

@@ -11,6 +11,7 @@ from pytest_bdd import given, parsers, scenario, then, when
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_oso_scripting.objects import Telescope
 
 from .oet_helpers import ScriptExecutor
 
@@ -26,6 +27,13 @@ EXECUTOR = ScriptExecutor()
 def test_telescope_startup():
     """Telescope startup test."""
 
+@pytest.mark.oet
+@pytest.mark.skalow
+@pytest.mark.startup
+@pytest.mark.k8s
+@scenario("features/oet_startup_standby_telescope.feature", "Starting up low telescope")
+def test_telescope_startup_in_low():
+    """Low Telescope startup test."""
 
 @pytest.mark.oet
 @pytest.mark.skamid
@@ -82,6 +90,13 @@ def run_startup_script(
         # after success we marked the telescope state to be ON
         standby_telescope.state = "ON"
 
+@when(parsers.parse("I turn telescope to ON state"))
+def startup_telescope_low():
+    """
+    Use the OET OSO Scripting to Turn On Telescope
+    """
+    telescope = Telescope()
+    telescope.on()
 
 @when(parsers.parse("I tell the OET to run standby script {script}"))
 def run_standby_script(

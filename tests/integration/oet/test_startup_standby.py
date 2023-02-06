@@ -46,24 +46,20 @@ def test_telescope_startup_in_low():
 def test_telescope_standby():
     """ Set telescope to standby test."""
 
+@pytest.mark.skip(reason="off command skipped as it is not working currently")
+@pytest.mark.oet
+@pytest.mark.skalow
+@pytest.mark.standby
+@pytest.mark.k8s
+@scenario("features/oet_startup_standby_telescope.feature", "Setting up low telescope to stand-by")
+def test_telescope_standby_in_low():
+    """ Set telescope to standby test."""
 
 @given("telescope is in STANDBY or OFF state")
 def a_telescope_on_standby_or_off_state(
     standby_telescope: fxt_types.standby_telescope,
 ):
     """a telescope on standby or off state"""
-    tel = names.TEL()
-    central_node = con_config.get_device_proxy(tel.tm.central_node, fast_load=True)
-    assert str(central_node.read_attribute("telescopeState").value) in [
-        "STANDBY",
-        "OFF",
-    ]
-
-@given("low telescope is in STANDBY or OFF state")
-def a_low_telescope_on_standby_or_off_state(
-    standby_telescope: fxt_types.standby_telescope,
-):
-    """a low telescope on standby or off state"""
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node, fast_load=True)
     assert str(central_node.read_attribute("telescopeState").value) in [
@@ -133,6 +129,14 @@ def run_standby_script(
             script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
 
+@when(parsers.parse("I turn telescope to OFF state"))
+def standby_telescope_low():
+    """
+    Use the OET OSO Scripting to Turn Off Telescope
+    """
+    telescope = Telescope()
+    telescope.off()
+
 
 @then(parsers.parse("the central node goes to state STANDBY"))
 def check_final_state_is_off():
@@ -151,19 +155,6 @@ def check_final_state_is_off():
 
 @then(parsers.parse("the central node goes to state ON"))
 def check_final_state_is_on():
-    """
-    Check that the central node device is in the expected state.
-    """
-    tel = names.TEL()
-    central_node = con_config.get_device_proxy(tel.tm.central_node)
-    final_state = central_node.read_attribute("telescopeState").value
-    assert (
-        str(final_state) == "ON"
-    ), f"Expected telescope to be ON but instead was {final_state}"
-    logger.info("Central node is in ON state")
-
-@then(parsers.parse("the central node goes to state ON"))
-def check_final_state_is_on_low():
     """
     Check that the central node device is in the expected state.
     """

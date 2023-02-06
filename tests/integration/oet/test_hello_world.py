@@ -70,11 +70,11 @@ def when_allocate_resources_from_activity(
 ):
     """
     """
-    ACTIVITY_ADAPTER.run(
+    summaries = ACTIVITY_ADAPTER.run(
         activity_name,
         sb_id,
     )
-    assert ( summaries[0].state == "REQUESTED" ),\
+    assert (summaries[0].state == "REQUESTED"),\
         f"Expected resource allocation script to be COMPLETED, instead was {summaries[0].state}"
 
 

@@ -85,10 +85,11 @@ ska-oso-oet:
   central_node: ska_mid/tm_central/central_node
   subarray: ska_mid/tm_subarray_node
   rest:
+    logLevel: DEBUG
     image:
       registry: registry.gitlab.com
       image: ska-telescope/oso/ska-oso-oet/ska-oso-oet
-      tag: 4.0.7-dev.c44471fae
+      tag: 4.0.7-dev.cd23940c3
     ingress:
       enabled: false
     oda:

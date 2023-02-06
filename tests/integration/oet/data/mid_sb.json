@@ -23,7 +23,7 @@
             "argname": "argval"
           }
         },
-        "run": {
+        "main": {
           "args": [
             "posarg1",
             "posarg2"
@@ -49,7 +49,7 @@
             "argname": "argval"
           }
         },
-        "run": {
+        "main": {
           "args": [
             "posarg1",
             "posarg2"
@@ -70,7 +70,7 @@
             "subarray_id": 1
           }
         },
-        "run": {
+        "main": {
           "args": [],
           "kwargs": {}
         }

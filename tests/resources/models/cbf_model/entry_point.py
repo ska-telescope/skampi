@@ -471,13 +471,13 @@ cbf_low_assign_resources = {
         "resources": [
             {
                 "device": "fsp_01",
-                "shared": "true",
+                "shared": True,
                 "fw_image": "pst",
                 "fw_mode": "unused",
             },
             {
                 "device": "p4_01",
-                "shared": "true",
+                "shared": True,
                 "fw_image": "p4.bin",
                 "fw_mode": "p4",
             },

@@ -29,7 +29,7 @@ class LogEnabled:
     """class that allows for logging if set by env var"""
 
     def __init__(self) -> None:
-        self._live_logging = bool(os.getenv("DEBUG"))
+        self._live_logging = bool(os.getenv("DEBUG_ENTRYPOINT"))
         self._tel = names.TEL()
 
     def _log(self, mssage: str):
@@ -80,25 +80,28 @@ class StartUpStep(base.ObservationStep, LogEnabled):
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
         """Domain logic for what needs to be waited for switching the sdp off."""
         brd = get_message_board_builder()
-        brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
-            "state"
-        ).to_become_equal_to("OFF", ignore_first=False)
-        # subarrays
-        for index in range(1, self.nr_of_subarrays + 1):
-            brd.set_waiting_on(self._tel.csp.cbf.subarray(index)).for_attribute(
+        if self._tel.skamid:
+            brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
                 "state"
             ).to_become_equal_to("OFF", ignore_first=False)
+            # subarrays
+            for index in range(1, self.nr_of_subarrays + 1):
+                brd.set_waiting_on(self._tel.csp.cbf.subarray(index)).for_attribute(
+                    "state"
+                ).to_become_equal_to("OFF", ignore_first=False)
         return brd
 
     def undo(self):
         """Domain logic for switching the cbf off."""
-        self.cbf_controller.command_inout("Off")
-        if self._tel.skalow:
-            for index in range(1, self.nr_of_subarrays + 1):
-                subarray_name = self._tel.csp.cbf.subarray(index)
-                subarray = con_config.get_device_proxy(subarray_name)
-                self._log(f"commanding {subarray_name} to Off")
-                subarray.command_inout(("Off"))
+        if self._tel.skamid:
+            self.cbf_controller.command_inout("Off")
+            if self._tel.skalow:
+                for index in range(1, self.nr_of_subarrays + 1):
+                    subarray_name = self._tel.csp.cbf.subarray(index)
+                    subarray = con_config.get_device_proxy(subarray_name)
+                    self._log(f"commanding {subarray_name} to Off")
+                    subarray.command_inout("Off")
+        # we skip tests if telescope low
 
 
 class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
@@ -465,25 +468,27 @@ cbf_low_start_scan = {
 cbf_low_assign_resources = {
     "common": {"subarrayID": 1},
     "lowcbf": {
-        "stations": [
-            {"station_id": 1, "sub_station_id": 1},
-            {"station_id": 3, "sub_station_id": 1},
-            {"station_id": 3, "sub_station_id": 2},
-        ],
-        "station_beams": [
+        "resources": [
             {
-                "station_beam_id": 1,
-                "channels": [1, 2, 3, 4, 5, 6, 7, 8],
-                "pst_beams": [{"pst_beam_id": 1}, {"pst_beam_id": 2}],
-            },
-            {
-                "station_beam_id": 2,
-                "channels": [9, 10, 11, 12, 13, 14, 15],
-                "pst_beams": [{"pst_beam_id": 3}],
+                "device": "device",
+                "shared": False,
+                "fw_image": "fw_image",
+                "fw_mode": "fw_image",
             },
         ],
     },
 }
+
+
+cbf_low_release_resources = (
+    {
+        "lowcbf": {
+            "resources": [
+                {"device": "device"},
+            ]
+        },
+    },
+)
 
 cbf_low_configure_scan = {
     "id": 1,

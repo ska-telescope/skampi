@@ -74,8 +74,8 @@ def when_allocate_resources_from_activity(
         activity_name,
         sb_id,
     )
-    assert (summaries[0].state == "REQUESTED"),\
-        f"Expected resource allocation script to be COMPLETED, instead was {summaries[0].state}"
+    assert (summaries[0].state == "TODO"),\
+        f"Expected activity with status TODO, instead got {summaries[0].state}"
 
 
 @then("script started by the activity completes successfully")

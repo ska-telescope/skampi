@@ -244,3 +244,41 @@ def i_assign_resources_to_it(
             config = observation.generate_assign_resources_config(subarray_id).as_object
             logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
             subarray.assign_from_cdm(config)
+
+@pytest.mark.skalow
+@pytest.mark.assign
+@pytest.mark.k8s
+@scenario(
+    "features/oet_assign_release_resources.feature",
+    "Release all resources from sub-array low",
+)
+def test_oet_scripting_release_resource_in_low():
+    """
+    Given sub-array with resources allocated to it
+		When I tell the OET to release resources
+		Then the sub-array goes to ObsState EMPTY
+    """
+
+@when("I tell the OET to release resources")
+def i_release_all_resources_assigned_to_it_in_low(
+    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I tell the OET to release resources"""
+    sub_array_id = allocated_subarray.id
+
+    with context_monitoring.context_monitoring():
+        with allocated_subarray.wait_for_releasing_a_subarray(
+            integration_test_exec_settings
+        ):
+            entry_point.tear_down_subarray(sub_array_id)
+
+@then("the sub-array goes to ObsState EMPTY")
+def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
+    """the subarray must be in EMPTY state."""
+    tel = names.TEL()
+    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    result = subarray.read_attribute("obsState").value
+    assert_that(result).is_equal_to(ObsState.EMPTY)

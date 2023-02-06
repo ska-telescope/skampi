@@ -34,5 +34,11 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	Scenario: Allocate resources using oet scripting interface low
 		Given an OET
 		And an oet subarray object in state EMPTY
-		When I assign resources to it low
+		When I assign resources to it in low
 		Then the sub-array goes to ObsState IDLE
+
+	#Scenario: Release all resources low
+	Scenario: Release all resources from sub-array low
+		Given sub-array with resources allocated to it
+		When I tell the OET to release resources
+		Then the sub-array goes to ObsState EMPTY

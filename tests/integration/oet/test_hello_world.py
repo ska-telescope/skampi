@@ -70,12 +70,12 @@ def when_allocate_resources_from_activity(
 ):
     """
     """
-    summaries = ACTIVITY_ADAPTER.run(
+    summary = ACTIVITY_ADAPTER.run(
         activity_name,
         sb_id,
     )
-    assert (summaries[0].state == "TODO"),\
-        f"Expected activity with status TODO, instead got {summaries[0].state}"
+    assert (summary.state == "TODO"),\
+        f"Expected activity with status TODO, instead got {summary.state}"
 
 
 @then("script started by the activity completes successfully")

@@ -470,12 +470,18 @@ cbf_low_assign_resources = {
     "lowcbf": {
         "resources": [
             {
-                "device": "device",
-                "shared": False,
-                "fw_image": "fw_image",
-                "fw_mode": "fw_image",
+                "device": "fsp_01",
+                "shared": "true",
+                "fw_image": "pst",
+                "fw_mode": "unused",
             },
-        ],
+            {
+                "device": "p4_01",
+                "shared": "true",
+                "fw_image": "p4.bin",
+                "fw_mode": "p4",
+            },
+        ]
     },
 }
 

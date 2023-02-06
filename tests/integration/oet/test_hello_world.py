@@ -8,12 +8,14 @@ from os import environ
 
 EXECUTOR = ScriptExecutor()
 
+
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_basic.feature", "Run the hello_world test script")
 def test_hello_world():
     """Telescope startup test."""
+
 
 @pytest.mark.oet
 @pytest.mark.skamid
@@ -56,6 +58,7 @@ def hello_world_sb_in_oda(sb_id, activity_name, test_sbd):
 def hello_world_script_ran():
     EXECUTOR.execute_script("file:///tmp/oda/hello_world.py")
 
+
 @when(
     parsers.parse(
         "I tell the OET to run {activity_name} activity for SBI {sb_id}"
@@ -74,6 +77,7 @@ def when_allocate_resources_from_activity(
     assert ( summaries[0].state == "REQUESTED" ),\
         f"Expected resource allocation script to be COMPLETED, instead was {summaries[0].state}"
 
+
 @then("script started by the activity completes successfully")
 def hello_world_script_complete():
     "script execution completes successfully"
@@ -83,6 +87,7 @@ def hello_world_script_complete():
     procedure_status = EXECUTOR.wait_for_script_state(pid, "COMPLETE", timeout=20)
 
     assert procedure_status == "COMPLETE"
+
 
 @then("script execution completes successfully")
 def hello_world_script_complete():

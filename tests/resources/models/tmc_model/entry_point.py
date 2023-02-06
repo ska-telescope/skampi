@@ -284,9 +284,13 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         Memo(scan_duration=duration)
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        config = self.observation.generate_scan_config().as_json
-        self._log(f"commanding {subarray_name} with Configure: {config} ")
+        if self._tel.skamid:
+            config = self.observation.generate_scan_config().as_json
 
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            config = json.dumps(CONFIGURE_JSON_LOW)
+        self._log(f"commanding {subarray_name} with Configure: {config} ")
         subarray.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
@@ -362,6 +366,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         ).to_become_equal_to("IDLE")
 
         return brd
+
 
 
 class ScanStep(base.ScanStep, LogEnabled):
@@ -829,7 +834,6 @@ CONFIGURE_JSON_LOW = {
     },
     "common": {
       "config_id": "sbi-mvp01-20200325-00001-science_A",
-      "subarray_id": 1
     },
     "lowcbf": {
       "stations": {
@@ -913,6 +917,7 @@ CONFIGURE_JSON_LOW = {
     "scan_duration": 10.0
   }
 }
+
 
 
 SCAN_JSON_LOW = {

@@ -366,6 +366,76 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         return None
 
 
+class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
+    """Domain logic for setting csp to online"""
+
+    def __init__(self, nr_of_subarrays: int) -> None:
+        super().__init__()
+        self.nr_of_subarrays = nr_of_subarrays
+
+    def do(self):
+        """Domain logic for setting devices in csp to online."""
+        controller_name = self._tel.csp.cbf.controller
+        controller = con_config.get_device_proxy(controller_name)
+        self._log(f"Setting adminMode for {controller_name} to '0' (ONLINE)")
+        controller.write_attribute("adminmode", 0)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray_name = self._tel.csp.cbf.subarray(index)
+            subarray = con_config.get_device_proxy(subarray_name)
+            self._log(f"Setting adminMode for {subarray_name} to '0' (ONLINE)")
+            subarray.write_attribute("adminmode", 0)
+
+    def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
+        """Domain logic for waiting for setting to online to be complete."""
+        controller_name = self._tel.csp.cbf.controller
+        builder = get_message_board_builder()
+        builder.set_waiting_on(controller_name).for_attribute(
+            "adminMode"
+        ).to_become_equal_to("ONLINE", ignore_first=False)
+        builder.set_waiting_on(controller_name).for_attribute(
+            "state"
+        ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray = self._tel.csp.cbf.subarray(index)
+            builder.set_waiting_on(subarray).for_attribute(
+                "adminMode"
+            ).to_become_equal_to("ONLINE", ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
+                ["OFF", "ON"], ignore_first=False
+            )
+        return builder
+
+    def undo(self):
+        """Domain logic for setting devices in csp to offline."""
+        controller_name = self._tel.csp.cbf.controller
+        controller = con_config.get_device_proxy(controller_name)
+        self._log(f"Setting adminMode for {controller_name} to '1' (OFFLINE)")
+        controller.write_attribute("adminmode", 1)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray_name = self._tel.csp.cbf.subarray(index)
+            subarray = con_config.get_device_proxy(subarray_name)
+            self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
+            subarray.write_attribute("adminmode", 1)
+
+    def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
+        """Domain logic for waiting for setting to offline to be complete."""
+        controller_name = self._tel.csp.cbf.controller
+        builder = get_message_board_builder()
+        builder.set_waiting_on(controller_name).for_attribute(
+            "adminMode"
+        ).to_become_equal_to("OFFLINE", ignore_first=False)
+        for index in range(1, self.nr_of_subarrays + 1):
+            subarray = self._tel.csp.cbf.subarray(index)
+            builder.set_waiting_on(subarray).for_attribute(
+                "adminMode"
+            ).to_become_equal_to("OFFLINE", ignore_first=False)
+        return builder
+
+    def set_wait_for_doing(self) -> MessageBoardBuilder:
+        """Not implemented."""
+        raise NotImplementedError()
+
+
 class CBFEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
@@ -374,7 +444,7 @@ class CBFEntryPoint(CompositeEntryPoint):
     def __init__(self) -> None:
         """Init Object"""
         super().__init__()
-        self.set_online_step = NoOpStep()
+        self.set_online_step = CBFSetOnlineStep(self.nr_of_subarrays)
         self.start_up_step = StartUpStep(self.nr_of_subarrays)
         self.assign_resources_step = CbfAsignResourcesStep()
         self.configure_scan_step = CbfConfigureStep()

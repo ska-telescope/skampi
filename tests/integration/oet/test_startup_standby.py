@@ -69,19 +69,6 @@ def a_telescope_on_standby_or_off_state(
         "OFF",
     ]
 
-@given("telescope is in STANDBY or OFF state")
-def a_low_telescope_on_standby_or_off_state(
-    standby_telescope: fxt_types.standby_telescope,
-):
-    """a low telescope on standby or off state"""
-    tel = names.TEL()
-    central_node = con_config.get_device_proxy(tel.tm.central_node, fast_load=True)
-    assert str(central_node.read_attribute("telescopeState").value) in [
-        "STANDBY",
-        "OFF",
-    ]
-
-
 @given("telescope is in ON state")
 def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
     """a telescope in the ON state"""
@@ -187,30 +174,3 @@ def check_final_state_is_on():
         str(final_state) == "ON"
     ), f"Expected telescope to be ON but instead was {final_state}"
     logger.info("Central node is in ON state")
-
-@then(parsers.parse("the central node goes to state ON"))
-def check_final_state_is_on_low():
-    """
-    Check that the central node device is in the expected state.
-    """
-    tel = names.TEL()
-    central_node = con_config.get_device_proxy(tel.tm.central_node)
-    final_state = central_node.read_attribute("telescopeState").value
-    assert (
-        str(final_state) == "ON"
-    ), f"Expected telescope to be ON but instead was {final_state}"
-    logger.info("Central node is in ON state")
-
-@then(parsers.parse("the central node goes to state OFF"))
-def check_final_state_is_off_low():
-    """
-    Check that the central node device is in the expected state.
-    """
-    tel = names.TEL()
-    central_node = con_config.get_device_proxy(tel.tm.central_node)
-    final_state = central_node.read_attribute("telescopeState").value
-    assert (
-        str(final_state) == "OFF"
-    ), f"Expected telescope to be STANDBY but instead was {final_state}"
-    logger.info("Central node is in OFF state")
-    time.sleep(10)

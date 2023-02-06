@@ -26,4 +26,4 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	Scenario: Setting up low telescope to stand-by
 		Given telescope is in ON state
 		When I turn telescope to OFF state
-		Then the central node goes to state OFF
+		Then the central node goes to state STANDBY

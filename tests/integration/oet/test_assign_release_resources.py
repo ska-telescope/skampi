@@ -208,15 +208,14 @@ def check_final_subarray_state(
     "features/oet_assign_release_resources.feature",
     "Allocate resources using oet scripting interface",
 )
-@pytest.mark.skip(reason="skipped for all the systems to be on same platform")
+
 @pytest.mark.skalow
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",
-    "Allocate resources using oet scripting interface",
+    "Allocate resources using oet scripting interface low",
 )
 
-@pytest.mark.skip(reason="skipped for all the systems to be on same platform")
 @pytest.mark.skalow
 @pytest.mark.k8s
 @scenario(
@@ -261,7 +260,7 @@ def i_assign_resources_to_it(
             logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
             subarray.assign_from_cdm(config)
 
-@when("I assign resources to it")
+@when("I assign resources to it low")
 def i_assign_resources_to_it_low(
     running_telescope: fxt_types.running_telescope,
     context_monitoring: fxt_types.context_monitoring,

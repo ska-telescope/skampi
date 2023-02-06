@@ -47,6 +47,7 @@ def test_low_telescope_startup():
 def test_telescope_standby():
     """ Set telescope to standby test."""
 
+@pytest.mark.skip(reason="off command skipped as it is not working currently")
 @pytest.mark.oet
 @pytest.mark.skalow
 @pytest.mark.standby

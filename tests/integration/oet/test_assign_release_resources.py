@@ -11,10 +11,8 @@ from assertpy import assert_that
 from pytest_bdd import given, parsers, scenario, then, when
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types, SubarrayAllocationSpec
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_oso_scripting.objects import SubArray
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.subarray.base import SBConfig
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 
@@ -263,21 +261,18 @@ def test_oet_scripting_release_resource_in_low():
 
 @when("I tell the OET to release resources")
 def i_release_all_resources_assigned_to_it_in_low(
-    running_telescope: fxt_types.running_telescope,
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
-    exec_settings: ExecSettings,
-    sut_settings: SutTestSettings,
-    subarray: SubArray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    subarray = SubArray,
 ):
-    """I tell the OET to release resources"""
-    subarray_id = allocated_subarray.id
-    observation = sut_settings.observation
+    """I release all resources assigned to it."""
+    sub_array_id = allocated_subarray.id
+
     with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_subarray_released(
-            subarray_id,
-            exec_settings
-            ):
+        with allocated_subarray.wait_for_releasing_a_subarray(
+            integration_test_exec_settings
+        ):
             subarray.release()
 
 @then("the sub-array goes to ObsState EMPTY")

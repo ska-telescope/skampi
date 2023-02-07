@@ -264,7 +264,6 @@ def i_release_all_resources_assigned_to_it_in_low(
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
-    subarray = SubArray,
 ):
     """I release all resources assigned to it."""
     sub_array_id = allocated_subarray.id
@@ -273,7 +272,7 @@ def i_release_all_resources_assigned_to_it_in_low(
         with allocated_subarray.wait_for_releasing_a_subarray(
             integration_test_exec_settings
         ):
-            subarray.release()
+            SubArray.release()
 
 @then("the sub-array goes to ObsState EMPTY")
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):

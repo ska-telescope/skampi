@@ -125,10 +125,33 @@ def startup_telescope_low(
     """
     Use the OET OSO Scripting to Turn On Telescope
     """
-    with context_monitoring.observe_while_running(integration_test_exec_settings):
-        standby_telescope.switch_off_after_test(integration_test_exec_settings)
-        telescope = Telescope()
-        telescope.on()
+    # with context_monitoring.observe_while_running(integration_test_exec_settings):
+    #     standby_telescope.switch_off_after_test(integration_test_exec_settings)
+    #     telescope = Telescope()
+    #     telescope.on()
+    standby_telescope.disable_automatic_setdown()
+    with context_monitoring.context_monitoring():
+        with standby_telescope.wait_for_starting_up(
+                integration_test_exec_settings):
+            logger.info("OET Commands are being used")
+            telescope = Telescope()
+            telescope.on()
+
+
+@given("the Telescope is in ON state")
+def the_telescope_is_on(
+        standby_telescope: fxt_types.standby_telescope,
+        entry_point: fxt_types.entry_point,
+        context_monitoring: fxt_types.context_monitoring,
+        integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I start up the telescope."""
+    standby_telescope.disable_automatic_setdown()
+    with context_monitoring.context_monitoring():
+        with standby_telescope.wait_for_starting_up(
+                integration_test_exec_settings):
+            logger.info("The entry point being used is : %s", entry_point)
+            entry_point.set_telescope_to_running()
 
 
 @then(parsers.parse("the central node goes to state STANDBY"))

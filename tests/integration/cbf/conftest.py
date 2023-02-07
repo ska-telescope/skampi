@@ -104,7 +104,7 @@ def fxt_set_up_log_checking_for_cbf(
 
 
 @pytest.fixture(name="cbf_base_composition")
-def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
+def fxt_bf_base_composition(tmp_path) -> conf_types.Composition:
     """Setup a base composition configuration to use for csp/cbf.
 
     :param tmp_path: a temporary path for sending configuration as a file.
@@ -114,6 +114,19 @@ def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
         tmp_path, conf_types.CompositionType.STANDARD
     )
     return composition
+
+
+@pytest.fixture(name="cbf_base_configuration")
+def fxt_cbf_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
+    """Setup a base scan configuration to use for csp/cbf.
+
+    :param tmp_path: a temporary path for sending configuration as a file.
+    :return: the configuration settings.
+    """
+    configuration = conf_types.ScanConfigurationByFile(
+        tmp_path, conf_types.ScanConfigurationType.STANDARD
+    )
+    return configuration
 
 
 # mocking

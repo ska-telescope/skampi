@@ -260,19 +260,9 @@ def test_oet_scripting_release_resource_in_low():
     """
 
 @when("I tell the OET to release resources")
-def i_release_all_resources_assigned_to_it_in_low(
-    allocated_subarray: fxt_types.allocated_subarray,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
-):
-    """I release all resources assigned to it."""
-    sub_array_id = allocated_subarray.id
-
-    with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_releasing_a_subarray(
-            integration_test_exec_settings
-        ):
-            SubArray.release()
+def i_release_all_resources_assigned_to_it_in_low():
+    subarray = SubArray()
+    subarray.release()
 
 @then("the sub-array goes to ObsState EMPTY")
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):

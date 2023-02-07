@@ -190,16 +190,20 @@ def when_release_resources(
 def when_release_resources(
         allocated_subarray: fxt_types.allocated_subarray,
         context_monitoring: fxt_types.context_monitoring,
-        sut_settings: SutTestSettings
+        integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """
     Use the OET Rest API to run script that releases all resources.
     """
-    allocated_subarray.disable_automatic_teardown()
+    subarray_id = allocated_subarray.id
+
     with context_monitoring.context_monitoring():
-        subarray_id = sut_settings.subarray_id
-        subarray = SubArray(subarray_id)
-        subarray.release()
+        with allocated_subarray.wait_for_releasing_a_subarray(
+                integration_test_exec_settings
+        ):
+            # subarray_id = sut_settings.subarray_id
+            subarray = SubArray(subarray_id)
+            subarray.release()
 
 
 @then("the script completes successfully")

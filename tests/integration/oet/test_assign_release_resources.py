@@ -260,8 +260,15 @@ def test_oet_scripting_release_resource_in_low():
     """
 
 @when("I tell the OET to release resources")
-def i_release_all_resources_assigned_to_it_in_low():
-    subarray = SubArray()
+def i_release_all_resources_assigned_to_it_in_low(
+    sut_settings: SutTestSettings,
+
+):  
+    """I release resources."""
+
+    subarray_id = sut_settings.subarray_id
+    print("************************" + subarray_id + "************************")
+    subarray = SubArray(subarray_id)
     subarray.release()
 
 @then("the sub-array goes to ObsState EMPTY")

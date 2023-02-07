@@ -3,7 +3,7 @@ from pytest_bdd import given, scenario, then, when, parsers
 
 from ska_db_oda.unit_of_work.restunitofwork import RESTUnitOfWork
 
-from .oet_helpers import ScriptExecutor, ACTIVITY_ADAPTER
+from .oet_helpers import ScriptExecutor, ACTIVITY_ADAPTER, add_sb_to_oda
 from os import environ
 
 EXECUTOR = ScriptExecutor()
@@ -37,24 +37,11 @@ def hello_world_script_created():
 )
 def hello_world_sb_in_oda(sb_id, activity_name, test_sbd):
     ""
-    oda = RESTUnitOfWork()
     test_sbd.sbd_id = sb_id
-
     assert activity_name in test_sbd.activities, \
         f"Activity test setup failed, no activity called {activity_name} in test SB"
 
-    with oda:
-        try:
-            existing_sbd = oda.sbds.get(test_sbd.sbd_id)
-            test_sbd.metadata.version = existing_sbd.metadata.version
-            # Only save the SB if there have been changes to it
-            if not existing_sbd == test_sbd:
-                oda.sbds.add(test_sbd)
-                oda.commit()
-        except KeyError:
-            # sbd_id doesn't exist in ODA so no need to worry about versions
-            oda.sbds.add(test_sbd)
-            oda.commit()
+    add_sb_to_oda(test_sbd)
 
 
 @when("the script is ran")

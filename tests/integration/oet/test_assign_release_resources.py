@@ -13,6 +13,8 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_oso_scripting.objects import SubArray
+from ska_ser_skallop.mvp_fixtures.base import ExecSettings
+from ska_ser_skallop.mvp_control.subarray.base import SBConfig
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 
@@ -261,19 +263,28 @@ def test_oet_scripting_release_resource_in_low():
 
 @when("I tell the OET to release resources")
 def i_release_all_resources_assigned_to_it_in_low(
+    running_telescope: fxt_types.running_telescope,
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
-    entry_point: fxt_types.entry_point,
-    integration_test_exec_settings: fxt_types.exec_settings,
+    subarray_allocation_spec: fxt_types.SubarrayAllocationSpec,
+    exec_settings: ExecSettings,
+    sut_settings: SutTestSettings,
+    subarray: SubArray,
+    sb_config = SBConfig
+
 ):
     """I tell the OET to release resources"""
-    sub_array_id = allocated_subarray.id
-
+    subarray_id = allocated_subarray.id
+    observation = sut_settings.observation
     with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_releasing_a_subarray(
-            integration_test_exec_settings
-        ):
-            entry_point.tear_down_subarray(sub_array_id)
+        with allocated_subarray(
+            running_telescope,
+            subarray_allocation_spec,
+            exec_settings,
+            sb_config
+            ):
+            config = observation.generate_low_release_all_resources_config_for_central_node(subarray_id).as_object
+            subarray.release(config)
 
 @then("the sub-array goes to ObsState EMPTY")
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):

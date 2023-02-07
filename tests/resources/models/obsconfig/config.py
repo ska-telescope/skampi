@@ -24,6 +24,17 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
         )
         return assign_request
 
+    def generate_low_release_all_resources_config_for_central_node(self, subarray_id: int = 1) -> str:
+        config = {
+            "interface": "https://schema.skao.int/ska-low-tmc-releaseresources/3.0",
+            "transaction_id": "txn-....-00001",
+            "subarray_id": subarray_id,
+            "release_all": "true",
+            "receptor_ids": [],
+        }
+
+        return json.dumps(config)   
+        
     def _generate_scan_config(
         self, target_id: str | None = None, scan_duration: float = 6
     ):

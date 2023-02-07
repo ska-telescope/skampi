@@ -267,9 +267,11 @@ def i_release_all_resources_assigned_to_it_in_low(
     """I release resources."""
 
     subarray_id = sut_settings.subarray_id
-    print("************************" + subarray_id + "************************")
+    logging.info(f"subarray_tj{subarray_id}")
     subarray = SubArray(subarray_id)
+    logging.info(f"subarray_tj_2{subarray}")
     subarray.release()
+    logging.info(f"subarray_tj_2{subarray.release()}")
 
 @then("the sub-array goes to ObsState EMPTY")
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):

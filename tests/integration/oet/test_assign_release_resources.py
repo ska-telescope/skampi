@@ -11,7 +11,7 @@ from assertpy import assert_that
 from pytest_bdd import given, parsers, scenario, then, when
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types, SubarrayAllocationSpec
 from ska_oso_scripting.objects import SubArray
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_control.subarray.base import SBConfig
@@ -269,7 +269,8 @@ def i_release_all_resources_assigned_to_it_in_low(
     exec_settings: ExecSettings,
     sut_settings: SutTestSettings,
     subarray: SubArray,
-    sb_config = SBConfig
+    sb_config = SBConfig,
+    subarray_allocation_specs = SubarrayAllocationSpec
 
 ):
     """I tell the OET to release resources"""
@@ -279,7 +280,8 @@ def i_release_all_resources_assigned_to_it_in_low(
         with allocated_subarray(
             running_telescope,
             exec_settings,
-            sb_config
+            sb_config,
+            subarray_allocation_specs
             ):
             subarray.release()
 

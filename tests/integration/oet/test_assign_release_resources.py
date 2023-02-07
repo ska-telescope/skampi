@@ -269,19 +269,14 @@ def i_release_all_resources_assigned_to_it_in_low(
     exec_settings: ExecSettings,
     sut_settings: SutTestSettings,
     subarray: SubArray,
-    sb_config = SBConfig,
-    subarray_allocation_specs = SubarrayAllocationSpec
-
 ):
     """I tell the OET to release resources"""
     subarray_id = allocated_subarray.id
     observation = sut_settings.observation
     with context_monitoring.context_monitoring():
-        with allocated_subarray(
-            running_telescope,
-            exec_settings,
-            sb_config,
-            subarray_allocation_specs
+        with running_telescope.wait_for_subarray_released(
+            subarray_id,
+            exec_settings
             ):
             subarray.release()
 

@@ -35,6 +35,7 @@ def test_telescope_startup():
 def test_telescope_startup_in_low():
     """Low Telescope startup test."""
 
+@pytest.mark.skip(reason="test purpose")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.standby

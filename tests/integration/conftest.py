@@ -1,5 +1,7 @@
 """pytest global settings, fixtures and global bdd step implementations for
 integration tests."""
+import json
+import copy
 import logging
 from types import SimpleNamespace
 import os
@@ -32,6 +34,7 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 4
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
+    _scan_configuration = None
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -55,6 +58,14 @@ class SutTestSettings(SimpleNamespace):
     def receptors(self, receptor: list[int]):
         self._receptors = receptor
 
+    @property
+    def scan_configuration(self):
+        return self._scan_configuration
+
+    @scan_configuration.setter
+    def scan_configuration(self, scan_configuration: None):
+        self._scan_configuration = scan_configuration
+
 
 @pytest.fixture(name="sut_settings", scope="function")
 def fxt_conftest_settings() -> SutTestSettings:
@@ -62,21 +73,13 @@ def fxt_conftest_settings() -> SutTestSettings:
     return SutTestSettings()
 
 
-class OnlineFlag:
-
-    value: bool = False
-
-    def __bool__(self):
-        return self.value
-
-    def set_true(self):
-        self.value = True
-
-
 # setting systems online
-@pytest.fixture(name="online", autouse=True, scope="session")
-def fxt_online():
-    return OnlineFlag()
+def generate_configure_json_for_low(sut_settings: SutTestSettings):
+    template = copy.deepcopy(LOW_CONFIGURE_JSON)
+    #template["csp"]["common"]["config_id"] = f'{sb_id}-{template["sdp"]["scan_type"]}'
+    template["csp"]["common"]["subarray_id"] = sut_settings.subarray_id
+    template["tmc"]["scan_duration"] = sut_settings.scan_duration
+    return json.dump(template)
 
 
 @pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
@@ -277,6 +280,37 @@ def i_configure_it_for_a_scan(
             )
 
 
+# fixture for SUT2.2
+@when("I issue the configure command with <scan_type> and <scan_configuration> to the subarray <subarray_id>")
+def i_configure_it_for_a_scan(
+    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    configuration: conf_types.ScanConfiguration,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    scan_type:str,
+    scan_configuration:str,
+    subarray_id:int,
+):
+    """I configure it for a scan."""
+    sub_array_id = allocated_subarray.id
+    receptors = allocated_subarray.receptors
+    sb_id = allocated_subarray.sb_config.sbid
+    scan_duration = sut_settings.scan_duration
+
+    # set input values
+    sut_settings.subarray_id = subarray_id
+    sut_settings.scan_configuration = scan_configuration
+
+    with context_monitoring.context_monitoring():
+        with allocated_subarray.wait_for_configuring_a_subarray(
+            integration_test_exec_settings
+        ):
+            entry_point.configure_subarray(
+                sub_array_id, receptors, configuration, sb_id, scan_duration
+            )
+
 # scans
 @when("I command it to scan for a given period")
 def i_command_it_to_scan(
@@ -285,6 +319,7 @@ def i_command_it_to_scan(
 ):
     """I configure it for a scan."""
     configured_subarray.set_to_scanning(integration_test_exec_settings)
+
 
 
 @when("I release all resources assigned to it")
@@ -302,4 +337,154 @@ def i_release_all_resources_assigned_to_it(
             integration_test_exec_settings
         ):
             entry_point.tear_down_subarray(sub_array_id)
-            
+
+
+# temp change
+LOW_CONFIGURE_JSON = {
+  "interface": "https://schema.skao.int/ska-low-tmc-configure/3.0",
+  "transaction_id": "txn-....-00001",
+  "mccs": {
+    "stations": [
+      {
+        "station_id": 1
+      },
+      {
+        "station_id": 2
+      }
+    ],
+    "subarray_beams": [
+      {
+        "subarray_beam_id": 1,
+        "station_ids": [
+          1,
+          2
+        ],
+        "update_rate": 0.0,
+        "channels": [
+          [
+            0,
+            8,
+            1,
+            1
+          ],
+          [
+            8,
+            8,
+            2,
+            1
+          ],
+          [
+            24,
+            16,
+            2,
+            1
+          ]
+        ],
+        "antenna_weights": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_centre": [
+          0.0,
+          0.0
+        ],
+        "target": {
+          "reference_frame": "HORIZON",
+          "target_name": "DriftScan",
+          "az": 180.0,
+          "el": 45.0
+        }
+      }
+    ]
+  },
+  "sdp": {
+    "interface": "https://schema.skao.int/ska-sdp-configure/0.4",
+    "scan_type": "science_A"
+  },
+  "csp": {
+    "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+    "subarray": {
+      "subarray_name": "science period 23"
+    },
+    "common": {
+      "config_id": "sbi-mvp01-20200325-00001-science_A"
+    },
+    "lowcbf": {
+      "stations": {
+        "stns": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            4,
+            0
+          ]
+        ],
+        "stn_beams": [
+          {
+            "beam_id": 1,
+            "freq_ids": [
+              64,
+              65,
+              66,
+              67,
+              68,
+              68,
+              70,
+              71
+            ],
+            "boresight_dly_poly": "url"
+          }
+        ]
+      },
+      "timing_beams": {
+        "beams": [
+          {
+            "pst_beam_id": 13,
+            "stn_beam_id": 1,
+            "offset_dly_poly": "url",
+            "stn_weights": [
+              0.9,
+              1.0,
+              1.0,
+              0.9
+            ],
+            "jones": "url",
+            "dest_chans": [
+              128,
+              256
+            ],
+            "rfi_enable": [
+              "true",
+              "true",
+              "true"
+            ],
+            "rfi_static_chans": [
+              1,
+              206,
+              997
+            ],
+            "rfi_dynamic_chans": [
+              242,
+              1342
+            ],
+            "rfi_weighted": 0.87
+          }
+        ]
+      }
+    }
+  },
+  "tmc": {
+    "scan_duration": 10.0
+  }
+}

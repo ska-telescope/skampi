@@ -266,7 +266,6 @@ def i_release_all_resources_assigned_to_it_in_low(
     running_telescope: fxt_types.running_telescope,
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
-    subarray_allocation_spec: fxt_types.SubarrayAllocationSpec,
     exec_settings: ExecSettings,
     sut_settings: SutTestSettings,
     subarray: SubArray,
@@ -279,7 +278,6 @@ def i_release_all_resources_assigned_to_it_in_low(
     with context_monitoring.context_monitoring():
         with allocated_subarray(
             running_telescope,
-            subarray_allocation_spec,
             exec_settings,
             sb_config
             ):

@@ -27,7 +27,7 @@ EXECUTOR = ScriptExecutor()
 def test_telescope_startup():
     """Telescope startup test."""
 
-@pytest.mark.skip(reason="test purpose")
+#@pytest.mark.skip(reason="test purpose")
 @pytest.mark.oet
 @pytest.mark.skalow
 @pytest.mark.startup
@@ -164,3 +164,20 @@ def check_final_state_is_on():
         str(final_state) == "ON"
     ), f"Expected telescope to be ON but instead was {final_state}"
     logger.info("Central node is in ON state")
+
+@then(parsers.parse("the low central node goes to state ON"))
+def check_final_state_is_on_low(
+    entry_point: fxt_types.entry_point,
+    ):
+    """
+    Check that the central node device is in the expected state.
+    """
+    tel = names.TEL()
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    final_state = central_node.read_attribute("telescopeState").value
+    assert (
+        str(final_state) == "ON"
+    ), f"Expected telescope to be ON but instead was {final_state}"
+    logger.info("Central node is in ON state")
+    entry_point.set_telescope_to_standby()
+    logger.info("Central node is in STANDBY state")

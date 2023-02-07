@@ -18,11 +18,9 @@ from .. import conftest
 @pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.configure
-@scenario(
-    "features/cbf_configure_scan.feature", "Configure scan on cbf subarray in low"
-)
+@scenario("features/cbf_configure_scan.feature", "Configure scan on CBF low subarray")
 def test_configure_scan_on_cbf_low_subarray():
-    """Configure scan on cbf subarray in low."""
+    """Configure scan on CBF low subarray."""
 
 
 @given("an CBF subarray in IDLE state", target_fixture="configuration")

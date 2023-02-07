@@ -125,10 +125,6 @@ def startup_telescope_low(
     """
     Use the OET OSO Scripting to Turn On Telescope
     """
-    # with context_monitoring.observe_while_running(integration_test_exec_settings):
-    #     standby_telescope.switch_off_after_test(integration_test_exec_settings)
-    #     telescope = Telescope()
-    #     telescope.on()
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(

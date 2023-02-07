@@ -47,11 +47,14 @@ def hello_world_sb_in_oda(sb_id, activity_name, test_sbd):
         try:
             existing_sbd = oda.sbds.get(test_sbd.sbd_id)
             test_sbd.metadata.version = existing_sbd.metadata.version
+            # Only save the SB if there have been changes to it
+            if not existing_sbd == test_sbd:
+                oda.sbds.add(test_sbd)
+                oda.commit()
         except KeyError:
             # sbd_id doesn't exist in ODA so no need to worry about versions
-            pass
-        oda.sbds.add(test_sbd)
-        oda.commit()
+            oda.sbds.add(test_sbd)
+            oda.commit()
 
 
 @when("the script is ran")

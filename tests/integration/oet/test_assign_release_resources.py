@@ -72,7 +72,7 @@ def test_resource_release():
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",
-    "Releasing all resources from sub-array low",
+    "Release all resources from sub-array low",
 )
 def test_resource_release_for_low():
     """

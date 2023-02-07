@@ -46,16 +46,6 @@ def test_telescope_startup_in_low():
 def test_telescope_standby():
     """ Set telescope to standby test."""
 
-
-@pytest.mark.skip(reason="off command skipped as it is not working currently")
-@pytest.mark.oet
-@pytest.mark.skalow
-@pytest.mark.standby
-@pytest.mark.k8s
-@scenario("features/oet_startup_standby_telescope.feature", "Setting up low telescope to stand-by")
-def test_telescope_standby_in_low():
-    """ Set telescope to standby test."""
-
 @given("telescope is in STANDBY or OFF state")
 def a_telescope_on_standby_or_off_state(
     standby_telescope: fxt_types.standby_telescope,
@@ -128,14 +118,6 @@ def run_standby_script(
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
-
-@when(parsers.parse("I turn telescope to OFF state"))
-def standby_telescope_low():
-    """
-    Use the OET OSO Scripting to Turn Off Telescope
-    """
-    telescope = Telescope()
-    telescope.off()
 
 @then(parsers.parse("the central node goes to state STANDBY"))
 def check_final_state_is_off():

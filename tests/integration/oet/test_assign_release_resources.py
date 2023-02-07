@@ -283,8 +283,7 @@ def i_release_all_resources_assigned_to_it_in_low(
             exec_settings,
             sb_config
             ):
-            config = observation.generate_low_release_all_resources_config_for_central_node(subarray_id).as_object
-            subarray.release(config)
+            subarray.release()
 
 @then("the sub-array goes to ObsState EMPTY")
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):

@@ -274,7 +274,7 @@ def i_assign_resources_to_it(
 
 @given(parsers.parse("the subarray {subarray_id} obsState is IDLE"))
 def the_subarray_is_in_idle(
-    running_telescope: fxt_types.running_telescope,
+    telescope_context: fxt_types.telescope_context,
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
     sb_config: fxt_types.sb_config,
@@ -288,7 +288,7 @@ def the_subarray_is_in_idle(
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
     with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_allocating_a_subarray(
+        with telescope_context.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings,
             release_when_finished=False,
         ):

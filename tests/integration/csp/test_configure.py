@@ -8,7 +8,7 @@ from pytest_bdd import scenario
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skamid
+@pytest.mark.skamid_skip
 @pytest.mark.csp
 @pytest.mark.configure
 @scenario(

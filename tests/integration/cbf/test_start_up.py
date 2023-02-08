@@ -24,7 +24,7 @@ def test_cbf_start_up_telescope_mid():
 
 
 @pytest.mark.skip(reason="cbf low not integrated")
-@pytest.mark.skalow
+@pytest.mark.skalow_skip
 @pytest.mark.cbf
 @pytest.mark.startup
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in low")

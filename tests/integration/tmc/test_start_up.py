@@ -38,14 +38,14 @@ def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
 
 
-@pytest.mark.skalow
+@pytest.mark.skalow_skip
 @pytest.mark.startup
 @scenario("features/tmc_start_up_telescope.feature", "Start up the low telescope using TMC")
 def test_tmc_start_up_telescope_low():
     """Start up the telescope in low."""
 
 @pytest.mark.skip(reason="OFF command is not supported in LOW CBF 0.5.7")
-@pytest.mark.skalow
+@pytest.mark.skalow_skip
 @pytest.mark.standby
 @scenario("features/tmc_start_up_telescope.feature", "Switch off the low telescope using TMC")
 def test_tmc_off_telescope_low():

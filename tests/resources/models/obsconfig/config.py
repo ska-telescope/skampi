@@ -9,9 +9,10 @@ from .csp import CSPconfig
 from .dishes import Dishes
 from .sdp_config import SdpConfig
 from .tmc_config import TmcConfig
+from .mccs import MCCSConfig
 
 
-class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
+class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
 
     assign_resources_schema = "https://schema.skao.int/ska-tmc-assignresources/2.1"
 
@@ -32,9 +33,9 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig):
             interface=self.low_assign_resources_schema,
             transaction_id=transaction_id,
             subarray_id=subarray_id,
-            mccs=self.generate_mccs_assign_resources_config().as_object,
+            mccs=self.generate_low_mccs_assign_resources_config().as_object,
             sdp_config=self.generate_sdp_assign_resources_config().as_object,
-            csp_config=self.generate_csp_assign_resources_config().as_object
+            csp_config=self.generate_low_csp_assign_resources_config().as_object
         )
         return assign_request
 

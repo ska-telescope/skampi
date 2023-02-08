@@ -268,7 +268,7 @@ def i_assign_resources_to_it_low(
     sut_settings: SutTestSettings,
     subarray: SubArray,
 ):
-    """I assign resources to it."""
+    """I assign resources to it in low."""
 
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
@@ -278,10 +278,9 @@ def i_assign_resources_to_it_low(
             subarray_id, receptors, integration_test_exec_settings
         ):
             config = observation.generate_low_assign_resources_config(subarray_id).as_object
-            print("Odservation block**********************"+config)
+            logging.info("Odservation block**********************"+config)
             logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
             subarray.assign_from_cdm(config)
-            print("subarrary assign from cdm***********************" +subarray.assign_from_cdm(config))
 
 @then("the sub-array goes to ObsState IDLE")
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):

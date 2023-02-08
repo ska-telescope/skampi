@@ -6,3 +6,4 @@ Feature: Configure the subarray using TMC
 		Given a subarray in the IDLE state
 		When I configure it for a scan
 		Then the subarray must be in the READY state
+

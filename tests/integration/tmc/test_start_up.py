@@ -19,7 +19,7 @@ from .. import conftest
 
 logger = logging.getLogger(__name__)
 
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

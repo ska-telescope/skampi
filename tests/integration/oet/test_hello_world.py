@@ -1,8 +1,6 @@
 import pytest
 from pytest_bdd import given, scenario, then, when, parsers
 
-from ska_db_oda.unit_of_work.restunitofwork import RESTUnitOfWork
-
 from .oet_helpers import ScriptExecutor, ACTIVITY_ADAPTER, add_sb_to_oda
 from os import environ
 

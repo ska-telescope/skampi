@@ -18,7 +18,7 @@ low-test:
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     COUNT: 1
-    EXIT_AT_FAIL: "false"
+    EXIT_AT_FAIL: "true"
     CAPTURE_LOGS: "True"
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"

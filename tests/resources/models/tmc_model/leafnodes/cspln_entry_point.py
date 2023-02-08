@@ -389,7 +389,6 @@ CONFIGURE_CSP_JSON_LOW = {
         
       ]
     },
-    "search_beams": "tbd",
-    "zooms": "tbd"
+    
   }
 }

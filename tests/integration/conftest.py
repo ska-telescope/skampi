@@ -72,6 +72,21 @@ def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()
 
+class OnlineFlag:
+
+    value: bool = False
+
+    def __bool__(self):
+        return self.value
+
+    def set_true(self):
+        self.value = True
+
+
+# setting systems online
+@pytest.fixture(name="online", autouse=True, scope="session")
+def fxt_online():
+    return OnlineFlag()
 
 # setting systems online
 def generate_configure_json_for_low(sut_settings: SutTestSettings):
@@ -281,7 +296,7 @@ def i_configure_it_for_a_scan(
 
 
 # fixture for SUT2.2
-@when("I issue the configure command with <scan_type> and <scan_configuration> to the subarray <subarray_id>")
+@when("I issue the configure command with <scan_type/config_id> and <scan_configuration> to the subarray <subarray_id>")
 def i_configure_it_for_a_scan(
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,

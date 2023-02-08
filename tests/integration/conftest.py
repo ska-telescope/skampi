@@ -9,7 +9,10 @@ import os
 from typing import Any, Callable
 from mock import patch, Mock
 
+from resources.models.mvp_model.states import ObsState
+
 import pytest
+from assertpy import assert_that
 from pytest_bdd import when, given, parsers
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
@@ -18,6 +21,8 @@ from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
 
@@ -191,7 +196,7 @@ def i_start_up_the_telescope(
 
 @given("the Telescope is in ON state")
 def the_telescope_is_on(
-   standby_telescope : fxt_types.standby_telescope,
+    standby_telescope : fxt_types.standby_telescope,
     entry_point: fxt_types.entry_point,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
@@ -244,9 +249,6 @@ def assign_resources_with_subarray_id(
             )
 
 
-            
-
-
 @when("I assign resources to it")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,
@@ -268,6 +270,36 @@ def i_assign_resources_to_it(
             entry_point.compose_subarray(
                 subarray_id, receptors, composition, sb_config.sbid
             )
+
+
+@given(parsers.parse("the subarray {subarray_id} obsState is IDLE"))
+def the_subarray_is_in_idle(
+    running_telescope: fxt_types.running_telescope,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    sb_config: fxt_types.sb_config,
+    composition: conf_types.Composition,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    subarray_id: int,
+):
+    """I assign resources to it."""
+
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    with context_monitoring.context_monitoring():
+        with running_telescope.wait_for_allocating_a_subarray(
+            subarray_id, receptors, integration_test_exec_settings,
+            release_when_finished=False,
+        ):
+            entry_point.compose_subarray(
+                subarray_id, receptors, composition, sb_config.sbid
+            )
+    tel = names.TEL()
+    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    result = subarray.read_attribute("obsState").value
+    assert_that(result).is_equal_to(ObsState.IDLE)
+
 
 
 # scan configuration

@@ -31,22 +31,17 @@ def test_tmc_low_subarray_for_configure_a_scan():
 # from conftest
 # @given("the Telescope is in ON state")
 
-@given(parsers.parse("the subarray {subarray_id} obsState is IDLE"))
-def the_subarray_is_in_idle_state(subarray_id, sut_settings: SutTestSettings):
-    """the subarray is in IDLE state."""
-    sut_settings.subarray_id = subarray_id
-    tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.IDLE)
-
+# from conftest
+# @given(parsers.parse("the subarray {subarray_id} obsState is IDLE")
 
 # using when from conftest
-# @when(" I issue the configure command with <scan_type> and <scan_configuration> to the subarray <subarray_id>")
+# @when(" I issue the configure command with <scan_type/config_id> and
+#  <scan_configuration> to the subarray <subarray_id>")
 
 
 @then(parsers.parse("the subarray <subarray_id> obsState is READY"))
-def the_subarray_must_be_in_ready_state(subarray_id, sut_settings: SutTestSettings, integration_test_exec_settings: fxt_types.exec_settings):
+def the_subarray_must_be_in_ready_state(subarray_id, sut_settings: SutTestSettings, 
+        integration_test_exec_settings: fxt_types.exec_settings):
     """the subarray is in READY state."""
     sut_settings.subarray_id = subarray_id
     tel = names.TEL()

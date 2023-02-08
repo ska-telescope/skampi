@@ -268,6 +268,7 @@ def i_assign_resources_to_it_low(
     sut_settings: SutTestSettings,
     subarray: SubArray,
 ):
+
     """I assign resources to it in low."""
 
     subarray_id = sut_settings.subarray_id

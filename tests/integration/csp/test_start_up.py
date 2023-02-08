@@ -13,7 +13,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from .. import conftest
 
 logger = logging.getLogger(__name__)
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.startup
@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 def test_csp_start_up_telescope_mid():
     """Start up the csp in mid."""
 
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.startup

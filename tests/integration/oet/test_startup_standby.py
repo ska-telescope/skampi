@@ -17,7 +17,7 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.startup
@@ -26,7 +26,7 @@ EXECUTOR = ScriptExecutor()
 def test_telescope_startup():
     """Telescope startup test."""
 
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.standby

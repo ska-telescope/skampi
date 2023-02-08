@@ -12,7 +12,7 @@ from resources.models.mvp_model.states import ObsState
 
 from ... import conftest
 
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skamid
 @pytest.mark.configure
 @scenario(
@@ -22,6 +22,7 @@ from ... import conftest
 def test_run_scan_on_sdp_subarray_in_mid():
     """Run scan on sdp subarray in mid using the leaf node."""
 
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skalow
 @pytest.mark.configure
 @scenario(

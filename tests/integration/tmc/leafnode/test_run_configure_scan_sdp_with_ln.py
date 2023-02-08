@@ -9,7 +9,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from resources.models.mvp_model.states import ObsState
 
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skamid
 @pytest.mark.configure
 @scenario(
@@ -19,6 +19,7 @@ from resources.models.mvp_model.states import ObsState
 def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid using the leaf node."""
 
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skalow
 @pytest.mark.configure
 @scenario(

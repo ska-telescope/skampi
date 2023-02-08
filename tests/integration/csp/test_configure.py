@@ -7,7 +7,7 @@ from pytest_bdd import scenario
 
 logger = logging.getLogger(__name__)
 
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.configure

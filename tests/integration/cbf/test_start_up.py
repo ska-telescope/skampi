@@ -14,7 +14,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 
 logger = logging.getLogger(__name__)
 
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.startup

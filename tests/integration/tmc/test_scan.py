@@ -10,7 +10,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

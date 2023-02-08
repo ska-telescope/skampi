@@ -8,7 +8,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 logger = logging.getLogger(__name__)
 
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign
@@ -30,7 +30,7 @@ def test_assign_resources_to_csp_low_subarray():
 def test_assign_resources_to_csp_mid_subarray():
     """Assign resources to CSP mid subarray."""
 
-
+@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign

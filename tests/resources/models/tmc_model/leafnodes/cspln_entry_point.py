@@ -4,9 +4,8 @@ import copy
 from typing import Union, List
 import json
 from time import sleep
+
 import copy
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.utils.nrgen import get_id
 from ska_ser_skallop.utils.singleton import Memo
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.connectors import configuration as con_config

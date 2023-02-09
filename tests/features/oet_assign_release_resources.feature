@@ -36,3 +36,9 @@ Feature: Verification of OET scripts being executed successfully during an obser
 		And an oet subarray object in state EMPTY
 		When I assign resources to it in low
 		Then the sub-array goes to ObsState IDLE
+
+	#Scenario: Release all resources low
+	Scenario: Release all resources from sub-array low
+		Given an OET
+		When I tell the OET to release resources
+		Then the sub-array goes to ObsState EMPTY

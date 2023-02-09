@@ -10,7 +10,8 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 
 from tests.integration import conftest
-
+import logging
+logger = logging.getLogger(__name__)
 
 @pytest.mark.skamid
 @scenario(
@@ -20,7 +21,7 @@ from tests.integration import conftest
 def test_scan_cspsubarray_for_a_scan_in_mid():
     """Scan cspsubarray for a scan in mid using the csp leaf node."""
 
-@pytest.mark.skip(reason="Scan low charts not integrated")
+@pytest.mark.skip
 @pytest.mark.skalow
 @scenario(
     "features/tmc_cspln_scan.feature",
@@ -46,6 +47,7 @@ def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
         )
         result = csp_subarray_leaf_node.ping()
         assert result > 0
+    logger.info ("a_tmc_csp_subarray_leaf_node")
 
 @then("the CSP subarray shall go from READY to SCANNING")
 def the_csp_subarray_shall_go_from_ready_to_scanning_state(

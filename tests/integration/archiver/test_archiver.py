@@ -9,7 +9,6 @@ from time import sleep
 from archiver_helper import ArchiverHelper
 from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
 
-
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -27,7 +26,6 @@ def configure_attribute(attribute):
   assert "Archiving          : Started" in archiver_helper.conf_manager_attribute_status(attribute)
   assert "Archiving          : Started" in archiver_helper.evt_subscriber_attribute_status(attribute)
   archiver_helper.stop_archiving(attribute)
-
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly

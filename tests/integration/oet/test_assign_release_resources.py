@@ -21,7 +21,6 @@ from .oet_helpers import ScriptExecutor
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

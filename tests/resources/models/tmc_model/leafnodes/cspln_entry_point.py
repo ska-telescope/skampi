@@ -380,10 +380,8 @@ CONFIGURE_CSP_JSON_LOW = {
     },
     "timing_beams": {
       "beams": [
-        
       ]
     },
-    
   }
 }
 

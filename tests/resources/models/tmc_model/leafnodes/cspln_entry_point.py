@@ -5,7 +5,6 @@ from typing import Union, List
 import json
 from time import sleep
 
-import copy
 from ska_ser_skallop.utils.singleton import Memo
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.connectors import configuration as con_config

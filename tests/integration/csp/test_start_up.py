@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 def test_csp_start_up_telescope_mid():
     """Start up the csp in mid."""
 
-@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.startup

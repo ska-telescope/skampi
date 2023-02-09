@@ -170,6 +170,23 @@ def when_release_resources(
             script_completion_state == "COMPLETE"
         ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
 
+@when("I tell the OET to release resources")
+def when_release_resources(
+        allocated_subarray: fxt_types.allocated_subarray,
+        context_monitoring: fxt_types.context_monitoring,
+        integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """
+    Use the OET Rest API to run script that releases all resources.
+    """
+    subarray_id = allocated_subarray.id
+
+    with context_monitoring.context_monitoring():
+        with allocated_subarray.wait_for_releasing_a_subarray(
+                integration_test_exec_settings
+        ):
+            subarray = SubArray(subarray_id)
+            subarray.release()
 
 @then("the script completes successfully")
 def check_script_completed():
@@ -230,6 +247,20 @@ def test_oet_scripting_resource_allocation_in_low():
                 And an oet subarray object in state EMPTY
                 When I assign resources to it in low
                 Then the sub-array goes to ObsState IDLE
+    """
+
+@pytest.mark.oet
+@pytest.mark.skalow
+@pytest.mark.k8s
+@scenario(
+    "features/oet_assign_release_resources.feature",
+    "Release all resources from sub-array low",
+)
+def test_resource_release_for_low():
+    """
+    Given sub-array with resources allocated to it
+    When I tell the OET to release resources
+    Then the sub-array goes to ObsState EMPTY
     """
 
 @given("an oet subarray object in state EMPTY", target_fixture="subarray")

@@ -17,6 +17,7 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 # log capturing
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -24,6 +25,7 @@ logger = logging.getLogger(__name__)
 @scenario("features/tmc_assign_resources.feature", "Assign resources to low subarray")
 def test_assign_resources_to_tmc_subarray_in_low():
     """Assign resources to tmc subarray in low."""
+
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -34,6 +36,7 @@ def test_assign_resources_to_tmc_subarray_in_low():
 def test_release_resources_from_tmc_subarray_in_low():
     """Release resources from tmc subarrays in low."""
 
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -41,6 +44,7 @@ def test_release_resources_from_tmc_subarray_in_low():
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
 def test_assign_resources_to_tmc_subarray_in_mid():
     """Assign resources to tmc subarray in mid."""
+
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly

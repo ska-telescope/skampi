@@ -888,9 +888,9 @@ CONFIGURE_JSON_LOW = {
               256
             ],
             "rfi_enable": [
-              true,
-              true,
-              true
+              True,
+              True,
+              True
             ],
             "rfi_static_chans": [
               1,

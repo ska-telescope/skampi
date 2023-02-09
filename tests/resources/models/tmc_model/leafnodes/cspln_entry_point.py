@@ -77,6 +77,7 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
                 config = self.observation.generate_assign_resources_config(sub_array_id).as_json
             elif self._tel.skalow:
                 # TODO Low json from CDM is not available. Once it is available pull json from CDM
+
                 config_json = copy.deepcopy(ASSIGN_RESOURCE_CSP_JSON_LOW)
                 config = json.dumps(config_json)
 

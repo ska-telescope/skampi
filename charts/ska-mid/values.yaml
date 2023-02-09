@@ -54,7 +54,7 @@ ska-ser-skuid:
       generator_id: mvp01
 
 ska-tango-base:
-  enabled: true
+  enabled: false
   vnc:
     replicas: 1
     enabled: true

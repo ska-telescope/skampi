@@ -331,6 +331,7 @@ SCAN_CSP_JSON_LOW = {
 }
 
 
+
 CONFIGURE_CSP_JSON_LOW = {
   "interface": "https://schema.skao.int/ska-csp-configure/2.0",
   "subarray": {
@@ -385,3 +386,14 @@ CONFIGURE_CSP_JSON_LOW = {
     
   }
 }
+
+csp_low_scan = {
+    "common": {"subarray_id": 1},
+    "lowcbf": {
+        "scan_id": 987654321,
+        "scan_seconds": 30,
+    },
+}
+
+
+

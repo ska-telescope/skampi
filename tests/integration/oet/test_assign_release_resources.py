@@ -274,7 +274,6 @@ def i_assign_resources_to_it_low(
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
     observation = sut_settings.observation
-    running_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings

@@ -22,7 +22,6 @@ from ... import conftest
 def test_run_scan_on_sdp_subarray_in_mid():
     """Run scan on sdp subarray in mid using the leaf node."""
 
-
 @pytest.mark.skalow
 @pytest.mark.configure
 @scenario(

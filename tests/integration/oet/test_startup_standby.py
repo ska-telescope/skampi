@@ -69,7 +69,6 @@ def the_low_telescope_is_off(
 ):
     """I switch off the telescope."""
     # we disable automatic shutdown as this is done by the test itself
-    running_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
         with running_telescope.wait_for_shutting_down(integration_test_exec_settings):
             entry_point.set_telescope_to_standby()

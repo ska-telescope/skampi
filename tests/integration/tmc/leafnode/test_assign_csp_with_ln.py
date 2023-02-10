@@ -13,7 +13,6 @@ from ...conftest import SutTestSettings
 import logging
 logger = logging.getLogger(__name__)
 
-@pytest.mark.skip(reason="Test only TMC's test case")
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(

@@ -872,7 +872,41 @@ CONFIGURE_JSON_LOW = {
       },
       "timing_beams": {
         "beams": [
-
+          {
+            "pst_beam_id": 13,
+            "stn_beam_id": 1,
+            "offset_dly_poly": "url",
+            "stn_weights": [
+              0.9,
+              1.0,
+              1.0,
+              0.9
+            ],
+            "jones": "url",
+            "dest_ip": [
+              "10.22.0.1:2345",
+              "10.22.0.3:3456"
+            ],
+            "dest_chans": [
+              128,
+              256
+            ],
+            "rfi_enable": [
+              True,
+              True,
+              True
+            ],
+            "rfi_static_chans": [
+              1,
+              206,
+              997
+            ],
+            "rfi_dynamic_chans": [
+              242,
+              1342
+            ],
+            "rfi_weighted": 0.87
+          }
         ]
       }
     }

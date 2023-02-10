@@ -51,3 +51,4 @@ def the_subarray_must_be_in_the_ready_state(
     sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(sub_array_id))
     result = sdp_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.READY)
+

@@ -206,7 +206,6 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
             config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
-
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         central_node.command_inout("ReleaseResources", config)
 
@@ -365,7 +364,6 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         ).to_become_equal_to("IDLE")
 
         return brd
-
 
 
 class ScanStep(base.ScanStep, LogEnabled):
@@ -915,7 +913,6 @@ CONFIGURE_JSON_LOW = {
     "scan_duration": 10.0
   }
 }
-
 
 SCAN_JSON_LOW = {
     "interface": "https://schema.skao.int/ska-low-tmc-scan/3.0",

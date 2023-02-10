@@ -19,7 +19,7 @@ Feature: Verification of OET scripts being executed successfully during an obser
 
 	#*Scenario: Starting up low telescope*
 	Scenario: Starting up low telescope
-		Given telescope is in STANDBY or OFF state
+		Given low telescope is in STANDBY or OFF state
 		When I turn telescope to ON state
 		Then the central node goes to state ON
 

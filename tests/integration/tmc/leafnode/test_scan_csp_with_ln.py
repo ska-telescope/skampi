@@ -10,8 +10,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 
 from tests.integration import conftest
-import logging
-logger = logging.getLogger(__name__)
+
 
 @pytest.mark.skamid
 @scenario(
@@ -47,7 +46,6 @@ def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
         )
         result = csp_subarray_leaf_node.ping()
         assert result > 0
-    logger.info ("a_tmc_csp_subarray_leaf_node")
 
 @then("the CSP subarray shall go from READY to SCANNING")
 def the_csp_subarray_shall_go_from_ready_to_scanning_state(

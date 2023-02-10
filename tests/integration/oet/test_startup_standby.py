@@ -68,7 +68,7 @@ def a_low_telescope_on_standby_or_off_state(
     tel = names.TEL()
     csp_master = con_config.get_device_proxy(tel.csp.controller)
     result = csp_master.read_attribute("state").value
-    assert(str(result)).is_equal_to("ON")
+    assert(str(result)) == ("ON")
     central_node = con_config.get_device_proxy(tel.tm.central_node, fast_load=True)
     assert str(central_node.read_attribute("telescopeState").value) in [
         "STANDBY",

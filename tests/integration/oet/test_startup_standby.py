@@ -60,19 +60,6 @@ def a_telescope_on_standby_or_off_state(
         "OFF",
     ]
 
-@given("the low telescope is in STANDBY or OFF state")
-def the_low_telescope_is_off(
-        running_telescope: fxt_types.running_telescope,
-        entry_point: fxt_types.entry_point,
-        context_monitoring: fxt_types.context_monitoring,
-        integration_test_exec_settings: fxt_types.exec_settings,
-):
-    """I switch off the telescope."""
-    # we disable automatic shutdown as this is done by the test itself
-    with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_shutting_down(integration_test_exec_settings):
-            entry_point.set_telescope_to_standby()
-
 @given("telescope is in ON state")
 def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
     """a telescope in the ON state"""

@@ -7,3 +7,10 @@ Feature: Configure the subarray using TMC
 		When I configure it for a scan
 		Then the subarray must be in the READY state
 
+	@XTP-16185
+	Scenario: Configure the low telescope subarray using TMC
+		Given an TMC
+		Given an telescope subarray
+		Given a subarray in the IDLE state
+		When I configure it for a scan
+		Then the subarray must be in the READY state

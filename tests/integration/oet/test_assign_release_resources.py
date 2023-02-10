@@ -43,7 +43,6 @@ def test_sbi_creation():
     """
 
 
-@pytest.mark.skip(reason="oet not compatible with tmc config changes yet")
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
@@ -58,7 +57,6 @@ def test_resource_allocation():
     """
 
 
-@pytest.mark.skip(reason="oet not compatible with tmc config changes yet")
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(

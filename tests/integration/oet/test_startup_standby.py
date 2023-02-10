@@ -33,7 +33,7 @@ def test_telescope_startup():
 @pytest.mark.startup
 @pytest.mark.k8s
 @scenario("features/oet_startup_standby_telescope.feature", "Starting up low telescope")
-def test_low_telescope_startup():
+def test_telescope_startup_low():
     """Telescope startup test."""
 
 
@@ -60,6 +60,20 @@ def a_telescope_on_standby_or_off_state(
         "OFF",
     ]
 
+@given("low telescope is in STANDBY or OFF state")
+def a_low_telescope_on_standby_or_off_state(
+        standby_telescope: fxt_types.standby_telescope,
+):
+    """a telescope on standby or off state"""
+    tel = names.TEL()
+    csp_master = con_config.get_device_proxy(tel.csp.controller)
+    result = csp_master.read_attribute("state").value
+    assert(str(result)) == ("ON")
+    central_node = con_config.get_device_proxy(tel.tm.central_node, fast_load=True)
+    assert str(central_node.read_attribute("telescopeState").value) in [
+        "STANDBY",
+        "OFF",
+    ]
 
 @given("telescope is in ON state")
 def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):

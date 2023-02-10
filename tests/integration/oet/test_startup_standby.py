@@ -45,12 +45,12 @@ def test_low_telescope_startup():
     "features/oet_startup_standby_telescope.feature", "Setting telescope to stand-by"
 )
 def test_telescope_standby():
-    """ Set telescope to standby test."""
+    """Set telescope to standby test."""
 
 
 @given("telescope is in STANDBY or OFF state")
 def a_telescope_on_standby_or_off_state(
-        standby_telescope: fxt_types.standby_telescope,
+    standby_telescope: fxt_types.standby_telescope,
 ):
     """a telescope on standby or off state"""
     tel = names.TEL()
@@ -69,12 +69,22 @@ def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
 
 
+@pytest.fixture(name="observe_csp_during_on_of")
+def fxt_observe_csp_during_on_of(context_monitoring: fxt_types.context_monitoring):
+    tel = names.TEL()
+    if tel.skalow:
+        context_monitoring.set_waiting_on(tel.csp.controller).for_attribute(
+            "obsState"
+        ).and_observe()
+
+
 @when(parsers.parse("I tell the OET to run startup script {script}"))
 def run_startup_script(
-        script,
-        standby_telescope: fxt_types.standby_telescope,
-        integration_test_exec_settings: fxt_types.exec_settings,
-        context_monitoring: fxt_types.context_monitoring,
+    script,
+    standby_telescope: fxt_types.standby_telescope,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    observe_csp_during_on_of,  # type: ignore
+    context_monitoring: fxt_types.context_monitoring,
 ):
     """
     Use the OET Rest API to run a script
@@ -87,7 +97,7 @@ def run_startup_script(
         standby_telescope.switch_off_after_test(integration_test_exec_settings)
         script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
         assert (
-                script_completion_state == "COMPLETE"
+            script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
         # after success we marked the telescope state to be ON
         standby_telescope.state = "ON"
@@ -95,10 +105,10 @@ def run_startup_script(
 
 @when(parsers.parse("I tell the OET to run standby script {script}"))
 def run_standby_script(
-        script,
-        running_telescope: fxt_types.running_telescope,
-        integration_test_exec_settings: fxt_types.exec_settings,
-        context_monitoring: fxt_types.context_monitoring,
+    script,
+    running_telescope: fxt_types.running_telescope,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    context_monitoring: fxt_types.context_monitoring,
 ):
     """
     Use the OET Rest API to run a script
@@ -112,23 +122,22 @@ def run_standby_script(
         with running_telescope.wait_for_shutting_down():
             script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
         assert (
-                script_completion_state == "COMPLETE"
+            script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
 
 
 @when(parsers.parse("I turn telescope to ON state"))
 def startup_telescope_low(
-        standby_telescope: fxt_types.standby_telescope,
-        integration_test_exec_settings: fxt_types.exec_settings,
-        context_monitoring: fxt_types.context_monitoring,
+    standby_telescope: fxt_types.standby_telescope,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    context_monitoring: fxt_types.context_monitoring,
 ):
     """
     Use the OET OSO Scripting to Turn On Telescope
     """
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(
-                integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
             logger.info("OET Commands are being used")
             telescope = Telescope()
             telescope.on()
@@ -136,16 +145,15 @@ def startup_telescope_low(
 
 @given("the Telescope is in ON state")
 def the_telescope_is_on(
-        standby_telescope: fxt_types.standby_telescope,
-        entry_point: fxt_types.entry_point,
-        context_monitoring: fxt_types.context_monitoring,
-        integration_test_exec_settings: fxt_types.exec_settings,
+    standby_telescope: fxt_types.standby_telescope,
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """I start up the telescope."""
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(
-                integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
@@ -159,7 +167,7 @@ def check_final_state_is_off():
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     final_state = central_node.read_attribute("telescopeState").value
     assert (
-            str(final_state) == "STANDBY"
+        str(final_state) == "STANDBY"
     ), f"Expected telescope to be STANDBY but instead was {final_state}"
     logger.info("Central node is in STANDBY state")
     time.sleep(10)
@@ -174,6 +182,6 @@ def check_final_state_is_on():
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     final_state = central_node.read_attribute("telescopeState").value
     assert (
-            str(final_state) == "ON"
+        str(final_state) == "ON"
     ), f"Expected telescope to be ON but instead was {final_state}"
     logger.info("Central node is in ON state")

@@ -146,7 +146,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
-        
+
     def _generate_unique_eb_sb_ids(self, config_json):
         """This method will generate unique eb and sb ids.
         Update it in config json
@@ -206,7 +206,6 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
             config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
-        
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         central_node.command_inout("ReleaseResources", config)
 
@@ -386,7 +385,11 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        scan_config = self.observation.generate_run_scan_conf().as_json
+        if self._tel.skamid:
+            scan_config = self.observation.generate_run_scan_conf().as_json
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            scan_config = json.dumps(SCAN_JSON_LOW)
         scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -406,7 +409,7 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-    
+
     def undo(self, sub_array_id: int):
         """This is a no-op as no undo for scan is needed
 
@@ -910,4 +913,12 @@ CONFIGURE_JSON_LOW = {
   "tmc": {
     "scan_duration": 10.0
   }
+}
+
+
+SCAN_JSON_LOW = {
+    "interface": "https://schema.skao.int/ska-low-tmc-scan/3.0",
+    "transaction_id": "txn-....-00001",
+    "scan_id": 1
+
 }

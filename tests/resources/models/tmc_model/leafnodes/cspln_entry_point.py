@@ -1,5 +1,6 @@
 """Domain logic for the cdp."""
 import logging
+import copy
 from typing import Union, List
 import json
 from time import sleep
@@ -21,6 +22,7 @@ from ...csp_model.entry_point import (
 )
 
 from ...obsconfig.config import Observation
+
 
 logger = logging.getLogger(__name__)
 
@@ -52,11 +54,11 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
     """Implementation of Assign Resources Step for CSP LN."""
 
     def do(
-        self,
-        sub_array_id: int,
-        dish_ids: List[int],
-        composition: types.Composition,  # pylint: disable=
-        sb_id: str,
+            self,
+            sub_array_id: int,
+            dish_ids: List[int],
+            composition: types.Composition,  # pylint: disable=
+            sb_id: str,
     ):
         """Domain logic for assigning resources to a subarray in csp LN.
 
@@ -67,13 +69,26 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic id to identify a sb to assign resources
         """
-        # currently ignore composition as all types will be standard
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
-        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
 
-        config = self.observation.generate_assign_resources_config(sub_array_id).as_json
-        self._log(f"commanding {csp_subarray_ln_name} with AssignResources: {config} ")
-        csp_subarray_ln.command_inout("AssignResources", config)
+        try:
+            csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
+            csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+            if self._tel.skamid:
+                config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+            elif self._tel.skalow:
+                # TODO Low json from CDM is not available. Once it is available pull json from CDM
+
+                config_json = copy.deepcopy(ASSIGN_RESOURCE_CSP_JSON_LOW)
+                config = json.dumps(config_json)
+
+            logger.info(f"commanding {csp_subarray_ln_name} with AssignResources: {config} ")
+            csp_subarray_ln.command_inout("AssignResources", config)
+
+
+        except Exception as exception:
+
+            logger.exception(exception)
+            raise exception
 
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in csp.
@@ -92,12 +107,12 @@ class CspLnConfigureStep(CspConfigureStep):
     """Implementation of Configure Scan Step for CSP LN."""
 
     def do(
-        self,
-        sub_array_id: int,
-        dish_ids: List[int],
-        configuration: types.ScanConfiguration,
-        sb_id: str,
-        duration: float,
+            self,
+            sub_array_id: int,
+            dish_ids: List[int],
+            configuration: types.ScanConfiguration,
+            sb_id: str,
+            duration: float,
     ):
         """Domain logic for configuring a scan on subarray in csp LN.
 
@@ -112,10 +127,16 @@ class CspLnConfigureStep(CspConfigureStep):
         Memo(scan_duration=duration)
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
-        config = self.observation.generate_scan_config_parsed_for_csp(
-            scan_duration=duration
-        )
-        self._log(f"commanding {csp_subarray_ln_name} with Configure: {config}")
+        if self._tel.skamid:
+            config = self.observation.generate_scan_config_parsed_for_csp(
+                scan_duration=duration
+            )
+        elif self._tel.skalow:
+            config_json = copy.deepcopy(CONFIGURE_CSP_JSON_LOW)
+            config = json.dumps(config_json)
+
+
+        logger.info(f"commanding {csp_subarray_ln_name} with Configure: {config}")
         csp_subarray_ln.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
@@ -132,7 +153,6 @@ class CspLnConfigureStep(CspConfigureStep):
 
 
 class CSPLnScanStep(CspScanStep):
-
     """Implementation of Scan Step for CSP LN."""
 
     def do(self, sub_array_id: int):
@@ -144,12 +164,19 @@ class CSPLnScanStep(CspScanStep):
         """
         # scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
-        csp_run_scan_config = self.observation.generate_csp_run_scan_config()
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+
+
+        if self._tel.skamid:
+            csp_run_scan_config = self.observation.generate_csp_run_scan_config()
+
+        elif self._tel.skalow:
+            csp_run_scan_config=copy.deepcopy(SCAN_CSP_JSON_LOW)
+
         self._log(
-            f"Commanding {csp_subarray_ln_name} to Scan with {csp_run_scan_config}"
-        )
+                f"Commanding {csp_subarray_ln_name} to Scan with {csp_run_scan_config}"
+            )
         try:
             csp_subarray_ln.command_inout("Scan", json.dumps(csp_run_scan_config))
             sleep(scan_duration)
@@ -159,7 +186,7 @@ class CSPLnScanStep(CspScanStep):
             raise exception
 
     def set_wait_for_do(
-        self, sub_array_id: int, receptors: List[int]
+            self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
         """This is a no-op as there is no scanning command
 
@@ -173,7 +200,7 @@ class CSPLnScanStep(CspScanStep):
         """
 
     def set_wait_for_doing(
-        self, sub_array_id: int, receptors: List[int]
+            self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifying what needs to be done for waiting for subarray to be scanning.
 
@@ -187,7 +214,7 @@ class CSPLnScanStep(CspScanStep):
         return builder
 
     def set_wait_for_undo(
-        self, sub_array_id: int, receptors: List[int]
+            self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
         """This is a no-op as no undo for scan is needed
 
@@ -218,7 +245,6 @@ assignresources_csp = {
     "subarray_id": 1,
     "dish": {"receptor_ids": ["0001", "0002"]},
 }
-
 
 configure_csp = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
@@ -268,3 +294,106 @@ configure_csp = {
         }
     },
 }
+
+
+
+ASSIGN_RESOURCE_CSP_JSON_LOW={
+  "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",
+  "common": {
+    "subarray_id": 1
+  },
+  "lowcbf": {
+    "resources": [
+      {
+        "device": "fsp_01",
+        "shared": True,
+        "fw_image": "pst",
+        "fw_mode": "unused"
+      },
+      {
+        "device": "p4_01",
+        "shared": True,
+        "fw_image": "p4.bin",
+        "fw_mode": "p4"
+      }
+    ]
+  }
+}
+
+SCAN_CSP_JSON_LOW = {
+  "common": {
+    "subarray_id": 1
+  },
+  "lowcbf": {
+    "scan_id": 987654321,
+    "scan_seconds": 30
+  }
+}
+
+
+
+CONFIGURE_CSP_JSON_LOW = {
+  "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+  "subarray": {
+    "subarray_name": "science period 23"
+  },
+  "common": {
+    "config_id": "sbi-mvp01-20200325-00001-science_A",
+    "subarray_id": 1
+  },
+  "lowcbf": {
+    "stations": {
+      "stns": [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ],
+      "stn_beams": [
+        {
+          "beam_id": 1,
+          "freq_ids": [
+            64,
+            65,
+            66,
+            67,
+            68,
+            68,
+            70,
+            71
+          ],
+          "boresight_dly_poly": "url"
+        }
+      ]
+    },
+    "timing_beams": {
+      "beams": [
+
+      ]
+    },
+
+  }
+}
+
+csp_low_scan = {
+    "common": {"subarray_id": 1},
+    "lowcbf": {
+        "scan_id": 987654321,
+        "scan_seconds": 30,
+    },
+}
+
+
+

@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
+@pytest.mark.usefixtures("set_up_subarray_log_checking_for_tmc")
 def fxt_set_entry_point(
     nr_of_subarrays: int,
     set_session_exec_env: fxt_types.set_session_exec_env,
@@ -33,13 +34,14 @@ def fxt_set_entry_point(
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     TMCEntryPoint.receptors = sut_settings.receptors
     exec_env.entrypoint = TMCEntryPoint
+    # exec_env.maintain_on = True
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = [
-        "tm",
-        "mid",
+        # "tm",
+        # "mid",
         "sdp",
         "csp",
-        "tmc scope",
+        # "tmc scope",
         "csp scope",
         "csp control",
         "sdp control",
@@ -63,9 +65,10 @@ def fxt_nr_of_subarrays() -> int:
 
 
 @pytest.fixture(autouse=True, scope="session")
-@pytest.mark.usefixtures("set_up_subarray_log_checking_for_tmc")
 def fxt_set_csp_online_from_tmc(
-    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
+    online: conftest.OnlineFlag,
+    set_subsystem_online: Callable[[EntryPoint], None],
+    nr_of_subarrays,
 ):
     """_summary_
 
@@ -74,10 +77,12 @@ def fxt_set_csp_online_from_tmc(
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
     """
-    logging.info("setting csp components online within tmc context")
-    TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
-    entry_point = TMCEntryPoint()
-    set_subsystem_online(entry_point)
+    if not online:
+        logging.info("setting csp components online within tmc context")
+        TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+        entry_point = TMCEntryPoint()
+        set_subsystem_online(entry_point)
+        online.set_true()
 
 
 @pytest.fixture(name="tmc_start_up_test_exec_settings", autouse=True)
@@ -108,8 +113,7 @@ def fxt_tmc_assign_resources_exec_settings(
 
 @pytest.fixture(name="set_up_subarray_log_checking_for_tmc")
 def fxt_set_up_log_capturing_for_cbf(
-    log_checking: fxt_types.log_checking,
-    sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
@@ -122,14 +126,10 @@ def fxt_set_up_log_capturing_for_cbf(
         sdp_subarray1 = str(tel.sdp.subarray(index))
         if tel.skamid:
             subarray_ln = str(tel.skamid.tm.subarray(index).sdp_leaf_node)
-            log_checking.capture_logs_from_devices(
-                subarray, sdp_subarray1, subarray_ln
-            )
+            log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
         else:
             subarray_ln = str(tel.skalow.tm.subarray(index).sdp_leaf_node)
-            log_checking.capture_logs_from_devices(
-                subarray, sdp_subarray1, subarray_ln
-            )
+            log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
 
 
 # resource configurations

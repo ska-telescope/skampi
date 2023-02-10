@@ -20,6 +20,15 @@ def test_tmc_configure_scan_on_mid_subarray():
     """Configure scan on TMC mid telescope subarray."""
 
 
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skalow
+@pytest.mark.configure
+@scenario("features/tmc_configure_scan.feature", "Configure the low telescope subarray using TMC")
+def test_tmc_configure_scan_on_low_subarray():
+    """Configure scan on TMC low telescope subarray."""
+
+
 @given("an TMC")
 def a_tmc():
     """an TMC"""
@@ -52,4 +61,3 @@ def the_subarray_must_be_in_the_ready_state(
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = tmc_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.READY)
-

@@ -328,7 +328,7 @@ def i_configure_it_for_a_scan(
 
 
 # fixture for SUT2.2
-@when("I issue the configure command with <scan_type/config_id> and <scan_configuration> to the subarray <subarray_id>")
+@when(parsers.parse("I issue the configure command with {scan_type/config_id} and {scan_configuration} to the subarray {subarray_id}"))
 def i_configure_it_for_a_scan(
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,

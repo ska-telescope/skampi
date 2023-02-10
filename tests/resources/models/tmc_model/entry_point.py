@@ -830,6 +830,7 @@ CONFIGURE_JSON_LOW = {
     },
     "common": {
       "config_id": "sbi-mvp01-20200325-00001-science_A",
+      
     },
     "lowcbf": {
       "stations": {
@@ -913,6 +914,7 @@ CONFIGURE_JSON_LOW = {
     "scan_duration": 10.0
   }
 }
+
 
 SCAN_JSON_LOW = {
     "interface": "https://schema.skao.int/ska-low-tmc-scan/3.0",

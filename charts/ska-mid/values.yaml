@@ -149,3 +149,7 @@ ska-tango-archiver:
 ## dishmasters
 ska-sim-dishmaster:
   enabled: true
+
+# alarm-handler
+ska-tango-alarmhandler:
+  enabled: true

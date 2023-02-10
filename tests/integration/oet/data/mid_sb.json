@@ -105,11 +105,12 @@
     {
       "target_id": "Polaris Australis",
       "pointing_pattern": {
-        "active": "FivePointParameters",
+        "active": "SinglePointParameters",
         "parameters": [
           {
-            "kind": "FivePointParameters",
-            "offset_arcsec": 5.0
+            "kind": "SinglePointParameters",
+            "offset_x_arcsec": 0.0,
+            "offset_y_arcsec": 0.0
           },
           {
             "kind": "RasterParameters",

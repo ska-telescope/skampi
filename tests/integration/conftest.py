@@ -335,9 +335,9 @@ def i_issue_configure_command(
     base_configuration: conf_types.ScanConfiguration,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
-    scan_type:str,
-    scan_configuration:str,
-    subarray_id:int,
+    scan_type: str,
+    scan_configuration: str,
+    subarray_id: int,
     subarray_context,
 ):
     """I configure it for a scan."""
@@ -346,15 +346,16 @@ def i_issue_configure_command(
     scan_duration = sut_settings.scan_duration
 
     # set input values
-    sut_settings.subarray_id = subarray_id
-    sut_settings.scan_configuration = scan_configuration
+    # sut_settings.subarray_id = subarray_id
+    # sut_settings.scan_configuration = scan_configuration
 
     with context_monitoring.context_monitoring():
         with subarray_context.wait_for_configuring_a_subarray(
             integration_test_exec_settings
         ):
             entry_point.configure_subarray(
-                subarray_id, receptors, base_configuration, sb_id, scan_duration
+                int(subarray_id), receptors, base_configuration, sb_id, 
+                scan_duration
             )
 
 

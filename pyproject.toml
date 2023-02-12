@@ -24,7 +24,7 @@ pytest-timeout = "^2.0.2"
 pytest-ordering = "^0.6"
 pipe = "^1.6.0"
 ska-ser-skallop = "2.22.0"
-ska-oso-oet = "4.0.7"
+ska-oso-oet = "4.0.6"
 atlassian-python-api = "^3.25.0"
 ska-oso-scripting = "^6.1.0"
 

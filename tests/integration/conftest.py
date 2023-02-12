@@ -28,7 +28,7 @@ from ska_ser_skallop.mvp_fixtures.context_management import SubarrayContext
 from ska_ser_skallop.mvp_fixtures.fixtures import _setup_env, fxt_types
 from ska_ser_skallop.mvp_management import subarray_composition as sub
 from ska_ser_skallop.mvp_management import telescope_management as tel
-
+from ska_ser_skallop.event_handling import builders
 logger = logging.getLogger(__name__)
 
 
@@ -437,6 +437,7 @@ def subarray_context(
 @contextmanager
 def assign_resources_tear_down(sut_settings, integration_test_exec_settings):
     yield
+    builders.clear_supscription_specs()
     sub.teardown_subarray(
         sut_settings.receptors,
         sut_settings.subarray_id,

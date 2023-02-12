@@ -15,18 +15,20 @@ import pytest
 from assertpy import assert_that
 from pytest_bdd import when, given, parsers
 
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types ,_setup_env
 from ska_ser_skallop.mvp_management import telescope_management as tel
+from ska_ser_skallop.mvp_management import subarray_composition as sub
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+import ska_ser_skallop.mvp_control.subarray.compose as comp
 from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
-
-
+from ska_ser_skallop.mvp_fixtures.context_management import SubarrayContext
+from contextlib import ExitStack, contextmanager
 logger = logging.getLogger(__name__)
 
 
@@ -40,6 +42,7 @@ class SutTestSettings(SimpleNamespace):
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
     _scan_configuration = None
+    sbid = None
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -274,32 +277,28 @@ def i_assign_resources_to_it(
 
 @given(parsers.parse("the subarray {subarray_id} obsState is IDLE"))
 def the_subarray_is_in_idle(
-    running_telescope: fxt_types.running_telescope,
+    telescope_context: fxt_types.telescope_context,
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
     sb_config: fxt_types.sb_config,
-    composition: conf_types.Composition,
+    base_composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
-    subarray_id: int,
+    subarray_id:int
 ):
     """I assign resources to it."""
 
-    subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
+    sut_settings.sb_config=sb_config
+    sut_settings.sbid = sut_settings.sb_config.sbid
     with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_allocating_a_subarray(
-            subarray_id, receptors, integration_test_exec_settings,
-            release_when_finished=False,
+        with telescope_context.wait_for_allocating_a_subarray(
+          subarray_id, receptors, integration_test_exec_settings,
+          release_when_finished=False,
         ):
             entry_point.compose_subarray(
-                subarray_id, receptors, composition, sb_config.sbid
+                subarray_id, receptors, base_composition, sut_settings.sbid 
             )
-    tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.IDLE)
-
 
 
 # scan configuration
@@ -327,23 +326,23 @@ def i_configure_it_for_a_scan(
             )
 
 
+
 # fixture for SUT2.2
-@when(parsers.parse("I issue the configure command with {scan_type/config_id} and {scan_configuration} to the subarray {subarray_id}"))
-def i_configure_it_for_a_scan(
-    allocated_subarray: fxt_types.allocated_subarray,
+@when(parsers.parse("I issue the configure command with {scan_type} and {scan_configuration} to the subarray {subarray_id}"))
+def i_issue_configure_command(
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
-    configuration: conf_types.ScanConfiguration,
+    base_configuration: conf_types.ScanConfiguration,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
     scan_type:str,
     scan_configuration:str,
     subarray_id:int,
+    subarray_context,
 ):
     """I configure it for a scan."""
-    sub_array_id = allocated_subarray.id
-    receptors = allocated_subarray.receptors
-    sb_id = allocated_subarray.sb_config.sbid
+    receptors = sut_settings.receptors
+    sb_id = sut_settings.sbid
     scan_duration = sut_settings.scan_duration
 
     # set input values
@@ -351,12 +350,14 @@ def i_configure_it_for_a_scan(
     sut_settings.scan_configuration = scan_configuration
 
     with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_configuring_a_subarray(
+        with subarray_context.wait_for_configuring_a_subarray(
             integration_test_exec_settings
         ):
             entry_point.configure_subarray(
-                sub_array_id, receptors, configuration, sb_id, scan_duration
+                subarray_id, receptors, base_configuration, sb_id, scan_duration
             )
+
+
 
 # scans
 @when("I command it to scan for a given period")
@@ -384,154 +385,23 @@ def i_release_all_resources_assigned_to_it(
             integration_test_exec_settings
         ):
             entry_point.tear_down_subarray(sub_array_id)
+            
+            
+@pytest.fixture(name="subarray_context")
+def subarray_context(
+  integration_test_exec_settings: fxt_types.exec_settings,
+  sut_settings: SutTestSettings,
+  base_composition,
+  telescope_context
+  ):
+  """Manages the context for subarray."""
+  subarray_context = SubarrayContext(telescope_context._test_stack, sut_settings.subarray_id,
+                                       sut_settings.receptors, base_composition,sut_settings.sb_config,integration_test_exec_settings)
+  telescope_context.push_context_onto_test(assign_resources_tear_down(sut_settings, integration_test_exec_settings))
+  return subarray_context
 
 
-# temp change
-LOW_CONFIGURE_JSON = {
-  "interface": "https://schema.skao.int/ska-low-tmc-configure/3.0",
-  "transaction_id": "txn-....-00001",
-  "mccs": {
-    "stations": [
-      {
-        "station_id": 1
-      },
-      {
-        "station_id": 2
-      }
-    ],
-    "subarray_beams": [
-      {
-        "subarray_beam_id": 1,
-        "station_ids": [
-          1,
-          2
-        ],
-        "update_rate": 0.0,
-        "channels": [
-          [
-            0,
-            8,
-            1,
-            1
-          ],
-          [
-            8,
-            8,
-            2,
-            1
-          ],
-          [
-            24,
-            16,
-            2,
-            1
-          ]
-        ],
-        "antenna_weights": [
-          1.0,
-          1.0,
-          1.0
-        ],
-        "phase_centre": [
-          0.0,
-          0.0
-        ],
-        "target": {
-          "reference_frame": "HORIZON",
-          "target_name": "DriftScan",
-          "az": 180.0,
-          "el": 45.0
-        }
-      }
-    ]
-  },
-  "sdp": {
-    "interface": "https://schema.skao.int/ska-sdp-configure/0.4",
-    "scan_type": "science_A"
-  },
-  "csp": {
-    "interface": "https://schema.skao.int/ska-csp-configure/2.0",
-    "subarray": {
-      "subarray_name": "science period 23"
-    },
-    "common": {
-      "config_id": "sbi-mvp01-20200325-00001-science_A"
-    },
-    "lowcbf": {
-      "stations": {
-        "stns": [
-          [
-            1,
-            0
-          ],
-          [
-            2,
-            0
-          ],
-          [
-            3,
-            0
-          ],
-          [
-            4,
-            0
-          ]
-        ],
-        "stn_beams": [
-          {
-            "beam_id": 1,
-            "freq_ids": [
-              64,
-              65,
-              66,
-              67,
-              68,
-              68,
-              70,
-              71
-            ],
-            "boresight_dly_poly": "url"
-          }
-        ]
-      },
-      "timing_beams": {
-        "beams": [
-          {
-            "pst_beam_id": 13,
-            "stn_beam_id": 1,
-            "offset_dly_poly": "url",
-            "stn_weights": [
-              0.9,
-              1.0,
-              1.0,
-              0.9
-            ],
-            "jones": "url",
-            "dest_chans": [
-              128,
-              256
-            ],
-            "rfi_enable": [
-              "true",
-              "true",
-              "true"
-            ],
-            "rfi_static_chans": [
-              1,
-              206,
-              997
-            ],
-            "rfi_dynamic_chans": [
-              242,
-              1342
-            ],
-            "rfi_weighted": 0.87
-          }
-        ]
-      }
-    }
-  },
-  "tmc": {
-    "scan_duration": 10.0
-  }
-}
+@contextmanager            
+def assign_resources_tear_down(sut_settings,integration_test_exec_settings):
+    yield
+    sub.teardown_subarray(sut_settings.receptors, sut_settings.subarray_id, integration_test_exec_settings)

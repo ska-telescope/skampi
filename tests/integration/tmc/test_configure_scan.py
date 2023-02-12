@@ -22,7 +22,7 @@ def test_tmc_configure_scan_on_mid_subarray():
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skalow
+# @pytest.mark.skalow
 @pytest.mark.configure
 @scenario("features/tmc_configure_scan.feature", "Configure the low telescope subarray using TMC")
 def test_tmc_configure_scan_on_low_subarray():

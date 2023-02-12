@@ -1,34 +1,34 @@
 """pytest global settings, fixtures and global bdd step implementations for
 integration tests."""
-import json
 import copy
+import json
 import logging
-from types import SimpleNamespace
 import os
-
+from contextlib import ExitStack, contextmanager
+from types import SimpleNamespace
 from typing import Any, Callable
-from mock import patch, Mock
-
-from resources.models.mvp_model.states import ObsState
 
 import pytest
-from assertpy import assert_that
-from pytest_bdd import when, given, parsers
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types ,_setup_env
-from ska_ser_skallop.mvp_management import telescope_management as tel
-from ska_ser_skallop.mvp_management import subarray_composition as sub
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 import ska_ser_skallop.mvp_control.subarray.compose as comp
-from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from assertpy import assert_that
+from mock import Mock, patch
+from pytest_bdd import given, parsers, when
+from resources.models.mvp_model.states import ObsState
+from resources.models.obsconfig.config import Observation
+from resources.models.tmc_model.entry_point import TMCEntryPoint
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from resources.models.tmc_model.entry_point import TMCEntryPoint
-from resources.models.obsconfig.config import Observation
+from ska_ser_skallop.mvp_control.entry_points import (
+    configuration as entry_conf,
+)
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_fixtures.context_management import SubarrayContext
-from contextlib import ExitStack, contextmanager
+from ska_ser_skallop.mvp_fixtures.fixtures import _setup_env, fxt_types
+from ska_ser_skallop.mvp_management import subarray_composition as sub
+from ska_ser_skallop.mvp_management import telescope_management as tel
+
 logger = logging.getLogger(__name__)
 
 
@@ -80,6 +80,7 @@ def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()
 
+
 class OnlineFlag:
 
     value: bool = False
@@ -96,16 +97,19 @@ class OnlineFlag:
 def fxt_online():
     return OnlineFlag()
 
+
 # setting systems online
 def generate_configure_json_for_low(sut_settings: SutTestSettings):
     template = copy.deepcopy(LOW_CONFIGURE_JSON)
-    #template["csp"]["common"]["config_id"] = f'{sb_id}-{template["sdp"]["scan_type"]}'
+    # template["csp"]["common"]["config_id"] = f'{sb_id}-{template["sdp"]["scan_type"]}'
     template["csp"]["common"]["subarray_id"] = sut_settings.subarray_id
     template["tmc"]["scan_duration"] = sut_settings.scan_duration
     return json.dump(template)
 
 
-@pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
+@pytest.fixture(
+    name="set_session_exec_settings", autouse=True, scope="session"
+)
 def fxt_set_session_exec_settings(
     session_exec_settings: fxt_types.session_exec_settings,
 ):
@@ -192,14 +196,15 @@ def i_start_up_the_telescope(
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(
-            integration_test_exec_settings):
+            integration_test_exec_settings
+        ):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
 
 @given("the Telescope is in ON state")
 def the_telescope_is_on(
-    standby_telescope : fxt_types.standby_telescope,
+    standby_telescope: fxt_types.standby_telescope,
     entry_point: fxt_types.entry_point,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
@@ -208,11 +213,12 @@ def the_telescope_is_on(
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(
-            integration_test_exec_settings):
+            integration_test_exec_settings
+        ):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
-   
-            
+
+
 @when("I switch off the telescope")
 def i_switch_off_the_telescope(
     running_telescope: fxt_types.running_telescope,
@@ -224,11 +230,18 @@ def i_switch_off_the_telescope(
     # we disable automatic shutdown as this is done by the test itself
     running_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_shutting_down(integration_test_exec_settings):
+        with running_telescope.wait_for_shutting_down(
+            integration_test_exec_settings
+        ):
             entry_point.set_telescope_to_standby()
 
-#Currently, resources_list is not utilised, raised SKB for the same:https://jira.skatelescope.org/browse/SKB-202
-@when(parsers.parse("I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"))
+
+# Currently, resources_list is not utilised, raised SKB for the same:https://jira.skatelescope.org/browse/SKB-202
+@when(
+    parsers.parse(
+        "I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"
+    )
+)
 def assign_resources_with_subarray_id(
     telescope_context: fxt_types.telescope_context,
     context_monitoring: fxt_types.context_monitoring,
@@ -237,8 +250,8 @@ def assign_resources_with_subarray_id(
     composition: conf_types.Composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
-    resources_list:list,
-    subarray_id:int
+    resources_list: list,
+    subarray_id: int,
 ):
     """I assign resources to it."""
 
@@ -284,20 +297,22 @@ def the_subarray_is_in_idle(
     base_composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
-    subarray_id:int
+    subarray_id: int,
 ):
     """I assign resources to it."""
 
     receptors = sut_settings.receptors
-    sut_settings.sb_config=sb_config
+    sut_settings.sb_config = sb_config
     sut_settings.sbid = sut_settings.sb_config.sbid
     with context_monitoring.context_monitoring():
         with telescope_context.wait_for_allocating_a_subarray(
-          subarray_id, receptors, integration_test_exec_settings,
-          release_when_finished=False,
+            subarray_id,
+            receptors,
+            integration_test_exec_settings,
+            release_when_finished=False,
         ):
             entry_point.compose_subarray(
-                subarray_id, receptors, base_composition, sut_settings.sbid 
+                subarray_id, receptors, base_composition, sut_settings.sbid
             )
 
 
@@ -326,9 +341,12 @@ def i_configure_it_for_a_scan(
             )
 
 
-
 # fixture for SUT2.2
-@when(parsers.parse("I issue the configure command with {scan_type} and {scan_configuration} to the subarray {subarray_id}"))
+@when(
+    parsers.parse(
+        "I issue the configure command with {scan_type} and {scan_configuration} to the subarray {subarray_id}"
+    )
+)
 def i_issue_configure_command(
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
@@ -354,10 +372,12 @@ def i_issue_configure_command(
             integration_test_exec_settings
         ):
             entry_point.configure_subarray(
-                int(subarray_id), receptors, base_configuration, sb_id, 
-                scan_duration
+                subarray_id,
+                receptors,
+                base_configuration,
+                sb_id,
+                scan_duration,
             )
-
 
 
 # scans
@@ -368,7 +388,6 @@ def i_command_it_to_scan(
 ):
     """I configure it for a scan."""
     configured_subarray.set_to_scanning(integration_test_exec_settings)
-
 
 
 @when("I release all resources assigned to it")
@@ -386,23 +405,40 @@ def i_release_all_resources_assigned_to_it(
             integration_test_exec_settings
         ):
             entry_point.tear_down_subarray(sub_array_id)
-            
-            
+
+
 @pytest.fixture(name="subarray_context")
 def subarray_context(
-  integration_test_exec_settings: fxt_types.exec_settings,
-  sut_settings: SutTestSettings,
-  base_composition,
-  telescope_context
-  ):
-  """Manages the context for subarray."""
-  subarray_context = SubarrayContext(telescope_context._test_stack, sut_settings.subarray_id,
-                                       sut_settings.receptors, base_composition,sut_settings.sb_config,integration_test_exec_settings)
-  telescope_context.push_context_onto_test(assign_resources_tear_down(sut_settings, integration_test_exec_settings))
-  return subarray_context
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    base_composition,
+    telescope_context,
+):
+    """Manages the context for subarray."""
+    subarray_context = SubarrayContext(
+        telescope_context._test_stack,
+        sut_settings.subarray_id,
+        sut_settings.receptors,
+        base_composition,
+        sut_settings.sb_config,
+        integration_test_exec_settings,
+    )
+    telescope_context.push_context_onto_test(
+        assign_resources_tear_down(
+            sut_settings, integration_test_exec_settings
+        )
+    )
+    telescope_context.existing_subarrays[
+        sut_settings.subarray_id
+    ] = subarray_context
+    return subarray_context
 
 
-@contextmanager            
-def assign_resources_tear_down(sut_settings,integration_test_exec_settings):
+@contextmanager
+def assign_resources_tear_down(sut_settings, integration_test_exec_settings):
     yield
-    sub.teardown_subarray(sut_settings.receptors, sut_settings.subarray_id, integration_test_exec_settings)
+    sub.teardown_subarray(
+        sut_settings.receptors,
+        sut_settings.subarray_id,
+        integration_test_exec_settings,
+    )

@@ -13,7 +13,7 @@ from ...conftest import SutTestSettings
 import logging
 logger = logging.getLogger(__name__)
 
-@pytest.mark.skalow
+# @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
     "features/tmc_cspln_assign.feature",

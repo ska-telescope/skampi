@@ -18,12 +18,10 @@ from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
 
-# log capturing
-
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-# @pytest.mark.skalow
+@pytest.mark.skalow
 @scenario(
     "features/tmc_configure_scan_sut.feature",
     "Configure for a scan on a subarray - happy flow",

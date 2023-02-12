@@ -7,4 +7,4 @@ Scenario: Configure for a scan on a subarray - happy flow
     And the <scan_type> is correctly configured on the subarray <subarray_id>
     Examples: 
         | subarray_id   |  scan_configuration   |    scan_type      |
-        |   1           |         tba           |       "science_A" |
+        | 1           |         tba           |       "science_A" |

@@ -306,13 +306,13 @@ def the_subarray_is_in_idle(
     sut_settings.sbid = sut_settings.sb_config.sbid
     with context_monitoring.context_monitoring():
         with telescope_context.wait_for_allocating_a_subarray(
-            subarray_id,
+            sut_settings.subarray_id,
             receptors,
             integration_test_exec_settings,
             release_when_finished=False,
         ):
             entry_point.compose_subarray(
-                subarray_id, receptors, base_composition, sut_settings.sbid
+                sut_settings.subarray_id, receptors, base_composition, sut_settings.sbid
             )
 
 
@@ -362,7 +362,6 @@ def i_issue_configure_command(
     receptors = sut_settings.receptors
     sb_id = sut_settings.sbid
     scan_duration = sut_settings.scan_duration
-
     # set input values
     # sut_settings.subarray_id = subarray_id
     # sut_settings.scan_configuration = scan_configuration
@@ -372,7 +371,7 @@ def i_issue_configure_command(
             integration_test_exec_settings
         ):
             entry_point.configure_subarray(
-                subarray_id,
+                sut_settings.subarray_id,
                 receptors,
                 base_configuration,
                 sb_id,

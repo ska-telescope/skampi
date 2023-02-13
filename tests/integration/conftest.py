@@ -17,6 +17,7 @@ from resources.models.mvp_model.states import ObsState
 from resources.models.obsconfig.config import Observation
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.event_handling import builders
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import (
     configuration as entry_conf,
@@ -28,7 +29,7 @@ from ska_ser_skallop.mvp_fixtures.context_management import SubarrayContext
 from ska_ser_skallop.mvp_fixtures.fixtures import _setup_env, fxt_types
 from ska_ser_skallop.mvp_management import subarray_composition as sub
 from ska_ser_skallop.mvp_management import telescope_management as tel
-from ska_ser_skallop.event_handling import builders
+
 logger = logging.getLogger(__name__)
 
 
@@ -312,7 +313,10 @@ def the_subarray_is_in_idle(
             release_when_finished=False,
         ):
             entry_point.compose_subarray(
-                sut_settings.subarray_id, receptors, base_composition, sut_settings.sbid
+                sut_settings.subarray_id,
+                receptors,
+                base_composition,
+                sut_settings.sbid,
             )
 
 
@@ -414,6 +418,14 @@ def subarray_context(
     telescope_context,
 ):
     """Manages the context for subarray."""
+    logger.debug(
+        "Setting up a subarray as part of fixture using the injected entry point:"
+        f"subarray_id: {sut_settings.subarray_id}"
+        f", receptors: {sut_settings.receptors}"
+        f", composition: {base_composition}."
+        f", integration_test_exec_settings: {integration_test_exec_settings}"
+        "Note, subarray will be released automatically at the end of test."
+    )
     subarray_context = SubarrayContext(
         telescope_context._test_stack,
         sut_settings.subarray_id,
@@ -422,6 +434,7 @@ def subarray_context(
         sut_settings.sb_config,
         integration_test_exec_settings,
     )
+    logger.debug(f"pushing assign_resources teardown")
     telescope_context.push_context_onto_test(
         assign_resources_tear_down(
             sut_settings, integration_test_exec_settings
@@ -435,10 +448,18 @@ def subarray_context(
 
 @contextmanager
 def assign_resources_tear_down(sut_settings, integration_test_exec_settings):
+    logger.debug(f"Inside assignResources teardown")
     yield
     builders.clear_supscription_specs()
+    logger.debug(f"clear subscription before teardown")
+    logger.debug(
+        f"subarray_id: {sut_settings.subarray_id}"
+        f", receptors: {sut_settings.receptors}"
+        f", integration_test_exec_settings: {integration_test_exec_settings}"
+    )
     sub.teardown_subarray(
         sut_settings.receptors,
         sut_settings.subarray_id,
         integration_test_exec_settings,
     )
+    logger.debug(f"teardown completed")

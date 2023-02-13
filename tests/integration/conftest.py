@@ -305,22 +305,19 @@ def the_subarray_is_in_idle(
     receptors = sut_settings.receptors
     sut_settings.sb_config = sb_config
     sut_settings.sbid = sut_settings.sb_config.sbid
-    try:
-        with context_monitoring.context_monitoring():
-            with telescope_context.wait_for_allocating_a_subarray(
+    with context_monitoring.context_monitoring():
+        with telescope_context.wait_for_allocating_a_subarray(
+            sut_settings.subarray_id,
+            receptors,
+            integration_test_exec_settings,
+            release_when_finished=False,
+        ):
+            entry_point.compose_subarray(
                 sut_settings.subarray_id,
                 receptors,
-                integration_test_exec_settings,
-                release_when_finished=False,
-            ):
-                entry_point.compose_subarray(
-                    sut_settings.subarray_id,
-                    receptors,
-                    base_composition,
-                    sut_settings.sbid,
-                )
-    except Exception as ex:
-        logger.debug(f"Occurred exception is:: {ex}")
+                base_composition,
+                sut_settings.sbid,
+            )
 
 
 # scan configuration
@@ -369,25 +366,18 @@ def i_issue_configure_command(
     receptors = sut_settings.receptors
     sb_id = sut_settings.sbid
     scan_duration = sut_settings.scan_duration
-    # set input values
-    # sut_settings.subarray_id = subarray_id
-    # sut_settings.scan_configuration = scan_configuration
-    logger.debug("calling configure subarray")
-    try:
-        with context_monitoring.context_monitoring():
-            with subarray_context.wait_for_configuring_a_subarray(
-                integration_test_exec_settings
-            ):
-                entry_point.configure_subarray(
-                    sut_settings.subarray_id,
-                    receptors,
-                    base_configuration,
-                    sb_id,
-                    scan_duration,
-                )
-        logger.debug("Executed try block...")
-    except Exception as ex:
-        logger.debug(f"Occured exception is:::{ex}")
+
+    with context_monitoring.context_monitoring():
+        with subarray_context.wait_for_configuring_a_subarray(
+            integration_test_exec_settings
+        ):
+            entry_point.configure_subarray(
+                sut_settings.subarray_id,
+                receptors,
+                base_configuration,
+                sb_id,
+                scan_duration,
+            )
 
 
 # scans

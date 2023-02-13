@@ -12,7 +12,7 @@ from resources.models.mvp_model.states import ObsState
 from ...conftest import SutTestSettings
 
 
-# @pytest.mark.skalow
+@pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
     "features/sdpln_assign_release.feature",

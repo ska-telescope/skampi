@@ -21,7 +21,7 @@ from ..conftest import SutTestSettings
 def test_assign_resources_to_cbf_mid_subarray():
     """Assign resources to CBF mid subarray."""
 
-# @pytest.mark.skalow
+@pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.assign
 @scenario(

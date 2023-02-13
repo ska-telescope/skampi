@@ -20,7 +20,7 @@ from tests.integration import conftest
 def test_scan_cspsubarray_for_a_scan_in_mid():
     """Scan cspsubarray for a scan in mid using the csp leaf node."""
 
-@pytest.mark.skip(reason="Scan low charts not integrated")
+
 @pytest.mark.skalow
 @scenario(
     "features/tmc_cspln_scan.feature",

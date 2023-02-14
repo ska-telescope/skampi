@@ -258,19 +258,19 @@ def the_tmc_devices_must_be_healthy(sut_settings: conftest.SutTestSettings):
     # Check state attribute of SDP Master
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("healthState").value
-    assert_that(str(result)).is_equal_to("OK")
+    assert result == 0
     for index in range(1, sut_settings.nr_of_subarrays + 1):
         subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
         result = subarray.read_attribute("healthState").value
-        assert_that(str(result)).is_equal_to("OK")
+        assert result == 0
     # Check state attribute of CSP Master
     csp_master = con_config.get_device_proxy(tel.csp.controller)
     result = csp_master.read_attribute("healthState").value
-    assert_that(str(result)).is_equal_to("OK")
+    assert result == 0
     for index in range(1, sut_settings.nr_of_subarrays + 1):
         subarray = con_config.get_device_proxy(tel.csp.subarray(index))
         result = subarray.read_attribute("healthState").value
-        assert_that(str(result)).is_equal_to("OK")
+        assert result == 0
     # Check state attribute of Dish Masters
     # if tel.skamid:
     #     for dish_id in sut_settings.receptors:
@@ -280,4 +280,4 @@ def the_tmc_devices_must_be_healthy(sut_settings: conftest.SutTestSettings):
     # Check telescopeState attribute of Central Node
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     result = central_node.read_attribute("healthState").value
-    assert_that(str(result)).is_equal_to("OK")
+    assert result == 0

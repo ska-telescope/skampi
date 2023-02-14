@@ -64,6 +64,15 @@ ska-tango-base:
         ephemeral-storage: 256Mi
   tangotest:
     enabled: true
+    resources:
+      requests:
+        cpu: 100m # 100m = 0.1 CPU
+        memory: 128Mi # 256Mi = 0.25 GB mem
+        ephemeral-storage: 256Mi
+      limits:
+        cpu: 200m # 100m = 0.1 CPU
+        memory: 768Mi # 256Mi = 0.25 GB mem
+        ephemeral-storage: 256Mi
   ingress:
     enabled: true
     hostname: k8s.stfc.skao.int
@@ -103,6 +112,15 @@ ska-taranta:
 
 ska-sdp:
   enabled: true
+  resources:
+    requests:
+      cpu: 1m
+      memory: 1Mi
+      ephemeral-storage: 1Mi
+    limits:
+      cpu: 1000m
+      memory: 256Mi
+      ephemeral-storage: 1Gi
   lmc:
     prefix: low
     nsubarray: 3
@@ -151,11 +169,68 @@ ska-low-cbf:
 
 ska-low-cbf-proc:
   enabled: true
+  resources:
+    requests:
+      cpu: 1m
+      memory: 1Mi
+      ephemeral-storage: 1Mi
+    limits:
+      cpu: 1000m
+      memory: 256Mi
+      ephemeral-storage: 1Gi
 
 ska-csp-lmc-low:
   enabled: true
+  resources:
+    requests:
+      cpu: 1m
+      memory: 1Mi
+      ephemeral-storage: 1Mi
+    limits:
+      cpu: 1000m
+      memory: 256Mi
+      ephemeral-storage: 1Gi
 
 ## tmc
 ska-tmc-low:
   enabled: true
+  resources:
+    requests:
+      cpu: 1m
+      memory: 1Mi
+      ephemeral-storage: 1Mi
+    limits:
+      cpu: 1000m
+      memory: 256Mi
+      ephemeral-storage: 1Gi
   telescope: SKA-low
+
+ska-taranta-dashboard:
+  ingress:
+    enabled: true
+    resources:
+      requests:
+        cpu: 1m
+        memory: 1Mi
+        ephemeral-storage: 1Mi
+      limits:
+        cpu: 1000m
+        memory: 256Mi
+        ephemeral-storage: 1Gi
+    nginx: true
+    hostname: test-taranta.k8s.stfc.skao.int
+
+ska-taranta-auth:
+  ingress:
+    enabled: true
+    resources:
+      requests:
+        cpu: 1m
+        memory: 1Mi
+        ephemeral-storage: 1Mi
+      limits:
+        cpu: 1000m
+        memory: 256Mi
+        ephemeral-storage: 1Gi
+    nginx: true
+    hostname: test-taranta.k8s.stfc.skao.int

@@ -1,24 +1,50 @@
-release=0.12.0
-tag=0.12.0
-tag_description=
+release=0.18.5
+tag=0.18.5
+tag_description=new releases of low and mid
 **Charts:**
-**1. ska-mid 0.11.0 - 0.12.0:**
+**1. ska-low 0.8.2 - 0.9.0:**
 
-    **1.1 ska-tmc-mid - 0.5.22 - 0.6.1:
+    **1.1 ska-sdp  0.12.1 - 0.13.0**:
 
-            a.   Update tmc to perform scan commands
-
-    **1.2 ska-sdp  0.12.1 - 0.12.2:
-
-            a. Add initial sdp qa back ends
+            a. add sdp with metric support
     
-    **1.3 ska-tango-taranta  1.3.5 - 1.3.6:
+    **1.2 ska-tmc-low new product - 0.5.3**:
 
-            a. fix bug blocking attribute writer
+            a. new ska tmc capable up to basic scan configuration
 
-    **1.4 ska-tango-tangogql 1.3.4 - 1.3.6:
+    **1.3 ska-tango-taranta 1.3.6 - 1.3.11**:
 
-            a. fix bug blocking attribute writer
+            a. updates to taranta functionality
 
+    **1.4 ska-csp-lmc-low 0.2.3 - 0.3.1**:
 
+            a. update to work with new cbf
+
+    **1.5 ska-low-cbf 0.5.3 - 0.5.7**:
+
+            a. update new cbf working with new intended hw
+
+    (note: ska-low-cbf-proc is removed)
+
+**2. ska-mid 0.12.0 - 0.13.0:**
+
+    **1.1 ska-sdp  0.12.1 - 0.13.0**:
+
+            a. add sdp with metric support
+    
+    **1.2 ska-tmc-mid 0.6.2 - 0.6.4**:
+
+            a. improvements on tmc mid to work with updates json configs
+
+    **1.3 ska-tango-taranta 1.3.6 - 1.3.11**:
+
+            a. updates to taranta functionality
+
+    **1.4 ska-tango-archiver new release - 2.2.1**:
+
+            a. new archiver
+            
+    **1.5 ska-tango-alarmhandler new release - 0.1.3**:
+
+            a. new alarm handler
 

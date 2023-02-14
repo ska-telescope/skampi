@@ -16,7 +16,7 @@ else
 EXIT = 
 endif
 
-test: install
+test:
 	# make start_log_consumer # does not start:
 	# omniORB: (0) 2021-10-13 14:29:20.153601: Error: cannot create directory: /tmp/omni-root
 	# omniORB: (0) 2021-10-13 14:29:20.153613: Error: Unable to create an endpoint of this description: giop:unix:
@@ -34,8 +34,6 @@ test: install
 	cp -r ./build/* tests/build/; \
 	exit $$status
 
-install:
-	if [[ -f test_requirements.txt ]]; then pip3 install -r test_requirements.txt -qq; fi
 
 start_log_consumer:
 	tango_admin --add-server LogConsumer/log LogConsumer LogConsumer/log/log01 && \

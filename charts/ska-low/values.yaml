@@ -106,6 +106,30 @@ ska-sdp:
   lmc:
     prefix: low
     nsubarray: 3
+  console:
+    enabled: true
+  data-pvc:
+    name: shared
+    create:
+      enabled: true
+      size: 20Gi
+      storageClassName: nfss1
+  ska-sdp-qa:
+    kafka:
+      resources:
+        limits:
+          cpu: 750m
+          memory: 1024Mi
+        requests:
+          cpu: 250m
+          memory: 500Mi
+      livenessProbe:
+        initialDelaySeconds: 30
+        failureThreshold: 5
+      zookeeper:
+        resources:
+          requests:
+            cpu: 100m
   ska-tango-base:
     enabled: false
   data-pvc:

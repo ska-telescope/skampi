@@ -1,3 +1,4 @@
+
 """Start up the telescope from tmc feature tests."""
 import logging
 
@@ -42,7 +43,6 @@ def test_tmc_off_telescope_mid():
 @scenario("features/tmc_start_up_telescope.feature", "Start up the low telescope using TMC")
 def test_tmc_start_up_telescope_low():
     """Start up the telescope in low."""
-
 
 @pytest.mark.skip(reason="OFF command is not supported in LOW CBF 0.5.7")
 @pytest.mark.skalow

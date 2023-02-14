@@ -108,6 +108,12 @@ ska-sdp:
     nsubarray: 3
   ska-tango-base:
     enabled: false
+  data-pvc:
+    name: test-sdp-pvc
+    create:
+      enabled: true
+      size: 5Gi
+      storageClassName: nfss1
 
 ska-tango-archiver:
   enabled: false

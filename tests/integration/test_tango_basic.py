@@ -13,8 +13,8 @@ from ska_ser_skallop.connectors.configuration import get_device_proxy
 
 
 @pytest.mark.skip(reason="disable test as tangobridge is no longer in use")
-@pytest.mark.skamid
-@pytest.mark.skalow
+@pytest.mark.skamid_skip
+@pytest.mark.skalow_skip
 @pytest.mark.taranta
 @scenario("features/taranta_basic.feature", "TangoGQL service available")
 def test_tangogql_service_available():
@@ -49,7 +49,7 @@ def i_expect_a_response_to_be_returned_from_the_device_server():
 
 
 @pytest.mark.taranta
-@pytest.mark.skalow
+@pytest.mark.skalow_skip
 @pytest.mark.taranta
 @pytest.mark.k8s
 @scenario("features/taranta_basic.feature", "taranta dashboard services available")
@@ -78,8 +78,8 @@ def a_deployed_taranta_web_dashboard_service(env: ENV) -> str:
 
 
 @pytest.mark.taranta
-@pytest.mark.skamid
-@pytest.mark.skalow
+@pytest.mark.skamid_skip
+@pytest.mark.skalow_skip
 @pytest.mark.k8s
 @scenario("features/taranta_basic.feature", "taranta devices service available")
 def test_taranta_devices_service_available(env: ENV):

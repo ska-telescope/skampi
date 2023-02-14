@@ -8,6 +8,7 @@ Feature: Start up the telescope using TMC
 		Given a Telescope consisting of SDP, CSP and a Dish
 		When I start up the telescope
 		Then the sdp, csp and dish must be on
+		And TMC devices are healthy
 
 	@XTP-6426 @XTP-6186 @XTP-3324
 	Scenario: Switch of the telescope
@@ -22,6 +23,7 @@ Feature: Start up the telescope using TMC
 		Given a Telescope consisting of SDP and CSP
 		When I start up the telescope
 		Then the sdp and csp must be on
+		And TMC devices are healthy
 
 	@XTP-16182 @XTP-16179 @XTP-3325
 	Scenario: Switch off the low telescope using TMC

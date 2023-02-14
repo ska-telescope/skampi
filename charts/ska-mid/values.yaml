@@ -130,6 +130,12 @@ ska-sdp:
         resources:
           requests:
             cpu: 100m
+      data-pvc:
+        name: test-sdp-pvc
+        create:
+          enabled: true
+          size: 5Gi
+          storageClassName: nfss1
 
 ## tmc
 tmc-mid:

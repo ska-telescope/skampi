@@ -27,6 +27,8 @@ ska-oso-oet = "4.0.6"
 atlassian-python-api = "^3.25.0"
 ska-tmc-cdm = "7.2.0"
 ska-oso-scripting = "6.1.0"
+ska-oso-oet-client = "^1.0.0"
+ska-db-oda = "^1.5.1"
 
 [[tool.poetry.source]]
 name = 'ska'

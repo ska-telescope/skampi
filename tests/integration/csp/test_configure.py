@@ -8,7 +8,7 @@ from pytest_bdd import scenario
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skamid
+@pytest.mark.skamid_skip
 @pytest.mark.csp
 @pytest.mark.configure
 @scenario(
@@ -20,7 +20,7 @@ def test_configure_csp_mid_subarray():
 
 
 @pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
-@pytest.mark.skalow
+@pytest.mark.skalow_skip
 @pytest.mark.csp
 @pytest.mark.configure
 @scenario(

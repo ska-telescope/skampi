@@ -1,4 +1,3 @@
-
 """Start up the telescope from tmc feature tests."""
 import logging
 
@@ -31,7 +30,7 @@ def test_tmc_start_up_telescope_mid():
 
 # marked as xfail due to SKB-170
 @pytest.mark.xfail
-@pytest.mark.skamid
+@pytest.mark.skamid_skip
 @pytest.mark.standby
 @scenario("features/tmc_start_up_telescope.feature", "Switch of the telescope")
 def test_tmc_off_telescope_mid():
@@ -44,8 +43,9 @@ def test_tmc_off_telescope_mid():
 def test_tmc_start_up_telescope_low():
     """Start up the telescope in low."""
 
+
 @pytest.mark.skip(reason="OFF command is not supported in LOW CBF 0.5.7")
-@pytest.mark.skalow
+@pytest.mark.skalow_skip
 @pytest.mark.standby
 @scenario("features/tmc_start_up_telescope.feature", "Switch off the low telescope using TMC")
 def test_tmc_off_telescope_low():
@@ -210,8 +210,8 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
 @then("the sdp and csp must be off")
 @then("the sdp, csp and dish must be off")
 def the_sdp_csp_and_dish_must_be_off(
-    sut_settings: conftest.SutTestSettings,
-    integration_test_exec_settings: fxt_types.exec_settings,
+        sut_settings: conftest.SutTestSettings,
+        integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """the sdp, csp and dish must be off."""
     tel = names.TEL()
@@ -248,3 +248,70 @@ def the_sdp_csp_and_dish_must_be_off(
         assert_that(str(result)).is_equal_to("STANDBY")
     elif tel.skalow:
         assert_that(str(result)).is_equal_to("OFF")
+
+
+@then("TMC devices are healthy")
+def the_tmc_devices_must_be_healthy(sut_settings: conftest.SutTestSettings):
+    """the sdp, csp and dish must be on."""
+    # tel = names.TEL()
+    # mid = names.Mid()
+    # # Check state attribute of SDP Master
+    # sdp_master = con_config.get_device_proxy(tel.sdp.master)
+    # result = sdp_master.read_attribute("healthState").value
+    # assert result == 0
+    # for index in range(1, sut_settings.nr_of_subarrays + 1):
+    #     subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
+    #     result = subarray.read_attribute("healthState").value
+    #     assert result == 0
+    # # Check state attribute of CSP Master
+    # csp_master = con_config.get_device_proxy(tel.csp.controller)
+    # result = csp_master.read_attribute("healthState").value
+    # assert result == 0
+    # for index in range(1, sut_settings.nr_of_subarrays + 1):
+    #     subarray = con_config.get_device_proxy(tel.csp.subarray(index))
+    #     result = subarray.read_attribute("healthState").value
+    #     assert result == 0
+    # # Check state attribute of Dish Masters
+    # # if tel.skamid:
+    # #     for dish_id in sut_settings.receptors:
+    # #         dish = con_config.get_device_proxy(mid.dish(dish_id))
+    # #         result = dish.read_attribute("state").value
+    # #         assert_that(str(result)).is_equal_to("ON")
+    # # Check telescopeState attribute of Central Node
+    # central_node = con_config.get_device_proxy(tel.tm.central_node)
+    # result = central_node.read_attribute("healthState").value
+    # assert result == 0
+
+    tel = names.TEL()
+    sut_settings = conftest.SutTestSettings()
+
+    csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
+    result = csp_master_leaf_node.read_attribute("healthState").value
+    assert result == 0
+
+    sdp_master_leaf_node = con_config.get_device_proxy(tel.tm.sdp_leaf_node)
+    result = sdp_master_leaf_node.read_attribute("healthState").value
+    assert result == 0
+
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        csp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).csp_leaf_node
+        )
+        result = csp_subarray_leaf_node.read_attribute("healthState").value
+        assert result == 0
+
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        sdp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).sdp_leaf_node
+        )
+        result = sdp_subarray_leaf_node.read_attribute("healthState").value
+        assert result == 0
+
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    result = central_node.read_attribute("healthState").value
+    assert result == 0
+
+
+
+
+

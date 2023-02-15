@@ -226,9 +226,6 @@ def assign_resources_with_subarray_id(
             )
 
 
-            
-
-
 @when("I assign resources to it")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,

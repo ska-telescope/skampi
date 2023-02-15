@@ -39,7 +39,7 @@ def fxt_set_entry_point(
 
 @pytest.fixture(name="setup_sdp_mock")
 def fxt_setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
-    """Fixture to use for injecting a mocked entrypoin for sdp in stead of the real one."""
+    """Fixture to use for injecting a mocked entrypoint for sdp in stead of the real one."""
     setup_sdp_mock(mock_entry_point)
 
 
@@ -71,7 +71,7 @@ def fxt_sdp_assign_resources_exec_settings(
 
 @pytest.fixture(name="set_up_subarray_log_checking_for_sdp", autouse=True)
 @pytest.mark.usefixtures("set_sdp_entry_point")
-def fxt_set_up_log_capturing_for_cbf(
+def fxt_set_up_log_capturing_for_sdp(
     log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
@@ -117,6 +117,14 @@ def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 
 
 # shared givens
+
+
+@given("an SDP subarray", target_fixture="composition")
+def an_sdp_subarray(
+    set_up_subarray_log_checking_for_sdp, sdp_base_composition: conf_types.Composition
+) -> conf_types.Composition:
+    """an SDP subarray."""
+    return sdp_base_composition
 
 
 @given("an SDP subarray in IDLE state", target_fixture="configuration")

@@ -306,3 +306,12 @@ def the_tmc_devices_must_be_healthy(sut_settings: conftest.SutTestSettings):
         )
         result = sdp_subarray_leaf_node.read_attribute("healthState").value
         assert result == 0
+
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    result = central_node.read_attribute("healthState").value
+    assert result == 0
+
+    result = central_node.read_attribute("telescopeHealthState").value
+    assert result == 0
+
+

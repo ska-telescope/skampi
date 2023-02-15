@@ -31,6 +31,7 @@ Feature: Verification of OET scripts being executed successfully during an obser
 		Then the sub-array goes to ObsState IDLE
 
 	#Scenario: Allocate resources using oet scripting interface low
+	@XTP-18864 @XTP-18866
 	Scenario: Allocate resources using oet scripting interface low
 		Given an OET
 		And an oet subarray object in state EMPTY
@@ -38,6 +39,7 @@ Feature: Verification of OET scripts being executed successfully during an obser
 		Then the sub-array goes to ObsState IDLE
 
 	#Scenario: Release all resources low
+	@XTP-18870 @XTP-18866
 	Scenario: Release all resources from sub-array low
 		Given an OET
 		When I tell the OET to release resources

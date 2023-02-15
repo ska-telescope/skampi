@@ -25,16 +25,13 @@ def a_oet():
 
 @given("a subarray in READY state", target_fixture="scan")
 def a_low_subarray_in_ready_state(
-    set_up_subarray_log_checking_for_tmc,
     base_configuration: conf_types.ScanConfiguration,
-    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-    sut_settings: SutTestSettings,
 ) -> conf_types.ScanConfiguration:
     """a subarray in READY state"""
     return base_configuration
 
 @when("I command it to scan for a given period")
-def i_low_command_it_to_scan(
+def i_command_it_to_scan_low(
     configured_subarray: fxt_types.configured_subarray,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,

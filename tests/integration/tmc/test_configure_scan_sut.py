@@ -65,6 +65,7 @@ def the_subarray_must_be_in_ready_state(
     )
 )
 def the_configuration_is_verified_for_csp_sdp_subarray(subarray_id):
+    # TODO: Sdp Subarray updates scan_type attribute value from AssignResources json
     # configure_json = copy.deepcopy(CONFIGURE_JSON_LOW)
     # # sdp_scan_type = assign_config_json["sdp"]["execution_blocks"]["scan_types"][1]["scan_type_id"]
     # csp_config_id = configure_json["csp"]["common"]["config_id"]

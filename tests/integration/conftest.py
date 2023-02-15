@@ -99,15 +99,6 @@ def fxt_online():
     return OnlineFlag()
 
 
-# setting systems online
-def generate_configure_json_for_low(sut_settings: SutTestSettings):
-    template = copy.deepcopy(LOW_CONFIGURE_JSON)
-    # template["csp"]["common"]["config_id"] = f'{sb_id}-{template["sdp"]["scan_type"]}'
-    template["csp"]["common"]["subarray_id"] = sut_settings.subarray_id
-    template["tmc"]["scan_duration"] = sut_settings.scan_duration
-    return json.dump(template)
-
-
 @pytest.fixture(
     name="set_session_exec_settings", autouse=True, scope="session"
 )
@@ -220,6 +211,15 @@ def the_telescope_is_on(
             entry_point.set_telescope_to_running()
 
 
+# for SUT 2.2 scenario: Configure happy flow - running_telescope teardown is disabled
+@given("Telescope is in ON state")
+def the_telescope_is_on_state(
+    running_telescope: fxt_types.running_telescope,
+):
+    """I start up the telescope."""
+    running_telescope.disable_automatic_setdown()
+
+
 @when("I switch off the telescope")
 def i_switch_off_the_telescope(
     running_telescope: fxt_types.running_telescope,
@@ -289,9 +289,10 @@ def i_assign_resources_to_it(
             )
 
 
+# for SUT 2.2 scenario: Configure happy flow - running_telescope teardown is disabled
 @given(parsers.parse("the subarray {subarray_id} obsState is IDLE"))
 def the_subarray_is_in_idle(
-    telescope_context: fxt_types.telescope_context,
+    running_telescope: fxt_types.telescope_context,
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
     sb_config: fxt_types.sb_config,
@@ -306,7 +307,7 @@ def the_subarray_is_in_idle(
     sut_settings.sb_config = sb_config
     sut_settings.sbid = sut_settings.sb_config.sbid
     with context_monitoring.context_monitoring():
-        with telescope_context.wait_for_allocating_a_subarray(
+        with running_telescope.wait_for_allocating_a_subarray(
             sut_settings.subarray_id,
             receptors,
             integration_test_exec_settings,
@@ -345,13 +346,14 @@ def i_configure_it_for_a_scan(
             )
 
 
-# fixture for SUT2.2
+# for SUT 2.2 scenario: Configure happy flow
 @when(
     parsers.parse(
         "I issue the configure command with {scan_type} and {scan_configuration} to the subarray {subarray_id}"
     )
 )
-def i_issue_configure_command(
+def i_configure_it_for_a_scan(
+    allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
     base_configuration: conf_types.ScanConfiguration,
@@ -360,25 +362,20 @@ def i_issue_configure_command(
     scan_type: str,
     scan_configuration: str,
     subarray_id: int,
-    subarray_context,
 ):
     """I configure it for a scan."""
-    receptors = sut_settings.receptors
-    sb_id = sut_settings.sbid
+    sub_array_id = allocated_subarray.id
+    receptors = allocated_subarray.receptors
+    sb_id = allocated_subarray.sb_config.sbid
     scan_duration = sut_settings.scan_duration
 
     with context_monitoring.context_monitoring():
-        with subarray_context.wait_for_configuring_a_subarray(
-            integration_test_exec_settings
+        with allocated_subarray.wait_for_configuring_a_subarray(
+            integration_test_exec_settings,
         ):
             entry_point.configure_subarray(
-                sut_settings.subarray_id,
-                receptors,
-                base_configuration,
-                sb_id,
-                scan_duration,
+                sub_array_id, receptors, base_configuration, sb_id, scan_duration
             )
-
 
 # scans
 @when("I command it to scan for a given period")
@@ -405,58 +402,3 @@ def i_release_all_resources_assigned_to_it(
             integration_test_exec_settings
         ):
             entry_point.tear_down_subarray(sub_array_id)
-
-
-@pytest.fixture(name="subarray_context")
-def subarray_context(
-    integration_test_exec_settings: fxt_types.exec_settings,
-    sut_settings: SutTestSettings,
-    base_composition,
-    telescope_context,
-):
-    """Manages the context for subarray."""
-    logger.debug(
-        "Setting up a subarray as part of fixture using the injected entry point:"
-        f"subarray_id: {sut_settings.subarray_id}"
-        f", receptors: {sut_settings.receptors}"
-        f", composition: {base_composition}."
-        f", integration_test_exec_settings: {integration_test_exec_settings}"
-        "Note, subarray will be released automatically at the end of test."
-    )
-    subarray_context = SubarrayContext(
-        telescope_context._test_stack,
-        sut_settings.subarray_id,
-        sut_settings.receptors,
-        base_composition,
-        sut_settings.sb_config,
-        integration_test_exec_settings,
-    )
-    logger.debug(f"pushing assign_resources teardown")
-    telescope_context.push_context_onto_test(
-        assign_resources_tear_down(
-            sut_settings, integration_test_exec_settings
-        )
-    )
-    telescope_context.existing_subarrays[
-        sut_settings.subarray_id
-    ] = subarray_context
-    return subarray_context
-
-
-@contextmanager
-def assign_resources_tear_down(sut_settings, integration_test_exec_settings):
-    logger.debug(f"Inside assignResources teardown")
-    yield
-    builders.clear_supscription_specs()
-    logger.debug(f"clear subscription before teardown")
-    logger.debug(
-        f"subarray_id: {sut_settings.subarray_id}"
-        f", receptors: {sut_settings.receptors}"
-        f", integration_test_exec_settings: {integration_test_exec_settings}"
-    )
-    sub.teardown_subarray(
-        sut_settings.receptors,
-        sut_settings.subarray_id,
-        integration_test_exec_settings,
-    )
-    logger.debug(f"teardown completed")

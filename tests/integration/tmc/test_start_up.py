@@ -250,7 +250,7 @@ def the_sdp_csp_and_dish_must_be_off(
         assert_that(str(result)).is_equal_to("OFF")
 
 
-@then("TMC devices are healthy")
+@then("telescope is in an OK health state")
 def the_tmc_devices_must_be_healthy(sut_settings: conftest.SutTestSettings):
     """the sdp, csp and dish must be on."""
     # tel = names.TEL()

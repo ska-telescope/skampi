@@ -22,7 +22,6 @@ mid-test:
     ODA_URI: "http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
-    TEL: mid
     EXIT_AT_FAIL: "false"
     CAPTURE_LOGS: "True"
     DEBUG_ENTRYPOINT: "True"

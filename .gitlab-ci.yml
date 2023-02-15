@@ -8,10 +8,11 @@ variables:
   INGRESS_HOST: "k8s.stfc.skao.int"
   GIT_SUBMODULE_STRATEGY: recursive
   SKALLOP_VERSION: "2.20.5"
-  K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-ser-skallop:$SKALLOP_VERSION
+  K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-tango-images-pytango-builder:9.3.3
   KUBE_BRANCH: $CI_JOB_ID
   DOMAIN: "branch"
   EXPOSE_All_DS: "true"
+  CONFIG: "common"
 
 stages:
   - build
@@ -53,7 +54,6 @@ build-base-image:
 include:
   # Common template components
   - local: "/.gitlab/ci/common.gitlab-ci.yml"
-  # temp comment out - only test mid
   # # All SKA Low stages
   - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
   # All SKA Mid stages
@@ -78,3 +78,4 @@ include:
   # .post steps
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
+    

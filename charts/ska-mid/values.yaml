@@ -117,10 +117,14 @@ ska-sdp:
   lmc:
     prefix: mid
     nsubarray: 3
-  ska-tango-base:
-    enabled: false
   console:
     enabled: true
+  data-pvc:
+    name: shared
+    create:
+      enabled: true
+      size: 20Gi
+      storageClassName: nfss1
   ska-sdp-qa:
     kafka:
       resources:
@@ -137,6 +141,8 @@ ska-sdp:
         resources:
           requests:
             cpu: 100m
+  ska-tango-base:
+    enabled: false
 
 ## tmc
 tmc-mid:
@@ -149,4 +155,8 @@ ska-tango-archiver:
 
 ## dishmasters
 ska-sim-dishmaster:
+  enabled: true
+
+# alarm-handler
+ska-tango-alarmhandler:
   enabled: true

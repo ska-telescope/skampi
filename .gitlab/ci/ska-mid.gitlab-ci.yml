@@ -18,7 +18,7 @@ mid-test:
     OET_INGRESS_ENABLED: "true"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
-    EXIT_AT_FAIL: "true"
+    EXIT_AT_FAIL: "false"
     CAPTURE_LOGS: "True"
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"

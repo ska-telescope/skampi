@@ -11,6 +11,7 @@ from resources.models.mvp_model.states import ObsState
 from ska_oso_scripting.objects import SubArray
 from .. import conftest
 
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -19,9 +20,11 @@ from .. import conftest
 def test_oet_scan_on_low_subarray():
     """Run a scan on OET low telescope subarray."""
 
+
 @given("an OET")
 def a_oet():
     """an OET"""
+
 
 @given("a subarray in READY state", target_fixture="scan")
 def a_low_subarray_in_ready_state(
@@ -33,6 +36,7 @@ def a_low_subarray_in_ready_state(
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     return base_configuration
+
 
 @when("I command it to scan for a given period")
 def i_command_it_to_scan_low(

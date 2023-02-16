@@ -11,6 +11,7 @@ from resources.models.mvp_model.states import ObsState
 from ska_oso_scripting.objects import SubArray
 from .. import conftest
 
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -19,9 +20,11 @@ from .. import conftest
 def test_oet_scan_on_low_subarray():
     """Run a scan on OET low telescope subarray."""
 
+
 @given("an OET")
 def a_oet():
     """an OET"""
+
 
 @given("a subarray in READY state", target_fixture="scan")
 def a_low_subarray_in_ready_state(
@@ -33,6 +36,7 @@ def a_low_subarray_in_ready_state(
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     return base_configuration
+
 
 @when("I command it to scan for a given period")
 def i_command_it_to_scan_low(
@@ -59,17 +63,20 @@ def the_subarray_must_be_in_the_scanning_state(
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """the subarray must be in the SCANNING state until finished."""
+    recorder = integration_test_exec_settings.recorder
     tel = names.TEL()
-    tmc_subarray_name = tel.tm.subarray(configured_subarray.id)
+    tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
+    occurrences = recorder._occurrences  # type: ignore
+    tmc_state_changes = [
+        occurrence.attr_value
+        for occurrence in occurrences
+        if (
+            (occurrence.attr_name == tmc_subarray_name)
+            & (occurrence.attr_name == "obsstate")
+        )
+    ]
+    assert_that(tmc_state_changes).is_equal_to(["SCANNING", "READY"])
 
-    # afterwards it must be ready
-    context_monitoring.re_init_builder()
-    context_monitoring.wait_for(tmc_subarray_name).for_attribute(
-        "obsstate"
-    ).to_become_equal_to(
-        "READY", ignore_first=False, settings=integration_test_exec_settings
-    )
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(tmc_subarray_name)
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

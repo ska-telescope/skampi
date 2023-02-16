@@ -43,14 +43,9 @@ def i_command_it_to_scan_low(
 ):
     """I configure it for a scan."""
     subarray_id = sut_settings.subarray_id
-    tel = names.TEL()
-    context_monitoring.set_waiting_on(tel.tm.subarray(1)).for_attribute(
-        "obsstate"
-    ).and_observe()
-    with context_monitoring.context_monitoring():
-        with configured_subarray.observe_while_running(integration_test_exec_settings):
-            subarray = SubArray(subarray_id)
-            subarray.scan()
+    with context_monitoring.observe_while_running(integration_test_exec_settings):
+        subarray = SubArray(subarray_id)
+        subarray.scan()
 
 @then("the subarray must be in the SCANNING state until finished")
 def the_sdp_subarray_must_be_in_the_scanning_state(

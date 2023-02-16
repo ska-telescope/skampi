@@ -18,6 +18,7 @@ Feature: Verification of OET scripts being executed successfully during an obser
 	
 
 	#*Scenario: Starting up low telescope*
+	@XTP-18871 @XTP-18866
 	Scenario: Starting up low telescope
 		Given low telescope
 		When I turn telescope to ON state

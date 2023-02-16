@@ -1,7 +1,7 @@
 @XTP-17101
 Feature: Start the SUT's components,assign resources,configure a scan,wait for completion,then check SDP results through the QA interface
 
-  @XTP-17103
+  @XTP-17103 @hello
   Scenario Outline: Run a scan on a subarray - happy flow
     Given the Telescope is in ON state
     And the subarray <subarray_id> obsState is READY

@@ -52,6 +52,25 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
             tmc=self.generate_tmc_scan_config(scan_duration),
         )
 
+    def _generate_low_tmc_scan_config(
+        self, target_id: str | None = 6, scan_duration: float = 10, low_tmc=True
+    ):
+        if target_id is None:
+            target_id = self.next_target_id
+        return ConfigureRequest(
+            interface=self.config_resources_schema,
+            transaction_id="txn-....-00001",
+            sdp=self.generate_sdp_scan_config().as_object,
+            csp=self.generate_csp_scan_config(low_tmc).as_object,
+            tmc=self.generate_tmc_scan_config(scan_duration),
+            mccs=self.generate_mccs_scan_config().as_object,
+        )
+
+    @encoded
+    def generate_low_tmc_scan_config(self, scan_duration: float = 10, low_tmc=True):
+        return self._generate_low_tmc_scan_config(scan_duration, low_tmc)
+    
+
     @encoded
     def generate_assign_resources_config(self, subarray_id: int = 1):
         return self._generate_assign_resources_config(subarray_id)

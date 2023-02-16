@@ -29,6 +29,7 @@ from ska_ser_skallop.mvp_fixtures.context_management import SubarrayContext
 from ska_ser_skallop.mvp_fixtures.fixtures import _setup_env, fxt_types
 from ska_ser_skallop.mvp_management import subarray_composition as sub
 from ska_ser_skallop.mvp_management import telescope_management as tel
+from ska_ser_skallop.mvp_control.configuration.types import Composition
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +84,6 @@ def fxt_conftest_settings() -> SutTestSettings:
 
 
 class OnlineFlag:
-
     value: bool = False
 
     def __bool__(self):
@@ -99,9 +99,7 @@ def fxt_online():
     return OnlineFlag()
 
 
-@pytest.fixture(
-    name="set_session_exec_settings", autouse=True, scope="session"
-)
+@pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
 def fxt_set_session_exec_settings(
     session_exec_settings: fxt_types.session_exec_settings,
 ):
@@ -187,37 +185,17 @@ def i_start_up_the_telescope(
 ):
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(
-            integration_test_exec_settings
-        ):
+        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
 
+@given("Telescope is in ON state")
 @given("the Telescope is in ON state")
 def the_telescope_is_on(
-    standby_telescope: fxt_types.standby_telescope,
-    entry_point: fxt_types.entry_point,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
-):
-    """I start up the telescope."""
-    standby_telescope.disable_automatic_setdown()
-    with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(
-            integration_test_exec_settings
-        ):
-            logger.info("The entry point being used is : %s", entry_point)
-            entry_point.set_telescope_to_running()
-
-
-# for SUT 2.2 scenario: Configure happy flow - running_telescope teardown is disabled
-@given("Telescope is in ON state")
-def the_telescope_is_on_state(
     running_telescope: fxt_types.running_telescope,
 ):
-    """I start up the telescope."""
-    running_telescope.disable_automatic_setdown()
+    "the Telescope is in ON state"
 
 
 @when("I switch off the telescope")
@@ -231,9 +209,7 @@ def i_switch_off_the_telescope(
     # we disable automatic shutdown as this is done by the test itself
     running_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_shutting_down(
-            integration_test_exec_settings
-        ):
+        with running_telescope.wait_for_shutting_down(integration_test_exec_settings):
             entry_point.set_telescope_to_standby()
 
 
@@ -290,35 +266,32 @@ def i_assign_resources_to_it(
 
 
 # for SUT 2.2 scenario: Configure happy flow - running_telescope teardown is disabled
-@given(parsers.parse("the subarray {subarray_id} obsState is IDLE"))
+@given(
+    parsers.parse("the subarray {subarray_id} obsState is IDLE"),
+    target_fixture="allocated_subarray",
+)
 def the_subarray_is_in_idle(
     running_telescope: fxt_types.telescope_context,
-    context_monitoring: fxt_types.context_monitoring,
-    entry_point: fxt_types.entry_point,
     sb_config: fxt_types.sb_config,
-    base_composition,
+    base_composition: Composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
     subarray_id: int,
 ):
-    """I assign resources to it."""
+    """the subarray {subarray_id} obsState is IDLE"""
+    sut_settings.subarray_id = subarray_id
+    receptors = [
+        receptor_id for receptor_id in range(1, sut_settings.nr_of_receptors + 1)
+    ]
 
-    receptors = sut_settings.receptors
-    sut_settings.sb_config = sb_config
-    sut_settings.sbid = sut_settings.sb_config.sbid
-    with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_allocating_a_subarray(
-            sut_settings.subarray_id,
-            receptors,
-            integration_test_exec_settings,
-            release_when_finished=False,
-        ):
-            entry_point.compose_subarray(
-                sut_settings.subarray_id,
-                receptors,
-                base_composition,
-                sut_settings.sbid,
-            )
+    allocated_subarray = running_telescope.allocate_a_subarray(
+        subarray_id,
+        receptors,
+        sb_config,
+        integration_test_exec_settings,
+        base_composition,
+    )
+    return allocated_subarray
 
 
 # scan configuration
@@ -376,6 +349,7 @@ def i_configure_it_for_a_scan(
             entry_point.configure_subarray(
                 sub_array_id, receptors, base_configuration, sb_id, scan_duration
             )
+
 
 # scans
 @when("I command it to scan for a given period")

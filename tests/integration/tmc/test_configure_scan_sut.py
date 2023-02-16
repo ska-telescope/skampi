@@ -42,19 +42,16 @@ def test_tmc_low_subarray_for_configure_a_scan():
 
 @then(parsers.parse("the subarray {subarray_id} obsState is READY"))
 def the_subarray_must_be_in_ready_state(
-    subarray_id,
+    subarray_id: int,
     sut_settings: SutTestSettings,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """the subarray is in READY state."""
-    sut_settings.subarray_id = subarray_id
     tel = names.TEL()
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
         str(tel.tm.subarray(sut_settings.subarray_id))
     )
-    subarray = con_config.get_device_proxy(
-        tel.tm.subarray(sut_settings.subarray_id)
-    )
+    subarray = con_config.get_device_proxy(tel.tm.subarray(subarray_id))
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.READY)
 

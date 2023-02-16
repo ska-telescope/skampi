@@ -127,7 +127,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         elif self._tel.skalow:
             brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
                 "telescopeState"
-            ).to_become_equal_to("OFF", "UNKNOWN", ignore_first=False)
+            ).to_become_equal_to(["OFF", "UNKNOWN"], ignore_first=False)
         return brd
 
     def undo(self):

@@ -36,7 +36,7 @@ DEFAULT_FIELDS = {
         phase_dir=PhaseDir(
             ra=[123.0],
             dec=[-60.0],
-            reference_time="...",
+            reference_time="2023-02-16T01:23:45.678900",
             reference_frame="ICRF3",
         ),
     )

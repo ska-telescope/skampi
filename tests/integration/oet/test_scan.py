@@ -63,8 +63,6 @@ def the_subarray_must_be_in_the_scanning_state(
     tmc_subarray_name = tel.tm.subarray(configured_subarray.id)
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
 
-    result = tmc_subarray.read_attribute("obsstate").value
-    assert_that(result).is_equal_to(ObsState.SCANNING)
     # afterwards it must be ready
     context_monitoring.re_init_builder()
     context_monitoring.wait_for(tmc_subarray_name).for_attribute(

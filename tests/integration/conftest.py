@@ -190,7 +190,6 @@ def i_start_up_the_telescope(
             entry_point.set_telescope_to_running()
 
 
-@given("Telescope is in ON state")
 @given("the Telescope is in ON state")
 def the_telescope_is_on(
     running_telescope: fxt_types.running_telescope,

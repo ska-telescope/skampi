@@ -1,17 +1,12 @@
-"""Assign resources to subarray feature tests."""
-import copy
-import json
+"""Configure low TMC Subarray: Happy flow"""
 import logging
-import os
 
 import pytest
 from assertpy import assert_that
-from pytest_bdd import given, parsers, scenario, then
+from pytest_bdd import parsers, scenario, then
 from resources.models.mvp_model.states import ObsState
-from resources.models.tmc_model.entry_point import CONFIGURE_JSON_LOW
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from ..conftest import SutTestSettings
@@ -27,7 +22,7 @@ logger = logging.getLogger(__name__)
     "Configure for a scan on a subarray - happy flow",
 )
 def test_tmc_low_subarray_for_configure_a_scan():
-    """Configure tmc subarrays in low."""
+    """Configure low tmc subarrays"""
 
 
 # from conftest
@@ -36,7 +31,7 @@ def test_tmc_low_subarray_for_configure_a_scan():
 # from conftest
 # @given(parsers.parse("the subarray {subarray_id} obsState is IDLE")
 
-# using when from conftest
+# from conftest
 # @when(parsers.parse("I issue the configure command with {scan_type} and {scan_configuration} to the subarray {subarray_id}"))
 
 
@@ -63,14 +58,4 @@ def the_subarray_must_be_in_ready_state(
 )
 def the_configuration_is_verified_for_csp_sdp_subarray(subarray_id):
     # TODO: Sdp Subarray updates scan_type attribute value from AssignResources json
-    # configure_json = copy.deepcopy(CONFIGURE_JSON_LOW)
-    # # sdp_scan_type = assign_config_json["sdp"]["execution_blocks"]["scan_types"][1]["scan_type_id"]
-    # csp_config_id = configure_json["csp"]["common"]["config_id"]
-
-    # tel = names.TEL()
-    # # sdpsubarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
-    # cspsubarray = con_config.get_device_proxy(tel.csp.subarray(subarray_id))
-
-    # result_csp = cspsubarray.read_attribute("configurationID").value
-    # assert_that(result_csp).is_equal_to(csp_config_id)
     pass

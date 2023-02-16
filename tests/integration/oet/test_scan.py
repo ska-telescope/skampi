@@ -36,14 +36,18 @@ def a_low_subarray_in_ready_state(
 
 @when("I command it to scan for a given period")
 def i_command_it_to_scan_low(
-    #configured_subarray: fxt_types.configured_subarray,
+    configured_subarray: fxt_types.configured_subarray,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: conftest.SutTestSettings,
 ):
     """I configure it for a scan."""
     subarray_id = sut_settings.subarray_id
-    with context_monitoring.observe_while_running(integration_test_exec_settings):
+    tel = names.TEL()
+    context_monitoring.set_waiting_on(tel.tm.subarray(1)).for_attribute(
+        "obsstate"
+    ).and_observe()
+    with configured_subarray.set_to_scanning(integration_test_exec_settings):
         subarray = SubArray(subarray_id)
         subarray.scan()
 

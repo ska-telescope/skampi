@@ -15,14 +15,14 @@ from ska_ser_skallop.connectors import configuration as con_config
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.startup
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in mid")
 def test_cbf_start_up_telescope_mid():
     """Start up the cbf in mid."""
 
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.startup
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in low")

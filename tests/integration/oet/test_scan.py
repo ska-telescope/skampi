@@ -56,8 +56,12 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
     """the SDP subarray must be in the SCANNING state until finished."""
     tel = names.TEL()
     tmc_subarray_name = tel.tm.subarray(configured_subarray.id)
-    tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
+    tmc_subarray = con_config.get_device_proxy(tmc_subarray_name) 
 
+    context_monitoring.set_waiting_on(tel.tm.subarray(1)).for_attribute(
+        "obsstate"
+    ).to_change_in_order(["SCANNING", "READY"])
+    
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.SCANNING)
     # afterwards it must be ready

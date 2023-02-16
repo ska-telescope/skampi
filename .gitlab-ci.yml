@@ -20,6 +20,8 @@ stages:
   - clean_test_env
   - lint
   - publish
+  - integration
+  - staging
   - deploy_integration
   - clean_integration
   - pages
@@ -54,14 +56,6 @@ build-base-image:
 include:
   # Common template components
   - local: "/.gitlab/ci/common.gitlab-ci.yml"
-  # # All SKA Low stages
-  - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
-  # All SKA Mid stages
-  - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
-  # Jobs to run on PSI Low
-  - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
-  # Jobs to run on PSI Mid
-  - local: "/.gitlab/ci/psi-mid.gitlab-ci.yml"
 
   # Helm Charts
   - project: "ska-telescope/templates-repository"
@@ -74,6 +68,18 @@ include:
   # release steps
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/release.gitlab-ci.yml"
+
+  # integration and staging
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/deploy.integration.gitlab-ci.yml"
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/deploy.staging.gitlab-ci.yml"
+  
+  # Deployments
+  #- local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
+  - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
+  - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
+  - local: "/.gitlab/ci/psi-mid.gitlab-ci.yml"
 
   # .post steps
   - project: "ska-telescope/templates-repository"

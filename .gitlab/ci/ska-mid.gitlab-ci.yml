@@ -1,158 +1,83 @@
+---
 # ################################################
 # # SKA Mid CI Stages
 # ################################################
 
-# mid merge blocking job - must pass for pipeline success
-mid-test:
-  stage: test
-  variables:
-    CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
-    DISABLE_MAINTAIN_ON: "True"
-    OET_INGRESS_ENABLED: "true"
-    TEST_ENV: "BUILD_IN"
-    ATTR_SYNCH_ENABLED_GLOBALLY: "True"
-    EXIT_AT_FAIL: "false"
-    CAPTURE_LOGS: "True"
-    DEBUG_ENTRYPOINT: "True"
-    DEBUG_ENTRYPOINT_EXTENDED: "True"
-    LIVE_LOGGING_EXTENDED: "True"
-    COUNT: 1
-
-  extends:
-    - .tags_default
-    - .set_dbname
-  script:
-    - !reference [.deploy_chart_before, before_script]
-    - !reference [.test_deployment, script]
-    - !reference [.uninstall_chart, script]
-  environment:
-    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/report.xml
-    when: always
-  retry: 1
-
-clean-mid-test:
-  stage: clean_test_env
-  variables:
-    CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
-    COUNT: 1
-    DISABLE_MAINTAIN_ON: "True"
-    TEST_ENV: "BUILD_OUT"
-    TEL: mid
-  extends:
-    - .set_dbname
-    - .tags_default
-  script:
-    - !reference [.uninstall_chart_after, after_script]
-  when: always
-  environment:
-    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-  allow_failure: true
-
-# teardown integration on stop
-mid_uninstall_integration:
-  stage: deploy_integration
-  extends:
-    - .tags_default
-    - .uninstall_chart
-  variables:
-    CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "integration-$CONFIG"
-    KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
-    SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
-    ARCHIVER_DBNAME: "integration_${CONFIG}_archiver_db"
-    KEEP_NAMESPACE: "true"
-  rules:
-    - if: $DELETE == "true"
-      when: manual
-  allow_failure: true
-  environment:
-    name: "integration-mid"
-    action: stop
-
-# deploy mid staging on tag
-mid_deploy_staging:
-  stage: deploy_staging
-  extends:
-    - .tags_default
-    - .uninstall_chart_before
-    - .deploy_chart
-  variables:
-    CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    HELM_RELEASE: "staging-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "staging-$CONFIG"
-    KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
-    SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
-    ARCHIVER_DBNAME: "staging_${CONFIG}_archiver_db"
-    MARK: "not infra"
-    KEEP_NAMESPACE: "true"
-  environment:
-    name: "staging-mid"
-    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    kubernetes:
-      # This repetition is needed for gitlab to parse the namespace correctly
-      namespace: $KUBE_NAMESPACE
-    on_stop: mid_uninstall_staging
-  rules:
-    - if: $CI_COMMIT_TAG
-
-# teardown staging on stop
-mid_uninstall_staging:
-  stage: deploy_staging
-  extends:
-    - .tags_default
-    - .uninstall_chart
-  variables:
-    CONFIG: mid
-    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    HELM_RELEASE: "staging-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "staging-$CONFIG"
-    KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
-    SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"
-    ARCHIVER_DBNAME: "staging_${CONFIG}_archiver_db"
-    KEEP_NAMESPACE: "true"
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: manual
-    - if: $DELETE == "true"
-      when: manual
-  environment:
-    name: "staging-mid"
-    action: stop
-  allow_failure: true
+# TODO: Uncomment this
+#mid-test:
+#  stage: test
+#  variables:
+#    CONFIG: mid
+#    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+#    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+#    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+#    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
+#    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
+#    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
+#    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+#    DISABLE_MAINTAIN_ON: "True"
+#    OET_INGRESS_ENABLED: "true"
+#    TEST_ENV: "BUILD_IN"
+#    ATTR_SYNCH_ENABLED_GLOBALLY: "True"
+#    EXIT_AT_FAIL: "false"
+#    CAPTURE_LOGS: "True"
+#    DEBUG_ENTRYPOINT: "True"
+#    DEBUG_ENTRYPOINT_EXTENDED: "True"
+#    LIVE_LOGGING_EXTENDED: "True"
+#    COUNT: 1
+#  extends:
+#    - .tags_default
+#    - .set_dbname
+#  script:
+#    - !reference [.deploy_chart_before, before_script]
+#    - !reference [.test_deployment, script]
+#  environment:
+#    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
+#    kubernetes:
+#      # This repetition is needed for gitlab to parse the namespace correctly
+#      namespace: $KUBE_NAMESPACE
+#    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+#  artifacts:
+#    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+#    paths:
+#      - "build/"
+#    reports:
+#      junit: build/report.xml
+#    when: always
+#  retry: 1
+#  rules: # TODO: Remove this
+#    - when: manual
+#
+#clean-mid-test:
+#  stage: clean_test_env
+#  variables:
+#    CONFIG: mid
+#    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+#    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+#    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+#    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
+#    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
+#    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
+#    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+#    COUNT: 1
+#    DISABLE_MAINTAIN_ON: "True"
+#    TEST_ENV: "BUILD_OUT"
+#    TEL: mid
+#  extends:
+#    - .set_dbname
+#    - .tags_default
+#  script:
+#    - !reference [.uninstall_chart_after, after_script]
+#  when: always
+#  environment:
+#    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
+#    kubernetes:
+#      # This repetition is needed for gitlab to parse the namespace correctly
+#      namespace: $KUBE_NAMESPACE
+#    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+#  allow_failure: true
+#  rules: # TODO: Remove this
+#    - when: manual
 
 # Mid on-demand deployment
 mid_on_demand_deploy:
@@ -187,3 +112,125 @@ mid_on_demand_deploy:
       junit: build/report.xml
   when: manual
   allow_failure: true
+
+# Mid integration
+.mid-integration-config:
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: ska-$CONFIG
+    K8S_CHART: $DEPLOYMENT_CONFIGURATION
+    KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
+    KUBE_NAMESPACE_SDP: integration-$CI_PROJECT_NAME-$CONFIG-sdp
+    HELM_RELEASE: $CONFIG
+    SERVICE_ACCOUNT: integration-$CONFIG-sa
+    ARCHIVER_DBNAME: integration-$CONFIG-archiver_db
+    INGRESS_HOST: k8s.stfc.skao.int
+    KEEP_NAMESPACE: "true"
+  environment:
+    name: integration-$CI_PROJECT_NAME-$CONFIG
+  rules: # TODO: Remove this
+    - when: manual
+
+deploy-integration:
+  extends:
+    - .mid-integration-config
+  variables:
+    KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
+  after_script:
+    - make skampi-links
+  environment:
+    name: integration-$CI_PROJECT_NAME-$CONFIG
+  #needs:
+  #  - mid-test
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+  rules: # TODO: Remove this
+    - when: manual
+
+info-integration:
+  extends:
+    - .mid-integration-config
+  variables:
+    KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
+  environment:
+    name: integration-$CI_PROJECT_NAME-$CONFIG
+  rules: # TODO: Remove this
+    - when: manual
+
+stop-integration:
+  extends:
+    - .mid-integration-config
+  variables:
+    KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
+  environment:
+    name: integration-$CI_PROJECT_NAME-$CONFIG
+  rules: # TODO: Remove this
+    - when: manual
+
+redeploy-integration:
+  extends:
+    - .mid-integration-config
+  variables:
+    KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
+  environment:
+    name: integration-$CI_PROJECT_NAME-$CONFIG
+  rules: # TODO: Remove this
+    - when: manual
+
+## Mid staging
+#.mid-staging-config:
+#  variables:
+#    CONFIG: mid
+#    DEPLOYMENT_CONFIGURATION: ska-$CONFIG
+#    K8S_CHART: $DEPLOYMENT_CONFIGURATION
+#    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+#    KUBE_NAMESPACE_SDP: staging-$CI_PROJECT_NAME-$CONFIG-sdp
+#    HELM_RELEASE: staging-$CONFIG-$CI_JOB_ID
+#    SERVICE_ACCOUNT: staging-svc-$CI_PROJECT_NAME
+#    ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
+#  environment:
+#    name: "staging-$CI_PROJECT_NAME-$CONFIG"
+#  after_script:
+#    - make skampi-links
+#  rules:
+#    - when: manual
+#
+#deploy-staging:
+#  extends:
+#    - .mid-staging-config
+#  variables:
+#    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+#  environment:
+#    name: "staging-$CI_PROJECT_NAME-$CONFIG"
+#  rules:
+#    - when: manual
+#  artifacts:
+#    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+#    paths:
+#      - "build/"
+#    reports:
+#      junit: build/report.xml
+#
+#info-staging:
+#  extends:
+#    - .mid-staging-config
+#  variables:
+#    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+#  environment:
+#    name: "staging-$CI_PROJECT_NAME-$CONFIG"
+#  rules:
+#    - when: manual
+#
+#stop-staging:
+#  extends:
+#    - .mid-staging-config
+#  variables:
+#    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+#  environment:
+#    name: "staging-$CI_PROJECT_NAME-$CONFIG"
+#  rules:
+#    - when: manual

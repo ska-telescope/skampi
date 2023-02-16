@@ -29,6 +29,14 @@ def test_tmc_configure_scan_on_low_subarray():
     """Configure scan on TMC low telescope subarray."""
 
 
+
+@pytest.mark.skamid
+@pytest.mark.configure
+@pytest.mark.tmc
+@scenario("features/tmc_configure_scan.feature", "Abort configuring")
+def test_abort_configure_scan_on_tmc_subarray_in_mid():
+    """Abort configuring."""
+
 @given("an TMC")
 def a_tmc():
     """an TMC"""

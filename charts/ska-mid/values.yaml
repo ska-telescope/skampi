@@ -88,7 +88,7 @@ ska-oso-oet:
     image:
       registry: registry.gitlab.com
       image: ska-telescope/oso/ska-oso-oet/ska-oso-oet
-      tag: 4.0.7-dev.c8591194b
+      tag: 4.0.7-dev.cf0a0620c
     ingress:
       enabled: false
     oda:

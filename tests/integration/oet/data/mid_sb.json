@@ -162,91 +162,11 @@
     "execution_block": {
       "eb_id": "eb-mvp01-20200325-00001",
       "max_length": 100.0,
-      "context": {
-        "foo": "bar",
-        "baz": 123
-      },
+      "context": {},
       "beams": [
         {
           "beam_id": "vis0",
           "function": "visibilities"
-        },
-        {
-          "beam_id": "pss1",
-          "search_beam_id": 1,
-          "function": "pulsar search"
-        },
-        {
-          "beam_id": "pss2",
-          "search_beam_id": 2,
-          "function": "pulsar search"
-        },
-        {
-          "beam_id": "pst1",
-          "timing_beam_id": 1,
-          "function": "pulsar search"
-        },
-        {
-          "beam_id": "pst2",
-          "timing_beam_id": 2,
-          "function": "pulsar search"
-        },
-        {
-          "beam_id": "vlbi",
-          "vlbi_beam_id": 1,
-          "function": "vlbi"
-        }
-      ],
-      "scan_types": [
-        {
-          "scan_type_id": ".default",
-          "beams": [
-            {
-              "beam_id": "vis0",
-              "channels_id": "vis_channels",
-              "polarisations_id": "all"
-            },
-            {
-              "beam_id": "pss1",
-              "field_id": "M83",
-              "channels_id": "pulsar_channels",
-              "polarisations_id": "all"
-            },
-            {
-              "beam_id": "pss2",
-              "field_id": "Polaris Australis",
-              "channels_id": "pulsar_channels",
-              "polarisations_id": "all"
-            },
-            {
-              "beam_id": "pst1",
-              "field_id": "M83",
-              "channels_id": "pulsar_channels",
-              "polarisations_id": "all"
-            },
-            {
-              "beam_id": "pst2",
-              "field_id": "Polaris Australis",
-              "channels_id": "pulsar_channels",
-              "polarisations_id": "all"
-            },
-            {
-              "beam_id": "vlbi",
-              "field_id": "Polaris Australis",
-              "channels_id": "vlbi_channels",
-              "polarisations_id": "all"
-            }
-          ]
-        },
-        {
-          "scan_type_id": ".default",
-          "derive_from": ".default",
-          "beams": [
-            {
-              "beam_id": "vis0",
-              "field_id": "M83"
-            }
-          ]
         }
       ],
       "channels": [
@@ -266,44 +186,30 @@
                 [744, 2],
                 [944, 3]
               ]
-            },
-            {
-              "spectral_window_id": "fsp_2_channels",
-              "count": 744,
-              "start": 2000,
-              "stride": 1,
-              "freq_min": 360000000,
-              "freq_max": 368000000,
-              "link_map": [
-                [2000, 4],
-                [2200, 5]
-              ]
-            },
-            {
-              "spectral_window_id": "zoom_window_1",
-              "count": 744,
-              "start": 4000,
-              "stride": 1,
-              "freq_min": 360000000,
-              "freq_max": 361000000,
-              "link_map": [
-                [4000, 6],
-                [4200, 7]
-              ]
             }
           ]
+        }
+      ],
+      "scan_types": [
+        {
+          "beams": [
+            {
+              "beam_id": "vis0",
+              "channels_id": "vis_channels",
+              "polarisations_id": "all"
+            }
+          ],
+          "scan_type_id": ".default"
         },
         {
-          "channels_id": "pulsar_channels",
-          "spectral_windows": [
+          "derive_from": ".default",
+          "beams": [
             {
-              "spectral_window_id": "pulsar_fsp_channels",
-              "count": 744,
-              "start": 0,
-              "freq_min": 350000000,
-              "freq_max": 368000000
+              "beam_id": "vis0",
+              "field_id": "M83"
             }
-          ]
+          ],
+          "scan_type_id": "target:a"
         }
       ],
       "polarisations": [
@@ -320,67 +226,18 @@
           "sbi-mvp01-20200325-00001"
         ],
         "script": {
-          "version": "0.1.0",
-          "name": "vis_receive",
-          "kind": "realtime"
+          "kind": "realtime",
+          "version": "0.5.0",
+          "name": "test-receive-addresses"
         },
         "parameters": {}
-      },
-      {
-        "pb_id": "pb-mvp01-20200325-00002",
-        "sbi_ids": [
-          "sbi-mvp01-20200325-00001"
-        ],
-        "script": {
-          "version": "0.1.0",
-          "name": "test_realtime",
-          "kind": "realtime"
-        },
-        "parameters": {}
-      },
-      {
-        "pb_id": "pb-mvp01-20200325-00003",
-        "sbi_ids": [
-          "sbi-mvp01-20200325-00001"
-        ],
-        "script": {
-          "version": "0.1.0",
-          "name": "ical",
-          "kind": "batch"
-        },
-        "parameters": {},
-        "dependencies": [
-          {
-            "pb_id": "pb-mvp01-20200325-00001",
-            "kind": [
-              "visibilities"
-            ]
-          }
-        ]
-      },
-      {
-        "pb_id": "pb-mvp01-20200325-00004",
-        "sbi_ids": [
-          "sbi-mvp01-20200325-00001"
-        ],
-        "script": {
-          "version": "0.1.0",
-          "name": "dpreb",
-          "kind": "batch"
-        },
-        "parameters": {},
-        "dependencies": [
-          {
-            "pb_id": "pb-mvp01-20200325-00003",
-            "kind": ["calibration"]
-          }
-        ]
       }
     ],
     "resources": {
-      "csp_links": [1, 2],
-      "receptors": ["FS4", "FS8", "FS16"],
-      "receive_nodes": 10
+      "receptors": [
+        "SKA0001",
+        "SKA0002"
+      ]
     }
   },
   "csp_configurations": [

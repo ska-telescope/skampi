@@ -15,6 +15,9 @@ from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
+    AbortStep,
+    ObsResetStep,
+
 )
 from ska_ser_skallop.utils.nrgen import get_id
 

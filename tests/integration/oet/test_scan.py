@@ -9,7 +9,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 from ska_oso_scripting.objects import SubArray
-from ..conftest import SutTestSettings
+from .. import conftest
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -26,8 +26,12 @@ def a_oet():
 @given("a subarray in READY state", target_fixture="scan")
 def a_low_subarray_in_ready_state(
     base_configuration: conf_types.ScanConfiguration,
+    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
+    sut_settings: conftest.SutTestSettings,
 ) -> conf_types.ScanConfiguration:
     """a subarray in READY state"""
+    subarray_allocation_spec.receptors = sut_settings.receptors
+    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     return base_configuration
 
 @when("I command it to scan for a given period")
@@ -36,9 +40,10 @@ def i_command_it_to_scan_low(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
     allocated_subarray: fxt_types.allocated_subarray,
+    sut_settings: conftest.SutTestSettings,
 ):
     """I configure it for a scan."""
-    subarray_id = allocated_subarray.id
+    subarray_id = sut_settings.subarray_id
     with context_monitoring.context_monitoring():
         with configured_subarray.scan(
                 integration_test_exec_settings

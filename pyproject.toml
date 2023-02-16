@@ -23,12 +23,11 @@ pytest-timeout = "^2.0.2"
 pytest-ordering = "^0.6"
 pipe = "^1.6.0"
 ska-ser-skallop = "2.22.0"
-ska-oso-oet = "4.0.6"
 atlassian-python-api = "^3.25.0"
-ska-tmc-cdm = "7.2.0"
-ska-oso-scripting = "6.1.0"
+ska-tmc-cdm = "7.3.1"
+ska-oso-scripting = "7.0.0"
 ska-oso-oet-client = "^1.0.0"
-ska-db-oda = "^1.5.1"
+ska-db-oda = "^1.6.1"
 
 [[tool.poetry.source]]
 name = 'ska'

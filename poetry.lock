@@ -40,6 +40,19 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
+name = "appdirs"
+version = "1.4.4"
+description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
 name = "appnope"
 version = "0.1.3"
 description = "Disable App Nap on macOS >= 10.9"
@@ -468,6 +481,19 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
+name = "docopt"
+version = "0.6.2"
+description = "Pythonic argument parser, that will make you smile"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
 name = "execnet"
 version = "1.9.0"
 description = "execnet: rapid multi-Python deployment"
@@ -520,7 +546,7 @@ reference = 'ska'
 
 [[package]]
 name = "flask"
-version = "2.2.2"
+version = "2.2.3"
 description = "A simple framework for building complex web applications."
 category = "main"
 optional = false
@@ -571,20 +597,15 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
-name = "gitpython"
-version = "3.1.30"
-description = "GitPython is a python library used to interact with Git repositories"
+name = "GitPython"
+version = "3.1.31"
+description = "GitPython is a Python library used to interact with Git repositories"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
 gitdb = ">=4.0.1,<5"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
 
 [[package]]
 name = "glob2"
@@ -829,6 +850,25 @@ pyrsistent = ">=0.14.0,<0.17.0 || >0.17.0,<0.17.1 || >0.17.1,<0.17.2 || >0.17.2"
 [package.extras]
 format = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3987", "uri-template", "webcolors (>=1.11)"]
 format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "uri-template", "webcolors (>=1.11)"]
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
+name = "jsonschema-spec"
+version = "0.1.3"
+description = "JSONSchema Spec with object-oriented paths"
+category = "main"
+optional = false
+python-versions = ">=3.7.0,<4.0.0"
+
+[package.dependencies]
+jsonschema = ">=4.0.0,<5.0.0"
+pathable = ">=0.4.1,<0.5.0"
+PyYAML = ">=5.1"
+typing-extensions = ">=4.3.0,<5.0.0"
 
 [package.source]
 type = "legacy"
@@ -1117,19 +1157,15 @@ reference = 'ska'
 
 [[package]]
 name = "openapi-schema-validator"
-version = "0.2.3"
+version = "0.4.3"
 description = "OpenAPI schema validation for Python"
 category = "main"
 optional = false
 python-versions = ">=3.7.0,<4.0.0"
 
 [package.dependencies]
-jsonschema = ">=3.0.0,<5.0.0"
-
-[package.extras]
-isodate = ["isodate"]
-rfc3339-validator = ["rfc3339-validator"]
-strict-rfc3339 = ["strict-rfc3339"]
+jsonschema = ">=4.0.0,<5.0.0"
+rfc3339-validator = "*"
 
 [package.source]
 type = "legacy"
@@ -1138,17 +1174,17 @@ reference = 'ska'
 
 [[package]]
 name = "openapi-spec-validator"
-version = "0.4.0"
-description = "OpenAPI 2.0 (aka Swagger) and OpenAPI 3.0 spec validator"
+version = "0.5.5"
+description = "OpenAPI 2.0 (aka Swagger) and OpenAPI 3 spec validator"
 category = "main"
 optional = false
 python-versions = ">=3.7.0,<4.0.0"
 
 [package.dependencies]
-jsonschema = ">=3.2.0,<5.0.0"
-openapi-schema-validator = ">=0.2.0,<0.3.0"
-PyYAML = ">=5.1"
-setuptools = "*"
+jsonschema = ">=4.0.0,<5.0.0"
+jsonschema-spec = ">=0.1.1,<0.2.0"
+lazy-object-proxy = ">=1.7.1,<2.0.0"
+openapi-schema-validator = ">=0.4.2,<0.5.0"
 
 [package.extras]
 requests = ["requests"]
@@ -1176,11 +1212,14 @@ reference = 'ska'
 
 [[package]]
 name = "packaging"
-version = "23.0"
+version = "21.3"
 description = "Core utilities for Python packages"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.6"
+
+[package.dependencies]
+pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
 
 [package.source]
 type = "legacy"
@@ -1232,6 +1271,19 @@ python-versions = ">=3.6"
 [package.extras]
 qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
 testing = ["docopt", "pytest (<6.0.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
+name = "pathable"
+version = "0.4.3"
+description = "Object-oriented paths"
+category = "main"
+optional = false
+python-versions = ">=3.7.0,<4.0.0"
 
 [package.source]
 type = "legacy"
@@ -1329,7 +1381,7 @@ reference = 'ska'
 
 [[package]]
 name = "prance"
-version = "0.21.8.0"
+version = "0.22.11.4.0"
 description = "Resolving Swagger/OpenAPI 2.0 and 3.0.0 Parser"
 category = "main"
 optional = false
@@ -1337,6 +1389,8 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 chardet = ">=3.0,<5.0"
+openapi-spec-validator = {version = ">=0.5.1,<0.6.0", optional = true, markers = "extra == \"osv\""}
+packaging = ">=21.3,<22.0"
 requests = ">=2.25,<3.0"
 "ruamel.yaml" = ">=0.17.10,<0.18.0"
 semver = ">=2.13,<3.0"
@@ -1347,7 +1401,7 @@ cli = ["click (>=7.0,<8.0)"]
 dev = ["bumpversion (>=0.6)", "pytest (>=6.1)", "pytest-cov (>=2.11)", "sphinx (>=3.4)", "towncrier (>=19.2)", "tox (>=3.4)"]
 flex = ["flex (>=6.13,<7.0)"]
 icu = ["PyICU (>=2.4,<3.0)"]
-osv = ["openapi-spec-validator (>=0.2.1)"]
+osv = ["openapi-spec-validator (>=0.5.1,<0.6.0)"]
 ssv = ["swagger-spec-validator (>=2.4,<3.0)"]
 
 [package.source]
@@ -1365,6 +1419,22 @@ python-versions = ">=3.6.2"
 
 [package.dependencies]
 wcwidth = "*"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
+name = "psutil"
+version = "5.9.4"
+description = "Cross-platform lib for process and system monitoring in Python."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.extras]
+test = ["enum34", "ipaddress", "mock", "pywin32", "wmi"]
 
 [package.source]
 type = "legacy"
@@ -1591,6 +1661,22 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
+name = "pyparsing"
+version = "3.0.9"
+description = "pyparsing module - Classes and methods to define and execute parsing grammars"
+category = "main"
+optional = false
+python-versions = ">=3.6.8"
+
+[package.extras]
+diagrams = ["jinja2", "railroad-diagrams"]
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
 name = "pypubsub"
 version = "4.0.3"
 description = "Python Publish-Subscribe Package"
@@ -1618,14 +1704,20 @@ reference = 'ska'
 
 [[package]]
 name = "pytango"
-version = "9.3.3"
+version = "9.4.0"
 description = "A python binding for the Tango control system"
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = ">=3.6"
 
 [package.dependencies]
-six = ">=1.10"
+numpy = ">=1.13.3"
+packaging = "*"
+psutil = "*"
+
+[package.extras]
+gevent = ["gevent (>=20.0)"]
+tests = ["gevent (>=20)", "pytest", "pytest-forked"]
 
 [package.source]
 type = "legacy"
@@ -1856,6 +1948,27 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
+name = "python-gitlab"
+version = "3.13.0"
+description = "Interact with GitLab API"
+category = "main"
+optional = false
+python-versions = ">=3.7.0"
+
+[package.dependencies]
+requests = ">=2.25.0"
+requests-toolbelt = ">=0.10.1"
+
+[package.extras]
+autocompletion = ["argcomplete (>=1.10.0,<3)"]
+yaml = ["PyYaml (>=5.2)"]
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
 name = "python-graphql-client"
 version = "0.4.3"
 description = "Python GraphQL Client"
@@ -1926,6 +2039,38 @@ requests = ">=2.0.0"
 
 [package.extras]
 rsa = ["oauthlib[signedtoken] (>=3.0.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
+name = "requests-toolbelt"
+version = "0.10.1"
+description = "A utility belt for advanced users of python-requests"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+requests = ">=2.0.1,<3.0.0"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
+name = "rfc3339-validator"
+version = "0.1.4"
+description = "A pure python RFC3339 validator"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[package.dependencies]
+six = "*"
 
 [package.source]
 type = "legacy"
@@ -2012,7 +2157,7 @@ reference = 'ska'
 
 [[package]]
 name = "setuptools"
-version = "67.3.1"
+version = "67.3.2"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "main"
 optional = false
@@ -2043,7 +2188,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-db-oda"
-version = "1.5.1"
+version = "1.6.1"
 description = "SKA Database OSO Data Archive"
 category = "main"
 optional = false
@@ -2054,13 +2199,12 @@ connexion = ">=2.14.0,<3.0.0"
 fire = ">=0.4.0,<0.5.0"
 gunicorn = ">=20.1.0,<21.0.0"
 mistune = "0.8.4"
-openapi-spec-validator = ">=0.4.0,<0.5.0"
-prance = ">=0.21.8.0,<0.22.0.0"
+prance = {version = ">=0.22.11,<0.23.0", extras = ["osv"]}
 psycopg = {version = ">=3.0.15,<4.0.0", extras = ["binary"]}
 psycopg-pool = ">=3.1.1,<4.0.0"
 python-dateutil = ">=2.8.2,<3.0.0"
 requests = ">=2.27.1,<3.0.0"
-ska-oso-pdm = ">=9.0.0,<10.0.0"
+ska-oso-pdm = ">=10.0.1,<11.0.0"
 ska-ser-logging = ">=0.4.1,<0.5.0"
 swagger-ui-bundle = ">=0.0.9,<0.0.10"
 
@@ -2074,7 +2218,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-oso-oet"
-version = "4.0.6"
+version = "4.0.3"
 description = "SKA Observation Execution Tool"
 category = "main"
 optional = false
@@ -2086,7 +2230,7 @@ Flask = ">=2.0.3,<3.0.0"
 GitPython = ">=3.1.27,<4.0.0"
 jsonpickle = ">=2.1.0,<3.0.0"
 PyPubSub = ">=4.0.3,<5.0.0"
-pytango = "9.3.3"
+pytango = ">=9.3.3,<10.0.0"
 requests = ">=2.27.1,<3.0.0"
 ska-ser-logging = ">=0.4.1,<0.5.0"
 ska-ser-skuid = ">=3.3.3,<4.0.0"
@@ -2121,7 +2265,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-oso-pdm"
-version = "9.0.0"
+version = "10.0.1"
 description = "SKA Project Data Model serialisation library"
 category = "main"
 optional = false
@@ -2142,7 +2286,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-oso-scripting"
-version = "6.1.0"
+version = "7.0.0"
 description = "SKA OSO Scripting Library"
 category = "main"
 optional = false
@@ -2151,12 +2295,12 @@ python-versions = ">=3.10,<4.0"
 [package.dependencies]
 pytango = ">=9.3.3,<10.0.0"
 ska-oso-oet = "*"
-ska-oso-pdm = ">=9.0.0,<10.0.0"
+ska-oso-pdm = ">=10.0.1,<11.0.0"
 ska-ser-log-transactions = ">=0.2.2,<0.3.0"
 ska-ser-logging = ">=0.4.1,<0.5.0"
 ska-ser-skuid = ">=3.2.1,<4.0.0"
 ska-tango-base = ">=0.13.0,<0.13.4"
-ska-tmc-cdm = ">=7.2.0,<8.0.0"
+ska-tmc-cdm = ">=7.3.1,<8.0.0"
 
 [package.source]
 type = "legacy"
@@ -2281,18 +2425,20 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
-name = "ska-telescope-model"
-version = "1.3.1"
+name = "ska-telmodel"
+version = "1.5.0"
 description = "SKA telescope model library"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7.2,<4.0.0"
 
 [package.dependencies]
-schema = "*"
-
-[package.extras]
-dev = ["isort", "prospector[with_pyroma]", "yapf"]
+appdirs = ">=1.4.4,<2.0.0"
+docopt = ">=0.6.2,<0.7.0"
+python-gitlab = ">=3.8.0,<4.0.0"
+pyyaml = ">=6.0,<7.0"
+schema = ">=0.7.5,<0.8.0"
+toolz = ">=0.12.0,<0.13.0"
 
 [package.source]
 type = "legacy"
@@ -2301,7 +2447,7 @@ reference = 'ska'
 
 [[package]]
 name = "ska-tmc-cdm"
-version = "7.2.0"
+version = "7.3.1"
 description = "SKA Control Data Model serialisation library"
 category = "main"
 optional = false
@@ -2313,7 +2459,7 @@ deepdiff = ">=5.8.1,<6.0.0"
 marshmallow = ">=3.18.0,<4.0.0"
 marshmallow-enum = ">=1.5.1,<2.0.0"
 marshmallow-oneofschema = ">=3.0.1,<4.0.0"
-ska-telescope-model = ">=1.3.1,<2.0.0"
+ska-telmodel = ">=1.5.0,<2.0.0"
 
 [package.source]
 type = "legacy"
@@ -2444,6 +2590,19 @@ description = "Style preserving TOML library"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
+name = "toolz"
+version = "0.12.0"
+description = "List processing tools and functional utilities"
+category = "main"
+optional = false
+python-versions = ">=3.5"
 
 [package.source]
 type = "legacy"
@@ -2627,7 +2786,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "64271f55ec1ad85b197e4c8d264e9ad4db53b6925557f157349d9a2e0b2adda2"
+content-hash = "20eef5d3d7edf2098691f4d05901c120856a456a77e9d079fbb99c4bacc506b2"
 
 [metadata.files]
 aiohttp = [
@@ -2722,6 +2881,10 @@ aiohttp = [
 aiosignal = [
     {file = "aiosignal-1.3.1-py3-none-any.whl", hash = "sha256:f8376fb07dd1e86a584e4fcdec80b36b7f81aac666ebc724e2c090300dd83b17"},
     {file = "aiosignal-1.3.1.tar.gz", hash = "sha256:54cd96e15e1649b75d6c87526a6ff0b6c1b0dd3459f43d9ca11d48c339b68cfc"},
+]
+appdirs = [
+    {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
+    {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
 ]
 appnope = [
     {file = "appnope-0.1.3-py2.py3-none-any.whl", hash = "sha256:265a455292d0bd8a72453494fa24df5a11eb18373a60c7c0430889f22548605e"},
@@ -2999,6 +3162,9 @@ dill = [
     {file = "dill-0.3.6-py3-none-any.whl", hash = "sha256:a07ffd2351b8c678dfc4a856a3005f8067aea51d6ba6c700796a4d9e280f39f0"},
     {file = "dill-0.3.6.tar.gz", hash = "sha256:e5db55f3687856d8fbdab002ed78544e1c4559a130302693d839dfe8f93f2373"},
 ]
+docopt = [
+    {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
+]
 execnet = [
     {file = "execnet-1.9.0-py2.py3-none-any.whl", hash = "sha256:a295f7cc774947aac58dde7fdc85f4aa00c42adf5d8f5468fc630c1acf30a142"},
     {file = "execnet-1.9.0.tar.gz", hash = "sha256:8f694f3ba9cc92cab508b152dcfe322153975c29bda272e2fd7f3f00f36e47c5"},
@@ -3011,8 +3177,7 @@ flake8 = [
     {file = "flake8-4.0.1.tar.gz", hash = "sha256:806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d"},
 ]
 flask = [
-    {file = "Flask-2.2.2-py3-none-any.whl", hash = "sha256:b9c46cc36662a7949f34b52d8ec7bb59c0d74ba08ba6cb9ce9adc1d8676d9526"},
-    {file = "Flask-2.2.2.tar.gz", hash = "sha256:642c450d19c4ad482f96729bd2a8f6d32554aa1e231f4f6b4e7e5264b16cca2b"},
+    {file = "Flask-2.2.3-py3-none-any.whl", hash = "sha256:c0bec9477df1cb867e5a67c9e1ab758de9cb4a3e52dd70681f59fa40a62b3f2d"},
 ]
 frozenlist = [
     {file = "frozenlist-1.3.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:ff8bf625fe85e119553b5383ba0fb6aa3d0ec2ae980295aaefa552374926b3f4"},
@@ -3094,9 +3259,9 @@ gitdb = [
     {file = "gitdb-4.0.10-py3-none-any.whl", hash = "sha256:c286cf298426064079ed96a9e4a9d39e7f3e9bf15ba60701e95f5492f28415c7"},
     {file = "gitdb-4.0.10.tar.gz", hash = "sha256:6eb990b69df4e15bad899ea868dc46572c3f75339735663b81de79b06f17eb9a"},
 ]
-gitpython = [
-    {file = "GitPython-3.1.30-py3-none-any.whl", hash = "sha256:cd455b0000615c60e286208ba540271af9fe531fa6a87cc590a7298785ab2882"},
-    {file = "GitPython-3.1.30.tar.gz", hash = "sha256:769c2d83e13f5d938b7688479da374c4e3d49f71549aaf462b646db9602ea6f8"},
+GitPython = [
+    {file = "GitPython-3.1.31-py3-none-any.whl", hash = "sha256:f04893614f6aa713a60cbbe1e6a97403ef633103cdd0ef5eb6efe0deb98dbe8d"},
+    {file = "GitPython-3.1.31.tar.gz", hash = "sha256:8ce3bcf69adfdf7c7d503e78fd3b1c492af782d58893b650adb2ac8912ddd573"},
 ]
 glob2 = [
     {file = "glob2-0.7.tar.gz", hash = "sha256:85c3dbd07c8aa26d63d7aacee34fa86e9a91a3873bc30bf62ec46e531f92ab8c"},
@@ -3148,6 +3313,10 @@ jsonpickle = [
 jsonschema = [
     {file = "jsonschema-4.17.3-py3-none-any.whl", hash = "sha256:a870ad254da1a8ca84b6a2905cac29d265f805acc57af304784962a2aa6508f6"},
     {file = "jsonschema-4.17.3.tar.gz", hash = "sha256:0f864437ab8b6076ba6707453ef8f98a6a0d512a80e93f8abdb676f737ecb60d"},
+]
+jsonschema-spec = [
+    {file = "jsonschema_spec-0.1.3-py3-none-any.whl", hash = "sha256:b3cde007ad65c2e631e2f8653cf187124a2c714d02d9fafbab68ad64bf5745d6"},
+    {file = "jsonschema_spec-0.1.3.tar.gz", hash = "sha256:8d8db7c255e524fab1016a952a9143e5b6e3c074f4ed25d1878f8e97806caec0"},
 ]
 junit-xml-2 = [
     {file = "junit_xml_2-1.9-py2.py3-none-any.whl", hash = "sha256:05093d75fe11120ccd51293884b5ee334ff3bc4b5106647c2bcc928486600588"},
@@ -3397,20 +3566,20 @@ oauthlib = [
     {file = "oauthlib-3.2.2.tar.gz", hash = "sha256:9859c40929662bec5d64f34d01c99e093149682a3f38915dc0655d5a633dd918"},
 ]
 openapi-schema-validator = [
-    {file = "openapi-schema-validator-0.2.3.tar.gz", hash = "sha256:2c64907728c3ef78e23711c8840a423f0b241588c9ed929855e4b2d1bb0cf5f2"},
-    {file = "openapi_schema_validator-0.2.3-py3-none-any.whl", hash = "sha256:9bae709212a19222892cabcc60cafd903cbf4b220223f48583afa3c0e3cc6fc4"},
+    {file = "openapi_schema_validator-0.4.3-py3-none-any.whl", hash = "sha256:f1eff2a7936546a3ce62b88a17d09de93c9bd229cbc43cb696c988a61a382548"},
+    {file = "openapi_schema_validator-0.4.3.tar.gz", hash = "sha256:6940dba9f4906c97078fea6fd9d5a3a3384207db368c4e32f6af6abd7c5c560b"},
 ]
 openapi-spec-validator = [
-    {file = "openapi-spec-validator-0.4.0.tar.gz", hash = "sha256:97f258850afc97b048f7c2653855e0f88fa66ac103c2be5077c7960aca2ad49a"},
-    {file = "openapi_spec_validator-0.4.0-py3-none-any.whl", hash = "sha256:06900ac4d546a1df3642a779da0055be58869c598e3042a2fef067cfd99d04d0"},
+    {file = "openapi_spec_validator-0.5.5-py3-none-any.whl", hash = "sha256:93ba247f585e1447214b4207728a7cce3726d148238217be69e6b8725c118fbe"},
+    {file = "openapi_spec_validator-0.5.5.tar.gz", hash = "sha256:3010df5237748e25d7fac2b2aaf13457c1afd02735b2bd6f008a10079c8f443a"},
 ]
 ordered-set = [
     {file = "ordered-set-4.1.0.tar.gz", hash = "sha256:694a8e44c87657c59292ede72891eb91d34131f6531463aab3009191c77364a8"},
     {file = "ordered_set-4.1.0-py3-none-any.whl", hash = "sha256:046e1132c71fcf3330438a539928932caf51ddbc582496833e23de611de14562"},
 ]
 packaging = [
-    {file = "packaging-23.0-py3-none-any.whl", hash = "sha256:714ac14496c3e68c99c29b00845f7a2b85f3bb6f1078fd9f72fd20f0570002b2"},
-    {file = "packaging-23.0.tar.gz", hash = "sha256:b6ad297f8907de0fa2fe1ccbd26fdaf387f5f47c7275fedf8cce89f99446cf97"},
+    {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
+    {file = "packaging-21.3.tar.gz", hash = "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb"},
 ]
 parse = [
     {file = "parse-1.19.0.tar.gz", hash = "sha256:9ff82852bcb65d139813e2a5197627a94966245c897796760a3a2a8eb66f020b"},
@@ -3422,6 +3591,10 @@ parse-type = [
 parso = [
     {file = "parso-0.8.3-py2.py3-none-any.whl", hash = "sha256:c001d4636cd3aecdaf33cbb40aebb59b094be2a74c556778ef5576c175e19e75"},
     {file = "parso-0.8.3.tar.gz", hash = "sha256:8c07be290bb59f03588915921e29e8a50002acaf2cdc5fa0e0114f91709fafa0"},
+]
+pathable = [
+    {file = "pathable-0.4.3-py3-none-any.whl", hash = "sha256:cdd7b1f9d7d5c8b8d3315dbf5a86b2596053ae845f056f57d97c0eefff84da14"},
+    {file = "pathable-0.4.3.tar.gz", hash = "sha256:5c869d315be50776cc8a993f3af43e0c60dc01506b399643f919034ebf4cdcab"},
 ]
 pathspec = [
     {file = "pathspec-0.11.0-py3-none-any.whl", hash = "sha256:3a66eb970cbac598f9e5ccb5b2cf58930cd8e3ed86d393d541eaf2d8b1705229"},
@@ -3448,12 +3621,28 @@ pluggy = [
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
 prance = [
-    {file = "prance-0.21.8.0-py3-none-any.whl", hash = "sha256:51ec41d10b317bf5d4e74782a7f7f0c0488c6042433b5b4fde2a988cd069d235"},
-    {file = "prance-0.21.8.0.tar.gz", hash = "sha256:ce06feef8814c3436645f3b094e91067b1a111bc860a51f239f93437a8d4b00e"},
+    {file = "prance-0.22.11.4.0-py3-none-any.whl", hash = "sha256:c15e9ca889b56262e4c2aee354f52918ba5e54f46bb3da42b806d8bbd8255ee9"},
+    {file = "prance-0.22.11.4.0.tar.gz", hash = "sha256:814a523bc1ff18383c12cb523ce44c90fe8792bf5f48d8cc33c9f658276658ed"},
 ]
 prompt-toolkit = [
     {file = "prompt_toolkit-3.0.36-py3-none-any.whl", hash = "sha256:aa64ad242a462c5ff0363a7b9cfe696c20d55d9fc60c11fd8e632d064804d305"},
     {file = "prompt_toolkit-3.0.36.tar.gz", hash = "sha256:3e163f254bef5a03b146397d7c1963bd3e2812f0964bb9a24e6ec761fd28db63"},
+]
+psutil = [
+    {file = "psutil-5.9.4-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:c1ca331af862803a42677c120aff8a814a804e09832f166f226bfd22b56feee8"},
+    {file = "psutil-5.9.4-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:68908971daf802203f3d37e78d3f8831b6d1014864d7a85937941bb35f09aefe"},
+    {file = "psutil-5.9.4-cp27-cp27m-manylinux2010_x86_64.whl", hash = "sha256:3ff89f9b835100a825b14c2808a106b6fdcc4b15483141482a12c725e7f78549"},
+    {file = "psutil-5.9.4-cp27-cp27m-win32.whl", hash = "sha256:852dd5d9f8a47169fe62fd4a971aa07859476c2ba22c2254d4a1baa4e10b95ad"},
+    {file = "psutil-5.9.4-cp27-cp27m-win_amd64.whl", hash = "sha256:9120cd39dca5c5e1c54b59a41d205023d436799b1c8c4d3ff71af18535728e94"},
+    {file = "psutil-5.9.4-cp27-cp27mu-manylinux2010_i686.whl", hash = "sha256:6b92c532979bafc2df23ddc785ed116fced1f492ad90a6830cf24f4d1ea27d24"},
+    {file = "psutil-5.9.4-cp27-cp27mu-manylinux2010_x86_64.whl", hash = "sha256:efeae04f9516907be44904cc7ce08defb6b665128992a56957abc9b61dca94b7"},
+    {file = "psutil-5.9.4-cp36-abi3-macosx_10_9_x86_64.whl", hash = "sha256:54d5b184728298f2ca8567bf83c422b706200bcbbfafdc06718264f9393cfeb7"},
+    {file = "psutil-5.9.4-cp36-abi3-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:16653106f3b59386ffe10e0bad3bb6299e169d5327d3f187614b1cb8f24cf2e1"},
+    {file = "psutil-5.9.4-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:54c0d3d8e0078b7666984e11b12b88af2db11d11249a8ac8920dd5ef68a66e08"},
+    {file = "psutil-5.9.4-cp36-abi3-win32.whl", hash = "sha256:149555f59a69b33f056ba1c4eb22bb7bf24332ce631c44a319cec09f876aaeff"},
+    {file = "psutil-5.9.4-cp36-abi3-win_amd64.whl", hash = "sha256:fd8522436a6ada7b4aad6638662966de0d61d241cb821239b2ae7013d41a43d4"},
+    {file = "psutil-5.9.4-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:6001c809253a29599bc0dfd5179d9f8a5779f9dffea1da0f13c53ee568115e1e"},
+    {file = "psutil-5.9.4.tar.gz", hash = "sha256:3d7f9739eb435d4b1338944abe23f49584bde5395f27487d2ee25ad9a8774a62"},
 ]
 psycopg = [
     {file = "psycopg-3.1.8-py3-none-any.whl", hash = "sha256:b1500c42063abaa01d30b056f0b300826b8dd8d586900586029a294ce74af327"},
@@ -3585,6 +3774,10 @@ pylint = [
 pylint-junit = [
     {file = "pylint_junit-0.3.2.tar.gz", hash = "sha256:c6dbe956e55bb9b365d86e2ec77b58df6b95262b5515d187ac54b8359507174b"},
 ]
+pyparsing = [
+    {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
+    {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
+]
 pypubsub = [
     {file = "Pypubsub-4.0.3-py3-none-any.whl", hash = "sha256:7f716bae9388afe01ff82b264ba8a96a8ae78b42bb1f114f2716ca8f9e404e2a"},
 ]
@@ -3618,15 +3811,31 @@ pyrsistent = [
     {file = "pyrsistent-0.19.3.tar.gz", hash = "sha256:1a2994773706bbb4995c31a97bc94f1418314923bd1048c6d964837040376440"},
 ]
 pytango = [
-    {file = "pytango-9.3.3-cp27-cp27m-win32.whl", hash = "sha256:c481628c0b7b0cda737adbf6194d0d143f66352e04e310912c9bae236ed2e482"},
-    {file = "pytango-9.3.3-cp27-cp27m-win_amd64.whl", hash = "sha256:beeab13f0ce32c5d226da2c9b33dc07eb92b4c7a320164c34ff2666b2ea583a3"},
-    {file = "pytango-9.3.3-cp36-cp36m-win32.whl", hash = "sha256:3d566fe6f091b12032d5ad90465f3770f02ccc7e8bd7345543074936676eb3d9"},
-    {file = "pytango-9.3.3-cp36-cp36m-win_amd64.whl", hash = "sha256:b0627968afbc3bfc6d5f81c8d2094a823f57e489853704493b85b1628423c7e0"},
-    {file = "pytango-9.3.3-cp37-cp37m-win32.whl", hash = "sha256:4c70dd4c634b8514b6022641d02512f7d275f80e226d39765954d0f91b003c5e"},
-    {file = "pytango-9.3.3-cp37-cp37m-win_amd64.whl", hash = "sha256:eef2db112050c04ade0b3d2fc1540b8f8ff2f9029034ddc8806afc0053b404da"},
-    {file = "pytango-9.3.3-cp38-cp38-win32.whl", hash = "sha256:2e166d1e887488f368144caabb1afd4b0026a1a5a190ea76c52e92d7420429d9"},
-    {file = "pytango-9.3.3-cp38-cp38-win_amd64.whl", hash = "sha256:133efb1b70c95a24ae129941c76c9485e8ebdc5cd3edac803257f30091f2bb61"},
-    {file = "pytango-9.3.3.tar.gz", hash = "sha256:c09fc7a44cac8c2d95d3ad39ba644998e8f468c730dc495443a74de05a07e9f9"},
+    {file = "pytango-9.4.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:106cc56ad21d92f5ee9a44bb499f9446d8daa9329b47448f16eff47ac680b5c0"},
+    {file = "pytango-9.4.0-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:47dfdefeec0bb5b915001d2f3aabd533c677e9e6d6612ef3a02766d2d7712278"},
+    {file = "pytango-9.4.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:80252692800a7f7a47104ef007ecb302305bcd9c30ea239bbfa74ef85ae66d46"},
+    {file = "pytango-9.4.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:95393854dee57f344308680390f4752d1d5b4607d197386fe219162cf919bed0"},
+    {file = "pytango-9.4.0-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a1bc90ea25092ac3c7016feeb021d8c66a1c80ab328343592a81e9a4d796f997"},
+    {file = "pytango-9.4.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:eb1a2850bfb8deab32c819d050a9ce31f8e030ca77af1d919d8666cfb7df22bb"},
+    {file = "pytango-9.4.0-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5079b2ae04744fc800f4e1cb55fa6c85fe291cf460b5ebdaa3d7d119ff98600a"},
+    {file = "pytango-9.4.0-cp36-cp36m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:39f7b52d12fccb2a0f525d5d805d5c1731643c1a812a481b4fa2284724abb1f2"},
+    {file = "pytango-9.4.0-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7f83ce2bff9e0909db784caff806ddb67ec744369f9709e41099ff43088b0518"},
+    {file = "pytango-9.4.0-cp36-cp36m-win32.whl", hash = "sha256:0dfd41b7831a73d57cb20a33e4845d201d7401f437d8437caf7f23f2ea20c440"},
+    {file = "pytango-9.4.0-cp36-cp36m-win_amd64.whl", hash = "sha256:8783fb8c04faef555c5812550e3e1f56d59e4aed60207f5f0912205f4f429685"},
+    {file = "pytango-9.4.0-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9fc87938ca5f8059c221f0f947e1455e8677ba7d45faa827aac4ec7e8e731725"},
+    {file = "pytango-9.4.0-cp37-cp37m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3d67f6dbb6844aac4d22547f8e2f4164c00a39432852a6bdedc09814a9987fa6"},
+    {file = "pytango-9.4.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8f3bd50794de7c9d593e45a0b18e6258bbbd5018ae6ace919e8aead417c2e444"},
+    {file = "pytango-9.4.0-cp37-cp37m-win32.whl", hash = "sha256:9df5273eaac5aff86a5fdc375fea47389ee9afaf9cac093fb977b873447d330b"},
+    {file = "pytango-9.4.0-cp37-cp37m-win_amd64.whl", hash = "sha256:53c2598bd6d8ee678eeb900278f7306128eeafdd44ad67b771204b012a67299d"},
+    {file = "pytango-9.4.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f2b5b5a8fa8d304f277ea430e025d849f9ad2cebbaea15c9f3f12fd106dd8f14"},
+    {file = "pytango-9.4.0-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:38e9239db6097a32ca3e9b266c5c1b938f7ce715a8ad4804dfaafa1e98650820"},
+    {file = "pytango-9.4.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3d488c390283b9a998ef6ecc7ad08f0535f50a54acdf7d356c72aea170324716"},
+    {file = "pytango-9.4.0-cp38-cp38-win32.whl", hash = "sha256:8152a290c4639320ce8595b6ca5cec9f79ab322436d7d90702a5e71dff2cc4f7"},
+    {file = "pytango-9.4.0-cp38-cp38-win_amd64.whl", hash = "sha256:04ddd508d90620bf82db680222aa91132f5941c1e0aecd2b5ec2d7e59ba8b5c6"},
+    {file = "pytango-9.4.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9e2268e20bae7ddc44a9c5d510a3d73326dab3e339b72bbdf5a4ad7f795deac9"},
+    {file = "pytango-9.4.0-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:7d0c717030292e730a1ad641f73bde7a276bdb84ac08275e547970c3dc1c2ebd"},
+    {file = "pytango-9.4.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e0a3835cf3e0ee173b196a548172323085e4ee5084ee9a15b710dbdc85f61732"},
+    {file = "pytango-9.4.0.tar.gz", hash = "sha256:bc22fe5f06ac0e0ff4affcbd18b65b2d1367f34e20b8b2f11e1182b376737a68"},
 ]
 pytest = [
     {file = "pytest-6.2.5-py3-none-any.whl", hash = "sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134"},
@@ -3676,6 +3885,10 @@ pytest-xdist = [
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
+]
+python-gitlab = [
+    {file = "python-gitlab-3.13.0.tar.gz", hash = "sha256:ad502b72b5d1137f4af37d4a68ae20fe7d6c9778f67cbe2aec566f7995053c7d"},
+    {file = "python_gitlab-3.13.0-py3-none-any.whl", hash = "sha256:85ae778d8953aba87ad4b78aef7fbb5dae053980d2c20ff200bea29799685743"},
 ]
 python-graphql-client = [
     {file = "python_graphql_client-0.4.3-py3-none-any.whl", hash = "sha256:c5eb996702acf46110b352f61819c46065ea4f4f106158535cd471e66490b25e"},
@@ -3731,6 +3944,14 @@ requests-oauthlib = [
     {file = "requests-oauthlib-1.3.1.tar.gz", hash = "sha256:75beac4a47881eeb94d5ea5d6ad31ef88856affe2332b9aafb52c6452ccf0d7a"},
     {file = "requests_oauthlib-1.3.1-py2.py3-none-any.whl", hash = "sha256:2577c501a2fb8d05a304c09d090d6e47c306fef15809d102b327cf8364bddab5"},
 ]
+requests-toolbelt = [
+    {file = "requests-toolbelt-0.10.1.tar.gz", hash = "sha256:62e09f7ff5ccbda92772a29f394a49c3ad6cb181d568b1337626b2abb628a63d"},
+    {file = "requests_toolbelt-0.10.1-py2.py3-none-any.whl", hash = "sha256:18565aa58116d9951ac39baa288d3adb5b3ff975c4f25eee78555d89e8f247f7"},
+]
+rfc3339-validator = [
+    {file = "rfc3339_validator-0.1.4-py2.py3-none-any.whl", hash = "sha256:24f6ec1eda14ef823da9e36ec7113124b39c04d50a4d3d3a3c2859577e7791fa"},
+    {file = "rfc3339_validator-0.1.4.tar.gz", hash = "sha256:138a2abdf93304ad60530167e51d2dfb9549521a836871b88d7f4695d0022f6b"},
+]
 rsa = [
     {file = "rsa-4.9-py3-none-any.whl", hash = "sha256:90260d9058e514786967344d0ef75fa8727eed8a7d2e43ce9f4bcf1b536174f7"},
     {file = "rsa-4.9.tar.gz", hash = "sha256:e38464a49c6c85d7f1351b0126661487a7e0a14a50f1675ec50eb34d4f20ef21"},
@@ -3784,32 +4005,32 @@ semver = [
     {file = "semver-2.13.0.tar.gz", hash = "sha256:fa0fe2722ee1c3f57eac478820c3a5ae2f624af8264cbdf9000c980ff7f75e3f"},
 ]
 setuptools = [
-    {file = "setuptools-67.3.1-py3-none-any.whl", hash = "sha256:23c86b4e44432bfd8899384afc08872ec166a24f48a3f99f293b0a557e6a6b5d"},
-    {file = "setuptools-67.3.1.tar.gz", hash = "sha256:daec07fd848d80676694d6bf69c009d28910aeece68a38dbe88b7e1bb6dba12e"},
+    {file = "setuptools-67.3.2-py3-none-any.whl", hash = "sha256:bb6d8e508de562768f2027902929f8523932fcd1fb784e6d573d2cafac995a48"},
+    {file = "setuptools-67.3.2.tar.gz", hash = "sha256:95f00380ef2ffa41d9bba85d95b27689d923c93dfbafed4aecd7cf988a25e012"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-db-oda = [
-    {file = "ska_db_oda-1.5.1-py3-none-any.whl", hash = "sha256:e039b3e61e9fba91ac8e7e8beb072c6c9ae88142614e0f23bc7281def8708130"},
-    {file = "ska_db_oda-1.5.1.tar.gz", hash = "sha256:3e600cf1aef79066bedd0834c3c4aafde1d63c6ba8849bd19fdd54eb899e6fc4"},
+    {file = "ska_db_oda-1.6.1-py3-none-any.whl", hash = "sha256:67ccd2bf760cd5ff8e9bcdf36f189738ebbd1ad44a583834253886530f5eaa52"},
+    {file = "ska_db_oda-1.6.1.tar.gz", hash = "sha256:02683b26981c05a0eee518a56411a4a755c15dae616b9d57ca6f59ba843d1b83"},
 ]
 ska-oso-oet = [
-    {file = "ska-oso-oet-4.0.6.tar.gz", hash = "sha256:cdbf62331eb95229ee27c8d50bd86586d8170737e33455a12599253d7df7d30b"},
-    {file = "ska_oso_oet-4.0.6-py3-none-any.whl", hash = "sha256:46b0c263cc1b48ccdf17e61a2c159e62c533f34c54e8d3a2d8cb3813ca590d8c"},
+    {file = "ska-oso-oet-4.0.3.tar.gz", hash = "sha256:e8d3618dd5aac3882ff13b1f014d37c7917037d6bd90c7781d58e0428a89f61b"},
+    {file = "ska_oso_oet-4.0.3-py3-none-any.whl", hash = "sha256:0d4bc483b136d9e9f6d7112aac4fe605773193ef41bc169d43ff052af7161a32"},
 ]
 ska-oso-oet-client = [
     {file = "ska_oso_oet_client-1.0.0-py3-none-any.whl", hash = "sha256:c6d9b3c454c66043b1d06669d4b55ab37e5da2382d5636c5ac2d448fd5b9ea1f"},
     {file = "ska_oso_oet_client-1.0.0.tar.gz", hash = "sha256:143ef896ad568ded4619e8df849a90615e76c45a98d13df8d7c7af7ced3c8a46"},
 ]
 ska-oso-pdm = [
-    {file = "ska_oso_pdm-9.0.0-py3-none-any.whl", hash = "sha256:d9d2cc26fa996181bc9611fc001bc4a0d4190c8191627c365e959425b6de5059"},
-    {file = "ska_oso_pdm-9.0.0.tar.gz", hash = "sha256:690cfb044608cc295d5cd87e5e9ae32ccab11c725d95160d696d58d6ae35c32b"},
+    {file = "ska_oso_pdm-10.0.1-py3-none-any.whl", hash = "sha256:0b2aba5a447d5e6806b1e4e3debb6cf1a0e1e95d56f0ee2e51f51126ab4fd585"},
+    {file = "ska_oso_pdm-10.0.1.tar.gz", hash = "sha256:ac028ef84c4a4bbb09adc7f9f077546d63684715b33189edb2e2736ed755c512"},
 ]
 ska-oso-scripting = [
-    {file = "ska_oso_scripting-6.1.0-py3-none-any.whl", hash = "sha256:6def7ec818e9eeda9943cccc43465425c6604406e0b32b2cd71ca4dbb5af89d7"},
-    {file = "ska_oso_scripting-6.1.0.tar.gz", hash = "sha256:c28442d78d8e87af606a033b55dc9b36165cc42ce18e75da2f6437055664823d"},
+    {file = "ska_oso_scripting-7.0.0-py3-none-any.whl", hash = "sha256:b8737d91cc5deb7c8061f0e4680f2007b5b55d08cb46c036a501bab4087e380b"},
+    {file = "ska_oso_scripting-7.0.0.tar.gz", hash = "sha256:a791cc58bc8b06436393812d43bb1a21860e510fe2551fdb4daf3fa858274e7f"},
 ]
 ska-ser-log-transactions = [
     {file = "ska_ser_log_transactions-0.2.2+ae0f5c92-py3-none-any.whl", hash = "sha256:b50506b583b711471e41f3f561e56669573fe287262d533b1386a12abcfa6e91"},
@@ -3835,13 +4056,13 @@ ska-tango-testing = [
     {file = "ska_tango_testing-0.5.3-py3-none-any.whl", hash = "sha256:14e5836a22902e8bbf247c71c81b261da7c9acde78ad20e154fe5f11088bab9f"},
     {file = "ska_tango_testing-0.5.3.tar.gz", hash = "sha256:8a617b3517f58bd91c6baffc48f011b604b564cdfb7e965b704c89c890c75a68"},
 ]
-ska-telescope-model = [
-    {file = "ska-telescope-model-1.3.1.tar.gz", hash = "sha256:41cff908f07eba9a72aaa0c99cceedc9a1ec3031967288947c208d42584e3268"},
-    {file = "ska_telescope_model-1.3.1-py3-none-any.whl", hash = "sha256:0366c7617169a8a3fe7901286513f078c0ec039cb2dc836fec41c00391aa90f9"},
+ska-telmodel = [
+    {file = "ska_telmodel-1.5.0-py3-none-any.whl", hash = "sha256:66be880a6d269664d76caedc4aca984688d4864a9c331d14ea3d00a72dc838be"},
+    {file = "ska_telmodel-1.5.0.tar.gz", hash = "sha256:597e89e01c33caec5c45752ecb40863c5851b3c61857b44f4e4d7d0b8f231323"},
 ]
 ska-tmc-cdm = [
-    {file = "ska_tmc_cdm-7.2.0-py3-none-any.whl", hash = "sha256:5ab5ee7248a8ce7dd290695d9036d2b7442efc2ea377c17b285485e7776ef515"},
-    {file = "ska_tmc_cdm-7.2.0.tar.gz", hash = "sha256:287ea8805edd19760e72c87b1a9d5d6e0ffb38f863fd46adee960873bc011f98"},
+    {file = "ska_tmc_cdm-7.3.1-py3-none-any.whl", hash = "sha256:6096dfd4d7c0211dad2ac58cfe0c3cc88b3d5448f20405c5cb7864ec44f28757"},
+    {file = "ska_tmc_cdm-7.3.1.tar.gz", hash = "sha256:3129cd4ec33b207f80669f521ba80fd221a42041c841f6c2f44eb8225ed8c363"},
 ]
 smmap = [
     {file = "smmap-5.0.0-py3-none-any.whl", hash = "sha256:2aba19d6a040e78d8b09de5c57e96207b09ed71d8e55ce0959eeee6c8e190d94"},
@@ -3877,6 +4098,10 @@ tomli = [
 tomlkit = [
     {file = "tomlkit-0.11.6-py3-none-any.whl", hash = "sha256:07de26b0d8cfc18f871aec595fda24d95b08fef89d147caa861939f37230bf4b"},
     {file = "tomlkit-0.11.6.tar.gz", hash = "sha256:71b952e5721688937fb02cf9d354dbcf0785066149d2855e44531ebdd2b65d73"},
+]
+toolz = [
+    {file = "toolz-0.12.0-py3-none-any.whl", hash = "sha256:2059bd4148deb1884bb0eb770a3cde70e7f954cfbbdc2285f1f2de01fd21eb6f"},
+    {file = "toolz-0.12.0.tar.gz", hash = "sha256:88c570861c440ee3f2f6037c4654613228ff40c93a6c25e0eba70d17282c6194"},
 ]
 traitlets = [
     {file = "traitlets-5.9.0-py3-none-any.whl", hash = "sha256:9e6ec080259b9a5940c797d58b613b5e31441c2257b87c2e795c5228ae80d2d8"},

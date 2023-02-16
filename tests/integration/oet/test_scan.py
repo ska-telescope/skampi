@@ -49,8 +49,7 @@ def i_command_it_to_scan_low(
     ).to_change_in_order(["SCANNING", "READY"])
     with context_monitoring.observe_while_running(integration_test_exec_settings):
         subarray = SubArray(subarray_id)
-        subarray.scan()
-
+        subarray.scan(scan_duration=30)
 
 @then("the subarray must be in the SCANNING state until finished")
 def the_subarray_must_be_in_the_scanning_state(
@@ -59,17 +58,20 @@ def the_subarray_must_be_in_the_scanning_state(
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """the subarray must be in the SCANNING state until finished."""
+    recorder = integration_test_exec_settings.recorder
     tel = names.TEL()
-    tmc_subarray_name = tel.tm.subarray(configured_subarray.id)
+    tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
+    occurrences = recorder._occurrences  # type: ignore
+    tmc_state_changes = [
+        occurrence.attr_value
+        for occurrence in occurrences
+        if (
+            (occurrence.attr_name == tmc_subarray_name)
+            & (occurrence.attr_name == "obsstate")
+        )
+    ]
+    assert_that(tmc_state_changes).is_equal_to(["SCANNING", "READY"])
 
-    # afterwards it must be ready
-    context_monitoring.re_init_builder()
-    context_monitoring.wait_for(tmc_subarray_name).for_attribute(
-        "obsstate"
-    ).to_become_equal_to(
-        "READY", ignore_first=False, settings=integration_test_exec_settings
-    )
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(tmc_subarray_name)
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

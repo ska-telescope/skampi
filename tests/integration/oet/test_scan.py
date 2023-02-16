@@ -43,25 +43,26 @@ def i_command_it_to_scan_low(
 ):
     """I configure it for a scan."""
     subarray_id = sut_settings.subarray_id
+    tel = names.TEL()
+    context_monitoring.set_waiting_on(tel.tm.subarray(subarray_id)).for_attribute(
+        "obsstate"
+    ).to_change_in_order(["SCANNING", "READY"])
     with context_monitoring.observe_while_running(integration_test_exec_settings):
         subarray = SubArray(subarray_id)
         subarray.scan()
 
+
 @then("the subarray must be in the SCANNING state until finished")
-def the_sdp_subarray_must_be_in_the_scanning_state(
+def the_subarray_must_be_in_the_scanning_state(
     configured_subarray: fxt_types.configured_subarray,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """the SDP subarray must be in the SCANNING state until finished."""
+    """the subarray must be in the SCANNING state until finished."""
     tel = names.TEL()
     tmc_subarray_name = tel.tm.subarray(configured_subarray.id)
-    tmc_subarray = con_config.get_device_proxy(tmc_subarray_name) 
+    tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
 
-    context_monitoring.set_waiting_on(tel.tm.subarray(1)).for_attribute(
-        "obsstate"
-    ).to_change_in_order(["SCANNING", "READY"])
-    
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.SCANNING)
     # afterwards it must be ready

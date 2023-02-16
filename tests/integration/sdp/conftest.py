@@ -11,7 +11,17 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.sdp_model.entry_point import SDPEntryPoint
 from resources.models.sdp_model.mocking import setup_sdp_mock
 
+from .tmp_vis_receive_utils import K8sElementManager
+
 from .. import conftest
+
+
+@pytest.fixture(scope="module")
+def k8s_element_manager():
+    """Allow easy creation, and later automatic destruction, of k8s elements"""
+    manager = K8sElementManager()
+    yield manager
+    manager.cleanup()
 
 
 @pytest.fixture(name="update_sut_settings")

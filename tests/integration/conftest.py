@@ -12,6 +12,7 @@ from pytest_bdd import when, given, parsers
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management import telescope_management as tel
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
@@ -278,6 +279,7 @@ def i_configure_it_for_a_scan(
 
 
 # scans
+@given("an subarray busy scanning")
 @when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
@@ -302,4 +304,24 @@ def i_release_all_resources_assigned_to_it(
             integration_test_exec_settings
         ):
             entry_point.tear_down_subarray(sub_array_id)
-            
+
+
+@when("I command it to Abort")
+def i_command_it_to_abort(
+    context_monitoring: fxt_types.context_monitoring,
+    allocated_subarray: fxt_types.allocated_subarray,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    tel = names.TEL()
+    subarray = tel.tm.subarray(sut_settings.subarray_id)
+    sub_array_id = sut_settings.subarray_id
+    context_monitoring.builder.set_waiting_on(subarray).for_attribute(
+        "obsstate"
+    ).to_become_equal_to("ABORTED")
+    with context_monitoring.context_monitoring():
+        with context_monitoring.wait_before_complete(integration_test_exec_settings):
+            allocated_subarray.reset_after_test(integration_test_exec_settings)
+            entry_point.abort_subarray(sub_array_id)
+    integration_test_exec_settings.touch()

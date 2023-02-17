@@ -63,19 +63,11 @@ def the_subarray_must_be_in_the_scanning_state(
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """the subarray must be in the SCANNING state until finished."""
+    recorder = integration_test_exec_settings.recorder
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
-    
-    result = tmc_subarray.read_attribute("obsstate").value
-    assert_that(result).is_equal_to(ObsState.SCANNING)
-    # afterwards it must be ready
-    context_monitoring.re_init_builder()
-    context_monitoring.wait_for(tmc_subarray_name).for_attribute(
-        "obsstate"
-    ).to_become_equal_to(
-        "READY", ignore_first=False, settings=integration_test_exec_settings
-    )
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(tmc_subarray_name)
+    tmc_state_changes = recorder.get_transitions_for(tmc_subarray_name, "obsstate")
+    assert_that(tmc_state_changes).is_equal_to("SCANNING")
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

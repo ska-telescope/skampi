@@ -517,7 +517,7 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
-class TMCAbortStep(base.EntryPoint, AbortStep, LogEnabled):
+class TMCAbortStep(AbortStep, LogEnabled):
     def do(self, sub_array_id: int):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)

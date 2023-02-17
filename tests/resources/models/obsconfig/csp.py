@@ -1,5 +1,4 @@
 from typing import TypedDict, cast
-
 from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     CBFConfiguration,
     CommonConfiguration,
@@ -7,13 +6,6 @@ from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     FSPConfiguration,
     FSPFunctionMode,
     SubarrayConfiguration,
-    StnBeamConfiguration,
-    StationConfiguration,
-    BeamConfiguration,
-    TimingBeamConfiguration,
-    LowCBFConfiguration,
-
-
 )
 
 from .base import encoded
@@ -61,10 +53,13 @@ class CSPconfig(TargetSpecs):
         return self._generate_low_csp_assign_resources_config()
 
     def _generate_csp_scan_config(
-        self, target_id: str | None = None, subarray_id: int = 1, low_tmc=False
+        self, target_id: str | None = None, subarray_id: int = 1
     ):
         mode: FSPFunctionMode = FSPFunctionMode.CORR
-        
+        if target_id:
+            spec = self.target_specs[target_id]
+        else:
+            target_id, spec = list(self.target_specs.items())[0]
         fsps = [1, 2]
         fsp1 = FSPConfiguration(
             fsp_id=fsps[0],
@@ -87,53 +82,18 @@ class CSPconfig(TargetSpecs):
             channel_offset=744,
             zoom_window_tuning=650000,
         )
-
-        stn_beams = StnBeamConfiguration(
-            beam_id=1, freq_ids=[64, 65, 66, 67, 68, 69, 70, 71], boresight_dly_poly="url"
-        )
-        stations = StationConfiguration(
-            stns=[[1, 0], [2, 0], [3, 0], [4, 0]], stn_beams=[stn_beams]
-        )
-        beams = BeamConfiguration(
-            pst_beam_id=13,
-            stn_beam_id=1,
-            offset_dly_poly="url",
-            stn_weights=[0.9, 1.0, 1.0, 0.9],
-            jones="url",
-            dest_chans=[128, 256],
-            rfi_enable=[True, True, True],
-            rfi_static_chans=[1, 206, 997],
-            rfi_dynamic_chans=[242, 1342],
-            rfi_weighted=0.87,
-        )
-        timing_beams = TimingBeamConfiguration(beams=[beams])
-
-        if low_tmc is False:
-            if target_id:
-                spec = self.target_specs[target_id]
-            else:
-                target_id, spec = list(self.target_specs.items())[0]
-            return CSPConfiguration(
-                self.csp_scan_configure_schema,
-                SubarrayConfiguration(self.csp_subarray_id),
-                CommonConfiguration(self.eb_id, spec.band, subarray_id),
-                CBFConfiguration([fsp1, fsp2]),
-            )
-
-
         return CSPConfiguration(
             self.csp_scan_configure_schema,
             SubarrayConfiguration(self.csp_subarray_id),
-            CommonConfiguration(self.config_id),
-            lowcbf=LowCBFConfiguration(stations, timing_beams),
-
+            CommonConfiguration(self.eb_id, spec.band, subarray_id),
+            CBFConfiguration([fsp1, fsp2]),
         )
 
     @encoded
     def generate_csp_scan_config(
-        self, target_id: str | None = None, subarray_id: int = 1,low_tmc=True
+        self, target_id: str | None = None, subarray_id: int = 1
     ):
-        return self._generate_csp_scan_config(target_id, subarray_id, low_tmc=True)
+        return self._generate_csp_scan_config(target_id, subarray_id)
 
     def generate_csp_run_scan_config(
         self, target_id: str | None = None, subarray_id: int = 1

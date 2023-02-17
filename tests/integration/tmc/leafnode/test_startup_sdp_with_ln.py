@@ -13,7 +13,7 @@ from ... import conftest
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skamid
+# @pytest.mark.skamid
 @pytest.mark.startup
 @scenario(
     "features/sdpln_start_up_telescope.feature",

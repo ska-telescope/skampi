@@ -39,7 +39,7 @@ def test_release_resources_from_tmc_subarray_in_low():
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skamid
+# @pytest.mark.skamid
 @pytest.mark.assign
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
 def test_assign_resources_to_tmc_subarray_in_mid():
@@ -48,7 +48,7 @@ def test_assign_resources_to_tmc_subarray_in_mid():
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skamid
+# @pytest.mark.skamid
 @scenario(
     "features/tmc_assign_resources.feature", "Release resources from mid subarray"
 )

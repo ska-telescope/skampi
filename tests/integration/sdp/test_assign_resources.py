@@ -28,7 +28,7 @@ def test_assign_resources_to_sdp_subarray_in_low(assign_resources_test_exec_sett
     """Assign resources to sdp subarray in low."""
 
 
-@pytest.mark.skamid
+# @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
 @scenario(

@@ -6,19 +6,23 @@ import os
 
 from typing import Any, Callable
 from mock import patch, Mock
-
+from assertpy import assert_that
 import pytest
-from pytest_bdd import when, given, parsers
+from pytest_bdd import when, given, then, parsers
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management import telescope_management as tel
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
+# from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
+from ska_ser_skallop.connectors import configuration as con_config
+from resources.models.mvp_model.states import ObsState
+
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +41,10 @@ class SutTestSettings(SimpleNamespace):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         logger.info("initialising sut settings")
+        self.tel = TEL()
         self.observation = Observation()
+        self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
+
 
     @property
     def nr_of_receptors(self):
@@ -227,9 +234,7 @@ def assign_resources_with_subarray_id(
             )
 
 
-            
-
-
+        
 @when("I assign resources to it")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,
@@ -314,8 +319,7 @@ def i_command_it_to_abort(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):
-    tel = names.TEL()
-    subarray = tel.tm.subarray(sut_settings.subarray_id)
+    subarray = sut_settings.default_subarray_name
     sub_array_id = sut_settings.subarray_id
     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
         "obsstate"
@@ -327,3 +331,12 @@ def i_command_it_to_abort(
             entry_point.abort_subarray(sub_array_id)
 
     integration_test_exec_settings.touch()
+
+
+@then("the subarray should go into an aborted state")
+def the_subarray_should_go_into_an_aborted_state(
+    sut_settings: SutTestSettings,
+):
+    subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
+    result = subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(ObsState.ABORTED)

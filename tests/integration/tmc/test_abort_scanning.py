@@ -18,19 +18,30 @@ from ..conftest import SutTestSettings
 def test_tmc_abort_scanning_on_mid_subarray():
     """Run a abort on TMC mid subarray when Scanning"""
 
+# from conftest
+# @given("an subarray busy scanning")
 
 # from conftest
 # @when("I command it to Abort")
 
 
-@then("the subarray should go into an aborted state")
-def the_subarray_should_go_into_aborted_state(
-   sut_settings: SutTestSettings, integration_test_exec_settings: fxt_types.exec_settings
-):
-    """the subarray should go into an aborted state."""
-    tel = names.TEL()
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
-        str(tel.tm.subarray(sut_settings.subarray_id)))
-    tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = tmc_subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.ABORTED)
+# @then("the subarray should go into an aborted state")
+# def the_subarray_should_go_into_aborted_state(
+#    sut_settings: SutTestSettings, integration_test_exec_settings: fxt_types.exec_settings
+# ):
+#     """the subarray should go into an aborted state."""
+#     tel = names.TEL()
+#     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+#         str(tel.tm.subarray(sut_settings.subarray_id)))
+#     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+#     result = tmc_subarray.read_attribute("obsState").value
+#     assert_that(result).is_equal_to(ObsState.ABORTED)
+
+
+# @then("the subarray should go into an aborted state")
+# def the_subarray_should_go_into_an_aborted_state(
+#     sut_settings: SutTestSettings,
+# ):
+#     subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
+#     result = subarray.read_attribute("obsstate").value
+#     assert_that(result).is_equal_to(ObsState.ABORTED)

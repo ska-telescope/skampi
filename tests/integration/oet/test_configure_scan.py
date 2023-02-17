@@ -33,11 +33,11 @@ def a_subarray_in_the_idle_state(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
-    subarray: SubArray,
 ):
     """I assign resources to it in low."""
 
     subarray_id = sut_settings.subarray_id
+    subarray = SubArray(subarray_id)
     receptors = sut_settings.receptors
     observation = sut_settings.observation
     with context_monitoring.context_monitoring():
@@ -59,7 +59,6 @@ def i_configure_it_for_a_scan(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
-    subarray: SubArray,
 ):
     """I configure it for a scan."""
     observation = sut_settings.observation
@@ -70,6 +69,8 @@ def i_configure_it_for_a_scan(
             integration_test_exec_settings
         ):
             config = observation.generate_low_tmc_scan_config(scan_duration, low_tmc=True).as_object
+            tel = names.TEL()
+            subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
             #logging.info(f"...:{config. . }")
             subarray.configure_from_cdm(config)
 

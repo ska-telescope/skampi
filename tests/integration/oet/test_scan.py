@@ -50,10 +50,13 @@ def i_command_it_to_scan_low(
     tel = names.TEL()
     context_monitoring.set_waiting_on(tel.tm.subarray(subarray_id)).for_attribute(
         "obsstate"
-    ).to_change_in_order(["SCANNING", "READY"])
-    with context_monitoring.observe_while_running(integration_test_exec_settings):
+    ).to_become_equal_to(["SCANNING", "READY"])
+    with context_monitoring.observe_while_running(
+        integration_test_exec_settings
+    ) as concurrent_monitoring:
         subarray = SubArray(subarray_id)
-        subarray.scan()
+        subarray.scan()  # this is a blocking command
+        concurrent_monitoring.wait_until_complete()  # this waits for events to complete
 
 
 @then("the subarray must be in the SCANNING state until finished")

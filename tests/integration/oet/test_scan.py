@@ -2,6 +2,7 @@
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
+import logging
 import time
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -71,6 +72,10 @@ def the_subarray_must_be_in_the_scanning_state(
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
     tmc_state_changes = recorder.get_transitions_for(tmc_subarray_name, "obsstate")
-    assert_that(tmc_state_changes).is_equal_to(["READY", "SCANNING", "READY"])
+    try:
+        assert_that(tmc_state_changes).is_equal_to(["READY", "SCANNING", "READY"])
+    except AssertionError as error:
+        logging.info(f"events recorded not correct: {recorder._occurrences}")  # type: ignore
+        raise error
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

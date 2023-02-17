@@ -55,6 +55,7 @@ def i_command_it_to_scan_low(
         subarray = SubArray(subarray_id)
         subarray.scan()
 
+
 @then("the subarray must be in the SCANNING state until finished")
 def the_subarray_must_be_in_the_scanning_state(
     configured_subarray: fxt_types.configured_subarray,
@@ -66,16 +67,7 @@ def the_subarray_must_be_in_the_scanning_state(
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
-    """occurrences = recorder._occurrences  # type: ignore
-    tmc_state_changes = [
-        occurrence.attr_value
-        for occurrence in occurrences
-        if (
-            (occurrence.attr_name == tmc_subarray_name)
-            & (occurrence.attr_name == "obsstate")
-        )
-    ]
-    assert_that(tmc_state_changes).is_equal_to(["SCANNING", "READY"])"""
-
+    tmc_state_changes = recorder.get_transitions_for(tmc_subarray_name, "obsstate")
+    assert_that(tmc_state_changes).is_equal_to(["SCANNING", "READY"])
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

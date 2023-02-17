@@ -53,6 +53,9 @@ def i_command_it_to_scan_low(
         "obsstate"
     ).to_change_in_order(["SCANNING", "READY"])
     integration_test_exec_settings.attr_synching = False
+    logging.info(
+        f"context_monitoring._wait_after_setting_builder = {context_monitoring._wait_after_setting_builder}"
+    )
     with context_monitoring.observe_while_running(
         integration_test_exec_settings
     ) as concurrent_monitoring:

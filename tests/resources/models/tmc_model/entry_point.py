@@ -537,23 +537,48 @@ class TMCAbortStep(AbortStep, LogEnabled):
         ).to_become_equal_to("ABORTED", ignore_first=True)
         return builder
 
+    def undo(self, sub_array_id: int):
+        """Domain logic for restart configuration on a subarray in tmc.
 
-# class TMCObsResetStep(ObsResetStep, LogEnabled):
-#     def set_wait_for_do(
-#         self, sub_array_id: int, receptors: List[int]
-#     ) -> Union[MessageBoardBuilder, None]:
-#         builder = get_message_board_builder()
-#         subarray_name = self._tel.tm.subarray(sub_array_id)
-#         builder.set_waiting_on(subarray_name).for_attribute(
-#             "obsState"
-#         ).to_become_equal_to("IDLE", ignore_first=True)
-#         return builder
-#
-#     def do(self, sub_array_id: int):
-#         subarray_name = self._tel.tm.subarray(sub_array_id)
-#         subarray = con_config.get_device_proxy(subarray_name)
-#         self._log(f"commanding {subarray_name} with ObsReset command")
-#         subarray.command_inout("Obsreset")
+        This implements the restart method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+class TMCRestart(base.ObsResetStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(self, sub_array_id: int, receptors: List[int]) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
+        return builder
+class TMCObsResetStep(ObsResetStep, LogEnabled):
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)  #IDLE
+        return builder
+
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ObsReset command")
+        #subarray.command_inout("Obsreset")
 
 
 class TMCEntryPoint(CompositeEntryPoint):
@@ -575,7 +600,7 @@ class TMCEntryPoint(CompositeEntryPoint):
         self.configure_scan_step = ConfigureStep(observation)
         self.scan_step = ScanStep(observation)
         self.abort_step = TMCAbortStep()
-        self.obsreset_step = TMCObsResetStep()
+        self.obsreset_step = TMCRestart()  # TMCObsResetStep()
 
 
 ASSIGN_RESOURCE_JSON_LOW = {

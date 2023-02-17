@@ -56,7 +56,7 @@ def i_command_it_to_scan_low(
     ) as concurrent_monitoring:
         subarray = SubArray(subarray_id)
         subarray.scan()  # this is a blocking command
-time.sleep(10)
+        time.sleep(10)
 
 @then("the subarray must be in the SCANNING state until finished")
 def the_subarray_must_be_in_the_scanning_state(

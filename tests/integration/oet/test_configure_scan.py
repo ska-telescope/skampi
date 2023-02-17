@@ -83,7 +83,7 @@ def i_configure_it_for_a_scan(
                     1,
                     2
                 ],
-                "update_rate": 0,
+                "update_rate": 0.0,
                 "channels": [
                     [
                         0,

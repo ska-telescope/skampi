@@ -12,6 +12,9 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     NoOpStep,
     MessageBoardBuilder,
+    AbortStep,
+    ObsResetStep,
+
 )
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -322,6 +325,41 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         return None
 
 
+class SDPAbortStep(AbortStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Abort command")
+        subarray.command_inout("Abort")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        return builder
+
+
+class SDPObsResetStep(ObsResetStep, LogEnabled):
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE", ignore_first=True)
+        return builder
+
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ObsReset command")
+        subarray.command_inout("Obsreset")
+
+
+
 class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
     """Derived Entrypoint scoped to SDP element."""
 
@@ -338,3 +376,6 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
         self.assign_resources_step = SdpAssignResourcesStep(observation)
         self.configure_scan_step = SdpConfigureStep(observation)
         self.scan_step = SDPScanStep(observation)
+        self.abort_step = SDPAbortStep()
+        self.obsreset_step = SDPObsResetStep()
+

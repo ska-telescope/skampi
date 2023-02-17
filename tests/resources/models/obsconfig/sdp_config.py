@@ -382,7 +382,7 @@ class ProcessingBlockSpec(ProcessingSpecs):
             ProcessingBlockConfiguration(
                 pb_id=self.pb_id,
                 script=processing_script.script,
-                sbi_ids=[self.eb_id],
+                sbi_ids=[self.sbi_id],
                 parameters=processing_script.parameters,
             )
             for processing_script in self.processing_scripts

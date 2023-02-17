@@ -17,6 +17,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     MessageBoardBuilder,
     AbortStep,
 )
+from ..mvp_model.states import ObsState
 from ska_ser_skallop.utils.nrgen import get_id
 
 from ..obsconfig.config import Observation
@@ -398,7 +399,9 @@ class ScanStep(base.ScanStep, LogEnabled):
         try:
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)
-            subarray.command_inout("EndScan")
+            current_state = subarray.read_attribute("obsState")
+            if current_state.value == ObsState.SCANNING:
+                subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception

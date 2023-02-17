@@ -47,7 +47,7 @@ def an_alarm_handler():
 @when("I configure alarm for Telescope with empty observation state")
 def configure_alarm_for_empty_obs_state():
     alarm_handler = tango.DeviceProxy("alarm/handler/01")
-    alarm_formula = "tag=subarray_empty;formula=(ska_mid/tm_subarray_node/1/obsState == 2);priority=log;group=none;message=(\"alarm for subarray node empty\")"
+    alarm_formula = "tag=subarray_empty;formula=(ska_mid/tm_subarray_node/1/obsstate == 2);priority=log;group=none;message=(\"alarm for subarray node empty\")"
     alarm_handler.command_inout("Load", alarm_formula)
     
 @then("alarm should be raised with UNACK state")

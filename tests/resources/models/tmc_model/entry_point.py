@@ -572,7 +572,7 @@ class TMCRestart(base.ObsResetStep, LogEnabled):
         self._log(f"commanding {subarray_name} with Restart command")
         subarray.command_inout("Restart")
 
-    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_do(self, sub_array_id: int, receptors: List[int]) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(

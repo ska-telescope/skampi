@@ -517,7 +517,7 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
-class TMCAbortStep(AbortStep, LogEnabled):
+class TMCAbortStep(base.AbortStep, LogEnabled):
     def do(self, sub_array_id: int):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -563,6 +563,24 @@ class TMCAbortStep(AbortStep, LogEnabled):
     #     ).to_become_equal_to("EMPTY", ignore_first=True)
     #     return builder
 
+
+# temporary change
+class TMCRestart(base.ObsResetStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
+        return builder
+
+
 class TMCEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
@@ -582,7 +600,7 @@ class TMCEntryPoint(CompositeEntryPoint):
         self.configure_scan_step = ConfigureStep(observation)
         self.scan_step = ScanStep(observation)
         self.abort_step = TMCAbortStep()
-
+        self.obsreset_step = TMCRestart()
 
 
 ASSIGN_RESOURCE_JSON_LOW = {

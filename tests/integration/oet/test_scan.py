@@ -52,6 +52,7 @@ def i_command_it_to_scan_low(
     context_monitoring.set_waiting_on(tel.tm.subarray(subarray_id)).for_attribute(
         "obsstate"
     ).to_change_in_order(["SCANNING", "READY"])
+    integration_test_exec_settings.attr_synching = False
     with context_monitoring.observe_while_running(
         integration_test_exec_settings
     ) as concurrent_monitoring:

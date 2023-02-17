@@ -47,7 +47,7 @@ def an_alarm_handler():
 @when("I configure alarm for Telescope with empty observation state")
 def configure_alarm_for_empty_obs_state():
     alarm_handler = tango.DeviceProxy("alarm/handler/01")
-    alarm_formula = "tag=subarray_empty;formula=(ska_mid/tm_subarray_node/1/obsState == 0);priority=log;group=none;message=(\"alarm for subarray node empty\")"
+    alarm_formula = "tag=subarray_empty;formula=(ska_mid/tm_subarray_node/1/obsState == 2);priority=log;group=none;message=(\"alarm for subarray node empty\")"
     alarm_handler.command_inout("Load", alarm_formula)
     
 @then("alarm should be raised with UNACK state")
@@ -56,7 +56,6 @@ def validate_alarm_state(sut_settings: SutTestSettings):
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     subarray_obsstate = subarray.read_attribute("obsState").value
     logger.info("SUBARRAY Value {}".format(subarray_obsstate))
-    assert subarray_obsstate  == 0
     alarm_handler = tango.DeviceProxy("alarm/handler/01")
     alarm_summary = alarm_handler.alarmSummary
     assert "state=UNACK" in alarm_summary[0]

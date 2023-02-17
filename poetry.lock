@@ -1064,6 +1064,11 @@ files = [
 [package.dependencies]
 gitdb = ">=4.0.1,<5"
 
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
 [[package]]
 name = "glob2"
 version = "0.7"
@@ -3005,14 +3010,14 @@ reference = 'ska'
 
 [[package]]
 name = "ska-ser-skallop"
-version = "2.23.2"
+version = "2.23.3"
 description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "ska-ser-skallop-2.23.2.tar.gz", hash = "sha256:d7a5de97f4e052a86c6b9de3a76a6ea7474998e36aa16c00045d26c994a04938"},
-    {file = "ska_ser_skallop-2.23.2-py3-none-any.whl", hash = "sha256:9ec3a663c77b4cb95db189ca62d947b9541f3ca414840c89998a70b2b3c85f19"},
+    {file = "ska-ser-skallop-2.23.3.tar.gz", hash = "sha256:8c229b50c98db37c42731010a956bc98f8712ac017460d7b3c4b9e21fa197fa1"},
+    {file = "ska_ser_skallop-2.23.3-py3-none-any.whl", hash = "sha256:1a52d33d57147910576958fd96b5a8af5ef096abf7f92f0d8d22560d1b765252"},
 ]
 
 [package.dependencies]
@@ -3702,4 +3707,4 @@ reference = 'ska'
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a673bbbeb119908d7deee0e06d4b2edb172367f0047c6ee1abebe386acd7e632"
+content-hash = "202779ac3fe10d3e0279ade77bd1e42134ebb3f195a094462dcb62c343d592bb"

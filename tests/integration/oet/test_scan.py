@@ -44,6 +44,7 @@ def i_command_it_to_scan_low(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: conftest.SutTestSettings,
+    entry_point: fxt_types.entry_point,
 ):
     """I configure it for a scan."""
     subarray_id = sut_settings.subarray_id
@@ -54,9 +55,10 @@ def i_command_it_to_scan_low(
     with context_monitoring.observe_while_running(
         integration_test_exec_settings
     ) as concurrent_monitoring:
-        subarray = SubArray(subarray_id)
-        subarray.scan()  # this is a blocking command
-        time.sleep(10)
+        # subarray = SubArray(subarray_id)
+        # subarray.scan()  # this is a blocking command
+        entry_point.scan(subarray_id)
+        concurrent_monitoring.wait_until_complete()
 
 
 @then("the subarray must be in the SCANNING state until finished")
@@ -71,6 +73,6 @@ def the_subarray_must_be_in_the_scanning_state(
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
     tmc_state_changes = recorder.get_transitions_for(tmc_subarray_name, "obsstate")
-    assert_that(tmc_state_changes).is_equal_to(["SCANNING", "READY"])
+    assert_that(tmc_state_changes).is_equal_to(["READY", "SCANNING", "READY"])
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

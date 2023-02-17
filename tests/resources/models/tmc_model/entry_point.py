@@ -65,7 +65,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON", ignore_first=False)
         # set csp controller and csp subarray to be waited before startup completes
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
             "state"
@@ -105,7 +105,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("OFF")
+            ).to_become_equal_to("OFF", ignore_first=False)
         # set dish master to be waited before startup completes
         if self._tel.skamid:
             brd.set_waiting_on(self._tel.csp.controller).for_attribute(

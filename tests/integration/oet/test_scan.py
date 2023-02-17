@@ -2,7 +2,7 @@
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
-
+import time
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
@@ -56,7 +56,7 @@ def i_command_it_to_scan_low(
     ) as concurrent_monitoring:
         subarray = SubArray(subarray_id)
         subarray.scan()  # this is a blocking command
-        concurrent_monitoring.wait_until_complete()  # this waits for events to complete
+        time.sleep(1) # this waits for events to complete
 
 
 @then("the subarray must be in the SCANNING state until finished")

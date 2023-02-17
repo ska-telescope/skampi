@@ -44,7 +44,6 @@ def i_command_it_to_scan_low(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: conftest.SutTestSettings,
-    entry_point: fxt_types.entry_point,
 ):
     """I configure it for a scan."""
     subarray_id = sut_settings.subarray_id
@@ -55,9 +54,8 @@ def i_command_it_to_scan_low(
     with context_monitoring.observe_while_running(
         integration_test_exec_settings
     ) as concurrent_monitoring:
-        # subarray = SubArray(subarray_id)
-        # subarray.scan()  # this is a blocking command
-        entry_point.scan(subarray_id)
+        subarray = SubArray(subarray_id)
+        subarray.scan()  # this is a blocking command
         concurrent_monitoring.wait_until_complete()
 
 

@@ -12,51 +12,33 @@
   "activities": {
     "allocate": {
       "kind": "filesystem",
-      "path": "file:///path/to/allocatescript.py",
+      "path": "file:///scripts/allocate_from_file_mid_sb.py",
       "function_args": {
         "init": {
-          "args": [
-            "posarg1",
-            "posarg2"
-          ],
+          "args": [],
           "kwargs": {
-            "argname": "argval"
+            "subarray_id": 1
           }
         },
         "main": {
-          "args": [
-            "posarg1",
-            "posarg2"
-          ],
-          "kwargs": {
-            "argname": "argval"
-          }
+          "args": [],
+          "kwargs": {}
         }
       }
     },
     "observe": {
-      "kind": "git",
-      "path": "git://relative/path/to/scriptinsiderepo.py",
-      "repo": "https://gitlab.com/script_repo/operational_scripts",
-      "branch": "main",
+      "kind": "filesystem",
+      "path": "file:///scripts/observe_mid_sb.py",
       "function_args": {
         "init": {
-          "args": [
-            "posarg1",
-            "posarg2"
-          ],
+          "args": [],
           "kwargs": {
-            "argname": "argval"
+            "subarray_id": 1
           }
         },
         "main": {
-          "args": [
-            "posarg1",
-            "posarg2"
-          ],
-          "kwargs": {
-            "argname": "argval"
-          }
+          "args": [],
+          "kwargs": {}
         }
       }
     },
@@ -235,8 +217,8 @@
     ],
     "resources": {
       "receptors": [
-        "SKA0001",
-        "SKA0002"
+        "SKA001",
+        "SKA002"
       ]
     }
   },
@@ -271,7 +253,7 @@
             "frequency_slice_id": 2,
             "integration_factor": 1,
             "zoom_factor": 1,
-            "zoom_window_tuning": 650000,
+            "zoom_window_tuning": 4900000,
             "output_link_map": [[0, 0], [200, 1]]
           }
         ]

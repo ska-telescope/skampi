@@ -15,7 +15,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.context_management import (
     TelescopeContext,
 )
-from .. import conftest
+from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,12 @@ def configure_alarm_for_empty_obs_state():
     alarm_handler.command_inout("Load", alarm_formula)
     
 @then("alarm should be raised with UNACK state")
-def validate_alarm_state():
+def validate_alarm_state(sut_settings: SutTestSettings):
+    tel = names.TEL()
+    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray_obsstate = subarray.read_attribute("obsState").value
+    logger.info("SUBARRAY Value {}".format(subarray_obsstate))
+    assert subarray_obsstate  == 0
     alarm_handler = tango.DeviceProxy("alarm/handler/01")
     alarm_summary = alarm_handler.alarmSummary
     assert "state=UNACK" in alarm_summary[0]

@@ -67,14 +67,15 @@ def the_subarray_must_be_in_the_scanning_state(
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
     
-    result = csp_subarray.read_attribute("obsstate").value
+    result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.SCANNING)
     # afterwards it must be ready
     context_monitoring.re_init_builder()
-    context_monitoring.wait_for(csp_subarray_name).for_attribute(
+    context_monitoring.wait_for(tmc_subarray_name).for_attribute(
         "obsstate"
     ).to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
-    result = csp_subarray.read_attribute("obsstate").value
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(tmc_subarray_name)
+    result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

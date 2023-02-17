@@ -58,5 +58,5 @@ def validate_alarm_state(sut_settings: SutTestSettings):
     logger.info("SUBARRAY Value {}".format(subarray_obsstate))
     logger.info("SUBARRAY ID: {}".format(sut_settings.subarray_id))
     alarm_handler = tango.DeviceProxy("alarm/handler/01")
-    alarm_summary = alarm_handler.alarmSummary
-    assert "state=UNACK" in alarm_summary[0]
+    alarm_summary = alarm_handler.alarmUnacknowledged
+    assert "subarray_empty" in alarm_summary

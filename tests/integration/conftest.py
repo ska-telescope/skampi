@@ -18,7 +18,7 @@ from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
-
+from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +35,12 @@ class SutTestSettings(SimpleNamespace):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.tel = TEL()
         logger.info("initialising sut settings")
         self.observation = Observation()
+        self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
+        self.previous_state: Any = None
+        self.next_state: Any = None
 
     @property
     def nr_of_receptors(self):

@@ -25,7 +25,7 @@ def test_tmc_abort_scanning_on_mid_subarray():
 # @when("I command it to Abort")
 
 
-@then("the subarray should go into an aborted state")
+@then("the Tmc subarray should go into an aborted state")
 def the_subarray_should_go_into_aborted_state(
    sut_settings: SutTestSettings, integration_test_exec_settings: fxt_types.exec_settings
 ):

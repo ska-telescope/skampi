@@ -3,7 +3,7 @@ import logging
 # import os
 
 import pytest
-import tango
+# import tango
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
 
@@ -11,6 +11,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.connectors.configuration import get_device_proxy
 
 from ska_ser_skallop.mvp_fixtures.context_management import (
     TelescopeContext,
@@ -46,7 +47,9 @@ def an_alarm_handler():
 
 @when("I configure alarm for Telescope with empty observation state")
 def configure_alarm_for_empty_obs_state():
-    alarm_handler = tango.DeviceProxy("alarm/handler/01")
+    alarm_handler = get_device_proxy("alarm/handler/01")
+    alarm_formula = "tag=subarray_empty;formula=(ska_mid/tm_subarray_node/1/obsstate == 2);priority=log;group=none;message=(\"alarm for subarray node empty\")"
+    alarm_handler.command_inout("Load", alarm_formula)
     
 @then("alarm should be raised with UNACK state")
 def validate_alarm_state(sut_settings: SutTestSettings):
@@ -55,14 +58,9 @@ def validate_alarm_state(sut_settings: SutTestSettings):
     subarray_obsstate = subarray.read_attribute("obsState").value
     logger.info("SUBARRAY Value {}".format(subarray_obsstate))
     logger.info("SUBARRAY ID: {}".format(sut_settings.subarray_id))
-    alarm_handler = tango.DeviceProxy("alarm/handler/01")
     
-    alarm_formula = "tag=subarray_empty;formula=(ska_mid/tm_subarray_node/1/obsstate == 2);priority=log;group=none;message=(\"alarm for subarray node empty\")"
-    alarm_handler.command_inout("Load", alarm_formula)
+    alarm_handler = get_device_proxy("alarm/handler/01")
+    alarm_summary = alarm_handler.read_attribute("alarmSummary").value
     
-    alarm_formula = "tag=subarray_healthstate;formula=(ska_mid/tm_subarray_node/1/healthState == 1);priority=log;group=none;message=(\"alarm for subarray node healthState\")"
-    alarm_handler.command_inout("Load", alarm_formula)
-    
-    alarm_summary = alarm_handler.alarmSummary
     logger.info("Alarm Summary {}".format(alarm_summary))
     assert "state=UNACK" in alarm_summary[0]

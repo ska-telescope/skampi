@@ -63,8 +63,6 @@ def validate_alarm_state(sut_settings: SutTestSettings):
     time.sleep(5)
     
     alarm_handler = get_device_proxy("alarm/handler/01")
-    alarm_formula = "tag=subarray_empty1;formula=(ska_mid/tm_subarray_node/1/obsstate == 2);priority=log;group=none;message=(\"alarm for subarray node empty\")"
-    alarm_handler.command_inout("Load", alarm_formula)
     alarm_summary = alarm_handler.read_attribute("alarmSummary").value
     
     logger.info("Alarm Summary {}".format(alarm_summary))

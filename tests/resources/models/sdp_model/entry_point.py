@@ -286,7 +286,6 @@ class SDPScanStep(base.ScanStep, LogEnabled):
             current_state = subarray.read_attribute("obsState")
             if current_state.value == ObsState.SCANNING:
                 subarray.command_inout("EndScan")
-            subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception

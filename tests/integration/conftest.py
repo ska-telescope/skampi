@@ -347,7 +347,7 @@ def i_command_it_to_abort(
         "obsstate"
     ).to_become_equal_to("ABORTED")
     with context_monitoring.context_monitoring():
-        with context_monitoring.wait_before_complete(integration_test_exec_settings):
+        with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
             allocated_subarray.reset_after_test(integration_test_exec_settings)
             entry_point.abort_subarray(sub_array_id)
 

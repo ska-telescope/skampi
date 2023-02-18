@@ -53,14 +53,15 @@ def configure_alarm_for_empty_obs_state():
     
 @then("alarm should be raised with UNACK state")
 def validate_alarm_state(sut_settings: SutTestSettings):
-    tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    subarray_obsstate = subarray.read_attribute("obsState").value
-    logger.info("SUBARRAY Value {}".format(subarray_obsstate))
-    logger.info("SUBARRAY ID: {}".format(sut_settings.subarray_id))
+    # tel = names.TEL()
+    # subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    # subarray_obsstate = subarray.read_attribute("obsState").value
+    # logger.info("SUBARRAY Value {}".format(subarray_obsstate))
+    # logger.info("SUBARRAY ID: {}".format(sut_settings.subarray_id))
     
     alarm_handler = get_device_proxy("alarm/handler/01")
     alarm_summary = alarm_handler.read_attribute("alarmSummary").value
     
     logger.info("Alarm Summary {}".format(alarm_summary))
     assert "state=UNACK" in alarm_summary[0]
+

@@ -19,6 +19,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ..obsconfig.config import Observation
+from ..mvp_model.states import ObsState
 
 
 logger = logging.getLogger(__name__)
@@ -282,6 +283,9 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         try:
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)
+            current_state = subarray.read_attribute("obsState")
+            if current_state.value == ObsState.SCANNING:
+                subarray.command_inout("EndScan")
             subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)

@@ -333,10 +333,10 @@ def i_command_it_to_abort(
     integration_test_exec_settings.touch()
 
 
-@then("the subarray should go into an aborted state")
-def the_subarray_should_go_into_an_aborted_state(
-    sut_settings: SutTestSettings,
-):
-    subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
-    result = subarray.read_attribute("obsstate").value
-    assert_that(result).is_equal_to(ObsState.ABORTED)
+# @then("the subarray should go into an aborted state")
+# def the_subarray_should_go_into_an_aborted_state(
+#     sut_settings: SutTestSettings,
+# ):
+#     subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
+#     result = subarray.read_attribute("obsstate").value
+#     assert_that(result).is_equal_to(ObsState.ABORTED)

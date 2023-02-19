@@ -421,7 +421,7 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
-class CSPAbortStep(AbortStep, LogEnabled):
+class CSPAbortStep(base.AbortStep, LogEnabled):
     def do(self, sub_array_id: int):
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -437,7 +437,7 @@ class CSPAbortStep(AbortStep, LogEnabled):
         return builder
 
 
-class CSPObsResetStep(ObsResetStep, LogEnabled):
+class CSPObsResetStep(base.ObsResetStep, LogEnabled):
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:

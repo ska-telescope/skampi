@@ -98,12 +98,12 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
 
     config_resources_schema = "https://schema.skao.int/ska-low-tmc-configure/3.0"    
     def _generate_low_tmc_scan_config(
-        self, target_id: str | None = 6, scan_duration: float = 10, low_tmc=True
+        self, target_id: str | None = None , scan_duration: float = 10, low_tmc=True
     ):
         if target_id is None:
             target_id = self.next_target_id
-        return ConfigureRequest(
             interface=self.config_resources_schema,
+        return ConfigureRequest(
             transaction_id="txn-....-00001",
             sdp=self.generate_low_sdp_scan_config().as_object,
             csp=self.generate_csp_scan_config(target_id,low_tmc).as_object,

@@ -39,16 +39,6 @@ DEFAULT_TARGET_SPECS = OrderedDict(
             "test-receive-addresses",
             "two",
         ),
-        "calibration:b": TargetSpec(
-            Target("12:29:06.699 degrees", "02:03:08.598 degrees"),
-            "calibration:b",
-            ReceiverBand.BAND_2,
-            "vis_channels",
-            "all",
-            "field_b",
-            "test-receive-addresses",
-            "two",
-        ),
     }
 )
 

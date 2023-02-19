@@ -434,6 +434,7 @@ class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields):
 class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
     sdp_assign_resources_schema = "https://schema.skao.int/ska-sdp-assignres/0.4"
     sdp_configure_scan_schema = "https://schema.skao.int/ska-sdp-configure/0.3"
+    sdp_low_configure_scan_schema = "https://schema.skao.int/ska-sdp-configure/0.4"
 
     def _generate_sdp_assign_resources_config(self):
         return SDPConfiguration(
@@ -454,6 +455,16 @@ class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
             interface=self.sdp_configure_scan_schema, scan_type=target_id
         )
 
+    def _generate_low_sdp_scan_config(self, target_id: str | None = None):
+        if target_id:
+            assert self.target_specs[target_id], "unknown target id specified"
+        else:
+            target_id = list(self.target_specs.keys())[0]
+        self._pending_scan_type = target_id
+        return SDPScanConfiguration(
+            interface=self.sdp_low_configure_scan_schema, scan_type=target_id
+        )
+
     def _generate_sdp_run_scan(self):
         return self.get_scan_id(backwards=True)
 
@@ -464,6 +475,10 @@ class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
     @encoded
     def generate_sdp_scan_config(self, target_id: str | None = None):
         return self._generate_sdp_scan_config(target_id)
+
+    @encoded
+    def generate_low_sdp_scan_config(self, target_id: str | None = None):
+        return self._generate_low_sdp_scan_config(target_id)
 
     @encoded
     def generate_sdp_assign_resources_config(self):

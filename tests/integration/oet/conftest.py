@@ -80,7 +80,6 @@ def fxt_oet_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 
 # log checking
 
-
 @pytest.fixture(name="set_up_tmc_log_checking", autouse=True)
 @pytest.mark.usefixtures("set_tmc_entry_point")
 def fxt_set_up_log_capturing_for_cbf(

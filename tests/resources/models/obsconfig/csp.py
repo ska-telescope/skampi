@@ -19,6 +19,8 @@ from .target_spec import TargetSpecs
 class CSPconfig(TargetSpecs):
     csp_subarray_id = "dummy name"
     csp_scan_configure_schema = "https://schema.skao.int/ska-csp-configure/2.0"
+
+    csp_low_subarray_id = "science period 23"
     config_id = "sbi-mvp01-20200325-00001-science_A"
 
     def _generate_low_csp_assign_resources_config(self):
@@ -118,7 +120,7 @@ class CSPconfig(TargetSpecs):
         timing_beams = TimingBeamConfiguration(beams=[beams])
         return CSPConfiguration(
             self.csp_scan_configure_schema,
-            SubarrayConfiguration(self.csp_subarray_id),
+            SubarrayConfiguration(self.csp_low_subarray_id),
             CommonConfiguration(self.config_id, spec.band, subarray_id),
             lowcbf=LowCBFConfiguration(stations, timing_beams),
         )

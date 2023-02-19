@@ -68,7 +68,7 @@ def fxt_set_entry_point(
 
 @pytest.fixture(name="base_configuration")
 def fxt_oet_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
-    """Setup a base scan configuration to use for sdp.
+    """Setup a base scan configuration to use for oet.
 
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.

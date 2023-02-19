@@ -102,8 +102,8 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
     ):
         if target_id is None:
             target_id = self.next_target_id
-            interface=self.config_resources_schema,
         return ConfigureRequest(
+            interface=self.config_resources_schema,
             transaction_id="txn-....-00001",
             sdp=self.generate_low_sdp_scan_config().as_object,
             csp=self.generate_csp_scan_config(target_id,low_tmc).as_object,

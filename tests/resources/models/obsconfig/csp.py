@@ -5,11 +5,6 @@ from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     FSPConfiguration,
     FSPFunctionMode,
     SubarrayConfiguration,
-    BeamConfiguration,
-    LowCBFConfiguration,
-    StationConfiguration,
-    StnBeamConfiguration,
-    TimingBeamConfiguration, 
 )
 
 from .base import encoded
@@ -93,40 +88,54 @@ class CSPconfig(TargetSpecs):
     def generate_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
         return self._generate_csp_scan_config(target_id, subarray_id)
 
-    def _generate_low_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
-        mode: FSPFunctionMode = FSPFunctionMode.CORR
-        if target_id:
-            spec = self.target_specs[target_id]
-        else:
-            target_id, spec = list(self.target_specs.items())[0]
-        stn_beams = StnBeamConfiguration(
-            beam_id=1, freq_ids=[64, 65, 66, 67, 68, 69, 70, 71], boresight_dly_poly="url"
-        )
-        stations = StationConfiguration(
-            stns=[[1, 0], [2, 0], [3, 0], [4, 0]], stn_beams=[stn_beams]
-        )
-        beams = BeamConfiguration(
-            pst_beam_id=13,
-            stn_beam_id=1,
-            offset_dly_poly="url",
-            stn_weights=[0.9, 1.0, 1.0, 0.9],
-            jones="url",
-            dest_chans=[128, 256],
-            rfi_enable=[True, True, True],
-            rfi_static_chans=[1, 206, 997],
-            rfi_dynamic_chans=[242, 1342],
-            rfi_weighted=0.87,
-        )
-        timing_beams = TimingBeamConfiguration(beams=[beams])
-        return CSPConfiguration(
-            self.csp_scan_configure_schema,
-            SubarrayConfiguration(self.csp_low_subarray_id),
-            CommonConfiguration(self.config_id, spec.band),
-            lowcbf=LowCBFConfiguration(stations, timing_beams),
-        )
+    def _generate_low_csp_scan_config(self):
+        interface = "https://schema.skao.int/ska-csp-configure/2.0"
+        subarray = {"subarray_name": "science period 23"}
+        common = {
+            "config_id": "sbi-mvp01-20200325-00001-science_A",
+            "subarray_id": 1
+        }
+        lowcbf = {
+            "stations": {
+            "stns": [
+                [1,0],
+                [2,0],
+                [3,0],
+                [4,0]
+            ],
+            "stn_beams": [
+                {
+                "beam_id": 1,
+                "freq_ids": [64,65,66,67,68,69,70,71],
+                "boresight_dly_poly": "url"
+                }
+            ]
+            },
+            "timing_beams": {
+            "beams": [
+                {
+                "pst_beam_id": 13,
+                "stn_beam_id": 1,
+                "offset_dly_poly": "url",
+                "stn_weights": [0.9,1.0,1.0,0.9],
+                "jones": "url",
+                "dest_chans": [128,256],
+                "rfi_enable": [true,true,true],
+                "rfi_static_chans": [1,206,997],
+                "rfi_dynamic_chans": [242,1342],
+                "rfi_weighted": 0.87
+                }
+            ]
+            },
+        }
 
+        return CSPConfiguration(
+            interface=interface,
+            subarray=subarray,
+            common=common,
+            lowcbf=lowcbf
+        )
+        
     @encoded
-    def generate_low_csp_scan_config(
-        self, target_id: str | None = None, subarray_id: int = 1
-    ):
-        return self._generate_low_csp_scan_config(target_id, subarray_id)
+    def generate_low_csp_scan_config(self):
+        return self._generate_low_csp_scan_config()

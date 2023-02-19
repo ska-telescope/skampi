@@ -121,7 +121,7 @@ class CSPconfig(TargetSpecs):
         return CSPConfiguration(
             self.csp_scan_configure_schema,
             SubarrayConfiguration(self.csp_low_subarray_id),
-            CommonConfiguration(self.config_id, subarray_id),
+            CommonConfiguration(self.config_id, spec.band),
             lowcbf=LowCBFConfiguration(stations, timing_beams),
         )
 

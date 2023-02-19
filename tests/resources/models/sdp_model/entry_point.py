@@ -360,6 +360,30 @@ class SDPObsResetStep(ObsResetStep, LogEnabled):
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with ObsReset command")
         subarray.command_inout("Obsreset")
+    
+    def undo(self, sub_array_id: int):
+        """Domain logic for releasing resources on a subarray in sdp.
+
+        This implments the tear_down_subarray method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"Commanding {subarray_name} to ReleaseAllResources")
+        subarray.command_inout("ReleaseAllResources")
+
+    def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
+        """Domain logic specifying what needs to be waited for subarray releasing resources is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        brd = get_message_board_builder()
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "EMPTY"
+        )
+        return brd
 
 
 

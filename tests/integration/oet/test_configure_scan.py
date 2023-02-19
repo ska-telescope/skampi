@@ -58,7 +58,8 @@ def i_configure_it_for_a_scan(
     sut_settings: SutTestSettings,
 ):
     """I configure it for a scan."""
-  
+    subarray_id = sut_settings.subarray_id
+    subarray = SubArray(subarray_id)
     observation = sut_settings.observation
     scan_duration = sut_settings.scan_duration
     with context_monitoring.context_monitoring():
@@ -66,8 +67,6 @@ def i_configure_it_for_a_scan(
             integration_test_exec_settings
         ):
             config = observation.generate_low_tmc_scan_config(scan_duration, low_tmc=True).as_object
-            tel = names.TEL()
-            subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
             subarray.configure_from_cdm(config)
 
 @then("the subarray must be in the READY state")

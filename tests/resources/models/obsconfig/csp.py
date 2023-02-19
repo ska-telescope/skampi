@@ -116,11 +116,10 @@ class CSPconfig(TargetSpecs):
                 CommonConfiguration(self.eb_id, spec.band, subarray_id),
                 CBFConfiguration([fsp1, fsp2]),
             )
-        spec = self.target_specs[target_id]
         return CSPConfiguration(
             self.csp_scan_configure_schema,
             SubarrayConfiguration(self.csp_subarray_id),
-            CommonConfiguration(self.csp_config_id,subarray_id,spec.band),
+            CommonConfiguration(self.csp_config_id,subarray_id),
             lowcbf=LowCBFConfiguration(stations, timing_beams),
         )
 
@@ -128,7 +127,7 @@ class CSPconfig(TargetSpecs):
     def generate_csp_scan_config(
         self, target_id: str | None = None, subarray_id: int = 1, low_tmc=True
     ):
-        return self._generate_csp_scan_config(target_id, subarray_id, low_tmc=True)
+        return self._generate_csp_scan_config(target_id=None,subarray_id=1, low_tmc=True)
 
 
     def generate_csp_run_scan_config(

@@ -25,7 +25,9 @@ class CSPrunScanConfig(TypedDict):
 class CSPconfig(TargetSpecs):
     csp_subarray_id = "dummy name"
     csp_scan_configure_schema = "https://schema.skao.int/ska-csp-configure/2.0"
+    csp_subarray_id = "science period 23"
     config_id = "sbi-mvp01-20200325-00001-science_A"
+
     def _generate_low_csp_assign_resources_config(self):
         interface = "https://schema.skao.int/ska-low-csp-assignresources/2.0"
         common = {

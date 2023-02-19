@@ -116,6 +116,7 @@ class CSPconfig(TargetSpecs):
                 CommonConfiguration(self.eb_id, spec.band, subarray_id),
                 CBFConfiguration([fsp1, fsp2]),
             )
+        spec = self.target_specs[target_id]
         return CSPConfiguration(
             self.csp_scan_configure_schema,
             SubarrayConfiguration(self.csp_subarray_id),

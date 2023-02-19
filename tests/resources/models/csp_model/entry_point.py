@@ -17,6 +17,8 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 from ska_ser_skallop.utils.singleton import Memo
 
 from ..obsconfig.config import Observation
+from ..mvp_model.states import ObsState
+
 
 
 logger = logging.getLogger(__name__)
@@ -308,7 +310,9 @@ class CspScanStep(base.ScanStep, LogEnabled):
         try:
             subarray.command_inout("Scan", scan_config_arg)
             sleep(scan_duration)
-            subarray.command_inout("EndScan")
+            current_state = subarray.read_attribute("obsState")
+            if current_state.value == ObsState.SCANNING:
+                subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception

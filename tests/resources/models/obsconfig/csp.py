@@ -95,7 +95,7 @@ class CSPconfig(TargetSpecs):
             }
         common = {
             "config_id": "sbi-mvp01-20200325-00001-science_A",
-            "frequency_band": None,
+            "frequency_band": "5a",
             "subarray_id": 1
         }
         lowcbf = {

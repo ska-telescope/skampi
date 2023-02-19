@@ -120,7 +120,7 @@ class CSPconfig(TargetSpecs):
                 "stn_weights": [0.9,1.0,1.0,0.9],
                 "jones": "url",
                 "dest_chans": [128,256],
-                "rfi_enable": [true,true,true],
+                "rfi_enable": ['true','true','true'],
                 "rfi_static_chans": [1,206,997],
                 "rfi_dynamic_chans": [242,1342],
                 "rfi_weighted": 0.87

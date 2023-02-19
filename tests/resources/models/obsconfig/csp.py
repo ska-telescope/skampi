@@ -10,6 +10,7 @@ from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     StationConfiguration,
     TimingBeamConfiguration,
     BeamConfiguration,
+    StnBeamConfiguration,
 )
 
 from .base import encoded
@@ -22,7 +23,8 @@ class CSPrunScanConfig(TypedDict):
 
 
 class CSPconfig(TargetSpecs):
-    csp_subarray_id = "dummy name"
+    csp_subarray_id = "science period 23"
+    csp_config_id = "sbi-mvp01-20200325-00001-science_A"
     csp_scan_configure_schema = "https://schema.skao.int/ska-csp-configure/2.0"
 
     def _generate_low_csp_assign_resources_config(self):
@@ -83,6 +85,9 @@ class CSPconfig(TargetSpecs):
             channel_offset=744,
             zoom_window_tuning=650000,
         )
+        stn_beams = StnBeamConfiguration(
+            beam_id=1, freq_ids=[64, 65, 66, 67, 68, 69, 70, 71], boresight_dly_poly="url"
+        )
         stations = StationConfiguration(
             stns=[[1, 0], [2, 0], [3, 0], [4, 0]], stn_beams=[stn_beams]
         )
@@ -114,7 +119,7 @@ class CSPconfig(TargetSpecs):
         return CSPConfiguration(
             self.csp_scan_configure_schema,
             SubarrayConfiguration(self.csp_subarray_id),
-            CommonConfiguration(self.config_id),
+            CommonConfiguration(self.csp_config_id, self.csp_subarray_id ),
             lowcbf=LowCBFConfiguration(stations, timing_beams),
         )
 

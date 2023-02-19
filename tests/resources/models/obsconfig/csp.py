@@ -89,13 +89,12 @@ class CSPconfig(TargetSpecs):
         return self._generate_csp_scan_config(target_id, subarray_id)
 
     def _generate_low_csp_scan_config(self):
-        interface = "https://schema.skao.int/ska-csp-configure/2.0"
+        interface = "https://schema.skao.int/ska-low-csp-configure/2.0"
         subarray = {
             "subarray_name": "science period 23"
             }
         common = {
             "config_id": "sbi-mvp01-20200325-00001-science_A",
-            "frequency_band": "5a",
             "subarray_id": 1
         }
         lowcbf = {

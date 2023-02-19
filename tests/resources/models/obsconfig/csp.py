@@ -21,6 +21,37 @@ class CSPconfig(TargetSpecs):
     csp_scan_configure_schema = "https://schema.skao.int/ska-csp-configure/2.0"
     config_id = "sbi-mvp01-20200325-00001-science_A"
 
+    def _generate_low_csp_assign_resources_config(self):
+        interface = "https://schema.skao.int/ska-low-csp-assignresources/2.0"
+        common = {
+            "subarray_id": 1
+        }
+        lowcbf = {
+            "resources": [
+                {
+                    "device": "fsp_01",
+                    "shared": True,
+                    "fw_image": "pst",
+                    "fw_mode": "unused"
+                },
+                {
+                    "device": "p4_01",
+                    "shared": True,
+                    "fw_image": "p4.bin",
+                    "fw_mode": "p4"
+                }
+            ]
+        }
+        return CSPConfiguration(
+            interface=interface,
+            common=common,
+            lowcbf=lowcbf
+        )
+
+    @encoded
+    def generate_low_csp_assign_resources_config(self):
+        return self._generate_low_csp_assign_resources_config()
+
     def _generate_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
         mode: FSPFunctionMode = FSPFunctionMode.CORR
         if target_id:
@@ -94,6 +125,6 @@ class CSPconfig(TargetSpecs):
 
     @encoded
     def generate_low_csp_scan_config(
-        self, target_id: str | None = None, subarray_id: int = 1, low_tmc=True
+        self, target_id: str | None = None, subarray_id: int = 1
     ):
-        return self._generate_low_csp_scan_config(target_id, subarray_id, low_tmc=True)
+        return self._generate_low_csp_scan_config(target_id, subarray_id)

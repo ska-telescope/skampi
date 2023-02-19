@@ -98,7 +98,7 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
 
     config_resources_schema = "https://schema.skao.int/ska-low-tmc-configure/3.0"    
     def _generate_low_tmc_scan_config(
-        self, target_id: str | None = None , scan_duration: float = 10, low_tmc=True
+        self, target_id: str | None = None , scan_duration: float = 10
     ):
         if target_id is None:
             target_id = self.next_target_id
@@ -112,5 +112,5 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
         )
 
     @encoded
-    def generate_low_tmc_scan_config(self, scan_duration: float = 10, low_tmc=True):
-        return self._generate_low_tmc_scan_config(scan_duration, low_tmc)
+    def generate_low_tmc_scan_config(self, scan_duration: float = 10):
+        return self._generate_low_tmc_scan_config(scan_duration)

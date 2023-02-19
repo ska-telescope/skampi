@@ -66,7 +66,7 @@ def i_configure_it_for_a_scan(
         with allocated_subarray.wait_for_configuring_a_subarray(
             integration_test_exec_settings
         ):
-            config = observation.generate_low_tmc_scan_config(scan_duration, low_tmc=True).as_object
+            config = observation.generate_low_tmc_scan_config(scan_duration).as_object
             subarray.configure_from_cdm(config)
 
 @then("the subarray must be in the READY state")

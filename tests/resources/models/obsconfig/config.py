@@ -2,7 +2,7 @@ import json
 from typing import Any, cast
 
 from ska_tmc_cdm.messages.central_node.assign_resources import AssignResourcesRequest
-from ska_tmc_cdm.messages.mccssubarray.configure import ConfigureRequest
+from ska_tmc_cdm.messages.subarray_node.configure import ConfigureRequest
 
 from .base import encoded
 from .csp import CSPconfig
@@ -102,7 +102,7 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
     ):
         if target_id is None:
             target_id = self.next_target_id
-        return ConfigureRequest(
+        return low_configure_request(
             interface=self.config_resources_schema,
             transaction_id="txn-....-00001",
             sdp=self.generate_low_sdp_scan_config().as_object,

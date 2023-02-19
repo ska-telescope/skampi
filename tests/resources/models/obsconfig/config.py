@@ -106,7 +106,7 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
             interface=self.config_resources_schema,
             transaction_id="txn-....-00001",
             sdp=self.generate_low_sdp_scan_config().as_object,
-            csp=self.generate_csp_scan_config(target_id,low_tmc).as_object,
+            csp=self.generate_low_csp_scan_config().as_object,
             tmc=self.generate_tmc_scan_config(scan_duration),
             mccs=self.generate_mccs_scan_config().as_object,
         )

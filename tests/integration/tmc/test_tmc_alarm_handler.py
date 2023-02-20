@@ -1,20 +1,12 @@
 import logging
 
 import pytest
-from assertpy import assert_that
-from pytest_bdd import given, scenario, then, when
+from pytest_bdd import given, scenario, then
 
-from ska_ser_skallop.connectors import configuration as con_config
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.connectors.configuration import get_device_proxy
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
-
-from ska_ser_skallop.mvp_fixtures.context_management import (
-    TelescopeContext,
-)
-from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
 
@@ -44,12 +36,14 @@ def an_alarm_handler():
     
 @then("alarm must be raised with Unacknwoledged state")
 def validate_alarm_state(context_monitoring: fxt_types.context_monitoring, integration_test_exec_settings: fxt_types.exec_settings):
-    
+    """Validate Alarm is raised for IDLE Observation state
+    """
     brd = get_message_board_builder()
     brd.set_waiting_on("alarm/handler/01").for_attribute(
         "alarmUnacknowledged"
     ).to_become_equal_to(
         ('subarray_idle',)
     )
+
 
 

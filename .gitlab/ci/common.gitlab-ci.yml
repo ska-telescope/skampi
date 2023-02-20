@@ -91,3 +91,36 @@
     - kubectl -n $KUBE_NAMESPACE_SDP delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all --ignore-not-found
     - make k8s-delete-namespace
     - make delete-sdp-namespace
+
+# Ignore builtin integration and staging jobs
+deploy-integration:
+  rules:
+    - when: never
+
+info-integration:
+  rules:
+    - when: never
+
+stop-integration:
+  rules:
+    - when: never
+
+redeploy-integration:
+  rules:
+    - when: never
+
+deploy-staging:
+  rules:
+    - when: never
+
+info-staging:
+  rules:
+    - when: never
+
+stop-staging:
+  rules:
+    - when: never
+
+redeploy-staging:
+  rules:
+    - when: never

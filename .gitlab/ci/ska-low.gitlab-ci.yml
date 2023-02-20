@@ -104,6 +104,8 @@ low_on_demand_deploy:
   when: manual
   allow_failure: true
 
+# Low integration
+
 .low-integration-config:
   variables:
     CONFIG: low
@@ -118,8 +120,6 @@ low_on_demand_deploy:
     KEEP_NAMESPACE: "true"
   environment:
     name: integration-$CI_PROJECT_NAME-$CONFIG
-  rules: # TODO: Remove this
-    - when: manual
 
 low-deploy-integration:
   extends:
@@ -138,8 +138,9 @@ low-deploy-integration:
       - "build/"
     reports:
       junit: build/report.xml
-  rules: # TODO: Remove this
-    - when: manual
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
 
 low-info-integration:
   extends:
@@ -149,21 +150,25 @@ low-info-integration:
     KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
   environment:
     name: integration-$CI_PROJECT_NAME-$CONFIG
-  rules: # TODO: Remove this
-    - when: manual
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual
 
 low-stop-integration:
   extends:
     - stop-integration
     - .low-integration-config
+  needs:
+    - low-deploy-integration
   variables:
     KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
   environment:
     name: integration-$CI_PROJECT_NAME-$CONFIG
-  needs:
-    - low-deploy-integration
-  rules: # TODO: Remove this
-    - when: manual
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual
 
 low-redeploy-integration:
   extends:
@@ -173,5 +178,88 @@ low-redeploy-integration:
     KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
   environment:
     name: integration-$CI_PROJECT_NAME-$CONFIG
-  rules: # TODO: Remove this
-    - when: manual
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual
+
+# Low staging
+
+.low-staging-config:
+  variables:
+    CONFIG: low
+    DEPLOYMENT_CONFIGURATION: ska-$CONFIG
+    K8S_CHART: $DEPLOYMENT_CONFIGURATION
+    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+    KUBE_NAMESPACE_SDP: staging-$CI_PROJECT_NAME-$CONFIG-sdp
+    HELM_RELEASE: $CONFIG
+    SERVICE_ACCOUNT: staging-$CONFIG-sa
+    ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
+    INGRESS_HOST: k8s.stfc.skao.int
+    KEEP_NAMESPACE: "true"
+  environment:
+    name: staging-$CI_PROJECT_NAME-$CONFIG
+
+low-deploy-staging:
+  extends:
+    - deploy-staging
+    - .low-staging-config
+  needs:
+    - low-deploy-integration
+  variables:
+    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+  after_script:
+    - make skampi-links
+  environment:
+    name: staging-$CI_PROJECT_NAME-$CONFIG
+    on_stop: low-stop-staging
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+
+low-info-staging:
+  extends:
+    - info-staging
+    - .low-staging-config
+  variables:
+    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+  environment:
+    name: staging-$CI_PROJECT_NAME-$CONFIG
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual
+
+low-stop-staging:
+  extends:
+    - stop-staging
+    - .low-staging-config
+  needs:
+    - low-deploy-staging
+  variables:
+    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+  environment:
+    name: staging-$CI_PROJECT_NAME-$CONFIG
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual
+
+low-redeploy-staging:
+  extends:
+    - redeploy-staging
+    - .low-staging-config
+  variables:
+    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+  environment:
+    name: staging-$CI_PROJECT_NAME-$CONFIG
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual

@@ -115,23 +115,6 @@ mid_on_demand_deploy:
 
 # Mid integration
 
-# Ignore builtin jobs
-deploy-integration:
-  rules:
-    - when: never
-
-info-integration:
-  rules:
-    - when: never
-
-stop-integration:
-  rules:
-    - when: never
-
-redeploy-integration:
-  rules:
-    - when: never
-
 .mid-integration-config:
   variables:
     CONFIG: mid
@@ -146,8 +129,6 @@ redeploy-integration:
     KEEP_NAMESPACE: "true"
   environment:
     name: integration-$CI_PROJECT_NAME-$CONFIG
-  rules: # TODO: Remove this
-    - when: manual
 
 mid-deploy-integration:
   extends:
@@ -166,8 +147,9 @@ mid-deploy-integration:
       - "build/"
     reports:
       junit: build/report.xml
-  rules: # TODO: Remove this
-    - when: manual
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
 
 mid-info-integration:
   extends:
@@ -177,21 +159,25 @@ mid-info-integration:
     KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
   environment:
     name: integration-$CI_PROJECT_NAME-$CONFIG
-  rules: # TODO: Remove this
-    - when: manual
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual
 
 mid-stop-integration:
   extends:
     - stop-integration
     - .mid-integration-config
+  needs:
+    - mid-deploy-integration
   variables:
     KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
   environment:
     name: integration-$CI_PROJECT_NAME-$CONFIG
-  needs:
-    - mid-deploy-integration
-  rules: # TODO: Remove this
-    - when: manual
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual
 
 mid-redeploy-integration:
   extends:
@@ -201,59 +187,88 @@ mid-redeploy-integration:
     KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
   environment:
     name: integration-$CI_PROJECT_NAME-$CONFIG
-  rules: # TODO: Remove this
-    - when: manual
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual
 
 ## Mid staging
-#.mid-staging-config:
-#  variables:
-#    CONFIG: mid
-#    DEPLOYMENT_CONFIGURATION: ska-$CONFIG
-#    K8S_CHART: $DEPLOYMENT_CONFIGURATION
-#    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
-#    KUBE_NAMESPACE_SDP: staging-$CI_PROJECT_NAME-$CONFIG-sdp
-#    HELM_RELEASE: staging-$CONFIG-$CI_JOB_ID
-#    SERVICE_ACCOUNT: staging-svc-$CI_PROJECT_NAME
-#    ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
-#  environment:
-#    name: "staging-$CI_PROJECT_NAME-$CONFIG"
-#  after_script:
-#    - make skampi-links
-#  rules:
-#    - when: manual
-#
-#deploy-staging:
-#  extends:
-#    - .mid-staging-config
-#  variables:
-#    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
-#  environment:
-#    name: "staging-$CI_PROJECT_NAME-$CONFIG"
-#  rules:
-#    - when: manual
-#  artifacts:
-#    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-#    paths:
-#      - "build/"
-#    reports:
-#      junit: build/report.xml
-#
-#info-staging:
-#  extends:
-#    - .mid-staging-config
-#  variables:
-#    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
-#  environment:
-#    name: "staging-$CI_PROJECT_NAME-$CONFIG"
-#  rules:
-#    - when: manual
-#
-#stop-staging:
-#  extends:
-#    - .mid-staging-config
-#  variables:
-#    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
-#  environment:
-#    name: "staging-$CI_PROJECT_NAME-$CONFIG"
-#  rules:
-#    - when: manual
+
+.mid-staging-config:
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: ska-$CONFIG
+    K8S_CHART: $DEPLOYMENT_CONFIGURATION
+    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+    KUBE_NAMESPACE_SDP: staging-$CI_PROJECT_NAME-$CONFIG-sdp
+    HELM_RELEASE: $CONFIG
+    SERVICE_ACCOUNT: staging-$CONFIG-sa
+    ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
+    INGRESS_HOST: k8s.stfc.skao.int
+    KEEP_NAMESPACE: "true"
+  environment:
+    name: staging-$CI_PROJECT_NAME-$CONFIG
+
+mid-deploy-staging:
+  extends:
+    - deploy-staging
+    - .mid-staging-config
+  needs:
+    - mid-deploy-integration
+  variables:
+    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+  after_script:
+    - make skampi-links
+  environment:
+    name: staging-$CI_PROJECT_NAME-$CONFIG
+    on_stop: mid-stop-staging
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+
+mid-info-staging:
+  extends:
+    - info-staging
+    - .mid-staging-config
+  variables:
+    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+  environment:
+    name: staging-$CI_PROJECT_NAME-$CONFIG
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual
+
+mid-stop-staging:
+  extends:
+    - stop-staging
+    - .mid-staging-config
+  needs:
+    - mid-deploy-staging
+  variables:
+    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+  environment:
+    name: staging-$CI_PROJECT_NAME-$CONFIG
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual
+
+mid-redeploy-staging:
+  extends:
+    - redeploy-staging
+    - .mid-staging-config
+  variables:
+    KUBE_NAMESPACE: staging-$CI_PROJECT_NAME-$CONFIG
+  environment:
+    name: staging-$CI_PROJECT_NAME-$CONFIG
+  rules:
+    - when: manual # TODO: Remove this
+    - if: $CI_COMMIT_TAG
+      when: manual

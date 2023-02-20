@@ -22,7 +22,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 from ska_ser_skallop.utils.nrgen import get_id
 
 from ..obsconfig.config import Observation
-
+from ..mvp_model.states import ObsState
 logger = logging.getLogger(__name__)
 
 
@@ -286,8 +286,8 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         if self._tel.skamid:
-            #config = self.observation.generate_scan_config().as_json
-            config = json.dumps(CONFIGURE_JSON_LOW_WRONG)
+            config = self.observation.generate_scan_config().as_json
+            #config = json.dumps(CONFIGURE_JSON_LOW_WRONG)
 
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
@@ -336,10 +336,10 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         """Not implemented."""
         brd = get_message_board_builder()
 
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to(["CONFIGURING", "READY"])
-        #).to_become_equal_to("CONFIGURING")
+        # brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+        #     "obsState"
+        # #).to_become_equal_to(["CONFIGURING", "READY"])
+        # ).to_become_equal_to("CONFIGURING")
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("CONFIGURING")

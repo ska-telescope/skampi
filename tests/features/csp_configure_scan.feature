@@ -12,4 +12,10 @@ Feature: Configure scan on csp subarray
     Scenario: Configure scan on csp subarray in low
         Given an CSP subarray in IDLE state
         When I configure it for a scan
-        Then the CSP subarray must be in READY state 
+        Then the CSP subarray must be in READY state
+
+    @XTP-16346
+	    Scenario: Abort configuring
+        Given an subarray busy configuring
+        When I command it to Abort
+        Then the Sdp/Csp subarray should go into an aborted state

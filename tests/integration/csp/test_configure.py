@@ -8,6 +8,13 @@ from pytest_bdd import scenario
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skamid
+@pytest.mark.scan
+@pytest.mark.csp
+@scenario("features/csp_configure_scan.feature", "Abort Csp scanning")
+def test_abort_configuring():
+    """Abort scanning."""
+
 @pytest.mark.skamid_skip
 @pytest.mark.csp
 @pytest.mark.configure

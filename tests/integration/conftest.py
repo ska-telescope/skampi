@@ -8,8 +8,9 @@ from typing import Any, Callable
 from mock import patch, Mock
 
 import pytest
-from pytest_bdd import when, given, parsers
-
+from pytest_bdd import when, given,then, parsers
+from ska_ser_skallop.connectors import configuration as con_config
+from assertpy import assert_that
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management import telescope_management as tel
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
@@ -19,6 +20,8 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
 from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
+from resources.models.mvp_model.states import ObsState
+
 
 logger = logging.getLogger(__name__)
 
@@ -333,3 +336,10 @@ def i_command_it_to_abort(
     integration_test_exec_settings.touch()
 
 
+@then("the Sdp/Csp subarray should go into an aborted state")
+def the_subarray_should_go_into_an_aborted_state(
+    sut_settings: SutTestSettings,
+):
+    subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
+    result = subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(ObsState.ABORTED)

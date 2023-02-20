@@ -70,6 +70,7 @@ def the_csp_subarray_goes_back_to_ready_state(
     csp_subarray_name = tel.csp.subarray(configured_subarray.id)
     csp_subarray = con_config.get_device_proxy(csp_subarray_name)
     context_monitoring.re_init_builder()
+    integration_test_exec_settings.attr_synching = True
     context_monitoring.wait_for(csp_subarray_name).for_attribute(
         "obsstate"
     ).to_become_equal_to(

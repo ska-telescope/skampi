@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.skamid
 @pytest.mark.scan
 @pytest.mark.csp
-@scenario("features/csp_configure_scan.feature", "Abort Csp scanning")
+@scenario("features/csp_configure_scan.feature", "Abort configuring")
 def test_abort_configuring():
     """Abort scanning."""
 

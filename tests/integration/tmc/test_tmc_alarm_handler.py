@@ -50,7 +50,7 @@ def validate_alarm_state(context_monitoring: fxt_types.context_monitoring, integ
     context_monitoring.wait_for("alarm/handler/01").for_attribute(
         "alarmUnacknowledged"
     ).to_become_equal_to(
-        ["subarray_idle"], ignore_first=False, settings=integration_test_exec_settings
+        ("subarray_idle",), ignore_first=False, settings=integration_test_exec_settings
     )
     
     logger.info("Alarm Summary {}".format(alarm_unacknowledged))

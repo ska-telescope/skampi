@@ -10,8 +10,9 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from resources.models.sdp_model.entry_point import SDPEntryPoint
 from resources.models.sdp_model.mocking import setup_sdp_mock
+from resources.models.sdp_model.entry_point import VisRecObservation
 
-from .tmp_vis_receive_utils import K8sElementManager
+from .vis_receive_utils import K8sElementManager
 
 from .. import conftest
 
@@ -41,6 +42,7 @@ def fxt_set_entry_point(
     exec_env = set_session_exec_env
     if not sut_settings.mock_sut:
         SDPEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+        SDPEntryPoint.obs_to_use = VisRecObservation()
         exec_env.entrypoint = SDPEntryPoint
     else:
         exec_env.entrypoint = "mock"

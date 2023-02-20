@@ -1,6 +1,8 @@
 import logging
 import subprocess
+import time
 
+import pytest
 from kubernetes import client, watch
 from kubernetes.stream import stream
 
@@ -290,3 +292,38 @@ def _consume_response(api_response):
         if api_response.peek_stderr():
             LOG.info("STDERR: %s", api_response.read_stderr().strip())
     api_response.close()
+
+
+def wait_for_predicate(predicate, description, timeout=TIMEOUT, interval=0.5):
+    """
+    Wait for predicate to be true.
+
+    :param predicate: callable to test
+    :param description: description to use if test fails
+    :param timeout: timeout in seconds
+    :param interval: interval between tests of the predicate in seconds
+
+    """
+    start = time.time()
+    while True:
+        if predicate():
+            break
+        if time.time() >= start + timeout:
+            pytest.fail(f"{description} not achieved after {timeout} seconds")
+        time.sleep(interval)
+
+
+def wait_for_obs_state(device, obs_state, timeout=TIMEOUT):
+    """
+    Wait for obsState to have the expected value.
+
+    :param device: device proxy
+    :param obs_state: the expected value
+    :param timeout: timeout in seconds
+    """
+
+    def predicate():
+        return device.read_attribute("obsState").name == obs_state
+
+    description = f"obsState {obs_state}; current one is {device.read_attribute('obsState').name}"
+    wait_for_predicate(predicate, description, timeout=timeout)

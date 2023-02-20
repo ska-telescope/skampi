@@ -1,6 +1,6 @@
 """Domain logic for the sdp."""
 import logging
-from typing import Union, List
+from typing import Union, List, Any
 import os
 from time import sleep
 
@@ -15,6 +15,11 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
+
+from resources.models.obsconfig import Observation
+from resources.models.obsconfig.sdp_config import ProcessingSpec, VIS_RECEIVE_SCRIPT
+from resources.models.obsconfig.target_spec import VIS_REC_SPEC
+
 from ..obsconfig.config import Observation
 
 
@@ -29,8 +34,10 @@ class LogEnabled:
         self._tel = names.TEL()
 
     def _log(self, mssage: str):
-        if self._live_logging:
-            logger.info(mssage)
+        # TODO: change back once things work
+        #  this is needed to log the configuration string
+        # if self._live_logging:
+        logger.info(mssage)
 
 
 class StartUpStep(base.ObservationStep, LogEnabled):
@@ -322,19 +329,96 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         return None
 
 
+class VisRecObservation(Observation):
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+        self.target_specs = VIS_REC_SPEC
+        self.processing_specs = {"vis-receive": ProcessingSpec(
+            script=VIS_RECEIVE_SCRIPT,
+            parameters={
+                "image": "artefact.skao.int/ska-sdp-realtime-receive-modules",
+                "version": "3.6.0",
+                "plasmaEnabled": "true",
+                "reception": {
+                    "layout": "/mnt/data/low-layout.json",
+                    "num_channels": 13824,
+                    "channels_per_stream": 6912,
+                    "continuous_mode": "true",
+                    "transport_protocol": "tcp",
+                    "payloads_in_flight": 3,
+                    "disable_astropy_iers_autodownload": "true",
+                },
+                "pvc": {"name": "shared"},
+                "plasma_parameters": {
+                    "initContainers": [
+                        {
+                            "name": "existing-output-remover",
+                            "image": "artefact.skao.int/ska-sdp-realtime-receive-processors:0.3.0",
+                            "command": ["rm", "-rf", "/mnt/data/output*.ms"],
+                            "volumeMounts": [
+                                {"mountPath": "/mnt/data", "name": "shared"}
+                            ],
+                        },
+                        {
+                            "name": "start-telmodel",
+                            "image": "python:3.10-slim",
+                            "command": [
+                                "/bin/bash",
+                                "-c",
+                                "pip install --extra-index-url=https://artefact.skao.int/repository/pypi-internal/simple ska-telmodel==1.4.1 pyyaml; rm -f /mnt/data/low-layout.json ; ska-telmodel cat instrument/ska1_low/layout/low-layout.json > /mnt/data/low-layout.json",
+                            ],
+                            "volumeMounts": [
+                                {"mountPath": "/mnt/data", "name": "shared"}
+                            ],
+                        },
+                    ],
+                    "extraContainers": [
+                        {
+                            "name": "plasma-processor",
+                            "image": "artefact.skao.int/ska-sdp-realtime-receive-processors:0.3.0",
+                            "args": [
+                                "--max-payloads",
+                                "12",
+                                "--readiness-file",
+                                "/tmp/processor_ready",
+                                "/mnt/data/output.ms",
+                            ],
+                            "volumeMounts": [
+                                {
+                                    "name": "plasma-storage-volume",
+                                    "mountPath": "/plasma",
+                                },
+                                {"mountPath": "/mnt/data", "name": "shared"},
+                            ],
+                            "readinessProbe": {
+                                "initialDelaySeconds": 5,
+                                "periodSeconds": 5,
+                                "exec": {"command": ["cat", "/tmp/processor_ready"]},
+                            },
+                        }
+                    ],
+                },
+            },
+        )}
+
+
 class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2
+    obs_to_use = None
 
     def __init__(self, observation: Observation | None = None) -> None:
         """Init Object"""
         super().__init__()
-        if not observation:
-            observation = Observation()
-        self.observation = observation
+        if not self.obs_to_use:
+            if not observation:
+                self.obs_to_use = Observation()
+            else:
+                self.obs_to_use = observation
+        self.observation = self.obs_to_use
         self.set_online_step = NoOpStep()
         self.start_up_step = StartUpStep(self.nr_of_subarrays)
-        self.assign_resources_step = SdpAssignResourcesStep(observation)
-        self.configure_scan_step = SdpConfigureStep(observation)
-        self.scan_step = SDPScanStep(observation)
+        self.assign_resources_step = SdpAssignResourcesStep(self.observation)
+        self.configure_scan_step = SdpConfigureStep(self.observation)
+        self.scan_step = SDPScanStep(self.observation)

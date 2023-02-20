@@ -313,6 +313,9 @@ class ProcessingSpec(NamedTuple):
 DEFAULT_SCRIPT = ScriptConfiguration(
     kind="realtime", name="test-receive-addresses", version="0.5.0"
 )
+VIS_RECEIVE_SCRIPT = ScriptConfiguration(
+    kind="realtime", name="vis-receive", version="0.8.0"
+)
 
 
 class ProcessingSpecs(TargetSpecs):
@@ -333,6 +336,16 @@ class ProcessingSpecs(TargetSpecs):
                     for processing_spec in additional_processing_specs
                 },
             }
+
+    @property
+    def processing_specs(self):
+        return self._processing_specs
+
+    @processing_specs.setter
+    def processing_specs(self, new_spec):
+        if not isinstance(new_spec, dict):
+            raise ValueError("Processing specs needs to be a dictionary")
+        self._processing_specs = new_spec
 
     @property
     def target_processings(self):
@@ -380,7 +393,7 @@ class ProcessingBlockSpec(ProcessingSpecs):
             ProcessingBlockConfiguration(
                 pb_id=self.pb_id,
                 script=processing_script.script,
-                sbi_ids=[self.eb_id],
+                sbi_ids=[self.eb_id.replace("eb", "sbi")],
                 parameters=processing_script.parameters,
             )
             for processing_script in self.processing_scripts

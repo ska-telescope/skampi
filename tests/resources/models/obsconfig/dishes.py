@@ -30,6 +30,8 @@ class Dishes(TargetSpecs):
             "two": ["SKA0001", "SKA0002"],
             "three": ["SKA0001", "SKA0002", "SKA0003"],
             "four": ["SKA0001", "SKA0002", "SKA0003", "SKA0004"],
+            # vis-receive script doesn't allow the above resources
+            "vis-rec": ["C10", "C136", "C1", "C217", "C13", "C42"],
         }
 
     @property

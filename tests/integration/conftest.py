@@ -324,7 +324,7 @@ def i_command_it_to_abort(
     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
         "obsstate"
     ).to_become_equal_to("ABORTED")
-    allocated_subarray.disable_automatic_teardown()
+    # allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
         with context_monitoring.wait_before_complete(integration_test_exec_settings):
             allocated_subarray.reset_after_test(integration_test_exec_settings)
@@ -337,28 +337,20 @@ def i_command_it_to_abort(
 def i_command_it_to_abort(
     context_monitoring: fxt_types.context_monitoring,
     allocated_subarray: fxt_types.allocated_subarray,
-    # running_telescope: fxt_types.running_telescope,
     entry_point: fxt_types.entry_point,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):
     subarray = sut_settings.default_subarray_name
     sub_array_id = sut_settings.subarray_id
-    # subarray_id = sut_settings.subarray_id
-    # receptors = sut_settings.receptors
     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
         "obsstate"
     ).to_become_equal_to("ABORTED")
 
     with context_monitoring.context_monitoring():
         with context_monitoring.wait_before_complete(integration_test_exec_settings):
-            # with running_telescope.wait_for_allocating_a_subarray(
-            #     sub_array_id, receptors, integration_test_exec_settings
-            # ):
             allocated_subarray.reset_after_test(integration_test_exec_settings)
             entry_point.abort_subarray(sub_array_id)
-            # entry_point.tear_down_subarray(sub_array_id)
-
     integration_test_exec_settings.touch()
 
 

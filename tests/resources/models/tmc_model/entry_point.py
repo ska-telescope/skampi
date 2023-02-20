@@ -591,6 +591,10 @@ class TMCEntryPoint(CompositeEntryPoint):
         self.configure_scan_step = ConfigureStep(observation)
         self.scan_step = ScanStep(observation)
         self.abort_step = TMCAbortStep()
+        # TODO add an implementation of obsreset
+        # currently we do obsreset via an restart
+        #  not this results in the SUT going to EMPTY and not
+        # IDLE
         self.obsreset_step = TMCRestart()
 
 

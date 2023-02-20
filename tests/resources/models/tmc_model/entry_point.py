@@ -556,18 +556,6 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
         return builder
 
 
-    # # restart_subarray method is not currently present on skallop. Overriding the method to call Restart command here
-    # def set_waiting_for_obsreset(self, sub_array_id: int, receptors: List[int] # temporary change
-    # ) -> MessageBoardBuilder:
-    #     builder = get_message_board_builder()
-    #     subarray_name = self._tel.tm.subarray(sub_array_id)
-    #     builder.set_waiting_on(subarray_name).for_attribute(
-    #         "obsState"
-    #     ).to_become_equal_to("EMPTY", ignore_first=True)
-    #     return builder
-
-
-# temporary change
 class TMCRestart(base.ObsResetStep, LogEnabled):
     def do(self, sub_array_id: int):
         subarray_name = self._tel.tm.subarray(sub_array_id)

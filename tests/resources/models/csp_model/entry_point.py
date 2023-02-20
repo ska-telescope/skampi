@@ -426,13 +426,26 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
 
 
 class CSPAbortStep(base.AbortStep, LogEnabled):
+
+    """Implementation of Abort Step for CSP.""" 
+
     def do(self, sub_array_id: int):
+        """Domain logic for running a abort on subarray in csp.
+
+        This implments the scan method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with Abort command")
         subarray.command_inout("Abort")
 
     def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        """Domain logic specifying what needs to be waited for abort is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
@@ -442,9 +455,18 @@ class CSPAbortStep(base.AbortStep, LogEnabled):
 
 
 class CSPObsResetStep(base.ObsResetStep, LogEnabled):
+
+    """Implementation of ObsReset Step for CSP.""" 
+
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
+        """Domain logic for running a obsreset on subarray in csp.
+
+        This implments the scan method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
@@ -453,6 +475,10 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         return builder
 
     def do(self, sub_array_id: int):
+        """Domain logic specifying what needs to be waited for obsreset is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with ObsReset command")

@@ -58,11 +58,12 @@ def i_configure_it_for_a_scan(
     """I configure it for a scan."""
     subarray_id = sut_settings.subarray_id
     subarray = SubArray(subarray_id)
+    valid_json_path = "configure_low.json"
     with context_monitoring.context_monitoring():
         with allocated_subarray.wait_for_configuring_a_subarray(
             integration_test_exec_settings
         ):
-            subarray.configure_from_file("/resources/test_data/OET_integration/configure_low.json", False)
+            subarray.configure_from_file(valid_json_path, False)
 
 @then("the subarray must be in the READY state")
 def the_subarray_must_be_in_the_ready_state(

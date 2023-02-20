@@ -260,10 +260,18 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         return builder
 
     def set_wait_for_doing(
-        self, sub_array_id: int, receptors: List[int]
+            self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Not implemented."""
-        raise NotImplementedError()
+        """Domain logic specifying what needs to be waited for a subarray to be in a state of configuring.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("CONFIGURING")
+        return builder
 
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]

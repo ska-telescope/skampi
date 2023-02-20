@@ -286,7 +286,8 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         if self._tel.skamid:
-            config = self.observation.generate_scan_config().as_json
+            #config = self.observation.generate_scan_config().as_json
+            config = json.dumps(CONFIGURE_JSON_LOW_WRONG)
 
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
@@ -988,4 +989,194 @@ SCAN_JSON_LOW = {
     "transaction_id": "txn-....-00001",
     "scan_id": 1
 
+}
+
+#Wrong Interface- based on aggragation subarray goes to empty state
+# CONFIGURE_JSON_LOW_WRONG ={
+#   "pointing": {
+#     "target": {
+#       "target_name": "",
+#       "dec": "+02:03:08.598",
+#       "ra": "00:49:56.4466",
+#       "reference_frame": "ICRS"
+#     }
+#   },
+#   "dish": {
+#     "receiver_band": "2"
+#   },
+#   "csp": {
+#     "cbf": {
+#       "fsp": [
+#         {
+#           "frequency_slice_id": 1,
+#           "zoom_factor": 0,
+#           "channel_offset": 0,
+#           "integration_factor": 1,
+#           "function_mode": "CORR",
+#           "fsp_id": 1,
+#           "channel_averaging_map": [
+#             [
+#               0,
+#               2
+#             ],
+#             [
+#               744,
+#               0
+#             ]
+#           ],
+#           "output_link_map": [
+#             [
+#               0,
+#               0
+#             ],
+#             [
+#               200,
+#               1
+#             ]
+#           ]
+#         },
+#         {
+#           "frequency_slice_id": 1,
+#           "zoom_factor": 1,
+#           "channel_offset": 744,
+#           "integration_factor": 1,
+#           "function_mode": "CORR",
+#           "fsp_id": 2,
+#           "channel_averaging_map": [
+#             [
+#               0,
+#               2
+#             ],
+#             [
+#               744,
+#               0
+#             ]
+#           ],
+#           "output_link_map": [
+#             [
+#               0,
+#               4
+#             ],
+#             [
+#               200,
+#               5
+#             ]
+#           ],
+#           "zoom_window_tuning": 650000
+#         }
+#       ]
+#     },
+#     "common": {
+#       "frequency_band": "2",
+#       "config_id": "eb-mvp01-20230217-38327",
+#       "subarray_id": 1
+#     },
+#     "interface": "https://schema.skao.int/ska-csp-configure/22.0",
+#     "subarray": {
+#       "subarray_name": "dummy name"
+#     }
+#   },
+#   "tmc": {
+#     "scan_duration": 6.0
+#   },
+#   "interface": "https://schema.skao.int/ska-tmc-configure/2.1",
+#   "sdp": {
+#     "interface": "https://schema.skao.int/ska-sdp-configure/11.3",
+#     "scan_type": "target:a"
+#   }
+# }
+
+
+CONFIGURE_JSON_LOW_WRONG = {
+  "pointing": {
+    "target": {
+      "target_name": "",
+      "dec": "+02:03:08.598",
+      "ra": "00:49:56.4466",
+      "reference_frame": "ICRS"
+    }
+  },
+  "dish": {
+    "receiver_band": "2"
+  },
+  "csp": {
+    "cbf": {
+      "fsp": [
+        {
+          "frequency_slice_id": 1,
+          "zoom_factor": 0,
+          "channel_offset": 0,
+          "integration_factor": 1,
+          "function_mode": "CORR",
+          "fsp_id": 1,
+          "channel_averaging_map": [
+            [
+              0,
+              2
+            ],
+            [
+              744,
+              0
+            ]
+          ],
+          "output_link_map": [
+            [
+              0,
+              0
+            ],
+            [
+              200,
+              1
+            ]
+          ]
+        },
+        {
+          "frequency_slice_id": 1,
+          "zoom_factor": 1,
+          "channel_offset": 744,
+          "integration_factor": 1,
+          "function_mode": "CORR",
+          "fsp_id": 2,
+          "channel_averaging_map": [
+            [
+              0,
+              2
+            ],
+            [
+              744,
+              0
+            ]
+          ],
+          "output_link_map": [
+            [
+              0,
+              4
+            ],
+            [
+              200,
+              5
+            ]
+          ],
+          "zoom_window_tuning": 650000
+        }
+      ]
+    },
+    "common": {
+      "frequency_band": "2",
+      "config_id": "eb-mvp01-20230217-38327",
+      "subarray_id": 1
+    },
+    "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+    "subarray": {
+      "subarray_name": "dummy name"
+    }
+  },
+  "tmc": {
+    "scan_duration": 6.0
+  },
+  "interface": "https://schema.skao.int/ska-tmc-configure/2.1",
+  "sdp": {
+    "interface": "https://schema.skao.int/ska-sdp-configure/0.3",
+    "scan_type": "target:a"
+  }
 }

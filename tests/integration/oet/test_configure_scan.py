@@ -62,11 +62,9 @@ def i_configure_it_for_a_scan(
     subarray = SubArray(subarray_id)
     observation = sut_settings.observation
     scan_duration = sut_settings.scan_duration
-    clear_when_finished=True
     with context_monitoring.context_monitoring():
         with allocated_subarray.wait_for_configuring_a_subarray(
-            integration_test_exec_settings,
-            clear_when_finished
+            integration_test_exec_settings
         ):
             config = observation.generate_low_tmc_scan_config(scan_duration).as_object
             subarray.configure_from_cdm(config)

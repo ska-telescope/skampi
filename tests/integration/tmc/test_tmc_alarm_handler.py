@@ -44,6 +44,3 @@ def validate_alarm_state(context_monitoring: fxt_types.context_monitoring, integ
     ).to_become_equal_to(
         ('subarray_idle',)
     )
-
-
-

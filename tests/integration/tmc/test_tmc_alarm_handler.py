@@ -9,6 +9,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.connectors.configuration import get_device_proxy
+from ska_ser_skallop.event_handling.builders import get_message_board_builder
 
 from ska_ser_skallop.mvp_fixtures.context_management import (
     TelescopeContext,
@@ -44,15 +45,11 @@ def an_alarm_handler():
 @then("alarm must be raised with Unacknwoledged state")
 def validate_alarm_state(context_monitoring: fxt_types.context_monitoring, integration_test_exec_settings: fxt_types.exec_settings):
     
-    alarm_handler = get_device_proxy("alarm/handler/01")
-    alarm_unacknowledged = alarm_handler.read_attribute("alarmUnacknowledged").value
-    
-    context_monitoring.wait_for("alarm/handler/01").for_attribute(
+    brd = get_message_board_builder()
+    brd.set_waiting_on("alarm/handler/01").for_attribute(
         "alarmUnacknowledged"
     ).to_become_equal_to(
-        ("subarray_idle",), ignore_first=False, settings=integration_test_exec_settings
+        ('subarray_idle',)
     )
-    
-    logger.info("Alarm Summary {}".format(alarm_unacknowledged))
-    assert "subarray_idle" in alarm_unacknowledged
+
 

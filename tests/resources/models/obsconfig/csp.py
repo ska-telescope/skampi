@@ -1,3 +1,4 @@
+from typing import TypedDict, cast
 from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     CBFConfiguration,
     CommonConfiguration,
@@ -11,12 +12,14 @@ from .base import encoded
 from .target_spec import TargetSpecs
 
 
+class CSPrunScanConfig(TypedDict):
+    scan_id: int
+    interface: str
+
+
 class CSPconfig(TargetSpecs):
     csp_subarray_id = "dummy name"
     csp_scan_configure_schema = "https://schema.skao.int/ska-csp-configure/2.0"
-
-    csp_low_subarray_id = "science period 23"
-    config_id = "sbi-mvp01-20200325-00001-science_A"
 
     def _generate_low_csp_assign_resources_config(self):
         interface = "https://schema.skao.int/ska-low-csp-assignresources/2.0"
@@ -49,7 +52,9 @@ class CSPconfig(TargetSpecs):
     def generate_low_csp_assign_resources_config(self):
         return self._generate_low_csp_assign_resources_config()
 
-    def _generate_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
+    def _generate_csp_scan_config(
+        self, target_id: str | None = None, subarray_id: int = 1
+    ):
         mode: FSPFunctionMode = FSPFunctionMode.CORR
         if target_id:
             spec = self.target_specs[target_id]
@@ -85,58 +90,20 @@ class CSPconfig(TargetSpecs):
         )
 
     @encoded
-    def generate_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
+    def generate_csp_scan_config(
+        self, target_id: str | None = None, subarray_id: int = 1
+    ):
         return self._generate_csp_scan_config(target_id, subarray_id)
 
-    def _generate_low_csp_scan_config(self):
-        interface = "https://schema.skao.int/ska-low-csp-configure/2.0"
-        subarray = {
-            "subarray_name": "science period 23"
-            }
-        common = {
-            "config_id": "sbi-mvp01-20200325-00001-science_A",
-            "subarray_id": 1
-        }
-        lowcbf = {
-            "stations": {
-            "stns": [
-                [1,0],
-                [2,0],
-                [3,0],
-                [4,0]
-            ],
-            "stn_beams": [
-                {
-                "beam_id": 1,
-                "freq_ids": [64,65,66,67,68,69,70,71],
-                "boresight_dly_poly": "url"
-                }
-            ]
+    def generate_csp_run_scan_config(
+        self, target_id: str | None = None, subarray_id: int = 1
+    ) -> CSPrunScanConfig:
+        config = self.get_scan_id()
+        csp_run_scan_config = cast(
+            CSPrunScanConfig,
+            {
+                **config,
+                **{"interface": "https://schema.skao.int/ska-mid-csp-scan/2.0"},
             },
-            "timing_beams": {
-            "beams": [
-                {
-                "pst_beam_id": 13,
-                "stn_beam_id": 1,
-                "offset_dly_poly": "url",
-                "stn_weights": [0.9,1.0,1.0,0.9],
-                "jones": "url",
-                "dest_chans": [128,256],
-                "rfi_enable": [True,True,True],
-                "rfi_static_chans": [1,206,997],
-                "rfi_dynamic_chans": [242,1342],
-                "rfi_weighted": 0.87
-                }
-            ]
-            },
-        }
-        return CSPConfiguration(
-            interface=interface,
-            subarray=subarray,
-            common=common,
-            lowcbf=lowcbf
         )
-        
-    @encoded
-    def generate_low_csp_scan_config(self):
-        return self._generate_low_csp_scan_config()
+        return csp_run_scan_config

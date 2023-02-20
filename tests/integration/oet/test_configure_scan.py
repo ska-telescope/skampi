@@ -7,8 +7,6 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_oso_scripting.objects import SubArray
 from resources.models.mvp_model.states import ObsState
-from ska_tmc_cdm.schemas import CODEC
-from ska_tmc_cdm.messages.subarray_node.configure import ConfigureRequest
 from ..conftest import SutTestSettings
 
 @pytest.mark.k8s
@@ -60,14 +58,11 @@ def i_configure_it_for_a_scan(
     """I configure it for a scan."""
     subarray_id = sut_settings.subarray_id
     subarray = SubArray(subarray_id)
-    observation = sut_settings.observation
-    scan_duration = sut_settings.scan_duration
     with context_monitoring.context_monitoring():
         with allocated_subarray.wait_for_configuring_a_subarray(
             integration_test_exec_settings
         ):
-            config = observation.generate_low_tmc_scan_config(scan_duration).as_object
-            subarray.configure_from_cdm(config)
+            subarray.configure_from_file(subarray_id, "/tests/resources/test_data/OET_integration/configure_low.json", with_processing=False)
 
 @then("the subarray must be in the READY state")
 def the_subarray_must_be_in_the_ready_state(

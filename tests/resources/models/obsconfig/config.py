@@ -95,22 +95,3 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
         csp_config = config["csp"]
         csp_config["pointing"] = config["pointing"]
         return json.dumps(csp_config)
-
-    config_resources_schema = "https://schema.skao.int/ska-low-tmc-configure/3.0"    
-    def _generate_low_tmc_scan_config(
-        self, target_id: str | None = None , scan_duration: float = 10
-    ):
-        if target_id is None:
-            target_id = self.next_target_id
-        return ConfigureRequest(
-            interface=self.config_resources_schema,
-            transaction_id="txn-....-00001",
-            sdp=self.generate_low_sdp_scan_config().as_object,
-            csp=self.generate_low_csp_scan_config().as_object,
-            tmc=self.generate_tmc_scan_config(scan_duration),
-            mccs=self.generate_mccs_scan_config().as_object,
-        )
-
-    @encoded
-    def generate_low_tmc_scan_config(self, scan_duration: float = 10):
-        return self._generate_low_tmc_scan_config(scan_duration)

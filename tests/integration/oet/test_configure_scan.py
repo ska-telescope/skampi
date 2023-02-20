@@ -57,14 +57,14 @@ def a_subarray_in_the_idle_state(
     assert_that(result).is_equal_to(ObsState.IDLE)
 
 
-@given("a valid scan configuration", target_fixture="scan_config")
+@given("a valid scan configuration", target_fixture="valid_config_from_file")
 def a_valid_scan_configuration():
     return Path("./tests/resources/test_data/OET_integration/configure_low.json")
 
 
 @when("I configure it for a scan")
 def i_configure_it_for_a_scan(
-    valid_json: Path,
+    valid_config_from_file: Path,
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
@@ -77,7 +77,7 @@ def i_configure_it_for_a_scan(
         with allocated_subarray.wait_for_configuring_a_subarray(
             integration_test_exec_settings
         ):
-            subarray.configure_from_file(valid_json.name, False)
+            subarray.configure_from_file(valid_config_from_file.name, False)
 
 
 @then("the subarray must be in the READY state")

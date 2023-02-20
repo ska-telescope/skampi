@@ -13,7 +13,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     NoOpStep,
     MessageBoardBuilder,
     AbortStep,
-    ObsResetStep,
+
 )
 
 from ska_ser_skallop.mvp_control.entry_points import base
@@ -381,4 +381,4 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
         self.configure_scan_step = SdpConfigureStep(observation)
         self.scan_step = SDPScanStep(observation)
         self.abort_step = SDPAbortStep()
-        self.obsreset_step = SDPObsResetStep()
+

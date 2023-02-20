@@ -48,8 +48,9 @@ def a_subarray_in_the_idle_state(
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
-@when("I configure it for a scan")
+@when("I configure it for a scan and SBI {valid_json}")
 def i_configure_it_for_a_scan(
+    valid_json,
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
@@ -58,12 +59,11 @@ def i_configure_it_for_a_scan(
     """I configure it for a scan."""
     subarray_id = sut_settings.subarray_id
     subarray = SubArray(subarray_id)
-    valid_json_path = "configure_low.json"
     with context_monitoring.context_monitoring():
         with allocated_subarray.wait_for_configuring_a_subarray(
             integration_test_exec_settings
         ):
-            subarray.configure_from_file(valid_json_path, False)
+            subarray.configure_from_file(valid_json, False)
 
 @then("the subarray must be in the READY state")
 def the_subarray_must_be_in_the_ready_state(

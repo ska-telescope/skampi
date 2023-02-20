@@ -21,7 +21,7 @@ def fxt_setup_log_checking(
         csp_subarray_leaf_node = str(
             tel.tm.subarray(sut_settings.subarray_id).csp_leaf_node
         )
-        csp_subarray = tel.csp.subarray(sut_settings.subarray_id)
+        csp_subarray = str(tel.csp.subarray(sut_settings.subarray_id))
         log_checking.capture_logs_from_devices(csp_subarray_leaf_node, csp_subarray)
 
 

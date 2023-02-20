@@ -76,7 +76,7 @@ include:
     file: "gitlab-ci/includes/deploy.staging.gitlab-ci.yml"
   
   # Deployments
-  #- local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
+  - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
   - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
   - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
   - local: "/.gitlab/ci/psi-mid.gitlab-ci.yml"

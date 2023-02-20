@@ -62,7 +62,7 @@ def i_configure_it_for_a_scan(
         with allocated_subarray.wait_for_configuring_a_subarray(
             integration_test_exec_settings
         ):
-            subarray.configure_from_file(subarray_id, "/tests/resources/test_data/OET_integration/configure_low.json", False)
+            subarray.configure_from_file("/resources/test_data/OET_integration/configure_low.json", False)
 
 @then("the subarray must be in the READY state")
 def the_subarray_must_be_in_the_ready_state(

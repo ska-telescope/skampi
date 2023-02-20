@@ -1,9 +1,7 @@
 Feature: Implement Alarm Handler and Integrate it into SKAMPI
     
-    Scenario: Configure Alarm for EMPTY Observation State
-        Given an TMC
+    Scenario: Configure Alarm for IDLE Observation State
         Given an telescope subarray
-        Given an alarm handler
+        Given an Alarm handler configured for subarray obsState IDLE
         When I assign resources to it
-        And I configure alarm for Telescope with idle observation state
-        Then alarm should be raised with UNACK state
+        Then alarm must be raised with Unacknwoledged state

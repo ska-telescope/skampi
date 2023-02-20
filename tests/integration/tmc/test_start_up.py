@@ -1,4 +1,3 @@
-
 """Start up the telescope from tmc feature tests."""
 import logging
 
@@ -43,6 +42,7 @@ def test_tmc_off_telescope_mid():
 @scenario("features/tmc_start_up_telescope.feature", "Start up the low telescope using TMC")
 def test_tmc_start_up_telescope_low():
     """Start up the telescope in low."""
+
 
 @pytest.mark.skip(reason="OFF command is not supported in LOW CBF 0.5.7")
 @pytest.mark.skalow
@@ -210,8 +210,8 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
 @then("the sdp and csp must be off")
 @then("the sdp, csp and dish must be off")
 def the_sdp_csp_and_dish_must_be_off(
-    sut_settings: conftest.SutTestSettings,
-    integration_test_exec_settings: fxt_types.exec_settings,
+        sut_settings: conftest.SutTestSettings,
+        integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """the sdp, csp and dish must be off."""
     tel = names.TEL()
@@ -248,3 +248,42 @@ def the_sdp_csp_and_dish_must_be_off(
         assert_that(str(result)).is_equal_to("STANDBY")
     elif tel.skalow:
         assert_that(str(result)).is_equal_to("OFF")
+
+
+@then("telescope is in an OK health state")
+def the_tmc_devices_must_be_healthy(sut_settings: conftest.SutTestSettings):
+    """the sdp, csp and dish must be on."""
+  
+    tel = names.TEL()
+    sut_settings = conftest.SutTestSettings()
+
+    csp_master_leaf_node = con_config.get_device_proxy(tel.tm.csp_leaf_node)
+    result = csp_master_leaf_node.read_attribute("healthState").value
+    assert result == 0
+
+    sdp_master_leaf_node = con_config.get_device_proxy(tel.tm.sdp_leaf_node)
+    result = sdp_master_leaf_node.read_attribute("healthState").value
+    assert result == 0
+
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        csp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).csp_leaf_node
+        )
+        result = csp_subarray_leaf_node.read_attribute("healthState").value
+        assert result == 0
+
+    for index in range(1, sut_settings.nr_of_subarrays + 1):
+        sdp_subarray_leaf_node = con_config.get_device_proxy(
+            tel.tm.subarray(index).sdp_leaf_node
+        )
+        result = sdp_subarray_leaf_node.read_attribute("healthState").value
+        assert result == 0
+
+    central_node = con_config.get_device_proxy(tel.tm.central_node)
+    result = central_node.read_attribute("healthState").value
+    assert result == 0
+
+
+
+
+

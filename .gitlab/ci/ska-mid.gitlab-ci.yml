@@ -114,6 +114,24 @@ mid_on_demand_deploy:
   allow_failure: true
 
 # Mid integration
+
+# Ignore builtin jobs
+deploy-integration:
+  rules:
+    - when: never
+
+info-integration:
+  rules:
+    - when: never
+
+stop-integration:
+  rules:
+    - when: never
+
+redeploy-integration:
+  rules:
+    - when: never
+
 .mid-integration-config:
   variables:
     CONFIG: mid
@@ -131,8 +149,9 @@ mid_on_demand_deploy:
   rules: # TODO: Remove this
     - when: manual
 
-deploy-integration:
+mid-deploy-integration:
   extends:
+    - deploy-integration
     - .mid-integration-config
   variables:
     KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
@@ -140,8 +159,7 @@ deploy-integration:
     - make skampi-links
   environment:
     name: integration-$CI_PROJECT_NAME-$CONFIG
-  #needs:
-  #  - mid-test
+    on_stop: mid-stop-integration
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -151,8 +169,9 @@ deploy-integration:
   rules: # TODO: Remove this
     - when: manual
 
-info-integration:
+mid-info-integration:
   extends:
+    - info-integration
     - .mid-integration-config
   variables:
     KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
@@ -161,18 +180,22 @@ info-integration:
   rules: # TODO: Remove this
     - when: manual
 
-stop-integration:
+mid-stop-integration:
   extends:
+    - stop-integration
     - .mid-integration-config
   variables:
     KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG
   environment:
     name: integration-$CI_PROJECT_NAME-$CONFIG
+  needs:
+    - mid-deploy-integration
   rules: # TODO: Remove this
     - when: manual
 
-redeploy-integration:
+mid-redeploy-integration:
   extends:
+    - redeploy-integration
     - .mid-integration-config
   variables:
     KUBE_NAMESPACE: integration-$CI_PROJECT_NAME-$CONFIG

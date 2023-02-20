@@ -81,7 +81,7 @@
 
 # Mid on-demand deployment
 mid_on_demand_deploy:
-  stage: build
+  stage: deploy
   variables:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"

@@ -73,7 +73,7 @@
 
 # Low on-demand deployment
 low_on_demand_deploy:
-  stage: build
+  stage: deploy
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"

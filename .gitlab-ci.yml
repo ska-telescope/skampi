@@ -20,6 +20,7 @@ stages:
   - clean_test_env
   - lint
   - publish
+  - deploy
   - integration
   - staging
   - deploy_integration

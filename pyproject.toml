@@ -22,7 +22,7 @@ assertpy = "^1.1"
 pytest-timeout = "^2.0.2"
 pytest-ordering = "^0.6"
 pipe = "^1.6.0"
-ska-ser-skallop = "2.22.0"
+ska-ser-skallop = "2.23.5"
 ska-oso-oet = "4.0.6"
 atlassian-python-api = "^3.25.0"
 ska-tmc-cdm = "7.2.0"
@@ -33,9 +33,11 @@ name = 'ska'
 url = 'https://artefact.skatelescope.org/repository/pypi-all/simple'
 
 [tool.poetry.dev-dependencies]
-flake8 = "^4.0.1"
+flake8 = "^6.0.0"
 black = "^21.12b0"
 ipython = "^7.30.1"
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

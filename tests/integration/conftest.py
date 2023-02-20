@@ -334,7 +334,7 @@ def i_command_it_to_abort(
 
 
 
-@then("the Sdp/Csp subarray should go into an aborted state")
+@then("the subarray should go into an aborted state")
 def the_subarray_should_go_into_an_aborted_state(
     sut_settings: SutTestSettings,
 ):

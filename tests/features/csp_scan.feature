@@ -18,4 +18,4 @@ Feature: Run a scan on CSP subarray
     Scenario: Abort Csp scanning
         Given an subarray busy scanning
         When I command it to Abort
-        Then the Sdp/Csp subarray should go into an aborted state
+        Then the subarray should go into an aborted state

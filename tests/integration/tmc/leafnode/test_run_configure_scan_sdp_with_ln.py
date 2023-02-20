@@ -10,7 +10,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 
 
-# @pytest.mark.skamid
+@pytest.mark.skamid
 @pytest.mark.configure
 @scenario(
     "features/sdpln_configure_scan.feature",

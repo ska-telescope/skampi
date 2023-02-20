@@ -18,5 +18,5 @@ Feature: Run a scan on sdp subarray
 	@XTP-16344
     Scenario: Abort SDP scanning
         Given an subarray busy scanning
-        When I command Sdp/Csp Subarray to Abort
+        When I command it to Abort
         Then the Sdp/Csp subarray should go into an aborted state

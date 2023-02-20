@@ -311,7 +311,7 @@ def i_release_all_resources_assigned_to_it(
             entry_point.tear_down_subarray(sub_array_id)
 
 
-@when("I command Tmc Subarray to Abort")
+@when("I command it to Abort")
 def i_command_it_to_abort(
     context_monitoring: fxt_types.context_monitoring,
     allocated_subarray: fxt_types.allocated_subarray,
@@ -333,25 +333,25 @@ def i_command_it_to_abort(
     integration_test_exec_settings.touch()
 
 
-@when("I command Sdp/Csp Subarray to Abort")
-def i_command_it_to_abort(
-    context_monitoring: fxt_types.context_monitoring,
-    allocated_subarray: fxt_types.allocated_subarray,
-    entry_point: fxt_types.entry_point,
-    integration_test_exec_settings: fxt_types.exec_settings,
-    sut_settings: SutTestSettings,
-):
-    subarray = sut_settings.default_subarray_name
-    sub_array_id = sut_settings.subarray_id
-    context_monitoring.builder.set_waiting_on(subarray).for_attribute(
-        "obsstate"
-    ).to_become_equal_to("ABORTED")
+# @when("I command Sdp/Csp Subarray to Abort")
+# def i_command_it_to_abort(
+#     context_monitoring: fxt_types.context_monitoring,
+#     allocated_subarray: fxt_types.allocated_subarray,
+#     entry_point: fxt_types.entry_point,
+#     integration_test_exec_settings: fxt_types.exec_settings,
+#     sut_settings: SutTestSettings,
+# ):
+#     subarray = sut_settings.default_subarray_name
+#     sub_array_id = sut_settings.subarray_id
+#     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
+#         "obsstate"
+#     ).to_become_equal_to("ABORTED")
 
-    with context_monitoring.context_monitoring():
-        with context_monitoring.wait_before_complete(integration_test_exec_settings):
-            allocated_subarray.reset_after_test(integration_test_exec_settings)
-            entry_point.abort_subarray(sub_array_id)
-    integration_test_exec_settings.touch()
+#     with context_monitoring.context_monitoring():
+#         with context_monitoring.wait_before_complete(integration_test_exec_settings):
+#             allocated_subarray.reset_after_test(integration_test_exec_settings)
+#             entry_point.abort_subarray(sub_array_id)
+#     integration_test_exec_settings.touch()
 
 
 @then("the Sdp/Csp subarray should go into an aborted state")

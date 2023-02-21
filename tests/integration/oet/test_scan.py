@@ -21,7 +21,7 @@ from .. import conftest
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.scan
 @scenario("features/oet_scan.feature", "Run a scan on low subarray from OET")
 def test_oet_scan_on_low_subarray():

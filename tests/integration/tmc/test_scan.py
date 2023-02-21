@@ -13,7 +13,7 @@ from ..conftest import SutTestSettings
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.scan
 @scenario("features/tmc_scan.feature", "Run a scan from TMC")
 def test_tmc_scan_on_mid_subarray():
@@ -21,7 +21,7 @@ def test_tmc_scan_on_mid_subarray():
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.scan
 @scenario("features/tmc_scan.feature", "Run a scan on low subarray from TMC")
 def test_tmc_scan_on_low_subarray():

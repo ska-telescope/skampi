@@ -18,4 +18,4 @@ Feature: Configure scan on csp subarray
 	    Scenario: Abort configuring
         Given an subarray busy configuring
         When I command it to Abort
-        Then the Sdp/Csp subarray should go into an aborted state
+        Then the subarray should go into an aborted state

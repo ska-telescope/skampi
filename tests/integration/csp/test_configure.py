@@ -16,7 +16,7 @@ def test_abort_configuring():
     """Abort scanning."""
 
 
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.configure
 @scenario(

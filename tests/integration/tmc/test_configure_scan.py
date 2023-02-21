@@ -34,7 +34,7 @@ def test_tmc_configure_scan_on_low_subarray():
 @pytest.mark.configure
 @pytest.mark.tmc
 @scenario("features/tmc_configure_scan.feature", "Abort configuring")
-def test_abort_configure_scan_on_tmc_subarray_in_mid():
+def test_abort_configuring_on_mid_tmc_subarray():
     """Abort configuring."""
 
 @given("an TMC")
@@ -70,12 +70,3 @@ def the_subarray_must_be_in_the_ready_state(
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = tmc_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.READY)
-
-
-@then("the subarray should go into an aborted state")
-def the_subarray_should_go_into_an_aborted_state(
-    sut_settings: SutTestSettings,
-):
-    subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
-    result = subarray.read_attribute("obsstate").value
-    assert_that(result).is_equal_to(ObsState.ABORTED)

@@ -322,7 +322,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
-        ).to_become_equal_to("READY")
+        ).to_become_equal_to("READY", ignore_first=False)
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("READY")

@@ -45,6 +45,17 @@ def test_run_multiple_scans_on_csp_subarray_in_mid():
     """Run multiple scans on csp subarray in mid."""
 
 
+@pytest.mark.skamid
+@pytest.mark.scanning
+@pytest.mark.csp
+@scenario(
+    "features/csp_multi_scan.feature",
+    "Run multiple scans on CSP subarray in mid for different scan types",
+)
+def test_run_multiple_scans_on_csp_subarray_in_mid_for_different_scan_types():
+    """Run multiple scans on CSP subarray in mid for different scan types"""
+
+
 @given("an CSP subarray in READY state")
 def an_csp_subarray_in_ready_state(
     set_up_subarray_log_checking_for_csp,

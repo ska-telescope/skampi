@@ -254,14 +254,6 @@ def a_subarray_defined_to_perform_scan_types(
     return scan_targets
 
 
-@given("an subarray that has just completed it's first scan")
-def an_subarray_that_has_just_completed_its_first_scan(
-    configured_subarray: fxt_types.configured_subarray,
-    integration_test_exec_settings: fxt_types.exec_settings,
-):
-    configured_subarray.scan(integration_test_exec_settings)
-
-
 @when(
     parsers.parse("I configure the subarray again for scan type {scan_type}"),
     target_fixture="configured_subarray",
@@ -385,8 +377,16 @@ def i_configure_it_for_a_scan(
 
 
 # scans
-@given("an subarray busy scanning")
 @given("the subarray has just completed it's first scan for given configuration")
+@given("an subarray that has just completed it's first scan")
+def an_subarray_that_has_just_completed_its_first_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    configured_subarray.scan(integration_test_exec_settings)
+
+
+@given("an subarray busy scanning")
 @when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,

@@ -237,7 +237,7 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("READY")
+        ).to_become_equal_to("READY", ignore_first=False)
         return builder
 
     def set_wait_for_doing(

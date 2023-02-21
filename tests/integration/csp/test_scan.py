@@ -11,14 +11,14 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from .. import conftest
 
 @pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.scan
 @scenario("features/csp_scan.feature", "Run a scan on csp subarray in low")
 def test_run_a_scan_on_csp_subarray_in_low():
     """Run a scan on csp subarray in low."""
 
 
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.scan
 @scenario("features/csp_scan.feature", "Run a scan on csp subarray in mid")
 def test_run_a_scan_on_csp_subarray_in_mid():

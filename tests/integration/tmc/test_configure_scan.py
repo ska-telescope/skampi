@@ -13,7 +13,7 @@ from ..conftest import SutTestSettings
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.configure
 @scenario("features/tmc_configure_scan.feature", "Configure the mid telescope subarray using TMC")
 def test_tmc_configure_scan_on_mid_subarray():
@@ -22,7 +22,7 @@ def test_tmc_configure_scan_on_mid_subarray():
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.configure
 @scenario("features/tmc_configure_scan.feature", "Configure the low telescope subarray using TMC")
 def test_tmc_configure_scan_on_low_subarray():

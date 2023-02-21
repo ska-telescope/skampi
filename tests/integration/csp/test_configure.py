@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 def test_abort_configuring():
     """Abort scanning."""
 
+
 @pytest.mark.skamid_skip
 @pytest.mark.csp
 @pytest.mark.configure
@@ -27,7 +28,7 @@ def test_configure_csp_mid_subarray():
 
 
 @pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.configure
 @scenario(

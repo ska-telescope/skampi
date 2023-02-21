@@ -317,8 +317,6 @@ def i_release_all_resources_assigned_to_it(
             integration_test_exec_settings
         ):
             entry_point.tear_down_subarray(sub_array_id)
-<<<<<<< HEAD
-
 
 @when("I command it to Abort")
 def i_command_it_to_abort(
@@ -348,5 +346,4 @@ def the_subarray_should_go_into_an_aborted_state(
     subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
     result = subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.ABORTED)
-=======
->>>>>>> master
+

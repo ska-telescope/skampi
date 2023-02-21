@@ -9,7 +9,7 @@ from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 
 
-@pytest.fixture(name="disable_clear")
+@pytest.fixture(name="disable_clear_and_tear_down")
 def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
     configured_subarray.disable_automatic_clear()
     configured_subarray.disable_automatic_teardown()
@@ -20,7 +20,7 @@ def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
 @pytest.mark.skamid
 @pytest.mark.scan
 @scenario("features/tmc_abort_scanning.feature", "Abort scanning")
-def test_tmc_abort_scanning_on_mid_subarray(disable_clear_and_tear_down):
+def test_tmc_abort_scanning_on_mid_subarray(disable_clear_and_tear_down: None):
     """Run a abort on TMC mid subarray when Scanning"""
 
 
@@ -31,7 +31,7 @@ def test_tmc_abort_scanning_on_mid_subarray(disable_clear_and_tear_down):
 # @when("I command it to Abort")
 
 
-@then("the Tmc subarray should go into an aborted state")
+@then("the subarray should go into an aborted state")
 def the_subarray_should_go_into_aborted_state(
     sut_settings: SutTestSettings,
     integration_test_exec_settings: fxt_types.exec_settings,

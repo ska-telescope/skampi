@@ -32,7 +32,7 @@ def an_alarm_handler():
     alarm_handler.command_inout("Load", alarm_formula)
     
     
-@then("alarm must be raised with Unacknwoledged state")
+@then("alarm must be raised with Unacknowledged state")
 def validate_alarm_state():
     """Validate Alarm is raised for IDLE Observation state
     """

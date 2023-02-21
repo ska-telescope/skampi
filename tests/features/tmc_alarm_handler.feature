@@ -5,4 +5,4 @@ Feature: Implement Alarm Handler and Integrate it into SKAMPI
         Given an telescope subarray
         Given an Alarm handler configured for subarray obsState IDLE
         When I assign resources to it
-        Then alarm must be raised with Unacknwoledged state
+        Then alarm must be raised with Unacknowledged state

@@ -7,8 +7,7 @@ CONFIGURE AND TEST ALARM USING IPYTHON Terminal
 -----------------------------------------------
 
 
-* Copy KUBECONFIG Locally using curl command for completed Job
-    Example: ``curl https://artefact.skao.int/repository/k8s-ci-creds-internal/k8s-ci-svc-ska-skampi-hm-157-ci-ska-skampi-hm-157-mid-conf --output KUBECONFIG)
+* Copy KUBECONFIG Locally using curl command for completed Job - Refer to the pipeline deploy job output.   
 
 * Get list of Pods
    .. code-block:: 

@@ -49,9 +49,9 @@ class SutTestSettings(SimpleNamespace):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         logger.info("initialising sut settings")
-        self.tel = TEL()
+        self.tel = names.TEL()
         self.observation = Observation()
-        self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
+        self.default_subarray_name = self.tel.tm.subarray(self.subarray_id)
 
     @property
     def nr_of_receptors(self):

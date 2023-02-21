@@ -12,6 +12,7 @@ from pytest_bdd import when, given, then, parsers
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management import telescope_management as tel
+
 # from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
@@ -22,7 +23,6 @@ from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
 from ska_ser_skallop.connectors import configuration as con_config
 from resources.models.mvp_model.states import ObsState
-
 
 
 logger = logging.getLogger(__name__)
@@ -45,7 +45,6 @@ class SutTestSettings(SimpleNamespace):
         self.observation = Observation()
         self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
 
-
     @property
     def nr_of_receptors(self):
         return self._nr_of_receptors
@@ -64,6 +63,11 @@ class SutTestSettings(SimpleNamespace):
         self._receptors = receptor
 
 
+@pytest.fixture(name="disable_clear")
+def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
+    configured_subarray.disable_automatic_clear()
+
+
 @pytest.fixture(name="sut_settings", scope="function")
 def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
@@ -71,7 +75,6 @@ def fxt_conftest_settings() -> SutTestSettings:
 
 
 class OnlineFlag:
-
     value: bool = False
 
     def __bool__(self):
@@ -173,15 +176,14 @@ def i_start_up_the_telescope(
 ):
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(
-            integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
 
 @given("the Telescope is in ON state")
 def the_telescope_is_on(
-   standby_telescope : fxt_types.standby_telescope,
+    standby_telescope: fxt_types.standby_telescope,
     entry_point: fxt_types.entry_point,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
@@ -189,12 +191,11 @@ def the_telescope_is_on(
     """I start up the telescope."""
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(
-            integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
-   
-            
+
+
 @when("I switch off the telescope")
 def i_switch_off_the_telescope(
     running_telescope: fxt_types.running_telescope,
@@ -209,8 +210,13 @@ def i_switch_off_the_telescope(
         with running_telescope.wait_for_shutting_down(integration_test_exec_settings):
             entry_point.set_telescope_to_standby()
 
-#Currently, resources_list is not utilised, raised SKB for the same:https://jira.skatelescope.org/browse/SKB-202
-@when(parsers.parse("I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"))
+
+# Currently, resources_list is not utilised, raised SKB for the same:https://jira.skatelescope.org/browse/SKB-202
+@when(
+    parsers.parse(
+        "I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"
+    )
+)
 def assign_resources_with_subarray_id(
     telescope_context: fxt_types.telescope_context,
     context_monitoring: fxt_types.context_monitoring,
@@ -219,8 +225,8 @@ def assign_resources_with_subarray_id(
     composition: conf_types.Composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
-    resources_list:list,
-    subarray_id:int
+    resources_list: list,
+    subarray_id: int,
 ):
     """I assign resources to it."""
 
@@ -234,7 +240,6 @@ def assign_resources_with_subarray_id(
             )
 
 
-        
 @when("I assign resources to it")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,
@@ -311,7 +316,6 @@ def i_release_all_resources_assigned_to_it(
             entry_point.tear_down_subarray(sub_array_id)
 
 
-
 @when("I command it to Abort")
 def i_command_it_to_abort(
     context_monitoring: fxt_types.context_monitoring,
@@ -331,7 +335,6 @@ def i_command_it_to_abort(
             entry_point.abort_subarray(sub_array_id)
 
     integration_test_exec_settings.touch()
-
 
 
 @then("the subarray should go into an aborted state")

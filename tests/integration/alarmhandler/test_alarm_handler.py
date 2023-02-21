@@ -9,7 +9,7 @@ import tango
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 def test_load_alarm():
   """ Test to load and verify the configured alarm. """
   alarm_device = tango.DeviceProxy("alarm/handler/01")

@@ -10,7 +10,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 
 
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.configure
 @pytest.mark.sdp
 @scenario(
@@ -29,7 +29,7 @@ def test_abort_configuring_in_mid():
     """Configure scan on sdp subarray in mid."""
 
 
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.sdp
 @scenario(

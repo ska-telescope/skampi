@@ -66,7 +66,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
         brd.set_waiting_on(self._tel.sdp.master).for_attribute(
             "state"
-        ).to_become_equal_to("ON")
+        ).to_become_equal_to("ON", ignore_first=False)
         # subarrays
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.sdp.subarray(index)

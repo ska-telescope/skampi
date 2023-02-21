@@ -1,6 +1,6 @@
 {
   "interface": "https://schema.skao.int/ska-oso-pdm-sbd/0.1",
-  "sbd_id": "sbi-mvp01-20200325-00001",
+  "sbd_id": "sbi-mvp01-20200325-00002",
   "telescope": "ska_mid",
   "metadata": {
     "version": 1,
@@ -62,14 +62,14 @@
   "scan_definitions": [
     {
       "scan_definition_id": "calibrator scan",
-      "scan_duration": 60000,
+      "scan_duration": 6000,
       "target": "Polaris Australis",
       "dish_configuration": "dish config 123",
       "scan_type": "calibration_B",
       "csp_configuration": "csp config 123"
     },
     {
-      "scan_duration": 60000,
+      "scan_duration": 6000,
       "target": "M83",
       "dish_configuration": "dish config 123",
       "scan_type": "science_A",
@@ -93,21 +93,6 @@
             "kind": "SinglePointParameters",
             "offset_x_arcsec": 0.0,
             "offset_y_arcsec": 0.0
-          },
-          {
-            "kind": "RasterParameters",
-            "row_length_arcsec": 1.23,
-            "row_offset_arcsec": 4.56,
-            "n_rows": 2,
-            "pa": 7.89,
-            "unidirectional": true
-          },
-          {
-            "kind": "StarRasterParameters",
-            "row_length_arcsec": 1.23,
-            "n_rows": 2,
-            "row_offset_angle": 4.56,
-            "unidirectional": true
           }
         ]
       },
@@ -230,10 +215,7 @@
       },
       "common": {
         "subarray_id": 1,
-        "band_5_tuning": [
-          5.85,
-          7.25
-        ]
+        "band_5_tuning": [5.85, 7.25]
       },
       "cbf": {
         "fsp": [
@@ -273,4 +255,3 @@
     }
   ]
 }
-

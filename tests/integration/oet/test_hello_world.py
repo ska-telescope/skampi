@@ -30,12 +30,11 @@ def hello_world_script_created():
 
 @given(
     parsers.parse(
-        "SB with id {sb_id} and activity {activity_name} exists in ODA"
+        "a test SB with activity {activity_name} exists in ODA"
     )
 )
-def hello_world_sb_in_oda(sb_id, activity_name, test_sbd):
+def hello_world_sb_in_oda(activity_name, test_sbd):
     ""
-    test_sbd.sbd_id = sb_id
     assert activity_name in test_sbd.activities, \
         f"Activity test setup failed, no activity called {activity_name} in test SB"
 
@@ -49,18 +48,18 @@ def hello_world_script_ran():
 
 @when(
     parsers.parse(
-        "I tell the OET to run {activity_name} activity for SBI {sb_id}"
+        "I tell the OET to run {activity_name} activity on the test SB"
     )
 )
 def when_allocate_resources_from_activity(
     activity_name,
-    sb_id,
+    test_sbd,
 ):
     """
     """
     summary = ACTIVITY_ADAPTER.run(
         activity_name,
-        sb_id,
+        test_sbd.sbd_id,
     )
     assert (summary.state == "TODO"),\
         f"Expected activity with status TODO, instead got {summary.state}"

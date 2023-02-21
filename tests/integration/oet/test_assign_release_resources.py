@@ -43,6 +43,7 @@ def test_sbi_creation():
     """
 
 
+@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
@@ -57,6 +58,7 @@ def test_resource_allocation():
     """
 
 
+@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
@@ -223,6 +225,7 @@ def check_final_subarray_state(
     logger.info("Sub-array is in ObsState %s", obsstate)
 
 
+@pytest.mark.scripting
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
@@ -237,7 +240,7 @@ def test_oet__scripting_resource_allocation():
                 Then the sub-array goes to ObsState IDLE
     """
 
-@pytest.mark.oet
+@pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.k8s
@@ -253,7 +256,7 @@ def test_oet_scripting_resource_allocation_in_low():
                 Then the sub-array goes to ObsState IDLE
     """
 
-@pytest.mark.oet
+@pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.k8s
 @scenario(

@@ -56,9 +56,6 @@ build-base-image:
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
-  # Common template components
-  - local: "/.gitlab/ci/common.gitlab-ci.yml"
-
   # Helm Charts
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/helm-chart.gitlab-ci.yml"
@@ -78,6 +75,7 @@ include:
     file: "gitlab-ci/includes/deploy.staging.gitlab-ci.yml"
   
   # Deployments
+  - local: "/.gitlab/ci/common.gitlab-ci.yml"
   - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
   - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
   - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"

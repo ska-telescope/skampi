@@ -15,3 +15,12 @@ Feature: Verification of OET scripts being executed successfully during an obser
 		Given telescope is in ON state
 		When I tell the OET to run standby script file:///scripts/standby.py
 		Then the central node goes to state STANDBY
+	
+
+	#*Scenario: Starting up low telescope*
+	@XTP-18871 @XTP-18866
+	Scenario: Starting up low telescope
+		Given low telescope
+		When I turn telescope to ON state
+		Then the central node goes to state ON
+

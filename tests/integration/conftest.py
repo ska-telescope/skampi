@@ -355,9 +355,12 @@ def i_configure_it_for_a_scan(
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
+    context_monitoring: fxt_types.context_monitoring,
 ):
     """I configure it for a scan."""
-    configured_subarray.set_to_scanning(integration_test_exec_settings)
+    integration_test_exec_settings.attr_synching = False
+    with context_monitoring.context_monitoring():
+        configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
 @when("I release all resources assigned to it")

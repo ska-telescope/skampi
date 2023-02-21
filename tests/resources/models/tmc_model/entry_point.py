@@ -66,7 +66,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON", ignore_first=False)
         # set csp controller and csp subarray to be waited before startup completes
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
             "state"
@@ -106,14 +106,9 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("OFF")
-
+            ).to_become_equal_to("OFF", ignore_first=False)
         # set dish master to be waited before startup completes
         if self._tel.skamid:
-            for dish in self._tel.skamid.dishes(self.receptors):
-                brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
-                    "STANDBY", ignore_first=False
-                )
             brd.set_waiting_on(self._tel.csp.controller).for_attribute(
                 "state"
             ).to_become_equal_to("OFF", ignore_first=False)
@@ -121,6 +116,11 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                     "state"
                 ).to_become_equal_to("OFF", ignore_first=False)
+            for dish in self._tel.skamid.dishes(self.receptors):
+                brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
+                    "STANDBY", ignore_first=False
+                )
+            # set centralnode telescopeState waited before startup completes
             brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
                 "telescopeState"
             ).to_become_equal_to("STANDBY", ignore_first=False)

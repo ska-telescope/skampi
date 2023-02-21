@@ -81,17 +81,17 @@ mid_on_demand_deploy:
   when: manual
   allow_failure: true # need to keep this to unlock the pipeline
 
-  mid_on_demand_destroy:
-    variables:
-      CONFIG: mid
-      DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
-      K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-      HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
-      KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
-      KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
-      SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
-      ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
-      OET_INGRESS_ENABLED: "true"
+mid_on_demand_destroy:
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+    OET_INGRESS_ENABLED: "true"
   extends:
     - .tags_default
     - .set_dbname

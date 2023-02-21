@@ -78,7 +78,7 @@ low_on_demand_deploy:
   when: manual
   allow_failure: true
 
-  low_on_demand_destroy:
+low_on_demand_destroy:
   stage: deploy
   variables:
     CONFIG: low

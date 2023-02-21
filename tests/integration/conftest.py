@@ -262,7 +262,26 @@ def i_assign_resources_to_it(
             entry_point.compose_subarray(
                 subarray_id, receptors, composition, sb_config.sbid
             )
+@given("the resources are assigned")
+def the_subarray_is_in_idle(
+    running_telescope: fxt_types.telescope_context,
+    sb_config: fxt_types.sb_config,
+    base_composition: Composition,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    receptors = [
+        receptor_id for receptor_id in range(1, sut_settings.nr_of_receptors + 1)
+    ]
 
+    allocated_subarray = running_telescope.allocate_a_subarray(
+        sut_settings.subarray_id,
+        receptors,
+        sb_config,
+        integration_test_exec_settings,
+        base_composition,
+    )
+    return allocated_subarray
 
 # for SUT 2.2 scenario: Configure happy flow - running_telescope teardown is disabled
 @given(
@@ -351,30 +370,33 @@ def i_configure_it_for_a_scan(
 
 
 # for SUT 2.3
-@given(
-    parsers.parse("the subarray {subarray_id} obsState is READY"),
-    target_fixture="configured_subarray",
-)
+@given("the scan configuration is applied", target_fixture="configured_subarray")
 def the_subarray_is_in_ready(
     allocated_subarray: fxt_types.allocated_subarray,
     base_composition: Composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
-    subarray_id: int,
 ):
     """the subarray {subarray_id} obsState is READY"""
-    sut_settings.subarray_id = subarray_id
     scan_duration = sut_settings.scan_duration
-    # receptors = [
-    #     receptor_id for receptor_id in range(1, sut_settings.nr_of_receptors + 1)
-    # ]
     configured_subarray = allocated_subarray.configure(base_composition, scan_duration, 
                                     integration_test_exec_settings)
     return configured_subarray
 
 # scans
-@when(parsers.parse("the user issues the scan command with a {scan_id} to the subarray {subarray_id}"))
+
 @when("I command it to scan for a given period")
+def i_command_it_to_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    context_monitoring: fxt_types.context_monitoring,
+):
+    """I configure it for a scan."""
+    integration_test_exec_settings.attr_synching = False
+    with context_monitoring.context_monitoring():
+        configured_subarray.set_to_scanning(integration_test_exec_settings)
+        
+@when(parsers.parse("the user issues the scan command with a {scan_id} to the subarray {subarray_id}"))
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,

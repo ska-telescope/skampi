@@ -3,7 +3,7 @@ import logging
 
 import pytest
 from assertpy import assert_that
-from pytest_bdd import parsers, scenario, then
+from pytest_bdd import parsers, scenario, then, given
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -19,14 +19,21 @@ logger = logging.getLogger(__name__)
 @pytest.mark.skalow
 @scenario(
     "features/tmc_low_scan_sut.feature",
-    "execute a scan for the elapsed scan duration",
+    "Execute a scan for the elapsed scan duration - happy flow",
 )
 def test_tmc_low_subarray_for_a_scan():
     """Run a Scan on low tmc subarrays"""
 
 # from conftest
-# @given("the subarray <subarray_id> obsState is READY")
+@given(parsers.parse("the subarray {subarray_id} obsState is READY"))
+def the_subarray_obsstate_transitions_to_ready( subarray_id ):
+    tel = names.TEL()
+    tmc_subarray_name = tel.tm.subarray(subarray_id)
+    tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
 
+    result = tmc_subarray.read_attribute("obsState").value
+    assert_that(result).is_equal_to(ObsState.READY)
+    
 @then(parsers.parse("the subarray {subarray_id} obsState transitions to SCANNING"))
 def the_subarray_obsstate_transitions_to_scanning(
     configured_subarray: fxt_types.configured_subarray,
@@ -40,7 +47,7 @@ def the_subarray_obsstate_transitions_to_scanning(
     tmc_subarray_name = tel.tm.subarray(configured_subarray.id)
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
 
-    result = tmc_subarray.read_attribute("obsstate").value
+    result = tmc_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.SCANNING)
 
 @then(parsers.parse("the subarray {subarray_id} obsState transitions to READY after the scan duration elapsed"))
@@ -52,7 +59,7 @@ def subarray_obsState_transitions_to_ready(context_monitoring: fxt_types.context
     tel = names.TEL()
     context_monitoring.re_init_builder()
     context_monitoring.wait_for(str(tel.tm.subarray(sut_settings.subarray_id))).for_attribute(
-        "obsstate"
+        "obsState"
     ).to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
@@ -63,3 +70,10 @@ def subarray_obsState_transitions_to_ready(context_monitoring: fxt_types.context
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.READY)
 
+@then("the measurement set is present")
+def measurement_set_is_present():
+    pass
+
+@then(parsers.parse("the {scan_id} is correctly represented in the measurement set"))
+def scan_id_in_measurement_set():
+    pass

@@ -289,10 +289,16 @@ def i_configure_it_for_a_scan(
                 sub_array_id, receptors, configuration, sb_id, scan_duration
             )
 
+@when("I command it to scan for a given period")
+def i_command_it_to_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I configure it for a scan."""
+    configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 # scans
 @given("an subarray busy scanning")
-@when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,

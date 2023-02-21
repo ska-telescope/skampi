@@ -12,7 +12,7 @@ import pytest
 import ska_ser_skallop.mvp_control.subarray.compose as comp
 from assertpy import assert_that
 from mock import Mock, patch
-from pytest_bdd import given, parsers, when
+from pytest_bdd import given, parsers, when, then
 from resources.models.mvp_model.states import ObsState
 from resources.models.obsconfig.config import Observation
 from resources.models.tmc_model.entry_point import TMCEntryPoint

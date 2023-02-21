@@ -2,8 +2,6 @@ import logging
 
 import pytest
 from pytest_bdd import given, scenario, then
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.connectors.configuration import get_device_proxy
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -21,7 +19,7 @@ def test_tmc_alarm_handler_telescope_mid():
     
 @given("an telescope subarray", target_fixture="composition")
 def a_telescope_subarray(
-    set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition  # type: ignore
+    base_composition: conf_types.Composition  # type: ignore
 ) -> conf_types.Composition:
     """an telescope subarray."""
     return base_composition
@@ -35,7 +33,7 @@ def an_alarm_handler():
     
     
 @then("alarm must be raised with Unacknwoledged state")
-def validate_alarm_state(context_monitoring: fxt_types.context_monitoring, integration_test_exec_settings: fxt_types.exec_settings):
+def validate_alarm_state():
     """Validate Alarm is raised for IDLE Observation state
     """
     brd = get_message_board_builder()

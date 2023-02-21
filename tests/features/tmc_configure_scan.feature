@@ -15,7 +15,7 @@ Feature: Configure the subarray using TMC
 		When I configure it for a scan
 		Then the subarray must be in the READY state
 
-    
+
 	@XTP-16347
 	Scenario: Abort configuring
         Given an subarray busy configuring

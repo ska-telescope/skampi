@@ -1,3 +1,10 @@
+"""
+test_XTP-18866
+----------------------------------
+Tests for Configure the low telescope subarray using OET (XTP-19864)
+"""
+
+"""Configure scan on telescope subarray feature tests."""
 from pathlib import Path
 import pytest
 from assertpy import assert_that

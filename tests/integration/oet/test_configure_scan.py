@@ -20,7 +20,7 @@ from ..conftest import SutTestSettings
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
-@pytest.mark.skalow
+@pytest.mark.skalow_skip
 @pytest.mark.configure
 @scenario(
     "features/oet_configure_scan.feature",

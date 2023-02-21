@@ -18,6 +18,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.nrgen import get_id
 from ska_ser_skallop.utils.singleton import Memo
+from ..mvp_model.states import ObsState
 
 from ..obsconfig.config import Observation
 
@@ -401,7 +402,9 @@ class ScanStep(base.ScanStep, LogEnabled):
         try:
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)
-            subarray.command_inout("EndScan")
+            current_state = subarray.read_attribute("obsState")
+            if current_state.value == ObsState.SCANNING:
+                subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception
@@ -544,11 +547,7 @@ ASSIGN_RESOURCE_JSON_LOW = {
     "interface": "https://schema.skao.int/ska-low-tmc-assignresources/3.0",
     "transaction_id": "txn-....-00001",
     "subarray_id": 1,
-    "mccs": {
-        "subarray_beam_ids": [1],
-        "station_ids": [[1, 2]],
-        "channel_blocks": [3],
-    },
+    "mccs": {"subarray_beam_ids": [1], "station_ids": [[1, 2]], "channel_blocks": [3]},
     "sdp": {
         "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
         "resources": {"receptors": ["SKA001", "SKA002", "SKA003", "SKA004"]},
@@ -595,10 +594,7 @@ ASSIGN_RESOURCE_JSON_LOW = {
                 }
             ],
             "polarisations": [
-                {
-                    "polarisations_id": "all",
-                    "corr_type": ["XX", "XY", "YX", "YY"],
-                }
+                {"polarisations_id": "all", "corr_type": ["XX", "XY", "YX", "YY"]}
             ],
             "fields": [
                 {

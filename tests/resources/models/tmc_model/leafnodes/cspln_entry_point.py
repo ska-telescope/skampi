@@ -22,7 +22,7 @@ from ...csp_model.entry_point import (
 )
 
 from ...obsconfig.config import Observation
-
+from ..mvp_model.states import ObsState
 
 logger = logging.getLogger(__name__)
 
@@ -180,7 +180,9 @@ class CSPLnScanStep(CspScanStep):
         try:
             csp_subarray_ln.command_inout("Scan", json.dumps(csp_run_scan_config))
             sleep(scan_duration)
-            csp_subarray_ln.command_inout("EndScan")
+            current_state = csp_subarray_ln.read_attribute("obsState")
+            if current_state.value == ObsState.SCANNING:
+              csp_subarray_ln.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception

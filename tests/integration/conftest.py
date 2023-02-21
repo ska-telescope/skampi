@@ -350,12 +350,37 @@ def i_configure_it_for_a_scan(
             )
 
 
+# for SUT 2.3
+@given(
+    parsers.parse("the subarray {subarray_id} obsState is READY"),
+    target_fixture="configured_subarray",
+)
+def the_subarray_is_in_ready(
+    allocated_subarray: fxt_types.allocated_subarray,
+    base_composition: Composition,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    subarray_id: int,
+):
+    """the subarray {subarray_id} obsState is READY"""
+    sut_settings.subarray_id = subarray_id
+    scan_duration = sut_settings.scan_duration
+    # receptors = [
+    #     receptor_id for receptor_id in range(1, sut_settings.nr_of_receptors + 1)
+    # ]
+    configured_subarray = allocated_subarray.configure(base_composition, scan_duration, 
+                                    integration_test_exec_settings)
+    return configured_subarray
+
 # scans
+@when(parsers.parse("the user issues the scan command with a {scan_id} to the subarray {subarray_id}"))
 @when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
     context_monitoring: fxt_types.context_monitoring,
+    scan_id: int,
+    subarray_id: int,
 ):
     """I configure it for a scan."""
     integration_test_exec_settings.attr_synching = False

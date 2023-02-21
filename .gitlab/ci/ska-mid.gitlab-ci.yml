@@ -82,6 +82,7 @@ mid_on_demand_deploy:
   allow_failure: true # need to keep this to unlock the pipeline
 
 mid_on_demand_destroy:
+  stage: build
   variables:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"

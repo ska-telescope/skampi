@@ -46,7 +46,7 @@ low-test:
 
 # Low on-demand deployment
 low_on_demand_deploy:
-  stage: deploy
+  stage: build
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
@@ -79,7 +79,7 @@ low_on_demand_deploy:
   allow_failure: true
 
 low_on_demand_destroy:
-  stage: deploy
+  stage: build
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"

@@ -28,27 +28,27 @@ def an_oet():
     """an OET"""
 
 
-@given("a low telescope subarray in IDLE state")
-def a_subarray_in_the_idle_state(
-    running_telescope: fxt_types.running_telescope,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
-    sut_settings: SutTestSettings,
-):
-    """I assign resources to it in low."""
+# @given("a low telescope subarray in IDLE state")
+# def a_subarray_in_the_idle_state(
+#     running_telescope: fxt_types.running_telescope,
+#     context_monitoring: fxt_types.context_monitoring,
+#     integration_test_exec_settings: fxt_types.exec_settings,
+#     sut_settings: SutTestSettings,
+# ):
+#     """I assign resources to it in low."""
 
-    subarray_id = sut_settings.subarray_id
-    subarray = SubArray(subarray_id)
-    receptors = sut_settings.receptors
-    observation = sut_settings.observation
-    with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_allocating_a_subarray(
-            subarray_id, receptors, integration_test_exec_settings
-        ):
-            config = observation.generate_low_assign_resources_config(
-                subarray_id
-            ).as_object
-            subarray.assign_from_cdm(config)
+#     subarray_id = sut_settings.subarray_id
+#     subarray = SubArray(subarray_id)
+#     receptors = sut_settings.receptors
+#     observation = sut_settings.observation
+#     with context_monitoring.context_monitoring():
+#         with running_telescope.wait_for_allocating_a_subarray(
+#             subarray_id, receptors, integration_test_exec_settings
+#         ):
+#             config = observation.generate_low_assign_resources_config(
+#                 subarray_id
+#             ).as_object
+#             subarray.assign_from_cdm(config)
 
     # """when resources assigned the low telescope subarray goes in IDLE state."""
     # tel = names.TEL()

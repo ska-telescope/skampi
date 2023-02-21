@@ -102,6 +102,9 @@ ska-oso-oet:
       cpu: 2000m
       memory: 1024Mi
 
+ska-db-oda:
+  enabled: false
+
 #telescope control
 ## mid-cbf
 ska-mid-cbf:

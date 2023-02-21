@@ -59,7 +59,7 @@ def a_subarray_in_the_idle_state(
 
 @given("a valid scan configuration", target_fixture="valid_config_from_file")
 def a_valid_scan_configuration():
-    return Path("configure_low.json")
+    return Path("./tests/integration/oet/configure_low.json")
 
 
 @when("I configure it for a scan")
@@ -77,7 +77,7 @@ def i_configure_it_for_a_scan(
         with allocated_subarray.wait_for_configuring_a_subarray(
             integration_test_exec_settings
         ):
-            subarray.configure_from_file(valid_config_from_file.name, False)
+            subarray.configure_from_file(str(valid_config_from_file), False)
 
 
 @then("the subarray must be in the READY state")

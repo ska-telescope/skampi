@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.skamid
 @pytest.mark.startup
 @scenario("features/tmc_alarm_handler.feature", "Configure Alarm for IDLE Observation State")
-def test_tmc_alarm_handler_telescope_mid():
+def test_tmc_mid_alarm_for_subarray_idle():
     """Configure Alarm for IDLE Observation State in mid."""
     
 @given("an telescope subarray", target_fixture="composition")

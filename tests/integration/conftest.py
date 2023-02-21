@@ -6,18 +6,23 @@ import os
 
 from typing import Any, Callable
 from mock import patch, Mock
-
+from assertpy import assert_that
 import pytest
-from pytest_bdd import when, given, parsers
+from pytest_bdd import when, given, then, parsers
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management import telescope_management as tel
+
+# from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
 from ska_ser_skallop.mvp_fixtures.base import ExecSettings
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
+from ska_ser_skallop.connectors import configuration as con_config
+from resources.models.mvp_model.states import ObsState
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +41,9 @@ class SutTestSettings(SimpleNamespace):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         logger.info("initialising sut settings")
+        self.tel = TEL()
         self.observation = Observation()
+        self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
 
     @property
     def nr_of_receptors(self):
@@ -54,6 +61,11 @@ class SutTestSettings(SimpleNamespace):
     @receptors.setter
     def receptors(self, receptor: list[int]):
         self._receptors = receptor
+
+
+@pytest.fixture(name="disable_clear")
+def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
+    configured_subarray.disable_automatic_clear()
 
 
 @pytest.fixture(name="sut_settings", scope="function")
@@ -277,6 +289,7 @@ def i_configure_it_for_a_scan(
 
 
 # scans
+@given("an subarray busy scanning")
 @when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
@@ -304,3 +317,33 @@ def i_release_all_resources_assigned_to_it(
             integration_test_exec_settings
         ):
             entry_point.tear_down_subarray(sub_array_id)
+
+@when("I command it to Abort")
+def i_command_it_to_abort(
+    context_monitoring: fxt_types.context_monitoring,
+    allocated_subarray: fxt_types.allocated_subarray,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    subarray = sut_settings.default_subarray_name
+    sub_array_id = sut_settings.subarray_id
+    context_monitoring.builder.set_waiting_on(subarray).for_attribute(
+        "obsstate"
+    ).to_become_equal_to("ABORTED")
+    with context_monitoring.context_monitoring():
+        with context_monitoring.wait_before_complete(integration_test_exec_settings):
+            allocated_subarray.reset_after_test(integration_test_exec_settings)
+            entry_point.abort_subarray(sub_array_id)
+
+    integration_test_exec_settings.touch()
+
+
+@then("the subarray should go into an aborted state")
+def the_subarray_should_go_into_an_aborted_state(
+    sut_settings: SutTestSettings,
+):
+    subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
+    result = subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(ObsState.ABORTED)
+

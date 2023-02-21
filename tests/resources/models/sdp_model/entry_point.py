@@ -1,6 +1,6 @@
 """Domain logic for the sdp."""
 import logging
-from typing import Union, List
+from typing import Union, List, cast
 import os
 from time import sleep
 
@@ -14,10 +14,11 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     MessageBoardBuilder,
     AbortStep,
     ObsResetStep,
-
 )
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
+
+from tests.resources.models.mvp_model.configuration import SKAScanConfiguration
 from ..obsconfig.config import Observation
 from ..mvp_model.states import ObsState
 
@@ -206,7 +207,10 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         Memo(scan_duration=duration)
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        config = self.observation.generate_sdp_scan_config().as_json
+        if isinstance(configuration, SKAScanConfiguration):
+            config = configuration.generate_sdp_scan_config().as_json
+        else:
+            config = self.observation.generate_sdp_scan_config().as_json
         self._log(f"commanding {subarray_name} with Configure: {config} ")
         subarray.command_inout("Configure", config)
 
@@ -359,7 +363,7 @@ class SDPAbortStep(AbortStep, LogEnabled):
 
 class SDPObsResetStep(ObsResetStep, LogEnabled):
 
-    """Implementation of ObsReset Step for SDP.""" 
+    """Implementation of ObsReset Step for SDP."""
 
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -386,7 +390,7 @@ class SDPObsResetStep(ObsResetStep, LogEnabled):
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with ObsReset command")
         subarray.command_inout("Obsreset")
-    
+
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
 
@@ -412,7 +416,6 @@ class SDPObsResetStep(ObsResetStep, LogEnabled):
         return brd
 
 
-
 class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
     """Derived Entrypoint scoped to SDP element."""
 
@@ -431,4 +434,3 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
         self.scan_step = SDPScanStep(observation)
         self.abort_step = SDPAbortStep()
         self.obsreset_step = SDPObsResetStep()
-

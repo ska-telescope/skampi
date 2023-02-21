@@ -4,13 +4,13 @@ import logging
 from types import SimpleNamespace
 import os
 
-from typing import Any, Callable
+from typing import Any, Callable, Union, cast
 from mock import patch, Mock
 from assertpy import assert_that
 import pytest
 from pytest_bdd import when, given, then, parsers
 
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types, SubarrayConfigurationSpec
 from ska_ser_skallop.mvp_management import telescope_management as tel
 
 # from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -23,6 +23,8 @@ from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
 from ska_ser_skallop.connectors import configuration as con_config
 from resources.models.mvp_model.states import ObsState
+from tests.resources.models.mvp_model.configuration import SKAScanConfiguration
+from tests.resources.models.obsconfig.target_spec import TargetSpec
 
 
 logger = logging.getLogger(__name__)
@@ -61,6 +63,25 @@ class SutTestSettings(SimpleNamespace):
     @receptors.setter
     def receptors(self, receptor: list[int]):
         self._receptors = receptor
+
+
+@pytest.fixture(name="configuration")
+def fxt_configuration(
+    tmp_path: str, observation_config: Observation
+) -> conf_types.ScanConfiguration:
+    """Setup a base scan configuration to use for sdp.
+
+    :param tmp_path: a temporary path for sending configuration as a file.
+    :return: the configuration settings.
+    """
+    _tel = TEL()
+    if _tel.skalow:
+        configuration = conf_types.ScanConfigurationByFile(
+            tmp_path, conf_types.ScanConfigurationType.STANDARD
+        )
+    else:
+        configuration = SKAScanConfiguration(observation_config)
+    return configuration
 
 
 @pytest.fixture(name="disable_clear")
@@ -163,6 +184,11 @@ def fxt_integration_test_exec_settings(
     return integration_test_exec_settings
 
 
+@pytest.fixture(name="observation_config")
+def fxt_observation_config(sut_settings: SutTestSettings) -> Observation:
+    return sut_settings.observation
+
+
 # global when steps
 # start up
 
@@ -196,6 +222,72 @@ def the_telescope_is_on(
             entry_point.set_telescope_to_running()
 
 
+@given(
+    parsers.parse(
+        "a subarray defined to perform scans for types {scan_target1} "
+        "and {scan_target2}"
+    ),
+    target_fixture="scan_targets",
+)
+def a_subarray_defined_to_perform_scan_types(
+    scan_target1: str,
+    scan_target2: str,
+    observation_config: Observation,
+) -> dict[str, str]:
+    assert (
+        scan_target1 in observation_config.scan_type_configurations
+    ), f"Scan target {scan_target1} not defined"
+    assert (
+        scan_target2 in observation_config.scan_type_configurations
+    ), f"Scan target {scan_target2} not defined"
+    # check that we have targets referencing this scan types
+    scan_targets = {
+        target_spec.scan_type: target_name
+        for target_name, target_spec in observation_config.target_specs.items()
+    }
+    assert scan_targets.get(
+        scan_target1
+    ), f"Scan target {scan_target1} not defined as part of scan targets"
+    assert scan_targets.get(
+        scan_target2
+    ), f"Scan target {scan_target2} not defined as part of scan targets"
+    return scan_targets
+
+
+@given("an subarray that has just completed it's first scan")
+def an_subarray_that_has_just_completed_its_first_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    configured_subarray.scan(integration_test_exec_settings)
+
+
+@when(
+    parsers.parse("I configure the subarray again for scan type {scan_type}"),
+    target_fixture="configured_subarray",
+)
+@given(
+    parsers.parse("a subarray configured for scan type {scan_type}"),
+    target_fixture="configured_subarray",
+)
+def a_subarray_configured_for_scan_type(
+    scan_type: str,
+    factory_configured_subarray: fxt_types.factory_configured_subarray,
+    observation_config: Observation,
+    configuration: conf_types.ScanConfiguration,
+    sut_settings: SutTestSettings,
+    scan_targets: dict[str, str],
+):
+    """a subarray configured for scan type {scan_type}"""
+    scan_duration = sut_settings.scan_duration
+    configuration = SKAScanConfiguration(observation_config)
+    configuration.set_next_target_to_be_configured(scan_targets[scan_type])
+    configuration_specs = SubarrayConfigurationSpec(scan_duration, configuration)
+    return factory_configured_subarray(
+        injected_subarray_configuration_spec=configuration_specs
+    )
+
+
 @when("I switch off the telescope")
 def i_switch_off_the_telescope(
     running_telescope: fxt_types.running_telescope,
@@ -214,7 +306,8 @@ def i_switch_off_the_telescope(
 # Currently, resources_list is not utilised, raised SKB for the same:https://jira.skatelescope.org/browse/SKB-202
 @when(
     parsers.parse(
-        "I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"
+        "I issue the assignResources command with the {resources_list} to the"
+        " subarray {subarray_id}"
     )
 )
 def assign_resources_with_subarray_id(
@@ -264,6 +357,9 @@ def i_assign_resources_to_it(
 
 
 # scan configuration
+
+
+# scan configuration
 @when("I configure it for a scan")
 def i_configure_it_for_a_scan(
     allocated_subarray: fxt_types.allocated_subarray,
@@ -290,6 +386,7 @@ def i_configure_it_for_a_scan(
 
 # scans
 @given("an subarray busy scanning")
+@given("the subarray has just completed it's first scan for given configuration")
 @when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,

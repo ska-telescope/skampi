@@ -19,6 +19,12 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
+@pytest.fixture(name="disable_clear_and_tear_down")
+def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
+    configured_subarray.disable_automatic_clear()
+    configured_subarray.disable_automatic_teardown()
+
+
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
 @pytest.mark.usefixtures("set_up_subarray_log_checking_for_tmc")
 def fxt_set_entry_point(

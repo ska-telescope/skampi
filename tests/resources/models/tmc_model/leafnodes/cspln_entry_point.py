@@ -22,7 +22,7 @@ from ...csp_model.entry_point import (
 )
 
 from ...obsconfig.config import Observation
-from ..mvp_model.states import ObsState
+from ...mvp_model.states import ObsState
 
 logger = logging.getLogger(__name__)
 

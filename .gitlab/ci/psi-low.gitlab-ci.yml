@@ -42,7 +42,7 @@ psi_low_on_demand_deploy:
     - .psi_low_branch_job
     - .psi_low_deploy
 
-psi_low_on_demand_uninstall:
+psi_low_on_demand_destroy:
   extends:
     - .psi_low_branch_job
     - .uninstall_chart
@@ -69,7 +69,7 @@ psi_low_deploy_integration:
     - .psi_low_integration_job
     - .psi_low_deploy
 
-psi_low_uninstall_integration:
+psi_low_destroy_integration:
   extends:
     - .psi_low_integration_job
     - .uninstall_chart
@@ -96,7 +96,7 @@ psi_low_deploy_staging:
     - .psi_low_staging_job
     - .psi_low_deploy
 
-psi_low_uninstall_staging:
+psi_low_destroy_staging:
   extends:
     - .psi_low_staging_job
     - .uninstall_chart

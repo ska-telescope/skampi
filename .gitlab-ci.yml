@@ -15,8 +15,8 @@ variables:
   CONFIG: "common"
 
 stages:
-  - build
   - on-demand
+  - build
   - test
   - clean_test_env
   - lint

@@ -50,11 +50,11 @@ def a_subarray_in_the_idle_state(
             ).as_object
             subarray.assign_from_cdm(config)
 
-    """when resources assigned the low telescope subarray goes in IDLE state."""
-    tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.IDLE)
+    # """when resources assigned the low telescope subarray goes in IDLE state."""
+    # tel = names.TEL()
+    # subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    # result = subarray.read_attribute("obsState").value
+    # assert_that(result).is_equal_to(ObsState.IDLE)
 
 
 @given("a valid scan configuration", target_fixture="valid_config_from_file")

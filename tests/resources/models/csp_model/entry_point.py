@@ -435,6 +435,7 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
 
 class CSPAbortStep(base.AbortStep, LogEnabled):
 
+
     """Implementation of Abort Step for CSP."""
 
     def do(self, sub_array_id: int):
@@ -465,6 +466,7 @@ class CSPAbortStep(base.AbortStep, LogEnabled):
 class CSPObsResetStep(base.ObsResetStep, LogEnabled):
 
     """Implementation of ObsReset Step for CSP."""
+
 
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]

@@ -55,6 +55,7 @@ def an_telescope_subarray(
 def a_subarray_in_the_idle_state():
     """a subarray in the IDLE state."""
 
+
 # @when("I configure it for scan")
 
 

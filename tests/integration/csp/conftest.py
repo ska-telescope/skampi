@@ -97,7 +97,6 @@ def fxt_set_csp_entry_point(
 
 
 
-
 # log checking
 
 

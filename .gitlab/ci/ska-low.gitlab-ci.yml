@@ -19,7 +19,7 @@ low-test:
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     COUNT: 1
     EXIT_AT_FAIL: "True"
-    CAPTURE_LOGS: "True"
+    CAPTURE_LOGS: "false"
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"

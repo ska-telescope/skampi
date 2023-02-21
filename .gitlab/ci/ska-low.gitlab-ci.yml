@@ -46,7 +46,7 @@ low-test:
 
 # Low on-demand deployment
 low_on_demand_deploy:
-  stage: build
+  stage: on-demand
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
@@ -79,7 +79,7 @@ low_on_demand_deploy:
   allow_failure: true
 
 low_on_demand_destroy:
-  stage: build
+  stage: on-demand
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
@@ -112,7 +112,7 @@ low_on_demand_destroy:
     KUBE_NAMESPACE: integration-$CONFIG
     KUBE_NAMESPACE_SDP: integration-$CONFIG-sdp
     HELM_RELEASE: $CONFIG
-    SERVICE_ACCOUNT: integration-$CONFIG-sa
+    SERVICE_ACCOUNT: integration-svc-$CONFIG
     ARCHIVER_DBNAME: integration-$CONFIG-archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
@@ -186,7 +186,7 @@ low-redeploy-integration:
     KUBE_NAMESPACE: staging-$CONFIG
     KUBE_NAMESPACE_SDP: staging-$CONFIG-sdp
     HELM_RELEASE: $CONFIG
-    SERVICE_ACCOUNT: staging-$CONFIG-sa
+    SERVICE_ACCOUNT: staging-svc-$CONFIG
     ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"

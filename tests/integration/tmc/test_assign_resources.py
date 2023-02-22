@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 # log capturing
 
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow_skip
@@ -45,12 +46,18 @@ def test_release_resources_from_tmc_subarray_in_low():
 def test_assign_resources_to_tmc_subarray_in_mid():
     """Assign resources to tmc subarray in mid."""
 
+
+@pytest.fixture(name="composition")
+def fxt_default_composition(base_composition: conf_types.Composition):
+    return base_composition
+
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.assign
 @scenario("features/tmc_assign_resources.feature", "Abort assigning")
-def test_abort_in_resourcing_mid():
+def test_abort_in_resourcing_mid(composition: conf_types.Composition):
     """Assign resources to tmc subarray in mid."""
 
 

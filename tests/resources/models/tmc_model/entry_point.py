@@ -16,6 +16,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
     AbortStep,
+    ObsResetStep,
 )
 from ..mvp_model.states import ObsState
 from ska_ser_skallop.utils.nrgen import get_id
@@ -23,7 +24,7 @@ from ska_ser_skallop.utils.singleton import Memo
 from resources.models.mvp_model.states import ObsState
 
 from ..obsconfig.config import Observation
-
+from ..mvp_model.states import ObsState
 logger = logging.getLogger(__name__)
 
 
@@ -339,9 +340,6 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         """Not implemented."""
         brd = get_message_board_builder()
 
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("CONFIGURING")
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("CONFIGURING")
@@ -603,6 +601,7 @@ class TMCEntryPoint(CompositeEntryPoint):
         self.obsreset_step = TMCRestart()
 
 
+
 ASSIGN_RESOURCE_JSON_LOW = {
     "interface": "https://schema.skao.int/ska-low-tmc-assignresources/3.0",
     "transaction_id": "txn-....-00001",
@@ -792,3 +791,4 @@ SCAN_JSON_LOW = {
     "transaction_id": "txn-....-00001",
     "scan_id": 1,
 }
+

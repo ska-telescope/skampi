@@ -11,3 +11,4 @@ Scenario: Configure the csp low using csp leaf node
 	Given a TMC CSP subarray Leaf Node
 	When I configure it for a scan
 	Then the CSP subarray shall go from IDLE to READY state
+

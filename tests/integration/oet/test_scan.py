@@ -1,3 +1,9 @@
+"""
+test_XTP-18866
+----------------------------------
+Tests to Run a scan on low subarray from OET (XTP-19865)
+"""
+
 """Scan on telescope subarray feature tests."""
 import pytest
 from assertpy import assert_that

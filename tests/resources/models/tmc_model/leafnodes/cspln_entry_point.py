@@ -166,6 +166,8 @@ class CSPLnScanStep(CspScanStep):
         scan_duration = Memo().get("scan_duration")
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+        csp_subarray_name = self._tel.csp.subarray(sub_array_id)
+        csp_subarray = con_config.get_device_proxy(csp_subarray_name)  # type: ignore
 
 
         if self._tel.skamid:
@@ -180,7 +182,7 @@ class CSPLnScanStep(CspScanStep):
         try:
             csp_subarray_ln.command_inout("Scan", json.dumps(csp_run_scan_config))
             sleep(scan_duration)
-            current_state = csp_subarray_ln.read_attribute("obsState")
+            current_state = csp_subarray.read_attribute("obsState")
             if current_state.value == ObsState.SCANNING:
               csp_subarray_ln.command_inout("EndScan")
         except Exception as exception:

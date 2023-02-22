@@ -22,6 +22,7 @@ from ...sdp_model.entry_point import (
     SDPScanStep,
 )
 from ...obsconfig.config import Observation
+from ...mvp_model.states import ObsState
 
 logger = logging.getLogger(__name__)
 
@@ -154,11 +155,16 @@ class SDPLnScanStep(SDPScanStep):
         scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
         subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
+        sdp_subarray_name = self._tel.sdp.subarray(sub_array_id)
+        sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)  # type: ignore
+
         self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         try:
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)
-            subarray.command_inout("EndScan")
+            current_state = sdp_subarray.read_attribute("obsState")
+            if current_state.value == ObsState.SCANNING:
+                subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception

@@ -1,6 +1,6 @@
 """Domain logic for the sdp."""
 import logging
-from typing import Union, List
+from typing import Any, Union, List
 import os
 from time import sleep
 
@@ -170,7 +170,6 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
             "obsState"
         ).to_become_equal_to("RESOURCING")
         return brd
-
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray releasing resources is done.
@@ -466,10 +465,10 @@ class SDPRestart(base.RestartStep, LogEnabled):
         subarray.command_inout("Restart")
 
     def set_wait_for_do(
-        self, sub_array_id: int, receptors: List[int]
+        self, sub_array_id: int, _: Any = None
     ) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
-        subarray_name = self._tel.csp.subarray(sub_array_id)
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
         ).to_become_equal_to("EMPTY", ignore_first=True)

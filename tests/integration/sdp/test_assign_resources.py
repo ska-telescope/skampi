@@ -18,6 +18,16 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
+@pytest.fixture(name="composition")
+def fxt_default_composition(sdp_base_configuration: conf_types.Composition):
+    return sdp_base_configuration
+
+
+@pytest.fixture(name="set_restart_after_abort")
+def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
+    sut_settings.restart_after_abort = True
+
+
 @pytest.mark.skalow_skip
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -38,16 +48,14 @@ def test_assign_resources_to_sdp_subarray_in_mid(assign_resources_test_exec_sett
     """Assign resources to sdp subarray in mid."""
 
 
-
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
-@scenario(
-    "features/sdp_assign_resources.feature", "Abort assigning"
-)
-def test_abort_in_resourcing_sdp_subarray_in_mid(composition: conf_types.Composition):
+@scenario("features/sdp_assign_resources.feature", "Abort assigning")
+def test_abort_in_resourcing_sdp_subarray_in_mid(
+    set_restart_after_abort: None, composition: conf_types.Composition
+):
     """Assign resources to sdp subarray in mid."""
-
 
 
 @given("an SDP subarray", target_fixture="composition")

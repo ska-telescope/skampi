@@ -20,7 +20,6 @@ from ..obsconfig.config import Observation
 from ..mvp_model.states import ObsState
 
 
-
 logger = logging.getLogger(__name__)
 
 # scan duration needs to be a singleton in order to keep track of scan
@@ -170,7 +169,11 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
 
     def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
         """Not implemented."""
-        raise NotImplementedError()
+        brd = get_message_board_builder()
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("RESOURCING")
+        return brd
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray releasing resources is done.
@@ -260,7 +263,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         return builder
 
     def set_wait_for_doing(
-            self, sub_array_id: int, receptors: List[int]
+        self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for a subarray to be in a state of configuring.
 
@@ -435,7 +438,6 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
 
 class CSPAbortStep(base.AbortStep, LogEnabled):
 
-
     """Implementation of Abort Step for CSP."""
 
     def do(self, sub_array_id: int):
@@ -467,7 +469,6 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
 
     """Implementation of ObsReset Step for CSP."""
 
-
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
@@ -494,7 +495,6 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         self._log(f"commanding {subarray_name} with ObsReset command")
         subarray.command_inout("Obsreset")
 
-
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in csp.
 
@@ -508,7 +508,6 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         subarray.set_timeout_millis(6000)
         subarray.command_inout("ReleaseAllResources")
 
-
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray releasing resources is done.
 
@@ -521,6 +520,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         ).to_become_equal_to("EMPTY")
 
         return builder
+
 
 class CSPEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
@@ -540,7 +540,6 @@ class CSPEntryPoint(CompositeEntryPoint):
         self.scan_step = CspScanStep(observation)
         self.abort_step = CSPAbortStep()
         self.obsreset_step = CSPObsResetStep()
-
 
 
 csp_mid_assign_resources_template = {

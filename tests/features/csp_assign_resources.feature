@@ -26,3 +26,8 @@ Feature: Assign resources to CSP subarray
 		Given an CSP subarray in IDLE state
 		When I release all resources assigned to it
 		Then the CSP subarray must be in EMPTY state
+
+	Scenario: Abort assigning
+		Given an subarray busy assigning
+		When I command it to Abort
+		Then the subarray should go into an aborted state

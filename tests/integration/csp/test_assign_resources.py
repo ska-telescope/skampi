@@ -9,6 +9,11 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 logger = logging.getLogger(__name__)
 
 
+@pytest.fixture(name="composition")
+def fxt_default_composition(csp_base_composition: conf_types.Composition):
+    return csp_base_composition
+
+
 @pytest.mark.skalow_skip
 @pytest.mark.csp
 @pytest.mark.assign
@@ -51,6 +56,15 @@ def test_release_resources_to_csp_low_subarray():
 )
 def test_release_resources_to_csp_mid_subarray():
     """Release resources assigned to an CSP mid subarray"""
+
+
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skamid
+@pytest.mark.assign
+@scenario("features/csp_assign_resources.feature", "Abort assigning")
+def test_abort_in_resourcing_mid(composition: conf_types.Composition):
+    """Assign resources to csp subarray in mid."""
 
 
 # use when from ..shared_assign_resources in ..conftest.py

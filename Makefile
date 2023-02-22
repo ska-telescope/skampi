@@ -128,6 +128,14 @@ ifdef OET_INGRESS_ENABLED
 	K8S_CHART_PARAMS += --set ska-oso-oet.rest.ingress.enabled=$(OET_INGRESS_ENABLED)
 endif
 
+ifdef ODA_DEPLOYMENT_ENABLED
+	K8S_CHART_PARAMS += --set ska-db-oda.enabled=true \
+	  --set ska-oso-oet.rest.oda.url=$(ODA_URI) \
+	  --set ska-db-oda.rest.backend.type=filesystem \
+	  --set ska-db-oda.pgadmin4.enabled=false \
+	  --set ska-db-oda.postgresql.enabled=false
+endif
+
 ifeq ($(strip $(MINIKUBE)),true)
 ifeq ($(strip $(TARANTA_AUTH_DASHBOARD_ENABLE)),true)
 K8S_CHART_PARAMS += --set ska-taranta.enabled=true \

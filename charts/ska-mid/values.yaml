@@ -85,10 +85,6 @@ ska-oso-oet:
   central_node: ska_mid/tm_central/central_node
   subarray: ska_mid/tm_subarray_node
   rest:
-    image:
-      registry: registry.gitlab.com
-      image: ska-telescope/oso/ska-oso-oet/ska-oso-oet
-      tag: 5.0.0
     ingress:
       enabled: false
     oda:

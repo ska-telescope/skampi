@@ -48,7 +48,7 @@ class SutTestSettings(SimpleNamespace):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.tel = TEL()
+        self.tel = names.TEL()
         logger.info("initialising sut settings")
         self.tel = names.TEL()
         self.observation = Observation()

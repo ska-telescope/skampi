@@ -6,6 +6,8 @@ from pytest_bdd import given, scenario, then
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
+from ..conftest import SutTestSettings
+
 logger = logging.getLogger(__name__)
 
 
@@ -58,12 +60,19 @@ def test_release_resources_to_csp_mid_subarray():
     """Release resources assigned to an CSP mid subarray"""
 
 
+@pytest.fixture(name="set_restart_after_abort")
+def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
+    sut_settings.restart_after_abort = True
+
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.assign
 @scenario("features/csp_assign_resources.feature", "Abort assigning")
-def test_abort_in_resourcing_mid(composition: conf_types.Composition):
+def test_abort_in_resourcing_mid(
+    set_restart_after_abort: None, composition: conf_types.Composition
+):
     """Assign resources to csp subarray in mid."""
 
 

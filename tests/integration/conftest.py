@@ -47,6 +47,7 @@ class SutTestSettings(SimpleNamespace):
         self.observation = Observation()
         self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
         self.disable_subarray_teardown = False
+        self.restart_after_abort = False
 
     @property
     def nr_of_receptors(self):
@@ -383,7 +384,10 @@ def i_command_it_to_abort(
     ).to_become_equal_to("ABORTED")
     with context_monitoring.context_monitoring():
         with context_monitoring.wait_before_complete(integration_test_exec_settings):
-            allocated_subarray.reset_after_test(integration_test_exec_settings)
+            if sut_settings.restart_after_abort:
+                allocated_subarray.restart_after_test(integration_test_exec_settings)
+            else:
+                allocated_subarray.reset_after_test(integration_test_exec_settings)
             entry_point.abort_subarray(sub_array_id)
 
     integration_test_exec_settings.touch()

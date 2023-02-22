@@ -52,12 +52,19 @@ def fxt_default_composition(base_composition: conf_types.Composition):
     return base_composition
 
 
+@pytest.fixture(name="set_restart_after_abort")
+def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
+    sut_settings.restart_after_abort = True
+
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.assign
 @scenario("features/tmc_assign_resources.feature", "Abort assigning")
-def test_abort_in_resourcing_mid(composition: conf_types.Composition):
+def test_abort_in_resourcing_mid(
+    set_restart_after_abort: None, composition: conf_types.Composition
+):
     """Assign resources to tmc subarray in mid."""
 
 

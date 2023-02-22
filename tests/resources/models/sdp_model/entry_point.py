@@ -236,7 +236,6 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         ).to_become_equal_to("READY")
         return builder
 
-
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
@@ -336,6 +335,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         """
         return None
 
+
 class SDPAbortStep(AbortStep, LogEnabled):
 
     """Implementation of Abort Step for SDP."""
@@ -396,7 +396,7 @@ class SDPAbortStep(AbortStep, LogEnabled):
 
 class SDPObsResetStep(ObsResetStep, LogEnabled):
 
-    """Implementation of ObsReset Step for SDP.""" 
+    """Implementation of ObsReset Step for SDP."""
 
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -423,7 +423,7 @@ class SDPObsResetStep(ObsResetStep, LogEnabled):
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with ObsReset command")
         subarray.command_inout("Obsreset")
-    
+
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
 
@@ -449,6 +449,23 @@ class SDPObsResetStep(ObsResetStep, LogEnabled):
         return brd
 
 
+class SDPRestart(base.RestartStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
+        return builder
+
 
 class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
     """Derived Entrypoint scoped to SDP element."""
@@ -468,5 +485,4 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
         self.scan_step = SDPScanStep(observation)
         self.abort_step = SDPAbortStep()
         self.obsreset_step = SDPObsResetStep()
-
-
+        self.restart_step = SDPRestart()

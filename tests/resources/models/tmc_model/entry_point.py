@@ -3,7 +3,7 @@ import copy
 import json
 import logging
 import os
-from typing import List, Union
+from typing import Any, List, Union
 from time import sleep
 from ska_ser_skallop.utils.singleton import Memo
 from ska_ser_skallop.mvp_control.configuration import configuration as conf
@@ -592,7 +592,7 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
         return builder
 
 
-class TMCRestart(base.ObsResetStep, LogEnabled):
+class TMCRestart(base.RestartStep, LogEnabled):
     def do(self, sub_array_id: int):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -600,7 +600,7 @@ class TMCRestart(base.ObsResetStep, LogEnabled):
         subarray.command_inout("Restart")
 
     def set_wait_for_do(
-        self, sub_array_id: int, receptors: List[int]
+        self, sub_array_id: int, _: Any = None
     ) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
@@ -633,7 +633,8 @@ class TMCEntryPoint(CompositeEntryPoint):
         # currently we do obsreset via an restart
         #  not this results in the SUT going to EMPTY and not
         # IDLE
-        self.obsreset_step = TMCRestart()
+        self.obsreset_step = TMCRestart()  # type ignore
+        self.restart_step = TMCRestart()
 
 
 ASSIGN_RESOURCE_JSON_LOW = {

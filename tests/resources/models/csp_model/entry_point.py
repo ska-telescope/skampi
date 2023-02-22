@@ -522,6 +522,22 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         return builder
 
 
+class CSPRestart(base.RestartStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
+        return builder
+
+
 class CSPEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
@@ -540,6 +556,7 @@ class CSPEntryPoint(CompositeEntryPoint):
         self.scan_step = CspScanStep(observation)
         self.abort_step = CSPAbortStep()
         self.obsreset_step = CSPObsResetStep()
+        self.restart_step = CSPRestart()
 
 
 csp_mid_assign_resources_template = {

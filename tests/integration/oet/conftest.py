@@ -7,7 +7,7 @@ import pytest
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 
 from ska_oso_pdm.entities.common.sb_definition import SBDefinition
@@ -80,6 +80,17 @@ def fxt_set_entry_point(
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = ["tmc", "mid"]
 
+@pytest.fixture(name="base_configuration")
+def fxt_oet_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
+    """Setup a base scan configuration to use for sdp.
+
+    :param tmp_path: a temporary path for sending configuration as a file.
+    :return: the configuration settings.
+    """
+    configuration = conf_types.ScanConfigurationByFile(
+        tmp_path, conf_types.ScanConfigurationType.STANDARD
+    )
+    return configuration
 
 # log checking
 
@@ -97,6 +108,7 @@ def fxt_set_up_log_capturing_for_cbf(
         tel = names.TEL()
         subarray = str(tel.tm.subarray(1))
         log_checking.capture_logs_from_devices(subarray)
+
 
 @pytest.fixture
 def test_sbd() -> SBDefinition:

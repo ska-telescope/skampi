@@ -1,13 +1,12 @@
-@VTS-225
-Feature: Verification of OET scripts being executed successfully during an observation
+@XTP-18866
+Feature: OET Non-SB observing happy path for SKA LOW
 
-    #Scenario: Observing a SBI
-	@XTP-778 @XTP-776
-	Scenario: Observing a Scheduling Block
-		Given an OET
-		And sub-array is in the ObsState IDLE
-		When I tell the OET to observe using script file:///scripts/observe_mid_sb.py and SBI /tmp/oda/mid_sb_example.json
-		Then the OET will execute the script correctly
-		And the sub-array goes to ObsState IDLE
+    #Scenario: Run a scan on low subarray from OET
+    @XTP-19865 @XTP-18866
+    Scenario: Run a scan on low subarray from OET
+    Given an OET
+    Given a subarray in READY state
+    When I command it to scan for a given period
+    Then the subarray must be in the SCANNING state until finished
 
 

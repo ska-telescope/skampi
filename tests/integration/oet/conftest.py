@@ -7,7 +7,7 @@ import pytest
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 
 from resources.models.obsconfig.config import Observation
@@ -35,7 +35,9 @@ def fxt_nr_of_subarrays() -> int:
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online_from_tmc(
-    set_subsystem_online: Callable[[EntryPoint], None], nr_of_subarrays
+    online: conftest.OnlineFlag,
+    set_subsystem_online: Callable[[EntryPoint], None],
+    nr_of_subarrays,
 ):
     """_summary_
 
@@ -44,10 +46,12 @@ def fxt_set_csp_online_from_tmc(
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
     """
-    logging.info("setting csp components online within tmc context")
-    TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
-    entry_point = TMCEntryPoint()
-    set_subsystem_online(entry_point)
+    if not online:
+        logging.info("setting csp components online within tmc context")
+        TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+        entry_point = TMCEntryPoint()
+        set_subsystem_online(entry_point)
+        online.set_true()
 
 
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
@@ -73,6 +77,17 @@ def fxt_set_entry_point(
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = ["tmc", "mid"]
 
+@pytest.fixture(name="base_configuration")
+def fxt_oet_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
+    """Setup a base scan configuration to use for sdp.
+
+    :param tmp_path: a temporary path for sending configuration as a file.
+    :return: the configuration settings.
+    """
+    configuration = conf_types.ScanConfigurationByFile(
+        tmp_path, conf_types.ScanConfigurationType.STANDARD
+    )
+    return configuration
 
 # log checking
 
@@ -90,3 +105,4 @@ def fxt_set_up_log_capturing_for_cbf(
         tel = names.TEL()
         subarray = str(tel.tm.subarray(1))
         log_checking.capture_logs_from_devices(subarray)
+        

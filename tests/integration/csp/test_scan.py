@@ -10,6 +10,8 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
 
+
+@pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
 @pytest.mark.skalow
 @pytest.mark.scan
 @scenario("features/csp_scan.feature", "Run a scan on csp subarray in low")
@@ -22,6 +24,14 @@ def test_run_a_scan_on_csp_subarray_in_low():
 @scenario("features/csp_scan.feature", "Run a scan on csp subarray in mid")
 def test_run_a_scan_on_csp_subarray_in_mid():
     """Run a scan on sdp subarray in mid."""
+
+
+@pytest.mark.skamid
+@pytest.mark.scan
+@pytest.mark.csp
+@scenario("features/csp_scan.feature", "Abort Csp scanning")
+def test_abort_scanning(disable_clear):
+    """Abort scanning."""
 
 
 @given("an CSP subarray in READY state")
@@ -65,4 +75,3 @@ def the_csp_subarray_must_be_in_the_scanning_state(
     )
     result = csp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)
-

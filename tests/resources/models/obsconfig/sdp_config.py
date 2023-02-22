@@ -36,7 +36,7 @@ DEFAULT_FIELDS = {
         phase_dir=PhaseDir(
             ra=[123.0],
             dec=[-60.0],
-            reference_time="...",
+            reference_time="2023-02-16T01:23:45.678900",
             reference_frame="ICRF3",
         ),
     )
@@ -382,7 +382,7 @@ class ProcessingBlockSpec(ProcessingSpecs):
             ProcessingBlockConfiguration(
                 pb_id=self.pb_id,
                 script=processing_script.script,
-                sbi_ids=[self.eb_id],
+                sbi_ids=[self.sbi_id],
                 parameters=processing_script.parameters,
             )
             for processing_script in self.processing_scripts
@@ -439,7 +439,6 @@ class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
 
     def _generate_sdp_assign_resources_config(self):
         return SDPConfiguration(
-            eb_id=self.eb_id,
             interface=self.sdp_assign_resources_schema,
             execution_block=self.execution_block,
             resources=cast(dict[Any, Any], self.resource_configuration),

@@ -21,9 +21,8 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 from ..mvp_model.states import ObsState
 from ska_ser_skallop.utils.nrgen import get_id
 
-from ..obsconfig.config import Observation
+from ..mvp_model.env import get_observation_config, Observation
 from ..mvp_model.states import ObsState
-
 logger = logging.getLogger(__name__)
 
 
@@ -43,7 +42,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
     """Implementation of Startup step for TMC"""
 
     def __init__(
-            self, nr_of_subarrays: int = 3, receptors: list[int] = [1, 2, 3, 4]
+        self, nr_of_subarrays: int = 3, receptors: list[int] = [1, 2, 3, 4]
     ) -> None:
         super().__init__()
         self.nr_of_subarrays = nr_of_subarrays
@@ -163,11 +162,11 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
             pb["pb_id"] = get_id("pb-test-********-*****")
 
     def do(
-            self,
-            sub_array_id: int,
-            dish_ids: List[int],
-            composition: types.Composition,  # pylint: disable=
-            sb_id: str,
+        self,
+        sub_array_id: int,
+        dish_ids: List[int],
+        composition: types.Composition,  # pylint: disable=
+        sb_id: str,
     ):
         """Domain logic for assigning resources to a subarray in sdp.
 
@@ -269,12 +268,12 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         self.observation = observation
 
     def do(
-            self,
-            sub_array_id: int,
-            dish_ids: List[int],
-            configuration: types.ScanConfiguration,
-            sb_id: str,
-            duration: float,
+        self,
+        sub_array_id: int,
+        dish_ids: List[int],
+        configuration: types.ScanConfiguration,
+        sb_id: str,
+        duration: float,
     ):
         """Domain logic for configuring a scan on subarray in sdp.
 
@@ -311,7 +310,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         subarray.command_inout("End")
 
     def set_wait_for_do(
-            self, sub_array_id: int, receptors: List[int]
+        self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for configuring a scan is done.
 
@@ -334,7 +333,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         return brd
 
     def set_wait_for_doing(
-            self, sub_array_id: int, receptors: List[int]
+        self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
         """Not implemented."""
         brd = get_message_board_builder()
@@ -349,7 +348,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         return brd
 
     def set_wait_for_undo(
-            self, sub_array_id: int, receptors: List[int]
+        self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray clear scan config is done.
 
@@ -409,7 +408,7 @@ class ScanStep(base.ScanStep, LogEnabled):
             raise exception
 
     def set_wait_for_do(
-            self, sub_array_id: int, receptors: List[int]
+        self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
         """This is a no-op as there is no scanning command
 
@@ -423,7 +422,7 @@ class ScanStep(base.ScanStep, LogEnabled):
         """
 
     def set_wait_for_doing(
-            self, sub_array_id: int, receptors: List[int]
+        self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
 
@@ -443,7 +442,7 @@ class ScanStep(base.ScanStep, LogEnabled):
         return brd
 
     def set_wait_for_undo(
-            self, sub_array_id: int, receptors: List[int]
+        self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
         """This is a no-op as no undo for scan is needed
 
@@ -522,15 +521,16 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
+
 class TMCObsResetStep(ObsResetStep, LogEnabled):
     def set_wait_for_do(
-            self, sub_array_id: int, receptors: List[int]
+        self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("ABORTED", ignore_first=True)  # IDLE
+        ).to_become_equal_to("ABORTED", ignore_first=True)  #IDLE
         return builder
 
     def do(self, sub_array_id: int):
@@ -603,7 +603,7 @@ class TMCEntryPoint(CompositeEntryPoint):
         """Init Object"""
         super().__init__()
         if not observation:
-            observation = Observation()
+            observation = get_observation_config()
         self.observation = observation
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
         self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
@@ -616,6 +616,7 @@ class TMCEntryPoint(CompositeEntryPoint):
         #  not this results in the SUT going to EMPTY and not
         # IDLE
         self.obsreset_step = TMCRestart()
+
 
 
 ASSIGN_RESOURCE_JSON_LOW = {
@@ -800,6 +801,7 @@ CONFIGURE_JSON_LOW = {
     },
     "tmc": {"scan_duration": 10.0},
 }
+
 
 SCAN_JSON_LOW = {
     "interface": "https://schema.skao.int/ska-low-tmc-scan/3.0",

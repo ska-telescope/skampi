@@ -10,14 +10,14 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 
 
-@pytest.mark.skamid
+@pytest.mark.skamid_skip
 @scenario(
     "features/tmc_cspln_configure.feature", "Configure the csp mid using csp leaf node"
 )
 def test_configure_cspsubarray_for_a_scan_in_mid():
     """Configure cspsubarray for a scan in mid using the csp leaf node."""
 
-@pytest.mark.skalow
+@pytest.mark.skalow_skip
 @scenario(
     "features/tmc_cspln_configure.feature", "Configure the csp low using csp leaf node"
 )

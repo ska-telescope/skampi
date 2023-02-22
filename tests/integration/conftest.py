@@ -335,6 +335,39 @@ def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarra
     """an subarray busy configuring"""
     allocated_subarray.set_to_configuring(clear_afterwards=False)
 
+
+@given("an subarray busy assigning")
+def an_subarray_busy_assigning(
+    running_telescope: fxt_types.running_telescope,
+    sb_config: fxt_types.sb_config,
+    composition: conf_types.Composition,
+    settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+     ):
+    """an subarray busy assigning"""
+
+    """Create a subarray but block only until it is in RESOURCING.
+
+            :param subarray_id: the identification nr for the subarray
+            :param receptors: the receptors that will be used for the subarray.
+                If none is given it will use a default set of two receptors 1 and 2.
+            :param sb_config: The SB configuration to use as context, defaults to SBConfig()
+            :param settings: the execution settings to use during the IO calls., defaults to
+                ExecSettings()
+            :param composition: The type of composition configuration to use.
+                , defaults to conf_types.Composition( conf_types.CompositionType.STANDARD )
+            :type composition: conf_types.Composition, optional
+            :return: A subarray context manager to ue for subsequent commands.
+            """
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    running_telescope.set_to_resourcing(
+        subarray_id,
+        receptors,
+        sb_config,
+        settings,
+        composition)
+
 @when("I command it to Abort")
 def i_command_it_to_abort(
     context_monitoring: fxt_types.context_monitoring,

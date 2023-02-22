@@ -31,3 +31,9 @@ Feature: Assign resources to subarray using TMC
 		Given a subarray in the IDLE state
 		When I release all resources assigned to it
 		Then the subarray must be in EMPTY state
+
+	@XTP-163471
+	Scenario: Abort assigning
+	    Given an subarray busy assigning
+        When I command it to Abort
+        Then the subarray should go into an aborted state

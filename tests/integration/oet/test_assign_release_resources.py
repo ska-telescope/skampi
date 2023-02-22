@@ -23,7 +23,7 @@ EXECUTOR = ScriptExecutor()
 
 
 @pytest.mark.oet
-@pytest.mark.skamid
+@pytest.mark.skamid_skip
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",
@@ -38,7 +38,7 @@ def test_sbi_creation():
 
 
 @pytest.mark.skip(reason="oet not compatible with tmc config changes yet")
-@pytest.mark.skamid
+@pytest.mark.skamid_skip
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature", "Allocating resources with a SBI"
@@ -53,7 +53,7 @@ def test_resource_allocation():
 
 
 @pytest.mark.skip(reason="oet not compatible with tmc config changes yet")
-@pytest.mark.skamid
+@pytest.mark.skamid_skip
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",
@@ -219,7 +219,7 @@ def check_final_subarray_state(
     logger.info("Sub-array is in ObsState %s", obsstate)
 
 
-@pytest.mark.skamid
+@pytest.mark.skamid_skip
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",
@@ -234,7 +234,7 @@ def test_oet__scripting_resource_allocation():
     """
 
 @pytest.mark.oet
-@pytest.mark.skalow
+@pytest.mark.skalow_skip
 @pytest.mark.assign
 @pytest.mark.k8s
 @scenario(
@@ -250,7 +250,7 @@ def test_oet_scripting_resource_allocation_in_low():
     """
 
 @pytest.mark.oet
-@pytest.mark.skalow
+@pytest.mark.skalow_skip
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",

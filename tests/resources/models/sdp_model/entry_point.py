@@ -159,9 +159,18 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         )
         return brd
 
-    def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Not implemented."""
-        raise NotImplementedError()
+    def set_wait_for_doing(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        brd = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("RESOURCING")
+        return brd
+
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray releasing resources is done.

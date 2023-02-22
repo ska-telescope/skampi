@@ -38,6 +38,18 @@ def test_assign_resources_to_sdp_subarray_in_mid(assign_resources_test_exec_sett
     """Assign resources to sdp subarray in mid."""
 
 
+
+@pytest.mark.skamid
+@pytest.mark.assign
+@pytest.mark.sdp
+@scenario(
+    "features/sdp_assign_resources.feature", "Abort assigning"
+)
+def test_abort_in_resourcing_sdp_subarray_in_mid(composition: conf_types.Composition):
+    """Assign resources to sdp subarray in mid."""
+
+
+
 @given("an SDP subarray", target_fixture="composition")
 def an_sdp_subarray(
     set_up_subarray_log_checking_for_sdp, sdp_base_composition: conf_types.Composition

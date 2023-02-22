@@ -24,7 +24,7 @@ def a_telescope_subarray(
     """an telescope subarray."""
     return base_composition
 
-@given("an Alarm handler configured for subarray obsState IDLE")
+@given("an Alarm handler configured to raise an alarm when the subarray obsState is IDLE")
 def an_alarm_handler():
     """an Alarm Handler"""
     alarm_handler = get_device_proxy("alarm/handler/01")

@@ -3147,23 +3147,11 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 files = [
     {file = "atomicwrites-1.4.1.tar.gz", hash = "sha256:81b2c9071a49367a7f770170e5eec8cb66567cfbbc8c73d20ce5ca4a8d71cf11"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "attrs"
-version = "22.2.0"
-description = "Classes Without Boilerplate"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
+attrs = [
     {file = "attrs-22.2.0-py3-none-any.whl", hash = "sha256:29e95c7f6778868dbd49170f98f8818f78f3dc5e0e37c0b1f474e3561b240836"},
     {file = "attrs-22.2.0.tar.gz", hash = "sha256:c9227bfc2f01993c03f68db37d1d15c9690188323c067c641f1a35ca58185f99"},
 ]
+<<<<<<< HEAD
 
 [package.extras]
 cov = ["attrs[tests]", "coverage-enable-subprocess", "coverage[toml] (>=5.3)"]
@@ -3185,75 +3173,25 @@ category = "dev"
 optional = false
 python-versions = "*"
 files = [
+=======
+backcall = [
+>>>>>>> master
     {file = "backcall-0.2.0-py2.py3-none-any.whl", hash = "sha256:fbbce6a29f263178a1f7915c1940bde0ec2b2a967566fe1c65c1dfb7422bd255"},
     {file = "backcall-0.2.0.tar.gz", hash = "sha256:5cbdbf27be5e7cfadb448baf0aa95508f91f2bbc6c6437cd9cd06e2a4c215e1e"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "black"
-version = "21.12b0"
-description = "The uncompromising code formatter."
-category = "dev"
-optional = false
-python-versions = ">=3.6.2"
-files = [
+black = [
     {file = "black-21.12b0-py3-none-any.whl", hash = "sha256:a615e69ae185e08fdd73e4715e260e2479c861b5740057fde6e8b4e3b7dd589f"},
     {file = "black-21.12b0.tar.gz", hash = "sha256:77b80f693a569e2e527958459634f18df9b0ba2625ba4e0c2d5da5be42e6f2b3"},
 ]
-
-[package.dependencies]
-click = ">=7.1.2"
-mypy-extensions = ">=0.4.3"
-pathspec = ">=0.9.0,<1"
-platformdirs = ">=2"
-tomli = ">=0.2.6,<2.0.0"
-typing-extensions = {version = ">=3.10.0.0,<3.10.0.1 || >3.10.0.1", markers = "python_version >= \"3.10\""}
-
-[package.extras]
-colorama = ["colorama (>=0.4.3)"]
-d = ["aiohttp (>=3.7.4)"]
-jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
-python2 = ["typed-ast (>=1.4.3)"]
-uvloop = ["uvloop (>=0.15.2)"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "cachetools"
-version = "5.3.0"
-description = "Extensible memoizing collections and decorators"
-category = "main"
-optional = false
-python-versions = "~=3.7"
-files = [
+cachetools = [
     {file = "cachetools-5.3.0-py3-none-any.whl", hash = "sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4"},
     {file = "cachetools-5.3.0.tar.gz", hash = "sha256:13dfddc7b8df938c21a940dfa6557ce6e94a2f1cdfa58eb90c805721d58f2c14"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "certifi"
-version = "2022.12.7"
-description = "Python package for providing Mozilla's CA Bundle."
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
+certifi = [
     {file = "certifi-2022.12.7-py3-none-any.whl", hash = "sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18"},
     {file = "certifi-2022.12.7.tar.gz", hash = "sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3"},
 ]
+<<<<<<< HEAD
 
 [package.source]
 type = "legacy"
@@ -3268,6 +3206,13 @@ category = "main"
 optional = false
 python-versions = "*"
 files = [
+>>>>>>> master
+=======
+chardet = [
+    {file = "chardet-4.0.0-py2.py3-none-any.whl", hash = "sha256:f864054d66fd9118f2e67044ac8981a54775ec5b67aed0441892edb553d21da5"},
+    {file = "chardet-4.0.0.tar.gz", hash = "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa"},
+]
+charset-normalizer = [
 >>>>>>> master
     {file = "charset-normalizer-3.0.1.tar.gz", hash = "sha256:ebea339af930f8ca5d7a699b921106c6e29c617fe9606fa7baa043c1cdae326f"},
     {file = "charset_normalizer-3.0.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:88600c72ef7587fe1708fd242b385b6ed4b8904976d5da0893e31df8b3480cb6"},
@@ -3359,6 +3304,7 @@ files = [
     {file = "charset_normalizer-3.0.1-py3-none-any.whl", hash = "sha256:7e189e2e1d3ed2f4aebabd2d5b0f931e883676e51c7624826e0a4e5fe8a0bf24"},
 ]
 <<<<<<< HEAD
+<<<<<<< HEAD
 click = [
     {file = "click-8.1.3-py3-none-any.whl", hash = "sha256:bb4d8133cb15a609f44e8213d9b391b0809795062913b383c62be0ee95b1db48"},
     {file = "click-8.1.3.tar.gz", hash = "sha256:7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"},
@@ -3395,29 +3341,17 @@ category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
+=======
+click = [
+>>>>>>> master
     {file = "click-8.1.3-py3-none-any.whl", hash = "sha256:bb4d8133cb15a609f44e8213d9b391b0809795062913b383c62be0ee95b1db48"},
     {file = "click-8.1.3.tar.gz", hash = "sha256:7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"},
 ]
-
-[package.dependencies]
-colorama = {version = "*", markers = "platform_system == \"Windows\""}
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "clickclick"
-version = "20.10.2"
-description = "Click utility functions"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
+clickclick = [
     {file = "clickclick-20.10.2-py2.py3-none-any.whl", hash = "sha256:c8f33e6d9ec83f68416dd2136a7950125bd256ec39ccc9a85c6e280a16be2bb5"},
     {file = "clickclick-20.10.2.tar.gz", hash = "sha256:4efb13e62353e34c5eef7ed6582c4920b418d7dedc86d819e22ee089ba01802c"},
 ]
+<<<<<<< HEAD
 
 [package.dependencies]
 click = ">=4.0"
@@ -3453,44 +3387,21 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
+=======
+colorama = [
+    {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
+    {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
+]
+connexion = [
+>>>>>>> master
     {file = "connexion-2.14.2-py2.py3-none-any.whl", hash = "sha256:a73b96a0e07b16979a42cde7c7e26afe8548099e352cf350f80c57185e0e0b36"},
     {file = "connexion-2.14.2.tar.gz", hash = "sha256:dbc06f52ebeebcf045c9904d570f24377e8bbd5a6521caef15a06f634cf85646"},
 ]
-
-[package.dependencies]
-clickclick = ">=1.2,<21"
-flask = ">=1.0.4,<2.3"
-inflection = ">=0.3.1,<0.6"
-itsdangerous = ">=0.24"
-jsonschema = ">=2.5.1,<5"
-packaging = ">=20"
-PyYAML = ">=5.1,<7"
-requests = ">=2.9.1,<3"
-werkzeug = ">=1.0,<2.3"
-
-[package.extras]
-aiohttp = ["MarkupSafe (>=0.23)", "aiohttp (>=2.3.10,<4)", "aiohttp-jinja2 (>=0.14.0,<2)"]
-docs = ["sphinx-autoapi (==1.8.1)"]
-flask = ["flask (>=1.0.4,<2.3)", "itsdangerous (>=0.24)"]
-swagger-ui = ["swagger-ui-bundle (>=0.0.2,<0.1)"]
-tests = ["MarkupSafe (>=0.23)", "aiohttp (>=2.3.10,<4)", "aiohttp-jinja2 (>=0.14.0,<2)", "aiohttp-remotes", "decorator (>=5,<6)", "flask (>=1.0.4,<2.3)", "itsdangerous (>=0.24)", "pytest (>=6,<7)", "pytest-aiohttp", "pytest-cov (>=2,<3)", "swagger-ui-bundle (>=0.0.2,<0.1)", "testfixtures (>=6,<7)"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "contextlib2"
-version = "21.6.0"
-description = "Backports and enhancements for the contextlib module"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
+contextlib2 = [
     {file = "contextlib2-21.6.0-py2.py3-none-any.whl", hash = "sha256:3fbdb64466afd23abaf6c977627b75b6139a5a3e8ce38405c5b413aed7a0471f"},
     {file = "contextlib2-21.6.0.tar.gz", hash = "sha256:ab1e2bfe1d01d968e1b7e8d9023bc51ef3509bba217bb730cee3827e1ee82869"},
 ]
+<<<<<<< HEAD
 
 [package.source]
 type = "legacy"
@@ -3505,6 +3416,9 @@ category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
+>>>>>>> master
+=======
+coverage = [
 >>>>>>> master
     {file = "coverage-7.1.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:3b946bbcd5a8231383450b195cfb58cb01cbe7f8949f5758566b881df4b33baf"},
     {file = "coverage-7.1.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ec8e767f13be637d056f7e07e61d089e555f719b387a7070154ad80a0ff31801"},
@@ -3559,6 +3473,7 @@ files = [
     {file = "coverage-7.1.0.tar.gz", hash = "sha256:10188fe543560ec4874f974b5305cd1a8bdcfa885ee00ea3a03733464c4ca265"},
 ]
 <<<<<<< HEAD
+<<<<<<< HEAD
 debugpy = [
 =======
 
@@ -3599,6 +3514,13 @@ optional = false
 python-versions = ">=3.7"
 files = [
 >>>>>>> master
+=======
+darglint = [
+    {file = "darglint-1.8.1-py3-none-any.whl", hash = "sha256:5ae11c259c17b0701618a20c3da343a3eb98b3bc4b5a83d31cdd94f5ebdced8d"},
+    {file = "darglint-1.8.1.tar.gz", hash = "sha256:080d5106df149b199822e7ee7deb9c012b49891538f14a11be681044f0bb20da"},
+]
+debugpy = [
+>>>>>>> master
     {file = "debugpy-1.6.6-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:0ea1011e94416e90fb3598cc3ef5e08b0a4dd6ce6b9b33ccd436c1dffc8cd664"},
     {file = "debugpy-1.6.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:dff595686178b0e75580c24d316aa45a8f4d56e2418063865c114eef651a982e"},
     {file = "debugpy-1.6.6-cp310-cp310-win32.whl", hash = "sha256:87755e173fcf2ec45f584bb9d61aa7686bb665d861b81faa366d59808bbd3494"},
@@ -3618,6 +3540,9 @@ files = [
     {file = "debugpy-1.6.6.zip", hash = "sha256:b9c2130e1c632540fbf9c2c88341493797ddf58016e7cba02e311de9b0a96b67"},
 ]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> master
 decorator = [
     {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
     {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
@@ -3645,6 +3570,7 @@ fire = [
     {file = "fire-0.4.0.tar.gz", hash = "sha256:c5e2b8763699d1142393a46d0e3e790c5eb2f0706082df8f647878842c216a62"},
 ]
 flake8 = [
+<<<<<<< HEAD
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},
     {file = "flake8-4.0.1.tar.gz", hash = "sha256:806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d"},
 ]
@@ -3858,6 +3784,15 @@ optional = false
 python-versions = ">=3.7"
 files = [
 >>>>>>> master
+=======
+    {file = "flake8-6.0.0-py2.py3-none-any.whl", hash = "sha256:3833794e27ff64ea4e9cf5d410082a8b97ff1a06c16aa3d2027339cd0f1195c7"},
+    {file = "flake8-6.0.0.tar.gz", hash = "sha256:c61007e76655af75e6785a931f452915b371dc48f56efd765247c8fe68f2b181"},
+]
+flask = [
+    {file = "Flask-2.2.3-py3-none-any.whl", hash = "sha256:c0bec9477df1cb867e5a67c9e1ab758de9cb4a3e52dd70681f59fa40a62b3f2d"},
+]
+frozenlist = [
+>>>>>>> master
     {file = "frozenlist-1.3.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:ff8bf625fe85e119553b5383ba0fb6aa3d0ec2ae980295aaefa552374926b3f4"},
     {file = "frozenlist-1.3.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:dfbac4c2dfcc082fcf8d942d1e49b6aa0766c19d3358bd86e2000bf0fa4a9cf0"},
     {file = "frozenlist-1.3.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:b1c63e8d377d039ac769cd0926558bb7068a1f7abb0f003e3717ee003ad85530"},
@@ -3934,6 +3869,9 @@ files = [
     {file = "frozenlist-1.3.3.tar.gz", hash = "sha256:58bcc55721e8a90b88332d6cd441261ebb22342e238296bb330968952fbb3a6a"},
 ]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> master
 gitdb = [
     {file = "gitdb-4.0.10-py3-none-any.whl", hash = "sha256:c286cf298426064079ed96a9e4a9d39e7f3e9bf15ba60701e95f5492f28415c7"},
     {file = "gitdb-4.0.10.tar.gz", hash = "sha256:6eb990b69df4e15bad899ea868dc46572c3f75339735663b81de79b06f17eb9a"},
@@ -4009,6 +3947,7 @@ kubernetes = [
     {file = "kubernetes-21.7.0.tar.gz", hash = "sha256:c9849afc2eafdce60efa210049ee7a94e7ef6cf3a7afa14a69b3bf0447825977"},
 ]
 lazy-object-proxy = [
+<<<<<<< HEAD
 =======
 
 [package.source]
@@ -4407,6 +4346,8 @@ optional = false
 python-versions = ">=3.7"
 files = [
 >>>>>>> master
+=======
+>>>>>>> master
     {file = "lazy-object-proxy-1.9.0.tar.gz", hash = "sha256:659fb5809fa4629b8a1ac5106f669cfc7bef26fbb389dda53b3e010d1ac4ebae"},
     {file = "lazy_object_proxy-1.9.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:b40387277b0ed2d0602b8293b94d7257e17d1479e257b4de114ea11a8cb7f2d7"},
     {file = "lazy_object_proxy-1.9.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e8c6cfb338b133fbdbc5cfaa10fe3c6aeea827db80c978dbd13bc9dd8526b7d4"},
@@ -4445,11 +4386,15 @@ files = [
     {file = "lazy_object_proxy-1.9.0-cp39-cp39-win_amd64.whl", hash = "sha256:db1c1722726f47e10e0b5fdbf15ac3b8adb58c091d12b3ab713965795036985f"},
 ]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> master
 mako = [
     {file = "Mako-1.2.4-py3-none-any.whl", hash = "sha256:c97c79c018b9165ac9922ae4f32da095ffd3c4e6872b45eded42926deea46818"},
     {file = "Mako-1.2.4.tar.gz", hash = "sha256:d60a3903dc3bb01a18ad6a89cdbe2e4eadc69c0bc8ef1e3773ba53d44c3f7a34"},
 ]
 markupsafe = [
+<<<<<<< HEAD
 =======
 
 [package.source]
@@ -4490,6 +4435,8 @@ category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
+>>>>>>> master
+=======
 >>>>>>> master
     {file = "MarkupSafe-2.1.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:665a36ae6f8f20a4676b53224e33d456a6f5a72657d9c83c2aa00765072f31f7"},
     {file = "MarkupSafe-2.1.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:340bea174e9761308703ae988e982005aedf427de816d1afe98147668cc03036"},
@@ -4543,6 +4490,9 @@ files = [
     {file = "MarkupSafe-2.1.2.tar.gz", hash = "sha256:abcabc8c2b26036d62d4c746381a6f7cf60aafcc653198ad678306986b09450d"},
 ]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> master
 marshmallow = [
     {file = "marshmallow-3.19.0-py3-none-any.whl", hash = "sha256:93f0958568da045b0021ec6aeb7ac37c81bfcccbb9a0e7ed8559885070b3a19b"},
     {file = "marshmallow-3.19.0.tar.gz", hash = "sha256:90032c0fd650ce94b6ec6dc8dfeb0e3ff50c144586462c389b81a07205bedb78"},
@@ -4560,8 +4510,13 @@ matplotlib-inline = [
     {file = "matplotlib_inline-0.1.6-py3-none-any.whl", hash = "sha256:f1f41aab5328aa5aaea9b16d083b128102f8712542f819fe7e6a420ff581b311"},
 ]
 mccabe = [
+<<<<<<< HEAD
     {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
+=======
+    {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
+    {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
+>>>>>>> master
 ]
 mistune = [
     {file = "mistune-0.8.4-py2.py3-none-any.whl", hash = "sha256:88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"},
@@ -4572,6 +4527,7 @@ mock = [
     {file = "mock-4.0.3.tar.gz", hash = "sha256:7d3fbbde18228f4ff2f1f119a45cdffa458b4c0dee32eb4d2bb2f82554bac7bc"},
 ]
 multidict = [
+<<<<<<< HEAD
 =======
 
 [package.source]
@@ -4718,6 +4674,8 @@ optional = false
 python-versions = ">=3.7"
 files = [
 >>>>>>> master
+=======
+>>>>>>> master
     {file = "multidict-6.0.4-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:0b1a97283e0c85772d613878028fec909f003993e1007eafa715b24b377cb9b8"},
     {file = "multidict-6.0.4-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:eeb6dcc05e911516ae3d1f207d4b0520d07f54484c49dfc294d6e7d63b734171"},
     {file = "multidict-6.0.4-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:d6d635d5209b82a3492508cf5b365f3446afb65ae7ebd755e70e18f287b0adf7"},
@@ -4794,6 +4752,9 @@ files = [
     {file = "multidict-6.0.4.tar.gz", hash = "sha256:3666906492efb76453c0e7b97f2cf459b0682e7402c0489a95484965dbc1da49"},
 ]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> master
 mypy-extensions = [
     {file = "mypy_extensions-1.0.0-py3-none-any.whl", hash = "sha256:4392f6c0eb8a5668a69e23d168ffa70f0be9ccfd32b5cc2d26a34ae5b844552d"},
     {file = "mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782"},
@@ -4970,6 +4931,7 @@ pyasn1-modules = [
     {file = "pyasn1_modules-0.2.8-py2.py3-none-any.whl", hash = "sha256:a50b808ffeb97cb3601dd25981f6b016cbb3d31fbf57a8b8a87428e6158d0c74"},
 ]
 pycodestyle = [
+<<<<<<< HEAD
     {file = "pycodestyle-2.8.0-py2.py3-none-any.whl", hash = "sha256:720f8b39dde8b293825e7ff02c475f3077124006db4f440dcbc9a20b76548a20"},
     {file = "pycodestyle-2.8.0.tar.gz", hash = "sha256:eddd5847ef438ea1c7870ca7eb78a9d47ce0cdb4851a5523949f2601d0cbbe7f"},
 ]
@@ -5392,6 +5354,12 @@ optional = false
 python-versions = ">=3.7"
 files = [
 >>>>>>> master
+=======
+    {file = "pycodestyle-2.10.0-py2.py3-none-any.whl", hash = "sha256:8a4eaf0d0495c7395bdab3589ac2db602797d76207242c17d470186815706610"},
+    {file = "pycodestyle-2.10.0.tar.gz", hash = "sha256:347187bdb476329d98f695c213d7295a846d1152ff4fe9bacb8a9590b8ee7053"},
+]
+pyerfa = [
+>>>>>>> master
     {file = "pyerfa-2.0.0.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:278832de7803f2fb0ef4b14263200f98dfdb3eaa78dc63835d93796fd8fc42c6"},
     {file = "pyerfa-2.0.0.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:629248cebc8626a52e80f69d4e2f30cc6e751f57803f5ba7ec99edd09785d181"},
     {file = "pyerfa-2.0.0.1-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:3285d95dfe398a931a633da961f6f1c0b8690f2a3b1c510a4efe639f784cd9c7"},
@@ -5422,6 +5390,7 @@ files = [
     {file = "pyerfa-2.0.0.1-cp39-cp39-win_amd64.whl", hash = "sha256:63a83c35cea8c5d50d53c18089f1e625c0ffc59a7a5b8d44e0f1b3ec5288f183"},
     {file = "pyerfa-2.0.0.1.tar.gz", hash = "sha256:2fd4637ffe2c1e6ede7482c13f583ba7c73119d78bef90175448ce506a0ede30"},
 ]
+<<<<<<< HEAD
 <<<<<<< HEAD
 pyflakes = [
     {file = "pyflakes-2.4.0-py2.py3-none-any.whl", hash = "sha256:3bb3a3f256f4b7968c9c788781e4ff07dce46bdf12339dcda61053375426ee2e"},
@@ -5468,26 +5437,17 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
+=======
+pyflakes = [
+>>>>>>> master
     {file = "pyflakes-3.0.1-py2.py3-none-any.whl", hash = "sha256:ec55bf7fe21fff7f1ad2f7da62363d749e2a470500eab1b555334b67aa1ef8cf"},
     {file = "pyflakes-3.0.1.tar.gz", hash = "sha256:ec8b276a6b60bd80defed25add7e439881c19e64850afd9b346283d4165fd0fd"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pygments"
-version = "2.14.0"
-description = "Pygments is a syntax highlighting package written in Python."
-category = "dev"
-optional = false
-python-versions = ">=3.6"
-files = [
+pygments = [
     {file = "Pygments-2.14.0-py3-none-any.whl", hash = "sha256:fa7bd7bd2771287c0de303af8bfdfc731f51bd2c6a47ab69d117138893b82717"},
     {file = "Pygments-2.14.0.tar.gz", hash = "sha256:b3ed06a9e8ac9a9aae5a6f5dbe78a8a58655d17b43b93c078f094ddc476ae297"},
 ]
+<<<<<<< HEAD
 
 [package.extras]
 plugins = ["importlib-metadata"]
@@ -5505,62 +5465,23 @@ category = "main"
 optional = false
 python-versions = ">=3.7.2"
 files = [
+=======
+pylint = [
+>>>>>>> master
     {file = "pylint-2.16.2-py3-none-any.whl", hash = "sha256:ff22dde9c2128cd257c145cfd51adeff0be7df4d80d669055f24a962b351bbe4"},
     {file = "pylint-2.16.2.tar.gz", hash = "sha256:13b2c805a404a9bf57d002cd5f054ca4d40b0b87542bdaba5e05321ae8262c84"},
 ]
-
-[package.dependencies]
-astroid = ">=2.14.2,<=2.16.0-dev0"
-colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
-dill = [
-    {version = ">=0.2", markers = "python_version < \"3.11\""},
-    {version = ">=0.3.6", markers = "python_version >= \"3.11\""},
-]
-isort = ">=4.2.5,<6"
-mccabe = ">=0.6,<0.8"
-platformdirs = ">=2.2.0"
-tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
-tomlkit = ">=0.10.1"
-
-[package.extras]
-spelling = ["pyenchant (>=3.2,<4.0)"]
-testutils = ["gitpython (>3)"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pylint-junit"
-version = "0.3.2"
-description = "pylint reporter for junit format."
-category = "main"
-optional = false
-python-versions = "*"
-files = [
+pylint-junit = [
     {file = "pylint_junit-0.3.2.tar.gz", hash = "sha256:c6dbe956e55bb9b365d86e2ec77b58df6b95262b5515d187ac54b8359507174b"},
 ]
-
-[package.dependencies]
-junit-xml-2 = "*"
-pylint = "*"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pypubsub"
-version = "4.0.3"
-description = "Python Publish-Subscribe Package"
-category = "main"
-optional = false
-python-versions = ">=3.3, <4"
-files = [
+pyparsing = [
+    {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
+    {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
+]
+pypubsub = [
     {file = "Pypubsub-4.0.3-py3-none-any.whl", hash = "sha256:7f716bae9388afe01ff82b264ba8a96a8ae78b42bb1f114f2716ca8f9e404e2a"},
 ]
+<<<<<<< HEAD
 
 [package.source]
 type = "legacy"
@@ -5575,6 +5496,9 @@ category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
+>>>>>>> master
+=======
+pyrsistent = [
 >>>>>>> master
     {file = "pyrsistent-0.19.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:20460ac0ea439a3e79caa1dbd560344b64ed75e85d8703943e0b66c2a6150e4a"},
     {file = "pyrsistent-0.19.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4c18264cb84b5e68e7085a43723f9e4c1fd1d935ab240ce02c0324a8e01ccb64"},
@@ -5605,6 +5529,7 @@ files = [
     {file = "pyrsistent-0.19.3.tar.gz", hash = "sha256:1a2994773706bbb4995c31a97bc94f1418314923bd1048c6d964837040376440"},
 ]
 <<<<<<< HEAD
+<<<<<<< HEAD
 pytango = [
 =======
 
@@ -5622,6 +5547,9 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
 >>>>>>> master
+=======
+pytango = [
+>>>>>>> master
     {file = "pytango-9.3.3-cp27-cp27m-win32.whl", hash = "sha256:c481628c0b7b0cda737adbf6194d0d143f66352e04e310912c9bae236ed2e482"},
     {file = "pytango-9.3.3-cp27-cp27m-win_amd64.whl", hash = "sha256:beeab13f0ce32c5d226da2c9b33dc07eb92b4c7a320164c34ff2666b2ea583a3"},
     {file = "pytango-9.3.3-cp36-cp36m-win32.whl", hash = "sha256:3d566fe6f091b12032d5ad90465f3770f02ccc7e8bd7345543074936676eb3d9"},
@@ -5632,6 +5560,7 @@ files = [
     {file = "pytango-9.3.3-cp38-cp38-win_amd64.whl", hash = "sha256:133efb1b70c95a24ae129941c76c9485e8ebdc5cd3edac803257f30091f2bb61"},
     {file = "pytango-9.3.3.tar.gz", hash = "sha256:c09fc7a44cac8c2d95d3ad39ba644998e8f468c730dc495443a74de05a07e9f9"},
 ]
+<<<<<<< HEAD
 <<<<<<< HEAD
 pytest = [
     {file = "pytest-6.2.5-py3-none-any.whl", hash = "sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134"},
@@ -5681,150 +5610,37 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
+=======
+pytest = [
+>>>>>>> master
     {file = "pytest-6.2.5-py3-none-any.whl", hash = "sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134"},
     {file = "pytest-6.2.5.tar.gz", hash = "sha256:131b36680866a76e6781d13f101efb86cf674ebb9762eb70d3082b6f29889e89"},
 ]
-
-[package.dependencies]
-atomicwrites = {version = ">=1.0", markers = "sys_platform == \"win32\""}
-attrs = ">=19.2.0"
-colorama = {version = "*", markers = "sys_platform == \"win32\""}
-iniconfig = "*"
-packaging = "*"
-pluggy = ">=0.12,<2.0"
-py = ">=1.8.2"
-toml = "*"
-
-[package.extras]
-testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pytest-bdd"
-version = "5.0.0"
-description = "BDD for pytest"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
+pytest-bdd = [
     {file = "pytest-bdd-5.0.0.tar.gz", hash = "sha256:fab7093ed3d5e51ee0c68de093c90e4f40de345bd9a54a188b2991ce2a2a39cf"},
     {file = "pytest_bdd-5.0.0-py3-none-any.whl", hash = "sha256:c7cf12209606421f61f36b5dc63beccd0c82d29446c0592cf68af2dad0a9761d"},
 ]
-
-[package.dependencies]
-glob2 = "*"
-Mako = "*"
-parse = "*"
-parse-type = "*"
-py = "*"
-pytest = ">=4.3"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pytest-cov"
-version = "3.0.0"
-description = "Pytest plugin for measuring coverage."
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
+pytest-cov = [
     {file = "pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
     {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
 ]
-
-[package.dependencies]
-coverage = {version = ">=5.2.1", extras = ["toml"]}
-pytest = ">=4.6"
-
-[package.extras]
-testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pytest-forked"
-version = "1.6.0"
-description = "run tests in isolated forked subprocesses"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-files = [
+pytest-forked = [
     {file = "pytest-forked-1.6.0.tar.gz", hash = "sha256:4dafd46a9a600f65d822b8f605133ecf5b3e1941ebb3588e943b4e3eb71a5a3f"},
     {file = "pytest_forked-1.6.0-py3-none-any.whl", hash = "sha256:810958f66a91afb1a1e2ae83089d8dc1cd2437ac96b12963042fbb9fb4d16af0"},
 ]
-
-[package.dependencies]
-py = "*"
-pytest = ">=3.10"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pytest-json-report"
-version = "1.5.0"
-description = "A pytest plugin to report test results as JSON files"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
+pytest-json-report = [
     {file = "pytest-json-report-1.5.0.tar.gz", hash = "sha256:2dde3c647851a19b5f3700729e8310a6e66efb2077d674f27ddea3d34dc615de"},
     {file = "pytest_json_report-1.5.0-py3-none-any.whl", hash = "sha256:9897b68c910b12a2e48dd849f9a284b2c79a732a8a9cb398452ddd23d3c8c325"},
 ]
-
-[package.dependencies]
-pytest = ">=3.8.0"
-pytest-metadata = "*"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pytest-metadata"
-version = "1.11.0"
-description = "pytest plugin for test session metadata"
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
-files = [
+pytest-metadata = [
     {file = "pytest-metadata-1.11.0.tar.gz", hash = "sha256:71b506d49d34e539cc3cfdb7ce2c5f072bea5c953320002c95968e0238f8ecf1"},
     {file = "pytest_metadata-1.11.0-py2.py3-none-any.whl", hash = "sha256:576055b8336dd4a9006dd2a47615f76f2f8c30ab12b1b1c039d99e834583523f"},
 ]
-
-[package.dependencies]
-pytest = ">=2.9.0"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pytest-mock"
-version = "3.10.0"
-description = "Thin-wrapper around the mock package for easier use with pytest"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-files = [
+pytest-mock = [
     {file = "pytest-mock-3.10.0.tar.gz", hash = "sha256:fbbdb085ef7c252a326fd8cdcac0aa3b1333d8811f131bdcc701002e1be7ed4f"},
     {file = "pytest_mock-3.10.0-py3-none-any.whl", hash = "sha256:f4c973eeae0282963eb293eb173ce91b091a79c1334455acfac9ddee8a1c784b"},
 ]
+<<<<<<< HEAD
 
 [package.dependencies]
 pytest = ">=5.0"
@@ -5846,10 +5662,14 @@ optional = false
 python-versions = "*"
 files = [
 >>>>>>> master
+=======
+pytest-ordering = [
+>>>>>>> master
     {file = "pytest-ordering-0.6.tar.gz", hash = "sha256:561ad653626bb171da78e682f6d39ac33bb13b3e272d406cd555adb6b006bda6"},
     {file = "pytest_ordering-0.6-py2-none-any.whl", hash = "sha256:27fba3fc265f5d0f8597e7557885662c1bdc1969497cd58aff6ed21c3b617de2"},
     {file = "pytest_ordering-0.6-py3-none-any.whl", hash = "sha256:3f314a178dbeb6777509548727dc69edf22d6d9a2867bf2d310ab85c403380b6"},
 ]
+<<<<<<< HEAD
 <<<<<<< HEAD
 pytest-repeat = [
     {file = "pytest-repeat-0.9.1.tar.gz", hash = "sha256:5cd3289745ab3156d43eb9c8e7f7d00a926f3ae5c9cf425bec649b2fe15bad5b"},
@@ -5894,96 +5714,33 @@ category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
+=======
+pytest-repeat = [
+>>>>>>> master
     {file = "pytest-repeat-0.9.1.tar.gz", hash = "sha256:5cd3289745ab3156d43eb9c8e7f7d00a926f3ae5c9cf425bec649b2fe15bad5b"},
     {file = "pytest_repeat-0.9.1-py2.py3-none-any.whl", hash = "sha256:4474a7d9e9137f6d8cc8ae297f8c4168d33c56dd740aa78cfffe562557e6b96e"},
 ]
-
-[package.dependencies]
-pytest = ">=3.6"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pytest-timeout"
-version = "2.1.0"
-description = "pytest plugin to abort hanging tests"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
+pytest-timeout = [
     {file = "pytest-timeout-2.1.0.tar.gz", hash = "sha256:c07ca07404c612f8abbe22294b23c368e2e5104b521c1790195561f37e1ac3d9"},
     {file = "pytest_timeout-2.1.0-py3-none-any.whl", hash = "sha256:f6f50101443ce70ad325ceb4473c4255e9d74e3c7cd0ef827309dfa4c0d975c6"},
 ]
-
-[package.dependencies]
-pytest = ">=5.0.0"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "pytest-xdist"
-version = "2.5.0"
-description = "pytest xdist plugin for distributed testing and loop-on-failing modes"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
+pytest-xdist = [
     {file = "pytest-xdist-2.5.0.tar.gz", hash = "sha256:4580deca3ff04ddb2ac53eba39d76cb5dd5edeac050cb6fbc768b0dd712b4edf"},
     {file = "pytest_xdist-2.5.0-py3-none-any.whl", hash = "sha256:6fe5c74fec98906deb8f2d2b616b5c782022744978e7bd4695d39c8f42d0ce65"},
 ]
-
-[package.dependencies]
-execnet = ">=1.1"
-pytest = ">=6.2.0"
-pytest-forked = "*"
-
-[package.extras]
-psutil = ["psutil (>=3.0)"]
-setproctitle = ["setproctitle"]
-testing = ["filelock"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "python-dateutil"
-version = "2.8.2"
-description = "Extensions to the standard Python datetime module"
-category = "main"
-optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
-files = [
+python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
 ]
-
-[package.dependencies]
-six = ">=1.5"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "python-graphql-client"
-version = "0.4.3"
-description = "Python GraphQL Client"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
+python-gitlab = [
+    {file = "python-gitlab-3.13.0.tar.gz", hash = "sha256:ad502b72b5d1137f4af37d4a68ae20fe7d6c9778f67cbe2aec566f7995053c7d"},
+    {file = "python_gitlab-3.13.0-py3-none-any.whl", hash = "sha256:85ae778d8953aba87ad4b78aef7fbb5dae053980d2c20ff200bea29799685743"},
+]
+python-graphql-client = [
     {file = "python_graphql_client-0.4.3-py3-none-any.whl", hash = "sha256:c5eb996702acf46110b352f61819c46065ea4f4f106158535cd471e66490b25e"},
     {file = "python_graphql_client-0.4.3.tar.gz", hash = "sha256:fdbd03115dde8776db02e60414b83b018d7d95e5752d6d5fabf21c99265f5b9d"},
 ]
+<<<<<<< HEAD
 
 [package.dependencies]
 aiohttp = ">=3.0,<4.0"
@@ -6006,6 +5763,9 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
+>>>>>>> master
+=======
+pyyaml = [
 >>>>>>> master
     {file = "PyYAML-6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d4db7c7aef085872ef65a8fd7d6d09a14ae91f691dec3e87ee5ee0539d516f53"},
     {file = "PyYAML-6.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:9df7ed3b3d2e0ecfe09e14741b857df43adb5a3ddadc919a2d94fbdf78fea53c"},
@@ -6048,6 +5808,7 @@ files = [
     {file = "PyYAML-6.0-cp39-cp39-win_amd64.whl", hash = "sha256:b3d267842bf12586ba6c734f89d1f5b871df0273157918b0ccefa29deb05c21c"},
     {file = "PyYAML-6.0.tar.gz", hash = "sha256:68fb519c14306fec9720a2a5b45bc9f0c8d1b9c72adf45c37baedfcd949c35a2"},
 ]
+<<<<<<< HEAD
 <<<<<<< HEAD
 requests = [
     {file = "requests-2.28.2-py3-none-any.whl", hash = "sha256:64299f4909223da747622c030b781c0d7811e359c37124b4bd368fb8c6518baa"},
@@ -6264,80 +6025,73 @@ category = "main"
 optional = false
 python-versions = ">=3.7, <4"
 files = [
+=======
+requests = [
+>>>>>>> master
     {file = "requests-2.28.2-py3-none-any.whl", hash = "sha256:64299f4909223da747622c030b781c0d7811e359c37124b4bd368fb8c6518baa"},
     {file = "requests-2.28.2.tar.gz", hash = "sha256:98b1b2782e3c6c4904938b84c0eb932721069dfdb9134313beff7c83c2df24bf"},
 ]
-
-[package.dependencies]
-certifi = ">=2017.4.17"
-charset-normalizer = ">=2,<4"
-idna = ">=2.5,<4"
-urllib3 = ">=1.21.1,<1.27"
-
-[package.extras]
-socks = ["PySocks (>=1.5.6,!=1.5.7)"]
-use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "requests-oauthlib"
-version = "1.3.1"
-description = "OAuthlib authentication support for Requests."
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-files = [
+requests-oauthlib = [
     {file = "requests-oauthlib-1.3.1.tar.gz", hash = "sha256:75beac4a47881eeb94d5ea5d6ad31ef88856affe2332b9aafb52c6452ccf0d7a"},
     {file = "requests_oauthlib-1.3.1-py2.py3-none-any.whl", hash = "sha256:2577c501a2fb8d05a304c09d090d6e47c306fef15809d102b327cf8364bddab5"},
 ]
-
-[package.dependencies]
-oauthlib = ">=3.0.0"
-requests = ">=2.0.0"
-
-[package.extras]
-rsa = ["oauthlib[signedtoken] (>=3.0.0)"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "rsa"
-version = "4.9"
-description = "Pure-Python RSA implementation"
-category = "main"
-optional = false
-python-versions = ">=3.6,<4"
-files = [
+requests-toolbelt = [
+    {file = "requests-toolbelt-0.10.1.tar.gz", hash = "sha256:62e09f7ff5ccbda92772a29f394a49c3ad6cb181d568b1337626b2abb628a63d"},
+    {file = "requests_toolbelt-0.10.1-py2.py3-none-any.whl", hash = "sha256:18565aa58116d9951ac39baa288d3adb5b3ff975c4f25eee78555d89e8f247f7"},
+]
+rfc3339-validator = [
+    {file = "rfc3339_validator-0.1.4-py2.py3-none-any.whl", hash = "sha256:24f6ec1eda14ef823da9e36ec7113124b39c04d50a4d3d3a3c2859577e7791fa"},
+    {file = "rfc3339_validator-0.1.4.tar.gz", hash = "sha256:138a2abdf93304ad60530167e51d2dfb9549521a836871b88d7f4695d0022f6b"},
+]
+rsa = [
     {file = "rsa-4.9-py3-none-any.whl", hash = "sha256:90260d9058e514786967344d0ef75fa8727eed8a7d2e43ce9f4bcf1b536174f7"},
     {file = "rsa-4.9.tar.gz", hash = "sha256:e38464a49c6c85d7f1351b0126661487a7e0a14a50f1675ec50eb34d4f20ef21"},
 ]
-
-[package.dependencies]
-pyasn1 = ">=0.1.3"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "schema"
-version = "0.7.5"
-description = "Simple data validation library"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
+ruamel-yaml = [
+    {file = "ruamel.yaml-0.17.21-py3-none-any.whl", hash = "sha256:742b35d3d665023981bd6d16b3d24248ce5df75fdb4e2924e93a05c1f8b61ca7"},
+    {file = "ruamel.yaml-0.17.21.tar.gz", hash = "sha256:8b7ce697a2f212752a35c1ac414471dc16c424c9573be4926b56ff3f5d23b7af"},
+]
+ruamel-yaml-clib = [
+    {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:d5859983f26d8cd7bb5c287ef452e8aacc86501487634573d260968f753e1d71"},
+    {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:debc87a9516b237d0466a711b18b6ebeb17ba9f391eb7f91c649c5c4ec5006c7"},
+    {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:df5828871e6648db72d1c19b4bd24819b80a755c4541d3409f0f7acd0f335c80"},
+    {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:efa08d63ef03d079dcae1dfe334f6c8847ba8b645d08df286358b1f5293d24ab"},
+    {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-win32.whl", hash = "sha256:763d65baa3b952479c4e972669f679fe490eee058d5aa85da483ebae2009d231"},
+    {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-win_amd64.whl", hash = "sha256:d000f258cf42fec2b1bbf2863c61d7b8918d31ffee905da62dede869254d3b8a"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:045e0626baf1c52e5527bd5db361bc83180faaba2ff586e763d3d5982a876a9e"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_12_6_arm64.whl", hash = "sha256:721bc4ba4525f53f6a611ec0967bdcee61b31df5a56801281027a3a6d1c2daf5"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:41d0f1fa4c6830176eef5b276af04c89320ea616655d01327d5ce65e50575c94"},
+    {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:4b3a93bb9bc662fc1f99c5c3ea8e623d8b23ad22f861eb6fce9377ac07ad6072"},
+    {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-macosx_12_0_arm64.whl", hash = "sha256:a234a20ae07e8469da311e182e70ef6b199d0fbeb6c6cc2901204dd87fb867e8"},
+    {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:15910ef4f3e537eea7fe45f8a5d19997479940d9196f357152a09031c5be59f3"},
+    {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:370445fd795706fd291ab00c9df38a0caed0f17a6fb46b0f607668ecb16ce763"},
+    {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-win32.whl", hash = "sha256:ecdf1a604009bd35c674b9225a8fa609e0282d9b896c03dd441a91e5f53b534e"},
+    {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-win_amd64.whl", hash = "sha256:f34019dced51047d6f70cb9383b2ae2853b7fc4dce65129a5acd49f4f9256646"},
+    {file = "ruamel.yaml.clib-0.2.7-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:2aa261c29a5545adfef9296b7e33941f46aa5bbd21164228e833412af4c9c75f"},
+    {file = "ruamel.yaml.clib-0.2.7-cp37-cp37m-macosx_12_0_arm64.whl", hash = "sha256:f01da5790e95815eb5a8a138508c01c758e5f5bc0ce4286c4f7028b8dd7ac3d0"},
+    {file = "ruamel.yaml.clib-0.2.7-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:40d030e2329ce5286d6b231b8726959ebbe0404c92f0a578c0e2482182e38282"},
+    {file = "ruamel.yaml.clib-0.2.7-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:c3ca1fbba4ae962521e5eb66d72998b51f0f4d0f608d3c0347a48e1af262efa7"},
+    {file = "ruamel.yaml.clib-0.2.7-cp37-cp37m-win32.whl", hash = "sha256:7bdb4c06b063f6fd55e472e201317a3bb6cdeeee5d5a38512ea5c01e1acbdd93"},
+    {file = "ruamel.yaml.clib-0.2.7-cp37-cp37m-win_amd64.whl", hash = "sha256:be2a7ad8fd8f7442b24323d24ba0b56c51219513cfa45b9ada3b87b76c374d4b"},
+    {file = "ruamel.yaml.clib-0.2.7-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:91a789b4aa0097b78c93e3dc4b40040ba55bef518f84a40d4442f713b4094acb"},
+    {file = "ruamel.yaml.clib-0.2.7-cp38-cp38-macosx_12_0_arm64.whl", hash = "sha256:99e77daab5d13a48a4054803d052ff40780278240a902b880dd37a51ba01a307"},
+    {file = "ruamel.yaml.clib-0.2.7-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:3243f48ecd450eddadc2d11b5feb08aca941b5cd98c9b1db14b2fd128be8c697"},
+    {file = "ruamel.yaml.clib-0.2.7-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:8831a2cedcd0f0927f788c5bdf6567d9dc9cc235646a434986a852af1cb54b4b"},
+    {file = "ruamel.yaml.clib-0.2.7-cp38-cp38-win32.whl", hash = "sha256:3110a99e0f94a4a3470ff67fc20d3f96c25b13d24c6980ff841e82bafe827cac"},
+    {file = "ruamel.yaml.clib-0.2.7-cp38-cp38-win_amd64.whl", hash = "sha256:92460ce908546ab69770b2e576e4f99fbb4ce6ab4b245345a3869a0a0410488f"},
+    {file = "ruamel.yaml.clib-0.2.7-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:5bc0667c1eb8f83a3752b71b9c4ba55ef7c7058ae57022dd9b29065186a113d9"},
+    {file = "ruamel.yaml.clib-0.2.7-cp39-cp39-macosx_12_0_arm64.whl", hash = "sha256:4a4d8d417868d68b979076a9be6a38c676eca060785abaa6709c7b31593c35d1"},
+    {file = "ruamel.yaml.clib-0.2.7-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:bf9a6bc4a0221538b1a7de3ed7bca4c93c02346853f44e1cd764be0023cd3640"},
+    {file = "ruamel.yaml.clib-0.2.7-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:a7b301ff08055d73223058b5c46c55638917f04d21577c95e00e0c4d79201a6b"},
+    {file = "ruamel.yaml.clib-0.2.7-cp39-cp39-win32.whl", hash = "sha256:d5e51e2901ec2366b79f16c2299a03e74ba4531ddcfacc1416639c557aef0ad8"},
+    {file = "ruamel.yaml.clib-0.2.7-cp39-cp39-win_amd64.whl", hash = "sha256:184faeaec61dbaa3cace407cffc5819f7b977e75360e8d5ca19461cd851a5fc5"},
+    {file = "ruamel.yaml.clib-0.2.7.tar.gz", hash = "sha256:1f08fd5a2bea9c4180db71678e850b995d2a5f4537be0e94557668cf0f5f9497"},
+]
+schema = [
     {file = "schema-0.7.5-py2.py3-none-any.whl", hash = "sha256:f3ffdeeada09ec34bf40d7d79996d9f7175db93b7a5065de0faa7f41083c1e6c"},
     {file = "schema-0.7.5.tar.gz", hash = "sha256:f06717112c61895cabc4707752b88716e8420a8819d71404501e114f91043197"},
 ]
+<<<<<<< HEAD
 
 [package.dependencies]
 contextlib2 = ">=0.5.5"
@@ -6357,29 +6111,21 @@ python-versions = ">=3.7"
 files = [
     {file = "setuptools-67.3.2-py3-none-any.whl", hash = "sha256:bb6d8e508de562768f2027902929f8523932fcd1fb784e6d573d2cafac995a48"},
     {file = "setuptools-67.3.2.tar.gz", hash = "sha256:95f00380ef2ffa41d9bba85d95b27689d923c93dfbafed4aecd7cf988a25e012"},
+=======
+semver = [
+    {file = "semver-2.13.0-py2.py3-none-any.whl", hash = "sha256:ced8b23dceb22134307c1b8abfa523da14198793d9787ac838e70e29e77458d4"},
+    {file = "semver-2.13.0.tar.gz", hash = "sha256:fa0fe2722ee1c3f57eac478820c3a5ae2f624af8264cbdf9000c980ff7f75e3f"},
+>>>>>>> master
 ]
-
-[package.extras]
-docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-hoverxref (<2)", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (==0.8.3)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
-testing = ["build[virtualenv]", "filelock (>=3.4.0)", "flake8 (<5)", "flake8-2020", "ini2toml[lite] (>=0.9)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pip (>=19.1)", "pip-run (>=8.8)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)", "pytest-perf", "pytest-timeout", "pytest-xdist", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
-testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "six"
-version = "1.16.0"
-description = "Python 2 and 3 compatibility utilities"
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
-files = [
+setuptools = [
+    {file = "setuptools-67.4.0-py3-none-any.whl", hash = "sha256:f106dee1b506dee5102cc3f3e9e68137bbad6d47b616be7991714b0c62204251"},
+    {file = "setuptools-67.4.0.tar.gz", hash = "sha256:e5fd0a713141a4a105412233c63dc4e17ba0090c8e8334594ac790ec97792330"},
+]
+six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
+<<<<<<< HEAD
 
 [package.source]
 type = "legacy"
@@ -6396,233 +6142,57 @@ python-versions = ">=3.7,<4.0"
 files = [
     {file = "ska-oso-oet-4.0.6.tar.gz", hash = "sha256:cdbf62331eb95229ee27c8d50bd86586d8170737e33455a12599253d7df7d30b"},
     {file = "ska_oso_oet-4.0.6-py3-none-any.whl", hash = "sha256:46b0c263cc1b48ccdf17e61a2c159e62c533f34c54e8d3a2d8cb3813ca590d8c"},
+=======
+ska-db-oda = [
+    {file = "ska_db_oda-1.6.1-py3-none-any.whl", hash = "sha256:67ccd2bf760cd5ff8e9bcdf36f189738ebbd1ad44a583834253886530f5eaa52"},
+    {file = "ska_db_oda-1.6.1.tar.gz", hash = "sha256:02683b26981c05a0eee518a56411a4a755c15dae616b9d57ca6f59ba843d1b83"},
 ]
-
-[package.dependencies]
-fire = ">=0.4.0,<0.5.0"
-Flask = ">=2.0.3,<3.0.0"
-GitPython = ">=3.1.27,<4.0.0"
-jsonpickle = ">=2.1.0,<3.0.0"
-PyPubSub = ">=4.0.3,<5.0.0"
-pytango = "9.3.3"
-requests = ">=2.27.1,<3.0.0"
-ska-ser-logging = ">=0.4.1,<0.5.0"
-ska-ser-skuid = ">=3.3.3,<4.0.0"
-sseclient = ">=0.0.27,<0.0.28"
-tabulate = ">=0.8.9,<0.9.0"
-tblib = ">=1.7.0,<2.0.0"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "ska-oso-pdm"
-version = "9.0.0"
-description = "SKA Project Data Model serialisation library"
-category = "main"
-optional = false
-python-versions = ">=3.8,<4.0"
-files = [
-    {file = "ska_oso_pdm-9.0.0-py3-none-any.whl", hash = "sha256:d9d2cc26fa996181bc9611fc001bc4a0d4190c8191627c365e959425b6de5059"},
-    {file = "ska_oso_pdm-9.0.0.tar.gz", hash = "sha256:690cfb044608cc295d5cd87e5e9ae32ccab11c725d95160d696d58d6ae35c32b"},
+ska-oso-oet = [
+    {file = "ska_oso_oet-5.0.0-py3-none-any.whl", hash = "sha256:489a4c0c207fa8c9628d21540cbcd14a427eacbf70edc9de080a2b620bbd3a0f"},
+    {file = "ska_oso_oet-5.0.0.tar.gz", hash = "sha256:17afe779d4af3a01e6485c6ecee882df1c6f0889b8101e0af138064029954fd2"},
 ]
-
-[package.dependencies]
-astropy = ">=5.0.3,<6.0.0"
-connexion = ">=2.14.1,<3.0.0"
-marshmallow = ">=3.15.0,<4.0.0"
-marshmallow-enum = ">=1.5.1,<2.0.0"
-marshmallow-oneofschema = ">=3.0.1,<4.0.0"
-python-dateutil = ">=2.8.2,<3.0.0"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "ska-oso-scripting"
-version = "6.1.0"
-description = "SKA OSO Scripting Library"
-category = "main"
-optional = false
-python-versions = ">=3.10,<4.0"
-files = [
-    {file = "ska_oso_scripting-6.1.0-py3-none-any.whl", hash = "sha256:6def7ec818e9eeda9943cccc43465425c6604406e0b32b2cd71ca4dbb5af89d7"},
-    {file = "ska_oso_scripting-6.1.0.tar.gz", hash = "sha256:c28442d78d8e87af606a033b55dc9b36165cc42ce18e75da2f6437055664823d"},
+ska-oso-oet-client = [
+    {file = "ska_oso_oet_client-1.0.0-py3-none-any.whl", hash = "sha256:c6d9b3c454c66043b1d06669d4b55ab37e5da2382d5636c5ac2d448fd5b9ea1f"},
+    {file = "ska_oso_oet_client-1.0.0.tar.gz", hash = "sha256:143ef896ad568ded4619e8df849a90615e76c45a98d13df8d7c7af7ced3c8a46"},
+>>>>>>> master
 ]
-
-[package.dependencies]
-pytango = ">=9.3.3,<10.0.0"
-ska-oso-oet = "*"
-ska-oso-pdm = ">=9.0.0,<10.0.0"
-ska-ser-log-transactions = ">=0.2.2,<0.3.0"
-ska-ser-logging = ">=0.4.1,<0.5.0"
-ska-ser-skuid = ">=3.2.1,<4.0.0"
-ska-tango-base = ">=0.13.0,<0.13.4"
-ska-tmc-cdm = ">=7.2.0,<8.0.0"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "ska-ser-log-transactions"
-version = "0.2.2+ae0f5c92"
-description = "Square Kilometre Array transaction logging utility"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
+ska-oso-pdm = [
+    {file = "ska_oso_pdm-10.0.1-py3-none-any.whl", hash = "sha256:0b2aba5a447d5e6806b1e4e3debb6cf1a0e1e95d56f0ee2e51f51126ab4fd585"},
+    {file = "ska_oso_pdm-10.0.1.tar.gz", hash = "sha256:ac028ef84c4a4bbb09adc7f9f077546d63684715b33189edb2e2736ed755c512"},
+]
+ska-oso-scripting = [
+    {file = "ska_oso_scripting-7.0.0-py3-none-any.whl", hash = "sha256:b8737d91cc5deb7c8061f0e4680f2007b5b55d08cb46c036a501bab4087e380b"},
+    {file = "ska_oso_scripting-7.0.0.tar.gz", hash = "sha256:a791cc58bc8b06436393812d43bb1a21860e510fe2551fdb4daf3fa858274e7f"},
+]
+ska-ser-log-transactions = [
     {file = "ska_ser_log_transactions-0.2.2+ae0f5c92-py3-none-any.whl", hash = "sha256:b50506b583b711471e41f3f561e56669573fe287262d533b1386a12abcfa6e91"},
     {file = "ska_ser_log_transactions-0.2.2+ae0f5c92.tar.gz", hash = "sha256:383fb54f9d5c5a2c7f5a9e6747d7b6feec7631c8dbc580444a48c782967ff7e4"},
 ]
-
-[package.dependencies]
-katversion = "*"
-ska-ser-logging = "*"
-ska-ser-skuid = "*"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "ska-ser-logging"
-version = "0.4.1+0a677a67"
-description = "Square Kilometre Array logging configuration library"
-category = "main"
-optional = false
-python-versions = ">=3.5"
-files = [
+ska-ser-logging = [
     {file = "ska_ser_logging-0.4.1+0a677a67-py3-none-any.whl", hash = "sha256:8b2bf14e9981966c22503b6b6477b6386dec1def1f71295579f0686d55b83841"},
     {file = "ska_ser_logging-0.4.1+0a677a67.tar.gz", hash = "sha256:558622000db39668d3a35b6986af9d70dac36635826636ef2c07f816a149a06d"},
 ]
-
-[package.extras]
-dev = ["black", "isort", "prospector[with-pyroma]"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "ska-ser-skallop"
-version = "2.23.5"
-description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
-category = "main"
-optional = false
-python-versions = ">=3.9,<4.0"
-files = [
+ska-ser-skallop = [
     {file = "ska-ser-skallop-2.23.5.tar.gz", hash = "sha256:99fb07adc0782bdeed4567a4343e58764d0774b53c765eb28f9077cb68af71c9"},
     {file = "ska_ser_skallop-2.23.5-py3-none-any.whl", hash = "sha256:cda9c1b1d14b344913472f807dbd9ceb038ccd633ee583cfb1a968fbc8c30e21"},
 ]
-
-[package.dependencies]
-assertpy = ">=1.1,<2.0"
-darglint = ">=1.8.1,<2.0.0"
-flake8 = ">=6.0.0,<7.0.0"
-kubernetes = ">=21.7.0,<22.0.0"
-mock = ">=4.0.3,<5.0.0"
-pipe = ">=1.6.0,<2.0.0"
-pylint-junit = ">=0.3.2,<0.4.0"
-pytest = ">=6.2.5,<7.0.0"
-pytest-bdd = ">=5.0.0,<6.0.0"
-python-graphql-client = ">=0.4.3,<0.5.0"
-pyyaml = ">=6.0.0,<7.0.0"
-requests = ">=2.26.0,<3.0.0"
-
-[package.extras]
-bit = ["pytango (==9.3.3)"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "ska-ser-skuid"
-version = "3.3.3"
-description = "Library that generates ID's for the SKA project"
-category = "main"
-optional = false
-python-versions = ">=3.6,<4.0"
-files = [
+ska-ser-skuid = [
     {file = "ska-ser-skuid-3.3.3.tar.gz", hash = "sha256:91ad1dda3e3a397e39dbb362046888f5a80e4f5ef022628cde7ccc93c4d9b057"},
     {file = "ska_ser_skuid-3.3.3-py3-none-any.whl", hash = "sha256:743a4170024d208be49d262af2a326644356ef0933dd001cada05bbfcb1f67cd"},
 ]
-
-[package.dependencies]
-requests = ">=2.25.1,<3.0.0"
-ska-ser-logging = ">=0.4.1,<0.5.0"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "ska-tango-base"
-version = "0.13.3"
-description = "A set of generic base devices for SKA Telescope."
-category = "main"
-optional = false
-python-versions = "*"
-files = [
+ska-tango-base = [
     {file = "ska_tango_base-0.13.3-py3-none-any.whl", hash = "sha256:5f64037af3cf7f3b5a7fb84afadc7f7da485d3f1f66430b84edc99f2741ca756"},
     {file = "ska_tango_base-0.13.3.tar.gz", hash = "sha256:a1f32c9ac4cf73765ae757dcae92e2cab1af09211f1ad5bacc88a21f86c12de4"},
 ]
-
-[package.dependencies]
-debugpy = "*"
-numpy = "*"
-pytango = "*"
-ska-ser-logging = "*"
-ska-tango-testing = "*"
-transitions = "*"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "ska-tango-testing"
-version = "0.5.3"
-description = "Test harness for testing SKA Tango devices"
-category = "main"
-optional = false
-python-versions = ">=3.8,<4.0"
-files = [
+ska-tango-testing = [
     {file = "ska_tango_testing-0.5.3-py3-none-any.whl", hash = "sha256:14e5836a22902e8bbf247c71c81b261da7c9acde78ad20e154fe5f11088bab9f"},
     {file = "ska_tango_testing-0.5.3.tar.gz", hash = "sha256:8a617b3517f58bd91c6baffc48f011b604b564cdfb7e965b704c89c890c75a68"},
 ]
-
-[package.dependencies]
-numpy = ">=1.19.0,<2.0.0"
-pytango = ">=9.3.3,<10.0.0"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "ska-telescope-model"
-version = "1.3.1"
-description = "SKA telescope model library"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "ska-telescope-model-1.3.1.tar.gz", hash = "sha256:41cff908f07eba9a72aaa0c99cceedc9a1ec3031967288947c208d42584e3268"},
-    {file = "ska_telescope_model-1.3.1-py3-none-any.whl", hash = "sha256:0366c7617169a8a3fe7901286513f078c0ec039cb2dc836fec41c00391aa90f9"},
+ska-telmodel = [
+    {file = "ska_telmodel-1.5.0-py3-none-any.whl", hash = "sha256:66be880a6d269664d76caedc4aca984688d4864a9c331d14ea3d00a72dc838be"},
+    {file = "ska_telmodel-1.5.0.tar.gz", hash = "sha256:597e89e01c33caec5c45752ecb40863c5851b3c61857b44f4e4d7d0b8f231323"},
 ]
+<<<<<<< HEAD
 
 [package.dependencies]
 schema = "*"
@@ -6645,89 +6215,32 @@ python-versions = ">=3.10,<4.0"
 files = [
     {file = "ska_tmc_cdm-7.2.0-py3-none-any.whl", hash = "sha256:5ab5ee7248a8ce7dd290695d9036d2b7442efc2ea377c17b285485e7776ef515"},
     {file = "ska_tmc_cdm-7.2.0.tar.gz", hash = "sha256:287ea8805edd19760e72c87b1a9d5d6e0ffb38f863fd46adee960873bc011f98"},
+=======
+ska-tmc-cdm = [
+    {file = "ska_tmc_cdm-7.3.1-py3-none-any.whl", hash = "sha256:6096dfd4d7c0211dad2ac58cfe0c3cc88b3d5448f20405c5cb7864ec44f28757"},
+    {file = "ska_tmc_cdm-7.3.1.tar.gz", hash = "sha256:3129cd4ec33b207f80669f521ba80fd221a42041c841f6c2f44eb8225ed8c363"},
+>>>>>>> master
 ]
-
-[package.dependencies]
-astropy = ">=5.1,<6.0"
-deepdiff = ">=5.8.1,<6.0.0"
-marshmallow = ">=3.18.0,<4.0.0"
-marshmallow-enum = ">=1.5.1,<2.0.0"
-marshmallow-oneofschema = ">=3.0.1,<4.0.0"
-ska-telescope-model = ">=1.3.1,<2.0.0"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "smmap"
-version = "5.0.0"
-description = "A pure Python implementation of a sliding window memory map manager"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
+smmap = [
     {file = "smmap-5.0.0-py3-none-any.whl", hash = "sha256:2aba19d6a040e78d8b09de5c57e96207b09ed71d8e55ce0959eeee6c8e190d94"},
     {file = "smmap-5.0.0.tar.gz", hash = "sha256:c840e62059cd3be204b0c9c9f74be2c09d5648eddd4580d9314c3ecde0b30936"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "sseclient"
-version = "0.0.27"
-description = "Python client library for reading Server Sent Event streams."
-category = "main"
-optional = false
-python-versions = "*"
-files = [
+sseclient = [
     {file = "sseclient-0.0.27.tar.gz", hash = "sha256:b2fe534dcb33b1d3faad13d60c5a7c718e28f85987f2a034ecf5ec279918c11c"},
 ]
-
-[package.dependencies]
-requests = ">=2.9"
-six = "*"
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "tabulate"
-version = "0.8.10"
-description = "Pretty-print tabular data"
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-files = [
+swagger-ui-bundle = [
+    {file = "swagger_ui_bundle-0.0.9-py3-none-any.whl", hash = "sha256:cea116ed81147c345001027325c1ddc9ca78c1ee7319935c3c75d3669279d575"},
+    {file = "swagger_ui_bundle-0.0.9.tar.gz", hash = "sha256:b462aa1460261796ab78fd4663961a7f6f347ce01760f1303bbbdf630f11f516"},
+]
+tabulate = [
     {file = "tabulate-0.8.10-py3-none-any.whl", hash = "sha256:0ba055423dbaa164b9e456abe7920c5e8ed33fcc16f6d1b2f2d152c8e1e8b4fc"},
     {file = "tabulate-0.8.10.tar.gz", hash = "sha256:6c57f3f3dd7ac2782770155f3adb2db0b1a269637e42f27599925e64b114f519"},
 ]
-
-[package.extras]
-widechars = ["wcwidth"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "tblib"
-version = "1.7.0"
-description = "Traceback serialization library."
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-files = [
+tblib = [
     {file = "tblib-1.7.0-py2.py3-none-any.whl", hash = "sha256:289fa7359e580950e7d9743eab36b0691f0310fce64dee7d9c31065b8f723e23"},
     {file = "tblib-1.7.0.tar.gz", hash = "sha256:059bd77306ea7b419d4f76016aef6d7027cc8a0785579b5aad198803435f882c"},
 ]
+<<<<<<< HEAD
 
 [package.source]
 type = "legacy"
@@ -6742,46 +6255,21 @@ category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
+=======
+termcolor = [
+>>>>>>> master
     {file = "termcolor-2.2.0-py3-none-any.whl", hash = "sha256:91ddd848e7251200eac969846cbae2dacd7d71c2871e92733289e7e3666f48e7"},
     {file = "termcolor-2.2.0.tar.gz", hash = "sha256:dfc8ac3f350788f23b2947b3e6cfa5a53b630b612e6cd8965a015a776020b99a"},
 ]
-
-[package.extras]
-tests = ["pytest", "pytest-cov"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "toml"
-version = "0.10.2"
-description = "Python Library for Tom's Obvious, Minimal Language"
-category = "main"
-optional = false
-python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
-files = [
+toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "tomli"
-version = "1.2.3"
-description = "A lil' TOML parser"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
+tomli = [
     {file = "tomli-1.2.3-py3-none-any.whl", hash = "sha256:e3069e4be3ead9668e21cb9b074cd948f7b3113fd9c8bba083f48247aab8b11c"},
     {file = "tomli-1.2.3.tar.gz", hash = "sha256:05b6166bff487dc068d322585c7ea4ef78deed501cc124060e0f238e89a9231f"},
 ]
+<<<<<<< HEAD
 
 [package.source]
 type = "legacy"
@@ -6798,69 +6286,29 @@ python-versions = ">=3.6"
 files = [
     {file = "tomlkit-0.11.6-py3-none-any.whl", hash = "sha256:07de26b0d8cfc18f871aec595fda24d95b08fef89d147caa861939f37230bf4b"},
     {file = "tomlkit-0.11.6.tar.gz", hash = "sha256:71b952e5721688937fb02cf9d354dbcf0785066149d2855e44531ebdd2b65d73"},
+=======
+tomlkit = [
+    {file = "tomlkit-0.11.6-py3-none-any.whl", hash = "sha256:07de26b0d8cfc18f871aec595fda24d95b08fef89d147caa861939f37230bf4b"},
+    {file = "tomlkit-0.11.6.tar.gz", hash = "sha256:71b952e5721688937fb02cf9d354dbcf0785066149d2855e44531ebdd2b65d73"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "traitlets"
-version = "5.9.0"
-description = "Traitlets Python configuration system"
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
+toolz = [
+    {file = "toolz-0.12.0-py3-none-any.whl", hash = "sha256:2059bd4148deb1884bb0eb770a3cde70e7f954cfbbdc2285f1f2de01fd21eb6f"},
+    {file = "toolz-0.12.0.tar.gz", hash = "sha256:88c570861c440ee3f2f6037c4654613228ff40c93a6c25e0eba70d17282c6194"},
+>>>>>>> master
+]
+traitlets = [
     {file = "traitlets-5.9.0-py3-none-any.whl", hash = "sha256:9e6ec080259b9a5940c797d58b613b5e31441c2257b87c2e795c5228ae80d2d8"},
     {file = "traitlets-5.9.0.tar.gz", hash = "sha256:f6cde21a9c68cf756af02035f72d5a723bf607e862e7be33ece505abf4a3bad9"},
 ]
-
-[package.extras]
-docs = ["myst-parser", "pydata-sphinx-theme", "sphinx"]
-test = ["argcomplete (>=2.0)", "pre-commit", "pytest", "pytest-mock"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "transitions"
-version = "0.9.0"
-description = "A lightweight, object-oriented Python state machine implementation with many extensions."
-category = "main"
-optional = false
-python-versions = "*"
-files = [
+transitions = [
     {file = "transitions-0.9.0-py2.py3-none-any.whl", hash = "sha256:5687ee8c6a3200830e44f988d16b0045f53293f7a873002d7bff70852331a078"},
     {file = "transitions-0.9.0.tar.gz", hash = "sha256:2f54d11bdb225779d7e729011e93a9fb717668ce3dc65f8d4f5a5d7ba2f48e10"},
 ]
-
-[package.dependencies]
-six = "*"
-
-[package.extras]
-diagrams = ["pygraphviz"]
-test = ["pytest"]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "typing-extensions"
-version = "4.5.0"
-description = "Backported and Experimental Type Hints for Python 3.7+"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-files = [
+typing-extensions = [
     {file = "typing_extensions-4.5.0-py3-none-any.whl", hash = "sha256:fb33085c39dd998ac16d1431ebc293a8b3eedd00fd4a32de0ff79002c19511b4"},
     {file = "typing_extensions-4.5.0.tar.gz", hash = "sha256:5cb5f4a79139d699607b3ef622a1dedafa84e115ab0024e0d9c044a9479ca7cb"},
 ]
+<<<<<<< HEAD
 
 [package.source]
 type = "legacy"
@@ -6897,26 +6345,29 @@ category = "dev"
 optional = false
 python-versions = "*"
 files = [
+=======
+tzdata = [
+    {file = "tzdata-2022.7-py2.py3-none-any.whl", hash = "sha256:2b88858b0e3120792a3c0635c23daf36a7d7eeeca657c323da299d2094402a0d"},
+    {file = "tzdata-2022.7.tar.gz", hash = "sha256:fe5f866eddd8b96e9fcba978f8e503c909b19ea7efda11e52e39494bad3a7bfa"},
+]
+urllib3 = [
+    {file = "urllib3-1.26.14-py2.py3-none-any.whl", hash = "sha256:75edcdc2f7d85b137124a6c3c9fc3933cdeaa12ecb9a6a959f22797a0feca7e1"},
+    {file = "urllib3-1.26.14.tar.gz", hash = "sha256:076907bf8fd355cde77728471316625a4d2f7e713c125f51953bb5b3eecf4f72"},
+]
+waitress = [
+    {file = "waitress-2.1.2-py3-none-any.whl", hash = "sha256:7500c9625927c8ec60f54377d590f67b30c8e70ef4b8894214ac6e4cad233d2a"},
+    {file = "waitress-2.1.2.tar.gz", hash = "sha256:780a4082c5fbc0fde6a2fcfe5e26e6efc1e8f425730863c04085769781f51eba"},
+]
+wcwidth = [
+>>>>>>> master
     {file = "wcwidth-0.2.6-py2.py3-none-any.whl", hash = "sha256:795b138f6875577cd91bba52baf9e445cd5118fd32723b460e30a0af30ea230e"},
     {file = "wcwidth-0.2.6.tar.gz", hash = "sha256:a5220780a404dbe3353789870978e472cfe477761f06ee55077256e509b156d0"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
-reference = 'ska'
-
-[[package]]
-name = "websocket-client"
-version = "1.5.1"
-description = "WebSocket client for Python with low level API options"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-files = [
+websocket-client = [
     {file = "websocket-client-1.5.1.tar.gz", hash = "sha256:3f09e6d8230892547132177f575a4e3e73cfdf06526e20cc02aa1c3b47184d40"},
     {file = "websocket_client-1.5.1-py3-none-any.whl", hash = "sha256:cdf5877568b7e83aa7cf2244ab56a3213de587bbe0ce9d8b9600fc77b455d89e"},
 ]
+<<<<<<< HEAD
 
 [package.extras]
 docs = ["Sphinx (>=3.4)", "sphinx-rtd-theme (>=0.5)"]
@@ -6936,6 +6387,9 @@ category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
+>>>>>>> master
+=======
+websockets = [
 >>>>>>> master
     {file = "websockets-10.4-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:d58804e996d7d2307173d56c297cf7bc132c52df27a3efaac5e8d43e36c21c48"},
     {file = "websockets-10.4-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:bc0b82d728fe21a0d03e65f81980abbbcb13b5387f733a1a870672c5be26edab"},
@@ -7008,6 +6462,7 @@ files = [
     {file = "websockets-10.4.tar.gz", hash = "sha256:eef610b23933c54d5d921c92578ae5f89813438fded840c2e9809d378dc765d3"},
 ]
 <<<<<<< HEAD
+<<<<<<< HEAD
 werkzeug = [
 =======
 
@@ -7024,6 +6479,9 @@ category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
+>>>>>>> master
+=======
+werkzeug = [
 >>>>>>> master
     {file = "Werkzeug-2.2.3-py3-none-any.whl", hash = "sha256:56433961bc1f12533306c624f3be5e744389ac61d722175d543e1751285da612"},
     {file = "Werkzeug-2.2.3.tar.gz", hash = "sha256:2e1ccc9417d4da358b9de6f174e3ac094391ea1d4fbef2d667865d819dfd0afe"},
@@ -7171,6 +6629,7 @@ yarl = [
     {file = "yarl-1.8.2.tar.gz", hash = "sha256:49d43402c6e3013ad0978602bf6bf5328535c48d192304b91b97a3c6790b1562"},
 ]
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 [package.dependencies]
@@ -7186,4 +6645,6 @@ reference = 'ska'
 lock-version = "2.0"
 python-versions = "^3.10"
 content-hash = "7ed1d04acb9413ee08a8b607f549b89eb07128bdf10de9e74a8d156460f661dc"
+>>>>>>> master
+=======
 >>>>>>> master

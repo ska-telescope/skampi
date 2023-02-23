@@ -12,7 +12,11 @@ EXECUTOR = ScriptExecutor()
 @pytest.mark.k8s
 @scenario("features/oet_basic.feature", "Run the hello_world test script")
 def test_hello_world():
-    """Telescope startup test."""
+    """
+    Given The OET is integrated with SKAMPI
+    When the script is run
+    Then script execution completes successfully
+    """
 
 
 @pytest.mark.oet
@@ -20,7 +24,11 @@ def test_hello_world():
 @pytest.mark.k8s
 @scenario("features/oet_basic.feature", "Run the hello_world test script via an SB activity")
 def test_activity():
-    """."""
+    """
+    Given a test SB with activity helloworld exists in ODA
+    When I tell the OET to run helloworld activity on the test SB
+    Then script started by the activity completes successfully
+    """
 
 
 @given("The OET is integrated with SKAMPI")
@@ -41,9 +49,9 @@ def hello_world_sb_in_oda(activity_name, test_sbd):
     add_sb_to_oda(test_sbd)
 
 
-@when("the script is ran")
-def hello_world_script_ran():
-    EXECUTOR.execute_script("file:///tmp/oda/hello_world.py")
+@when(parsers.parse("the script {script} is run"))
+def hello_world_script_ran(script):
+    EXECUTOR.execute_script(script)
 
 
 @when(

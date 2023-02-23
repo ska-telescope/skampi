@@ -20,8 +20,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.nrgen import get_id
 
-from ..mvp_model.env import get_observation_config
-from ..obsconfig.config import Observation
+from ..mvp_model.env import get_observation_config, Observation
 from ..mvp_model.states import ObsState
 logger = logging.getLogger(__name__)
 

@@ -81,10 +81,14 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
   - name: ska-oso-oet
-    version: 4.0.6
+    version: 5.0.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-oso-oet.enabled
   - name: ska-tango-alarmhandler
     version: 0.1.5
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-alarmhandler.enabled
+  - name: ska-db-oda
+    version: 1.6.1
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-db-oda.enabled

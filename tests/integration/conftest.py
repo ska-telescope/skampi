@@ -11,6 +11,9 @@ import pytest
 from pytest_bdd import when, given, then, parsers
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types, SubarrayConfigurationSpec
+from ska_ser_skallop.connectors import configuration as con_config
+
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management import telescope_management as tel
 
 # from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -21,7 +24,6 @@ from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
-from ska_ser_skallop.connectors import configuration as con_config
 from resources.models.mvp_model.states import ObsState
 from tests.resources.models.mvp_model.configuration import SKAScanConfiguration
 from tests.resources.models.obsconfig.target_spec import TargetSpec
@@ -42,6 +44,7 @@ class SutTestSettings(SimpleNamespace):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.tel = TEL()
         logger.info("initialising sut settings")
         self.tel = TEL()
         self.observation = Observation()
@@ -376,6 +379,15 @@ def i_configure_it_for_a_scan(
             )
 
 
+@when("I command it to scan for a given period")
+def i_command_it_to_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I configure it for a scan."""
+    configured_subarray.set_to_scanning(integration_test_exec_settings)
+
+
 # scans
 @given("the subarray has just completed it's first scan for given configuration")
 @given("an subarray that has just completed it's first scan")
@@ -387,7 +399,6 @@ def an_subarray_that_has_just_completed_its_first_scan(
 
 
 @given("an subarray busy scanning")
-@when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,

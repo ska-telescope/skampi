@@ -16,12 +16,13 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
     AbortStep,
+    ObsResetStep,
 )
 from ..mvp_model.states import ObsState
 from ska_ser_skallop.utils.nrgen import get_id
 
 from ..obsconfig.config import Observation
-
+from ..mvp_model.states import ObsState
 logger = logging.getLogger(__name__)
 
 
@@ -337,9 +338,6 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         """Not implemented."""
         brd = get_message_board_builder()
 
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("CONFIGURING")
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("CONFIGURING")
@@ -523,6 +521,25 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
+
+class TMCObsResetStep(ObsResetStep, LogEnabled):
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)  #IDLE
+        return builder
+
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ObsReset command")
+        subarray.command_inout("Obsreset")
+
+
 class TMCAbortStep(base.AbortStep, LogEnabled):
     def do(self, sub_array_id: int):
         subarray_name = self._tel.tm.subarray(sub_array_id)
@@ -599,6 +616,7 @@ class TMCEntryPoint(CompositeEntryPoint):
         #  not this results in the SUT going to EMPTY and not
         # IDLE
         self.obsreset_step = TMCRestart()
+
 
 
 ASSIGN_RESOURCE_JSON_LOW = {
@@ -790,3 +808,4 @@ SCAN_JSON_LOW = {
     "transaction_id": "txn-....-00001",
     "scan_id": 1,
 }
+

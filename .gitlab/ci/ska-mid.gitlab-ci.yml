@@ -25,7 +25,6 @@ mid-test:
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
     COUNT: 1
-    MARK: ping
   extends:
     - .tags_default
     - .set_dbname

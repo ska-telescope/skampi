@@ -36,7 +36,7 @@
     - make k8s-test-runner
     - find ./build
     - echo "#####################################"
-    - make skampi-upload-test-results CONFIG=$CONFIG
+    - make skampi-upload-test-results # CONFIG=$CONFIG
     # Exit based on the make-k8s-test-runner output which is writting in build/status file
     - '[ -f build/status ] || (echo "Something went wrong with the test (no build/status file); exit 1")'
     - echo "Cleaning the environment"

@@ -5,30 +5,30 @@ ska-tango-base:
   vnc:
     enabled: false
 ska-sdp:
-  enabled: false
+  enabled: true
 ska-oso-scripting:
   enabled: false
 ska-taranta:
-  enabled: false
+  enabled: true
 ska-ser-skuid:
-  enabled: false
+  enabled: true
 ska-tango-archiver:
-  enabled: false
+  enabled: true
 ska-landingpage:
   enabled: true
 
 # Mid specific products
 ska-mid-cbf:
-  enabled: false
+  enabled: true
 ska-csp-lmc-mid:
-  enabled: false
+  enabled: true
 ska-tmc-mid:
-  enabled: false
+  enabled: true
 ska-sim-dishmaster:
-  enabled: false
+  enabled: true
 
 # Low specific products
 ska-tmc-low:
-  enabled: false
+  enabled: true
 ska-low-mccs:
   enabled: false

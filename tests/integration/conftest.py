@@ -10,6 +10,8 @@ from assertpy import assert_that
 import pytest
 from pytest_bdd import when, given, then, parsers
 
+from ska_ser_skallop.connectors import configuration as con_config
+
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management import telescope_management as tel
 
@@ -21,7 +23,6 @@ from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from resources.models.tmc_model.entry_point import TMCEntryPoint
 from resources.models.obsconfig.config import Observation
-from ska_ser_skallop.connectors import configuration as con_config
 from resources.models.mvp_model.states import ObsState
 
 
@@ -40,6 +41,7 @@ class SutTestSettings(SimpleNamespace):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.tel = TEL()
         logger.info("initialising sut settings")
         self.tel = TEL()
         self.observation = Observation()
@@ -287,10 +289,16 @@ def i_configure_it_for_a_scan(
                 sub_array_id, receptors, configuration, sb_id, scan_duration
             )
 
+@when("I command it to scan for a given period")
+def i_command_it_to_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I configure it for a scan."""
+    configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 # scans
 @given("an subarray busy scanning")
-@when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
@@ -300,6 +308,8 @@ def i_command_it_to_scan(
     integration_test_exec_settings.attr_synching = False
     with context_monitoring.context_monitoring():
         configured_subarray.set_to_scanning(integration_test_exec_settings)
+
+
 
 
 @when("I release all resources assigned to it")
@@ -317,6 +327,13 @@ def i_release_all_resources_assigned_to_it(
             integration_test_exec_settings
         ):
             entry_point.tear_down_subarray(sub_array_id)
+
+
+
+@given("an subarray busy configuring")
+def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
+    """an subarray busy configuring"""
+    allocated_subarray.set_to_configuring(clear_afterwards=False)
 
 @when("I command it to Abort")
 def i_command_it_to_abort(
@@ -337,7 +354,6 @@ def i_command_it_to_abort(
             entry_point.abort_subarray(sub_array_id)
 
     integration_test_exec_settings.touch()
-
 
 @then("the subarray should go into an aborted state")
 def the_subarray_should_go_into_an_aborted_state(

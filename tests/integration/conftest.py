@@ -16,6 +16,13 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management import telescope_management as tel
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
+from ska_ser_skallop.mvp_fixtures.base import ExecSettings
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from resources.models.tmc_model.entry_point import TMCEntryPoint
+from resources.models.obsconfig.config import Observation
+from resources.models.mvp_model.states import ObsState
 from resources.models.mvp_model.env import init_observation_config, Observation
 
 logger = logging.getLogger(__name__)

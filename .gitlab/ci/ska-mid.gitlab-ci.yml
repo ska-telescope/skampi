@@ -25,6 +25,7 @@ mid-test:
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
     COUNT: 1
+    MARK: ping
   extends:
     - .tags_default
     - .set_dbname
@@ -106,7 +107,6 @@ mid_on_demand_destroy:
     action: stop
   when: manual
   allow_failure: true # need to keep this to unlock the pipeline
-
 
 # Mid integration
 .mid-integration-config:

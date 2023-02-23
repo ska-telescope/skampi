@@ -73,7 +73,7 @@ skampi-upload-test-results: ## Upload Skampi system acceptance and integration t
 			/usr/local/bin/xtp-xray-upload -f $$cuke -i tests/test-exec-$(CONFIG).json -v; \
 		else \
 			echo "Using Jira Username and Password for auth"; \
-			xtp-xray-upload -f $$cuke -i tests/test-exec.json -v -u ${JIRA_USERNAME} -p ${JIRA_PASSWORD}; \
+			xtp-xray-upload -f $$cuke -i tests/test-exec-$(CONFIG).json -v -u ${JIRA_USERNAME} -p ${JIRA_PASSWORD}; \
 		fi; \
 	done; \
 

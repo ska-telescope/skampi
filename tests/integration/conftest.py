@@ -43,8 +43,7 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 4
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
-    _scan_configuration = None
-    sbid = None
+
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -67,14 +66,6 @@ class SutTestSettings(SimpleNamespace):
     @receptors.setter
     def receptors(self, receptor: list[int]):
         self._receptors = receptor
-
-    @property
-    def scan_configuration(self):
-        return self._scan_configuration
-
-    @scan_configuration.setter
-    def scan_configuration(self, scan_configuration: None):
-        self._scan_configuration = scan_configuration
 
 
 @pytest.fixture(name="sut_settings", scope="function")

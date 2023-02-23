@@ -457,6 +457,12 @@ def i_release_all_resources_assigned_to_it(
             entry_point.tear_down_subarray(sub_array_id)
 
 
+
+@given("an subarray busy configuring")
+def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
+    """an subarray busy configuring"""
+    allocated_subarray.set_to_configuring(clear_afterwards=False)
+
 @when("I command it to Abort")
 def i_command_it_to_abort(
     context_monitoring: fxt_types.context_monitoring,

@@ -70,7 +70,7 @@ skampi-upload-test-results: ## Upload Skampi system acceptance and integration t
 	@for cuke in  build/cucumber*.json; do \
 		echo "Processing XRay upload of: $$cuke"; \
 		if [[ -z "${JIRA_USERNAME}" ]]; then \
-			/usr/local/bin/xtp-xray-upload -f $$cuke -i tests/test-exec.json -v; \
+			/usr/local/bin/xtp-xray-upload -f $$cuke -i tests/test-exec-$(CONFIG).json -v; \
 		else \
 			echo "Using Jira Username and Password for auth"; \
 			xtp-xray-upload -f $$cuke -i tests/test-exec.json -v -u ${JIRA_USERNAME} -p ${JIRA_PASSWORD}; \

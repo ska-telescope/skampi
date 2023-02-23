@@ -4,7 +4,7 @@ import logging
 from types import SimpleNamespace
 import os
 
-from typing import Any, Callable, Union, cast
+from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
 from mock import patch, Mock
 from assertpy import assert_that
 import pytest
@@ -12,22 +12,12 @@ from pytest_bdd import when, given, then, parsers
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types, SubarrayConfigurationSpec
 from ska_ser_skallop.connectors import configuration as con_config
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_management import telescope_management as tel
-
-# from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.entry_point import TMCEntryPoint
-from resources.models.obsconfig.config import Observation
 from resources.models.mvp_model.states import ObsState
 from tests.resources.models.mvp_model.configuration import SKAScanConfiguration
-from tests.resources.models.obsconfig.target_spec import TargetSpec
-
+from resources.models.mvp_model.env import init_observation_config, Observation
 
 logger = logging.getLogger(__name__)
 
@@ -44,10 +34,9 @@ class SutTestSettings(SimpleNamespace):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.tel = TEL()
+        self.tel = names.TEL()
         logger.info("initialising sut settings")
-        self.tel = TEL()
-        self.observation = Observation()
+        self.observation = init_observation_config()
         self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
 
     @property
@@ -92,7 +81,7 @@ def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
     configured_subarray.disable_automatic_clear()
 
 
-@pytest.fixture(name="sut_settings", scope="function")
+@pytest.fixture(name="sut_settings", scope="function", autouse=True)
 def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()
@@ -191,6 +180,47 @@ def fxt_integration_test_exec_settings(
 def fxt_observation_config(sut_settings: SutTestSettings) -> Observation:
     return sut_settings.observation
 
+
+@pytest.fixture(name="mocked_observation_config")
+def fxt_mocked_observation_config(observation_config: Observation) -> Mock:
+    return Mock(spec=Observation, wraps=observation_config)
+
+
+T = TypeVar("T")
+P = ParamSpec("P")
+R = TypeVar("R")
+
+
+def _inject_method(
+    injectable: T, method: Callable[Concatenate[T, P], R]
+) -> Callable[P, R]:
+    def _replaced_method(*args: P.args, **kwargs: P.kwargs) -> R:
+        return method(injectable, *args, **kwargs)
+
+    return _replaced_method
+
+
+ObservationConfigInterjector = Callable[
+    [str, Callable[Concatenate[Observation, P], R]], None
+]
+
+
+@pytest.fixture(name="interject_into_observation_config")
+def fxt_observation_config_interjector(
+    observation_config: Observation, mocked_observation_config: Mock
+) -> ObservationConfigInterjector[P, R]:
+
+    obs = observation_config
+
+    def interject_observation_method(
+        method_name: str, intj_fn: Callable[Concatenate[Observation, P], R]
+    ):
+        injected_method = _inject_method(obs, intj_fn)
+        mocked_observation_config.configure_mock(
+            **{f"{method_name}.side_effect": injected_method}
+        )
+
+    return interject_observation_method
 
 # global when steps
 # start up

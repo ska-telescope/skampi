@@ -21,7 +21,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 from ..mvp_model.states import ObsState
 from ska_ser_skallop.utils.nrgen import get_id
 
-from ..obsconfig.config import Observation
+from ..mvp_model.env import get_observation_config, Observation
 from ..mvp_model.states import ObsState
 logger = logging.getLogger(__name__)
 
@@ -554,7 +554,7 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
             "obsState"
         ).to_become_equal_to("ABORTED", ignore_first=True)
         return builder
-    
+
     def undo(self, sub_array_id: int):
         """Domain logic for restart configuration on a subarray in tmc.
 
@@ -566,7 +566,7 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with Restart command")
         subarray.command_inout("Restart")
-    
+
     def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
@@ -603,7 +603,7 @@ class TMCEntryPoint(CompositeEntryPoint):
         """Init Object"""
         super().__init__()
         if not observation:
-            observation = Observation()
+            observation = get_observation_config()
         self.observation = observation
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
         self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
@@ -808,4 +808,3 @@ SCAN_JSON_LOW = {
     "transaction_id": "txn-....-00001",
     "scan_id": 1,
 }
-

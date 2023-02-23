@@ -261,7 +261,7 @@ def i_assign_resources_to_it(
 def the_subarray_is_in_idle(
     running_telescope: fxt_types.telescope_context,
     sb_config: fxt_types.sb_config,
-    base_composition: Composition,
+    base_composition: conf_types.Composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):
@@ -286,7 +286,7 @@ def the_subarray_is_in_idle(
 def the_subarray_is_in_idle(
     running_telescope: fxt_types.telescope_context,
     sb_config: fxt_types.sb_config,
-    base_composition: Composition,
+    base_composition: conf_types.Composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
     subarray_id: int,
@@ -375,7 +375,7 @@ def i_configure_it_for_a_scan(
 @given("the scan configuration is applied", target_fixture="configured_subarray")
 def the_subarray_is_in_ready(
     allocated_subarray: fxt_types.allocated_subarray,
-    base_composition: Composition,
+    base_composition: conf_types.Composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):

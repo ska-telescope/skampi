@@ -87,6 +87,9 @@ ska-oso-oet:
   rest:
     ingress:
       enabled: false
+    oda:
+      backendType: rest
+      url: http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1
   resources:
     requests:
       cpu: 200m
@@ -94,6 +97,9 @@ ska-oso-oet:
     limits:
       cpu: 2000m
       memory: 1024Mi
+
+ska-db-oda:
+  enabled: false
 
 #telescope control
 ## mid-cbf

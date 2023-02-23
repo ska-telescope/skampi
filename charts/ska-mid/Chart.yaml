@@ -88,3 +88,7 @@ dependencies:
     version: 0.1.3
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-alarmhandler.enabled
+  - name: ska-db-oda
+    version: 1.6.1
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-db-oda.enabled

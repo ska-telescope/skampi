@@ -50,7 +50,6 @@ class SutTestSettings(SimpleNamespace):
         super().__init__(**kwargs)
         self.tel = names.TEL()
         logger.info("initialising sut settings")
-        self.tel = names.TEL()
         self.observation = Observation()
         self.default_subarray_name = self.tel.tm.subarray(self.subarray_id)
 

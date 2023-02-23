@@ -65,6 +65,7 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
     sut_settings.restart_after_abort = True
 
 
+@pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

@@ -59,9 +59,15 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
 
 @pytest.fixture(name="setup_context_monitoring_for_abort_test")
 def fxt_setup_context_monitoring_for_abort_test(
-    context_monitoring: fxt_types.context_monitoring, sut_settings: SutTestSettings
+    context_monitoring: fxt_types.context_monitoring,
+    sut_settings: SutTestSettings,
+    log_checking: fxt_types.log_checking,
 ):
     _tel = names.TEL()
+    log_checking.capture_logs_from_devices(
+        str(_tel.tm.subarray(sut_settings.subarray_id)),
+        str(_tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node),
+    )
     context_monitoring.set_waiting_on(
         _tel.csp.subarray(sut_settings.subarray_id)
     ).for_attribute("obsstate").to_become_equal_to("ABORTED")

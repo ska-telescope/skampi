@@ -149,7 +149,7 @@ def when_observe_sbi(
     """
     script_completion_state = "UNKNOWN"
     with context_monitoring.context_monitoring():
-        script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=280)
+        script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=300)
     logger.info(f"observing script execution status set to {script_completion_state}")
     return script_completion_state
 

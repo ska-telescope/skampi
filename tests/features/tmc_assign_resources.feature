@@ -32,7 +32,7 @@ Feature: Assign resources to subarray using TMC
 		When I release all resources assigned to it
 		Then the subarray must be in EMPTY state
 
-	@XTP-16184
+	@XTP-20081
 	Scenario: Abort assigning
 		Given an subarray busy assigning
 		When I command it to Abort

@@ -569,6 +569,14 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
         ).to_become_equal_to("ABORTED", ignore_first=True)
+        csp_subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(csp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        sdp_subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(sdp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
         return builder
 
     def undo(self, sub_array_id: int):
@@ -582,14 +590,6 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with Restart command")
         subarray.command_inout("Restart")
-
-    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
-        builder = get_message_board_builder()
-        subarray_name = self._tel.tm.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY", ignore_first=True)
-        return builder
 
 
 class TMCRestart(base.RestartStep, LogEnabled):
@@ -606,7 +606,15 @@ class TMCRestart(base.RestartStep, LogEnabled):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("EMPTY", ignore_first=True)
+        ).to_become_equal_to("EMPTY", ignore_first=False)
+        csp_subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(csp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=False)
+        sdp_subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(sdp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to(["EMPTY", "IDLE"], ignore_first=False)
         return builder
 
 

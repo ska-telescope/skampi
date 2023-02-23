@@ -21,8 +21,8 @@ Feature: Assign resources to sdp subarray
 		When I release all resources assigned to it
 		Then the subarray must be in EMPTY state
 
-	@XTP-16184
-	Scenario: Abort assigning
+	@XTP-20083
+	Scenario: Abort assigning SDP
 		Given an subarray busy assigning
 		When I command it to Abort
 		Then the subarray should go into an aborted state

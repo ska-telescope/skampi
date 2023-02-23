@@ -15,13 +15,16 @@ from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
+    AbortStep,
+    ObsResetStep,
 )
+from ..mvp_model.states import ObsState
 from ska_ser_skallop.utils.nrgen import get_id
 from ska_ser_skallop.utils.singleton import Memo
 from ..mvp_model.states import ObsState
 
 from ..obsconfig.config import Observation
-
+from ..mvp_model.states import ObsState
 logger = logging.getLogger(__name__)
 
 
@@ -337,9 +340,6 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         """Not implemented."""
         brd = get_message_board_builder()
 
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("CONFIGURING")
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("CONFIGURING")
@@ -523,6 +523,77 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
+
+class TMCObsResetStep(ObsResetStep, LogEnabled):
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)  #IDLE
+        return builder
+
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ObsReset command")
+        subarray.command_inout("Obsreset")
+
+
+class TMCAbortStep(base.AbortStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Abort command")
+        subarray.command_inout("Abort")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        return builder
+    
+    def undo(self, sub_array_id: int):
+        """Domain logic for restart configuration on a subarray in tmc.
+
+        This implements the restart method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+    
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
+        return builder
+
+
+class TMCRestart(base.ObsResetStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(self, sub_array_id: int, receptors: List[int]) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
+        return builder
+
+
 class TMCEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
@@ -541,6 +612,13 @@ class TMCEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = AssignResourcesStep(observation)
         self.configure_scan_step = ConfigureStep(observation)
         self.scan_step = ScanStep(observation)
+        self.abort_step = TMCAbortStep()
+        # TODO add an implementation of obsreset
+        # currently we do obsreset via an restart
+        #  not this results in the SUT going to EMPTY and not
+        # IDLE
+        self.obsreset_step = TMCRestart()
+
 
 
 ASSIGN_RESOURCE_JSON_LOW = {
@@ -732,3 +810,4 @@ SCAN_JSON_LOW = {
     "transaction_id": "txn-....-00001",
     "scan_id": 1,
 }
+

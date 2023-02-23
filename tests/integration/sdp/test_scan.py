@@ -29,6 +29,14 @@ def test_run_a_scan_on_sdp_subarray_in_mid():
     """Run a scan on sdp subarray in mid."""
 
 
+@pytest.mark.skamid
+@pytest.mark.scan
+@pytest.mark.sdp
+@scenario("features/sdp_scan.feature", "Abort SDP scanning")
+def test_abort_scanning(disable_clear):
+    """Abort scanning."""
+
+
 @given("an SDP subarray in READY state")
 def an_sdp_subarray_in_ready_state(
     set_up_subarray_log_checking_for_sdp,

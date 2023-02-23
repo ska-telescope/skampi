@@ -17,6 +17,7 @@ mid-test:
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
     OET_INGRESS_ENABLED: "true"
+    ADDMARKS: "XTP-20081"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     EXIT_AT_FAIL: "false"
@@ -106,7 +107,6 @@ mid_on_demand_destroy:
     action: stop
   when: manual
   allow_failure: true # need to keep this to unlock the pipeline
-
 
 # Mid integration
 .mid-integration-config:

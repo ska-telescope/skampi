@@ -21,13 +21,13 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.mark.skamid
-@pytest.mark.assign
+@pytest.mark.startup
 @scenario(
-    "features/dishes_assign_resources.feature",
-    "Make a set of dishes go to full power state when assigned to a subarray",
+    "features/dishes_power_up.feature",
+    "Make a set of dishes go to full power state",
 )
-def test_assign_dishes_to_subarray_in_mid():
-    """Make a set of dishes go to full power state when assigned to a subarray."""
+def test_power_up_dishes():
+    """Make a set of dishes go to full power state."""
 
 
 @given("a set of available dishes", target_fixture="composition")
@@ -38,11 +38,10 @@ def an_dish_subarray(
 ) -> conf_types.Composition:
     """a set of available dishes"""
     # we set the dishes intending to be assigned as an attribute of the entrypoint
-    entry_point.dishes_to_assign = [1, 2]
     return base_composition
 
 
-# .. @when("I assign those dishes to a subarray") from conftest
+# .. @when("I switch those dishes to fullpower") from conftest
 
 
 @then("those dishes shall be in full power")

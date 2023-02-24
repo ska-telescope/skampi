@@ -18,9 +18,10 @@ from .. import conftest
 def fxt_set_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
     sut_settings: conftest.SutTestSettings,
-):
+) -> None:
     """Fixture to use for setting up the entry point as from only the interface to sdp."""
     exec_env = set_session_exec_env
+    DishEntryPoint.nr_of_dishes = sut_settings.receptors
     exec_env.entrypoint = DishEntryPoint
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = ["Dish"]

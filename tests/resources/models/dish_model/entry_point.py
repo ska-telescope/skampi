@@ -1,4 +1,5 @@
 """Domain logic for the Dish."""
+import abc
 import logging
 from typing import Dict, Literal, Union, List, cast
 import os
@@ -23,6 +24,9 @@ from ska_ser_skallop.event_handling.builders import (
     get_message_board_builder,
     clear_supscription_specs,
 )
+from tests.resources.models.obsconfig.config import Observation
+
+from tests.resources.models.tmc_model.entry_point import AssignResourcesStep
 
 from .dish_pointing import Pointing, SourcePosition, start_as_cm, stop, start
 
@@ -34,7 +38,7 @@ class LogEnabled:
     """class that allows for logging if set by env var"""
 
     def __init__(self) -> None:
-        self._live_logging = bool(os.getenv("DEBUG"))
+        self._live_logging = bool(os.getenv("DEBUG_ENTRYPOINT"))
         self._skamid = cast(names.Mid, names.TEL().skamid)
         assert self._skamid, "wrong telescope, this is Mid only"
 
@@ -43,47 +47,21 @@ class LogEnabled:
             logger.info(mssage)
 
 
-class DishAssignStep(base.AssignResourcesStep, LogEnabled):
-    """Implementation of Assign Resources Step for SDP."""
+class StartupDishes(base.ObservationStep, LogEnabled):
+    """Implementation of power up Step for dishes."""
 
-    def __init__(self) -> None:
+    def __init__(self, dish_ids: list[int]) -> None:
         """Init object."""
         super().__init__()
         self._skamid = cast(names.Mid, names.TEL().skamid)
         assert self._skamid, "wrong telescope, this is Mid only"
+        self.dish_ids = dish_ids
 
-    @property
-    def dishes_to_assign(self) -> list[int]:
-        return Memo().get("dishes_to_assign")
+    def do(self):  # type: ignore
+        """Domain logic for startung up dishes"""
 
-    @dishes_to_assign.setter
-    def dishes_to_assign(self, receptors: list[int]):
-        Memo(dishes_to_assign=receptors)
-
-    def do(
-        self,
-        sub_array_id: int,
-        dish_ids: List[int],
-        composition: types.Composition,  # pylint: disable=
-        sb_id: str,
-    ):
-        """Domain logic for assigning resources to a subarray in sdp.
-
-        This implements the compose_subarray method on the entry_point.
-
-        :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration paramaters
-        :param sb_id: a generic id to identify a sb to assign resources
-        """
-        # currently ignore composition as all types will be standard
-        assert self.dishes_to_assign == dish_ids, (
-            "The dishes intended to be assigned does not match with those"
-            "being prepared to wait for as indicated by the `dishes_to_assign` property,"
-            "did you remember to set them on the entrypoint beforehand?"
-        )
         successfully_commanded_dishes: list[con_config.AbstractDeviceProxy] = []
-        dish_names = self._skamid.dishes(self.dishes_to_assign).list
+        dish_names = self._skamid.dishes(self.dish_ids).list
         dish_name = ""
         try:
             for dish_name in dish_names:
@@ -99,48 +77,91 @@ class DishAssignStep(base.AssignResourcesStep, LogEnabled):
                 successfully_commanded_dish.command_inout("SetStandbyLPMode")
             raise exception
 
-    def undo(self, sub_array_id: int):
-        """Domain logic for releasing resources on a subarray in sdp.
+    def undo(self):  # type: ignore
+        """Domain logic for powering down all the dishes
 
         This implements the tear_down_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
         """
-        dish_names = self._skamid.dishes(self.dishes_to_assign).list
+        dish_names = self._skamid.dishes(self.dish_ids).list
         for dish_name in dish_names:
             dish = con_config.get_device_proxy(dish_name, fast_load=True)
             self._log(f"setting {dish_name} to SetStandbyLPMode")
             dish.command_inout("SetStandbyLPMode")
 
-    def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_do(self) -> MessageBoardBuilder:  # type: ignore
         """Domain logic specifying what needs to be waited for subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
-        dish_names = self._skamid.dishes(self.dishes_to_assign).list
+        dish_names = self._skamid.dishes(self.dish_ids).list
         for dish in dish_names:
             brd.set_waiting_on(dish).for_attribute("dishmode").to_become_equal_to(
                 "STANDBY_FP", ignore_first=False
             )
         return brd
 
-    def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_doing(self) -> MessageBoardBuilder:  # type: ignore
         """Not implemented."""
         raise NotImplementedError()
 
-    def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_undo(self) -> MessageBoardBuilder:  # type: ignore
         """Domain logic specifying what needs to be waited for subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
-        dish_names = self._skamid.dishes(self.dishes_to_assign).list
+        dish_names = self._skamid.dishes(self.dish_ids).list
         for dish in dish_names:
             brd.set_waiting_on(dish).for_attribute("dishmode").to_become_equal_to(
                 "STANDBY_LP", ignore_first=False
             )
         return brd
+
+
+class AssignedDishes:
+    @property
+    @abc.abstractmethod
+    def assigned_dishes(self) -> list[int]:
+        pass
+
+
+class DishAssignResourcesStep(AssignResourcesStep, AssignedDishes):
+    def __init__(self, observation: Observation) -> None:
+        """Init object."""
+        super().__init__(observation)
+        self._skamid = cast(names.Mid, names.TEL().skamid)
+        assert self._skamid, "wrong telescope, this is Mid only"
+
+    def do(
+        self,
+        sub_array_id: int,
+        dish_ids: List[int],
+        composition: types.Composition,
+        sb_id: str,
+    ):
+        self.assigned_dishes = dish_ids
+
+    @property
+    def assigned_dishes(self) -> list[int]:
+        if dishes := Memo().get("assigned_dishes"):
+            return cast(list[int], dishes)
+        return []
+
+    @assigned_dishes.setter
+    def assigned_dishes(self, dish_ids: list[int]):
+        Memo(assigned_dishes=dish_ids)
+
+    def undo(self, sub_array_id: int):
+        self.assigned_dishes = []
+
+    def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
+        return get_message_board_builder()
+
+    def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
+        return get_message_board_builder()
 
 
 BandType = Literal["B1", "B2", "B3", "B4", "B5a", "B5b"]
@@ -157,6 +178,10 @@ BandConfigureCommand = Literal[
 class SetBandStep(LogEnabled):
     """A 'sub' step specifically to a dish to change or setup a band on a nr of dishes."""
 
+    def __init__(self, assigned_dishes: AssignedDishes) -> None:
+        super().__init__()
+        self._assigned_dishes_object = assigned_dishes
+
     band_configure_mapping: Dict[BandType, BandConfigureCommand] = {
         "B1": "ConfigureBand1",
         "B2": "ConfigureBand2",
@@ -166,20 +191,26 @@ class SetBandStep(LogEnabled):
         "B5b": "ConfigureBand5b",
     }
 
-    def do(self, band: BandType, dish_ids: list[int]):
+    @property
+    def assigned_dishes(self) -> list[int]:
+        return self._assigned_dishes_object.assigned_dishes
+
+    def do(self, band: BandType):
         """_summary_
 
         :param band: _description_
-        :param dish_ids: _description_
+        :param _: _description_
         """
         successfully_commanded_dishes: list[con_config.AbstractDeviceProxy] = []
+        dish_ids = self.assigned_dishes
         dish_name = ""
         try:
             for dish_name in self._skamid.dishes(dish_ids):
                 dish = con_config.get_device_proxy(dish_name)
                 command = self.band_configure_mapping[band]
                 self._log(f"Commanding {dish_name} with {command}")
-                dish.command_inout(command, " ")
+                # this myabe the future command dish.command_inout(command, " ")
+                dish.command_inout(command)
         except Exception as exception:
             self._log(
                 f"Exception in commanding {dish_name} will revert commands on other dishes"
@@ -188,15 +219,14 @@ class SetBandStep(LogEnabled):
                 successfully_commanded_dish.command_inout("SetStandbyLPMode")
             raise exception
 
-    def set_wait_for_do(
-        self, band: BandType, dish_ids: list[int]
-    ) -> MessageBoardBuilder:
+    def set_wait_for_do(self, band: BandType) -> MessageBoardBuilder:
         """Get specifications of what to wait for in order for configure band to be complete.
 
 
         :return: _description_
         :rtype: Union[MessageBoardBuilder, None]
         """
+        dish_ids = self.assigned_dishes
         brd = get_message_board_builder()
         for dish_name in self._skamid.dishes(dish_ids):
             brd.set_waiting_on(dish_name).for_attribute(
@@ -219,49 +249,76 @@ class SetBandStep(LogEnabled):
         return get_message_board_builder()
 
 
-class SetReadyStep(LogEnabled):
+class ReadyDishes:
+    @property
+    @abc.abstractmethod
+    def ready_dishes(self) -> list[names.DeviceName]:
+        pass
+
+
+class SetReadyStep(LogEnabled, ReadyDishes):
     """A 'sub' step specifically to ensure dish is ready for pointing.
 
     (must be preceded by a SetBandStep step)
     """
 
+    def __init__(self, assigned_dishes: AssignedDishes) -> None:
+        super().__init__()
+        self._assigned_dishes_object = assigned_dishes
+        self._assigned_brd: Union[MessageBoardBuilder, None] = None
+
     @property
-    def configured_dishes(self) -> list[int]:
-        return Memo().get("configured_dishes")
+    def assigned_dishes(self) -> list[int]:
+        return self._assigned_dishes_object.assigned_dishes
 
-    @configured_dishes.setter
-    def configured_dishes(self, dish_ids: list[int]):
-        Memo(configured_dishes=dish_ids)
+    @property
+    def ready_dishes(self) -> list[names.DeviceName]:
+        if dishes := Memo().get("ready_dishes"):
+            return dishes
+        return []
 
-    def do(self, dish_ids: list[int]):
+    @ready_dishes.setter
+    def ready_dishes(self, dishes: list[names.DeviceName]):
+        Memo(ready_dishes=dishes)
+
+    def do(self):
         """_summary_
 
         :param band: _description_
         :param dish_ids: _description_
         """
-        successfully_commanded_dishes: list[con_config.AbstractDeviceProxy] = []
+        dish_ids = self.assigned_dishes
+        successfully_commanded_dishes: list[names.DeviceName] = []
         dish_name = ""
         try:
             for dish_name in self._skamid.dishes(dish_ids):
                 dish = con_config.get_device_proxy(dish_name)
                 self._log(f"Commanding {dish_name} with SetOperateMode")
                 dish.command_inout("SetOperateMode")
+                successfully_commanded_dishes.append(dish_name)
         except Exception as exception:
             self._log(
                 f"Exception in commanding {dish_name} will revert commands on other dishes"
             )
-            for successfully_commanded_dish in successfully_commanded_dishes:
-                successfully_commanded_dish.command_inout("SetStandbyFPMode")
+            for dish_name in successfully_commanded_dishes:
+                dish = con_config.get_device_proxy(dish_name)
+                dish.command_inout("SetStandbyFPMode")
+                if self._assigned_brd:
+                    if self._assigned_brd.board:
+                        self._assigned_brd.board.remove_all_subscriptions()
             raise exception
+        self.ready_dishes = successfully_commanded_dishes
 
-    def set_wait_for_do(self, dish_ids: list[int]) -> MessageBoardBuilder:
+    def set_wait_for_do(self) -> MessageBoardBuilder:
         """Get specifications of what to wait for in order for configure band to be complete.
 
 
         :return: _description_
         :rtype: Union[MessageBoardBuilder, None]
         """
+        dish_ids = self.assigned_dishes
         brd = get_message_board_builder()
+        self._assigned_brd = brd
         for dish_name in self._skamid.dishes(dish_ids):
             brd.set_waiting_on(dish_name).for_attribute(
                 "pointingstate"
@@ -280,7 +337,7 @@ class SetReadyStep(LogEnabled):
         :yield: _description_
         :rtype: _type_
         """
-        for dish_name in self._skamid.dishes(self.configured_dishes):
+        for dish_name in self.ready_dishes:
             dish = con_config.get_device_proxy(dish_name)
             self._log(
                 f"Reverting Operate state from {dish_name} by commanding it with SetStandbyFP"
@@ -290,11 +347,11 @@ class SetReadyStep(LogEnabled):
     def set_wait_for_undo(self) -> MessageBoardBuilder:
         """Domain logic for what needs to be waited for switching the Dish off."""
         brd = get_message_board_builder()
-        for dish_name in self._skamid.dishes(self.configured_dishes):
+        for dish_name in self.ready_dishes:
             brd.set_waiting_on(dish_name).for_attribute(
                 "pointingstate"
             ).to_become_equal_to("NONE", ignore_first=False)
-        for dish_name in self._skamid.dishes(self.configured_dishes):
+        for dish_name in self.ready_dishes:
             brd.set_waiting_on(dish_name).for_attribute("dishmode").to_become_equal_to(
                 "STANDBY_FP", ignore_first=False
             )
@@ -304,48 +361,59 @@ class SetReadyStep(LogEnabled):
 class PointingStep(LogEnabled):
     """ "A 'sub' step of configuration that realizes the pointing behavior on the dish."""
 
-    def __init__(self, context: Union[StackableContext, None] = None) -> None:
+    def __init__(
+        self,
+        ready_dishes: ReadyDishes,
+        context: Union[StackableContext, None] = None,
+    ) -> None:
         """Init object."""
         super().__init__()
         self._context = context
         self._dish_ids = []
+        self._ready_dishes = ready_dishes
 
     def set_stackable_context(self, context: StackableContext):
         self._context = context
 
     @property
-    def configured_dishes(self) -> list[int]:
-        return Memo().get("configured_dishes")
+    def configured_dishes(self) -> list[names.DeviceName]:
+        if dishes := Memo().get("configured_dishes"):
+            return dishes
+        return []
 
     @configured_dishes.setter
-    def configured_dishes(self, dish_ids: list[int]):
-        Memo(configured_dishes=dish_ids)
+    def configured_dishes(self, dishes: list[names.DeviceName]):
+        Memo(configured_dishes=dishes)
 
     @property
     def _pointings(self) -> list[Pointing]:
-        return Memo().get("_pointings")
+        if pointings := Memo().get("_pointings"):
+            return pointings
+        return []
 
     @_pointings.setter
     def _pointings(self, pointings: list[Pointing]):
         Memo(_pointings=pointings)
 
-    def do(self, dish_ids: list[int], source: SourcePosition, polling: float = 0.05):
+    def do(self, source: SourcePosition, polling: float = 0.05):
         """_summary_
 
         :param dish_ids: _description_
         :param source: _description_
         :param polling: _description_, defaults to 0.05
         """
+
         self._log("starting pointing threads...")
+        dishes = self._ready_dishes.ready_dishes
         if self._context:
             self._pointings = self._context.push_context_onto_test(
-                start_as_cm(dish_ids, source, polling)
+                start_as_cm(dishes, source, polling)
             )
         else:
-            self._pointings = start(dish_ids, source, polling)
-        self.configured_dishes = dish_ids
+            self._pointings = start(dishes, source, polling)
+        self.configured_dishes = dishes
 
-    def set_wait_for_do(self, dish_ids: list[int]) -> MessageBoardBuilder:
+    def set_wait_for_do(self) -> MessageBoardBuilder:
         """_summary_
 
         :raises NotImplementedError: _description_
@@ -356,17 +424,17 @@ class PointingStep(LogEnabled):
         # TODO currently there is a bug in that the pointing state
         # should end up as Track but we use READY as our indicator
         # until bug is fixed
-        for dish_name in self._skamid.dishes(dish_ids):
-            brd.set_waiting_on(dish_name).for_attribute(
-                "pointingstate"
-            ).to_become_equal_to("TRACK")
+        for dish in self._ready_dishes.ready_dishes:
+            brd.set_waiting_on(dish).for_attribute("pointingstate").to_become_equal_to(
+                "TRACK"
+            )
         return brd
 
     def undo(self):
         self._log("stopping pointing threads...")
         stop(self._pointings)
 
-    def set_wait_for_undo(self, dish_ids: list[int]) -> MessageBoardBuilder:
+    def set_wait_for_undo(self) -> MessageBoardBuilder:
         """_summary_
 
         :param dish_ids: _description_
@@ -375,10 +443,10 @@ class PointingStep(LogEnabled):
         :rtype: Union[MessageBoardBuilder, None]
         """
         brd = get_message_board_builder()
-        for dish_name in self._skamid.dishes(dish_ids):
-            brd.set_waiting_on(dish_name).for_attribute(
-                "pointingstate"
-            ).to_become_equal_to("READY")
+        for dish in self.configured_dishes:
+            brd.set_waiting_on(dish).for_attribute("pointingstate").to_become_equal_to(
+                "READY"
+            )
         return brd
 
 
@@ -387,18 +455,16 @@ class DishConfigureStep(base.ConfigureStep, LogEnabled):
 
     def __init__(
         self,
-        set_band_step: SetBandStep,
-        set_ready_step: SetReadyStep,
-        pointing_step: PointingStep,
+        assigned_dishes: AssignedDishes,
     ) -> None:
         """Init object."""
         super().__init__()
         self._skamid = names.TEL().skamid
         assert self._skamid, "wrong telescope, this is Mid only"
         self._context = None
-        self.set_band_step = set_band_step
-        self.set_ready_step = set_ready_step
-        self.pointing_step = pointing_step
+        self.set_band_step = SetBandStep(assigned_dishes)
+        self.set_ready_step = SetReadyStep(assigned_dishes)
+        self.pointing_step = PointingStep(self.set_ready_step)
         self.exec_settings = None
 
     def set_stackable_context(self, context: StackableContext):
@@ -434,22 +500,22 @@ class DishConfigureStep(base.ConfigureStep, LogEnabled):
         timeout = int(self.execution_context.time_out)
         live_logging = self.execution_context.log_enabled
         clear_supscription_specs()
-        configure_band_to_finish = self.set_band_step.set_wait_for_do(band, dish_ids)
+        configure_band_to_finish = self.set_band_step.set_wait_for_do(band)
         with wait_for(
             configure_band_to_finish, timeout=timeout, live_logging=live_logging
         ):
-            self.set_band_step.do(band, dish_ids)
+            self.set_band_step.do(band)
         clear_supscription_specs()
         # then we set it to operational
-        set_ready_to_finish = self.set_ready_step.set_wait_for_do(dish_ids)
+        set_ready_to_finish = self.set_ready_step.set_wait_for_do()
         with wait_for(set_ready_to_finish, timeout=timeout, live_logging=live_logging):
-            self.set_ready_step.do(dish_ids)
+            self.set_ready_step.do()
         clear_supscription_specs()
-        set_pointing_to_start = self.pointing_step.set_wait_for_do(dish_ids)
+        set_pointing_to_start = self.pointing_step.set_wait_for_do()
         with wait_for(
             set_pointing_to_start, timeout=timeout, live_logging=live_logging
         ):
-            self.pointing_step.do(dish_ids, source)
+            self.pointing_step.do(source)
 
     def undo(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in Dish.
@@ -459,9 +525,7 @@ class DishConfigureStep(base.ConfigureStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         clear_supscription_specs()
-        undo_pointing = self.pointing_step.set_wait_for_undo(
-            self.pointing_step.configured_dishes
-        )
+        undo_pointing = self.pointing_step.set_wait_for_undo()
         with wait_for(undo_pointing, timeout=30, live_logging=True):
             self.pointing_step.undo()
         clear_supscription_specs()
@@ -503,33 +567,27 @@ def set_execution_context(execution_context: ExecSettings):
     Memo(execution_context=execution_context)
 
 
-class DishEntryPoint(CompositeEntryPoint):
+class DishEntryPoint(CompositeEntryPoint, AssignedDishes):
     """Derived Entrypoint scoped to Dish element."""
 
-    _dishes_assigned = [1, 2, 3, 4]
+    nr_of_dishes = [1, 2, 3, 4]
 
-    def __init__(self) -> None:
+    def __init__(self, observation: Observation | None = None) -> None:
         """Init Object"""
         super().__init__()
+        if not observation:
+            if not (observation := Memo().get("dish_entry_point__observation")):
+                observation = Observation()
+                Memo(dish_entry_point__observation=observation)
         self.set_online_step = NoOpStep()
-        self.start_up_step = NoOpStep()
-        self.assign_resources_step = DishAssignStep()
-        self.set_band_step = SetBandStep()
-        self.set_ready_step = SetReadyStep()
-        self.pointing_step = PointingStep()
-        self.configure_scan_step = DishConfigureStep(
-            self.set_band_step, self.set_ready_step, self.pointing_step
-        )
+        self.start_up_step = StartupDishes(self.nr_of_dishes)
+        self.assign_resources_step = DishAssignResourcesStep(observation)
+        self.configure_scan_step = DishConfigureStep(self.assign_resources_step)
         self.scan_step = cast(ScanStep, NoOpStep())
 
     def set_stackable_context(self, context: StackableContext):
         cast(DishConfigureStep, self.configure_scan_step).set_stackable_context(context)
 
     @property
-    def dishes_to_assign(self) -> list[int]:
-        return cast(DishAssignStep, self.assign_resources_step).dishes_to_assign
-
-    @dishes_to_assign.setter
-    def dishes_to_assign(self, receptors: list[int]):
-        configure_scan_step = cast(DishAssignStep, self.assign_resources_step)
-        configure_scan_step.dishes_to_assign = receptors
+    def assigned_dishes(self) -> list[int]:
+        return cast(DishAssignResourcesStep, self.assign_resources_step).assigned_dishes

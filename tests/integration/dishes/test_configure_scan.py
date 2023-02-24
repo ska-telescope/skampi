@@ -23,7 +23,7 @@ def test_configure_dishes_for_a_subarray_scan():
 
 @given("an set of dish masters currently assigned to a subarray in IDLE state")
 def an_set_of_dish_masters_currently_assigned_to_a_subarray_in_idle_state(
-    set_global_exec_settings: None,
+    set_global_exec_settings: None, allocated_subarray: fxt_types.allocated_subarray
 ):
     """an set of dish masters currently assigned to a subarray in IDLE state."""
 
@@ -55,7 +55,7 @@ def those_dishes_shall_be_in_full_power(entry_point: DishEntryPoint):
     """Then those dishes shall be in full power."""
     tel = names.TEL()
     assert tel.skamid, "Incorrect Telescope: Low, this test is Mid only"
-    for dish_name in tel.skamid.dishes(entry_point.dishes_to_assign):
+    for dish_name in tel.skamid.dishes(entry_point.assigned_dishes):
         dish = con_config.get_device_proxy(dish_name)
         result = dish.read_attribute("pointingstate").value
         pointingstate: str = DishMasterPointingState(result).name

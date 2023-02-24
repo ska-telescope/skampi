@@ -16,7 +16,7 @@ def get_as_el(target: SourcePosition) -> Tuple[float, float]:
     return (200.0, 60.0)
 
 
-def point(dish_id: int, desired_az: float, desired_el: float):
+def point(dish_name: names.DeviceName, desired_az: float, desired_el: float):
     """_summary_
 
     :param dish: _description_
@@ -26,7 +26,6 @@ def point(dish_id: int, desired_az: float, desired_el: float):
     """
     tel = names.TEL()
     assert tel.skamid, "incorrect telescope: Low, this is Mid only"
-    dish_name = tel.skamid.dish(dish_id)
     dish = con_config.get_device_proxy(dish_name, fast_load=True)
     cmd_time_offset = 5000
     dish.write_attribute(
@@ -38,7 +37,7 @@ def point(dish_id: int, desired_az: float, desired_el: float):
 
 
 def pointing(
-    dish_id: int,
+    dish: names.DeviceName,
     inbox: Queue[Union[Literal["Stop"], SourcePosition]],
     target: SourcePosition,
     polling: float = 0.05,
@@ -54,7 +53,7 @@ def pointing(
     enabled = True
     while enabled:
         desired_az, desired_el = get_as_el(target)
-        point(dish_id, desired_az, desired_el)
+        point(dish, desired_az, desired_el)
         try:
             incomming_message = inbox.get(timeout=polling)
             if incomming_message == "Stop":
@@ -74,7 +73,7 @@ class Pointing:
     def __init__(
         self,
         pool: ThreadPoolExecutor,
-        dish_id: int,
+        dish: names.DeviceName,
         target: SourcePosition,
         polling: float = 0.05,
     ) -> None:
@@ -90,7 +89,7 @@ class Pointing:
         :type polling: float, optional
         """
         self._inbox = Queue[Union[Literal["Stop"], SourcePosition]]()
-        self._thread = pool.submit(pointing, dish_id, self._inbox, target, polling)
+        self._thread = pool.submit(pointing, dish, self._inbox, target, polling)
 
     def stop(self):
         """_summary_"""
@@ -106,13 +105,17 @@ class Pointing:
 
 
 @contextmanager
-def start_as_cm(dish_ids: list[int], target: SourcePosition, polling: float = 0.05):
-    with _start(dish_ids, target, polling) as pointings:
+def start_as_cm(
+    dishes: list[names.DeviceName],
+    target: SourcePosition,
+    polling: float = 0.05,
+):
+    with _start(dishes, target, polling) as pointings:
         yield pointings
 
 
 def start(
-    dish_ids: list[int], target: SourcePosition, polling: float = 0.05
+    dishes: list[names.DeviceName], target: SourcePosition, polling: float = 0.05
 ) -> List[Pointing]:
     """_summary_
 
@@ -121,12 +124,14 @@ def start(
     :param target: _description_
     :type target: Coordinates
     """
-    pool = ThreadPoolExecutor(max_workers=len(dish_ids))
-    return [Pointing(pool, dish_id, target, polling) for dish_id in dish_ids]
+    pool = ThreadPoolExecutor(max_workers=len(dishes))
+    return [Pointing(pool, dish, target, polling) for dish in dishes]
 
 
 @contextmanager
-def _start(dish_ids: list[int], target: SourcePosition, polling: float = 0.05):
+def _start(
+    dish_ids: list[names.DeviceName], target: SourcePosition, polling: float = 0.05
+):
     """_summary_
 
     :param the_list: _description_

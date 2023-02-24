@@ -172,9 +172,19 @@ def i_switch_off_the_telescope(
 
 
 # resource assignment
+@when("I switch those dishes to fullpower")
+def i_switch_those_dishes_to_fullpower(
+    standby_telescope: fxt_types.standby_telescope,
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I start up the telescope."""
+    with context_monitoring.context_monitoring():
+        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+            entry_point.set_telescope_to_running()
 
 
-@when("I assign those dishes to a subarray")
 @when("I assign resources to it")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,
@@ -234,7 +244,6 @@ def i_command_it_to_scan(
 ):
     """I configure it for a scan."""
     configured_subarray.set_to_scanning(integration_test_exec_settings)
-
 
 
 @when("I release all resources assigned to it")

@@ -18,15 +18,14 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     NoOpStep,
     MessageBoardBuilder,
     ScanStep,
+    AssignResourcesStep,
 )
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.event_handling.builders import (
     get_message_board_builder,
     clear_supscription_specs,
 )
-from tests.resources.models.obsconfig.config import Observation
-
-from tests.resources.models.tmc_model.entry_point import AssignResourcesStep
+from ..obsconfig.config import Observation
 
 from .dish_pointing import Pointing, SourcePosition, start_as_cm, stop, start
 

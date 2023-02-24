@@ -18,7 +18,6 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     AbortStep,
     ObsResetStep,
 )
-from ..mvp_model.states import ObsState
 from ska_ser_skallop.utils.nrgen import get_id
 
 from ..mvp_model.env import get_observation_config, Observation

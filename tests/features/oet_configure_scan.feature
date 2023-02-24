@@ -18,4 +18,3 @@ Feature: Verification of OET scripts being executed successfully during an obser
 			Given a valid scan configuration
 			When I configure it for a scan
 			Then the subarray must be in the READY state
-

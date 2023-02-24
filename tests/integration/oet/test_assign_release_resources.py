@@ -15,11 +15,17 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_oso_scripting.objects import SubArray
 from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
-
+from ska_oso_oet_client.activityclient import ActivityAdapter
+from os import environ
 from .oet_helpers import ScriptExecutor
 
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
+
+kube_namespace = environ.get("KUBE_NAMESPACE", "test")
+kube_host = environ.get("KUBE_HOST")
+rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0"
+activity_adapter = ActivityAdapter(rest_cli_uri)
 
 
 @pytest.mark.oet
@@ -37,7 +43,7 @@ def test_sbi_creation():
     """
 
 
-@pytest.mark.skip(reason="oet not compatible with tmc config changes yet")
+@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
@@ -52,7 +58,7 @@ def test_resource_allocation():
     """
 
 
-@pytest.mark.skip(reason="oet not compatible with tmc config changes yet")
+@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
@@ -219,6 +225,7 @@ def check_final_subarray_state(
     logger.info("Sub-array is in ObsState %s", obsstate)
 
 
+@pytest.mark.scripting
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
@@ -233,7 +240,7 @@ def test_oet__scripting_resource_allocation():
                 Then the sub-array goes to ObsState IDLE
     """
 
-@pytest.mark.oet
+@pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.k8s
@@ -249,7 +256,7 @@ def test_oet_scripting_resource_allocation_in_low():
                 Then the sub-array goes to ObsState IDLE
     """
 
-@pytest.mark.oet
+@pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.k8s
 @scenario(

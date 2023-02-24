@@ -58,8 +58,7 @@ def test_oet_configure_scan_on_low_subarray():
 
 @given("an OET")
 def an_oet(observation_config: Observation):
-    """an OET"""
-    """an OET"""
+    """Set up the observation before starting the test"""
     # This step has to executed before allocated_subarray fixture is used so that
     # additional scan types are recognised.
     observation_config.add_scan_type_configuration(
@@ -149,7 +148,9 @@ def when_observe_sbi(
     """
     script_completion_state = "UNKNOWN"
     with context_monitoring.context_monitoring():
-        script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=300)
+        # Set the timeout here to lower than skallop timeout (300) so that if the script
+        # is stuck, it will be stopped before context monitoring throws a timeout error
+        script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=280)
     logger.info(f"observing script execution status set to {script_completion_state}")
     return script_completion_state
 

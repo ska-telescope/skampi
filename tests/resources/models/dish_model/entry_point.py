@@ -130,7 +130,8 @@ class AssignedDishes:
 class DishAssignResourcesStep(AssignResourcesStep, AssignedDishes):
     def __init__(self, observation: Observation) -> None:
         """Init object."""
-        super().__init__(observation)
+        super().__init__()
+        self.observation = observation
         self._skamid = cast(names.Mid, names.TEL().skamid)
         assert self._skamid, "wrong telescope, this is Mid only"
 

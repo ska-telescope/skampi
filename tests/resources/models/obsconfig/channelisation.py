@@ -20,6 +20,8 @@ DEFAULT_CHANNELS = {
         ],
     )
 }
+VIS_REC_CHANNELS = DEFAULT_CHANNELS.copy()
+VIS_REC_CHANNELS["vis_channels"].spectral_windows[0].count = 13824
 
 
 class Channelization(TargetSpecs):
@@ -52,6 +54,12 @@ class Channelization(TargetSpecs):
     @property
     def channel_configurations(self) -> list[str]:
         return list(self._channel_configurations.keys())
+
+    @channel_configurations.setter
+    def channel_configurations(self, new_config):
+        if not isinstance(new_config, dict):
+            raise ValueError("Channel configuration needs to be a dictionary")
+        self._channel_configurations = new_config
 
     def get_channel_configuration(self, config_name: str) -> ChannelConfiguration:
         assert (

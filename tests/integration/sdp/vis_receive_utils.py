@@ -18,15 +18,16 @@ REC_POD = {
     "kind": "Pod",
     "metadata": {"name": "receive-data"},
     "spec": {
+        "securityContext": {"runAsUser": 0},  # run as root so that we can download data
         "containers": [
             {
-                "image": "python:3.10-slim",
+                "image": "artefact.skao.int/ska-sdp-realtime-receive-modules:3.5.0",
                 "name": "data-prep",
                 "command": [
                     "/bin/bash",
                     "-c",
                     "apt-get update; apt-get -y install curl;"
-                    "curl https://gitlab.com/ska-telescope/sdp/ska-sdp-realtime-receive-core/-/raw/main/data/AA05LOW.ms.tar.gz "
+                    "curl https://gitlab.com/ska-telescope/sdp/ska-sdp-realtime-receive-core/-/raw/3.6.0/data/AA05LOW.ms.tar.gz "
                     "--output /mnt/data/AA05LOW.ms.tar.gz;"
                     "cd /mnt/data/; tar -xzf AA05LOW.ms.tar.gz; cd -;"
                     " trap : TERM; sleep infinity & wait",
@@ -112,6 +113,17 @@ class K8sElementManager:
 
         self.to_remove.append((helm_uninstall, (release, namespace)))
 
+    def output_directory(
+        self, dataproduct_directory, pod_name, container_name, namespace
+    ):
+        """Remove the output directory once the test is finished."""
+        self.to_remove.append(
+            (
+                delete_directory,
+                (dataproduct_directory, pod_name, container_name, namespace),
+            )
+        )
+
 
 def helm_uninstall(release, namespace):
     """Uninstall a Helm chart
@@ -142,6 +154,25 @@ def delete_pod(pod_name: str, namespace: str):
 
     pod_to_remove = pod_name
     core_api.delete_namespaced_pod(pod_to_remove, namespace, async_req=False)
+
+
+def delete_directory(
+    dataproduct_directory, pod_name, container_name, namespace
+):
+    """Delete a directory
+
+    :param dataproduct_directory: The directory where outputs are written
+    :param pod_name: name of the pod
+    :param container_name: name of the container
+    :param namespace: The namespace where the chart will be installed
+
+    """
+    del_command = ["rm", "-rf", f"/mnt/data/{dataproduct_directory}"]
+    resp = k8s_pod_exec(
+        del_command, pod_name, container_name, namespace, stdin=False
+    )
+    _consume_response(resp)
+    assert resp.returncode == 0
 
 
 def pvc_exists(pvc_name: str, namespace: str):
@@ -210,27 +241,24 @@ def wait_for_pod(
     watch_pod = watch.Watch()
     start_time = int(time.time())
 
-    try:
-        for event in watch_pod.stream(
-            func=core_api.list_namespaced_pod,
-            namespace=namespace,
-            timeout_seconds=timeout,
+    for event in watch_pod.stream(
+        func=core_api.list_namespaced_pod,
+        namespace=namespace,
+        timeout_seconds=timeout,
+    ):
+        pod = event["object"]
+
+        if (
+            name_comparison(pod_name, pod.metadata.name)
+            and pod.status.phase == phase
+            and check_condition(pod)
         ):
-            pod = event["object"]
+            watch_pod.stop()
+            return True
 
-            if (
-                name_comparison(pod_name, pod.metadata.name)
-                and pod.status.phase == phase
-                and check_condition(pod)
-            ):
-                watch_pod.stop()
-                return True
-
-            # # return False a second before timeout is hit, else no error is raised
-            # if (start_time + timeout-2) <= time.time():
-            #     return False
-    except Exception as err:
-        raise err
+        # return False a second before timeout is hit, else no error is raised
+        if (start_time + timeout-10) <= time.time():
+            return False
 
     return False
 
@@ -265,7 +293,7 @@ def k8s_pod_exec(
         namespace,
         pod_name,
         container_name,
-        "".join(exec_command),
+        " ".join(exec_command),
     )
 
     api_response = stream(
@@ -416,3 +444,31 @@ def deploy_sender(host, scan_id, k8s_element_manager):
         300,
         name_comparison=Comparison.CONTAINS,
     )
+
+
+def compare_data(
+    pod_name: str, container_name: str, namespace: str, measurement_set: str
+):
+    """Compare the data sent with the data received.
+
+    :param pod_name: name of the pod
+    :param container_name: name of the container
+    :param namespace: namespace
+    :param measurement_set: name of the Measurement Set to compare
+
+    :returns: exit code of the command
+    """
+    # To test if the sent and received data match using ms-asserter
+
+    exec_command = [
+        "ms-asserter",
+        "/mnt/data/AA05LOW.ms",
+        f"/mnt/data/{measurement_set}",
+        "--minimal",
+        "true",
+    ]
+    resp = k8s_pod_exec(
+        exec_command, pod_name, container_name, namespace, stdin=False
+    )
+    _consume_response(resp)
+    return resp

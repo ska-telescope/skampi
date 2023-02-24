@@ -1,11 +1,12 @@
 import json
 import logging
 import os
+import time
 
 import pytest
 
 from assertpy import assert_that
-from pytest_bdd import scenario, given, when
+from pytest_bdd import scenario, given, when, then
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -19,10 +20,12 @@ from integration.sdp.vis_receive_utils import (
     check_data_present,
     wait_for_predicate,
     deploy_sender,
-    wait_for_obs_state
+    wait_for_obs_state,
 )
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.mvp_management.subarray_scanning import scanning_subarray
+
+from tests.integration.sdp.vis_receive_utils import compare_data
 
 pytest_plugins = ["tests.unit.test_cluster_k8s"]
 
@@ -109,8 +112,12 @@ def local_volume(k8s_element_manager, fxt_k8s_cluster):
             return True
         return False
 
-    wait_for_predicate(_wait_for_receive_data, "MS data is not present in volume.", timeout=50)
-    wait_for_predicate(_wait_for_sender_data, "MS data is not present in volume.", timeout=50)
+    wait_for_predicate(
+        _wait_for_receive_data, "MS data is not present in volume.", timeout=50
+    )
+    wait_for_predicate(
+        _wait_for_sender_data, "MS data is not present in volume.", timeout=50
+    )
 
     LOG.info("PVCs and pods created, and data copied successfully")
 
@@ -170,8 +177,8 @@ def config(
     return sdp_base_configuration
 
 
-@given("the SDP subarray is configured")
-def i_configure_it_for_a_scan(
+@pytest.fixture(name="configure_sdp")
+def configure_sdp_fixt(
     entry_point: fxt_types.entry_point,
     configuration: conf_types.ScanConfiguration,
     sut_settings: SutTestSettings,
@@ -179,9 +186,7 @@ def i_configure_it_for_a_scan(
     """I configure it for a scan."""
     tel = names.TEL()
     subarray_id = sut_settings.subarray_id
-    sdp_subarray = con_config.get_device_proxy(
-        tel.sdp.subarray(subarray_id)
-    )
+    sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
     obs_state = sdp_subarray.read_attribute("obsState").value
     assert_that(obs_state).is_equal_to(ObsState.IDLE)
 
@@ -195,13 +200,26 @@ def i_configure_it_for_a_scan(
 
     LOG.info("Subarray is configured.")
 
+    yield
+
+    # need to call End, to move it to IDLE (from which ReleaseAllResources works)
+    LOG.info("Calling End")
+    sdp_subarray.command_inout("End")
+    # wait_for_obs_state(sdp_subarray, "IDLE", timeout=30)
+
+
+@given("the SDP subarray is configured")
+def i_configure_it_for_a_scan(configure_sdp):
+    """Configure via fixture"""
+
 
 @when("SDP is commanded to capture data from a scan")
 def run_scan(
-        k8s_element_manager,
-        entry_point: fxt_types.entry_point,
-        sut_settings: SutTestSettings,
-        integration_test_exec_settings: fxt_types.exec_settings,):
+    k8s_element_manager,
+    entry_point: fxt_types.entry_point,
+    sut_settings: SutTestSettings,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
     """
     Run a sequence of scans.
 
@@ -211,12 +229,11 @@ def run_scan(
     :param k8s_element_manager: Kubernetes element manager
 
     """
+    LOG.info("Running scan step.")
     tel = names.TEL()
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
-    sdp_subarray = con_config.get_device_proxy(
-        tel.sdp.subarray(subarray_id)
-    )
+    sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
 
     obs_state = sdp_subarray.read_attribute("obsState").value
     assert_that(obs_state).is_equal_to(ObsState.READY)
@@ -228,8 +245,12 @@ def run_scan(
 
     LOG.info("Executing scan.")
 
+    err = None
     with scanning_subarray(
-            subarray_id, receptors, integration_test_exec_settings, clean_up_after_scanning=True
+        subarray_id,
+        receptors,
+        integration_test_exec_settings,
+        clean_up_after_scanning=True,
     ):
         try:
             # this gives 2 instead of 1, because (I think) when I call this here
@@ -241,10 +262,60 @@ def run_scan(
             assert_that(obs_state).is_equal_to(ObsState.SCANNING)
             LOG.info("Scanning")
             deploy_sender(host, scan_id, k8s_element_manager)
-        except Exception:
+        except Exception as err:
             LOG.exception("Scan step failed")
 
-    # when scanning_subarray exists, it sets the obsState to Ready
-    # need to call End, to move it to IDLE (from which ReleaseAllResources works)
-    LOG.info("Calling End")
-    sdp_subarray.command_inout("End")
+    if err:
+        # raise error after Subarray went back to READY
+        # so that ReleaseAllResource can work
+        raise err
+
+
+@pytest.fixture
+def dataproduct_directory(entry_point):
+    """
+    The directory where output files will be written.
+
+    :param assign_resources_config: AssignResources configuration
+    """
+    eb_id = entry_point.observation.execution_block.eb_id
+    pb_id = entry_point.observation.processing_blocks[0].pb_id
+    return f"/product/{eb_id}/ska-sdp/{pb_id}"
+
+
+@then("the data received matches with the data sent")
+def check_measurement_set(dataproduct_directory, k8s_element_manager, sut_settings):
+    """
+    Check the data received are same as the data sent.
+
+    :param context: context for the tests
+    :param dataproduct_directory: The directory where outputs are written
+
+    """
+    # Wait 10 seconds before checking the measurement.
+    # This gives enough time for the receiver for finish writing the data.
+    time.sleep(10)
+
+    receive_pod = "sdp-receive-data"
+    data_container = "data-prep"
+
+    # Add data product directory to k8s element manager for cleanup
+    parse_dir = dataproduct_directory.index("ska-sdp")
+    data_eb_dir = dataproduct_directory[:parse_dir]
+    k8s_element_manager.output_directory(
+        data_eb_dir,
+        receive_pod,
+        data_container,
+        NAMESPACE_SDP,
+    )
+
+    # try:
+    result = compare_data(
+        receive_pod,
+        data_container,
+        NAMESPACE_SDP,
+        f"{dataproduct_directory}/output.scan-1.ms",
+    )
+    assert result.returncode == 0
+    LOG.info("Data sent matches the data received")
+

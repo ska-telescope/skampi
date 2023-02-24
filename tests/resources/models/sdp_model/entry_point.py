@@ -20,6 +20,7 @@ from resources.models.obsconfig import Observation
 from resources.models.obsconfig.sdp_config import ProcessingSpec, VIS_RECEIVE_SCRIPT
 from resources.models.obsconfig.target_spec import VIS_REC_SPEC
 
+from ..obsconfig.channelisation import VIS_REC_CHANNELS
 from ..obsconfig.config import Observation
 
 
@@ -333,6 +334,7 @@ class VisRecObservation(Observation):
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         self.target_specs = VIS_REC_SPEC
+        self.channel_configurations = VIS_REC_CHANNELS
         self.processing_specs = {"vis-receive": ProcessingSpec(
             script=VIS_RECEIVE_SCRIPT,
             parameters={
@@ -353,7 +355,7 @@ class VisRecObservation(Observation):
                     "initContainers": [
                         {
                             "name": "existing-output-remover",
-                            "image": "artefact.skao.int/ska-sdp-realtime-receive-processors:0.3.0",
+                            "image": "artefact.skao.int/ska-sdp-realtime-receive-processors:0.4.0",
                             "command": ["rm", "-rf", "/mnt/data/output*.ms"],
                             "volumeMounts": [
                                 {"mountPath": "/mnt/data", "name": "shared"}
@@ -375,13 +377,13 @@ class VisRecObservation(Observation):
                     "extraContainers": [
                         {
                             "name": "plasma-processor",
-                            "image": "artefact.skao.int/ska-sdp-realtime-receive-processors:0.3.0",
+                            "image": "artefact.skao.int/ska-sdp-realtime-receive-processors:0.4.0",
                             "args": [
                                 "--max-payloads",
                                 "12",
                                 "--readiness-file",
                                 "/tmp/processor_ready",
-                                "/mnt/data/output.ms",
+                                "output.ms",
                             ],
                             "volumeMounts": [
                                 {

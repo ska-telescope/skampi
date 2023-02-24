@@ -247,7 +247,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         )
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
-        ).to_become_equal_to("RESOURCING")
+        # ).to_become_equal_to("RESOURCING")
+        ).to_become_equal_to("IDLE")
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("RESOURCING")

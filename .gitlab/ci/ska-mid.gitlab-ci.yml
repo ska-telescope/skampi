@@ -117,7 +117,6 @@ mid_on_demand_destroy:
   when: manual
   allow_failure: true # need to keep this to unlock the pipeline
 
-
 # Mid integration
 .mid-integration-config:
   variables:

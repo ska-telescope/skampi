@@ -97,7 +97,8 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
 	--set ska-tango-archiver.archwizard_config=$(ARCHWIZARD_CONFIG) \
-	$(SDP_PROXY_VARS)
+	$(SDP_PROXY_VARS) \
+	$(K8S_EXTRA_PARMS)
 
 K8S_CHART ?= ska-$(CONFIG)##Default chart
 SKAMPI_K8S_CHARTS ?= ska-mid ska-low ska-landingpage
@@ -173,7 +174,7 @@ K8S_TEST_TARGET = test
 
 # arguments to pass to make in the test runner container
 K8S_TEST_MAKE_PARAMS = \
-	SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.cluster.local:9870 \
+	SKUID_URL=ska-ser-skuid-$(HELM_RELEASE)-svc.$(KUBE_NAMESPACE).svc.$(CLUSTER_DOMAIN):9870 \
 	KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
 	HELM_RELEASE=$(HELM_RELEASE) \
 	CI_JOB_TOKEN=$(CI_JOB_TOKEN) \
@@ -191,7 +192,7 @@ K8S_TEST_MAKE_PARAMS = \
 	TARANTA_PASSWORD=$(TARANTA_PASSWORD) \
 	TARANTA_PASSPORT=$(TARANTA_PASSPORT) \
 	KUBE_HOST=$(KUBE_HOST) \
-	TANGO_HOST=$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000 \
+	TANGO_HOST=$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.$(CLUSTER_DOMAIN):10000 \
 	DISABLE_MAINTAIN_ON='$(DISABLE_MAINTAIN_ON)' \
 	TEST_ENV='$(TEST_ENV)' \
 	DEBUG_ENTRYPOINT=$(DEBUG_ENTRYPOINT) \

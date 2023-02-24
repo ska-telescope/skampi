@@ -17,9 +17,9 @@ mid-test:
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
     OET_INGRESS_ENABLED: "true"
-    SKA_TELESCOPE: "SKA-Mid"
-    CENTRALNODE_FQDN: "ska_mid/tm_central/central_node"
-    SUBARRAYNODE_FQDN_PREFIX: "ska_mid/tm_subarray_node"
+    SKA_TELESCOPE: "SKA-${CONFIG}"
+    CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"
+    SUBARRAYNODE_FQDN_PREFIX: "ska_${CONFIG}/tm_subarray_node"
     ODA_DEPLOYMENT_ENABLED: "true"
     ODA_URI: "http://ska-db-oda-rest-$HELM_RELEASE.$KUBE_NAMESPACE:5000/$KUBE_NAMESPACE/api/v1"
     TEST_ENV: "BUILD_IN"
@@ -65,9 +65,9 @@ mid_on_demand_deploy:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     OET_INGRESS_ENABLED: "true"
-    SKA_TELESCOPE: "SKA-Mid"
-    CENTRALNODE_FQDN: "ska_mid/tm_central/central_node"
-    SUBARRAYNODE_FQDN_PREFIX: "ska_mid/tm_subarray_node"
+    SKA_TELESCOPE: "SKA-${CONFIG}"
+    CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"
+    SUBARRAYNODE_FQDN_PREFIX: "ska_${CONFIG}/tm_subarray_node"
     ODA_URI: "http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1"
   extends:
     - .tags_default
@@ -131,9 +131,9 @@ mid_on_demand_destroy:
     ARCHIVER_DBNAME: integration-$CONFIG-archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
-    SKA_TELESCOPE: SKA-Mid
-    CENTRALNODE_FQDN: ska_mid/tm_central/central_node
-    SUBARRAYNODE_FQDN_PREFIX: ska_mid/tm_subarray_node
+    SKA_TELESCOPE: SKA-$CONFIG
+    CENTRALNODE_FQDN: ska_$CONFIG/tm_central/central_node
+    SUBARRAYNODE_FQDN_PREFIX: ska_$CONFIG/tm_subarray_node
     ODA_URI: http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1
   environment:
     name: integration-$CONFIG
@@ -209,9 +209,9 @@ mid-redeploy-integration:
     ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
-    SKA_TELESCOPE: SKA-Mid
-    CENTRALNODE_FQDN: ska_mid/tm_central/central_node
-    SUBARRAYNODE_FQDN_PREFIX: ska_mid/tm_subarray_node
+    SKA_TELESCOPE: SKA-$CONFIG
+    CENTRALNODE_FQDN: ska_$CONFIG/tm_central/central_node
+    SUBARRAYNODE_FQDN_PREFIX: ska_$CONFIG/tm_subarray_node
     ODA_URI: http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1
   environment:
     name: staging-$CONFIG

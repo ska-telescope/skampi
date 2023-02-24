@@ -324,7 +324,7 @@ def i_assign_resources_to_it(
 def the_subarray_is_in_idle(
     running_telescope: fxt_types.telescope_context,
     sb_config: fxt_types.sb_config,
-    base_composition: Composition,
+    base_composition: conf_types.Composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
     subarray_id: int,

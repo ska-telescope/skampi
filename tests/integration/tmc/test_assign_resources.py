@@ -149,10 +149,10 @@ def the_subarray_should_go_into_an_aborted_state(
     sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,
 ):
-    recorder = integration_test_exec_settings.recorder
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(sut_settings.subarray_id))
-    subarray = con_config.get_device_proxy(tmc_subarray_name)
-    result = subarray.read_attribute("obsstate").value
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+        tmc_subarray_name)
+    tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
+    result = tmc_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.ABORTED)
-    recorder.assert_no_devices_transitioned_after(tmc_subarray_name, "ABORTED")

@@ -1,8 +1,12 @@
+import enum
 import logging
+import os
 import subprocess
+import tempfile
 import time
 
 import pytest
+import yaml
 from kubernetes import client, watch
 from kubernetes.stream import stream
 
@@ -155,11 +159,21 @@ def pvc_exists(pvc_name: str, namespace: str):
     return False
 
 
+class Comparison(enum.Enum):
+    """Comparisons for waiting for pods."""
+
+    # pylint: disable=unnecessary-lambda-assignment
+
+    EQUALS = lambda x, y: x == y  # noqa: E731
+    CONTAINS = lambda x, y: x in y  # noqa: E731
+
+
 def wait_for_pod(
     pod_name: str,
     namespace: str,
     phase: str,
     timeout: int = TIMEOUT,
+    name_comparison: Comparison = Comparison.EQUALS,
     pod_condition: str = "",
 ):
     """Wait for the pod to be Running.
@@ -168,11 +182,15 @@ def wait_for_pod(
     :param namespace: namespace
     :param phase: phase of the pod
     :param timeout: time to wait for the change
+    :param name_comparison: the type of comparison used to match a pod name
     :param pod_condition: if given, the condition through which the pod must
     have passed
 
     :returns: whether the pod was in the indicated status within the timeout
     """
+    # pylint: disable=too-many-arguments
+
+    # Get API handle
     core_api = client.CoreV1Api()
 
     if pod_condition:
@@ -190,19 +208,30 @@ def wait_for_pod(
             return True
 
     watch_pod = watch.Watch()
-    for event in watch_pod.stream(
-        func=core_api.list_namespaced_pod,
-        namespace=namespace,
-        timeout_seconds=timeout,
-    ):
-        pod = event["object"]
-        if (
-            pod_name in pod.metadata.name
-            and pod.status.phase == phase
-            and check_condition(pod)
+    start_time = int(time.time())
+
+    try:
+        for event in watch_pod.stream(
+            func=core_api.list_namespaced_pod,
+            namespace=namespace,
+            timeout_seconds=timeout,
         ):
-            watch_pod.stop()
-            return True
+            pod = event["object"]
+
+            if (
+                name_comparison(pod_name, pod.metadata.name)
+                and pod.status.phase == phase
+                and check_condition(pod)
+            ):
+                watch_pod.stop()
+                return True
+
+            # # return False a second before timeout is hit, else no error is raised
+            # if (start_time + timeout-2) <= time.time():
+            #     return False
+    except Exception as err:
+        raise err
+
     return False
 
 
@@ -290,7 +319,7 @@ def _consume_response(api_response):
         if api_response.peek_stdout():
             LOG.info("STDOUT: %s", api_response.read_stdout().strip())
         if api_response.peek_stderr():
-            LOG.info("STDERR: %s", api_response.read_stderr().strip())
+            LOG.debug("STDERR: %s", api_response.read_stderr().strip())
     api_response.close()
 
 
@@ -327,3 +356,63 @@ def wait_for_obs_state(device, obs_state, timeout=TIMEOUT):
 
     description = f"obsState {obs_state}; current one is {device.read_attribute('obsState').name}"
     wait_for_predicate(predicate, description, timeout=timeout)
+
+
+def deploy_sender(host, scan_id, k8s_element_manager):
+    """
+    Deploy the cbf sender and check the cbf sender finished sending the data.
+
+    :param context: context for the tests
+    :param subarray_device: SDP subarray device client
+    :param k8s_element_manager: Kubernetes element manager
+    :param assign_resources_config: configuration passed to AssignResources
+        command
+
+    """
+
+    # Construct command for the sender
+    command = [
+        "emu-send",
+        "/mnt/data/AA05LOW.ms",
+        "-o",
+        "transmission.transport_protocol=tcp",
+        "-o",
+        "transmission.method=spead2_transmitters",
+        "-o",
+        "transmission.channels_per_stream=6912",
+        "-o",
+        "transmission.rate=10416667",
+        "-o",
+        "reader.num_repeats=1",
+        "-o",
+        f"transmission.target_host={host}",
+        "-o",
+        f"transmission.scan_id={scan_id}",
+    ]
+    values = {
+        "command": command,
+        "receiver": {"hostname": host, "address_resolution_timeout": 60},
+        "pvc": {"name": os.environ.get("SDP_DATA_PVC_NAME", "shared")},
+    }
+
+    # Deploy the sender
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as file:
+        file.write(yaml.dump(values))
+
+    filename = file.name
+    sender_name = f"cbf-send-scan-{scan_id}"
+    LOG.info("Deploying CBF sender for Scan %d on chart %s", scan_id, sender_name)
+    k8s_element_manager.helm_install(
+        sender_name,
+        "tests/resources/charts/cbf-sender",
+        os.environ.get("KUBE_NAMESPACE"),
+        filename,
+    )
+
+    assert wait_for_pod(
+        sender_name,
+        os.environ.get("KUBE_NAMESPACE"),
+        "Succeeded",
+        300,
+        name_comparison=Comparison.CONTAINS,
+    )

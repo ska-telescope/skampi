@@ -5,6 +5,7 @@ Feature: Visibility Receive Script
 		And obsState is EMPTY
 		And the volumes are created and the data is copied
 		And I deploy the visibility receive script
-		When SDP is commanded to capture data from 2 successive scans
+		And the SDP subarray is configured
+		When SDP is commanded to capture data from a scan
 #		Then the data received matches with the data sent
 #		And each scan can be identified by its associated metadata

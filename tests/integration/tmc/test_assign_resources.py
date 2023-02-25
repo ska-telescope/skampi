@@ -76,7 +76,7 @@ def fxt_setup_context_monitoring_for_abort_test(
     ).for_attribute("obsstate").to_become_equal_to(["ABORTED", "EMPTY", "IDLE"])
 
 
-@pytest.mark.xfail
+# @pytest.mark.xfail
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

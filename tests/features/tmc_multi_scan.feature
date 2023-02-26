@@ -15,13 +15,13 @@ Feature: Observations on TMC
         When I command it to scan for a given period
 		Then the subarray must be in the SCANNING state until finished
 
-    @XTP-19947
+    @XTP-20105
     Scenario: Run multiple scans on TMC subarray in low for same scan type
         Given an subarray that has just completed it's first scan   
         When I command it to scan for a given period
 		Then the subarray must be in the SCANNING state until finished
 
-    @XTP-19948
+    @XTP-20106
     Scenario: Run multiple scans on TMC subarray in low for different scan types
         Given a subarray defined to perform scans for types .default and target:a
         Given a subarray configured for scan type .default

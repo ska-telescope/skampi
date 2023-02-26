@@ -40,6 +40,17 @@ def test_run_multiple_scans_on_tmc_subarray_in_mid():
     """Run multiple scans on TMC subarray in mid."""
 
 
+@pytest.mark.skalow
+@pytest.mark.scan
+@pytest.mark.tmc
+@scenario(
+    "features/tmc_multi_scan.feature",
+    "Run multiple scans on TMC subarray in low for same scan type",
+)
+def test_run_multiple_scans_on_tmc_subarray_in_low():
+    """Run multiple scans on TMC subarray in low."""
+
+
 @pytest.mark.skamid
 @pytest.mark.scanning
 @pytest.mark.tmc
@@ -49,6 +60,17 @@ def test_run_multiple_scans_on_tmc_subarray_in_mid():
 )
 def test_run_multiple_scans_on_tmc_subarray_in_mid_for_different_scan_types():
     """Run multiple scans on subarray in mid for different scan types"""
+
+
+@pytest.mark.skalow
+@pytest.mark.scanning
+@pytest.mark.tmc
+@scenario(
+    "features/tmc_multi_scan.feature",
+    "Run multiple scans on TMC subarray in low for different scan types",
+)
+def test_run_multiple_scans_on_tmc_subarray_in_low_for_different_scan_types():
+    """Run multiple scans on subarray in low for different scan types"""
 
 
 @given("an TMC")

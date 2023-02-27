@@ -17,6 +17,11 @@ mid-test:
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
     OET_INGRESS_ENABLED: "true"
+    SKA_TELESCOPE: "SKA-${CONFIG}"
+    CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"
+    SUBARRAYNODE_FQDN_PREFIX: "ska_${CONFIG}/tm_subarray_node"
+    ODA_DEPLOYMENT_ENABLED: "true"
+    ODA_URI: "http://ska-db-oda-rest-$HELM_RELEASE.$KUBE_NAMESPACE:5000/$KUBE_NAMESPACE/api/v1"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     EXIT_AT_FAIL: "false"
@@ -46,6 +51,7 @@ mid-test:
     when: always
   retry: 1
 
+
 # Mid on-demand deployment
 mid_on_demand_deploy:
   stage: on-demand
@@ -59,6 +65,10 @@ mid_on_demand_deploy:
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     OET_INGRESS_ENABLED: "true"
+    SKA_TELESCOPE: "SKA-${CONFIG}"
+    CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"
+    SUBARRAYNODE_FQDN_PREFIX: "ska_${CONFIG}/tm_subarray_node"
+    ODA_URI: "http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1"
   extends:
     - .tags_default
     - .set_dbname
@@ -120,6 +130,10 @@ mid_on_demand_destroy:
     ARCHIVER_DBNAME: integration-$CONFIG-archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
+    SKA_TELESCOPE: SKA-$CONFIG
+    CENTRALNODE_FQDN: ska_$CONFIG/tm_central/central_node
+    SUBARRAYNODE_FQDN_PREFIX: ska_$CONFIG/tm_subarray_node
+    ODA_URI: http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1
   environment:
     name: integration-$CONFIG
 
@@ -141,7 +155,7 @@ mid-deploy-integration:
     reports:
       junit: build/report.xml
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 
 mid-info-integration:
   extends:
@@ -152,7 +166,7 @@ mid-info-integration:
   environment:
     name: integration-$CONFIG
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       when: manual
 
 mid-stop-integration:
@@ -166,7 +180,7 @@ mid-stop-integration:
   environment:
     name: integration-$CONFIG
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       when: manual
 
 mid-redeploy-integration:
@@ -178,7 +192,7 @@ mid-redeploy-integration:
   environment:
     name: integration-$CONFIG
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       when: manual
 
 # Mid staging
@@ -194,6 +208,10 @@ mid-redeploy-integration:
     ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
+    SKA_TELESCOPE: SKA-$CONFIG
+    CENTRALNODE_FQDN: ska_$CONFIG/tm_central/central_node
+    SUBARRAYNODE_FQDN_PREFIX: ska_$CONFIG/tm_subarray_node
+    ODA_URI: http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1
   environment:
     name: staging-$CONFIG
 

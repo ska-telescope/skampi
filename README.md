@@ -1,3 +1,4 @@
+
 # The current state of Skampi
 
 Skampi is currently undergoing major restructuring.  As a result, the current deployment consists of the ska-tango-base chart (containing MariaDB and the central DS) that is deployed in a single test pipeline simulating ska-mid.  The test deploys, runs tests and tears down the deployment on Kubernetes.  This can run both in cluster, and on Minikube.

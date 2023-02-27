@@ -388,7 +388,7 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         if self._tel.skamid:
-            scan_config = self.observation.generate_run_scan_conf().as_json
+            scan_config = SCAN_JSON_MID
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
             scan_config = json.dumps(SCAN_JSON_LOW)
@@ -806,4 +806,10 @@ SCAN_JSON_LOW = {
     "interface": "https://schema.skao.int/ska-low-tmc-scan/3.0",
     "transaction_id": "txn-....-00001",
     "scan_id": 1,
+}
+
+SCAN_JSON_MID = {
+  "interface": "https://schema.skao.intg/ska-tmc-scan/2.0",
+  "transaction_id": "txn-....-00001",
+  "scan_id": 1
 }

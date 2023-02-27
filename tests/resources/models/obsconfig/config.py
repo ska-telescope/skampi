@@ -67,7 +67,7 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
             "interface": "https://schema.skao.int/ska-tmc-releaseresources/2.1",
             "transaction_id": "txn-....-00001",
             "subarray_id": subarray_id,
-            "release_all": "true",
+            "release_all": "True",
             "receptor_ids": [],
         }
 

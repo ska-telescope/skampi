@@ -28,7 +28,7 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
     sut_settings.restart_after_abort = True
 
 
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp
 @scenario(

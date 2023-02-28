@@ -42,7 +42,6 @@ def fxt_disable_abort(allocated_subarray: fxt_types.allocated_subarray):
 
 @pytest.mark.skamid
 @pytest.mark.configure
-@pytest.mark.tmc
 @scenario("features/tmc_configure_scan.feature", "Abort configuring")
 def test_abort_configuring_on_mid_tmc_subarray(
     disable_clear_and_tear_down: None, set_up_subarray_log_checking_for_tmc: None

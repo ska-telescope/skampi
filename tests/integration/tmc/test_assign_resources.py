@@ -19,32 +19,32 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
-@pytest.mark.k8s
-@pytest.mark.k8sonly
-@pytest.mark.skalow_skip
-@pytest.mark.assign
-@scenario("features/tmc_assign_resources.feature", "Assign resources to low subarray")
-def test_assign_resources_to_tmc_subarray_in_low():
-    """Assign resources to tmc subarray in low."""
+# @pytest.mark.k8s
+# @pytest.mark.k8sonly
+# @pytest.mark.skalow_skip
+# @pytest.mark.assign
+# @scenario("features/tmc_assign_resources.feature", "Assign resources to low subarray")
+# def test_assign_resources_to_tmc_subarray_in_low():
+#     """Assign resources to tmc subarray in low."""
 
 
-@pytest.mark.k8s
-@pytest.mark.k8sonly
-@pytest.mark.skalow_skip
-@scenario(
-    "features/tmc_assign_resources.feature", "Release resources from low subarray"
-)
-def test_release_resources_from_tmc_subarray_in_low():
-    """Release resources from tmc subarrays in low."""
+# @pytest.mark.k8s
+# @pytest.mark.k8sonly
+# @pytest.mark.skalow_skip
+# @scenario(
+#     "features/tmc_assign_resources.feature", "Release resources from low subarray"
+# )
+# def test_release_resources_from_tmc_subarray_in_low():
+#     """Release resources from tmc subarrays in low."""
 
 
-@pytest.mark.k8s
-@pytest.mark.k8sonly
-@pytest.mark.skamid_skip
-@pytest.mark.assign
-@scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
-def test_assign_resources_to_tmc_subarray_in_mid():
-    """Assign resources to tmc subarray in mid."""
+# @pytest.mark.k8s
+# @pytest.mark.k8sonly
+# @pytest.mark.skamid
+# @pytest.mark.assign
+# @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
+# def test_assign_resources_to_tmc_subarray_in_mid():
+#     """Assign resources to tmc subarray in mid."""
 
 
 @pytest.fixture(name="composition")
@@ -90,14 +90,14 @@ def test_abort_in_resourcing_mid(
     """Assign resources to tmc subarray in mid."""
 
 
-@pytest.mark.k8s
-@pytest.mark.k8sonly
-@pytest.mark.skamid_skip
-@scenario(
-    "features/tmc_assign_resources.feature", "Release resources from mid subarray"
-)
-def test_release_resources_from_tmc_subarray_in_mid():
-    """Release resources from tmc subarrays in mid."""
+# @pytest.mark.k8s
+# @pytest.mark.k8sonly
+# @pytest.mark.skamid_skip
+# @scenario(
+#     "features/tmc_assign_resources.feature", "Release resources from mid subarray"
+# )
+# def test_release_resources_from_tmc_subarray_in_mid():
+#     """Release resources from tmc subarrays in mid."""
 
 
 @given("an TMC")

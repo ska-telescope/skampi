@@ -26,7 +26,7 @@ def test_run_a_scan_on_csp_subarray_in_mid():
     """Run a scan on sdp subarray in mid."""
 
 
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.scan
 @pytest.mark.csp
 @scenario("features/csp_scan.feature", "Abort Csp scanning")

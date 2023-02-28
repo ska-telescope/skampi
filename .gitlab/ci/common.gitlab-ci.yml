@@ -26,7 +26,7 @@
   script:
     - make k8s-install-chart
     - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
-    - make skampi-wait-all
+    - make skampi-wait-all > build/wait-output.log
 
 .test_deployment:
   script:

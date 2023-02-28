@@ -10,3 +10,10 @@ Scenario: Abort scanning
     Given an subarray busy scanning
     When I command it to Abort
     Then the subarray should go into an aborted state
+
+@XTP-16186
+Scenario: Run a scan on low subarray from TMC
+    Given an TMC
+    Given a subarray in READY state
+    When I command it to scan for a given period
+    Then the subarray must be in the SCANNING state until finished

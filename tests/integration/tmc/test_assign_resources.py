@@ -21,6 +21,25 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
+@pytest.mark.skalow
+@pytest.mark.assign
+@scenario("features/tmc_assign_resources.feature", "Assign resources to low subarray")
+def test_assign_resources_to_tmc_subarray_in_low():
+    """Assign resources to tmc subarray in low."""
+
+
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skalow
+@scenario(
+    "features/tmc_assign_resources.feature", "Release resources from low subarray"
+)
+def test_release_resources_from_tmc_subarray_in_low():
+    """Release resources from tmc subarrays in low."""
+
+
+@pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.assign
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")

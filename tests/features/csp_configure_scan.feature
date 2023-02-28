@@ -12,7 +12,7 @@ Feature: Configure scan on csp subarray
     Scenario: Configure scan on csp subarray in low
         Given an CSP subarray in IDLE state
         When I configure it for a scan
-        Then the CSP subarray must be in READY state 
+        Then the CSP subarray must be in READY state
 
     @XTP-16153
     Scenario: Configure invalid scan on csp subarray in mid

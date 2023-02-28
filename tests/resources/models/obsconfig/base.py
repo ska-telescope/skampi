@@ -7,27 +7,31 @@ from ska_tmc_cdm.schemas import CODEC
 
 
 class SB(NamedTuple):
+    sbi: str
     eb: str
     pb: str
 
 
 def load_next_sb():
     date = datetime.now()
-    unique = f"{date.year}{date.month}{date.day}-{str(int(date.timestamp()*100))[-5:]}"
+    unique = f"{date.year}{date.month:02}{date.day:02}-{str(int(date.timestamp()*100))[-5:]}"
+    sbi = f"sbi-mvp01-{unique}"
     pb = f"pb-mvp01-{unique}"
     eb = f"eb-mvp01-{unique}"
-    return SB(eb, pb)
+    return SB(sbi, eb, pb)
 
 
 class SchedulingBlock:
     def __init__(self, *_: Any, **__: Any) -> None:
         logging.info("initialising scheduling block")
-        eb_id, pb_id = load_next_sb()
+        sbi_id, eb_id, pb_id = load_next_sb()
+        self.sbi_id = sbi_id
         self.eb_id = eb_id
         self.pb_id = pb_id
 
     def load_next_sb(self):
-        eb_id, pb_id = load_next_sb()
+        sbi_id, eb_id, pb_id = load_next_sb()
+        self.sbi_id = sbi_id
         self.eb_id = eb_id
         self.pb_id = pb_id
 

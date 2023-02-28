@@ -14,7 +14,6 @@ from ..conftest import SutTestSettings
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
-@pytest.mark.skamid
 @pytest.mark.configure
 @scenario(
     "features/tmc_configure_scan.feature",
@@ -24,19 +23,18 @@ def test_tmc_configure_scan_on_mid_subarray():
     """Configure scan on TMC mid telescope subarray."""
 
 
-@pytest.mark.skip(reason="test fails stuck in CONFIGURING")
-@pytest.mark.skamid
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skalow
 @pytest.mark.configure
-@pytest.mark.tmc
 @scenario(
     "features/tmc_configure_scan.feature",
-    "Configure invalid scan on subarray using TMC",
+    "Configure the low telescope subarray using TMC",
 )
-def test_configure_invalid_scan_on_tmc_subarray_in_mid():
-    """Configure invalid scan on tmc subarray in mid."""
+def test_tmc_configure_scan_on_low_subarray():
+    """Configure scan on TMC low telescope subarray."""
 
 
-@pytest.mark.skip(reason="feature not yet implemented")
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.tmc

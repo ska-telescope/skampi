@@ -31,3 +31,18 @@ Feature: Assign resources to subarray using TMC
 		When I command the assign resources twice in consecutive fashion
 		Then the subarray should throw an exception and continue with first command
 		Then the subarray must be in IDLE state
+
+	@XTP-16183
+	Scenario: Assign resources to low subarray
+		Given an TMC
+		Given an telescope subarray
+		When I assign resources to it
+		Then the subarray must be in IDLE state
+
+	@XTP-16184
+	Scenario: Release resources from low subarray
+		Given an TMC
+		Given an telescope subarray
+		Given a subarray in the IDLE state
+		When I release all resources assigned to it
+		Then the subarray must be in EMPTY state

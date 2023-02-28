@@ -16,7 +16,7 @@ Feature: Run a scan on sdp subarray
 		Then the SDP subarray must be in the SCANNING state until finished
 
 	@XTP-16344
-    Scenario: Abort scanning
+    Scenario: Abort SDP scanning
         Given an subarray busy scanning
         When I command it to Abort
         Then the subarray should go into an aborted state

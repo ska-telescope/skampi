@@ -154,12 +154,23 @@ def fxt_csp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
     return configuration
 
 
+@pytest.fixture(name="monitor_cbf")
+def fxt_monitor_cbf(context_monitoring: fxt_types.context_monitoring):
+    tel = names.TEL()
+    (
+        context_monitoring.set_waiting_on(tel.csp.cbf.subarray(1))
+        .for_attribute("obsstate")
+        .and_observe()
+    )
+
+
 # shared givens
 
 
 @given("an CSP subarray", target_fixture="composition")
 def an_csp_subarray(
-    set_up_subarray_log_checking_for_csp,  # type: ignore
+    set_up_subarray_log_checking_for_csp,  # pylint: disable=unused-argument
+    monitor_cbf,  # pylint: disable=unused-argument
     csp_base_composition: conf_types.Composition,
     sut_settings: SutTestSettings,
 ) -> conf_types.Composition:
@@ -199,4 +210,5 @@ def the_csp_subarray_must_be_in_some_obsstate(
     recorder.assert_no_devices_transitioned_after(str(csp_subarray_name))
     csp_subarray = con_config.get_device_proxy(csp_subarray_name, fast_load=True)
     result = csp_subarray.read_attribute("obsstate").value
+
     assert_that(result).is_equal_to(eval(f"ObsState.{obsstate}"))

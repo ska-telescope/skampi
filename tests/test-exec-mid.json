@@ -2,16 +2,12 @@
     "test_plans": [
         {
             "select_from_tag": {
-                "XTP-5539": "XTP-5539",
                 "XTP-5573": "XTP-5573",
-                "XTP-5589": "XTP-5589",
                 "XTP-5590": "XTP-5590",
                 "XTP-3348": "XTP-3348",
                 "XTP-3616": "XTP-3616",
                 "XTP-3324": "XTP-3324",
-                "XTP-3325": "XTP-3325",
                 "XTP-4020": "XTP-4020",
-                "XTP-4021": "XTP-4021",
                 "XTP-4804": "XTP-4804",
                 "default": "XTP-3324"
             }
@@ -59,7 +55,7 @@
             "env": "CI_COMMIT_BRANCH",
             "maps_to": {
                 "default": "",
-                "master": "PI16"
+                "master": "PI17"
             }
         }
     ],

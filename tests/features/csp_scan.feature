@@ -15,8 +15,7 @@ Feature: Run a scan on CSP subarray
         Then the CSP subarray must be in the SCANNING state until finished
 
     @XTP-16345
-    Scenario: Abort scanning
+    Scenario: Abort Csp scanning
         Given an subarray busy scanning
         When I command it to Abort
         Then the subarray should go into an aborted state
-

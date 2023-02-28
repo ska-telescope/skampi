@@ -1,4 +1,5 @@
-"""pytest global settings, fixtures and global bdd step implementations for integration tests."""
+"""pytest global settings, fixtures and global bdd step implementations for
+integration tests."""
 import logging
 from types import SimpleNamespace
 import os
@@ -44,6 +45,7 @@ class SutTestSettings(SimpleNamespace):
         self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
         self.previous_state: Any = None
         self.next_state: Any = None
+        self.observation = init_observation_config()
 
     @property
     def nr_of_receptors(self):
@@ -75,13 +77,31 @@ def fxt_sdp_assign_resources_exec_settings(
     return integration_test_exec_settings
 
 
-@pytest.fixture(name="sut_settings", scope="function")
+@pytest.fixture(name="disable_clear")
+def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
+    configured_subarray.disable_automatic_clear()
+
+
+@pytest.fixture(name="sut_settings", scope="function", autouse=True)
 def fxt_conftest_settings() -> SutTestSettings:
     """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
     return SutTestSettings()
 
 
+class OnlineFlag:
+    value: bool = False
+
+    def __bool__(self):
+        return self.value
+
+    def set_true(self):
+        self.value = True
+
+
 # setting systems online
+@pytest.fixture(name="online", autouse=True, scope="session")
+def fxt_online():
+    return OnlineFlag()
 
 
 @pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
@@ -163,7 +183,7 @@ def fxt_observation_config(sut_settings: SutTestSettings) -> Observation:
 
 
 @pytest.fixture(name="mocked_observation_config")
-def fxt_mocked_observation_config(observation_config: Observation) -> Mock:
+def fxt_mocked_observation_config(observation_config: Observation):
     mocked_config = Mock(spec=Observation, wraps=observation_config)
     with interject_observation_config(mocked_config):
         yield mocked_config
@@ -192,7 +212,6 @@ ObservationConfigInterjector = Callable[
 def fxt_observation_config_interjector(
     observation_config: Observation, mocked_observation_config: Mock
 ) -> ObservationConfigInterjector[P, R]:
-
     obs = observation_config
 
     def interject_observation_method(
@@ -218,12 +237,6 @@ def an_subarray_busy_scanning(
     configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
-@given("an subarray busy configuring")
-def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
-    """an subarray busy configuring"""
-    allocated_subarray.set_to_configuring(clear_afterwards=False)
-
-
 # global when steps
 # start up
 
@@ -238,6 +251,22 @@ def i_start_up_the_telescope(
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+            logger.info("The entry point being used is : %s", entry_point)
+            entry_point.set_telescope_to_running()
+
+
+@given("the Telescope is in ON state")
+def the_telescope_is_on(
+    standby_telescope: fxt_types.standby_telescope,
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I start up the telescope."""
+    standby_telescope.disable_automatic_setdown()
+    with context_monitoring.context_monitoring():
+        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+            logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
 
@@ -256,7 +285,33 @@ def i_switch_off_the_telescope(
             entry_point.set_telescope_to_standby()
 
 
-# resource assignment
+# Currently, resources_list is not utilised, raised SKB for the same:https://jira.skatelescope.org/browse/SKB-202
+@when(
+    parsers.parse(
+        "I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"
+    )
+)
+def assign_resources_with_subarray_id(
+    telescope_context: fxt_types.telescope_context,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    sb_config: fxt_types.sb_config,
+    composition: conf_types.Composition,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    resources_list: list,
+    subarray_id: int,
+):
+    """I assign resources to it."""
+
+    receptors = sut_settings.receptors
+    with context_monitoring.context_monitoring():
+        with telescope_context.wait_for_allocating_a_subarray(
+            subarray_id, receptors, integration_test_exec_settings
+        ):
+            entry_point.compose_subarray(
+                subarray_id, receptors, composition, sb_config.sbid
+            )
 
 
 @when("I assign resources to it")
@@ -307,7 +362,6 @@ def i_configure_it_for_a_scan(
             )
 
 
-# scans
 @when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
@@ -315,6 +369,19 @@ def i_command_it_to_scan(
 ):
     """I configure it for a scan."""
     configured_subarray.set_to_scanning(integration_test_exec_settings)
+
+
+# scans
+@given("an subarray busy scanning")
+def i_command_it_to_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    context_monitoring: fxt_types.context_monitoring,
+):
+    """I configure it for a scan."""
+    integration_test_exec_settings.attr_synching = False
+    with context_monitoring.context_monitoring():
+        configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
 @when("I command it to Abort")
@@ -383,7 +450,6 @@ def when_i_assign_resources_with_invalid_config(
     sut_settings: SutTestSettings,
     invalid_assign_config_interjected,  # type: ignore this creates an empty assign config
 ):
-
     subarray_id = sut_settings.subarray_id
     sut_settings.previous_state = ObsState.EMPTY
     receptors = sut_settings.receptors
@@ -686,6 +752,33 @@ def the_subarray_should_throw_an_exception_remain_in_the_previous_state(
     subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
     result = subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(sut_settings.previous_state)
+
+
+@given("an subarray busy configuring")
+def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
+    """an subarray busy configuring"""
+    allocated_subarray.set_to_configuring(clear_afterwards=False)
+
+
+@when("I command it to Abort")
+def i_command_it_to_abort(
+    context_monitoring: fxt_types.context_monitoring,
+    allocated_subarray: fxt_types.allocated_subarray,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    subarray = sut_settings.default_subarray_name
+    sub_array_id = sut_settings.subarray_id
+    context_monitoring.builder.set_waiting_on(subarray).for_attribute(
+        "obsstate"
+    ).to_become_equal_to("ABORTED")
+    with context_monitoring.context_monitoring():
+        with context_monitoring.wait_before_complete(integration_test_exec_settings):
+            allocated_subarray.reset_after_test(integration_test_exec_settings)
+            entry_point.abort_subarray(sub_array_id)
+
+    integration_test_exec_settings.touch()
 
 
 @then("the subarray should go into an aborted state")

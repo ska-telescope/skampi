@@ -12,9 +12,9 @@ from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
-    AbortStep,
     ObsResetStep,
 )
+from ska_ser_skallop.utils.nrgen import get_id
 
 from ..mvp_model.env import get_observation_config, Observation
 from ..mvp_model.states import ObsState
@@ -64,7 +64,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON", ignore_first=False)
         # set csp controller and csp subarray to be waited before startup completes
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
             "state"
@@ -74,9 +74,10 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 "state"
             ).to_become_equal_to("ON", ignore_first=False)
         # we wait for cbf vccs to be in proper initialised state
-        brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
-            "reportVccState"
-        ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
+        if self._tel.skamid:
+            brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
+                "reportVccState"
+            ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
         # set dish master to be waited before startup completes
         if self._tel.skamid:
             for dish in self._tel.skamid.dishes(self.receptors):
@@ -103,24 +104,28 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("OFF")
-        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-            "state"
-        ).to_become_equal_to("OFF", ignore_first=False)
-        for index in range(1, self.nr_of_subarrays + 1):
-            brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
-                "state"
             ).to_become_equal_to("OFF", ignore_first=False)
         # set dish master to be waited before startup completes
         if self._tel.skamid:
+            brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF", ignore_first=False)
+            for index in range(1, self.nr_of_subarrays + 1):
+                brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+                    "state"
+                ).to_become_equal_to("OFF", ignore_first=False)
             for dish in self._tel.skamid.dishes(self.receptors):
                 brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
                     "STANDBY", ignore_first=False
                 )
-        # set centralnode telescopeState waited before startup completes
-        brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
-            "telescopeState"
-        ).to_become_equal_to("STANDBY", ignore_first=False)
+            # set centralnode telescopeState waited before startup completes
+            brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
+                "telescopeState"
+            ).to_become_equal_to("STANDBY", ignore_first=False)
+        elif self._tel.skalow:
+            brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
+                "telescopeState"
+            ).to_become_equal_to(["OFF", "UNKNOWN"], ignore_first=False)
         return brd
 
     def undo(self):
@@ -139,6 +144,18 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
+
+    def _generate_unique_eb_sb_ids(self, config_json):
+        """This method will generate unique eb and sb ids.
+        Update it in config json
+        Args:
+            config_json (Dict): Config json for Assign Resource command
+        """
+        config_json["sdp"]["execution_block"]["eb_id"] = get_id(
+            "eb-test-********-*****"
+        )
+        for pb in config_json["sdp"]["processing_blocks"]:
+            pb["pb_id"] = get_id("pb-test-********-*****")
 
     def do(
         self,
@@ -159,8 +176,15 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # currently ignore composition as all types will be standard
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-
-        config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+        if self._tel.skamid:
+            config = self.observation.generate_assign_resources_config(
+                sub_array_id
+            ).as_json
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
+            self._generate_unique_eb_sb_ids(config_json)
+            config = json.dumps(config_json)
 
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
 
@@ -175,11 +199,15 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-        config = (
-            self.observation.generate_release_all_resources_config_for_central_node(
-                sub_array_id
+        if self._tel.skamid:
+            config = (
+                self.observation.generate_release_all_resources_config_for_central_node(
+                    sub_array_id
+                )
             )
-        )
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         central_node.command_inout("ReleaseResources", config)
 
@@ -256,9 +284,13 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         Memo(scan_duration=duration)
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        config = self.observation.generate_scan_config().as_json
-        self._log(f"commanding {subarray_name} with Configure: {config} ")
+        if self._tel.skamid:
+            config = self.observation.generate_scan_config().as_json
 
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            config = json.dumps(CONFIGURE_JSON_LOW)
+        self._log(f"commanding {subarray_name} with Configure: {config} ")
         subarray.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
@@ -301,7 +333,6 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
     ) -> MessageBoardBuilder:
         """Not implemented."""
         brd = get_message_board_builder()
-
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to(["CONFIGURING", "READY"])
@@ -355,7 +386,11 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        scan_config = self.observation.generate_run_scan_conf().as_json
+        if self._tel.skamid:
+            scan_config = self.observation.generate_run_scan_conf().as_json
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            scan_config = json.dumps(SCAN_JSON_LOW)
         scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -483,8 +518,25 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         """Not implemented."""
         raise NotImplementedError()
 
+class TMCObsResetStep(ObsResetStep, LogEnabled):
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)  #IDLE
+        return builder
 
-class TMCAbortStep(AbortStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ObsReset command")
+        subarray.command_inout("Obsreset")
+
+
+class TMCAbortStep(base.AbortStep, LogEnabled):
     def do(self, sub_array_id: int):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -499,23 +551,41 @@ class TMCAbortStep(AbortStep, LogEnabled):
         ).to_become_equal_to("ABORTED", ignore_first=True)
         return builder
 
+    def undo(self, sub_array_id: int):
+        """Domain logic for restart configuration on a subarray in tmc.
 
-class TMCObsResetStep(ObsResetStep, LogEnabled):
-    def set_wait_for_do(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> Union[MessageBoardBuilder, None]:
+        This implements the restart method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("IDLE", ignore_first=True)
+        ).to_become_equal_to("EMPTY", ignore_first=True)
         return builder
 
+
+class TMCRestart(base.ObsResetStep, LogEnabled):
     def do(self, sub_array_id: int):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        self._log(f"commanding {subarray_name} with ObsReset command")
-        subarray.command_inout("Obsreset")
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(self, sub_array_id: int, receptors: List[int]) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
+        return builder
 
 
 class TMCEntryPoint(CompositeEntryPoint):
@@ -537,4 +607,200 @@ class TMCEntryPoint(CompositeEntryPoint):
         self.configure_scan_step = ConfigureStep(observation)
         self.scan_step = ScanStep(observation)
         self.abort_step = TMCAbortStep()
-        self.obsreset_step = TMCObsResetStep()
+        # TODO add an implementation of obsreset
+        # currently we do obsreset via an restart
+        #  not this results in the SUT going to EMPTY and not
+        # IDLE
+        self.obsreset_step = TMCRestart()
+
+
+
+ASSIGN_RESOURCE_JSON_LOW = {
+    "interface": "https://schema.skao.int/ska-low-tmc-assignresources/3.0",
+    "transaction_id": "txn-....-00001",
+    "subarray_id": 1,
+    "mccs": {"subarray_beam_ids": [1], "station_ids": [[1, 2]], "channel_blocks": [3]},
+    "sdp": {
+        "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
+        "resources": {"receptors": ["SKA001", "SKA002", "SKA003", "SKA004"]},
+        "execution_block": {
+            "eb_id": "eb-test-20220916-00000",
+            "context": {},
+            "max_length": 3600.0,
+            "beams": [{"beam_id": "vis0", "function": "visibilities"}],
+            "scan_types": [
+                {
+                    "scan_type_id": ".default",
+                    "beams": {
+                        "vis0": {
+                            "channels_id": "vis_channels",
+                            "polarisations_id": "all",
+                        }
+                    },
+                },
+                {
+                    "scan_type_id": "target:a",
+                    "derive_from": ".default",
+                    "beams": {"vis0": {"field_id": "field_a"}},
+                },
+                {
+                    "scan_type_id": "calibration:b",
+                    "derive_from": ".default",
+                    "beams": {"vis0": {"field_id": "field_b"}},
+                },
+            ],
+            "channels": [
+                {
+                    "channels_id": "vis_channels",
+                    "spectral_windows": [
+                        {
+                            "spectral_window_id": "fsp_1_channels",
+                            "count": 4,
+                            "start": 0,
+                            "stride": 2,
+                            "freq_min": 350000000.0,
+                            "freq_max": 368000000.0,
+                            "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
+                        }
+                    ],
+                }
+            ],
+            "polarisations": [
+                {"polarisations_id": "all", "corr_type": ["XX", "XY", "YX", "YY"]}
+            ],
+            "fields": [
+                {
+                    "field_id": "field_a",
+                    "phase_dir": {
+                        "ra": [123.0],
+                        "dec": [-60.0],
+                        "reference_time": "...",
+                        "reference_frame": "ICRF3",
+                    },
+                    "pointing_fqdn": "...",
+                },
+                {
+                    "field_id": "field_b",
+                    "phase_dir": {
+                        "ra": [123.0],
+                        "dec": [-60.0],
+                        "reference_time": "...",
+                        "reference_frame": "ICRF3",
+                    },
+                    "pointing_fqdn": "...",
+                },
+            ],
+        },
+        "processing_blocks": [
+            {
+                "pb_id": "pb-test-20220916-00000",
+                "script": {
+                    "kind": "realtime",
+                    "name": "test-receive-addresses",
+                    "version": "0.5.0",
+                },
+                "sbi_ids": ["sbi-test-20220916-00000"],
+                "parameters": {},
+            }
+        ],
+    },
+    "csp": {
+        "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",
+        "common": {"subarray_id": 1},
+        "lowcbf": {
+            "resources": [
+                {
+                    "device": "fsp_01",
+                    "shared": True,
+                    "fw_image": "pst",
+                    "fw_mode": "unused",
+                },
+                {
+                    "device": "p4_01",
+                    "shared": True,
+                    "fw_image": "p4.bin",
+                    "fw_mode": "p4",
+                },
+            ]
+        },
+    },
+}
+
+RELEASE_RESOURCE_JSON_LOW = {
+    "interface": "https://schema.skao.int/ska-low-tmc-releaseresources/3.0",
+    "transaction_id": "txn-....-00001",
+    "subarray_id": 1,
+    "release_all": True,
+}
+
+CONFIGURE_JSON_LOW = {
+    "interface": "https://schema.skao.int/ska-low-tmc-configure/3.0",
+    "transaction_id": "txn-....-00001",
+    "mccs": {
+        "stations": [{"station_id": 1}, {"station_id": 2}],
+        "subarray_beams": [
+            {
+                "subarray_beam_id": 1,
+                "station_ids": [1, 2],
+                "update_rate": 0.0,
+                "channels": [[0, 8, 1, 1], [8, 8, 2, 1], [24, 16, 2, 1]],
+                "antenna_weights": [1.0, 1.0, 1.0],
+                "phase_centre": [0.0, 0.0],
+                "target": {
+                    "reference_frame": "HORIZON",
+                    "target_name": "DriftScan",
+                    "az": 180.0,
+                    "el": 45.0,
+                },
+            }
+        ],
+    },
+    "sdp": {
+        "interface": "https://schema.skao.int/ska-sdp-configure/0.4",
+        "scan_type": "target:a",
+    },
+    "csp": {
+        "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+        "subarray": {"subarray_name": "science period 23"},
+        "common": {
+            "config_id": "sbi-mvp01-20200325-00001-science_A",
+        },
+        "lowcbf": {
+            "stations": {
+                "stns": [[1, 0], [2, 0], [3, 0], [4, 0]],
+                "stn_beams": [
+                    {
+                        "beam_id": 1,
+                        "freq_ids": [64, 65, 66, 67, 68, 69, 70, 71],
+                        "boresight_dly_poly": "url",
+                    }
+                ],
+            },
+            "timing_beams": {
+                "beams": [
+                    {
+                        "pst_beam_id": 13,
+                        "stn_beam_id": 1,
+                        "offset_dly_poly": "url",
+                        "stn_weights": [0.9, 1.0, 1.0, 0.9],
+                        "jones": "url",
+                        "dest_ip": ["10.22.0.1:2345", "10.22.0.3:3456"],
+                        "dest_chans": [128, 256],
+                        "rfi_enable": [True, True, True],
+                        "rfi_static_chans": [1, 206, 997],
+                        "rfi_dynamic_chans": [242, 1342],
+                        "rfi_weighted": 0.87,
+                    }
+                ]
+            },
+        },
+    },
+    "tmc": {"scan_duration": 10.0},
+}
+
+
+SCAN_JSON_LOW = {
+    "interface": "https://schema.skao.int/ska-low-tmc-scan/3.0",
+    "transaction_id": "txn-....-00001",
+    "scan_id": 1,
+}

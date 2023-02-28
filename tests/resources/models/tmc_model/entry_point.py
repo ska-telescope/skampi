@@ -405,7 +405,7 @@ class ScanStep(base.ScanStep, LogEnabled):
         """
         if self._tel.skamid:
             # scan_config = self.observation.generate_run_scan_conf().as_json
-            scan_config = SCAN_JSON_MID
+            scan_config = json.dumps(SCAN_JSON_MID)
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
             scan_config = json.dumps(SCAN_JSON_LOW)

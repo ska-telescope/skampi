@@ -35,12 +35,16 @@ def test_tmc_configure_scan_on_low_subarray():
     """Configure scan on TMC low telescope subarray."""
 
 
-@pytest.mark.xfail
+@pytest.fixture(name="disable_clear_and_tear_down")
+def fxt_disable_abort(allocated_subarray: fxt_types.allocated_subarray):
+    allocated_subarray.disable_automatic_teardown()
+
+
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.tmc
 @scenario("features/tmc_configure_scan.feature", "Abort configuring")
-def test_abort_configuring_on_mid_tmc_subarray():
+def test_abort_configuring_on_mid_tmc_subarray(disable_clear_and_tear_down: None):
     """Abort configuring."""
 
 

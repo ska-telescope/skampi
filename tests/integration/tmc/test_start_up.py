@@ -19,7 +19,6 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -30,7 +29,6 @@ def test_tmc_start_up_telescope_mid():
 
 
 # marked as xfail due to SKB-170
-@pytest.mark.skip
 @pytest.mark.xfail
 @pytest.mark.skamid
 @pytest.mark.standby

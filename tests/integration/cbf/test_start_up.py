@@ -15,7 +15,6 @@ from ska_ser_skallop.connectors import configuration as con_config
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.startup

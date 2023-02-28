@@ -9,7 +9,6 @@ from ska_ser_skallop.event_handling.builders import get_message_board_builder
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

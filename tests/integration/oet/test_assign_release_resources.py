@@ -28,7 +28,6 @@ rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0"
 activity_adapter = ActivityAdapter(rest_cli_uri)
 
 
-@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -44,7 +43,6 @@ def test_sbi_creation():
     """
 
 
-@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -227,7 +225,6 @@ def check_final_subarray_state(
     logger.info("Sub-array is in ObsState %s", obsstate)
 
 
-@pytest.mark.skip
 @pytest.mark.scripting
 @pytest.mark.skamid
 @pytest.mark.k8s

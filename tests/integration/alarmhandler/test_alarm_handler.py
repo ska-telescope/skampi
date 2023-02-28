@@ -7,7 +7,6 @@ import pytest
 import tango
 
 
-@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

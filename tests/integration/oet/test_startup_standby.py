@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 
-@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.startup
@@ -38,7 +37,6 @@ def test_telescope_startup_low():
     """Telescope startup test."""
 
 
-@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.standby

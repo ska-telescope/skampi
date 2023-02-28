@@ -24,6 +24,7 @@ low-test:
     COUNT: 1
     EXIT_AT_FAIL: "false"
     CAPTURE_LOGS: "True"
+    SKALLOP_LOG_FILTER_ERRORS: "True"
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"

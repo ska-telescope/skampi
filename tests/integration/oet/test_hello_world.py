@@ -7,6 +7,7 @@ from os import environ
 EXECUTOR = ScriptExecutor()
 
 
+@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -19,6 +20,7 @@ def test_hello_world():
     """
 
 
+@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

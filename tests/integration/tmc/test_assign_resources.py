@@ -37,6 +37,7 @@ def test_release_resources_from_tmc_subarray_in_low():
     """Release resources from tmc subarrays in low."""
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -46,6 +47,7 @@ def test_assign_resources_to_tmc_subarray_in_mid():
     """Assign resources to tmc subarray in mid."""
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

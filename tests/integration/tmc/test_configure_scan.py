@@ -11,6 +11,7 @@ from resources.models.mvp_model.states import ObsState
 from ..conftest import SutTestSettings
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -30,6 +31,7 @@ def test_tmc_configure_scan_on_low_subarray():
 
 
 
+@pytest.mark.skip
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.tmc

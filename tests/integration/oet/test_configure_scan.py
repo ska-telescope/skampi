@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 
+@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

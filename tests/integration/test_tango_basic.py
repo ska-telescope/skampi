@@ -49,7 +49,7 @@ def i_expect_a_response_to_be_returned_from_the_device_server():
 
 
 @pytest.mark.taranta
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.taranta
 @pytest.mark.k8s
 @scenario("features/taranta_basic.feature", "taranta dashboard services available")

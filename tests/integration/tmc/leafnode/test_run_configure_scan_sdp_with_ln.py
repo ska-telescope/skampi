@@ -10,7 +10,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 
 
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.configure
 @scenario(
     "features/sdpln_configure_scan.feature",
@@ -19,7 +19,7 @@ from resources.models.mvp_model.states import ObsState
 def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid using the leaf node."""
 
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.configure
 @scenario(
     "features/tmc_sdpln_configure.feature",

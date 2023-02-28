@@ -29,7 +29,7 @@ activity_adapter = ActivityAdapter(rest_cli_uri)
 
 
 @pytest.mark.oet
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",
@@ -44,7 +44,7 @@ def test_sbi_creation():
 
 
 @pytest.mark.oet
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature", "Allocating resources with a SBI"
@@ -59,7 +59,7 @@ def test_resource_allocation():
 
 
 @pytest.mark.oet
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",
@@ -226,7 +226,7 @@ def check_final_subarray_state(
 
 
 @pytest.mark.scripting
-@pytest.mark.skamid_skip
+@pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
     "features/oet_assign_release_resources.feature",
@@ -241,7 +241,7 @@ def test_oet__scripting_resource_allocation():
     """
 
 @pytest.mark.scripting
-@pytest.mark.skalow_skip
+@pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.k8s
 @scenario(

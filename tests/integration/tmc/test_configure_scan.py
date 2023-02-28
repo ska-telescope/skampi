@@ -40,11 +40,27 @@ def fxt_disable_abort(allocated_subarray: fxt_types.allocated_subarray):
     allocated_subarray.disable_automatic_teardown()
 
 
+@pytest.fixture(name="setup_monitoring_for_config_abort")
+def fxt_setup_monitoring_for_config_abort(
+    context_monitoring: fxt_types.context_monitoring, sut_settings: SutTestSettings
+):
+    tel = names.TEL()
+    sub_id = sut_settings.subarray_id
+    context_monitoring.set_waiting_on(tel.csp.subarray(sub_id)).for_attribute(
+        "obsstate"
+    ).and_observe()
+    context_monitoring.set_waiting_on(tel.sdp.subarray(sub_id)).for_attribute(
+        "obsstate"
+    ).and_observe()
+
+
 @pytest.mark.skamid
 @pytest.mark.configure
 @scenario("features/tmc_configure_scan.feature", "Abort configuring")
 def test_abort_configuring_on_mid_tmc_subarray(
-    disable_clear_and_tear_down: None, set_up_subarray_log_checking_for_tmc: None
+    disable_clear_and_tear_down: None,
+    set_up_subarray_log_checking_for_tmc: None,
+    setup_monitoring_for_config_abort: None,
 ):
     """Abort configuring."""
 

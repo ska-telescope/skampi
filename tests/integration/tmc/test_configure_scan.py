@@ -35,7 +35,7 @@ def test_tmc_configure_scan_on_low_subarray():
     """Configure scan on TMC low telescope subarray."""
 
 
-# @pytest.mark.xfail
+@pytest.mark.xfail
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.tmc

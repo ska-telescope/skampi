@@ -2292,6 +2292,11 @@ files = [
 [package.dependencies]
 wcwidth = "*"
 
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
 [[package]]
 name = "psycopg"
 version = "3.1.8"
@@ -3570,14 +3575,14 @@ reference = 'ska'
 
 [[package]]
 name = "ska-ser-skallop"
-version = "2.25.0"
+version = "2.25.1"
 description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "ska-ser-skallop-2.25.0.tar.gz", hash = "sha256:700737c8c749eada154caf85b4b9e8d7e24a836449091dc4ca23cc75d5b185f4"},
-    {file = "ska_ser_skallop-2.25.0-py3-none-any.whl", hash = "sha256:53d50b0ba2d41478b8fe01b4b00dcde1f481c0e38e5b7b659a7982bece549f20"},
+    {file = "ska-ser-skallop-2.25.1.tar.gz", hash = "sha256:fe969eb507edcdb7940fc78b8a23fe6d186608094a1127961cb72e33a8cd0b0d"},
+    {file = "ska_ser_skallop-2.25.1-py3-none-any.whl", hash = "sha256:22e66187add81118ae3084068c00cd0e237d3ed2d969826ea5736dfbfa929af7"},
 ]
 
 [package.dependencies]
@@ -4355,4 +4360,4 @@ reference = 'ska'
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "c8f6fe80b73cc94f61c3148f7ec3a6c672919efb17ee942ae5a3e8cc6ddab4a4"
+content-hash = "a63412408ff8f672baf5d0c4f716f6df160b6ce555fb1f425d616fdfb2775f6d"

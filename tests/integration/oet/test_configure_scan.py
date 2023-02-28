@@ -32,7 +32,7 @@ EXECUTOR = ScriptExecutor()
 
 
 @pytest.mark.oet
-@pytest.mark.skamid
+@pytest.mark.skamid_skip
 @pytest.mark.k8s
 @scenario("features/oet_configure_scan.feature", "Observing a Scheduling Block")
 def test_observing_sbi():

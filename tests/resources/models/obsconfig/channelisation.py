@@ -20,8 +20,6 @@ DEFAULT_CHANNELS = {
         ],
     )
 }
-VIS_REC_CHANNELS = DEFAULT_CHANNELS.copy()
-VIS_REC_CHANNELS["vis_channels"].spectral_windows[0].count = 13824
 
 
 class Channelization(TargetSpecs):

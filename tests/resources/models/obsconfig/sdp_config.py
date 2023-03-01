@@ -313,9 +313,6 @@ class ProcessingSpec(NamedTuple):
 DEFAULT_SCRIPT = ScriptConfiguration(
     kind="realtime", name="test-receive-addresses", version="0.5.0"
 )
-VIS_RECEIVE_SCRIPT = ScriptConfiguration(
-    kind="realtime", name="vis-receive", version="0.8.0"
-)
 
 
 class ProcessingSpecs(TargetSpecs):

@@ -42,31 +42,6 @@ DEFAULT_TARGET_SPECS = OrderedDict(
     }
 )
 
-VIS_REC_SPEC = OrderedDict(
-    {
-        "target:a": TargetSpec(
-            Target("12:29:06.699 degrees", "02:03:08.598 degrees"),
-            "target:a",
-            ReceiverBand.BAND_2,  # how to set this for low?
-            "vis_channels",
-            "all",
-            "field_a",
-            "vis-receive",
-            "vis-rec",
-        ),
-        ".default": TargetSpec(
-            Target("12:29:06.699 degrees", "02:03:08.598 degrees"),
-            ".default",
-            ReceiverBand.BAND_2,
-            "vis_channels",
-            "all",
-            "field_a",
-            "vis-receive",
-            "vis-rec",  # the type / number of dishes in tests.resources.models.obsconfig.dishes.Dishes
-        ),
-    }
-)
-
 
 class Scan:
     def __init__(self) -> None:

@@ -9,9 +9,7 @@ global:
     app.gitlab.com/env: ska
   sub-system:
     tango-base:
-      enabled: true
-      itango:
-        enabled: true
+      enabled: false
     ska-tango-base:
       enabled: false
     ska-taranta:

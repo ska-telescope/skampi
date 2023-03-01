@@ -10,7 +10,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from resources.models.sdp_model.entry_point import SDPEntryPoint
 from resources.models.sdp_model.mocking import setup_sdp_mock
-from resources.models.sdp_model.entry_point import VisRecObservation
+from resources.models.obsconfig.vis_receive_config import VisRecObservation
 
 from .vis_receive_utils import K8sElementManager
 

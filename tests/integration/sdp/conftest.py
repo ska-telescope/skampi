@@ -42,7 +42,8 @@ def fxt_set_entry_point(
     exec_env = set_session_exec_env
     if not sut_settings.mock_sut:
         SDPEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
-        SDPEntryPoint.obs_to_use = VisRecObservation()
+        if sut_settings.vis_receive_test:
+            SDPEntryPoint.obs_to_use = VisRecObservation()
         exec_env.entrypoint = SDPEntryPoint
     else:
         exec_env.entrypoint = "mock"
@@ -147,6 +148,21 @@ def an_sdp_subarray_in_idle_state(
     sut_settings: conftest.SutTestSettings,
 ) -> conf_types.ScanConfiguration:
     """an SDP subarray in IDLE state."""
+    subarray_allocation_spec.receptors = sut_settings.receptors
+    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
+    # will use default composition for the allocated subarray
+    # subarray_allocation_spec.composition
+    return sdp_base_configuration
+
+
+@given("an SDP subarray in READY state")
+def an_sdp_subarray_in_ready_state(
+    set_up_subarray_log_checking_for_sdp,
+    sdp_base_configuration: conf_types.ScanConfiguration,
+    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
+    sut_settings: conftest.SutTestSettings,
+) -> conf_types.ScanConfiguration:
+    """an SDP subarray in READY state."""
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     # will use default composition for the allocated subarray

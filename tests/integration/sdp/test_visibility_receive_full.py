@@ -1,17 +1,14 @@
 """
 SDP Visibility Receive processing script test.
 
-This version of the test doesn't implement AssignResources and
-Configure separately, instead, it uses an starting point,
-which already assumes that the subarray is READY to start a scan.
+This is an end-to-end SDP test, with each step being
+implemented separately, i.e. the steps to perform the following
+steps are implemnted explicitly:
+- AssignResources
+- Configure
+- Scan
 
-For this, we use the `configured_subarray` fixture, which
-makes sure that AssignResources and Configure are executed
-before the code reaches the steps implemented in this test.
-
-It is still and end-to-end functionality test, but
-the implementation is relying heavily on skampi and skallop
-for the first two commands.
+It is using underlying skampi and skallop code as much as possible.
 """
 
 import json
@@ -26,8 +23,10 @@ from pytest_bdd import scenario, given, when, then
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
+from integration.conftest import SutTestSettings
 from integration.sdp.vis_receive_utils import (
     pvc_exists,
     wait_for_pod,
@@ -39,7 +38,6 @@ from integration.sdp.vis_receive_utils import (
 )
 from resources.models.mvp_model.states import ObsState
 from .. import conftest
-
 from ska_ser_skallop.mvp_management.subarray_scanning import scanning_subarray
 
 pytest_plugins = ["unit.test_cluster_k8s"]
@@ -54,7 +52,7 @@ PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
 @pytest.mark.skalow
 @pytest.mark.sdp
 @scenario(
-    "features/sdp_visibility_receive.feature", "Execute visibility receive script for a single scan"
+    "features/sdp_visibility_receive.feature", "Execute visibility receive script for a single scan (full)"
 )
 def test_visibility_receive_in_low(assign_resources_test_exec_settings):
     """."""
@@ -66,6 +64,10 @@ def fxt_update_sut_settings_vis_rec(sut_settings: conftest.SutTestSettings):
     if tel.skalow:
         sut_settings.nr_of_subarrays = 1
     sut_settings.vis_receive_test = True
+
+
+# use given from sdp/conftest.py
+# @given("an SDP subarray")
 
 
 @given("the volumes are created and the data is copied")
@@ -129,17 +131,17 @@ def local_volume(k8s_element_manager, fxt_k8s_cluster):
     LOG.info("PVCs and pods created, and data copied successfully")
 
 
-# use given from sdp/conftest.py
-# @given("an SDP subarray in READY state")
+# @given("I deploy the visibility receive script") same as AssignResources in conftest.py
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def check_rec_adds(
-    configured_subarray
+    entry_point: fxt_types.entry_point,
+    sut_settings: SutTestSettings,
 ):
     tel = names.TEL()
     sdp_subarray = con_config.get_device_proxy(
-        tel.sdp.subarray(configured_subarray.id)
+        tel.sdp.subarray(sut_settings.subarray_id)
     )
 
     receive_addresses = json.loads(
@@ -167,11 +169,63 @@ def check_rec_adds(
     assert host == receive_addresses_expected
 
 
+@pytest.fixture(name="configuration")
+def config(
+    check_rec_adds,
+    set_up_subarray_log_checking_for_sdp,
+    sdp_base_configuration: conf_types.ScanConfiguration,
+    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
+    sut_settings: SutTestSettings,
+) -> conf_types.ScanConfiguration:
+    """an SDP subarray in IDLE state."""
+    subarray_allocation_spec.receptors = sut_settings.receptors
+    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
+    # will use default composition for the allocated subarray
+    # subarray_allocation_spec.composition
+    return sdp_base_configuration
+
+
+@pytest.fixture(name="configure_sdp")
+def configure_sdp_fixt(
+    entry_point: fxt_types.entry_point,
+    configuration: conf_types.ScanConfiguration,
+    sut_settings: SutTestSettings,
+):
+    """I configure it for a scan."""
+    tel = names.TEL()
+    subarray_id = sut_settings.subarray_id
+    sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
+    obs_state = sdp_subarray.read_attribute("obsState").value
+    assert_that(obs_state).is_equal_to(ObsState.IDLE)
+
+    receptors = sut_settings.receptors
+    scan_duration = sut_settings.scan_duration
+    sb_id = entry_point.observation.processing_blocks[0].sbi_ids[0]
+
+    entry_point.configure_subarray(
+        subarray_id, receptors, configuration, sb_id, scan_duration
+    )
+
+    LOG.info("Subarray is configured.")
+
+    yield
+
+    # need to call End, to move it to IDLE (from which ReleaseAllResources works)
+    LOG.info("Calling End")
+    sdp_subarray.command_inout("End")
+    # wait_for_obs_state(sdp_subarray, "IDLE", timeout=30)
+
+
+@given("the SDP subarray is configured")
+def i_configure_it_for_a_scan(configure_sdp):
+    """Configure via fixture"""
+
+
 @when("SDP is commanded to capture data from a scan")
 def run_scan(
-    check_rec_adds,
     k8s_element_manager,
-    configured_subarray,
+    entry_point: fxt_types.entry_point,
+    sut_settings: SutTestSettings,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """
@@ -185,8 +239,8 @@ def run_scan(
     """
     LOG.info("Running scan step.")
     tel = names.TEL()
-    subarray_id = configured_subarray.id
-    receptors = configured_subarray.receptors
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
     sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
 
     obs_state = sdp_subarray.read_attribute("obsState").value

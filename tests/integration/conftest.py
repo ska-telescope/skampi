@@ -426,9 +426,16 @@ def generate_invalid_config(observation: Observation):
     return EncodedObject(incorrect_config)
 
 
+def generate_invalid_sdp_processing_block_script(observation: Observation):
+    original = observation.generate_sdp_assign_resources_config().as_object
+    incorrect = copy.deepcopy(original)
+    incorrect.processing_blocks[0].script.name = "vis_receive"
+    return EncodedObject(incorrect)
+
+
 def generate_invalid_processing_block_script(observation: Observation):
     original = observation.generate_assign_resources_config().as_object
-    incorrect = copy.copy(original)
+    incorrect = copy.deepcopy(original)
     incorrect.sdp_config.processing_blocks[0].script.name = "vis_receive"
     return EncodedObject(incorrect)
 
@@ -449,19 +456,37 @@ def fxt_invalid_assign_config_interjected(
 @pytest.fixture(name="invalid_processing_block_script_interjected")
 def fxt_invalid_processing_block_script_interjected(
     interject_into_observation_config: ObservationConfigInterjector[
-        [], EncodedObject[dict[str, Any]]
+        [], EncodedObject[Any]
     ],
     entry_point: fxt_types.entry_point,
 ):
     interject_into_observation_config(
         "generate_assign_resources_config", generate_invalid_processing_block_script
     )
+    interject_into_observation_config(
+        "generate_sdp_assign_resources_config",
+        generate_invalid_sdp_processing_block_script,
+    )
     entry_point.__init__()
+
+
+class StepResult:
+    def __init__(self) -> None:
+        self.expected_exception_raised = False
+        self.exception: Exception | None = None
+        self.result_ok = True
+        self.result: Callable[[], Any] = lambda: None
+
+    def result_ok_but_expected_exception_not_raised(self) -> bool:
+        if self.result_ok:
+            if not self.expected_exception_raised:
+                return True
+        return False
 
 
 @when(
     "I assign resources with an invalid processing block script name",
-    target_fixture="exception_info",
+    target_fixture="step_result",
 )
 def when_i_assign_resources_with_invalid_pb(
     running_telescope: fxt_types.running_telescope,
@@ -472,11 +497,11 @@ def when_i_assign_resources_with_invalid_pb(
     sb_config: fxt_types.sb_config,
     sut_settings: SutTestSettings,
     invalid_processing_block_script_interjected,  # type: ignore this creates an empty assign config
-):
+) -> StepResult:
     subarray_id = sut_settings.subarray_id
     sut_settings.previous_state = ObsState.EMPTY
     receptors = sut_settings.receptors
-    expected_exception_raised = _assign_resources_with_invalid_config(
+    step_result = _assign_resources_with_invalid_config(
         subarray_id,
         receptors,
         entry_point,
@@ -486,26 +511,32 @@ def when_i_assign_resources_with_invalid_pb(
         sb_config,
         sut_settings,
     )
-    if not expected_exception_raised:
+    if step_result.result_ok_but_expected_exception_not_raised():
         subarray_device = con_config.get_device_proxy(
             sut_settings.default_subarray_name
         )
         result = subarray_device.read_attribute("obsstate").value
         if result == ObsState.EMPTY:
-            pytest.fail(
-                "exception not raised when calling assign but it did return back to EMPTY"
+            step_result.result_ok = False
+            step_result.result = lambda: except_it(
+                "exception not raised when calling assign but it did return "
+                "back to EMPTY"
             )
         else:
+            integration_test_exec_settings.touch()
             running_telescope.release_subarray_when_finished(
                 subarray_id, receptors, integration_test_exec_settings
             )
-            pytest.fail(
-                "exception not raised when calling assign but it did successfully go to IDLE\n"
+            step_result.result_ok = False
+            step_result.result = lambda: except_it(
+                "exception not raised when calling assign but it did "
+                "successfully go to IDLE\n"
                 "Are you sure the config is invalid?"
             )
+    return step_result
 
 
-@when("I assign resources with invalid config", target_fixture="exception_info")
+@when("I assign resources with invalid config", target_fixture="step_result")
 def when_i_assign_resources_with_invalid_config(
     running_telescope: fxt_types.running_telescope,
     entry_point: fxt_types.entry_point,
@@ -515,11 +546,11 @@ def when_i_assign_resources_with_invalid_config(
     sb_config: fxt_types.sb_config,
     sut_settings: SutTestSettings,
     invalid_assign_config_interjected,  # type: ignore this creates an empty assign config
-):
+) -> StepResult:
     subarray_id = sut_settings.subarray_id
     sut_settings.previous_state = ObsState.EMPTY
     receptors = sut_settings.receptors
-    expected_exception_raised = _assign_resources_with_invalid_config(
+    step_result = _assign_resources_with_invalid_config(
         subarray_id,
         receptors,
         entry_point,
@@ -529,23 +560,29 @@ def when_i_assign_resources_with_invalid_config(
         sb_config,
         sut_settings,
     )
-    if not expected_exception_raised:
+    if step_result.result_ok_but_expected_exception_not_raised():
         subarray_device = con_config.get_device_proxy(
             sut_settings.default_subarray_name
         )
         result = subarray_device.read_attribute("obsstate").value
         if result == ObsState.EMPTY:
-            pytest.fail(
-                "exception not raised when calling assign but it did return back to EMPTY"
+            step_result.result_ok = False
+            step_result.result = lambda: except_it(
+                "exception not raised when calling assign but it "
+                "did return back to EMPTY"
             )
         else:
+            integration_test_exec_settings.touch()
             running_telescope.release_subarray_when_finished(
                 subarray_id, receptors, integration_test_exec_settings
             )
-            pytest.fail(
-                "exception not raised when calling assign but it did successfully go to IDLE"
+            step_result.result_ok = False
+            step_result.result = lambda: except_it(
+                "exception not raised when calling assign but it did "
+                "successfully go to IDLE"
                 "Are you sure the config is invalid?"
             )
+    return step_result
 
 
 def _assign_resources_with_invalid_config(
@@ -557,10 +594,10 @@ def _assign_resources_with_invalid_config(
     composition: conf_types.Composition,
     sb_config: fxt_types.sb_config,
     sut_settings: SutTestSettings,
-):
+) -> StepResult:
     settings = integration_test_exec_settings
     subarray = sut_settings.default_subarray_name
-    expected_exception_raised = False
+    step_result = StepResult()
 
     with context_monitoring.context_monitoring():
         context_monitoring.builder.set_waiting_on(subarray).for_attribute(
@@ -576,14 +613,17 @@ def _assign_resources_with_invalid_config(
                     entry_point.compose_subarray(
                         subarray_id, receptors, composition, sb_config.sbid
                     )
-                except Exception:
-                    expected_exception_raised = True
+                except Exception as exception:
+                    step_result.exception = exception
+                    step_result.expected_exception_raised = True
         except EWhilstWaiting:
-            if not expected_exception_raised:
-                pytest.fail(
-                    "expected timeout waiting for resourcing ocurred but no expected command exception thrown"
+            if not step_result.expected_exception_raised:
+                step_result.result_ok = False
+                step_result.result = lambda: except_it(
+                    "expected timeout waiting for resourcing ocurred but"
+                    " no expected command exception thrown"
                 )
-            return expected_exception_raised
+            return step_result
     # this means we did not have a time out waiting for RESOURCING so now we
     # will attempt to wait for the next state IDLE or alternatively EMPTY if it reverted
     context_monitoring.re_init_builder()
@@ -597,18 +637,27 @@ def _assign_resources_with_invalid_config(
                 pass
         except EWhilstWaiting:
             # this means we are stuck in RESOURCING so will attempt to reset
-            if expected_exception_raised:
-                pytest.fail(
-                    "exception raised when calling assign but it seems be stuck in RESOURCING"
+            if step_result.expected_exception_raised:
+                step_result.result_ok = False
+                step_result.result = lambda: except_it(
+                    "exception raised when calling assign but it seems be"
+                    " stuck in RESOURCING"
                 )
             else:
-                pytest.fail(
-                    "exception not raised when calling assign but it seems to be stuck in RESOURCING"
+                step_result.result_ok = False
+                step_result.result = lambda: except_it(
+                    "exception not raised when calling assign but it seems"
+                    " to be stuck in RESOURCING"
                 )
-    return expected_exception_raised
+    assert step_result.result_ok
+    return step_result
 
 
-@when("I assign resources with a duplicate sb id", target_fixture="exception_info")
+def except_it(args: str):
+    raise Exception(args)
+
+
+@when("I assign resources with a duplicate sb id", target_fixture="step_result")
 def when_i_assign_resources_with_a_duplicate_sb_id(
     running_telescope: fxt_types.running_telescope,
     allocated_subarray: fxt_types.allocated_subarray,
@@ -618,11 +667,11 @@ def when_i_assign_resources_with_a_duplicate_sb_id(
     composition: conf_types.Composition,
     sb_config: fxt_types.sb_config,
     sut_settings: SutTestSettings,
-):
+) -> StepResult:
     subarray_id = allocated_subarray.id
     receptors = allocated_subarray.receptors
     sut_settings.previous_state = ObsState.IDLE
-    expected_exception_raised = _assign_resources_with_invalid_config(
+    step_result = _assign_resources_with_invalid_config(
         subarray_id,
         receptors,
         entry_point,
@@ -632,21 +681,27 @@ def when_i_assign_resources_with_a_duplicate_sb_id(
         sb_config,
         sut_settings,
     )
-    if not expected_exception_raised:
-        subarray_device = con_config.get_device_proxy(
-            sut_settings.default_subarray_name
-        )
-        result = subarray_device.read_attribute("obsstate").value
-        if result == ObsState.EMPTY:
-            allocated_subarray.disable_automatic_teardown()
-            pytest.fail(
-                "exception not raised when calling assign but it did return back to EMPTY"
+    if step_result.result_ok:
+        if not step_result.expected_exception_raised:
+            subarray_device = con_config.get_device_proxy(
+                sut_settings.default_subarray_name
             )
-        else:
-            pytest.fail(
-                "exception not raised when calling assign but it did successfully go to IDLE"
-                "Are you sure the config is invalid?"
-            )
+            result = subarray_device.read_attribute("obsstate").value
+            if result == ObsState.EMPTY:
+                allocated_subarray.disable_automatic_teardown()
+                step_result.result_ok = False
+                step_result.result = lambda: except_it(
+                    "exception not raised when calling assign but it did "
+                    "return back to EMPTY"
+                )
+            else:
+                step_result.result_ok = False
+                step_result.result = lambda: except_it(
+                    "exception not raised when calling assign but it did "
+                    "successfully go to IDLE"
+                    "Are you sure the config is invalid?"
+                )
+    return step_result
 
 
 @pytest.fixture(name="invalid_scan_config_interjected")
@@ -678,7 +733,10 @@ def fxt_invalid_scan_config_interjected(
     entry_point.__init__()
 
 
-@when("I configure it for a scan with an invalid configuration")
+@when(
+    "I configure it for a scan with an invalid configuration",
+    target_fixture="step_result",
+)
 def i_configure_it_for_a_scan_with_an_invalid_config(
     allocated_subarray: fxt_types.allocated_subarray,
     entry_point: fxt_types.entry_point,
@@ -687,7 +745,7 @@ def i_configure_it_for_a_scan_with_an_invalid_config(
     configuration: conf_types.ScanConfiguration,
     sut_settings: SutTestSettings,
     invalid_scan_config_interjected,  # type: ignore this causes an empty scan config
-):
+) -> StepResult:
     subarray_id = allocated_subarray.id
     sb_id = allocated_subarray.sb_config.sbid
     subarray = sut_settings.default_subarray_name
@@ -696,7 +754,8 @@ def i_configure_it_for_a_scan_with_an_invalid_config(
     sut_settings.previous_state = ObsState.IDLE
     duration = sut_settings.scan_duration
     # setup a normal context and specifically wait for CONFIGURING
-    expected_exception_raised = False
+    step_result = StepResult()
+    step_result.result_ok = False
     with context_monitoring.context_monitoring():
         context_monitoring.builder.set_waiting_on(subarray).for_attribute(
             "obsstate"
@@ -711,14 +770,17 @@ def i_configure_it_for_a_scan_with_an_invalid_config(
                     entry_point.configure_subarray(
                         subarray_id, receptors, configuration, sb_id, duration
                     )
-                except Exception:
-                    expected_exception_raised = True
+                except Exception as exception:
+                    step_result.exception = exception
+                    step_result.expected_exception_raised = True
+                    step_result.result_ok = True
         except EWhilstWaiting:
-            if not expected_exception_raised:
-                pytest.fail(
-                    "expected timeout waiting for CONFIGURING ocurred but no expected command exception thrown"
+            if not step_result.expected_exception_raised:
+                step_result.result = lambda: except_it(
+                    "expected timeout waiting for CONFIGURING ocurred but no"
+                    " expected command exception thrown"
                 )
-            return
+            return step_result
     # this means we did not have a time out waiting for RESOURCING so now we
     # will attempt to wait for the next state IDLE or alternatively EMPTY if it reverted
     context_monitoring.re_init_builder()
@@ -732,36 +794,43 @@ def i_configure_it_for_a_scan_with_an_invalid_config(
                 pass
         except EWhilstWaiting:
             # this means we are stuck in CONFIGURING so will attempt to reset
-            if expected_exception_raised:
-                pytest.fail(
-                    "exception raised when calling configure but it seems be stuck in CONFIGURING"
+            if step_result.expected_exception_raised:
+                step_result.result_ok = False
+                step_result.result = lambda: except_it(
+                    "exception raised when calling configure but it seems be"
+                    " stuck in CONFIGURING"
                 )
             else:
-                pytest.fail(
-                    "exception not raised when calling configure but it seems to be stuck in CONFIGURING"
+                step_result.result = lambda: except_it(
+                    "exception not raised when calling configure but it "
+                    "seems to be stuck in CONFIGURING"
                 )
-    if not expected_exception_raised:
+            return step_result
+    if not step_result.expected_exception_raised:
         subarray_device = con_config.get_device_proxy(
             sut_settings.default_subarray_name
         )
         result = subarray_device.read_attribute("obsstate").value
         if result == ObsState.IDLE:
-            pytest.fail(
-                "exception not raised when calling configure but it did return back to IDLE"
+            step_result.result = lambda: except_it(
+                "exception not raised when calling configure but it did return "
+                "back to IDLE"
             )
         else:
             allocated_subarray.clear_configuration_when_finished(
                 integration_test_exec_settings
             )
-            pytest.fail(
-                "exception not raised when calling configure but it did successfully go to IDLE"
+            step_result.result = lambda: except_it(
+                "exception not raised when calling configure but it did "
+                "successfully go to IDLE"
                 "Are you sure the config is invalid?"
             )
+    return step_result
 
 
 @when(
     "I command the assign resources twice in consecutive fashion",
-    target_fixture="expected_exception",
+    target_fixture="step_result",
 )
 def i_command_the_assign_resources_twice_in_consecutive_fashion(
     running_telescope: fxt_types.running_telescope,
@@ -771,13 +840,14 @@ def i_command_the_assign_resources_twice_in_consecutive_fashion(
     composition: conf_types.Composition,
     sb_config: fxt_types.sb_config,
     sut_settings: SutTestSettings,
-):
+) -> StepResult:
     """I assign resources to it."""
 
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
-    expected_exception_raised = None
+    step_result = StepResult()
     sut_settings.next_state = ObsState.IDLE
+    step_result.result_ok = False
     with context_monitoring.context_monitoring():
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
@@ -790,20 +860,23 @@ def i_command_the_assign_resources_twice_in_consecutive_fashion(
                     subarray_id, receptors, composition, sb_config.sbid
                 )
             except Exception as exception:
-                expected_exception_raised = exception
-    return expected_exception_raised
+                step_result.expected_exception_raised = True
+                step_result.result_ok = True
+                step_result.exception = exception
+    return step_result
 
 
 # thens
 @then("the subarray should throw an exception and continue with first command")
 def the_subarray_should_throw_an_exception_and_continue_with_first_command(
-    expected_exception: None | Exception,
+    step_result: StepResult,
     sut_settings: SutTestSettings,
 ):
+    step_result.result()
     assert (
-        expected_exception is not None
+        step_result.expected_exception_raised
     ), "No exception was raised after commanding the assign resources twice"
-    logger.info(f"exception successfully raised with {expected_exception}")
+    logger.info(f"exception successfully raised with {step_result.exception.args}")
     subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
     result = subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(sut_settings.next_state)
@@ -811,9 +884,9 @@ def the_subarray_should_throw_an_exception_and_continue_with_first_command(
 
 @then("the subarray should throw an exception and remain in the previous state")
 def the_subarray_should_throw_an_exception_remain_in_the_previous_state(
-    sut_settings: SutTestSettings,
+    sut_settings: SutTestSettings, step_result: StepResult
 ):
-    # if we are here then it means an exception was thrown
+    step_result.result()
     # we have to wait for a limited time to ensure any state transitions are stable
     subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
     result = subarray.read_attribute("obsstate").value

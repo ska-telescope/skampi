@@ -56,6 +56,17 @@ def test_assign_resources_duplicate_commands(assign_resources_test_exec_settings
     """Command assign resources twice in order."""
 
 
+@pytest.mark.skamid
+@pytest.mark.assign
+@pytest.mark.sdp
+@scenario(
+    "features/sdp_assign_resources.feature",
+    "Assign resources with invalid processing block script name to SDP",
+)
+def test_assign_resources_with_invalid_script(assign_resources_test_exec_settings):  # type: ignore
+    """Command assign resources twice in order."""
+
+
 @given("an SDP subarray", target_fixture="composition")
 def an_sdp_subarray(
     set_up_subarray_log_checking_for_sdp,  # type: ignore

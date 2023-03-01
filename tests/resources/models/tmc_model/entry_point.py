@@ -518,6 +518,7 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         """Not implemented."""
         raise NotImplementedError()
 
+
 class TMCObsResetStep(ObsResetStep, LogEnabled):
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -526,7 +527,9 @@ class TMCObsResetStep(ObsResetStep, LogEnabled):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("ABORTED", ignore_first=True)  #IDLE
+        ).to_become_equal_to(
+            "ABORTED", ignore_first=True
+        )  # IDLE
         return builder
 
     def do(self, sub_array_id: int):
@@ -579,7 +582,9 @@ class TMCRestart(base.ObsResetStep, LogEnabled):
         self._log(f"commanding {subarray_name} with Restart command")
         subarray.command_inout("Restart")
 
-    def set_wait_for_do(self, sub_array_id: int, receptors: List[int]) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
@@ -612,7 +617,6 @@ class TMCEntryPoint(CompositeEntryPoint):
         #  not this results in the SUT going to EMPTY and not
         # IDLE
         self.obsreset_step = TMCRestart()
-
 
 
 ASSIGN_RESOURCE_JSON_LOW = {

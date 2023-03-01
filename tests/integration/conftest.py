@@ -3,12 +3,12 @@ integration tests."""
 import logging
 from types import SimpleNamespace
 import os
-
+import copy
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
 from mock import patch, Mock
 from assertpy import assert_that
 import pytest
-from pytest_bdd import when, then, given
+from pytest_bdd import when, then, given, parsers
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting
@@ -426,6 +426,13 @@ def generate_invalid_config(observation: Observation):
     return EncodedObject(incorrect_config)
 
 
+def generate_invalid_processing_block_script(observation: Observation):
+    original = observation.generate_assign_resources_config().as_object
+    incorrect = copy.copy(original)
+    incorrect.sdp_config.processing_blocks[0].script.name = "vis_receive"
+    return EncodedObject(incorrect)
+
+
 @pytest.fixture(name="invalid_assign_config_interjected")
 def fxt_invalid_assign_config_interjected(
     interject_into_observation_config: ObservationConfigInterjector[
@@ -437,6 +444,65 @@ def fxt_invalid_assign_config_interjected(
         "generate_assign_resources_config", generate_invalid_config
     )
     entry_point.__init__()
+
+
+@pytest.fixture(name="invalid_processing_block_script_interjected")
+def fxt_invalid_processing_block_script_interjected(
+    interject_into_observation_config: ObservationConfigInterjector[
+        [], EncodedObject[dict[str, Any]]
+    ],
+    entry_point: fxt_types.entry_point,
+):
+    interject_into_observation_config(
+        "generate_assign_resources_config", generate_invalid_processing_block_script
+    )
+    entry_point.__init__()
+
+
+@when(
+    "I assign resources with an invalid processing block script name",
+    target_fixture="exception_info",
+)
+def when_i_assign_resources_with_invalid_pb(
+    running_telescope: fxt_types.running_telescope,
+    entry_point: fxt_types.entry_point,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    composition: conf_types.Composition,
+    sb_config: fxt_types.sb_config,
+    sut_settings: SutTestSettings,
+    invalid_processing_block_script_interjected,  # type: ignore this creates an empty assign config
+):
+    subarray_id = sut_settings.subarray_id
+    sut_settings.previous_state = ObsState.EMPTY
+    receptors = sut_settings.receptors
+    expected_exception_raised = _assign_resources_with_invalid_config(
+        subarray_id,
+        receptors,
+        entry_point,
+        context_monitoring,
+        integration_test_exec_settings,
+        composition,
+        sb_config,
+        sut_settings,
+    )
+    if not expected_exception_raised:
+        subarray_device = con_config.get_device_proxy(
+            sut_settings.default_subarray_name
+        )
+        result = subarray_device.read_attribute("obsstate").value
+        if result == ObsState.EMPTY:
+            pytest.fail(
+                "exception not raised when calling assign but it did return back to EMPTY"
+            )
+        else:
+            running_telescope.release_subarray_when_finished(
+                subarray_id, receptors, integration_test_exec_settings
+            )
+            pytest.fail(
+                "exception not raised when calling assign but it did successfully go to IDLE\n"
+                "Are you sure the config is invalid?"
+            )
 
 
 @when("I assign resources with invalid config", target_fixture="exception_info")

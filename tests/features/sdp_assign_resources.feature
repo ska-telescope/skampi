@@ -34,6 +34,12 @@ Feature: Assign resources to sdp subarray
 		Then the subarray should throw an exception and continue with first command
 		Then the subarray must be in IDLE state
 
+	@XTP-20494
+	Scenario: Assign resources with invalid processing block script name to SDP
+		Given an SDP subarray
+		When I assign resources with an invalid processing block script name
+		Then the subarray should throw an exception and remain in the previous state
+
 		
 
 

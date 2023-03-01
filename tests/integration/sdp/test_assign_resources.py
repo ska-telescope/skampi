@@ -56,6 +56,7 @@ def test_assign_resources_duplicate_commands(assign_resources_test_exec_settings
     """Command assign resources twice in order."""
 
 
+@pytest.mark.skip(reason="Unable to correctly tear down after this test")
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp

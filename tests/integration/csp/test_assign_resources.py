@@ -54,23 +54,6 @@ def test_release_resources_to_csp_mid_subarray():
     """Release resources assigned to an CSP mid subarray"""
 
 
-def generate_invalid_config(observation: Observation):
-    # correct_config = observation.generate_assign_resources_config().as_dict
-    incorrect_config = {}
-    return EncodedObject(incorrect_config)
-
-
-@pytest.fixture(name="set_obs_config_as_invalid")
-def fxt_set_obs_config_as_invalid(
-    interject_into_observation_config: ObservationConfigInterjector[
-        [], EncodedObject[dict[str, Any]]
-    ]
-):
-    interject_into_observation_config(
-        "generate_assign_resources_config", generate_invalid_config
-    )
-
-
 @pytest.mark.xfail
 @pytest.mark.skamid
 @pytest.mark.csp

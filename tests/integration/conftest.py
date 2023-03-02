@@ -9,6 +9,8 @@ from mock import patch, Mock
 from assertpy import assert_that
 import pytest
 from pytest_bdd import when, then, given, parsers
+from pytest_bdd.parser import Feature, Scenario, Step
+
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting
@@ -25,6 +27,22 @@ from resources.models.obsconfig.base import EncodedObject
 
 
 logger = logging.getLogger(__name__)
+
+
+def pytest_bdd_before_step_call(
+    request: Any,
+    feature: Feature,
+    scenario: Scenario,
+    step: Step,
+    step_func: Callable[[Any], Any],
+    step_func_args: dict[str, Any],
+):
+    if os.getenv("SHOW_STEP_FUNCTIONS"):
+        logger.info(
+            "\n**********************************************************\n"
+            f"***** {step.keyword} {step.name} *****\n"
+            "**********************************************************"
+        )
 
 
 class SutTestSettings(SimpleNamespace):

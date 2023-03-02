@@ -26,6 +26,7 @@ low-test:
     CAPTURE_LOGS: "True"
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
+    SHOW_STEP_FUNCTIONS: "True"
     LIVE_LOGGING_EXTENDED: "True"
   extends:
     - .tags_default

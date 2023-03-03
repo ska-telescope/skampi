@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-dashboards
+data:
+{{- $currentScope := .}}
+{{- range $path, $_ :=  .Files.Glob  "dashboards/*.wj" }}
+    {{- with $currentScope}}
+{{ base $path | indent 2 }}: |-
+{{ ($.Files.Get $path) | indent 4  }}
+    {{- end }}
+{{- end }}

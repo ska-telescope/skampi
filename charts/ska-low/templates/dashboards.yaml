@@ -8,11 +8,7 @@ spec:
   containers:
   - name: file-server
     image: ghcr.io/patrickdappollonio/docker-http-server:latest
-    env:
-      - name: FILE_SERVER_PATH
-        value: /data
-      - name: FILE_SERVER_PORT
-        value: 5000
+    args: ["--path","/data","--port","5000"]
     volumeMounts:
       - name: data
         mountPath: /data

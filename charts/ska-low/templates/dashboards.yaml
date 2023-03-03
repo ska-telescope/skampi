@@ -28,7 +28,7 @@ metadata:
   name: file-server
 spec:
   selector:
-    app.kubernetes.io/name: proxy
+    app.kubernetes.io/name: file-server
   ports:
   - name: http
     protocol: TCP

@@ -44,6 +44,8 @@ class SutTestSettings(SimpleNamespace):
         logger.info("initialising sut settings")
         self.observation = init_observation_config()
         self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
+        self.disable_subarray_teardown = False
+        self.restart_after_abort = False
 
     @property
     def nr_of_receptors(self):
@@ -333,6 +335,7 @@ def i_configure_it_for_a_scan(
                 sub_array_id, receptors, configuration, sb_id, scan_duration
             )
 
+
 @when("I command it to scan for a given period")
 def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
@@ -340,6 +343,7 @@ def i_command_it_to_scan(
 ):
     """I configure it for a scan."""
     configured_subarray.set_to_scanning(integration_test_exec_settings)
+
 
 # scans
 @given("an subarray busy scanning")
@@ -352,8 +356,6 @@ def i_command_it_to_scan(
     integration_test_exec_settings.attr_synching = False
     with context_monitoring.context_monitoring():
         configured_subarray.set_to_scanning(integration_test_exec_settings)
-
-
 
 
 @when("I release all resources assigned to it")
@@ -373,11 +375,43 @@ def i_release_all_resources_assigned_to_it(
             entry_point.tear_down_subarray(sub_array_id)
 
 
-
 @given("an subarray busy configuring")
 def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
     """an subarray busy configuring"""
     allocated_subarray.set_to_configuring(clear_afterwards=False)
+
+
+@given("an subarray busy assigning", target_fixture="allocated_subarray")
+def an_subarray_busy_assigning(
+    running_telescope: fxt_types.running_telescope,
+    sb_config: fxt_types.sb_config,
+    composition: conf_types.Composition,
+    exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    """an subarray busy assigning"""
+
+    """Create a subarray but block only until it is in RESOURCING.
+
+    :param subarray_id: the identification nr for the subarray
+    :param receptors: the receptors that will be used for the subarray.
+        If none is given it will use a default set of two receptors 1 and 2.
+    :param sb_config: The SB configuration to use as context, defaults to SBConfig()
+    :param settings: the execution settings to use during the IO calls., defaults to
+        ExecSettings()
+    :param composition: The type of composition configuration to use.
+        , defaults to conf_types.Composition( conf_types.CompositionType.STANDARD )
+    :type composition: conf_types.Composition, optional
+    :return: A subarray context manager to ue for subsequent commands.
+    """
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    allocated_subbaray = running_telescope.set_to_resourcing(
+        subarray_id, receptors, sb_config, exec_settings, composition
+    )
+    allocated_subbaray.disable_automatic_teardown()
+    return allocated_subbaray
+
 
 @when("I command it to Abort")
 def i_command_it_to_abort(
@@ -394,10 +428,14 @@ def i_command_it_to_abort(
     ).to_become_equal_to("ABORTED")
     with context_monitoring.context_monitoring():
         with context_monitoring.wait_before_complete(integration_test_exec_settings):
-            allocated_subarray.reset_after_test(integration_test_exec_settings)
+            if sut_settings.restart_after_abort:
+                allocated_subarray.restart_after_test(integration_test_exec_settings)
+            else:
+                allocated_subarray.reset_after_test(integration_test_exec_settings)
             entry_point.abort_subarray(sub_array_id)
 
     integration_test_exec_settings.touch()
+
 
 @then("the subarray should go into an aborted state")
 def the_subarray_should_go_into_an_aborted_state(

@@ -3,7 +3,7 @@ import copy
 import json
 import logging
 import os
-from typing import List, Union
+from typing import Any, List, Union
 from time import sleep
 from ska_ser_skallop.utils.singleton import Memo
 from ska_ser_skallop.mvp_control.configuration import configuration as conf
@@ -22,6 +22,7 @@ from ska_ser_skallop.utils.nrgen import get_id
 
 from ..mvp_model.env import get_observation_config, Observation
 from ..mvp_model.states import ObsState
+
 logger = logging.getLogger(__name__)
 
 
@@ -233,9 +234,24 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         ).to_become_equal_to("IDLE")
         return brd
 
-    def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Not implemented."""
-        raise NotImplementedError()
+    def set_wait_for_doing(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        brd = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "RESOURCING"
+        )
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        # ).to_become_equal_to("RESOURCING")
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("RESOURCING")
+        return brd
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray releasing resources is done.
@@ -520,7 +536,6 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
-
 class TMCObsResetStep(ObsResetStep, LogEnabled):
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -529,7 +544,9 @@ class TMCObsResetStep(ObsResetStep, LogEnabled):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("ABORTED", ignore_first=True)  #IDLE
+        ).to_become_equal_to(
+            "ABORTED", ignore_first=True
+        )  # IDLE
         return builder
 
     def do(self, sub_array_id: int):
@@ -550,6 +567,14 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        csp_subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(csp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        sdp_subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(sdp_subarray_name).for_attribute(
             "obsState"
         ).to_become_equal_to("ABORTED", ignore_first=True)
         return builder
@@ -575,19 +600,29 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
         return builder
 
 
-class TMCRestart(base.ObsResetStep, LogEnabled):
+class TMCRestart(base.RestartStep, LogEnabled):
     def do(self, sub_array_id: int):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with Restart command")
         subarray.command_inout("Restart")
 
-    def set_wait_for_do(self, sub_array_id: int, receptors: List[int]) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_do(
+        self, sub_array_id: int, _: Any = None
+    ) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("EMPTY", ignore_first=True)
+        ).to_become_equal_to("EMPTY", ignore_first=False)
+        csp_subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(csp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=False)
+        sdp_subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(sdp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to(["EMPTY", "IDLE"], ignore_first=False)
         return builder
 
 
@@ -614,8 +649,8 @@ class TMCEntryPoint(CompositeEntryPoint):
         # currently we do obsreset via an restart
         #  not this results in the SUT going to EMPTY and not
         # IDLE
-        self.obsreset_step = TMCRestart()
-
+        self.obsreset_step = TMCRestart()  # type ignore
+        self.restart_step = TMCRestart()
 
 
 ASSIGN_RESOURCE_JSON_LOW = {
@@ -807,3 +842,5 @@ SCAN_JSON_LOW = {
     "transaction_id": "txn-....-00001",
     "scan_id": 1,
 }
+
+

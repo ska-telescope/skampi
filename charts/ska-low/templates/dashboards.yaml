@@ -51,7 +51,7 @@ data:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: file-server}
+  name: file-server
   labels:
     app: file-server
   annotations:
@@ -61,7 +61,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /{{ .Release.Namespace }}/dasboards/(.*)
+      - path: /{{ .Release.Namespace }}/dashboards/(.*)
         backend:
           service:
             name: file-server

@@ -9,7 +9,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   SKALLOP_VERSION: "2.24.2"
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-tango-images-pytango-builder:9.3.3
-  KUBE_BRANCH: $CI_JOB_ID
+  KUBE_BRANCH: $CI_COMMIT_REF_SLUG
   DOMAIN: "branch"
   EXPOSE_All_DS: "true"
   CONFIG: "common"

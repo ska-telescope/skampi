@@ -79,7 +79,7 @@ ska-taranta:
         memory: 1024Mi # 1024Mi = 1 GB mem
 
 ska-oso-oet:
-  enabled: false
+  enabled: true
   system: TM-mid
   telescope: SKA-mid
   central_node: ska_mid/tm_central/central_node
@@ -104,15 +104,15 @@ ska-db-oda:
 #telescope control
 ## mid-cbf
 ska-mid-cbf:
-  enabled: false
+  enabled: true
 
 ## mid-csp
 ska-csp-lmc-mid:
-  enabled: false
+  enabled: true
 
 ## sdp
 ska-sdp:
-  enabled: false
+  enabled: true
   lmc:
     prefix: mid
     nsubarray: 3

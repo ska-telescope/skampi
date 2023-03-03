@@ -18,13 +18,13 @@
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
     - *create_k8s_creds
-    - mkdir -p build
-    - bash scripts/gitlab_section.sh install "Install Skampi Charts" make k8s-install-chart > build/install-chart.log 2>&1
-    - ls -all build
-    - bash scripts/gitlab_section.sh get_all "Check all k8s resources in $KUBE_NAMESPACE" kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE > build/all-resources.log 2>&1
-    - ls -all build
-    - bash scripts/gitlab_section.sh wait_for_it "Wait for all config jobs to complete" make skampi-wait-all > build/wait-for-daployment.log 2>&1
-    - ls -all build
+    - mkdir -p buildxx
+    - bash scripts/gitlab_section.sh install "Install Skampi Charts" make k8s-install-chart > buildxx/install-chart.log 2>&1
+    - ls -all buildxx
+    - bash scripts/gitlab_section.sh get_all "Check all k8s resources in $KUBE_NAMESPACE" kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE > buildxx/all-resources.log 2>&1
+    - ls -all buildxx
+    - bash scripts/gitlab_section.sh wait_for_it "Wait for all config jobs to complete" make skampi-wait-all > buildxx/wait-for-daployment.log 2>&1
+    - ls -all buildxx
   artifacts:
     untracked: false
     when: always

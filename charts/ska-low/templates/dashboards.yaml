@@ -16,7 +16,7 @@ spec:
         mountPath: /data
     ports:
       - containerPort: 5000
-        name: http-file-server
+        name: http
   volumes:
     - name: data
       configMap:
@@ -30,10 +30,10 @@ spec:
   selector:
     app.kubernetes.io/name: proxy
   ports:
-  - name: http-file-server
+  - name: http
     protocol: TCP
     port: 5000
-    targetPort: http-file-server
+    targetPort: http
 ---
 apiVersion: v1
 kind: ConfigMap

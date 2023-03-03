@@ -13,5 +13,3 @@ data:
         {{- end }}
         ]
     }
-  tmc_dashboard.wj: |-
-{{ ($.Files.Get "dashboard/tmc_dashboard.wj") | indent 4  }}

@@ -13,7 +13,17 @@ from kubernetes.stream import stream
 LOG = logging.getLogger(__name__)
 
 TIMEOUT = 15
-REC_POD = {
+POD_CONTAINER = "data-prep"
+POD_COMMAND = [
+    "/bin/bash",
+    "-c",
+    "apt-get update; apt-get -y install curl;"
+    "curl https://gitlab.com/ska-telescope/sdp/ska-sdp-realtime-receive-core/-/raw/3.6.0/data/AA05LOW.ms.tar.gz "
+    "--output /mnt/data/AA05LOW.ms.tar.gz;"
+    "cd /mnt/data/; tar -xzf AA05LOW.ms.tar.gz; cd -;"
+    " trap : TERM; sleep infinity & wait",
+]
+DATA_POD_DEF = {
     "apiVersion": "v1",
     "kind": "Pod",
     "metadata": {"name": "receive-data"},
@@ -22,16 +32,8 @@ REC_POD = {
         "containers": [
             {
                 "image": "artefact.skao.int/ska-sdp-realtime-receive-modules:3.5.0",
-                "name": "data-prep",
-                "command": [
-                    "/bin/bash",
-                    "-c",
-                    "apt-get update; apt-get -y install curl;"
-                    "curl https://gitlab.com/ska-telescope/sdp/ska-sdp-realtime-receive-core/-/raw/3.6.0/data/AA05LOW.ms.tar.gz "
-                    "--output /mnt/data/AA05LOW.ms.tar.gz;"
-                    "cd /mnt/data/; tar -xzf AA05LOW.ms.tar.gz; cd -;"
-                    " trap : TERM; sleep infinity & wait",
-                ],
+                "name": POD_CONTAINER,
+                "command": POD_COMMAND,
                 "volumeMounts": [{"mountPath": "/mnt/data", "name": "data"}],
             }
         ],
@@ -71,7 +73,7 @@ class K8sElementManager:
         """
         # Get API handle
         core_api = client.CoreV1Api()
-        pod_spec = REC_POD.copy()
+        pod_spec = DATA_POD_DEF.copy()
 
         # Update the name of the data pvc and the type of pod
         pod_spec["metadata"]["name"] = pod_name
@@ -156,9 +158,7 @@ def delete_pod(pod_name: str, namespace: str):
     core_api.delete_namespaced_pod(pod_to_remove, namespace, async_req=False)
 
 
-def delete_directory(
-    dataproduct_directory, pod_name, container_name, namespace
-):
+def delete_directory(dataproduct_directory, pod_name, container_name, namespace):
     """Delete a directory
 
     :param dataproduct_directory: The directory where outputs are written
@@ -168,9 +168,7 @@ def delete_directory(
 
     """
     del_command = ["rm", "-rf", f"/mnt/data/{dataproduct_directory}"]
-    resp = k8s_pod_exec(
-        del_command, pod_name, container_name, namespace, stdin=False
-    )
+    resp = k8s_pod_exec(del_command, pod_name, container_name, namespace, stdin=False)
     _consume_response(resp)
     assert resp.returncode == 0
 
@@ -257,7 +255,7 @@ def wait_for_pod(
             return True
 
         # return False a second before timeout is hit, else no error is raised
-        if (start_time + timeout-10) <= time.time():
+        if (start_time + timeout - 10) <= time.time():
             return False
 
     return False
@@ -382,7 +380,9 @@ def wait_for_obs_state(device, obs_state, timeout=TIMEOUT):
     def predicate():
         return device.read_attribute("obsState").name == obs_state
 
-    description = f"obsState {obs_state}; current one is {device.read_attribute('obsState').name}"
+    description = (
+        f"obsState {obs_state}; current one is {device.read_attribute('obsState').name}"
+    )
     wait_for_predicate(predicate, description, timeout=timeout)
 
 
@@ -467,8 +467,6 @@ def compare_data(
         "--minimal",
         "true",
     ]
-    resp = k8s_pod_exec(
-        exec_command, pod_name, container_name, namespace, stdin=False
-    )
+    resp = k8s_pod_exec(exec_command, pod_name, container_name, namespace, stdin=False)
     _consume_response(resp)
     return resp

@@ -32,7 +32,7 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 4
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
-    vis_receive_test = False
+    test_case = None
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

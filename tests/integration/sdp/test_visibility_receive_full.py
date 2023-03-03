@@ -34,7 +34,8 @@ from integration.sdp.vis_receive_utils import (
     wait_for_predicate,
     deploy_sender,
     wait_for_obs_state,
-    compare_data
+    compare_data,
+    POD_CONTAINER
 )
 from resources.models.mvp_model.states import ObsState
 from .. import conftest
@@ -63,7 +64,7 @@ def fxt_update_sut_settings_vis_rec(sut_settings: conftest.SutTestSettings):
     tel = names.TEL()
     if tel.skalow:
         sut_settings.nr_of_subarrays = 1
-    sut_settings.vis_receive_test = True
+    sut_settings.test_case = "vis-receive"
 
 
 # use given from sdp/conftest.py
@@ -80,7 +81,7 @@ def local_volume(k8s_element_manager, fxt_k8s_cluster):
     """
     receive_pod = "sdp-receive-data"
     sender_pod = "sdp-sender-data"
-    data_container = "data-prep"
+    data_container = POD_CONTAINER
 
     LOG.info("Check for existing PVC")
     assert pvc_exists(PVC_NAME, NAMESPACE_SDP), f"PVC in {NAMESPACE_SDP} doesn't exist"
@@ -305,7 +306,7 @@ def check_measurement_set(dataproduct_directory, k8s_element_manager, sut_settin
     time.sleep(10)
 
     receive_pod = "sdp-receive-data"
-    data_container = "data-prep"
+    data_container = POD_CONTAINER
 
     # Add data product directory to k8s element manager for cleanup
     parse_dir = dataproduct_directory.index("ska-sdp")

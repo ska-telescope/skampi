@@ -42,7 +42,7 @@ def fxt_set_entry_point(
     exec_env = set_session_exec_env
     if not sut_settings.mock_sut:
         SDPEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
-        if sut_settings.vis_receive_test:
+        if sut_settings.test_case == "vis-receive":
             SDPEntryPoint.obs_to_use = VisRecObservation()
         exec_env.entrypoint = SDPEntryPoint
     else:

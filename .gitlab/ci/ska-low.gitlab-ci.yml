@@ -24,6 +24,7 @@ low-test:
     COUNT: 1
     EXIT_AT_FAIL: "false"
     CAPTURE_LOGS: "True"
+    SKALLOP_LOG_FILTER_ERRORS: "True"
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
@@ -48,7 +49,7 @@ low-test:
   retry: 1
 
 # Low on-demand deployment
-low_on_demand_deploy:
+low_deploy_on_demand:
   stage: on-demand
   variables:
     CONFIG: low
@@ -74,7 +75,7 @@ low_on_demand_deploy:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    on_stop: low_on_demand_destroy
+    on_stop: low_destroy_on_demand
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -84,7 +85,7 @@ low_on_demand_deploy:
   when: manual
   allow_failure: true
 
-low_on_demand_destroy:
+low_destroy_on_demand:
   stage: on-demand
   variables:
     CONFIG: low

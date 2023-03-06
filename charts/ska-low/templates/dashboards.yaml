@@ -8,7 +8,7 @@ spec:
   containers:
   - name: file-server
     image: ghcr.io/patrickdappollonio/docker-http-server:latest
-    args: ["--path","/data","--port","5000"]
+    args: ["--path","/data","--port","5000","--pathprefix","{{ .Release.Namespace }}/dashboards/"]
     volumeMounts:
       - name: data
         mountPath: /data
@@ -54,12 +54,11 @@ metadata:
     app: file-server
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
   - http:
       paths:
-      - path: /{{ .Release.Namespace }}/dashboards/(.*)
+      - path: /{{ .Release.Namespace }}/dashboards/
         backend:
           service:
             name: file-server

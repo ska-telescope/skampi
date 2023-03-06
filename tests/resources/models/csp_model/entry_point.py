@@ -17,6 +17,8 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 from ska_ser_skallop.utils.singleton import Memo
 
 from ..obsconfig.config import Observation
+from ..mvp_model.states import ObsState
+
 
 
 logger = logging.getLogger(__name__)
@@ -80,14 +82,16 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """Domain logic for what needs to be waited for switching the csp off."""
         brd = get_message_board_builder()
         # controller
-        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-            "state"
-        ).to_become_equal_to("OFF", ignore_first=False)
-        # subarrays
-        for index in range(1, self.nr_of_subarrays + 1):
-            brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+        # the low telescope does not switch off so there is no wait
+        if self._tel.skamid:
+            brd.set_waiting_on(self._tel.csp.controller).for_attribute(
                 "state"
             ).to_become_equal_to("OFF", ignore_first=False)
+            # subarrays
+            for index in range(1, self.nr_of_subarrays + 1):
+                brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+                    "state"
+                ).to_become_equal_to("OFF", ignore_first=False)
         return brd
 
     def undo(self):
@@ -256,10 +260,18 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         return builder
 
     def set_wait_for_doing(
-        self, sub_array_id: int, receptors: List[int]
+            self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Not implemented."""
-        raise NotImplementedError()
+        """Domain logic specifying what needs to be waited for a subarray to be in a state of configuring.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("CONFIGURING")
+        return builder
 
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]
@@ -306,7 +318,9 @@ class CspScanStep(base.ScanStep, LogEnabled):
         try:
             subarray.command_inout("Scan", scan_config_arg)
             sleep(scan_duration)
-            subarray.command_inout("EndScan")
+            current_state = subarray.read_attribute("obsState")
+            if current_state.value == ObsState.SCANNING:
+                subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception
@@ -419,6 +433,95 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
+class CSPAbortStep(base.AbortStep, LogEnabled):
+
+
+    """Implementation of Abort Step for CSP."""
+
+    def do(self, sub_array_id: int):
+        """Domain logic for running a abort on subarray in csp.
+
+        This implments the scan method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Abort command")
+        subarray.command_inout("Abort")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        """Domain logic specifying what needs to be waited for abort is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        return builder
+
+
+class CSPObsResetStep(base.ObsResetStep, LogEnabled):
+
+    """Implementation of ObsReset Step for CSP."""
+
+
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
+        """Domain logic for running a obsreset on subarray in csp.
+
+        This implments the scan method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE", ignore_first=True)
+        return builder
+
+    def do(self, sub_array_id: int):
+        """Domain logic specifying what needs to be waited for obsreset is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ObsReset command")
+        subarray.command_inout("Obsreset")
+
+
+    def undo(self, sub_array_id: int):
+        """Domain logic for releasing resources on a subarray in csp.
+
+        This implments the tear_down_subarray method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ReleaseAllResources")
+        subarray.set_timeout_millis(6000)
+        subarray.command_inout("ReleaseAllResources")
+
+
+    def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
+        """Domain logic specifying what needs to be waited for subarray releasing resources is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+
+        return builder
+
 class CSPEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
@@ -435,6 +538,9 @@ class CSPEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = CspAsignResourcesStep(observation)
         self.configure_scan_step = CspConfigureStep(observation)
         self.scan_step = CspScanStep(observation)
+        self.abort_step = CSPAbortStep()
+        self.obsreset_step = CSPObsResetStep()
+
 
 
 csp_mid_assign_resources_template = {
@@ -496,82 +602,118 @@ csp_low_assign_resources = {
     "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",
     "common": {"subarray_id": 1},
     "lowcbf": {
-        "stations": [
-            {"station_id": 1, "sub_station_id": 1},
-            {"station_id": 3, "sub_station_id": 1},
-            {"station_id": 3, "sub_station_id": 2},
-        ],
-        "station_beams": [
+        "resources": [
             {
-                "station_beam_id": 1,
-                "channels": [1, 2, 3, 4, 5, 6, 7, 8],
-                "pst_beams": [{"pst_beam_id": 1}],
-            }
-        ],
+                "device": "fsp_01",
+                "shared": True,
+                "fw_image": "pst",
+                "fw_mode": "unused",
+            },
+            {"device": "p4_01", "shared": True, "fw_image": "p4.bin", "fw_mode": "p4"},
+        ]
     },
 }
+
+# csp_low_configure_scan = {
+#     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+#     "subarray": {"subarray_name": "science period 23"},
+#     "common": {
+#         "config_id": "sbi-mvp01-20200325-00001-science_A",
+#         "subarray_id": 1,
+#     },
+#     "lowcbf": {
+#         "jones_source": "tango://host:port/domain/family/member",
+#         "station_beams": [
+#             {
+#                 "station_beam_id": 1,
+#                 "station_delay_src": "tango://host:port/domain/family/member",
+#                 "visibility_dest": [
+#                     {"dest_ip": "10.0.2.1", "dest_mac": "02:00:00:00:02:01"}
+#                 ],
+#                 "zooms": [
+#                     {
+#                         "zoom_id": 1,
+#                         "zoom_centre_hz": 90000000,
+#                         "zoom_resolution_hz": 14,
+#                         "zoom_channels": 2000,
+#                         "zoom_dest": {
+#                             "dest_ip": "10.0.5.1",
+#                             "dest_mac": "02:00:00:00:05:01",
+#                         },
+#                     },
+#                     {
+#                         "zoom_id": 2,
+#                         "zoom_centre_hz": 120000000,
+#                         "zoom_resolution_hz": 30,
+#                         "zoom_channels": 2000,
+#                         "zoom_dest": {
+#                             "dest_ip": "10.0.5.2",
+#                             "dest_mac": "02:00:00:00:05:02",
+#                         },
+#                     },
+#                 ],
+#             },
+#             {
+#                 "station_beam_id": 2,
+#                 "station_delay_src": "tango://host:port/domain/family/member",
+#                 "visibility_dest": [
+#                     {"dest_ip": "10.0.2.2", "dest_mac": "02:00:00:00:02:02"}
+#                 ],
+#                 "zooms": [
+#                     {
+#                         "zoom_id": 3,
+#                         "zoom_centre_hz": 190000000,
+#                         "zoom_resolution_hz": 60,
+#                         "zoom_channels": 2000,
+#                         "zoom_dest": {
+#                             "dest_ip": "10.0.5.3",
+#                             "dest_mac": "02:00:00:00:05:03",
+#                         },
+#                     }
+#                 ],
+#             },
+#         ],
+#     },
+# }
+
 
 csp_low_configure_scan = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
     "subarray": {"subarray_name": "science period 23"},
-    "common": {
-        "config_id": "sbi-mvp01-20200325-00001-science_A",
-        "subarray_id": 1,
-    },
+    "common": {"config_id": "sbi-mvp01-20200325-00001-science_A", "subarray_id": 1},
     "lowcbf": {
-        "jones_source": "tango://host:port/domain/family/member",
-        "station_beams": [
-            {
-                "station_beam_id": 1,
-                "station_delay_src": "tango://host:port/domain/family/member",
-                "visibility_dest": [
-                    {"dest_ip": "10.0.2.1", "dest_mac": "02:00:00:00:02:01"}
-                ],
-                "zooms": [
-                    {
-                        "zoom_id": 1,
-                        "zoom_centre_hz": 90000000,
-                        "zoom_resolution_hz": 14,
-                        "zoom_channels": 2000,
-                        "zoom_dest": {
-                            "dest_ip": "10.0.5.1",
-                            "dest_mac": "02:00:00:00:05:01",
-                        },
-                    },
-                    {
-                        "zoom_id": 2,
-                        "zoom_centre_hz": 120000000,
-                        "zoom_resolution_hz": 30,
-                        "zoom_channels": 2000,
-                        "zoom_dest": {
-                            "dest_ip": "10.0.5.2",
-                            "dest_mac": "02:00:00:00:05:02",
-                        },
-                    },
-                ],
-            },
-            {
-                "station_beam_id": 2,
-                "station_delay_src": "tango://host:port/domain/family/member",
-                "visibility_dest": [
-                    {"dest_ip": "10.0.2.2", "dest_mac": "02:00:00:00:02:02"}
-                ],
-                "zooms": [
-                    {
-                        "zoom_id": 3,
-                        "zoom_centre_hz": 190000000,
-                        "zoom_resolution_hz": 60,
-                        "zoom_channels": 2000,
-                        "zoom_dest": {
-                            "dest_ip": "10.0.5.3",
-                            "dest_mac": "02:00:00:00:05:03",
-                        },
-                    }
-                ],
-            },
-        ],
+        "stations": {
+            "stns": [[1, 0], [2, 0], [3, 0], [4, 0]],
+            "stn_beams": [
+                {
+                    "beam_id": 1,
+                    "freq_ids": [64, 65, 66, 67, 68, 68, 70, 71],
+                    "boresight_dly_poly": "url",
+                }
+            ],
+        },
+        "timing_beams": {
+            "beams": [
+                {
+                    "pst_beam_id": 13,
+                    "stn_beam_id": 1,
+                    "offset_dly_poly": "url",
+                    "stn_weights": [0.9, 1.0, 1.0, 0.9],
+                    "jones": "url",
+                    "dest_ip": ["10.22.0.1:2345", "10.22.0.3:3456"],
+                    "dest_chans": [128, 256],
+                    "rfi_enable": ["true", "true", "true"],
+                    "rfi_static_chans": [1, 206, 997],
+                    "rfi_dynamic_chans": [242, 1342],
+                    "rfi_weighted": 0.87,
+                }
+            ]
+        },
+        "search_beams": "tbd",
+        "zooms": "tbd",
     },
 }
+
 
 csp_low_scan = {
     "common": {"subarray_id": 1},

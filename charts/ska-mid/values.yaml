@@ -41,6 +41,14 @@ global:
       pullPolicy: IfNotPresent
   dish_lmc_server_instances: ["1", "2", "3", "4"]
 
+ska-dish-lmc:
+  enabled: true
+  ska-mid-dish-simulators:
+    enabled: true
+  deviceServers:
+    dsdevice: 
+      enabled: true
+
 ska-landingpage:
   enabled: true
   MVPInstance: ska-mid
@@ -88,6 +96,9 @@ ska-oso-oet:
   rest:
     ingress:
       enabled: false
+    oda:
+      backendType: rest
+      url: http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1
   resources:
     requests:
       cpu: 200m
@@ -95,6 +106,9 @@ ska-oso-oet:
     limits:
       cpu: 2000m
       memory: 1024Mi
+
+ska-db-oda:
+  enabled: false
 
 #telescope control
 ## mid-cbf
@@ -111,10 +125,14 @@ ska-sdp:
   lmc:
     prefix: mid
     nsubarray: 3
-  ska-tango-base:
-    enabled: false
   console:
     enabled: true
+  data-pvc:
+    name: shared
+    create:
+      enabled: true
+      size: 20Gi
+      storageClassName: nfss1
   ska-sdp-qa:
     kafka:
       resources:
@@ -131,6 +149,8 @@ ska-sdp:
         resources:
           requests:
             cpu: 100m
+  ska-tango-base:
+    enabled: false
 
 ## tmc
 tmc-mid:
@@ -142,9 +162,9 @@ ska-tango-archiver:
   dbname: default_mvp_archiver_db
 
 ## dishmasters
-# ska-sim-dishmaster:
-#   enabled: true
+ska-sim-dishmaster:
+  enabled: true
 
-#dish lmc
-ska-dish-lmc:
+# alarm-handler
+ska-tango-alarmhandler:
   enabled: true

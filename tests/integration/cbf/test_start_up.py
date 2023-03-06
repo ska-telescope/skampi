@@ -22,15 +22,12 @@ logger = logging.getLogger(__name__)
 def test_cbf_start_up_telescope_mid():
     """Start up the cbf in mid."""
 
-
-@pytest.mark.skip(reason="cbf low not integrated")
 @pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.startup
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in low")
 def test_cbf_start_up_telescope_low():
     """Start up the cbf in low."""
-
 
 @pytest.fixture(name="set_up_transit_checking_for_cbf")
 @pytest.mark.usefixtures("set_cbf_entry_point")

@@ -1,3 +1,4 @@
+{{- if .Files.Glob  "dashboards/*.wj" }}
 apiVersion: v1
 kind: Pod
 metadata:
@@ -65,3 +66,4 @@ spec:
             port:
               number: 5000
         pathType: ImplementationSpecific
+{{- end }}

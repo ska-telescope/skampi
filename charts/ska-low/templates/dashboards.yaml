@@ -8,7 +8,7 @@ spec:
   containers:
   - name: file-server
     image: ghcr.io/patrickdappollonio/docker-http-server:latest
-    args: ["--path","/data","--port","5000","--pathprefix","{{ .Release.Namespace }}/dashboards/"]
+    args: ["--path","/data","--port","5000","--pathprefix","/{{ .Release.Namespace }}/dashboards/"]
     volumeMounts:
       - name: data
         mountPath: /data

@@ -43,10 +43,12 @@ global:
 
 ska-mid-dish-manager:
   enabled: true
+  global:
+    dishes: ["01", "02", "03", "04"]
   ska-mid-dish-simulators:
     enabled: true
   deviceServers:
-    dsdevice: 
+    dsdevice:
       enabled: true
 
 ska-landingpage:

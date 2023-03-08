@@ -41,7 +41,7 @@ global:
       pullPolicy: IfNotPresent
   dish_lmc_server_instances: ["1", "2", "3", "4"]
 
-ska-dish-lmc:
+ska-mid-dish-manager:
   enabled: true
   ska-mid-dish-simulators:
     enabled: true
@@ -163,7 +163,7 @@ ska-tango-archiver:
 
 ## dishmasters
 ska-sim-dishmaster:
-  enabled: true
+  enabled: false
 
 # alarm-handler
 ska-tango-alarmhandler:

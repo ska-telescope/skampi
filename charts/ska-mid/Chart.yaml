@@ -64,10 +64,10 @@ dependencies:
     version: 0.8.3
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
-  - name: ska-dish-lmc
-    version: 2.0.0
+  - name: ska-mid-dish-manager
+    version: 1.8.1
     repository: https://artefact.skao.int/repository/helm-internal
-    condition: ska-dish-lmc.enabled
+    condition: ska-mid-dish-manager.enabled
   - name: ska-tango-archiver
     version: 2.2.1
     repository: https://artefact.skao.int/repository/helm-internal

@@ -11,7 +11,7 @@ from ska_ser_skallop.datatypes.attributes import DishMasterPointingState
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 
-@pytest.mark.skip("disable until new dish LMC integrated")
+#@pytest.mark.skip("disable until new dish LMC integrated")
 @pytest.mark.skamid
 @pytest.mark.configure
 @scenario(

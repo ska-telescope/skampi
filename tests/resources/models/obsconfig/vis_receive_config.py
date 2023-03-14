@@ -16,7 +16,7 @@ from resources.models.obsconfig.sdp_config import ProcessingSpec
 from resources.models.obsconfig.target_spec import TargetSpec
 
 VIS_RECEIVE_SCRIPT = ScriptConfiguration(
-    kind="realtime", name="vis-receive", version="0.8.0"
+    kind="realtime", name="vis-receive", version="0.8.1"
 )
 VIS_REC_SPEC = OrderedDict(
     {

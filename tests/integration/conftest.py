@@ -230,7 +230,6 @@ def assign_resources_with_subarray_id(
             )
 
 
-@given("I deploy the visibility receive script")
 @when("I assign resources to it")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,

@@ -2,10 +2,11 @@
 import logging
 import pytest
 from assertpy import assert_that
-from pytest_bdd import scenario, then
+from pytest_bdd import given, scenario, then
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from resources.models.mvp_model.states import ObsState
@@ -37,8 +38,13 @@ def test_assign_resources_to_sdp_subarray_in_mid(assign_resources_test_exec_sett
     """Assign resources to sdp subarray in mid."""
 
 
-# use given from sdp/conftest.py
-# @given("an SDP subarray")
+@given("an SDP subarray", target_fixture="composition")
+def an_sdp_subarray(
+    set_up_subarray_log_checking_for_sdp, sdp_base_composition: conf_types.Composition
+) -> conf_types.Composition:
+    """an SDP subarray."""
+    return sdp_base_composition
+
 
 # use when from ..shared_assign_resources
 # @when("I assign resources to it")

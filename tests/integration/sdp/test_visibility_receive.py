@@ -171,7 +171,7 @@ def check_rec_adds(
 
     LOG.info("Receive pod is running. Checking receive addresses.")
     receive_addresses_expected = (
-        f"{receiver_pod_name}.receive.{NAMESPACE_SDP}.svc.cluster.local"
+        f"{receiver_pod_name}.receive.{NAMESPACE_SDP}"
     )
 
     assert host == receive_addresses_expected

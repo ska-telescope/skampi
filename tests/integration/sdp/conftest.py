@@ -132,14 +132,6 @@ def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 # shared givens
 
 
-@given("an SDP subarray", target_fixture="composition")
-def an_sdp_subarray(
-    set_up_subarray_log_checking_for_sdp, sdp_base_composition: conf_types.Composition
-) -> conf_types.Composition:
-    """an SDP subarray."""
-    return sdp_base_composition
-
-
 @given("an SDP subarray in IDLE state", target_fixture="configuration")
 def an_sdp_subarray_in_idle_state(
     set_up_subarray_log_checking_for_sdp,

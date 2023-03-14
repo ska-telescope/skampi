@@ -15,12 +15,17 @@ Upload the test results using the make target (refer to the Skallop documentatio
 
 .. code-block:: console
 
-    $ make skampi-upload-test-results 
-    Processing XRay uploads
+    $ make skampi-upload-test-results
+    Makefile:279: warning: overriding recipe for target 'k8s-do-test-runner'
+    .make/k8s.mk:451: warning: ignoring old recipe for target 'k8s-do-test-runner'
+    Processing XRay uploads using tests/test-exec-mid.json
+    Installing Skallop Requirements
+    00:02
     Processing XRay upload of: build/cucumber.json
     Using Jira Username and Password for auth
-    test results uploaded to XTP-6054: https://jira-test.skatelescope.org/browse/XTP-6054
+    test results uploaded to XTP-20175: https://jira.skatelescope.org/browse/XTP-20175
 
+.. warning:: Note from above output: the Test Execution details are captured in the ``tests/test-exec-<CONFIG>.json`` (where CONFIG is either ``mid`` or ``low``). Make sure that your test is marked properly with the ``@pytest.mark.<CONFIG>`` marker, so that it is executed in the correct telescope configuration. If a test can run in both LOW and MID pipelines, add both marks.
 
 Testing SKAMPI using the Testing Runway (SKALLOP)
 *************************************************

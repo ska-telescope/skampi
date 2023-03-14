@@ -36,7 +36,7 @@ DEFAULT_FIELDS = {
         phase_dir=PhaseDir(
             ra=[123.0],
             dec=[-60.0],
-            reference_time="...",
+            reference_time="2023-02-16T01:23:45.678900",
             reference_frame="ICRF3",
         ),
     )
@@ -169,11 +169,7 @@ class ScanTypes(TargetSpecs):
 
         agg_beam_types: dict[str, EBScanTypeBeam] = dict()
 
-        def add_beam(
-            grouping_id: str,
-            beam_type_id: str,
-            agg_beam_types: dict[str, EBScanTypeBeam],
-        ):
+        def add_beam(grouping_id: str, beam_type_id: str):
             beam_configuration = self.get_beam_configurations(grouping_id)
             assert beam_configuration, (
                 f"Beam grouping {grouping_id} does not exist, did you add a beam configuration"
@@ -184,7 +180,7 @@ class ScanTypes(TargetSpecs):
                 f"Beam type {beam_type_id} does not exist, did you add a beam configuration"
                 " by calling `add_beam_configuration'"
             )
-            agg_beam_types = {**agg_beam_types, **{grouping_id: beam_type}}
+            return {grouping_id: beam_type}
 
         assert (
             self._scan_type_configurations.get(config_name) is None
@@ -200,12 +196,18 @@ class ScanTypes(TargetSpecs):
         elif isinstance(beams, tuple):
             grouping_id = beams[0]
             beam_type_id = beams[1]
-            add_beam(grouping_id, beam_type_id, agg_beam_types)
+            agg_beam_types = {
+                **agg_beam_types,
+                **add_beam(grouping_id, beam_type_id),
+            }
         else:
             for mapping in beams:
                 grouping_id = mapping[0]
                 beam_type_id = mapping[1]
-                add_beam(grouping_id, beam_type_id, agg_beam_types)
+                agg_beam_types = {
+                    **agg_beam_types,
+                    **add_beam(grouping_id, beam_type_id),
+                }
 
         if derive_from is None:
             eb_scan_type = EBScanType(config_name, beams=agg_beam_types)
@@ -390,7 +392,7 @@ class ProcessingBlockSpec(ProcessingSpecs):
             ProcessingBlockConfiguration(
                 pb_id=self.pb_id,
                 script=processing_script.script,
-                sbi_ids=[self.eb_id.replace("eb", "sbi")],
+                sbi_ids=[self.sbi_id],
                 parameters=processing_script.parameters,
             )
             for processing_script in self.processing_scripts
@@ -447,7 +449,6 @@ class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
 
     def _generate_sdp_assign_resources_config(self):
         return SDPConfiguration(
-            eb_id=self.eb_id,
             interface=self.sdp_assign_resources_schema,
             execution_block=self.execution_block,
             resources=cast(dict[Any, Any], self.resource_configuration),

@@ -9,13 +9,15 @@ from ska_tmc_cdm.messages.subarray_node.configure.core import (
 from .target_spec import TargetSpecs
 
 ReceptorName = Literal[
-    "SKA0001",
-    "SKA0002",
-    "SKA0003",
-    "SKA0004",
-    "SKA0005",
-    "SKA0006",
-    "SKA0007" "SKA0008" "SKA0009",
+    "SKA001",
+    "SKA002",
+    "SKA003",
+    "SKA004",
+    "SKA005",
+    "SKA006",
+    "SKA007",
+    "SKA008",
+    "SKA009",
 ]
 
 
@@ -27,9 +29,9 @@ class Dishes(TargetSpecs):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.dish_specs: dict[str, list[ReceptorName]] = {
-            "two": ["SKA0001", "SKA0002"],
-            "three": ["SKA0001", "SKA0002", "SKA0003"],
-            "four": ["SKA0001", "SKA0002", "SKA0003", "SKA0004"],
+            "two": ["SKA001", "SKA002"],
+            "three": ["SKA001", "SKA002", "SKA003"],
+            "four": ["SKA001", "SKA002", "SKA003", "SKA004"],
             # vis-receive script doesn't allow the above resources
             "vis-rec": ["C10", "C136", "C1", "C217", "C13", "C42"],
         }
@@ -46,7 +48,7 @@ class Dishes(TargetSpecs):
 
     @property
     def dish_allocation(self):
-        adapted_dishes = [dish.replace("SKA", "") for dish in self.dishes]
+        adapted_dishes = [dish.replace("SKA", "0") for dish in self.dishes]
         return DishAllocation(adapted_dishes)
 
     @property

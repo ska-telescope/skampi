@@ -55,6 +55,9 @@ def _load_json(json_file):
 
 
 class VisRecObservation(Observation):
+    """
+    Observation object for the SDP visibility receive test.
+    """
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         self.target_specs = VIS_REC_SPEC

@@ -32,6 +32,8 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 4
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
+    # specify if a specific test case needs running
+    # for SDP visibility receive test: test_case = "vis-receive"
     test_case = None
 
     def __init__(self, **kwargs: Any) -> None:

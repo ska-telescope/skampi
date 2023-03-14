@@ -1,4 +1,8 @@
-import enum
+"""
+Utility functions and classes used for the visibility receive test.
+These were copied from the ska-sdp-integration repository
+"""
+
 import logging
 import os
 import subprocess
@@ -44,11 +48,59 @@ DATA_POD_DEF = {
 }
 
 
+def _k8s_pod_exec(
+    exec_command,
+    pod_name,
+    container_name,
+    namespace,
+    stdout=True,
+):
+    """
+    Execute a command in a Kubernetes Pod
+
+    :param exec_command: command to be executed (eg ["bash", "-c", tar_command])
+    :param pod_name: pod name where command is executed
+    :param container_name: container name within pod
+    :param namespace: namespace where pod is running
+    :param stdout: enable stdout on channel
+
+    :returns api_response: channel connection object
+    """
+    core_api = client.CoreV1Api()
+    LOG.debug(
+        "Executing command in container %s/%s/%s: %s",
+        namespace,
+        pod_name,
+        container_name,
+        " ".join(exec_command),
+    )
+
+    api_response = stream(
+        core_api.connect_get_namespaced_pod_exec,
+        pod_name,
+        namespace,
+        command=exec_command,
+        container=container_name,
+        stderr=True,
+        stdin=False,
+        stdout=stdout,
+        tty=False,
+        _preload_content=False,
+    )
+
+    return api_response
+
+
 class K8sElementManager:
     """
-    An object that keeps track of the k8s elements it creates, the order in
-    which they are created, how to delete them, so that users can perform this
-    reverse deletion on request.
+    An object that keeps track of the k8s elements it creates and the order in
+    which they are created, so that users can perform reverse deletion
+    of these items on request.
+
+    It creates and deletes:
+    - pods
+    - helm charts
+    - directories within a pod
     """
 
     def __init__(self):
@@ -64,18 +116,18 @@ class K8sElementManager:
             cleanup_function(*data)
 
     def create_pod(self, pod_name, namespace, pvc_name):
-        """Create the requested POD and keep track of it for later deletion.
+        """
+        Create the requested POD and keep track of it for later deletion.
 
         :param pod_name: name of the pod to be created
-        :param namespace: namespace
-        :param pvc_name: name of the sdp data pvc
-
+        :param namespace: namespace in which to create the pod
+        :param pvc_name: name of the SDP data PVC that needs to be mounted
+                         into the pod
         """
-        # Get API handle
         core_api = client.CoreV1Api()
         pod_spec = DATA_POD_DEF.copy()
 
-        # Update the name of the data pvc and the type of pod
+        # Update the name of the pod and the data PVC
         pod_spec["metadata"]["name"] = pod_name
         pod_spec["spec"]["volumes"][0]["persistentVolumeClaim"]["claimName"] = pvc_name
 
@@ -88,7 +140,18 @@ class K8sElementManager:
 
         core_api.create_namespaced_pod(namespace, pod_spec)
 
-        self.to_remove.append((delete_pod, (pod_name, namespace)))
+        self.to_remove.append((self.delete_pod, (pod_name, namespace)))
+
+    @staticmethod
+    def delete_pod(pod_name: str, namespace: str):
+        """
+        Delete namespaced pod.
+
+        :param pod_name: name of pod to be deleted
+        :param namespace: namespace where pod exists
+        """
+        core_api = client.CoreV1Api()
+        core_api.delete_namespaced_pod(pod_name, namespace, async_req=False)
 
     def helm_install(self, release, chart, namespace, values_file):
         """
@@ -113,71 +176,69 @@ class K8sElementManager:
         ]
         subprocess.run(cmd, check=True)
 
-        self.to_remove.append((helm_uninstall, (release, namespace)))
+        self.to_remove.append((self.helm_uninstall, (release, namespace)))
+
+    @staticmethod
+    def helm_uninstall(release, namespace):
+        """
+        Uninstall a Helm chart
+
+        :param release: The name of the release to be uninstalled
+        :param namespace: The namespace where the release lives
+        """
+        cmd = [
+            "helm",
+            "uninstall",
+            release,
+            "-n",
+            namespace,
+            "--wait",
+            "--no-hooks",
+        ]
+        subprocess.run(cmd, check=True)
 
     def output_directory(
         self, dataproduct_directory, pod_name, container_name, namespace
     ):
-        """Remove the output directory once the test is finished."""
+        """
+        Remove the output data directory once the test is finished.
+
+        :param dataproduct_directory: directory where data products are saved by test
+        :param pod_name: name of pod through which we access the data directory
+        :param container_name: name of container within pod
+        :param namespace: namespace where pod lives
+        """
         self.to_remove.append(
             (
-                delete_directory,
+                self.delete_directory,
                 (dataproduct_directory, pod_name, container_name, namespace),
             )
         )
 
+    @staticmethod
+    def delete_directory(dataproduct_directory, pod_name, container_name, namespace):
+        """
+        Delete a directory
 
-def helm_uninstall(release, namespace):
-    """Uninstall a Helm chart
+        :param dataproduct_directory: directory where test outputs are written
+        :param pod_name: name of pod through which we access the data directory
+        :param container_name: name of container within pod
+        :param namespace: namespace where pod lives
 
-    :param release: The name of the release
-    :param namespace: The namespace where the chart lives
-    """
-    cmd = [
-        "helm",
-        "uninstall",
-        release,
-        "-n",
-        namespace,
-        "--wait",
-        "--no-hooks",
-    ]
-    subprocess.run(cmd, check=True)
-
-
-def delete_pod(pod_name: str, namespace: str):
-    """Delete namespaced pod.
-
-    :param pod_name: name of pod to be deleted
-    :param namespace: namespace
-    """
-    # Get API handle
-    core_api = client.CoreV1Api()
-
-    pod_to_remove = pod_name
-    core_api.delete_namespaced_pod(pod_to_remove, namespace, async_req=False)
-
-
-def delete_directory(dataproduct_directory, pod_name, container_name, namespace):
-    """Delete a directory
-
-    :param dataproduct_directory: The directory where outputs are written
-    :param pod_name: name of the pod
-    :param container_name: name of the container
-    :param namespace: The namespace where the chart will be installed
-
-    """
-    del_command = ["rm", "-rf", f"/mnt/data/{dataproduct_directory}"]
-    resp = k8s_pod_exec(del_command, pod_name, container_name, namespace, stdin=False)
-    _consume_response(resp)
-    assert resp.returncode == 0
+        Method assumes that the PVC where data are saved is mounted at /mnt/data/
+        """
+        del_command = ["rm", "-rf", f"/mnt/data/{dataproduct_directory}"]
+        resp = _k8s_pod_exec(del_command, pod_name, container_name, namespace)
+        _consume_response(resp)
+        assert resp.returncode == 0
 
 
 def pvc_exists(pvc_name: str, namespace: str):
-    """Check if the pvc from the env variable exists.
+    """
+    Check if PVC with name `pvc_name` exists in `namespace`
 
-    :param pvc_name: name of the sdp data pvc
-
+    :param pvc_name: name of the PVC to check
+    :param namespace: namespace where to look for the PVC
     """
     core_api = client.CoreV1Api()
 
@@ -188,56 +249,40 @@ def pvc_exists(pvc_name: str, namespace: str):
     return False
 
 
-class Comparison(enum.Enum):
-    """Comparisons for waiting for pods."""
-
-    # pylint: disable=unnecessary-lambda-assignment
-
-    EQUALS = lambda x, y: x == y  # noqa: E731
-    CONTAINS = lambda x, y: x in y  # noqa: E731
-
-
 def wait_for_pod(
     pod_name: str,
     namespace: str,
     phase: str,
     timeout: int = TIMEOUT,
-    name_comparison: Comparison = Comparison.EQUALS,
     pod_condition: str = "",
 ):
-    """Wait for the pod to be Running.
+    """
+    Wait for the pod to be Running.
 
     :param pod_name: name of the pod
     :param namespace: namespace
     :param phase: phase of the pod
     :param timeout: time to wait for the change
-    :param name_comparison: the type of comparison used to match a pod name
     :param pod_condition: if given, the condition through which the pod must
     have passed
 
     :returns: whether the pod was in the indicated status within the timeout
     """
-    # pylint: disable=too-many-arguments
-
-    # Get API handle
     core_api = client.CoreV1Api()
 
     if pod_condition:
-
-        def check_condition(pod):
+        def check_condition(k8s_pod):
             return any(
                 c.status == "True"
-                for c in pod.status.conditions
+                for c in k8s_pod.status.conditions
                 if c.type == pod_condition
             )
 
     else:
-
         def check_condition(_):
             return True
 
     watch_pod = watch.Watch()
-    start_time = int(time.time())
 
     for event in watch_pod.stream(
         func=core_api.list_namespaced_pod,
@@ -247,96 +292,19 @@ def wait_for_pod(
         pod = event["object"]
 
         if (
-            name_comparison(pod_name, pod.metadata.name)
+            pod_name in pod.metadata.name
             and pod.status.phase == phase
             and check_condition(pod)
         ):
             watch_pod.stop()
             return True
 
-        # return False a second before timeout is hit, else no error is raised
-        if (start_time + timeout - 10) <= time.time():
-            return False
-
     return False
 
 
-def k8s_pod_exec(
-    exec_command,
-    pod_name,
-    container_name,
-    namespace,
-    stdin=True,
-    stdout=True,
-    stderr=True,
-):
-    """Execute a command in a Kubernetes Pod
-
-    param exec_command: command to be executed (eg ["bash", "-c", tar_command])
-    param pod_name: Pod name
-    param container_name: Container name
-    param namespace: Namespace
-    param stdin: Enable stdin on channel
-    param stdout: Enable stdout on channel
-    param stderr: Enable stderr on channel
-
-    returns api_response: Channel connection object
-    """
-    # pylint: disable=too-many-arguments
-
-    # Get API handle
-    core_api = client.CoreV1Api()
-    LOG.debug(
-        "Executing command in container %s/%s/%s: %s",
-        namespace,
-        pod_name,
-        container_name,
-        " ".join(exec_command),
-    )
-
-    api_response = stream(
-        core_api.connect_get_namespaced_pod_exec,
-        pod_name,
-        namespace,
-        command=exec_command,
-        container=container_name,
-        stderr=stderr,
-        stdin=stdin,
-        stdout=stdout,
-        tty=False,
-        _preload_content=False,
-    )
-
-    return api_response
-
-
-def check_data_present(
-    pod_name: str, container_name: str, namespace: str, mount_location: str
-):
-    """Check if the data are present in pod
-
-    :param pod_name: name of the pod
-    :param container_name: name of the container
-    :param namespace: namespace
-    :param mount_location: mount location for data in the container
-
-    :returns: exit code of the command
-    """
-    exec_command = ["ls", mount_location]
-    resp = k8s_pod_exec(
-        exec_command,
-        pod_name,
-        container_name,
-        namespace,
-        stdin=False,
-        stdout=False,
-    )
-    _consume_response(resp)
-    return resp
-
-
 def _consume_response(api_response):
-    """Consumes and logs the stdout/stderr from a stream response
+    """
+    Consumes and logs the stdout/stderr from a stream response
 
     :param api_response: stream with the results of a pod command execution
     """
@@ -349,6 +317,31 @@ def _consume_response(api_response):
     api_response.close()
 
 
+def check_data_present(
+    pod_name: str, container_name: str, namespace: str, mount_location: str
+):
+    """
+    Check if the data are present in pod
+
+    :param pod_name: name of the pod
+    :param container_name: name of the container within the pod
+    :param namespace: namespace where pod lives
+    :param mount_location: mount location for data in the container
+
+    :returns: exit code of the command
+    """
+    exec_command = ["ls", mount_location]
+    resp = _k8s_pod_exec(
+        exec_command,
+        pod_name,
+        container_name,
+        namespace,
+        stdout=False,
+    )
+    _consume_response(resp)
+    return resp
+
+
 def wait_for_predicate(predicate, description, timeout=TIMEOUT, interval=0.5):
     """
     Wait for predicate to be true.
@@ -357,7 +350,6 @@ def wait_for_predicate(predicate, description, timeout=TIMEOUT, interval=0.5):
     :param description: description to use if test fails
     :param timeout: timeout in seconds
     :param interval: interval between tests of the predicate in seconds
-
     """
     start = time.time()
     while True:
@@ -368,34 +360,39 @@ def wait_for_predicate(predicate, description, timeout=TIMEOUT, interval=0.5):
         time.sleep(interval)
 
 
-def wait_for_obs_state(device, obs_state, timeout=TIMEOUT):
+def compare_data(
+    pod_name: str, container_name: str, namespace: str, measurement_set: str
+):
     """
-    Wait for obsState to have the expected value.
+    Compare the data sent with the data received using ms-assert.
+    This compares two Measurement Sets.
 
-    :param device: device proxy
-    :param obs_state: the expected value
-    :param timeout: timeout in seconds
+    :param pod_name: name of the pod through which we connect to data PVC
+    :param container_name: name of the container in pod
+    :param namespace: namespace where pod lives
+    :param measurement_set: name of the Measurement Set to compare
+
+    :returns: exit code of the command
     """
+    exec_command = [
+        "ms-asserter",
+        "/mnt/data/AA05LOW.ms",
+        f"/mnt/data/{measurement_set}",
+        "--minimal",
+        "true",
+    ]
+    resp = _k8s_pod_exec(exec_command, pod_name, container_name, namespace)
+    _consume_response(resp)
+    return resp
 
-    def predicate():
-        return device.read_attribute("obsState").name == obs_state
 
-    description = (
-        f"obsState {obs_state}; current one is {device.read_attribute('obsState').name}"
-    )
-    wait_for_predicate(predicate, description, timeout=timeout)
-
-
-def deploy_sender(host, scan_id, k8s_element_manager):
+def deploy_cbf_emulator(host, scan_id, k8s_element_manager):
     """
-    Deploy the cbf sender and check the cbf sender finished sending the data.
+    Deploy the CBF emulator and check that it finished sending the data.
 
-    :param context: context for the tests
-    :param subarray_device: SDP subarray device client
+    :param host: receiver's host
+    :param scan_id: ID of the scan that is being executed
     :param k8s_element_manager: Kubernetes element manager
-    :param assign_resources_config: configuration passed to AssignResources
-        command
-
     """
 
     # Construct command for the sender
@@ -423,50 +420,25 @@ def deploy_sender(host, scan_id, k8s_element_manager):
         "pvc": {"name": os.environ.get("SDP_DATA_PVC_NAME", "shared")},
     }
 
-    # Deploy the sender
     with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as file:
         file.write(yaml.dump(values))
 
     filename = file.name
+    namespace = os.environ.get("KUBE_NAMESPACE")
     sender_name = f"cbf-send-scan-{scan_id}"
+
     LOG.info("Deploying CBF sender for Scan %d on chart %s", scan_id, sender_name)
     k8s_element_manager.helm_install(
         sender_name,
         "tests/resources/charts/cbf-sender",
-        os.environ.get("KUBE_NAMESPACE"),
+        namespace,
         filename,
     )
 
+    # wait for CBF emulator to finish sending data
     assert wait_for_pod(
         sender_name,
-        os.environ.get("KUBE_NAMESPACE"),
+        namespace,
         "Succeeded",
-        300,
-        name_comparison=Comparison.CONTAINS,
+        timeout=300,
     )
-
-
-def compare_data(
-    pod_name: str, container_name: str, namespace: str, measurement_set: str
-):
-    """Compare the data sent with the data received.
-
-    :param pod_name: name of the pod
-    :param container_name: name of the container
-    :param namespace: namespace
-    :param measurement_set: name of the Measurement Set to compare
-
-    :returns: exit code of the command
-    """
-    # To test if the sent and received data match using ms-asserter
-
-    exec_command = [
-        "ms-asserter",
-        "/mnt/data/AA05LOW.ms",
-        f"/mnt/data/{measurement_set}",
-        "--minimal",
-        "true",
-    ]
-    resp = k8s_pod_exec(exec_command, pod_name, container_name, namespace, stdin=False)
-    _consume_response(resp)
-    return resp

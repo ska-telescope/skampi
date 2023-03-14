@@ -32,8 +32,7 @@ from integration.sdp.vis_receive_utils import (
     wait_for_pod,
     check_data_present,
     wait_for_predicate,
-    deploy_sender,
-    wait_for_obs_state,
+    deploy_cbf_emulator,
     compare_data,
     POD_CONTAINER
 )
@@ -56,11 +55,15 @@ PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
     "features/sdp_visibility_receive.feature", "Execute visibility receive script for a single scan (full)"
 )
 def test_visibility_receive_in_low(assign_resources_test_exec_settings):
-    """."""
+    """SDP Visibility receive test."""
 
 
 @pytest.fixture(name="update_sut_settings")
 def fxt_update_sut_settings_vis_rec(sut_settings: conftest.SutTestSettings):
+    """
+    Update SUT settings. Specify that we're running the
+    visibility receive test.
+    """
     tel = names.TEL()
     if tel.skalow:
         sut_settings.nr_of_subarrays = 1
@@ -71,13 +74,15 @@ def fxt_update_sut_settings_vis_rec(sut_settings: conftest.SutTestSettings):
 # @given("an SDP subarray")
 
 
-@given("the volumes are created and the data is copied")
+@given("the test volumes are present and the test data are downloaded")
 def local_volume(k8s_element_manager, fxt_k8s_cluster):
     """
-    Check if the local volumes are created and data is copied.
+    Check if the local volumes are present and the data
+    have been successfully downloaded.
 
-    :param context: context for the tests
     :param k8s_element_manager: Kubernetes element manager
+    :param fxt_k8s_cluster: fixture to use a KUBECONFIG file (if present),
+                for performing k8s commands (see unit.test_cluster_k8s)
     """
     receive_pod = "sdp-receive-data"
     sender_pod = "sdp-sender-data"
@@ -123,10 +128,10 @@ def local_volume(k8s_element_manager, fxt_k8s_cluster):
         return False
 
     wait_for_predicate(
-        _wait_for_receive_data, "MS data is not present in volume.", timeout=100
+        _wait_for_receive_data, "MS data not present in volume.", timeout=100
     )
     wait_for_predicate(
-        _wait_for_sender_data, "MS data is not present in volume.", timeout=100
+        _wait_for_sender_data, "MS data not present in volume.", timeout=100
     )
 
     LOG.info("PVCs and pods created, and data copied successfully")
@@ -140,6 +145,10 @@ def check_rec_adds(
     entry_point: fxt_types.entry_point,
     sut_settings: SutTestSettings,
 ):
+    """
+    Wait for receive pod to be Running and check that the
+    receive addresses have been updated correctly.
+    """
     tel = names.TEL()
     sdp_subarray = con_config.get_device_proxy(
         tel.sdp.subarray(sut_settings.subarray_id)
@@ -148,6 +157,7 @@ def check_rec_adds(
     receive_addresses = json.loads(
         sdp_subarray.read_attribute("receiveAddresses").value
     )
+    # Get the DNS hostname from receive addresses attribute
     host = receive_addresses["target:a"]["vis0"]["host"][0][1]
     receiver_pod_name = host.split(".")[0]
 
@@ -157,14 +167,13 @@ def check_rec_adds(
         receiver_pod_name,
         NAMESPACE_SDP,
         "Running",
-        600,
+        timeout=600,
         pod_condition="Ready",
     )
 
     LOG.info("Receive pod is running. Checking receive addresses.")
-    # Get the DNS hostname from receive addresses attribute
     receive_addresses_expected = (
-        f"{receiver_pod_name}.receive.{NAMESPACE_SDP}." "svc.cluster.local"
+        f"{receiver_pod_name}.receive.{NAMESPACE_SDP}.svc.cluster.local"
     )
 
     assert host == receive_addresses_expected
@@ -178,7 +187,7 @@ def config(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """an SDP subarray in IDLE state."""
+    """Set up SDP Configure."""
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     # will use default composition for the allocated subarray
@@ -192,7 +201,7 @@ def configure_sdp_fixt(
     configuration: conf_types.ScanConfiguration,
     sut_settings: SutTestSettings,
 ):
-    """I configure it for a scan."""
+    """Configure SDP subarray for a scan."""
     tel = names.TEL()
     subarray_id = sut_settings.subarray_id
     sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
@@ -203,6 +212,7 @@ def configure_sdp_fixt(
     scan_duration = sut_settings.scan_duration
     sb_id = entry_point.observation.processing_blocks[0].sbi_ids[0]
 
+    # run Configure
     entry_point.configure_subarray(
         subarray_id, receptors, configuration, sb_id, scan_duration
     )
@@ -214,7 +224,6 @@ def configure_sdp_fixt(
     # need to call End, to move it to IDLE (from which ReleaseAllResources works)
     LOG.info("Calling End")
     sdp_subarray.command_inout("End")
-    # wait_for_obs_state(sdp_subarray, "IDLE", timeout=30)
 
 
 @given("the SDP subarray is configured")
@@ -230,13 +239,12 @@ def run_scan(
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """
-    Run a sequence of scans.
+    Run a scan.
 
-    :param context: context for the tests
-    :param subarray_device: SDP subarray device client
-    :param subarray_scan: scan fixture
     :param k8s_element_manager: Kubernetes element manager
-
+    :param entry_point: SDP entry point fixture
+    :param sut_settings: SUT settings fixture
+    :param integration_test_exec_settings: test specific execution settings
     """
     LOG.info("Running scan step.")
     tel = names.TEL()
@@ -262,15 +270,12 @@ def run_scan(
         clean_up_after_scanning=True,
     ):
         try:
-            # this gives 2 instead of 1, because (I think) when I call this here
-            # this is the second time it's called, so it increases the number by 1
-            # scan_id = entry_point.observation.get_scan_id(backwards=True)["id"]
             scan_id = 1
-
             obs_state = sdp_subarray.read_attribute("obsstate").value
             assert_that(obs_state).is_equal_to(ObsState.SCANNING)
             LOG.info("Scanning")
-            deploy_sender(host, scan_id, k8s_element_manager)
+            deploy_cbf_emulator(host, scan_id, k8s_element_manager)
+
         except Exception as err:
             LOG.exception("Scan step failed")
 
@@ -284,8 +289,6 @@ def run_scan(
 def dataproduct_directory(entry_point):
     """
     The directory where output files will be written.
-
-    :param assign_resources_config: AssignResources configuration
     """
     eb_id = entry_point.observation.execution_block.eb_id
     pb_id = entry_point.observation.processing_blocks[0].pb_id
@@ -297,9 +300,9 @@ def check_measurement_set(dataproduct_directory, k8s_element_manager, sut_settin
     """
     Check the data received are same as the data sent.
 
-    :param context: context for the tests
     :param dataproduct_directory: The directory where outputs are written
-
+    :param k8s_element_manager: Kubernetes element manager
+    :param sut_settings: SUT settings fixture
     """
     # Wait 10 seconds before checking the measurement.
     # This gives enough time for the receiver for finish writing the data.
@@ -318,7 +321,6 @@ def check_measurement_set(dataproduct_directory, k8s_element_manager, sut_settin
         NAMESPACE_SDP,
     )
 
-    # try:
     result = compare_data(
         receive_pod,
         data_container,
@@ -327,4 +329,3 @@ def check_measurement_set(dataproduct_directory, k8s_element_manager, sut_settin
     )
     assert result.returncode == 0
     LOG.info("Data sent matches the data received")
-

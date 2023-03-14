@@ -117,7 +117,6 @@ Thus for **mid-test** we have
       COUNT: 1
       DISABLE_MAINTAIN_ON: "True"
       TEST_ENV: "BUILD_OUT"
-      TEL: mid
       [... more code]
 
 and for **low-test** job
@@ -138,7 +137,6 @@ and for **low-test** job
       DISABLE_MAINTAIN_ON: "True"
       TEST_ENV: "BUILD_OUT"
       COUNT: 1
-      TEL: low
       [... more code]
 
 Only those two keys differ in the jobs. Developers are urged to maintain this similarity between jobs. Pipelines and tests should behave the same: the System Under Test and Test Environment both should be idempotent and reproducible.

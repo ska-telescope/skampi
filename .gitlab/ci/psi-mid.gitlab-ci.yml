@@ -24,7 +24,7 @@
 
 # on-demand deployment from branch to branch namespace
 .psi_mid_branch_job:
-  stage: build
+  stage: on-demand
   extends:
     - .psi_mid_base
   variables:
@@ -36,12 +36,12 @@
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
-psi_mid_on_demand_deploy:
+psi_mid_deploy_on_demand:
   extends:
     - .psi_mid_branch_job
     - .psi_mid_deploy
 
-psi_mid_on_demand_uninstall:
+psi_mid_destroy_on_demand:
   extends:
     - .psi_mid_branch_job
     - .uninstall_chart
@@ -67,7 +67,7 @@ psi_mid_deploy_integration:
     - .psi_mid_integration_job
     - .psi_mid_deploy
 
-psi_mid_uninstall_integration:
+psi_mid_destroy_integration:
   extends:
     - .psi_mid_integration_job
     - .uninstall_chart
@@ -93,7 +93,7 @@ psi_mid_deploy_staging:
     - .psi_mid_staging_job
     - .psi_mid_deploy
 
-psi_mid_uninstall_staging:
+psi_mid_destroy_staging:
   extends:
     - .psi_mid_staging_job
     - .uninstall_chart

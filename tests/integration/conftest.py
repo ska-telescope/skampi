@@ -340,7 +340,7 @@ def i_configure_it_for_a_scan(
 
 
 @when("I command it to scan for a given period")
-def i_command_it_to_scan(
+def i_command_it_to_scan_for_period(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):

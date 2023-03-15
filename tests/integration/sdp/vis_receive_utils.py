@@ -271,6 +271,7 @@ def wait_for_pod(
     core_api = client.CoreV1Api()
 
     if pod_condition:
+
         def check_condition(k8s_pod):
             return any(
                 c.status == "True"
@@ -279,6 +280,7 @@ def wait_for_pod(
             )
 
     else:
+
         def check_condition(_):
             return True
 

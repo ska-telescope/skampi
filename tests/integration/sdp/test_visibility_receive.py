@@ -54,7 +54,8 @@ PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
 @pytest.mark.skalow
 @pytest.mark.sdp
 @scenario(
-    "features/sdp_visibility_receive.feature", "Execute visibility receive script for a single scan"
+    "features/sdp_visibility_receive.feature",
+    "Execute visibility receive script for a single scan",
 )
 def test_visibility_receive_in_low(assign_resources_test_exec_settings):
     """SDP Visibility receive test."""
@@ -140,17 +141,13 @@ def local_volume(k8s_element_manager, fxt_k8s_cluster):
 
 
 @pytest.fixture()
-def check_rec_adds(
-    configured_subarray
-):
+def check_rec_adds(configured_subarray):
     """
     Wait for receive pod to be Running and check that the
     receive addresses have been updated correctly.
     """
     tel = names.TEL()
-    sdp_subarray = con_config.get_device_proxy(
-        tel.sdp.subarray(configured_subarray.id)
-    )
+    sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(configured_subarray.id))
 
     receive_addresses = json.loads(
         sdp_subarray.read_attribute("receiveAddresses").value
@@ -170,9 +167,7 @@ def check_rec_adds(
     )
 
     LOG.info("Receive pod is running. Checking receive addresses.")
-    receive_addresses_expected = (
-        f"{receiver_pod_name}.receive.{NAMESPACE_SDP}"
-    )
+    receive_addresses_expected = f"{receiver_pod_name}.receive.{NAMESPACE_SDP}"
 
     assert host == receive_addresses_expected
 

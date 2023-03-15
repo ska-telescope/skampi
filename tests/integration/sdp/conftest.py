@@ -32,7 +32,6 @@ def fxt_update_sut_settings(sut_settings: conftest.SutTestSettings):
         sut_settings.nr_of_subarrays = 1
 
 
-
 @pytest.fixture(name="set_sdp_entry_point", autouse=True)
 def fxt_set_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
@@ -52,9 +51,6 @@ def fxt_set_entry_point(
     sut_settings.default_subarray_name = sut_settings.tel.sdp.subarray(
         sut_settings.subarray_id
     )
-
-
-
 
 
 @pytest.fixture(name="setup_sdp_mock")

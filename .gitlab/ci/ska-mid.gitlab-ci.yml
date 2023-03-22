@@ -128,7 +128,7 @@ mid_destroy_on_demand:
     KUBE_NAMESPACE_SDP: integration-$CONFIG-sdp
     HELM_RELEASE: $CONFIG
     SERVICE_ACCOUNT: integration-svc-$CONFIG
-    ARCHIVER_DBNAME: integration-$CONFIG-archiver_db
+    ARCHIVER_DBNAME: integration_${CONFIG}_archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
     SKA_TELESCOPE: SKA-$CONFIG
@@ -206,7 +206,7 @@ mid-redeploy-integration:
     KUBE_NAMESPACE_SDP: staging-$CONFIG-sdp
     HELM_RELEASE: $CONFIG
     SERVICE_ACCOUNT: staging-svc-$CONFIG
-    ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
+    ARCHIVER_DBNAME: staging_${CONFIG}_archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
     SKA_TELESCOPE: SKA-$CONFIG

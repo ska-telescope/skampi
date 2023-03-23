@@ -9,6 +9,8 @@ my_local_values.yaml
 gitlab_values.yaml
 /ska-cicd-deploy-minikube/
 docs/venv
+docs/Pipfile
+docs/Pipfile.lock
 /.vagrant
 /ansible.log
 /playbooks/ansible.log
@@ -25,8 +27,8 @@ docs/venv
 /PrivateRules.mak
 /PrivateRules.mak_bu
 /tmp
-/build
-/builds
+build
+builds
 ansible-playbooks
 **/.idea
 /test-harness/tests/acceptance_tests/__pycache__
@@ -76,6 +78,3 @@ KUBECONFIG
 tests/resources/assets/kubeconfig
 tests/resources/assets/tmp_ingress.yaml
 .vscode
-.devcontainer
-!resources/vscode/.vscode
-!resources/vscode/.devcontainer

@@ -62,18 +62,20 @@ skampi-update-chart-versions: helm-install-yq ## update Skampi chart dependencie
 ##		CAR_PYPI_REPOSITORY_URL=<URL of Central Artefact Repository>
 ## 	uploads cucumber test results to XTP Jira project using XRAY API implementation in SKALLOP package
 
+TEST_EXEC_FILE_PATH?=tests/test-exec-$(CONFIG).json
+
 skampi-upload-test-results: ## Upload Skampi system acceptance and integration test results
-	@echo "Processing XRay uploads"
+	@echo "Processing XRay uploads using $(TEST_EXEC_FILE_PATH)"
 	@if [ -n "$$(ls -A build/cucumber*.json 2>/dev/null)" ]; then \
 		bash scripts/gitlab_section.sh install_skallop "Installing Skallop Requirements" pip3 install -U "ska-ser-skallop==$(SKALLOP_VERSION)"  --extra-index-url $(CAR_PYPI_REPOSITORY_URL); \
 	fi
 	@for cuke in  build/cucumber*.json; do \
 		echo "Processing XRay upload of: $$cuke"; \
 		if [[ -z "${JIRA_USERNAME}" ]]; then \
-			/usr/local/bin/xtp-xray-upload -f $$cuke -i tests/test-exec.json -v; \
+			/usr/local/bin/xtp-xray-upload -f $$cuke -i $(TEST_EXEC_FILE_PATH) -v; \
 		else \
 			echo "Using Jira Username and Password for auth"; \
-			xtp-xray-upload -f $$cuke -i tests/test-exec.json -v -u ${JIRA_USERNAME} -p ${JIRA_PASSWORD}; \
+			xtp-xray-upload -f $$cuke -i $(TEST_EXEC_FILE_PATH) -v -u ${JIRA_USERNAME} -p ${JIRA_PASSWORD}; \
 		fi; \
 	done; \
 

@@ -51,9 +51,20 @@ For information on Kubernetes and Kubectl, a quick list of references is availab
 ## Deployment
 
 ### Makefile Targets
-Deployment of SKAMPI is supported by Make targets, exactly as is the case with [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/). To check which targets are available and what default values are set for variables used by Make, run
+Deployment of SKAMPI is supported by Make targets, exactly as is the case with [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/).
+
+Note that the variable `CONFIG` is required and should be set to `mid` for the MID telescope or `low` for LOW.
+The best place is to use `PrivateRules.mak`, e.g.
 ```
-$ make
+$ echo CONFIG=mid >> PrivateRules.mak
+```
+or via environment variables
+```
+$ export CONFIG=mid
+```
+To check which targets are available and what default values are set for variables used by Make. 
+```
+$ make 
 ```
 
 ### Environment Settings
@@ -253,6 +264,8 @@ VALUES=values.yaml
 
 The values.yaml file controls all the variables that are used by Helm when interpreting the templates written for each of the Charts. In other words, if you want to modify the deployment of `SKAMPI` in any way, the simplest method would be to modify the appropriate variables in your own `yaml` file, and tell `Make` about this file. As a convenience, there is already a `yaml` file specified in `.gitignore`, so that you won't unnecessarily commit your local file.
 
+**NOTE** the following assumes that `CONFIG=mid` was set. Replace the `mid` with `low` if needed.
+
 1. Set your `VALUES` to this file and populate this file with a harmless default and check that Helm doesn't complain:
     ```
     $ echo VALUES=my_local_values.yaml >> PrivateRules.mak
@@ -396,6 +409,10 @@ make k8s_test MARK=ping
 Use the `MARK` parameter to run specific tests. All tests are marked with a `@pytest.mark.<some-test-marker>`, and by specifying the `MARK` variable by `<some-test-marker>`, you tell `pytest` to only run those tests. Note that this test will fail for the deployment described above, as there is no central node deployed.
 
 More information should be available in the [Documentation](https://developer.skao.int/projects/ska-skampi/en/latest/testing.html).
+
+## EDA 
+The EDA solution is based on HDB++ archiver with TimescaleDB as the backend database. The HDB++ Configuration Manager configures the attributes to be archived and defines which Event Subscriber is responsible for a set of Tango attributes to be archived. For more detail information on EDA please click [here](https://ska-tango-archiver.readthedocs.io/en/latest/)
+
 ## Troubleshooting / FAQ
 Finding issues with SKAMPI deployments can sometimes be difficult, and knowledge of Kubernetes and Tango are essential. Some excellent troubleshooting tips for Kubernetes can be found at https://kubernetes.io/docs/tasks/debug-application-cluster/troubleshooting.
 

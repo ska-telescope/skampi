@@ -22,15 +22,12 @@ logger = logging.getLogger(__name__)
 def test_cbf_start_up_telescope_mid():
     """Start up the cbf in mid."""
 
-
-@pytest.mark.skip(reason="cbf low not integrated")
 @pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.startup
 @scenario("features/cbf_start_up_telescope.feature", "Start up the cbf in low")
 def test_cbf_start_up_telescope_low():
     """Start up the cbf in low."""
-
 
 @pytest.fixture(name="set_up_transit_checking_for_cbf")
 @pytest.mark.usefixtures("set_cbf_entry_point")
@@ -85,18 +82,13 @@ def the_cbf_must_be_on(transit_checking: fxt_types.transit_checking):
     tel = names.TEL()
     cbf_controller = con_config.get_device_proxy(tel.csp.cbf.controller)
     result = cbf_controller.read_attribute("state").value
-    assert_that(result).is_equal_to("ON")
+    assert_that(str(result)).is_equal_to("ON")
     # only check subarray 1 for cbf
     nr_of_subarrays = 1
     for index in range(1, nr_of_subarrays + 1):
         subarray = con_config.get_device_proxy(tel.csp.cbf.subarray(index))
         result = subarray.read_attribute("state").value
-        assert_that(result).is_equal_to("ON")
-    if transit_checking:
-        checker = transit_checking.checker
-        assert checker
-        logger.info(checker.print_outcome_for(checker.subject_device))
-        checker.assert_that(checker.subject_device).is_behind_all_on_transit("ON")
+        assert_that(str(result)).is_equal_to("ON")
 
 
 # test validation

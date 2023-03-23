@@ -1,0 +1,15 @@
+Makefile:279: warning: overriding recipe for target 'k8s-do-test-runner'
+.make/k8s.mk:451: warning: ignoring old recipe for target 'k8s-do-test-runner'
+k8s-pre-install-chart: creating the SDP namespace integration-sdp
+make[1]: Entering directory '/Users/aragorn/code/skampi'
+Makefile:279: warning: overriding recipe for target 'k8s-do-test-runner'
+.make/k8s.mk:451: warning: ignoring old recipe for target 'k8s-do-test-runner'
+make[2]: Entering directory '/Users/aragorn/code/skampi'
+Makefile:279: warning: overriding recipe for target 'k8s-do-test-runner'
+.make/k8s.mk:451: warning: ignoring old recipe for target 'k8s-do-test-runner'
+Unable to connect to the server: dial tcp 192.168.106.12:6443: i/o timeout
+make[2]: *** [.make/k8s.mk:119: k8s-namespace] Error 1
+make[2]: Leaving directory '/Users/aragorn/code/skampi'
+make[1]: *** [resources/localhelpers.mk:7: namespace-sdp] Error 2
+make[1]: Leaving directory '/Users/aragorn/code/skampi'
+make: *** [Makefile:253: k8s-pre-install-chart] Error 2

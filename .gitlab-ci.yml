@@ -38,7 +38,7 @@ stages:
 
 .tags_itf:
   tags:
-    - k8srunner-itf-mid
+    - ska-k8srunner-za-itf
 
 build-base-image:
   stage: .pre

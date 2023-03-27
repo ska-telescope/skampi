@@ -1,5 +1,6 @@
 """Pytest fixtures and bdd step implementations specific to sdp integration tests."""
 import os
+from time import sleep
 
 import pytest
 from pytest_bdd import given
@@ -23,6 +24,7 @@ def k8s_element_manager():
     manager = K8sElementManager()
     yield manager
     manager.cleanup()
+    sleep(10)
 
 
 @pytest.fixture(name="update_sut_settings")

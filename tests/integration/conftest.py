@@ -308,8 +308,6 @@ def a_subarray_configured_for_scan_type(
     configuration = SKAScanConfiguration(observation_config)
     configuration.set_next_target_to_be_configured(scan_targets[scan_type])
     configuration_specs = SubarrayConfigurationSpec(scan_duration, configuration)
-    logger.info(f"$$$$$$$ configuration loads: {CODEC.loads(configuration)}")
-    logger.info(f"$$$$$$$ configuration_specs loads: {CODEC.loads(configuration_specs)}")
     logger.info(f"$$$$$$$ configuration dumps: {CODEC.dumps(configuration)}")
     logger.info(f"$$$$$$$ configuration_specs dumps: {CODEC.dumps(configuration_specs)}")
     

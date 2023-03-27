@@ -18,6 +18,7 @@ import json
 import logging
 import os
 import time
+from typing import NamedTuple
 
 import pytest
 
@@ -29,13 +30,13 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from integration.sdp.vis_receive_utils import (
-    pvc_exists,
     wait_for_pod,
     check_data_present,
     wait_for_predicate,
     deploy_cbf_emulator,
     compare_data,
     POD_CONTAINER,
+    K8sElementManagerRev2,
 )
 from resources.models.mvp_model.states import ObsState
 from .. import conftest
@@ -46,9 +47,21 @@ pytest_plugins = ["unit.test_cluster_k8s"]
 
 LOG = logging.getLogger(__name__)
 
-NAMESPACE = os.environ.get("KUBE_NAMESPACE")
-NAMESPACE_SDP = os.environ.get("KUBE_NAMESPACE_SDP")
-PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
+
+class EnvVars(NamedTuple):
+    namespace: str
+    namespace_sdp: str
+    pvc_name: str
+
+
+@pytest.fixture(name="env_vars")
+def fxt_env_vars() -> EnvVars:
+    if (NAMESPACE := os.environ.get("KUBE_NAMESPACE")) is None:
+        raise AssertionError("Env var KUBE_NAMESPACE is not defined")
+    if (NAMESPACE_SDP := os.environ.get("KUBE_NAMESPACE_SDP")) is None:
+        raise AssertionError("Env var KUBE_NAMESPACE_SDP is not defined")
+    SPVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
+    return EnvVars(NAMESPACE, NAMESPACE_SDP, SPVC_NAME)
 
 
 @pytest.mark.skalow
@@ -74,7 +87,9 @@ def fxt_update_sut_settings_vis_rec(sut_settings: conftest.SutTestSettings):
 
 
 @given("the test volumes are present and the test data are downloaded")
-def local_volume(k8s_element_manager, fxt_k8s_cluster):
+def local_volume(
+    k8s_element_manager_rev2: K8sElementManagerRev2, fxt_k8s_cluster, env_vars: EnvVars
+):
     """
     Check if the local volumes are present and the data
     have been successfully downloaded.
@@ -86,18 +101,14 @@ def local_volume(k8s_element_manager, fxt_k8s_cluster):
     receive_pod = "sdp-receive-data"
     sender_pod = "sdp-sender-data"
     data_container = POD_CONTAINER
-
-    LOG.info("Check for existing PVC")
-    assert pvc_exists(PVC_NAME, NAMESPACE_SDP), f"PVC in {NAMESPACE_SDP} doesn't exist"
-    assert pvc_exists(PVC_NAME, NAMESPACE), f"PVC in {NAMESPACE} doesn't exist"
+    PVC_NAME = env_vars.pvc_name
+    NAMESPACE_SDP = env_vars.namespace_sdp
+    NAMESPACE = env_vars.namespace
+    k8s_element_manager = k8s_element_manager_rev2
 
     LOG.info("Create Pod for receiver and sender")
-    k8s_element_manager.create_pod(receive_pod, NAMESPACE_SDP, PVC_NAME)
-    k8s_element_manager.create_pod(sender_pod, NAMESPACE, PVC_NAME)
-
-    # Wait for pods
-    assert wait_for_pod(receive_pod, NAMESPACE_SDP, "Running", timeout=300)
-    assert wait_for_pod(sender_pod, NAMESPACE, "Running", timeout=300)
+    k8s_element_manager.create_data_pod(receive_pod, NAMESPACE_SDP, PVC_NAME)
+    k8s_element_manager.create_data_pod(sender_pod, NAMESPACE, PVC_NAME)
 
     ms_file_mount_location = "/mnt/data/AA05LOW.ms/"
 

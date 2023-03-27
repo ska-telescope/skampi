@@ -1,4 +1,5 @@
 """Pytest fixtures and bdd step implementations specific to sdp integration tests."""
+from contextlib import ExitStack
 import os
 from time import sleep
 
@@ -13,7 +14,7 @@ from resources.models.sdp_model.entry_point import SDPEntryPoint
 from resources.models.sdp_model.mocking import setup_sdp_mock
 from resources.models.obsconfig.vis_receive_config import VisRecObservation
 
-from .vis_receive_utils import K8sElementManager
+from .vis_receive_utils import K8sElementManager, K8sElementManagerRev2
 
 from .. import conftest
 
@@ -25,6 +26,13 @@ def k8s_element_manager():
     yield manager
     manager.cleanup()
     sleep(10)
+
+
+@pytest.fixture(name="k8s_element_manager_rev2")
+def k8s_element_manager_rev2():
+    """Allow easy creation, and later automatic destruction, of k8s elements"""
+    with ExitStack() as stack:
+        yield K8sElementManagerRev2(stack)
 
 
 @pytest.fixture(name="update_sut_settings")

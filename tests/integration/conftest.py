@@ -308,9 +308,9 @@ def a_subarray_configured_for_scan_type(
     configuration.set_next_target_to_be_configured(scan_targets[scan_type])
     configuration_specs = SubarrayConfigurationSpec(scan_duration, configuration)
     logger.info(f"$$$$$$$ configuration_specs dir: {dir(configuration_specs)}")
-    logger.info(f"$$$$$$$ configuration dir: {dir(configuration)}")
-    logger.info(f"$$$$$$$ configuration: {configuration.__dict__}")
-    logger.info(f"$$$$$$$ configuration_specs: {configuration_specs.scan_config.__dict__}")
+    logger.info(f"$$$$$$$ configuration dir: {dir(configuration.observation)}")
+    logger.info(f"$$$$$$$ configuration: {configuration.observation.__dict__}")
+    logger.info(f"$$$$$$$ configuration_specs: {configuration_specs.conf_type.__dict__}")
     return factory_configured_subarray(
         injected_subarray_configuration_spec=configuration_specss
     )

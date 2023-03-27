@@ -3,29 +3,40 @@ integration tests."""
 import logging
 from types import SimpleNamespace
 import os
-
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
 from mock import patch, Mock
 from assertpy import assert_that
 import pytest
 from pytest_bdd import when, given, then, parsers
+from pytest_bdd.parser import Feature, Scenario, Step
 
 from ska_ser_skallop.connectors import configuration as con_config
 
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_management import telescope_management as tel
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
+from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.entry_point import TMCEntryPoint
-from resources.models.obsconfig.config import Observation
 from resources.models.mvp_model.states import ObsState
 from resources.models.mvp_model.env import init_observation_config, Observation
 
+
 logger = logging.getLogger(__name__)
+
+
+def pytest_bdd_before_step_call(
+    request: Any,
+    feature: Feature,
+    scenario: Scenario,
+    step: Step,
+    step_func: Callable[[Any], Any],
+    step_func_args: dict[str, Any],
+):
+    if os.getenv("SHOW_STEP_FUNCTIONS"):
+        logger.info(
+            "\n**********************************************************\n"
+            f"***** {step.keyword} {step.name} *****\n"
+            "**********************************************************"
+        )
 
 
 class SutTestSettings(SimpleNamespace):
@@ -201,7 +212,6 @@ ObservationConfigInterjector = Callable[
 def fxt_observation_config_interjector(
     observation_config: Observation, mocked_observation_config: Mock
 ) -> ObservationConfigInterjector[P, R]:
-
     obs = observation_config
 
     def interject_observation_method(
@@ -213,6 +223,7 @@ def fxt_observation_config_interjector(
         )
 
     return interject_observation_method
+
 
 # global when steps
 # start up

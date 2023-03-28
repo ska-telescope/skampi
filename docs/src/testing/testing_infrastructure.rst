@@ -30,7 +30,7 @@ Upload the test results using the make target (refer to the Skallop documentatio
 Testing SKAMPI using the Testing Runway (SKALLOP)
 *************************************************
 
-.. todo:: step by step instructions to follow.
+Refer to the Confluence page `How to test Skampi integrated software using Skallop <https://confluence.skatelescope.org/x/o4AEDQ>`_.
 
 Integration tests (tests that verify end to end behaviour involving one or more components) are done in BDD
 cucumber style using to a large degree fixtures and helper functions coming from skallop repo. 
@@ -52,5 +52,3 @@ There are two options for running tests:
 2. Continue with attempts at teardown after failure
 
 To enable immediate exit you need to set EXIT_AT_FAIL to "true"
-
-Refer to the `Confluence page on installation of SKALLOP for BDD tests <https://confluence.skatelescope.org/display/SE/Skallop+installation+for+BDD+tests>`_ in the meantime.

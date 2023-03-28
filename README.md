@@ -155,6 +155,37 @@ Helm Charts are basically a templating solution that enables a large project suc
 
 For an understanding of how Helm Charts are used in the SKAMPI project, please go to the section on [Templating the Application](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html#templating-the-application) under the [Container Orchestration Guidelines](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html) of the [Developer Portal](https://developer.skao.int/en/latest/).
 
+## Deploy and use the signal display via Skampi
+
+### Deploy via skampi
+
+Access skampi pipelines via the following link https://gitlab.com/ska-telescope/ska-skampi/-/pipelines
+
+Click Run pipeline, default is to run against master
+
+From pipeline stages, run the mid_deploy_on_demand job
+
+When this completes, in the log a new link to the skampi landing page should be generated (see below example)
+
+https://k8s.stfc.skao.int/ci-ska-skampi-master-mid/start/
+
+### Use the signal display via skampi
+
+Run the jupyter notebooks via the following link:
+https://k8s.stfc.skao.int/binderhub/v2/gl/ska-telescope%2Fska-jupyter-scripting/HEAD
+
+Modify prelim_aa05.ipynb at stage 1.3 Define deployment to be tested
+
+set_cluster(namespace="staging") should be updated to include the namespace in use (see example below)
+
+set_cluster(namespace="ci-ska-skampi-master")
+
+When this block is run, a link to the dashboard will be generated (example below)
+
+Link to dashboard: https://k8s.stfc.skao.int//ci-ska-skampi-master-mid/qa/display/
+
+Run each stage of the notebook blocks in order and the qa display dashboard will be updated with data.
+
 ## Development
 The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.
 

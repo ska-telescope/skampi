@@ -4,26 +4,20 @@ import logging
 from types import SimpleNamespace
 import os
 
-from typing import Any, Callable
+from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
 from mock import patch, Mock
 from assertpy import assert_that
 import pytest
 from pytest_bdd import when, given, then, parsers
 
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types, SubarrayConfigurationSpec
 from ska_ser_skallop.connectors import configuration as con_config
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_management import telescope_management as tel
-
-# from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.entry_point import TMCEntryPoint
-from resources.models.obsconfig.config import Observation
 from resources.models.mvp_model.states import ObsState
+from tests.resources.models.mvp_model.configuration import SKAScanConfiguration
+from resources.models.mvp_model.env import init_observation_config, Observation
 
 
 logger = logging.getLogger(__name__)
@@ -172,10 +166,10 @@ def fxt_integration_test_exec_settings(
 @when("I start up the telescope")
 def i_start_up_the_telescope(
     standby_telescope: fxt_types.standby_telescope,
-    entry_point: fxt_types.entry_point,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
+    entry_point: fxt_types.entry_point,
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
@@ -363,3 +357,18 @@ def the_subarray_should_go_into_an_aborted_state(
     result = subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.ABORTED)
 
+
+@given("an subarray that has just completed it's first scan")
+def an_subarray_that_has_just_completed_its_first_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    configured_subarray.scan(integration_test_exec_settings)
+
+@when("I command it to scan for a given period")
+def i_command_it_to_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """I configure it for a scan."""
+    configured_subarray.set_to_scanning(integration_test_exec_settings)

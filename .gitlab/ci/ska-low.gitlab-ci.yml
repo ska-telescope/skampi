@@ -28,6 +28,7 @@ low-test:
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
+    LOG_SUBSCRIPTIONS: "True"
   extends:
     - .tags_default
   script:

@@ -18,7 +18,6 @@ import json
 import logging
 import os
 import time
-from typing import NamedTuple
 
 import pytest
 
@@ -36,7 +35,7 @@ from integration.sdp.vis_receive_utils import (
     deploy_cbf_emulator,
     compare_data,
     POD_CONTAINER,
-    K8sElementManagerRev2,
+    pvc_exists,
 )
 from resources.models.mvp_model.states import ObsState
 from .. import conftest
@@ -47,21 +46,9 @@ pytest_plugins = ["unit.test_cluster_k8s"]
 
 LOG = logging.getLogger(__name__)
 
-
-class EnvVars(NamedTuple):
-    namespace: str
-    namespace_sdp: str
-    pvc_name: str
-
-
-@pytest.fixture(name="env_vars")
-def fxt_env_vars() -> EnvVars:
-    if (NAMESPACE := os.environ.get("KUBE_NAMESPACE")) is None:
-        raise AssertionError("Env var KUBE_NAMESPACE is not defined")
-    if (NAMESPACE_SDP := os.environ.get("KUBE_NAMESPACE_SDP")) is None:
-        raise AssertionError("Env var KUBE_NAMESPACE_SDP is not defined")
-    SPVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
-    return EnvVars(NAMESPACE, NAMESPACE_SDP, SPVC_NAME)
+NAMESPACE = os.environ.get("KUBE_NAMESPACE")
+NAMESPACE_SDP = os.environ.get("KUBE_NAMESPACE_SDP")
+PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
 
 
 @pytest.mark.skalow
@@ -87,9 +74,7 @@ def fxt_update_sut_settings_vis_rec(sut_settings: conftest.SutTestSettings):
 
 
 @given("the test volumes are present and the test data are downloaded")
-def local_volume(
-    k8s_element_manager_rev2: K8sElementManagerRev2, fxt_k8s_cluster, env_vars: EnvVars
-):
+def local_volume(k8s_element_manager, fxt_k8s_cluster):
     """
     Check if the local volumes are present and the data
     have been successfully downloaded.
@@ -98,17 +83,20 @@ def local_volume(
     :param fxt_k8s_cluster: fixture to use a KUBECONFIG file (if present),
                 for performing k8s commands (see unit.test_cluster_k8s)
     """
+    if NAMESPACE is None or NAMESPACE_SDP is None:
+        raise ValueError("Env var KUBE_NAMESPACE or KUBE_NAMESPACE_SDP is not defined")
+
     receive_pod = "sdp-receive-data"
     sender_pod = "sdp-sender-data"
     data_container = POD_CONTAINER
-    PVC_NAME = env_vars.pvc_name
-    NAMESPACE_SDP = env_vars.namespace_sdp
-    NAMESPACE = env_vars.namespace
-    k8s_element_manager = k8s_element_manager_rev2
+
+    LOG.info("Check for existing PVC")
+    assert pvc_exists(PVC_NAME, NAMESPACE_SDP), f"PVC in {NAMESPACE_SDP} doesn't exist"
+    assert pvc_exists(PVC_NAME, NAMESPACE), f"PVC in {NAMESPACE} doesn't exist"
 
     LOG.info("Create Pod for receiver and sender")
-    k8s_element_manager.create_data_pod(receive_pod, NAMESPACE_SDP, PVC_NAME)
-    k8s_element_manager.create_data_pod(sender_pod, NAMESPACE, PVC_NAME)
+    k8s_element_manager.create_pod(receive_pod, NAMESPACE_SDP, PVC_NAME)
+    k8s_element_manager.create_pod(sender_pod, NAMESPACE, PVC_NAME)
 
     ms_file_mount_location = "/mnt/data/AA05LOW.ms/"
 
@@ -139,10 +127,10 @@ def local_volume(
 
     wait_for_predicate(
         _wait_for_receive_data, "MS data not present in volume.", timeout=100
-    )
+    )()
     wait_for_predicate(
         _wait_for_sender_data, "MS data not present in volume.", timeout=100
-    )
+    )()
 
     LOG.info("PVCs are present, pods created, and data downloaded successfully")
 
@@ -151,7 +139,7 @@ def local_volume(
 # @given("an SDP subarray in READY state")
 
 
-@pytest.fixture()
+@pytest.fixture
 def check_rec_adds(configured_subarray):
     """
     Wait for receive pod to be Running and check that the

@@ -2,21 +2,17 @@
 Utility functions and classes used for the visibility receive test.
 These were copied from the ska-sdp-integration repository
 """
-
+import functools
 import logging
 import os
 import subprocess
 import tempfile
 import time
-from typing import Any
-import asyncio
 
 import pytest
 import yaml
-from contextlib import ExitStack, contextmanager
 from kubernetes import client, watch
 from kubernetes.stream import stream
-from ska_ser_skallop.mvp_fixtures.context_management import StackableContext
 
 LOG = logging.getLogger(__name__)
 
@@ -95,70 +91,6 @@ def _k8s_pod_exec(
     return api_response
 
 
-class K8sElementManagerRev2(StackableContext):
-    def __init__(
-        self, session_stack: ExitStack, test_stack: None | ExitStack = None
-    ) -> None:
-        super().__init__(session_stack, test_stack)
-        self._core_api = client.CoreV1Api()
-
-    @contextmanager
-    def _create_pod_context(
-        self, pod_name: str, namespace: str, pvc_name: str, pod_manifest: dict[str, Any]
-    ):
-        self._create_pod(pod_name, namespace, pvc_name, pod_manifest)
-        yield
-        self._delete_pod(pod_name, namespace)
-
-    def _create_pod(
-        self, pod_name: str, namespace: str, pvc_name: str, pod_manifest: dict[str, Any]
-    ):
-        core_api = self._core_api
-        pod_spec = pod_manifest.copy()
-
-        # Update the name of the pod and the data PVC
-        pod_spec["metadata"]["name"] = pod_name
-        assert pvc_exists(
-            pvc_name, namespace
-        ), f"Unable to create a pod in pvc {pvc_name} as it doesn't exist"
-        pod_spec["spec"]["volumes"][0]["persistentVolumeClaim"]["claimName"] = pvc_name
-
-        # Check Pod does not already exist
-        k8s_pods = core_api.list_namespaced_pod(namespace)
-        for item in k8s_pods.items:
-            assert (
-                item.metadata.name != pod_spec["metadata"]["name"]  # type: ignore
-            ), f"Pod {item.metadata.name} already exists"
-
-        core_api.create_namespaced_pod(namespace, pod_spec)
-        wait_for_pod(pod_name, namespace, "Succeeded")
-
-    def _delete_pod(self, pod_name: str, namespace: str):
-        self._core_api.delete_namespaced_pod(pod_name, namespace, async_req=False)
-        self._wait_for_pod_to_be_destroyed(pod_name, namespace)
-
-    def create_data_pod(self, pod_name: str, namespace: str, pvc_name: str):
-        self.push_context_onto_test(
-            self._create_pod_context(pod_name, namespace, pvc_name, DATA_POD_DEF)
-        )
-
-    def _wait_for_pod_to_be_destroyed(
-        self,
-        pod_name: str,
-        namespace: str,
-        timeout: float = 100,
-        poll_period: float = 0.1,
-    ):
-        def pod_does_not_exist():
-            k8s_pods = self._core_api.list_namespaced_pod(namespace)
-            return pod_name not in k8s_pods.items
-
-        while timeout > 0:
-            if pod_does_not_exist():
-                break
-            time.sleep(poll_period)
-
-
 class K8sElementManager:
     """
     An object that keeps track of the k8s elements it creates and the order in
@@ -207,8 +139,8 @@ class K8sElementManager:
             ), f"Pod {item.metadata.name} already exists"
 
         core_api.create_namespaced_pod(namespace, pod_spec)
-
         self.to_remove.append((self.delete_pod, (pod_name, namespace)))
+        wait_for_pod(pod_name, namespace, "Running", timeout=300)
 
     @staticmethod
     def delete_pod(pod_name: str, namespace: str):
@@ -220,6 +152,9 @@ class K8sElementManager:
         """
         core_api = client.CoreV1Api()
         core_api.delete_namespaced_pod(pod_name, namespace, async_req=False)
+        wait_for_predicate(pod_deleted, f"Pod {pod_name} delete", timeout=100)(
+            pod_name, namespace
+        )
 
     def helm_install(self, release, chart, namespace, values_file):
         """
@@ -264,6 +199,11 @@ class K8sElementManager:
             "--no-hooks",
         ]
         subprocess.run(cmd, check=True)
+        wait_for_predicate(
+            helm_release_uninstalled,
+            f"Helm release {release} uninstalled",
+            timeout=30,
+        )(release, namespace)
 
     def output_directory(
         self, dataproduct_directory, pod_name, container_name, namespace
@@ -315,6 +255,43 @@ def pvc_exists(pvc_name: str, namespace: str):
         if item.metadata.name == pvc_name:
             return True
     return False
+
+
+def pod_deleted(pod_name: str, namespace: str):
+    """
+    Check if pod with name `pod_name` has been
+    deleted from `namespace`
+
+    :param pod_name: name of the pod to check
+    :param namespace: namespace where to look for the PVC
+    """
+    core_api = client.CoreV1Api()
+
+    k8s_pod = core_api.list_namespaced_pod(namespace)
+    for item in k8s_pod.items:
+        if item.metadata.name == pod_name:
+            return False
+    return True
+
+
+def helm_release_uninstalled(release, namespace):
+    """
+    Check if a Helm chart is uninstalled
+
+    :param release: The name of the release to be checked
+    :param namespace: The namespace where the release lives
+    """
+    cmd = [
+        "helm",
+        "status",
+        release,
+        "-n",
+        namespace,
+    ]
+    ret_code = subprocess.run(cmd).returncode
+    if ret_code == 0:
+        return False
+    return True
 
 
 def wait_for_pod(
@@ -412,22 +389,27 @@ def check_data_present(
     return resp
 
 
-def wait_for_predicate(predicate, description, timeout=TIMEOUT, interval=0.5):
+def wait_for_predicate(func, description, timeout=TIMEOUT, interval=0.5):
     """
     Wait for predicate to be true.
 
-    :param predicate: callable to test
+    :param func: callable to test
     :param description: description to use if test fails
     :param timeout: timeout in seconds
     :param interval: interval between tests of the predicate in seconds
     """
-    start = time.time()
-    while True:
-        if predicate():
-            break
-        if time.time() >= start + timeout:
-            pytest.fail(f"{description} not achieved after {timeout} seconds")
-        time.sleep(interval)
+
+    @functools.wraps(func)  # preserves information about the original function
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        while True:
+            if func(*args, **kwargs):
+                break
+            if time.time() >= start + timeout:
+                pytest.fail(f"{description} not achieved after {timeout} seconds")
+            time.sleep(interval)
+
+    return wrapper
 
 
 def compare_data(

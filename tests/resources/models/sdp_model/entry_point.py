@@ -216,6 +216,7 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         subarray = con_config.get_device_proxy(subarray_name)
         config = self.observation.generate_sdp_scan_config().as_json
         self._log(f"commanding {subarray_name} with Configure: {config} ")
+        subarray.set_timeout_millis(6000)
         subarray.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):

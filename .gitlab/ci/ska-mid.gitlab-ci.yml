@@ -31,6 +31,7 @@ mid-test:
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
+    LOG_SUBSCRIPTIONS: "True"
     COUNT: 1
   extends:
     - .tags_default

@@ -169,7 +169,7 @@ def i_start_up_the_telescope(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    entry_point: fxt_types.entry_point,
+    entry_point: fxt_types.entry_point
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(integration_test_exec_settings):

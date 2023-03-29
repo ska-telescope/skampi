@@ -13,18 +13,22 @@ dependencies:
   - name: ska-tango-util
     version: 0.3.16
     repository: https://artefact.skao.int/repository/helm-internal
+  #  Correlator Beamformer
   - name: ska-mid-cbf # CIPA team
     version: 0.2.9
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-mid-cbf.enabled
+  # Central Signal Processor - Local Monitor and Control
   - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
     version: 0.11.5
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-csp-lmc-mid.enabled
+  # Science Data Processor
   - name: ska-sdp
     version: 0.13.1
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
+  # Telescope Monitor and Control https://confluence.skatelescope.org/x/0aQ7Bw
   - name: ska-tmc-mid
     version: 0.8.5
     repository: https://artefact.skao.int/repository/helm-internal
@@ -80,6 +84,7 @@ dependencies:
     version: 0.1.6
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
+  # OSO (Observatory Science Operations) Data Archive - Observation Execution Tool
   - name: ska-oso-oet
     version: 5.0.0
     repository: https://artefact.skao.int/repository/helm-internal
@@ -88,6 +93,7 @@ dependencies:
     version: 0.1.5
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-alarmhandler.enabled
+  # OSO (Observatory Science Operations) Data Archive
   - name: ska-db-oda
     version: 1.6.1
     repository: https://artefact.skao.int/repository/helm-internal

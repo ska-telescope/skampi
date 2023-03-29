@@ -78,6 +78,7 @@ ska-taranta:
         cpu: 1000m # 1000m = 1 CPU
         memory: 1024Mi # 1024Mi = 1 GB mem
 
+# OSO (Observatory Science Operations) Data Archive - Observation Execution Tool
 ska-oso-oet:
   enabled: true
   system: TM-mid
@@ -98,18 +99,21 @@ ska-oso-oet:
       cpu: 2000m
       memory: 1024Mi
 
+# OSO (Observatory Science Operations) Data Archive
 ska-db-oda:
   enabled: false
 
-#telescope control
+# Correlator Beamformer telescope control
 ## mid-cbf
 ska-mid-cbf:
   enabled: true
 
+# Central Signal Processor
 ## mid-csp
 ska-csp-lmc-mid:
   enabled: true
 
+# Science Data Processor
 ## sdp
 ska-sdp:
   enabled: true
@@ -143,6 +147,7 @@ ska-sdp:
   ska-tango-base:
     enabled: false
 
+# Telescope Monitor and Control https://confluence.skatelescope.org/x/0aQ7Bw
 ## tmc
 tmc-mid:
   enabled: true

@@ -61,7 +61,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-ser-skuid.enabled
   - name: ska-landingpage
-    version: 0.8.3
+    version: 0.9.0
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
   - name: ska-sim-dishmaster

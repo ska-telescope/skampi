@@ -143,7 +143,6 @@ def a_subarray_configured_for_scan_type(
     scan_type: str,
     factory_configured_subarray: fxt_types.factory_configured_subarray,
     observation_config: Observation,
-    configuration: conf_types.ScanConfiguration,
     sut_settings: conftest.SutTestSettings,
     scan_targets: dict[str, str],
 ):

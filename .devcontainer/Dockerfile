@@ -3,7 +3,9 @@ FROM artefact.skao.int/ska-tango-images-pytango-builder:9.3.32
 
 RUN apt-get update && apt-get install -y openssh-client graphviz
 
-RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV POETRY_HOME=/opt/poetry
+ENV POETRY_VERSION=1.3.2
+RUN curl -sSL https://install.python-poetry.org | python3 - --yes
 
 RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 

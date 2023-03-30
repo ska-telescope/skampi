@@ -1,7 +1,7 @@
 #FROM registry.gitlab.com/ska-telescope/ska-skampi/ska-skampi-ci-base:0.1.0
 FROM artefact.skao.int/ska-tango-images-pytango-builder:9.3.32
 
-RUN apt-get update && apt-get install -y openssh-client
+RUN apt-get update && apt-get install -y openssh-client graphviz
 
 RUN curl -sSL https://install.python-poetry.org | python3 -
 

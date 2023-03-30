@@ -8,10 +8,10 @@ import time
 
 import pytest
 from pytest_bdd import given, parsers, scenario, then, when
+from ska_oso_scripting.objects import Telescope
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_oso_scripting.objects import Telescope
 
 from .oet_helpers import ScriptExecutor
 

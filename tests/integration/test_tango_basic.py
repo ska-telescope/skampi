@@ -1,14 +1,14 @@
 """Default feature tests."""
-import os
-from typing import NamedTuple
 import json
 import logging
+import os
+from typing import NamedTuple
 
-import requests
 import pytest
+import requests
+from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
 from requests.models import Response
-from assertpy import assert_that
 from ska_ser_skallop.connectors.configuration import get_device_proxy
 
 

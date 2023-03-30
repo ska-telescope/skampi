@@ -1,4 +1,5 @@
 from typing import TypedDict, cast
+
 from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     CBFConfiguration,
     CommonConfiguration,

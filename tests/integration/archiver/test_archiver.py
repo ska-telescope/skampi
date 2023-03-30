@@ -2,12 +2,20 @@
 """
 Test archiver
 """
-import sys
-import pytest
 import logging
+import sys
 from time import sleep
+
+import pytest
 from archiver_helper import ArchiverHelper
-from tango import DevFailed, DeviceProxy, GreenMode, AttributeProxy, ApiUtil, DeviceData
+from tango import (
+    ApiUtil,
+    AttributeProxy,
+    DevFailed,
+    DeviceData,
+    DeviceProxy,
+    GreenMode,
+)
 
 
 @pytest.mark.k8s

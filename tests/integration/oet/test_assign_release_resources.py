@@ -5,18 +5,19 @@ Tests for creating SBI (XTP-779), allocating resources from SBI (XTP-777)
 """
 
 import logging
+from os import environ
 
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, parsers, scenario, then, when
+from resources.models.mvp_model.states import ObsState
+from ska_oso_oet_client.activityclient import ActivityAdapter
+from ska_oso_scripting.objects import SubArray
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_oso_scripting.objects import SubArray
-from resources.models.mvp_model.states import ObsState
+
 from ..conftest import SutTestSettings
-from ska_oso_oet_client.activityclient import ActivityAdapter
-from os import environ
 from .oet_helpers import ScriptExecutor
 
 logger = logging.getLogger(__name__)

@@ -1,19 +1,20 @@
 """Pytest fixtures and bdd step implementations specific to tmc integration
 tests."""
 
-import os
 import logging
+import os
+
 import pytest
 from pytest_bdd import given
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.leafnodes.sdpln_entry_point import (
-    SDPLnEntryPoint
-)
 from resources.models.tmc_model.leafnodes.cspln_entry_point import (
-    CSPLnEntryPoint
+    CSPLnEntryPoint,
 )
+from resources.models.tmc_model.leafnodes.sdpln_entry_point import (
+    SDPLnEntryPoint,
+)
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from ... import conftest
 

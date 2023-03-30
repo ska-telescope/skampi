@@ -1,15 +1,17 @@
 import json
 from typing import Any, cast
 
-from ska_tmc_cdm.messages.central_node.assign_resources import AssignResourcesRequest
+from ska_tmc_cdm.messages.central_node.assign_resources import (
+    AssignResourcesRequest,
+)
 from ska_tmc_cdm.messages.subarray_node.configure import ConfigureRequest
 
 from .base import encoded
 from .csp import CSPconfig
 from .dishes import Dishes
+from .mccs import MCCSConfig
 from .sdp_config import SdpConfig
 from .tmc_config import TmcConfig
-from .mccs import MCCSConfig
 
 
 class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):

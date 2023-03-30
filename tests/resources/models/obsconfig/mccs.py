@@ -1,4 +1,5 @@
 from ska_tmc_cdm.messages.central_node.mccs import MCCSAllocate
+
 from .base import encoded
 
 

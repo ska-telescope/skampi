@@ -1,29 +1,29 @@
 """pytest global settings, fixtures and global bdd step implementations for
 integration tests."""
 import logging
-from types import SimpleNamespace
 import os
-
+from types import SimpleNamespace
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
-from mock import patch, Mock
-from assertpy import assert_that
+
 import pytest
-from pytest_bdd import when, given, then, parsers
-
+from assertpy import assert_that
+from mock import Mock, patch
+from pytest_bdd import given, parsers, then, when
+from resources.models.mvp_model.env import Observation, init_observation_config
+from resources.models.mvp_model.states import ObsState
+from resources.models.obsconfig.config import Observation
+from resources.models.tmc_model.entry_point import TMCEntryPoint
 from ska_ser_skallop.connectors import configuration as con_config
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_management import telescope_management as tel
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
+from ska_ser_skallop.mvp_control.entry_points import (
+    configuration as entry_conf,
+)
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.entry_point import TMCEntryPoint
-from resources.models.obsconfig.config import Observation
-from resources.models.mvp_model.states import ObsState
-from resources.models.mvp_model.env import init_observation_config, Observation
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_fixtures.base import ExecSettings
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_management import telescope_management as tel
 
 logger = logging.getLogger(__name__)
 

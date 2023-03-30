@@ -6,25 +6,25 @@ Tests for Configure the mid telescope subarray using OET (XTP-778)
 """
 
 """Configure scan on telescope subarray feature tests."""
-from pathlib import Path
 import logging
+from pathlib import Path
+
 import pytest
 from assertpy import assert_that
-from pytest_bdd import given, parsers, when, scenario, then
-
+from pytest_bdd import given, parsers, scenario, then, when
+from resources.models.mvp_model.env import Observation
+from resources.models.mvp_model.states import ObsState
+from resources.models.obsconfig.target_spec import (
+    ReceiverBand,
+    Target,
+    TargetSpec,
+)
+from ska_oso_scripting.objects import SubArray
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_oso_scripting.objects import SubArray
-from resources.models.mvp_model.states import ObsState
-from ..conftest import SutTestSettings
-from resources.models.mvp_model.env import Observation
-from resources.models.obsconfig.target_spec import (
-    TargetSpec,
-    Target,
-    ReceiverBand,
-)
 
+from ..conftest import SutTestSettings
 from .oet_helpers import ScriptExecutor
 
 logger = logging.getLogger(__name__)

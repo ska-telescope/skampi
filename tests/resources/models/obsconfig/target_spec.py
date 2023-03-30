@@ -1,7 +1,10 @@
 from collections import OrderedDict
 from typing import NamedTuple
 
-from ska_tmc_cdm.messages.subarray_node.configure.core import ReceiverBand, Target
+from ska_tmc_cdm.messages.subarray_node.configure.core import (
+    ReceiverBand,
+    Target,
+)
 
 from .base import SchedulingBlock
 

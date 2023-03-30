@@ -1,16 +1,17 @@
-import sys
-import pytest
 import logging
+import sys
 import threading
+import time
+
+import pytest
 from tango import (
     Database,
-    DeviceProxy,
     DeviceData,
+    DeviceProxy,
+    DevVarStringArray,
     EventType,
     LogLevel,
-    DevVarStringArray,
 )
-import time
 
 
 class TraceHelper:

@@ -5,17 +5,19 @@ Tests to Run a scan on low subarray from OET (XTP-19865)
 """
 
 """Scan on telescope subarray feature tests."""
+import logging
+import time
+
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
-import logging
-import time
+from resources.models.mvp_model.states import ObsState
+from ska_oso_scripting.objects import SubArray
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from resources.models.mvp_model.states import ObsState
-from ska_oso_scripting.objects import SubArray
+
 from .. import conftest
 
 

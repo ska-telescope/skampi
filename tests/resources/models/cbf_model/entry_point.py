@@ -1,22 +1,21 @@
 """Domain logic for the cbf."""
-import logging
-from typing import Union, List
-import os
 import json
+import logging
+import os
 from time import sleep
+from typing import List, Union
 
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import configuration as conf
 from ska_ser_skallop.mvp_control.configuration import types
-from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
-    NoOpStep,
     MessageBoardBuilder,
+    NoOpStep,
 )
-from ska_ser_skallop.mvp_control.entry_points import base
-from ska_ser_skallop.event_handling.builders import get_message_board_builder
-
 
 logger = logging.getLogger(__name__)
 

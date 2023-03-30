@@ -1,27 +1,28 @@
 """Domain logic for the sdp."""
-import logging
-from typing import Union, List
 import json
+import logging
 from time import sleep
+from typing import List, Union
 
-from ska_ser_skallop.utils.singleton import Memo
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import composition as comp
 from ska_ser_skallop.mvp_control.configuration import configuration as conf
 from ska_ser_skallop.mvp_control.configuration import types
-from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
-    NoOpStep,
     MessageBoardBuilder,
+    NoOpStep,
 )
-from ska_ser_skallop.event_handling.builders import get_message_board_builder
+from ska_ser_skallop.utils.singleton import Memo
+
+from ...obsconfig.config import Observation
 from ...sdp_model.entry_point import (
-    StartUpStep,
     SdpAssignResourcesStep,
     SdpConfigureStep,
     SDPScanStep,
+    StartUpStep,
 )
-from ...obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,7 @@
-from tango import DeviceProxy,AttributeProxy
 from time import sleep
+
+from tango import AttributeProxy, DeviceProxy
+
 
 class ArchiverHelper:
 

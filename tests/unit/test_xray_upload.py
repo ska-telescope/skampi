@@ -1,16 +1,12 @@
 """Cucumber test results are uploaded to XRay feature tests."""
 
-from asyncio.log import logger
-from atlassian import Jira
-import pytest
-import os
 import json
-from pytest_bdd import (
-    given,
-    scenario,
-    then,
-    when,
-)
+import os
+from asyncio.log import logger
+
+import pytest
+from atlassian import Jira
+from pytest_bdd import given, scenario, then, when
 
 # declare pytestmark globally so that the whole scenario can be marked as infra
 pytestmark = pytest.mark.infra

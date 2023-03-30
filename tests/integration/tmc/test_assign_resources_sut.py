@@ -1,15 +1,15 @@
 """Assign resources to subarray feature tests."""
-import logging
-import pytest
 import copy
-from assertpy import assert_that
-from pytest_bdd import given, scenario, then, parsers
+import logging
 
+import pytest
+from assertpy import assert_that
+from pytest_bdd import given, parsers, scenario, then
+from resources.models.mvp_model.states import ObsState
+from resources.models.tmc_model.entry_point import ASSIGN_RESOURCE_JSON_LOW
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.entry_point import ASSIGN_RESOURCE_JSON_LOW
-from resources.models.mvp_model.states import ObsState
 
 from ..conftest import SutTestSettings
 

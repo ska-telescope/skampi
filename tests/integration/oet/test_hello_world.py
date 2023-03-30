@@ -1,8 +1,9 @@
-import pytest
-from pytest_bdd import given, scenario, then, when, parsers
-
-from .oet_helpers import ScriptExecutor, ACTIVITY_ADAPTER, add_sb_to_oda
 from os import environ
+
+import pytest
+from pytest_bdd import given, parsers, scenario, then, when
+
+from .oet_helpers import ACTIVITY_ADAPTER, ScriptExecutor, add_sb_to_oda
 
 EXECUTOR = ScriptExecutor()
 

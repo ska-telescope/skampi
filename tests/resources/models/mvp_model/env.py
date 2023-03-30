@@ -1,6 +1,7 @@
 """Creates a global env for a test and test session"""
 
 from typing import TypedDict
+
 from ..obsconfig.config import Observation
 
 

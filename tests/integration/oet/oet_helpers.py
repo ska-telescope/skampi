@@ -4,8 +4,12 @@ from os import environ
 from typing import List, Optional
 
 from ska_db_oda.unit_of_work.restunitofwork import RESTUnitOfWork
-from ska_oso_oet_client.procedureclient import ProcedureAdapter, ProcedureSummary
 from ska_oso_oet_client.activityclient import ActivityAdapter
+from ska_oso_oet_client.procedureclient import (
+    ProcedureAdapter,
+    ProcedureSummary,
+)
+
 LOGGER = logging.getLogger(__name__)
 
 kube_namespace = environ.get("KUBE_NAMESPACE", "test")

@@ -1,6 +1,13 @@
 import time
+
 import numpy
-from tango import AttrQuality, AttrWriteType, DispLevel, DevState, DebugIt  # GreenMode
+from tango import (  # GreenMode
+    AttrQuality,
+    AttrWriteType,
+    DebugIt,
+    DevState,
+    DispLevel,
+)
 from tango.server import Device, attribute, command, device_property
 
 

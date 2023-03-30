@@ -1,20 +1,20 @@
 """Start up the telescope from tmc feature tests."""
 import logging
 
-# import os
-
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_fixtures.context_management import TelescopeContext
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-from ska_ser_skallop.mvp_fixtures.context_management import (
-    TelescopeContext,
-)
 from .. import conftest
+
+# import os
+
+
+
 
 logger = logging.getLogger(__name__)
 

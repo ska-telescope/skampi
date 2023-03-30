@@ -11,6 +11,8 @@ packages = [{include = "tests/integration"}]
 python = "^3.10"
 pytest-repeat = "^0.9.1"
 kubernetes = "^21.7.0"
+pylint = "^2.12.2"
+pylint-junit = "^0.3.2"
 pytest-cov = "^3.0.0"
 pytest-forked = "^1.4.0"
 pytest-json-report = "^1.4.1"

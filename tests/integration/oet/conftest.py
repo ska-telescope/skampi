@@ -4,17 +4,15 @@ import os
 from typing import Callable
 
 import pytest
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from resources.models.obsconfig.config import Observation
+from resources.models.tmc_model.entry_point import TMCEntryPoint
+from ska_oso_pdm.entities.common.sb_definition import SBDefinition
+from ska_oso_pdm.schemas import CODEC
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-from ska_oso_pdm.entities.common.sb_definition import SBDefinition
-from ska_oso_pdm.schemas import CODEC
-
-from resources.models.obsconfig.config import Observation
-from resources.models.tmc_model.entry_point import TMCEntryPoint
 from .. import conftest
 
 LOGGER = logging.getLogger(__name__)

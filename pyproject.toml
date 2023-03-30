@@ -30,6 +30,8 @@ ska-oso-oet-client = "^1.0.0"
 ska-db-oda = "^1.6.1"
 ska-oso-oet="^5.0.0"
 diagrams = "^0.23.3"
+pyyaml = "^6.0"
+jsonschema = "^4.17.3"
 
 [[tool.poetry.source]]
 name = 'ska'

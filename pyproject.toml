@@ -29,6 +29,7 @@ ska-oso-scripting = "7.0.0"
 ska-oso-oet-client = "^1.0.0"
 ska-db-oda = "^1.6.1"
 ska-oso-oet="^5.0.0"
+diagrams = "^0.23.3"
 
 [[tool.poetry.source]]
 name = 'ska'
@@ -38,6 +39,9 @@ url = 'https://artefact.skatelescope.org/repository/pypi-all/simple'
 flake8 = "^6.0.0"
 black = "^21.12b0"
 ipython = "^7.30.1"
+
+[tool.poetry.scripts]
+graph = "tests.resources.utils.example:main"
 
 
 [build-system]

@@ -30,24 +30,12 @@ def test_oet_multi_scan_on_mid_subarray():
 def a_oet():
     """an OET"""
 
-# @given("an subarray that has just completed it's first scan")
-# def an_subarray_that_has_just_completed_its_first_scan(
-#     sut_settings: conftest.SutTestSettings,
-# ):  
-#     subarray_id = sut_settings.subarray_id
-#     subarray = SubArray(subarray_id)
-#     subarray.scan()
-
-@given("an subarray that has just completed it's first scan", target_fixture="scan")
-def a_low_subarray_in_ready_state(
-    base_configuration: conf_types.ScanConfiguration,
-    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-    sut_settings: conftest.SutTestSettings,
-) -> conf_types.ScanConfiguration:
-    """a subarray in READY state"""
-    subarray_allocation_spec.receptors = sut_settings.receptors
-    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
-    return base_configuration
+@given("an subarray that has just completed it's first scan")
+def an_subarray_that_has_just_completed_its_first_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    configured_subarray.scan(integration_test_exec_settings)
 
 @when("I command it to scan for a given period")
 def i_command_it_to_scan_mid(

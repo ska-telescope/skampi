@@ -4,8 +4,7 @@ from ska_ser_skallop.mvp_control.configuration.types import (
     ScanConfigurationType,
 )
 
-from tests.resources.models.obsconfig.config import Observation
-from tests.resources.models.obsconfig.target_spec import TargetSpec
+from resources.models.obsconfig.config import Observation
 
 
 class SKAObservation:

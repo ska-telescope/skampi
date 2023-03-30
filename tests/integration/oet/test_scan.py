@@ -33,7 +33,7 @@ def test_oet_scan_on_low_subarray():
 @pytest.mark.oet
 @scenario(
     "features/oet_multi_scan.feature",
-    "Run multiple scans on TMC subarray in mid for same scan type",
+    "Run multiple scans on TMC subarray in low for same scan type",
 )
 def test_multiple_scans_on_tmc_subarray_in_low():
     """Run multiple scans on TMC subarray in low."""

@@ -27,16 +27,13 @@ def test_oet_multi_scan_on_mid_subarray():
     """Run multiple scans on mid subarray for same scan type from OET."""
 
 
-
+@pytest.mark.k8s
+@pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.scanning
-@pytest.mark.oet
-@scenario(
-    "features/oet_multi_scan.feature",
-    "Run multiple scans on mid subarray for different scan type from OET",
-)
-def test_run_multiple_scans_on_oet_subarray_in_mid_for_different_scan_types():
-    """Run multiple scans on subarray in mid for different scan types"""
+@scenario("features/oet_multi_scan.feature","Run multiple scans on mid subarray for different scan type from OET")
+def test_oet_multi_scan_on_mid_subarray_for_different_scantype():
+    """Run multiple scans on mid subarray for different scan type from OET"""
 
 
 @given("an OET")

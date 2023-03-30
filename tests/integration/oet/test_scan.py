@@ -55,6 +55,12 @@ def a_low_subarray_in_ready_state(
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     return base_configuration
 
+@given("an subarray that has just completed it's first scan")
+def an_subarray_that_has_just_completed_its_first_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    configured_subarray.scan(integration_test_exec_settings)
 
 @when("I command it to scan for a given period")
 def i_command_it_to_scan_low(

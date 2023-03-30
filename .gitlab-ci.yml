@@ -15,11 +15,11 @@ variables:
   CONFIG: "common"
 
 stages:
+  - lint
   - on-demand
   - build
   - test
   - clean_test_env
-  - lint
   - publish
   - deploy
   - integration

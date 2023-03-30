@@ -1,0 +1,80 @@
+# yaml-language-server: $schema=../../resources/schemas/diagram.json
+ska-tango-base:
+  platformDependents:
+    - ska-mid-cbf
+    - ska-csp-lmc-mid
+    - ska-sdp
+    - ska-tmc-mid
+    - ska-tango-tangogql
+    - ska-sim-dishmaster
+    - ska-tango-archiver
+    - ska-log-consumer
+    - ska-oso-oet
+    - ska-tango-alarmhandler
+ska-tango-util:
+  dependencies: []
+  platformDependents:
+    - ska-mid-cbf
+    - ska-csp-lmc-mid
+    - ska-sdp
+    - ska-tmc-mid
+    - ska-sim-dishmaster
+    - ska-oso-oet
+ska-mid-cbf:
+  dependencies: []
+  platformDependents: ["ska-tango-base"]
+ska-csp-lmc-mid:
+  dependencies: ["ska-mid-cbf"]
+  platformDependents: []
+ska-sdp:
+  dependencies: []
+  platformDependents: ["ska-tango-base"]
+ska-tmc-mid:
+  dependencies: ["ska-csp-lmc-mid", "ska-sdp", "ska-sim-dishmaster"]
+  platformDependents: ["ska-tango-base"]
+ska-tango-taranta:
+  dependencies:
+    [
+      "ska-tango-tangogql",
+      "ska-tango-taranta-auth",
+      "ska-tango-taranta-dashboard-pvc",
+    ]
+  platformDependents: []
+ska-tango-tangogql:
+  dependencies: []
+  platformDependents: ["ska-tango-base"]
+ska-tango-taranta-auth:
+  dependencies: []
+  platformDependents: []
+ska-tango-taranta-dashboard-pvc:
+  dependencies: []
+  platformDependents: []
+ska-ser-skuid:
+  dependencies: []
+  platformDependents:
+    - ska-csp-lmc-mid
+    - ska-sdp
+    - ska-tmc-mid
+    - ska-oso-oet
+ska-landingpage:
+  dependencies: []
+  platformDependents: []
+ska-sim-dishmaster:
+  dependencies: []
+  platformDependents: []
+ska-tango-archiver:
+  dependencies: []
+  platformDependents: []
+ska-log-consumer:
+  dependencies: []
+  platformDependents: []
+ska-oso-oet:
+  dependencies: ["ska-tmc-mid"]
+  platformDependents: []
+  root:
+ska-tango-alarmhandler:
+  dependencies: []
+  platformDependents: []
+ska-db-oda:
+  dependencies: []
+  platformDependents: []

@@ -1,0 +1,33 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ska-skampi/diagram.schema.json",
+    "title": "Diagram",
+    "description": "A Yaml schema for producing diagrams from charts",
+    "type": "object",
+    "additionalProperties": false,
+    "patternProperties": {
+        "^.*": {
+            "type": "object",
+            "properties": {
+                "dependencies": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "platformDependents": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "root": {
+                    "type": [
+                        "null",
+                        "boolean"
+                    ]
+                }
+            }
+        }
+    }
+}

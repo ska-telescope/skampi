@@ -13,16 +13,19 @@ from ..conftest import SutTestSettings
 @pytest.mark.cbf
 @pytest.mark.assign
 @scenario(
-    "features/cbf_assign_resources.feature", "Assign resources to CBF mid subarray"
+    "features/cbf_assign_resources.feature",
+    "Assign resources to CBF mid subarray",
 )
 def test_assign_resources_to_cbf_mid_subarray():
     """Assign resources to CBF mid subarray."""
+
 
 @pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.assign
 @scenario(
-    "features/cbf_assign_resources.feature", "Assign resources to CBF low subarray"
+    "features/cbf_assign_resources.feature",
+    "Assign resources to CBF low subarray",
 )
 def test_assign_resources_to_cbf_low_subarray():
     """Assign resources to CBF low subarray."""

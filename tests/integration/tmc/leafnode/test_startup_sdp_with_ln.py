@@ -47,6 +47,7 @@ def a_sdp_ln():
 
 # thens
 
+
 @then("the sdp must be on")
 def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
     """the sdp must be on."""

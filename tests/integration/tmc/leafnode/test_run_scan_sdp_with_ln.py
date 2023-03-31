@@ -20,6 +20,7 @@ from ... import conftest
 def test_run_scan_on_sdp_subarray_in_mid():
     """Run scan on sdp subarray in mid using the leaf node."""
 
+
 @pytest.mark.skalow
 @pytest.mark.configure
 @scenario(
@@ -28,6 +29,7 @@ def test_run_scan_on_sdp_subarray_in_mid():
 )
 def test_run_scan_on_sdp_subarray_in_low():
     """Run scan on SDP subarray in low using the leaf node."""
+
 
 @given("an SDP subarray in READY state")
 def an_sdp_subarray_in_ready_state(
@@ -42,11 +44,14 @@ def an_sdp_subarray_in_ready_state(
     # subarray_allocation_spec.composition
     return sdp_base_configuration
 
+
 @given("a TMC SDP subarray Leaf Node")
 def a_sdp_sln(set_sdp_ln_entry_point):
     """a TMC SDP subarray Leaf Node."""
 
+
 # @when("I command it to scan for a given period") from ...conftest
+
 
 @then("the SDP subarray shall go from READY to SCANNING")
 def the_subarray_shall_be_in_the_scanning_state(

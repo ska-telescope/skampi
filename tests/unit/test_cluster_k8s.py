@@ -16,7 +16,9 @@ from kubernetes.stream import stream
 @pytest.fixture(name="assets_dir")
 def fxt_assets_dir():
     cur_path = os.path.dirname(os.path.realpath(__file__))
-    return os.path.realpath(os.path.join(cur_path, "..", "resources", "assets"))
+    return os.path.realpath(
+        os.path.join(cur_path, "..", "resources", "assets")
+    )
 
 
 @pytest.fixture(name="manifest")
@@ -53,7 +55,9 @@ def fxt_k8s_cluster(assets_dir):
                 "kubeconfig already exists, skipping: "
                 + os.path.join(os.environ["HOME"], ".kube", "config")
             )
-            kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
+            kubeconfig_filepath = os.path.join(
+                os.environ["HOME"], ".kube", "config"
+            )
         else:
             logging.info(
                 f"Defaulting to loading kubeconfig from {kubeconfig_filepath}."
@@ -129,7 +133,9 @@ def fxt_pvc(test_namespace):
         spec=client.V1PersistentVolumeClaimSpec(
             storage_class_name="nfss1",
             access_modes=["ReadWriteMany"],
-            resources=client.V1ResourceRequirements(requests={"storage": "1Gi"}),
+            resources=client.V1ResourceRequirements(
+                requests={"storage": "1Gi"}
+            ),
         ),
     )
 
@@ -140,7 +146,9 @@ def fxt_pvc(test_namespace):
     except ApiException as e:
         logging.error("That didn't work: %s" % e)
 
-    pvcs = api.list_namespaced_persistent_volume_claim(namespace=test_namespace)
+    pvcs = api.list_namespaced_persistent_volume_claim(
+        namespace=test_namespace
+    )
     logging.info(
         f"PVC {pvcs.items[0].metadata.name} currently {pvcs.items[0].status.phase}"
     )
@@ -155,7 +163,9 @@ def fxt_pvc(test_namespace):
 
 
 @pytest.fixture(name="all_the_things")
-def fxt_deployments_and_services(test_namespace, manifest, persistentvolumeclaim):
+def fxt_deployments_and_services(
+    test_namespace, manifest, persistentvolumeclaim
+):
 
     logging.info(f"Creating resources in namespace: {test_namespace}")
     k_cmd = [
@@ -230,7 +240,10 @@ def fxt_create_ingress(test_namespace, assets_dir):
     ]
 
     ingress_result = subprocess.run(
-        k_cmd_ingress, check=True, stdout=subprocess.PIPE, universal_newlines=True
+        k_cmd_ingress,
+        check=True,
+        stdout=subprocess.PIPE,
+        universal_newlines=True,
     )
 
     for line in ingress_result.stdout.split("\n"):
@@ -257,7 +270,9 @@ def fxt_create_ingress(test_namespace, assets_dir):
 
 
 # TODO: PATCH THE INGRESS RESOURCE SO THAT IT IS CREATED WITH NAMESPACED HOSTNAME
-def write_to_volume(write_service_name, test_namespace, all_the_things, ingress):
+def write_to_volume(
+    write_service_name, test_namespace, all_the_things, ingress
+):
     # def write_to_volume(write_service_name, test_namespace, all_the_things):
     logging.info(f"Result of creating all the things: {all_the_things}")
 
@@ -320,7 +335,9 @@ def curl_service_with_shared_volume(host0, host1, test_namespace):
 
 def wait_for_pod(test_namespace, service_name):
     v1 = client.CoreV1Api()
-    ret = v1.list_namespaced_pod(test_namespace, label_selector="app=" + service_name)
+    ret = v1.list_namespaced_pod(
+        test_namespace, label_selector="app=" + service_name
+    )
     logging.info("Checking Pod Readiness...")
     wait_for_seconds = 1.0
     while True:

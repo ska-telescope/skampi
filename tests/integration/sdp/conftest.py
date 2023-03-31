@@ -19,7 +19,6 @@ def fxt_update_sut_settings(sut_settings: conftest.SutTestSettings):
         sut_settings.nr_of_subarrays = 1
 
 
-
 @pytest.fixture(name="set_sdp_entry_point", autouse=True)
 def fxt_set_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
@@ -37,9 +36,6 @@ def fxt_set_entry_point(
     sut_settings.default_subarray_name = sut_settings.tel.sdp.subarray(
         sut_settings.subarray_id
     )
-
-
-
 
 
 @pytest.fixture(name="setup_sdp_mock")
@@ -77,7 +73,8 @@ def fxt_sdp_assign_resources_exec_settings(
 @pytest.fixture(name="set_up_subarray_log_checking_for_sdp", autouse=True)
 @pytest.mark.usefixtures("set_sdp_entry_point")
 def fxt_set_up_log_capturing_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 

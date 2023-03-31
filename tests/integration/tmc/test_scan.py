@@ -21,6 +21,7 @@ from ..conftest import SutTestSettings
 def test_tmc_scan_on_mid_subarray():
     """Run a scan on TMC mid telescope subarray."""
 
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -28,6 +29,7 @@ def test_tmc_scan_on_mid_subarray():
 @scenario("features/tmc_scan.feature", "Run a scan on low subarray from TMC")
 def test_tmc_scan_on_low_subarray():
     """Run a scan on TMC low telescope subarray."""
+
 
 @given("an TMC")
 def a_tmc():
@@ -46,6 +48,7 @@ def a_subarray_in_ready_state(
 
 
 # @when("I command it to scan for a given period")
+
 
 @then("the subarray must be in the SCANNING state until finished")
 def the_sdp_subarray_must_be_in_the_scanning_state(
@@ -67,6 +70,8 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
     ).to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(tmc_subarray_name)
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+        tmc_subarray_name
+    )
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

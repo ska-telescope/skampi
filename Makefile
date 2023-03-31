@@ -5,7 +5,7 @@ XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
 
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-skampi-chart
-
+PYTHON_LINT_TARGET ?= tests/
 INGRESS_HOST ?= k8s.stfc.skao.int## default ingress host
 KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used

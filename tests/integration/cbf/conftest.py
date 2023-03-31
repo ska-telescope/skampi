@@ -89,7 +89,8 @@ def fxt_set_cbf_online_from_cbf(
 @pytest.fixture(name="set_up_log_checking_for_cbf_subarray")
 @pytest.mark.usefixtures("set_cbf_entry_point")
 def fxt_set_up_log_checking_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 

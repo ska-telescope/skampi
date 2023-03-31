@@ -48,7 +48,8 @@ def test_sbi_creation():
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
-    "features/oet_assign_release_resources.feature", "Allocating resources with a SBI"
+    "features/oet_assign_release_resources.feature",
+    "Allocating resources with a SBI",
 )
 def test_resource_allocation():
     """
@@ -82,11 +83,13 @@ def a_oet():
 @given("sub-array is in ObsState EMPTY")
 def the_subarray_must_be_in_empty_state(
     running_telescope: fxt_types.running_telescope,
-    sut_settings: SutTestSettings
+    sut_settings: SutTestSettings,
 ):
     """the subarray must be in EMPTY state."""
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.EMPTY)
 
@@ -94,11 +97,13 @@ def the_subarray_must_be_in_empty_state(
 @given("sub-array with resources allocated to it")
 def the_subarray_with_recources_allocate(
     allocated_subarray: fxt_types.allocated_subarray,
-    sut_settings: SutTestSettings
+    sut_settings: SutTestSettings,
 ):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
@@ -107,7 +112,9 @@ def the_subarray_with_recources_allocate(
 
 
 @when(
-    parsers.parse("I tell the OET to create SBI using script {script} and SB {sb_json}")
+    parsers.parse(
+        "I tell the OET to create SBI using script {script} and SB {sb_json}"
+    )
 )
 def when_create_sbi(
     script,
@@ -158,7 +165,9 @@ def when_allocate_resources_from_sbi(
         ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
 
 
-@when(parsers.parse("I tell the OET to release resources using script {script}"))
+@when(
+    parsers.parse("I tell the OET to release resources using script {script}")
+)
 def when_release_resources(
     script,
     allocated_subarray: fxt_types.allocated_subarray,
@@ -177,11 +186,12 @@ def when_release_resources(
             script_completion_state == "COMPLETE"
         ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
 
+
 @when("I tell the OET to release resources")
 def when_release_resources(
-        allocated_subarray: fxt_types.allocated_subarray,
-        context_monitoring: fxt_types.context_monitoring,
-        integration_test_exec_settings: fxt_types.exec_settings,
+    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """
     Use the OET Rest API to run script that releases all resources.
@@ -190,10 +200,11 @@ def when_release_resources(
 
     with context_monitoring.context_monitoring():
         with allocated_subarray.wait_for_releasing_a_subarray(
-                integration_test_exec_settings
+            integration_test_exec_settings
         ):
             subarray = SubArray(subarray_id)
             subarray.release()
+
 
 @then("the script completes successfully")
 def check_script_completed():
@@ -218,7 +229,9 @@ def check_final_subarray_state(
         obsstate (str): Sub-array Tango device ObsState
     """
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     subarray_state = ObsState(subarray.read_attribute("obsState").value).name
     assert (
         subarray_state == obsstate
@@ -241,6 +254,7 @@ def test_oet__scripting_resource_allocation():
                 Then the sub-array goes to ObsState IDLE
     """
 
+
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.assign
@@ -257,6 +271,7 @@ def test_oet_scripting_resource_allocation_in_low():
                 Then the sub-array goes to ObsState IDLE
     """
 
+
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.k8s
@@ -271,9 +286,11 @@ def test_resource_release_for_low():
     Then the sub-array goes to ObsState EMPTY
     """
 
+
 @given("an oet subarray object in state EMPTY", target_fixture="subarray")
 def an_oet_subarray_object_in_state_empty(
-    running_telescope: fxt_types.running_telescope, sut_settings: SutTestSettings
+    running_telescope: fxt_types.running_telescope,
+    sut_settings: SutTestSettings,
 ) -> SubArray:
     return SubArray(sut_settings.subarray_id)
 
@@ -295,9 +312,12 @@ def i_assign_resources_to_it(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            config = observation.generate_assign_resources_config(subarray_id).as_object
+            config = observation.generate_assign_resources_config(
+                subarray_id
+            ).as_object
             logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
             subarray.assign_from_cdm(config)
+
 
 @when("I assign resources to it in low")
 def i_assign_resources_to_it_low(
@@ -317,14 +337,19 @@ def i_assign_resources_to_it_low(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            config = observation.generate_low_assign_resources_config(subarray_id).as_object
+            config = observation.generate_low_assign_resources_config(
+                subarray_id
+            ).as_object
             logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
             subarray.assign_from_cdm(config)
+
 
 @then("the sub-array goes to ObsState IDLE")
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)

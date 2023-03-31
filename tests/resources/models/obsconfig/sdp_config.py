@@ -67,13 +67,17 @@ def DEFAULT_SCAN_TYPES(owner: "ScanTypes"):
         ".default": EBScanType(
             scan_type_id=".default",
             beams={
-                "vis0": owner.get_beam_configurations("vis0").types["default_beam_type"]
+                "vis0": owner.get_beam_configurations("vis0").types[
+                    "default_beam_type"
+                ]
             },
         ),
         "target:a": EBScanType(
             scan_type_id="target:a",
             beams={
-                "vis0": owner.get_beam_configurations("vis0").types["field_a_beam_type"]
+                "vis0": owner.get_beam_configurations("vis0").types[
+                    "field_a_beam_type"
+                ]
             },
             derive_from=".default",
         ),
@@ -124,15 +128,21 @@ class ScanTypes(TargetSpecs):
         ), f"configuration {config_name} already exists."
         if search_beam_id:
             beam_configuration = BeamConfiguration(
-                beam_id=config_name, function=function, search_beam_id=search_beam_id
+                beam_id=config_name,
+                function=function,
+                search_beam_id=search_beam_id,
             )
         if timing_beam_id:
             beam_configuration = BeamConfiguration(
-                beam_id=config_name, function=function, timing_beam_id=timing_beam_id
+                beam_id=config_name,
+                function=function,
+                timing_beam_id=timing_beam_id,
             )
         if vlbi_beam_id:
             beam_configuration = BeamConfiguration(
-                beam_id=config_name, function=function, vlbi_beam_id=vlbi_beam_id
+                beam_id=config_name,
+                function=function,
+                vlbi_beam_id=vlbi_beam_id,
             )
         else:
             beam_configuration = BeamConfiguration(
@@ -144,7 +154,9 @@ class ScanTypes(TargetSpecs):
             config_name, beam_configuration, beam_types
         )
 
-    def add_beam_types(self, grouping_id: str, beam_types: dict[str, EBScanTypeBeam]):
+    def add_beam_types(
+        self, grouping_id: str, beam_types: dict[str, EBScanTypeBeam]
+    ):
         assert self._beam_configurations.get(
             grouping_id
         ), f"grouping {grouping_id} does not exist, did you call `add_beam_configuration()`."
@@ -162,7 +174,9 @@ class ScanTypes(TargetSpecs):
         self,
         config_name: str,
         beams: Union[
-            dict[str, dict[str, EBScanTypeBeam]], Tuple[str, str], list[Tuple[str, str]]
+            dict[str, dict[str, EBScanTypeBeam]],
+            Tuple[str, str],
+            list[Tuple[str, str]],
         ],
         derive_from: str | None = None,
     ):
@@ -228,7 +242,11 @@ class ScanTypes(TargetSpecs):
 
     @property
     def target_spec_beams(self):
-        return {key for scan_type in self.scan_types for key in scan_type.beams.keys()}
+        return {
+            key
+            for scan_type in self.scan_types
+            for key in scan_type.beams.keys()
+        }
 
     @property
     def beams(self):
@@ -269,7 +287,8 @@ class ScanTypes(TargetSpecs):
 class Polarisations(TargetSpecs):
     def __init__(
         self,
-        additional_polarizations: list[PolarisationConfiguration] | None = None,
+        additional_polarizations: list[PolarisationConfiguration]
+        | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -285,14 +304,17 @@ class Polarisations(TargetSpecs):
             }
 
     def get_polarisations_from_target_specs(self):
-        unique_keys = {target.polarisation for target in self.target_specs.values()}
+        unique_keys = {
+            target.polarisation for target in self.target_specs.values()
+        }
         return [self.polarizations[key] for key in unique_keys]
 
 
 class Fields(TargetSpecs):
     def __init__(
         self,
-        additional_field_configurations: list[FieldConfiguration] | None = None,
+        additional_field_configurations: list[FieldConfiguration]
+        | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -397,8 +419,10 @@ class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields):
         target_specs: dict[Any, Any] | None = None,
         additional_scan_types: list[EBScanType] | None = None,
         additional_channels: dict[str, ChannelConfiguration] | None = None,
-        additional_polarizations: dict[str, PolarisationConfiguration] | None = None,
-        additional_field_configurations: list[FieldConfiguration] | None = None,
+        additional_polarizations: dict[str, PolarisationConfiguration]
+        | None = None,
+        additional_field_configurations: list[FieldConfiguration]
+        | None = None,
     ) -> None:
         super().__init__(
             target_specs=target_specs,
@@ -434,7 +458,9 @@ class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields):
 
 
 class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
-    sdp_assign_resources_schema = "https://schema.skao.int/ska-sdp-assignres/0.4"
+    sdp_assign_resources_schema = (
+        "https://schema.skao.int/ska-sdp-assignres/0.4"
+    )
     sdp_configure_scan_schema = "https://schema.skao.int/ska-sdp-configure/0.3"
 
     def _generate_sdp_assign_resources_config(self):

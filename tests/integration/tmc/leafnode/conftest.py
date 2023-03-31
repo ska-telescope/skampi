@@ -65,7 +65,7 @@ def fxt_set_csp_ln_entry_point(
 @pytest.fixture(name="set_up_subarray_log_checking_for_sdp_ln")
 def fxt_set_up_log_capturing_for_sdp(
     log_checking: fxt_types.log_checking,
-    sut_settings: conftest.SutTestSettings
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
@@ -91,7 +91,7 @@ def fxt_set_up_log_capturing_for_sdp(
 @pytest.fixture(name="set_up_subarray_log_checking_for_csp_ln")
 def fxt_set_up_log_capturing_for_csp(
     log_checking: fxt_types.log_checking,
-    sut_settings: conftest.SutTestSettings
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CAPTURE_LOGS).
 
@@ -133,4 +133,3 @@ def an_sdp_subarray_in_idle_state(
     # will use default composition for the allocated subarray
     # subarray_allocation_spec.composition
     return sdp_base_configuration
-    

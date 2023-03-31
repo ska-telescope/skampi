@@ -110,7 +110,8 @@ def fxt_tmc_assign_resources_exec_settings(
 
 @pytest.fixture(name="set_up_subarray_log_checking_for_tmc")
 def fxt_set_up_log_capturing_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
@@ -123,10 +124,14 @@ def fxt_set_up_log_capturing_for_cbf(
         sdp_subarray1 = str(tel.sdp.subarray(index))
         if tel.skamid:
             subarray_ln = str(tel.skamid.tm.subarray(index).sdp_leaf_node)
-            log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
+            log_checking.capture_logs_from_devices(
+                subarray, sdp_subarray1, subarray_ln
+            )
         else:
             subarray_ln = str(tel.skalow.tm.subarray(index).sdp_leaf_node)
-            log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
+            log_checking.capture_logs_from_devices(
+                subarray, sdp_subarray1, subarray_ln
+            )
 
 
 # resource configurations

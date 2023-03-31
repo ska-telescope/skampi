@@ -14,6 +14,7 @@ from ...conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
 
+
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
@@ -26,8 +27,7 @@ def test_assign_resources_on_csp_in_low():
 
 @given("a CSP subarray in the EMPTY state", target_fixture="composition")
 def an_csp_subarray_in_empty_state(
-    set_csp_ln_entry_point,
-    base_composition: conf_types.Composition
+    set_csp_ln_entry_point, base_composition: conf_types.Composition
 ) -> conf_types.Composition:
     """an CSP subarray in Empty state."""
     logger.info("an_csp_subarray_in_empty_state")

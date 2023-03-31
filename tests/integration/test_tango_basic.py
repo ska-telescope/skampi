@@ -52,7 +52,9 @@ def i_expect_a_response_to_be_returned_from_the_device_server():
 @pytest.mark.skalow
 @pytest.mark.taranta
 @pytest.mark.k8s
-@scenario("features/taranta_basic.feature", "taranta dashboard services available")
+@scenario(
+    "features/taranta_basic.feature", "taranta dashboard services available"
+)
 def test_taranta_dashboard_services_available():
     """taranta dashboard services available."""
 
@@ -67,11 +69,15 @@ def fxt_env() -> ENV:
     host = os.getenv("KUBE_HOST")
     assert host, "Unable to continue with test as KUBE_HOST is not set"
     namespace = os.getenv("KUBE_NAMESPACE")
-    assert namespace, "Unable to continue with test as KUBE_NAMESPACE is not set"
+    assert (
+        namespace
+    ), "Unable to continue with test as KUBE_NAMESPACE is not set"
     return ENV(host, namespace)
 
 
-@given("a deployed Taranta web dashboard service", target_fixture="service_url")
+@given(
+    "a deployed Taranta web dashboard service", target_fixture="service_url"
+)
 def a_deployed_taranta_web_dashboard_service(env: ENV) -> str:
     """a deployed Taranta web dashboard service."""
     return f"http://{env.host}/{env.namespace}/taranta/dashboard/"
@@ -81,7 +87,9 @@ def a_deployed_taranta_web_dashboard_service(env: ENV) -> str:
 @pytest.mark.skamid
 @pytest.mark.skalow
 @pytest.mark.k8s
-@scenario("features/taranta_basic.feature", "taranta devices service available")
+@scenario(
+    "features/taranta_basic.feature", "taranta devices service available"
+)
 def test_taranta_devices_service_available(env: ENV):
     """taranta devices service available."""
 

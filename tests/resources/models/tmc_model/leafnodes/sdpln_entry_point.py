@@ -82,8 +82,12 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
         subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-        config = self.observation.generate_sdp_assign_resources_config().as_json
-        self._log(f"commanding {subarray_name} with AssignResources: {config} ")
+        config = (
+            self.observation.generate_sdp_assign_resources_config().as_json
+        )
+        self._log(
+            f"commanding {subarray_name} with AssignResources: {config} "
+        )
         subarray.command_inout("AssignResources", config)
 
     def undo(self, sub_array_id: int):

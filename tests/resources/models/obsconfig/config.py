@@ -16,7 +16,9 @@ from .tmc_config import TmcConfig
 
 class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
 
-    assign_resources_schema = "https://schema.skao.int/ska-tmc-assignresources/2.1"
+    assign_resources_schema = (
+        "https://schema.skao.int/ska-tmc-assignresources/2.1"
+    )
 
     def _generate_assign_resources_config(self, subarray_id: int = 1):
         assign_request = AssignResourcesRequest(
@@ -27,7 +29,9 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
         )
         return assign_request
 
-    low_assign_resources_schema = "https://schema.skao.int/ska-low-tmc-assignresources/3.0"
+    low_assign_resources_schema = (
+        "https://schema.skao.int/ska-low-tmc-assignresources/3.0"
+    )
 
     def _generate_low_assign_resources_config(self, subarray_id: int = 1):
         transaction_id = "txn-....-00001"
@@ -37,7 +41,7 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
             subarray_id=subarray_id,
             mccs=self.generate_low_mccs_assign_resources_config().as_object,
             sdp_config=self.generate_sdp_assign_resources_config().as_object,
-            csp_config=self.generate_low_csp_assign_resources_config().as_object
+            csp_config=self.generate_low_csp_assign_resources_config().as_object,
         )
         return assign_request
 
@@ -92,7 +96,8 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
         scan_duration: float = 4,
     ) -> str:
         config = cast(
-            dict[str, Any], self.generate_scan_config(target_id, scan_duration).as_dict
+            dict[str, Any],
+            self.generate_scan_config(target_id, scan_duration).as_dict,
         )
         csp_config = config["csp"]
         csp_config["pointing"] = config["pointing"]

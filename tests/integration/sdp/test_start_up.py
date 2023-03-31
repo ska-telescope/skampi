@@ -55,6 +55,7 @@ def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
 
 # test validation
 
+
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_startup(run_mock):

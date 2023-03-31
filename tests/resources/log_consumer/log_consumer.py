@@ -31,7 +31,10 @@ class LogConsumer(Device):
         if self.attr_message != result:
             self.attr_message = result
             self.push_change_event(
-                "message", self.attr_message, time.time(), AttrQuality.ATTR_VALID
+                "message",
+                self.attr_message,
+                time.time(),
+                AttrQuality.ATTR_VALID,
             )
 
 

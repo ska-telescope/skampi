@@ -24,29 +24,25 @@ class CSPconfig(TargetSpecs):
 
     def _generate_low_csp_assign_resources_config(self):
         interface = "https://schema.skao.int/ska-low-csp-assignresources/2.0"
-        common = {
-            "subarray_id": 1
-        }
+        common = {"subarray_id": 1}
         lowcbf = {
             "resources": [
                 {
                     "device": "fsp_01",
                     "shared": True,
                     "fw_image": "pst",
-                    "fw_mode": "unused"
+                    "fw_mode": "unused",
                 },
                 {
                     "device": "p4_01",
                     "shared": True,
                     "fw_image": "p4.bin",
-                    "fw_mode": "p4"
-                }
+                    "fw_mode": "p4",
+                },
             ]
         }
         return CSPConfiguration(
-            interface=interface,
-            common=common,
-            lowcbf=lowcbf
+            interface=interface, common=common, lowcbf=lowcbf
         )
 
     @encoded
@@ -104,7 +100,9 @@ class CSPconfig(TargetSpecs):
             CSPrunScanConfig,
             {
                 **config,
-                **{"interface": "https://schema.skao.int/ska-mid-csp-scan/2.0"},
+                **{
+                    "interface": "https://schema.skao.int/ska-mid-csp-scan/2.0"
+                },
             },
         )
         return csp_run_scan_config

@@ -31,9 +31,12 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
 @pytest.mark.assign
 @pytest.mark.sdp
 @scenario(
-    "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in low"
+    "features/sdp_assign_resources.feature",
+    "Assign resources to sdp subarray in low",
 )
-def test_assign_resources_to_sdp_subarray_in_low(assign_resources_test_exec_settings):
+def test_assign_resources_to_sdp_subarray_in_low(
+    assign_resources_test_exec_settings,
+):
     """Assign resources to sdp subarray in low."""
 
 
@@ -41,9 +44,12 @@ def test_assign_resources_to_sdp_subarray_in_low(assign_resources_test_exec_sett
 @pytest.mark.assign
 @pytest.mark.sdp
 @scenario(
-    "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in mid"
+    "features/sdp_assign_resources.feature",
+    "Assign resources to sdp subarray in mid",
 )
-def test_assign_resources_to_sdp_subarray_in_mid(assign_resources_test_exec_settings):
+def test_assign_resources_to_sdp_subarray_in_mid(
+    assign_resources_test_exec_settings,
+):
     """Assign resources to sdp subarray in mid."""
 
 
@@ -59,7 +65,8 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
 
 @given("an SDP subarray", target_fixture="composition")
 def an_sdp_subarray(
-    set_up_subarray_log_checking_for_sdp, sdp_base_composition: conf_types.Composition
+    set_up_subarray_log_checking_for_sdp,
+    sdp_base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """an SDP subarray."""
     return sdp_base_composition

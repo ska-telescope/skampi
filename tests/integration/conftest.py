@@ -43,7 +43,9 @@ class SutTestSettings(SimpleNamespace):
         self.tel = names.TEL()
         logger.info("initialising sut settings")
         self.observation = init_observation_config()
-        self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
+        self.default_subarray_name: DeviceName = self.tel.tm.subarray(
+            self.subarray_id
+        )
         self.disable_subarray_teardown = False
         self.restart_after_abort = False
 
@@ -92,7 +94,9 @@ def fxt_online():
     return OnlineFlag()
 
 
-@pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
+@pytest.fixture(
+    name="set_session_exec_settings", autouse=True, scope="session"
+)
 def fxt_set_session_exec_settings(
     session_exec_settings: fxt_types.session_exec_settings,
 ):
@@ -211,6 +215,7 @@ def fxt_observation_config_interjector(
 
     return interject_observation_method
 
+
 # global when steps
 # start up
 
@@ -224,7 +229,9 @@ def i_start_up_the_telescope(
 ):
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(
+            integration_test_exec_settings
+        ):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
@@ -239,7 +246,9 @@ def the_telescope_is_on(
     """I start up the telescope."""
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(
+            integration_test_exec_settings
+        ):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
@@ -255,7 +264,9 @@ def i_switch_off_the_telescope(
     # we disable automatic shutdown as this is done by the test itself
     running_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_shutting_down(integration_test_exec_settings):
+        with running_telescope.wait_for_shutting_down(
+            integration_test_exec_settings
+        ):
             entry_point.set_telescope_to_standby()
 
 
@@ -376,7 +387,9 @@ def i_release_all_resources_assigned_to_it(
 
 
 @given("an subarray busy configuring")
-def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
+def an_subarray_busy_configuring(
+    allocated_subarray: fxt_types.allocated_subarray,
+):
     """an subarray busy configuring"""
     allocated_subarray.set_to_configuring(clear_afterwards=False)
 
@@ -427,11 +440,17 @@ def i_command_it_to_abort(
         "obsstate"
     ).to_become_equal_to("ABORTED")
     with context_monitoring.context_monitoring():
-        with context_monitoring.wait_before_complete(integration_test_exec_settings):
+        with context_monitoring.wait_before_complete(
+            integration_test_exec_settings
+        ):
             if sut_settings.restart_after_abort:
-                allocated_subarray.restart_after_test(integration_test_exec_settings)
+                allocated_subarray.restart_after_test(
+                    integration_test_exec_settings
+                )
             else:
-                allocated_subarray.reset_after_test(integration_test_exec_settings)
+                allocated_subarray.reset_after_test(
+                    integration_test_exec_settings
+                )
             entry_point.abort_subarray(sub_array_id)
 
     integration_test_exec_settings.touch()

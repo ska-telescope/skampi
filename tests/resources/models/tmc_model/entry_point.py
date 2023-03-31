@@ -3,7 +3,7 @@ import copy
 import json
 import logging
 import os
-from typing import List, Union
+from typing import Any, List, Union
 from time import sleep
 from ska_ser_skallop.utils.singleton import Memo
 from ska_ser_skallop.mvp_control.configuration import configuration as conf
@@ -15,10 +15,13 @@ from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
+    AbortStep,
+    ObsResetStep,
 )
 from ska_ser_skallop.utils.nrgen import get_id
 
-from ..obsconfig.config import Observation
+from ..mvp_model.env import get_observation_config, Observation
+from ..mvp_model.states import ObsState
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +68,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("ON")
+            ).to_become_equal_to("ON", ignore_first=False)
         # set csp controller and csp subarray to be waited before startup completes
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
             "state"
@@ -105,29 +108,28 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
-            ).to_become_equal_to("OFF")
-        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-            "state"
-        ).to_become_equal_to("OFF", ignore_first=False)
-        for index in range(1, self.nr_of_subarrays + 1):
-            brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
-                "state"
             ).to_become_equal_to("OFF", ignore_first=False)
         # set dish master to be waited before startup completes
         if self._tel.skamid:
+            brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF", ignore_first=False)
+            for index in range(1, self.nr_of_subarrays + 1):
+                brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
+                    "state"
+                ).to_become_equal_to("OFF", ignore_first=False)
             for dish in self._tel.skamid.dishes(self.receptors):
                 brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
                     "STANDBY", ignore_first=False
                 )
-        # set centralnode telescopeState waited before startup completes
-        if self._tel.skamid:
+            # set centralnode telescopeState waited before startup completes
             brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
                 "telescopeState"
             ).to_become_equal_to("STANDBY", ignore_first=False)
         elif self._tel.skalow:
             brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
                 "telescopeState"
-            ).to_become_equal_to("OFF", ignore_first=False)
+            ).to_become_equal_to(["OFF", "UNKNOWN"], ignore_first=False)
         return brd
 
     def undo(self):
@@ -146,14 +148,16 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
-        
+
     def _generate_unique_eb_sb_ids(self, config_json):
         """This method will generate unique eb and sb ids.
         Update it in config json
         Args:
             config_json (Dict): Config json for Assign Resource command
         """
-        config_json["sdp"]["execution_block"]["eb_id"] = get_id("eb-test-********-*****")
+        config_json["sdp"]["execution_block"]["eb_id"] = get_id(
+            "eb-test-********-*****"
+        )
         for pb in config_json["sdp"]["processing_blocks"]:
             pb["pb_id"] = get_id("pb-test-********-*****")
 
@@ -177,7 +181,9 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         if self._tel.skamid:
-            config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+            config = self.observation.generate_assign_resources_config(
+                sub_array_id
+            ).as_json
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
             config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
@@ -206,7 +212,6 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         elif self._tel.skalow:
             # TODO Low json from CDM is not available. Once it is available pull json from CDM
             config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
-        
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         central_node.command_inout("ReleaseResources", config)
 
@@ -229,9 +234,24 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         ).to_become_equal_to("IDLE")
         return brd
 
-    def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Not implemented."""
-        raise NotImplementedError()
+    def set_wait_for_doing(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        brd = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "RESOURCING"
+        )
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        # ).to_become_equal_to("RESOURCING")
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("RESOURCING")
+        return brd
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray releasing resources is done.
@@ -283,9 +303,13 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         Memo(scan_duration=duration)
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        config = self.observation.generate_scan_config().as_json
-        self._log(f"commanding {subarray_name} with Configure: {config} ")
+        if self._tel.skamid:
+            config = self.observation.generate_scan_config().as_json
 
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            config = json.dumps(CONFIGURE_JSON_LOW)
+        self._log(f"commanding {subarray_name} with Configure: {config} ")
         subarray.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
@@ -329,9 +353,6 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         """Not implemented."""
         brd = get_message_board_builder()
 
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("CONFIGURING")
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("CONFIGURING")
@@ -382,7 +403,11 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        scan_config = self.observation.generate_run_scan_conf().as_json
+        if self._tel.skamid:
+            scan_config = self.observation.generate_run_scan_conf().as_json
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            scan_config = json.dumps(SCAN_JSON_LOW)
         scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -390,7 +415,9 @@ class ScanStep(base.ScanStep, LogEnabled):
         try:
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)
-            subarray.command_inout("EndScan")
+            current_state = subarray.read_attribute("obsState")
+            if current_state.value == ObsState.SCANNING:
+                subarray.command_inout("EndScan")
         except Exception as exception:
             logger.exception(exception)
             raise exception
@@ -402,7 +429,7 @@ class ScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-    
+
     def undo(self, sub_array_id: int):
         """This is a no-op as no undo for scan is needed
 
@@ -418,9 +445,9 @@ class ScanStep(base.ScanStep, LogEnabled):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("SCANNING")
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "SCANNING"
+        )
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("SCANNING")
@@ -509,6 +536,96 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
+class TMCObsResetStep(ObsResetStep, LogEnabled):
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to(
+            "ABORTED", ignore_first=True
+        )  # IDLE
+        return builder
+
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ObsReset command")
+        subarray.command_inout("Obsreset")
+
+
+class TMCAbortStep(base.AbortStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Abort command")
+        subarray.command_inout("Abort")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        csp_subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(csp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        sdp_subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(sdp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        return builder
+
+    def undo(self, sub_array_id: int):
+        """Domain logic for restart configuration on a subarray in tmc.
+
+        This implements the restart method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
+        return builder
+
+
+class TMCRestart(base.RestartStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(
+        self, sub_array_id: int, _: Any = None
+    ) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=False)
+        csp_subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(csp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=False)
+        sdp_subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(sdp_subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to(["EMPTY", "IDLE"], ignore_first=False)
+        return builder
+
+
 class TMCEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
@@ -520,105 +637,60 @@ class TMCEntryPoint(CompositeEntryPoint):
         """Init Object"""
         super().__init__()
         if not observation:
-            observation = Observation()
+            observation = get_observation_config()
         self.observation = observation
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
         self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
         self.assign_resources_step = AssignResourcesStep(observation)
         self.configure_scan_step = ConfigureStep(observation)
         self.scan_step = ScanStep(observation)
+        self.abort_step = TMCAbortStep()
+        # TODO add an implementation of obsreset
+        # currently we do obsreset via an restart
+        #  not this results in the SUT going to EMPTY and not
+        # IDLE
+        self.obsreset_step = TMCRestart()  # type ignore
+        self.restart_step = TMCRestart()
 
 
 ASSIGN_RESOURCE_JSON_LOW = {
     "interface": "https://schema.skao.int/ska-low-tmc-assignresources/3.0",
     "transaction_id": "txn-....-00001",
     "subarray_id": 1,
-    "mccs":
-    {
-        "subarray_beam_ids":
-        [
-            1
-        ],
-        "station_ids":
-        [
-            [
-                1,
-                2
-            ]
-        ],
-        "channel_blocks":
-        [
-            3
-        ]
-    },
-    "sdp":
-    {
+    "mccs": {"subarray_beam_ids": [1], "station_ids": [[1, 2]], "channel_blocks": [3]},
+    "sdp": {
         "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
-        "resources":
-        {
-            "receptors":
-            [
-                "SKA001",
-                "SKA002",
-                "SKA003",
-                "SKA004"
-            ]
-        },
-        "execution_block":
-        {
+        "resources": {"receptors": ["SKA001", "SKA002", "SKA003", "SKA004"]},
+        "execution_block": {
             "eb_id": "eb-test-20220916-00000",
-            "context":
-            {},
+            "context": {},
             "max_length": 3600.0,
-            "beams":
-            [
-                {
-                    "beam_id": "vis0",
-                    "function": "visibilities"
-                }
-            ],
-            "scan_types":
-            [
+            "beams": [{"beam_id": "vis0", "function": "visibilities"}],
+            "scan_types": [
                 {
                     "scan_type_id": ".default",
-                    "beams":
-                    {
-                        "vis0":
-                        {
+                    "beams": {
+                        "vis0": {
                             "channels_id": "vis_channels",
-                            "polarisations_id": "all"
+                            "polarisations_id": "all",
                         }
-                    }
+                    },
                 },
                 {
                     "scan_type_id": "target:a",
                     "derive_from": ".default",
-                    "beams":
-                    {
-                        "vis0":
-                        {
-                            "field_id": "field_a"
-                        }
-                    }
+                    "beams": {"vis0": {"field_id": "field_a"}},
                 },
                 {
                     "scan_type_id": "calibration:b",
                     "derive_from": ".default",
-                    "beams":
-                    {
-                        "vis0":
-                        {
-                            "field_id": "field_b"
-                        }
-                    }
-                }
+                    "beams": {"vis0": {"field_id": "field_b"}},
+                },
             ],
-            "channels":
-            [
+            "channels": [
                 {
                     "channels_id": "vis_channels",
-                    "spectral_windows":
-                    [
+                    "spectral_windows": [
                         {
                             "spectral_window_id": "fsp_1_channels",
                             "count": 4,
@@ -626,130 +698,149 @@ ASSIGN_RESOURCE_JSON_LOW = {
                             "stride": 2,
                             "freq_min": 350000000.0,
                             "freq_max": 368000000.0,
-                            "link_map":
-                            [
-                                [
-                                    0,
-                                    0
-                                ],
-                                [
-                                    200,
-                                    1
-                                ],
-                                [
-                                    744,
-                                    2
-                                ],
-                                [
-                                    944,
-                                    3
-                                ]
-                            ]
+                            "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
                         }
-                    ]
+                    ],
                 }
             ],
-            "polarisations":
-            [
-                {
-                    "polarisations_id": "all",
-                    "corr_type":
-                    [
-                        "XX",
-                        "XY",
-                        "YX",
-                        "YY"
-                    ]
-                }
+            "polarisations": [
+                {"polarisations_id": "all", "corr_type": ["XX", "XY", "YX", "YY"]}
             ],
-            "fields":
-            [
+            "fields": [
                 {
                     "field_id": "field_a",
-                    "phase_dir":
-                    {
-                        "ra":
-                        [
-                            123.0
-                        ],
-                        "dec":
-                        [
-                            -60.0
-                        ],
+                    "phase_dir": {
+                        "ra": [123.0],
+                        "dec": [-60.0],
                         "reference_time": "...",
-                        "reference_frame": "ICRF3"
+                        "reference_frame": "ICRF3",
                     },
-                    "pointing_fqdn": "..."
+                    "pointing_fqdn": "...",
                 },
                 {
                     "field_id": "field_b",
-                    "phase_dir":
-                    {
-                        "ra":
-                        [
-                            123.0
-                        ],
-                        "dec":
-                        [
-                            -60.0
-                        ],
+                    "phase_dir": {
+                        "ra": [123.0],
+                        "dec": [-60.0],
                         "reference_time": "...",
-                        "reference_frame": "ICRF3"
+                        "reference_frame": "ICRF3",
                     },
-                    "pointing_fqdn": "..."
-                }
-            ]
+                    "pointing_fqdn": "...",
+                },
+            ],
         },
-        "processing_blocks":
-        [
+        "processing_blocks": [
             {
                 "pb_id": "pb-test-20220916-00000",
-                "script":
-                {
+                "script": {
                     "kind": "realtime",
                     "name": "test-receive-addresses",
-                    "version": "0.5.0"
+                    "version": "0.5.0",
                 },
-                "sbi_ids":
-                [
-                    "sbi-test-20220916-00000"
-                ],
-                "parameters":
-                {}
+                "sbi_ids": ["sbi-test-20220916-00000"],
+                "parameters": {},
             }
-        ]
+        ],
     },
-    "csp":
-    {
+    "csp": {
         "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",
-        "common":
-        {
-            "subarray_id": 1
-        },
-        "lowcbf":
-        {
-            "resources":
-            [
+        "common": {"subarray_id": 1},
+        "lowcbf": {
+            "resources": [
                 {
                     "device": "fsp_01",
                     "shared": True,
                     "fw_image": "pst",
-                    "fw_mode": "unused"
+                    "fw_mode": "unused",
                 },
                 {
                     "device": "p4_01",
                     "shared": True,
                     "fw_image": "p4.bin",
-                    "fw_mode": "p4"
-                }
+                    "fw_mode": "p4",
+                },
             ]
-        }
-    }
+        },
+    },
 }
 
 RELEASE_RESOURCE_JSON_LOW = {
     "interface": "https://schema.skao.int/ska-low-tmc-releaseresources/3.0",
     "transaction_id": "txn-....-00001",
     "subarray_id": 1,
-    "release_all": True
+    "release_all": True,
 }
+
+CONFIGURE_JSON_LOW = {
+    "interface": "https://schema.skao.int/ska-low-tmc-configure/3.0",
+    "transaction_id": "txn-....-00001",
+    "mccs": {
+        "stations": [{"station_id": 1}, {"station_id": 2}],
+        "subarray_beams": [
+            {
+                "subarray_beam_id": 1,
+                "station_ids": [1, 2],
+                "update_rate": 0.0,
+                "channels": [[0, 8, 1, 1], [8, 8, 2, 1], [24, 16, 2, 1]],
+                "antenna_weights": [1.0, 1.0, 1.0],
+                "phase_centre": [0.0, 0.0],
+                "target": {
+                    "reference_frame": "HORIZON",
+                    "target_name": "DriftScan",
+                    "az": 180.0,
+                    "el": 45.0,
+                },
+            }
+        ],
+    },
+    "sdp": {
+        "interface": "https://schema.skao.int/ska-sdp-configure/0.4",
+        "scan_type": "target:a",
+    },
+    "csp": {
+        "interface": "https://schema.skao.int/ska-csp-configure/2.0",
+        "subarray": {"subarray_name": "science period 23"},
+        "common": {
+            "config_id": "sbi-mvp01-20200325-00001-science_A",
+        },
+        "lowcbf": {
+            "stations": {
+                "stns": [[1, 0], [2, 0], [3, 0], [4, 0]],
+                "stn_beams": [
+                    {
+                        "beam_id": 1,
+                        "freq_ids": [64, 65, 66, 67, 68, 69, 70, 71],
+                        "boresight_dly_poly": "url",
+                    }
+                ],
+            },
+            "timing_beams": {
+                "beams": [
+                    {
+                        "pst_beam_id": 13,
+                        "stn_beam_id": 1,
+                        "offset_dly_poly": "url",
+                        "stn_weights": [0.9, 1.0, 1.0, 0.9],
+                        "jones": "url",
+                        "dest_ip": ["10.22.0.1:2345", "10.22.0.3:3456"],
+                        "dest_chans": [128, 256],
+                        "rfi_enable": [True, True, True],
+                        "rfi_static_chans": [1, 206, 997],
+                        "rfi_dynamic_chans": [242, 1342],
+                        "rfi_weighted": 0.87,
+                    }
+                ]
+            },
+        },
+    },
+    "tmc": {"scan_duration": 10.0},
+}
+
+
+SCAN_JSON_LOW = {
+    "interface": "https://schema.skao.int/ska-low-tmc-scan/3.0",
+    "transaction_id": "txn-....-00001",
+    "scan_id": 1,
+}
+
+

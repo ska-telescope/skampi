@@ -3,14 +3,33 @@ import time
 from os import environ
 from typing import List, Optional
 
-from ska_oso_oet.procedure.application.restclient import RestAdapter, ProcedureSummary
-
+from ska_db_oda.unit_of_work.restunitofwork import RESTUnitOfWork
+from ska_oso_oet_client.procedureclient import ProcedureAdapter, ProcedureSummary
+from ska_oso_oet_client.activityclient import ActivityAdapter
 LOGGER = logging.getLogger(__name__)
 
 kube_namespace = environ.get("KUBE_NAMESPACE", "test")
 kube_host = environ.get("KUBE_HOST")
-rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0/procedures"
-REST_ADAPTER = RestAdapter(rest_cli_uri)
+rest_cli_uri = f"http://{kube_host}/{kube_namespace}/ska-oso-oet/api/v1.0"
+REST_ADAPTER = ProcedureAdapter(rest_cli_uri + "/procedures")
+ACTIVITY_ADAPTER = ActivityAdapter(rest_cli_uri + "/activities")
+
+
+def add_sb_to_oda(test_sbd):
+    oda = RESTUnitOfWork()
+
+    with oda:
+        try:
+            existing_sbd = oda.sbds.get(test_sbd.sbd_id)
+            test_sbd.metadata.version = existing_sbd.metadata.version
+            # Only save the SB if there have been changes to it
+            if not existing_sbd == test_sbd:
+                oda.sbds.add(test_sbd)
+                oda.commit()
+        except KeyError:
+            # sbd_id doesn't exist in ODA so no need to worry about versions
+            oda.sbds.add(test_sbd)
+            oda.commit()
 
 
 class ScriptExecutor:

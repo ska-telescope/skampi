@@ -19,25 +19,27 @@ pytest-mock = "^3.6.1"
 pytest-xdist = "^2.5.0"
 requests = "^2.26.0"
 assertpy = "^1.1"
-docopts = "^0.6.1"
 pytest-timeout = "^2.0.2"
 pytest-ordering = "^0.6"
 pipe = "^1.6.0"
-ska-ser-skallop = "2.21.4"
-ska-telescope-model = "1.3.1"
-ska-oso-oet = "4.0.6"
+ska-ser-skallop = "2.25.1"
 atlassian-python-api = "^3.25.0"
-ska-tmc-cdm = "7.1.0"
-ska-oso-scripting = "^5.0.0"
+ska-tmc-cdm = "7.3.1"
+ska-oso-scripting = "7.0.0"
+ska-oso-oet-client = "^1.0.0"
+ska-db-oda = "^1.6.1"
+ska-oso-oet="^5.0.0"
 
 [[tool.poetry.source]]
 name = 'ska'
 url = 'https://artefact.skatelescope.org/repository/pypi-all/simple'
 
 [tool.poetry.dev-dependencies]
-flake8 = "^4.0.1"
+flake8 = "^6.0.0"
 black = "^21.12b0"
 ipython = "^7.30.1"
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

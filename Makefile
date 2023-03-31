@@ -128,6 +128,14 @@ ifdef OET_INGRESS_ENABLED
 	K8S_CHART_PARAMS += --set ska-oso-oet.rest.ingress.enabled=$(OET_INGRESS_ENABLED)
 endif
 
+ifdef ODA_DEPLOYMENT_ENABLED
+	K8S_CHART_PARAMS += --set ska-db-oda.enabled=true \
+	  --set ska-oso-oet.rest.oda.url=$(ODA_URI) \
+	  --set ska-db-oda.rest.backend.type=filesystem \
+	  --set ska-db-oda.pgadmin4.enabled=false \
+	  --set ska-db-oda.postgresql.enabled=false
+endif
+
 ifeq ($(strip $(MINIKUBE)),true)
 ifeq ($(strip $(TARANTA_AUTH_DASHBOARD_ENABLE)),true)
 K8S_CHART_PARAMS += --set ska-taranta.enabled=true \
@@ -191,7 +199,7 @@ K8S_TEST_MAKE_PARAMS = \
 	LIVE_LOGGING_EXTENDED=$(LIVE_LOGGING_EXTENDED) \
 	REPLAY_EVENTS_AFTERWARDS=$(REPLAY_EVENTS_AFTERWARDS) \
 	CAPTURE_LOGS=$(CAPTURE_LOGS)
-	
+
 
 
 # runs inside the test runner container after cd ./tests
@@ -244,9 +252,16 @@ k8s-pre-install-chart:
 	@echo "k8s-pre-install-chart: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
 	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
 
-k8s-post-install-chart:
-	kubectl rollout status -n $(KUBE_NAMESPACE) --watch --timeout=90s statefulset/ska-sdp-console
-	kubectl -n $(KUBE_NAMESPACE) exec ska-sdp-console-0 -- ska-sdp create deployment shared helm '{"chart": "buffer", "values": {"size": "20Gi", "class": "nfss1"}}'
+# use hook to create SDP namespace
+k8s-pre-install-chart-car:
+	@echo "k8s-pre-install-chart-car: creating the SDP namespace $(KUBE_NAMESPACE_SDP)"
+	@make namespace-sdp KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+
+# use hook to delete SDP namespace
+k8s-post-uninstall-chart:
+	@echo "k8s-post-uninstall-chart: deleting the SDP namespace $(KUBE_NAMESPACE_SDP)"
+	@make delete-sdp-namespace KUBE_NAMESPACE=$(KUBE_NAMESPACE_SDP)
+
 # make sure infra test do not run in k8s-test
 k8s-test: MARK := not infra and $(DASHMARK) $(DISABLE_TARANTA)
 

@@ -1,4 +1,5 @@
 import logging
+import socket
 import sys
 import threading
 import time
@@ -90,5 +91,5 @@ class TraceHelper:
             location = (address, int(port))
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             return sock.connect_ex(location)
-        except:
+        except Exception:
             return -1

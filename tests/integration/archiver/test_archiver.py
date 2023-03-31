@@ -8,14 +8,7 @@ from time import sleep
 
 import pytest
 from archiver_helper import ArchiverHelper
-from tango import (
-    ApiUtil,
-    AttributeProxy,
-    DevFailed,
-    DeviceData,
-    DeviceProxy,
-    GreenMode,
-)
+from tango import ApiUtil, DevFailed, DeviceProxy
 
 
 @pytest.mark.k8s
@@ -62,7 +55,7 @@ def test_configure_attribute():
             try:
                 deviceAdm = DeviceProxy("dserver/hdbppcm-srv/01")
                 deviceAdm.RestartServer()
-            except:
+            except Exception:
                 logging.error(
                     f"reset_conf_manager exception: {sys.exc_info()[0]}"
                 )
@@ -74,7 +67,7 @@ def test_configure_attribute():
 
     if total_slept > 0:
         logging.info(
-            "Slept for "
-            + str(total_slept * sleep_time)
-            + "s for the test configuration!"
+            "Slept for {}s for the test configuration!".format(
+                total_slept * sleep_time
+            )
         )

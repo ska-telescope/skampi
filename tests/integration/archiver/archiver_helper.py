@@ -73,7 +73,7 @@ class ArchiverHelper:
                     in self.conf_manager_attribute_status(fqdn)
                 ):
                     break
-            except:
+            except Exception:
                 pass
             sleep(sleep_time)
             total_sleep_time += 1

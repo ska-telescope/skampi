@@ -1,10 +1,11 @@
+import pytest
+import tango
+
 """Test to verify alarm-handler configuration"""
 
 """
 Test Elettra Alarm Handler
 """
-import pytest
-import tango
 
 
 @pytest.mark.k8s

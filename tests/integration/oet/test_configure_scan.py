@@ -1,11 +1,3 @@
-"""
-test_XTP-18866, test_XTP-776
-----------------------------------
-Tests for Configure the low telescope subarray using OET (XTP-19864)
-Tests for Configure the mid telescope subarray using OET (XTP-778)
-"""
-
-"""Configure scan on telescope subarray feature tests."""
 import logging
 from pathlib import Path
 
@@ -26,6 +18,15 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from ..conftest import SutTestSettings
 from .oet_helpers import ScriptExecutor
+
+"""
+test_XTP-18866, test_XTP-776
+----------------------------------
+Tests for Configure the low telescope subarray using OET (XTP-19864)
+Tests for Configure the mid telescope subarray using OET (XTP-778)
+"""
+
+"""Configure scan on telescope subarray feature tests."""
 
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()

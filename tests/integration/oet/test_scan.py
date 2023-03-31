@@ -1,10 +1,3 @@
-"""
-test_XTP-18866
-----------------------------------
-Tests to Run a scan on low subarray from OET (XTP-19865)
-"""
-
-"""Scan on telescope subarray feature tests."""
 import logging
 import time
 
@@ -19,6 +12,14 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
+
+"""
+test_XTP-18866
+----------------------------------
+Tests to Run a scan on low subarray from OET (XTP-19865)
+"""
+
+"""Scan on telescope subarray feature tests."""
 
 
 @pytest.mark.k8s

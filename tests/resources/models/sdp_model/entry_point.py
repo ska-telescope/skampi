@@ -172,7 +172,6 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
-        subarray_name = self._tel.tm.subarray(sub_array_id)
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("RESOURCING")
@@ -336,6 +335,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
+
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
         ).to_become_equal_to("SCANNING", ignore_first=True)

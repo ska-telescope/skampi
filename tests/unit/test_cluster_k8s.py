@@ -143,6 +143,7 @@ def fxt_pvc(test_namespace):
         response = api.create_namespaced_persistent_volume_claim(
             namespace=test_namespace, body=pvc_body
         )
+        logging.info("Response is %s", response)
     except ApiException as e:
         logging.error("That didn't work: %s" % e)
 

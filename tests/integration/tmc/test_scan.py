@@ -1,5 +1,4 @@
 """Run scan on telescope subarray feature tests."""
-import time
 
 import pytest
 from assertpy import assert_that

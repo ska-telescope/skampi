@@ -1,6 +1,4 @@
 """Default feature tests."""
-import json
-import logging
 import os
 from typing import NamedTuple
 
@@ -23,7 +21,12 @@ def test_tangogql_service_available():
 
 @pytest.fixture(name="inject_build_out")
 def fxt_inject_build_out():
-    """Inject a value into os env for using build out"""
+    """I
+    Inject a value into os env for using build out
+
+    Yields:
+        None
+    """
     original_value = os.environ["TEST_ENV"]
     os.environ["TEST_ENV"] = "BUILD_OUT"
     yield

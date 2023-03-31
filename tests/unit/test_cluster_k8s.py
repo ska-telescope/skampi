@@ -3,14 +3,11 @@ import logging
 import os
 import subprocess
 import time
-from shutil import copyfile
 
 import pytest
 import requests
 from kubernetes import client, config
-from kubernetes.client.api.networking_v1_api import NetworkingV1Api
 from kubernetes.client.exceptions import ApiException
-from kubernetes.stream import stream
 
 
 @pytest.fixture(name="assets_dir")
@@ -87,6 +84,9 @@ def fxt_test_namespace(manifest):
     When run locally, no CI job exists - thus the default namespace
     is used. As a 'local default', in case users don't want to use their
     default namespace, we provide the preset value `ci-local` in the makefiles
+
+    Yields:
+        Namespace
     """
     logging.info(f"Current working directory: {os.getcwd()}")
     logging.info(f"Manifest returns: {manifest}")
@@ -213,6 +213,9 @@ def fxt_create_ingress(test_namespace, assets_dir):
     TODO: This is needed because the currently used version of the python
     kubernetes lib doesn't have the V1 ingress API implemented yet.
     Therefore this method can be updated in future to use the API directly.
+
+    Yields:
+        Return Code
     """
     import yaml
 

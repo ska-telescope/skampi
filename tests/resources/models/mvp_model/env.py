@@ -12,14 +12,12 @@ class ENV(TypedDict):
 env = ENV(observation=None)
 
 
-def get_observation_config() -> Observation:
-    global env
+def get_observation_config(env: ENV) -> Observation:
     if env["observation"] is None:
         env["observation"] = Observation()
     return env["observation"]
 
 
-def init_observation_config() -> Observation:
-    global env
+def init_observation_config(env: ENV) -> Observation:
     env["observation"] = Observation()
     return env["observation"]

@@ -66,7 +66,8 @@ class ArchiverHelper:
 
     def wait_for_start(self, fqdn, sleep_time=0.1, max_retries=30):
         total_sleep_time = 0
-        for x in range(0, max_retries):
+        while max_retries > 0:
+            max_retries -= 1
             try:
                 if (
                     "Archiving          : Started"

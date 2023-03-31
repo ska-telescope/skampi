@@ -1,14 +1,7 @@
 import time
 
-import numpy
-from tango import (  # GreenMode
-    AttrQuality,
-    AttrWriteType,
-    DebugIt,
-    DevState,
-    DispLevel,
-)
-from tango.server import Device, attribute, command, device_property
+from tango import AttrQuality  # GreenMode
+from tango.server import Device, attribute, command
 
 
 class LogConsumer(Device):

@@ -1,18 +1,9 @@
 import logging
 import socket
-import sys
 import threading
 import time
 
-import pytest
-from tango import (
-    Database,
-    DeviceData,
-    DeviceProxy,
-    DevVarStringArray,
-    EventType,
-    LogLevel,
-)
+from tango import DeviceProxy, EventType
 
 
 class TraceHelper:

@@ -86,6 +86,6 @@ include:
     file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
 
   # linting job
-  # - project: "ska-telescope/templates-repository"
-  #   file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
     

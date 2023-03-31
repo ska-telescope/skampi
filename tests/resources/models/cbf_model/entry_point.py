@@ -14,7 +14,6 @@ from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
-    NoOpStep,
 )
 
 logger = logging.getLogger(__name__)

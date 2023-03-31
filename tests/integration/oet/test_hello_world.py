@@ -1,5 +1,3 @@
-from os import environ
-
 import pytest
 from pytest_bdd import given, parsers, scenario, then, when
 

@@ -31,7 +31,6 @@ def test_sdp_start_up_telescope_low(sdp_start_up_test_exec_settings):
 @given("an SDP")
 def a_sdp():
     """a SDP."""
-    foo = "bar"
 
 
 # when

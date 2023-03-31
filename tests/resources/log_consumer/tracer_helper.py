@@ -90,5 +90,5 @@ class TraceHelper:
             location = (address, int(port))
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             return sock.connect_ex(location)
-        except Exception as e1:
+        except:
             return -1

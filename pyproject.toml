@@ -43,7 +43,7 @@ black = "^21.12b0"
 ipython = "^7.30.1"
 
 [tool.poetry.scripts]
-graph = "tests.resources.utils.example:main"
+graph = "tests.resources.utils.chart_imager.app:main"
 
 
 [build-system]

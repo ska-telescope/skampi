@@ -1,9 +1,11 @@
+import abc
 import json
 from pathlib import Path
 import yaml
 from jsonschema import validate
-from typing import NamedTuple, Union, cast
+from typing import NamedTuple, TypeVar, Union, cast, Generic
 from typing_extensions import TypedDict, NotRequired
+from diagrams import Node, Edge, Diagram
 
 
 class ItemDict(TypedDict):
@@ -24,9 +26,22 @@ class Item:
         self._root = root
         self.platform_dependents = platformDependents
         self.dependencies = dependencies
+        self._node: None | Node = None
+        self.edges: list[Edge] = []
+
+    @property
+    def node(self):
+        if self._node is None:
+            self._node = Node(self.name)
+        return self._node
 
     def is_root(self) -> bool:
         return self._root in [None, True]
+
+    def connect_to(self, other: "Item"):
+        edge = Edge(self.node, forward=True)
+        self.node.connect(other.node, edge)
+        self.edges.append(edge)
 
 
 def _load():
@@ -71,17 +86,21 @@ class DiagramItems:
     def _traverse_vertical(self, item: Item):
         for item_name in item.dependencies:
             new_item = self._get(item_name)
+            item.connect_to(new_item)
             yield new_item
             for inner_item in self._traverse_vertical(new_item):
                 yield inner_item
 
     def _traverse_horizontal(self, item: Item):
+        item_dependencies: list[Item] = []
         for item_name in item.dependencies:
             new_item = self._get(item_name)
+            item.connect_to(new_item)
+            item_dependencies.append(new_item)
             yield new_item
-        for item_name in item.dependencies:
-            new_item = self._get(item_name)
+        for new_item in item_dependencies:
             for inner_item in self._traverse_horizontal(new_item):
+                new_item.connect_to(inner_item)
                 yield inner_item
 
     def _traverse_vertical_edge(self, item: Item):
@@ -99,6 +118,11 @@ class DiagramItems:
             new_item = self._get(item_name)
             for inner_item in self._traverse_horizontal_edge(new_item):
                 yield inner_item
+
+    def build(self, diagram_name: str):
+        with Diagram(diagram_name, show=False):
+            for _ in self._traverse_vertical(self._root):
+                pass
 
     def get_next_item_depth_first(self):
         yield self._root

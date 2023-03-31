@@ -6,6 +6,7 @@ XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-skampi-chart
 
+CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 INGRESS_HOST ?= k8s.stfc.skao.int## default ingress host
 KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
@@ -45,7 +46,7 @@ endif
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
 CONFIG_MANAGER= $(CONFIG)-eda/cm/01
 ATTR_CONFIG_FILE = attribute_config_$(CONFIG).yaml
-ARCHWIZARD_CONFIG?= $(ARCHWIZARD_VIEW_DBNAME)=tango://$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.cluster.local:10000/$(CONFIG_MANAGER)
+ARCHWIZARD_CONFIG?= $(ARCHWIZARD_VIEW_DBNAME)=tango://$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.$(CLUSTER_DOMAIN):10000/$(CONFIG_MANAGER)
 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
 ifneq ($(TESTCOUNT),)
@@ -59,15 +60,14 @@ COUNT ?= 1
 endif
 PYTHON_VARS_AFTER_PYTEST ?= -m "$(DASHMARK)" $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
-CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 
 # Some environments need HTTP(s) requests to go through a proxy server. If http_proxy
 # is present we assume all proxy vars are set and pass them through. See
 # https://about.gitlab.com/blog/2021/01/27/we-need-to-talk-no-proxy/ for some
 # background reading about these variables.
 ifneq ($(http_proxy),)
-NO_PROXY ?= landingpage,oet-rest-$(HELM_RELEASE),.svc.cluster.local,${NO_PROXY}
-no_proxy ?= landingpage,oet-rest-$(HELM_RELEASE),.svc.cluster.local,${no_proxy}
+NO_PROXY ?= landingpage,oet-rest-$(HELM_RELEASE),.svc.$(CLUSTER_DOMAIN),${NO_PROXY}
+no_proxy ?= landingpage,oet-rest-$(HELM_RELEASE),.svc.$(CLUSTER_DOMAIN),${no_proxy}
 
 PROXY_VALUES = \
 		--env=HTTP_PROXY=${HTTP_PROXY} \
@@ -97,6 +97,9 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
 	--set ska-tango-archiver.archwizard_config=$(ARCHWIZARD_CONFIG) \
+	--set ska-sdp.ska-sdp-qa.zookeeper.clusterDomain=$(CLUSTER_DOMAIN) \
+	--set ska-sdp.ska-sdp-qa.kafka.clusterDomain=$(CLUSTER_DOMAIN) \
+	--set ska-sdp.ska-sdp-qa.redis.clusterDomain=$(CLUSTER_DOMAIN) \
 	$(SDP_PROXY_VARS) \
 	$(K8S_EXTRA_PARMS)
 

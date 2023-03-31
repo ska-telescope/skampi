@@ -6,7 +6,7 @@
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    INGRESS_HOST: 10.164.0.10:30080
+    INGRESS_HOST: "10.164.0.3"
     CLUSTER_DOMAIN: za-itf.skao.int
     K8S_EXTRA_PARMS: '--set global.ska-tango-archiver.enabled=false  --set ska-tango-archiver.enabled=false'
   when: manual

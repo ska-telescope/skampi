@@ -1,6 +1,6 @@
 import abc
 from typing_extensions import TypedDict, NotRequired
-from typing import Any, Union
+from typing import Union, Self
 
 
 class ItemDict(TypedDict):
@@ -44,5 +44,5 @@ class AbstractNodeItem(DataItem):
         """"""
 
     @abc.abstractmethod
-    def connect_to(self, other: Any):
+    def connect_to(self, other: Self):
         """"""

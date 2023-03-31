@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from diagrams import Node, Edge, Diagram, Cluster
 from .base import ItemDict, AbstractNodeItem
+from typing import Self
 
 
 class NodeItem(AbstractNodeItem):
@@ -21,7 +22,7 @@ class NodeItem(AbstractNodeItem):
             self._node = Node(name)
         return self._node
 
-    def connect_to(self, other: "NodeItem"):
+    def connect_to(self, other: Self):
         edge = Edge(self.node, forward=True)
         self.node.connect(other.node, edge)
         self.edges.append(edge)

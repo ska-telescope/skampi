@@ -1,10 +1,9 @@
 """
-test_XTP-18866
+test_
 ----------------------------------
-Tests to Run a scan on low subarray from OET (XTP-19865)
+Tests to Run a multi scan on low subarray from OET
 """
 
-"""Scan on telescope subarray feature tests."""
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
@@ -18,32 +17,27 @@ from resources.models.mvp_model.states import ObsState
 from ska_oso_scripting.objects import SubArray
 from .. import conftest
 
-
-@pytest.mark.k8s
-@pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.scan
-@scenario("features/oet_scan.feature", "Run a scan on low subarray from OET")
-def test_oet_scan_on_low_subarray():
-    """Run a scan on OET low telescope subarray."""
+@pytest.mark.oet
+@scenario(
+    "features/oet_multi_scan.feature",
+    "Run multiple scans on TMC subarray in low for same scan type",
+)
+def test_multiple_scans_on_tmc_subarray_in_low():
+    """Run multiple scans on TMC subarray in low."""
 
 
 @given("an OET")
 def a_oet():
     """an OET"""
 
-
-@given("a subarray in READY state", target_fixture="scan")
-def a_low_subarray_in_ready_state(
-    base_configuration: conf_types.ScanConfiguration,
-    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-    sut_settings: conftest.SutTestSettings,
-) -> conf_types.ScanConfiguration:
-    """a subarray in READY state"""
-    subarray_allocation_spec.receptors = sut_settings.receptors
-    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
-    return base_configuration
-
+@given("an subarray that has just completed it's first scan")
+def an_subarray_that_has_just_completed_its_first_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    configured_subarray.scan(integration_test_exec_settings)
 
 @when("I command it to scan for a given period")
 def i_command_it_to_scan_low(
@@ -66,7 +60,7 @@ def i_command_it_to_scan_low(
         integration_test_exec_settings
     ) as concurrent_monitoring:
         subarray = SubArray(subarray_id)
-        subarray.scan()  # this is a blocking command
+        subarray.scan()
         concurrent_monitoring.wait_until_complete()
 
 
@@ -89,3 +83,5 @@ def the_subarray_must_be_in_the_scanning_state(
         raise error
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)
+
+

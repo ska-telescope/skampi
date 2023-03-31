@@ -1,6 +1,7 @@
 import logging
 from diagrams import Diagram
 from diagrams.k8s.ecosystem import Helm
+from diagrams import Node
 from .input import DiagramItems
 
 
@@ -22,5 +23,11 @@ def main():
     diagram = DiagramItems()
     test_it()
     with Diagram("First try", show=False):
-        for edge in diagram.get_next_edge_depth_first():
-            Helm(edge.start.name) >> Helm(edge.end.name)
+        branch: None | Node = None
+        for item in diagram.get_next_item_depth_first():
+            if branch:
+                next_node = Helm(item.name)
+                branch >> next_node
+                branch = next_node
+            else:
+                branch = Helm(item.name)

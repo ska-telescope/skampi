@@ -106,6 +106,8 @@ ska-sdp:
   lmc:
     prefix: low
     nsubarray: 3
+    image: registry.gitlab.com/ska-telescope/sdp/ska-sdp-lmc/ska-sdp-lmc
+    version: 0.21.1-dev.cd0392a64
   console:
     enabled: true
   data-pvc:

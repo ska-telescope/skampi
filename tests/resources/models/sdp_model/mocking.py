@@ -1,7 +1,8 @@
 """Module containg mock implementation of an entrypoint for SDP."""
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from resources.models.mvp_model.states import ObsState
+
 from .entry_point import SDPEntryPoint
 
 

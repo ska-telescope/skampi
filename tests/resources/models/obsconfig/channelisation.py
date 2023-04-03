@@ -53,7 +53,9 @@ class Channelization(TargetSpecs):
     def channel_configurations(self) -> list[str]:
         return list(self._channel_configurations.keys())
 
-    def get_channel_configuration(self, config_name: str) -> ChannelConfiguration:
+    def get_channel_configuration(
+        self, config_name: str
+    ) -> ChannelConfiguration:
         assert (
             self._channel_configurations.get(config_name) is not None
         ), f"configuration {config_name} does not exist."

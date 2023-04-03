@@ -4,7 +4,6 @@ import logging
 import pytest
 from pytest_bdd import scenario
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -27,7 +26,9 @@ def test_configure_csp_mid_subarray():
     """Configure CSP low subarray."""
 
 
-@pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
+@pytest.mark.skip(
+    reason="Disable test as it need update to support new JSON Schema"
+)
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.configure

@@ -8,10 +8,10 @@ import time
 
 import pytest
 from pytest_bdd import given, parsers, scenario, then, when
+from ska_oso_scripting.objects import Telescope
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_oso_scripting.objects import Telescope
 
 from .oet_helpers import ScriptExecutor
 
@@ -23,7 +23,9 @@ EXECUTOR = ScriptExecutor()
 @pytest.mark.skamid
 @pytest.mark.startup
 @pytest.mark.k8s
-@scenario("features/oet_startup_standby_telescope.feature", "Starting up telescope")
+@scenario(
+    "features/oet_startup_standby_telescope.feature", "Starting up telescope"
+)
 def test_telescope_startup():
     """Telescope startup test."""
 
@@ -32,7 +34,10 @@ def test_telescope_startup():
 @pytest.mark.skalow
 @pytest.mark.startup
 @pytest.mark.k8s
-@scenario("features/oet_startup_standby_telescope.feature", "Starting up low telescope")
+@scenario(
+    "features/oet_startup_standby_telescope.feature",
+    "Starting up low telescope",
+)
 def test_telescope_startup_low():
     """Telescope startup test."""
 
@@ -42,7 +47,8 @@ def test_telescope_startup_low():
 @pytest.mark.standby
 @pytest.mark.k8s
 @scenario(
-    "features/oet_startup_standby_telescope.feature", "Setting telescope to stand-by"
+    "features/oet_startup_standby_telescope.feature",
+    "Setting telescope to stand-by",
 )
 def test_telescope_standby():
     """Set telescope to standby test."""
@@ -54,19 +60,24 @@ def a_telescope_on_standby_or_off_state(
 ):
     """a telescope on standby or off state"""
     tel = names.TEL()
-    central_node = con_config.get_device_proxy(tel.tm.central_node, fast_load=True)
+    central_node = con_config.get_device_proxy(
+        tel.tm.central_node, fast_load=True
+    )
     assert str(central_node.read_attribute("telescopeState").value) in [
         "STANDBY",
         "OFF",
     ]
 
+
 @given("low telescope")
 def a_low_telescope_():
     """a telescope"""
-    
+
 
 @given("telescope is in ON state")
-def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
+def a_telescope_in_the_on_state(
+    running_telescope: fxt_types.running_telescope,
+):
     """a telescope in the ON state"""
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node)
@@ -74,7 +85,9 @@ def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):
 
 
 @pytest.fixture(name="observe_csp_during_on_of")
-def fxt_observe_csp_during_on_of(context_monitoring: fxt_types.context_monitoring):
+def fxt_observe_csp_during_on_of(
+    context_monitoring: fxt_types.context_monitoring,
+):
     tel = names.TEL()
     if tel.skalow:
         context_monitoring.set_waiting_on(tel.csp.controller).for_attribute(
@@ -97,9 +110,13 @@ def run_startup_script(
         script (str): file path to an observing script
     """
 
-    with context_monitoring.observe_while_running(integration_test_exec_settings):
+    with context_monitoring.observe_while_running(
+        integration_test_exec_settings
+    ):
         standby_telescope.switch_off_after_test(integration_test_exec_settings)
-        script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
+        script_completion_state = EXECUTOR.execute_script(
+            script=script, timeout=30
+        )
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
@@ -121,10 +138,14 @@ def run_standby_script(
         script (str): file path to an observing script
     """
 
-    with context_monitoring.observe_while_running(integration_test_exec_settings):
+    with context_monitoring.observe_while_running(
+        integration_test_exec_settings
+    ):
         running_telescope.disable_automatic_setdown()
         with running_telescope.wait_for_shutting_down():
-            script_completion_state = EXECUTOR.execute_script(script=script, timeout=30)
+            script_completion_state = EXECUTOR.execute_script(
+                script=script, timeout=30
+            )
         assert (
             script_completion_state == "COMPLETE"
         ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
@@ -141,7 +162,9 @@ def startup_telescope_low(
     """
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(
+            integration_test_exec_settings
+        ):
             logger.info("OET Commands are being used")
             telescope = Telescope()
             telescope.on()
@@ -157,7 +180,9 @@ def the_telescope_is_on(
     """I start up the telescope."""
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(
+            integration_test_exec_settings
+        ):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 

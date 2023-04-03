@@ -631,7 +631,6 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
         self._log(f"commanding {subarray_name} with Restart command")
         subarray.command_inout("Restart")
 
-    # pylint: disable=E0102
     def set_wait_for_do(
         self, sub_array_id: int
     ) -> Union[MessageBoardBuilder, None]:

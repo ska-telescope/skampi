@@ -77,7 +77,12 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation is not done.
+        """
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
@@ -319,6 +324,9 @@ class CspScanStep(base.ScanStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+
+        Raises:
+            Exception: Raise exception in do method of scan command
         """
         if self._tel.skalow:
             scan_config_arg = json.dumps(csp_low_scan)
@@ -445,7 +453,12 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         return builder
 
     def set_wait_for_doing(self) -> MessageBoardBuilder:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation is not done.
+        """
         raise NotImplementedError()
 
 

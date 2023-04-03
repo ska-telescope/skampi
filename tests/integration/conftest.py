@@ -11,7 +11,8 @@ from mock import Mock, patch
 from pytest_bdd import given, parsers, then, when
 from resources.models.mvp_model.env import Observation, init_observation_config
 from resources.models.mvp_model.states import ObsState
-from resources.models.obsconfig.config import Observation
+
+# from resources.models.obsconfig.config import Observation
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
@@ -341,7 +342,7 @@ def i_configure_it_for_a_scan(
 
 
 @when("I command it to scan for a given period")
-def i_command_it_to_scan(
+def i_execute_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):

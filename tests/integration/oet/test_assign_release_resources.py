@@ -188,6 +188,7 @@ def when_release_resources(
 
 
 @when("I tell the OET to release resources")
+# pylint: disable=E0102
 def when_release_resources(
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,

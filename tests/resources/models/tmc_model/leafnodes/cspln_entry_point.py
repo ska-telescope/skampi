@@ -67,6 +67,9 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         :param dish_ids: this dish indices (in case of mid) to control
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic id to identify a sb to assign resources
+
+        Raises:
+            Exception: Raise exception in do method of assign resources command
         """
 
         try:
@@ -164,6 +167,9 @@ class CSPLnScanStep(CspScanStep):
         This implements the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+
+        Raises:
+            Exception: Raise exception in do method of scan command
         """
         # scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")

@@ -98,7 +98,12 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation is not done.
+        """
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
@@ -417,6 +422,9 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param dish_ids: this dish indices (in case of mid) to control
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
+
+        Raises:
+            Exception: Raise exception in do method of scan command
         """
         if self._tel.skamid:
             scan_config = self.observation.generate_run_scan_conf().as_json
@@ -557,7 +565,12 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         return builder
 
     def set_wait_for_doing(self) -> MessageBoardBuilder:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation is not done.
+        """
         raise NotImplementedError()
 
 
@@ -618,6 +631,7 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
         self._log(f"commanding {subarray_name} with Restart command")
         subarray.command_inout("Restart")
 
+    # pylint: disable=E0102
     def set_wait_for_do(
         self, sub_array_id: int
     ) -> Union[MessageBoardBuilder, None]:

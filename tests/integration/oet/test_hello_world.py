@@ -73,7 +73,7 @@ def when_allocate_resources_from_activity(
 
 
 @then("script started by the activity completes successfully")
-def hello_world_script_complete():
+def hello_world_script_activity_complete():
     "script execution completes successfully"
 
     summaries = ACTIVITY_ADAPTER.list()

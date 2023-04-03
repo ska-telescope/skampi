@@ -76,7 +76,12 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation is not done.
+        """
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
@@ -180,7 +185,12 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         return builder
 
     def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation is not done.
+        """
         raise NotImplementedError()
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -281,7 +291,12 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation is not done.
+        """
         raise NotImplementedError()
 
     def set_wait_for_undo(
@@ -315,6 +330,9 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+
+        Raises:
+            Exception: Raise exception if the scan command fails
         """
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -447,7 +465,12 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
         return builder
 
     def set_wait_for_doing(self) -> MessageBoardBuilder:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation is not done.
+        """
         raise NotImplementedError()
 
 

@@ -7,6 +7,8 @@ import sys
 from time import sleep
 
 import pytest
+
+# pylint: disable=E0401
 from archiver_helper import ArchiverHelper
 from tango import ApiUtil, DevFailed, DeviceProxy
 

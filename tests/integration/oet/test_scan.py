@@ -78,7 +78,13 @@ def the_subarray_must_be_in_the_scanning_state(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """the subarray must be in the SCANNING state until finished."""
+    """
+    The subarray must be in the SCANNING state until finished.
+
+    Raises:
+        AssertionError: If the subarray is not in the expected state.
+
+    """
     recorder = integration_test_exec_settings.recorder
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))

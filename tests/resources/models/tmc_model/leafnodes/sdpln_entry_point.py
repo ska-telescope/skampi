@@ -151,6 +151,9 @@ class SDPLnScanStep(SDPScanStep):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+
+        Raises:
+            Exception: Raise exception in do method of scan command
         """
         scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")

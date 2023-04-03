@@ -76,7 +76,12 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation is not done.
+        """
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
@@ -296,6 +301,9 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+
+        Raises:
+            Exception: Raise exception in do method of scan command
         """
         scan_config = self.observation.generate_sdp_run_scan().as_json
         scan_duration = Memo().get("scan_duration")
@@ -349,37 +357,6 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
         return None
-
-
-class SDPAbortStep(AbortStep, LogEnabled):
-
-    """Implementation of Abort Step for SDP."""
-
-    def do(self, sub_array_id: int):
-        """Domain logic for running a abort on subarray in sdp.
-
-        This implments the scan method on the entry_point.
-
-        :param sub_array_id: The index id of the subarray to control
-        """
-        subarray_name = self._tel.sdp.subarray(sub_array_id)
-        subarray = con_config.get_device_proxy(subarray_name)
-        self._log(f"commanding {subarray_name} with Abort command")
-        subarray.command_inout("Abort")
-
-    def set_wait_for_do(
-        self, sub_array_id: int
-    ) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifying what needs to be waited for abort is done.
-
-        :param sub_array_id: The index id of the subarray to control
-        """
-        builder = get_message_board_builder()
-        subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("ABORTED", ignore_first=True)
-        return builder
 
 
 class SDPAbortStep(AbortStep, LogEnabled):

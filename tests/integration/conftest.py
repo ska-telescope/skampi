@@ -243,8 +243,6 @@ def i_start_up_the_telescope(
         with standby_telescope.wait_for_starting_up(
             integration_test_exec_settings
         ):
-            if os.getenv("LOG_SUBSCRIPTIONS"):
-                logging.info(context_monitoring.builder.play_spec())
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
@@ -262,8 +260,6 @@ def the_telescope_is_on(
         with standby_telescope.wait_for_starting_up(
             integration_test_exec_settings
         ):
-            if os.getenv("LOG_SUBSCRIPTIONS"):
-                logging.info(context_monitoring.builder.play_spec())
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
@@ -282,8 +278,6 @@ def i_switch_off_the_telescope(
         with running_telescope.wait_for_shutting_down(
             integration_test_exec_settings
         ):
-            if os.getenv("LOG_SUBSCRIPTIONS"):
-                logging.info(context_monitoring.builder.play_spec())
             entry_point.set_telescope_to_standby()
 
 
@@ -311,8 +305,6 @@ def assign_resources_with_subarray_id(
         with telescope_context.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            if os.getenv("LOG_SUBSCRIPTIONS"):
-                logging.info(context_monitoring.builder.play_spec())
             entry_point.compose_subarray(
                 subarray_id, receptors, composition, sb_config.sbid
             )
@@ -336,8 +328,6 @@ def i_assign_resources_to_it(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            if os.getenv("LOG_SUBSCRIPTIONS"):
-                logging.info(context_monitoring.builder.play_spec())
             entry_point.compose_subarray(
                 subarray_id, receptors, composition, sb_config.sbid
             )
@@ -363,8 +353,6 @@ def i_configure_it_for_a_scan(
         with allocated_subarray.wait_for_configuring_a_subarray(
             integration_test_exec_settings
         ):
-            if os.getenv("LOG_SUBSCRIPTIONS"):
-                logging.info(context_monitoring.builder.play_spec())
             entry_point.configure_subarray(
                 sub_array_id, receptors, configuration, sb_id, scan_duration
             )
@@ -389,8 +377,6 @@ def i_command_it_to_scan(
     """I configure it for a scan."""
     integration_test_exec_settings.attr_synching = False
     with context_monitoring.context_monitoring():
-        if os.getenv("LOG_SUBSCRIPTIONS"):
-            logging.info(context_monitoring.builder.play_spec())
         configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
@@ -408,8 +394,6 @@ def i_release_all_resources_assigned_to_it(
         with allocated_subarray.wait_for_releasing_a_subarray(
             integration_test_exec_settings
         ):
-            if os.getenv("LOG_SUBSCRIPTIONS"):
-                logging.info(context_monitoring.builder.play_spec())
             entry_point.tear_down_subarray(sub_array_id)
 
 
@@ -470,8 +454,6 @@ def i_command_it_to_abort(
         with context_monitoring.wait_before_complete(
             integration_test_exec_settings
         ):
-            if os.getenv("LOG_SUBSCRIPTIONS"):
-                logging.info(context_monitoring.builder.play_spec())
             if sut_settings.restart_after_abort:
                 allocated_subarray.restart_after_test(
                     integration_test_exec_settings

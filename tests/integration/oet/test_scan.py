@@ -27,11 +27,27 @@ from .. import conftest
 def test_oet_scan_on_low_subarray():
     """Run a scan on OET low telescope subarray."""
 
+@pytest.mark.skalow
+@pytest.mark.scan
+@pytest.mark.oet
+@scenario(
+    "features/oet_multi_scan.feature",
+    "Run multiple scans on TMC subarray in low for same scan type",
+)
+def test_multiple_scans_on_tmc_subarray_in_low():
+    """Run multiple scans on TMC subarray in low."""
+
 
 @given("an OET")
 def a_oet():
     """an OET"""
 
+@given("an subarray that has just completed it's first scan")
+def an_subarray_that_has_just_completed_its_first_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    configured_subarray.scan(integration_test_exec_settings)
 
 @given("a subarray in READY state", target_fixture="scan")
 def a_low_subarray_in_ready_state(

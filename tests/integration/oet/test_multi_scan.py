@@ -17,7 +17,6 @@ from ska_oso_scripting.objects import SubArray
 from .. import conftest
 from resources.models.mvp_model.configuration import SKAScanConfiguration
 from resources.models.mvp_model.env import Observation
-from pathlib import Path
 
 @pytest.mark.k8s
 @pytest.mark.oet
@@ -127,14 +126,16 @@ def a_subarray_defined_to_perform_scan_types(
     ), f"Scan target {scan_target2} not defined as part of scan targets"
     return scan_targets
 
-@given("a valid scan configuration", target_fixture="valid_config_from_file")
-def a_valid_scan_configuration():
-    return Path("./tests/resources/test_data/OET_integration/configure_mid.json")
 
+@when(
+    parsers.parse("I configure the subarray again for scan type {scan_type}"),
+    target_fixture="configured_subarray",
+)
 @given(
     parsers.parse("a subarray configured for scan type {scan_type}"),
     target_fixture="configured_subarray",
 )
+
 def a_subarray_configured_for_scan_type(
     scan_type: str,
     factory_configured_subarray: fxt_types.factory_configured_subarray,
@@ -150,23 +151,3 @@ def a_subarray_configured_for_scan_type(
     return factory_configured_subarray(
         injected_subarray_configuration_spec=configuration_specs
     )
-
-@when(
-    parsers.parse("I configure the subarray again for next scan type"),
-)
-def i_configure_subarray_again_for_scan_type(
-    sut_settings: conftest.SutTestSettings,
-    valid_config_from_file: Path,
-    allocated_subarray: fxt_types.allocated_subarray,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
-):
-
-    """I configure it for a scan."""
-    subarray_id = sut_settings.subarray_id
-    subarray = SubArray(subarray_id)
-    with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_configuring_a_subarray(
-                integration_test_exec_settings
-        ):
-            subarray.configure_from_file(str(valid_config_from_file), False)

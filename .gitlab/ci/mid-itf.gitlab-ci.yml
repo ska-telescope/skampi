@@ -7,7 +7,6 @@
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     INGRESS_HOST: "10.164.0.3"
-    LOADBALANCER_IP: "10.164.0.3"
     CLUSTER_DOMAIN: za-itf.skao.int
     K8S_EXTRA_PARMS: '--set global.ska-tango-archiver.enabled=false  --set ska-tango-archiver.enabled=false'
   when: manual
@@ -16,7 +15,7 @@
   extends:
     - .deploy_chart_before
   script:
-    - make skampi-links
+    - LOADBALANCER_IP=10.164.10.1 make skampi-links
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

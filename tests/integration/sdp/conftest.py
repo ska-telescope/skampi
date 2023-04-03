@@ -88,7 +88,8 @@ def fxt_sdp_assign_resources_exec_settings(
 @pytest.fixture(name="set_up_subarray_log_checking_for_sdp", autouse=True)
 @pytest.mark.usefixtures("set_sdp_entry_point")
 def fxt_set_up_log_capturing_for_sdp(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 

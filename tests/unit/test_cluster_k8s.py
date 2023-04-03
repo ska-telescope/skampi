@@ -1,21 +1,21 @@
 """Basic cluster functionality tests."""
 import logging
-from kubernetes.client.api.networking_v1_api import NetworkingV1Api
-from kubernetes.client.exceptions import ApiException
-import pytest
 import os
-import requests
-import time
-from shutil import copyfile
 import subprocess
-from kubernetes import config, client
-from kubernetes.stream import stream
+import time
+
+import pytest
+import requests
+from kubernetes import client, config
+from kubernetes.client.exceptions import ApiException
 
 
 @pytest.fixture(name="assets_dir")
 def fxt_assets_dir():
     cur_path = os.path.dirname(os.path.realpath(__file__))
-    return os.path.realpath(os.path.join(cur_path, "..", "resources", "assets"))
+    return os.path.realpath(
+        os.path.join(cur_path, "..", "resources", "assets")
+    )
 
 
 @pytest.fixture(name="manifest")
@@ -52,7 +52,9 @@ def fxt_k8s_cluster(assets_dir):
                 "kubeconfig already exists, skipping: "
                 + os.path.join(os.environ["HOME"], ".kube", "config")
             )
-            kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
+            kubeconfig_filepath = os.path.join(
+                os.environ["HOME"], ".kube", "config"
+            )
         else:
             logging.info(
                 f"Defaulting to loading kubeconfig from {kubeconfig_filepath}."
@@ -85,6 +87,9 @@ def fxt_test_namespace(manifest):
     When run locally, no CI job exists - thus the default namespace
     is used. As a 'local default', in case users don't want to use their
     default namespace, we provide the preset value `ci-local` in the makefiles
+
+    Yields:
+        Namespace
     """
     logging.info(f"Current working directory: {os.getcwd()}")
     logging.info(f"Manifest returns: {manifest}")
@@ -131,7 +136,9 @@ def fxt_pvc(test_namespace):
         spec=client.V1PersistentVolumeClaimSpec(
             storage_class_name="nfss1",
             access_modes=["ReadWriteMany"],
-            resources=client.V1ResourceRequirements(requests={"storage": "1Gi"}),
+            resources=client.V1ResourceRequirements(
+                requests={"storage": "1Gi"}
+            ),
         ),
     )
 
@@ -139,10 +146,13 @@ def fxt_pvc(test_namespace):
         response = api.create_namespaced_persistent_volume_claim(
             namespace=test_namespace, body=pvc_body
         )
+        logging.info("Response is %s", response)
     except ApiException as e:
         logging.error("That didn't work: %s" % e)
 
-    pvcs = api.list_namespaced_persistent_volume_claim(namespace=test_namespace)
+    pvcs = api.list_namespaced_persistent_volume_claim(
+        namespace=test_namespace
+    )
     logging.info(
         f"PVC {pvcs.items[0].metadata.name} currently {pvcs.items[0].status.phase}"
     )
@@ -157,7 +167,9 @@ def fxt_pvc(test_namespace):
 
 
 @pytest.fixture(name="all_the_things")
-def fxt_deployments_and_services(test_namespace, manifest, persistentvolumeclaim):
+def fxt_deployments_and_services(
+    test_namespace, manifest, persistentvolumeclaim
+):
 
     logging.info(f"Creating resources in namespace: {test_namespace}")
     k_cmd = [
@@ -204,6 +216,9 @@ def fxt_create_ingress(test_namespace, assets_dir):
     TODO: This is needed because the currently used version of the python
     kubernetes lib doesn't have the V1 ingress API implemented yet.
     Therefore this method can be updated in future to use the API directly.
+
+    Yields:
+        Return Code
     """
     import yaml
 
@@ -232,7 +247,10 @@ def fxt_create_ingress(test_namespace, assets_dir):
     ]
 
     ingress_result = subprocess.run(
-        k_cmd_ingress, check=True, stdout=subprocess.PIPE, universal_newlines=True
+        k_cmd_ingress,
+        check=True,
+        stdout=subprocess.PIPE,
+        universal_newlines=True,
     )
 
     for line in ingress_result.stdout.split("\n"):
@@ -259,7 +277,9 @@ def fxt_create_ingress(test_namespace, assets_dir):
 
 
 # TODO: PATCH THE INGRESS RESOURCE SO THAT IT IS CREATED WITH NAMESPACED HOSTNAME
-def write_to_volume(write_service_name, test_namespace, all_the_things, ingress):
+def write_to_volume(
+    write_service_name, test_namespace, all_the_things, ingress
+):
     # def write_to_volume(write_service_name, test_namespace, all_the_things):
     logging.info(f"Result of creating all the things: {all_the_things}")
 
@@ -322,7 +342,9 @@ def curl_service_with_shared_volume(host0, host1, test_namespace):
 
 def wait_for_pod(test_namespace, service_name):
     v1 = client.CoreV1Api()
-    ret = v1.list_namespaced_pod(test_namespace, label_selector="app=" + service_name)
+    ret = v1.list_namespaced_pod(
+        test_namespace, label_selector="app=" + service_name
+    )
     logging.info("Checking Pod Readiness...")
     wait_for_seconds = 1.0
     while True:
@@ -359,9 +381,9 @@ def wait_for_pod(test_namespace, service_name):
 @pytest.mark.infra
 def test_cluster(test_namespace, all_the_things, ingress):
     wait_for_pod(test_namespace, "nginx1")
-    logging.info(f"Test: Deployment nginx1 Ready")
+    logging.info("Test: Deployment nginx1 Ready")
     wait_for_pod(test_namespace, "nginx2")
-    logging.info(f"Test: Deployment nginx2 Ready")
+    logging.info("Test: Deployment nginx2 Ready")
     write_to_volume("nginx1", test_namespace, all_the_things, ingress)
     logging.info("Test: Successfully executed a write to a shared volume")
     curl_service_with_shared_volume(

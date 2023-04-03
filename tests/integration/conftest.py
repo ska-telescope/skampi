@@ -1,23 +1,23 @@
 """pytest global settings, fixtures and global bdd step implementations for
 integration tests."""
 import logging
-from types import SimpleNamespace
 import os
+from types import SimpleNamespace
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
-from mock import patch, Mock
-from assertpy import assert_that
+
 import pytest
-from pytest_bdd import when, given, then, parsers
-from pytest_bdd.parser import Feature, Scenario, Step
+from assertpy import assert_that
+from mock import Mock, patch
+from pytest_bdd import given, parsers, then, when
+from resources.models.mvp_model.env import Observation, init_observation_config
+from resources.models.mvp_model.states import ObsState
 
+# from resources.models.obsconfig.config import Observation
 from ska_ser_skallop.connectors import configuration as con_config
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.mvp_model.states import ObsState
-from resources.models.mvp_model.env import init_observation_config, Observation
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 
 logger = logging.getLogger(__name__)
@@ -57,7 +57,9 @@ class SutTestSettings(SimpleNamespace):
         self.tel = names.TEL()
         logger.info("initialising sut settings")
         self.observation = init_observation_config()
-        self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
+        self.default_subarray_name: DeviceName = self.tel.tm.subarray(
+            self.subarray_id
+        )
         self.disable_subarray_teardown = False
         self.restart_after_abort = False
 
@@ -106,7 +108,9 @@ def fxt_online():
     return OnlineFlag()
 
 
-@pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
+@pytest.fixture(
+    name="set_session_exec_settings", autouse=True, scope="session"
+)
 def fxt_set_session_exec_settings(
     session_exec_settings: fxt_types.session_exec_settings,
 ):
@@ -363,7 +367,7 @@ def i_configure_it_for_a_scan(
 
 
 @when("I command it to scan for a given period")
-def i_command_it_to_scan_for_period(
+def i_execute_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
@@ -406,7 +410,9 @@ def i_release_all_resources_assigned_to_it(
 
 
 @given("an subarray busy configuring")
-def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
+def an_subarray_busy_configuring(
+    allocated_subarray: fxt_types.allocated_subarray,
+):
     """an subarray busy configuring"""
     allocated_subarray.set_to_configuring(clear_afterwards=False)
 
@@ -461,9 +467,13 @@ def i_command_it_to_abort(
             if os.getenv("LOG_SUBSCRIPTIONS"):
                 logging.info(context_monitoring.builder.play_spec())
             if sut_settings.restart_after_abort:
-                allocated_subarray.restart_after_test(integration_test_exec_settings)
+                allocated_subarray.restart_after_test(
+                    integration_test_exec_settings
+                )
             else:
-                allocated_subarray.reset_after_test(integration_test_exec_settings)
+                allocated_subarray.reset_after_test(
+                    integration_test_exec_settings
+                )
             entry_point.abort_subarray(sub_array_id)
 
     integration_test_exec_settings.touch()

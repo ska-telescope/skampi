@@ -20,27 +20,25 @@ import os
 import time
 
 import pytest
-
 from assertpy import assert_that
-from pytest_bdd import scenario, given, when, then
-
+from integration.sdp.vis_receive_utils import (
+    POD_CONTAINER,
+    check_data_present,
+    compare_data,
+    deploy_cbf_emulator,
+    pvc_exists,
+    wait_for_pod,
+    wait_for_predicate,
+)
+from pytest_bdd import given, scenario, then, when
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
-from integration.sdp.vis_receive_utils import (
-    wait_for_pod,
-    check_data_present,
-    wait_for_predicate,
-    deploy_cbf_emulator,
-    compare_data,
-    POD_CONTAINER,
-    pvc_exists,
-)
-from resources.models.mvp_model.states import ObsState
-from .. import conftest
-
 from ska_ser_skallop.mvp_management.subarray_scanning import scanning_subarray
+
+from .. import conftest
+from .vis_receive_utils import K8sElementManager
 
 pytest_plugins = ["unit.test_cluster_k8s"]
 
@@ -74,7 +72,7 @@ def fxt_update_sut_settings_vis_rec(sut_settings: conftest.SutTestSettings):
 
 
 @given("the test volumes are present and the test data are downloaded")
-def local_volume(k8s_element_manager, fxt_k8s_cluster):
+def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
     """
     Check if the local volumes are present and the data
     have been successfully downloaded.
@@ -82,16 +80,20 @@ def local_volume(k8s_element_manager, fxt_k8s_cluster):
     :param k8s_element_manager: Kubernetes element manager
     :param fxt_k8s_cluster: fixture to use a KUBECONFIG file (if present),
                 for performing k8s commands (see unit.test_cluster_k8s)
-    """
+    """  # noqa: DAR401
     if NAMESPACE is None or NAMESPACE_SDP is None:
-        raise ValueError("Env var KUBE_NAMESPACE or KUBE_NAMESPACE_SDP is not defined")
+        raise ValueError(
+            "Env var KUBE_NAMESPACE or KUBE_NAMESPACE_SDP is not defined"
+        )
 
     receive_pod = "sdp-receive-data"
     sender_pod = "sdp-sender-data"
     data_container = POD_CONTAINER
 
     LOG.info("Check for existing PVC")
-    assert pvc_exists(PVC_NAME, NAMESPACE_SDP), f"PVC in {NAMESPACE_SDP} doesn't exist"
+    assert pvc_exists(
+        PVC_NAME, NAMESPACE_SDP
+    ), f"PVC in {NAMESPACE_SDP} doesn't exist"
     assert pvc_exists(PVC_NAME, NAMESPACE), f"PVC in {NAMESPACE} doesn't exist"
 
     LOG.info("Create Pod for receiver and sender")
@@ -132,7 +134,9 @@ def local_volume(k8s_element_manager, fxt_k8s_cluster):
         _wait_for_sender_data, "MS data not present in volume.", timeout=100
     )()
 
-    LOG.info("PVCs are present, pods created, and data downloaded successfully")
+    LOG.info(
+        "PVCs are present, pods created, and data downloaded successfully"
+    )
 
 
 # use given from sdp/conftest.py
@@ -140,13 +144,17 @@ def local_volume(k8s_element_manager, fxt_k8s_cluster):
 
 
 @pytest.fixture
-def check_rec_adds(configured_subarray):
+def check_rec_adds(configured_subarray: fxt_types.configured_subarray):
     """
     Wait for receive pod to be Running and check that the
     receive addresses have been updated correctly.
+
+    :param configured_subarray: skallop configured_subarray fixture
     """
     tel = names.TEL()
-    sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(configured_subarray.id))
+    sdp_subarray = con_config.get_device_proxy(
+        tel.sdp.subarray(configured_subarray.id)
+    )
 
     receive_addresses = json.loads(
         sdp_subarray.read_attribute("receiveAddresses").value
@@ -174,8 +182,8 @@ def check_rec_adds(configured_subarray):
 @when("SDP is commanded to capture data from a scan")
 def run_scan(
     check_rec_adds,
-    k8s_element_manager,
-    configured_subarray,
+    k8s_element_manager: K8sElementManager,
+    configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """
@@ -186,7 +194,7 @@ def run_scan(
     :param k8s_element_manager: Kubernetes element manager
     :param configured_subarray: skallop configured_subarray fixture
     :param integration_test_exec_settings: test specific execution settings
-    """
+    """  # noqa: DAR401
     LOG.info("Running scan step.")
     tel = names.TEL()
     subarray_id = configured_subarray.id
@@ -218,6 +226,7 @@ def run_scan(
             deploy_cbf_emulator(host, scan_id, k8s_element_manager)
 
         except Exception as err:
+            err = err
             LOG.exception("Scan step failed")
 
     if err:
@@ -227,9 +236,11 @@ def run_scan(
 
 
 @pytest.fixture
-def dataproduct_directory(entry_point):
+def dataproduct_directory(entry_point: fxt_types.entry_point):
     """
     The directory where output files will be written.
+
+    :param entry_point: entry point to test
     """
     eb_id = entry_point.observation.execution_block.eb_id
     pb_id = entry_point.observation.processing_blocks[0].pb_id
@@ -237,7 +248,11 @@ def dataproduct_directory(entry_point):
 
 
 @then("the data received matches with the data sent")
-def check_measurement_set(dataproduct_directory, k8s_element_manager, sut_settings):
+def check_measurement_set(
+    dataproduct_directory,
+    k8s_element_manager: K8sElementManager,
+    sut_settings: conftest.SutTestSettings,
+):
     """
     Check the data received are same as the data sent.
 

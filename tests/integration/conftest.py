@@ -9,16 +9,14 @@ import pytest
 from assertpy import assert_that
 from mock import Mock, patch
 from pytest_bdd import given, parsers, then, when
+from pytest_bdd.parser import Feature, Scenario, Step
 from resources.models.mvp_model.env import Observation, init_observation_config
 from resources.models.mvp_model.states import ObsState
-
-# from resources.models.obsconfig.config import Observation
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
 
 logger = logging.getLogger(__name__)
 
@@ -242,7 +240,9 @@ def i_start_up_the_telescope(
 ):
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(
+            integration_test_exec_settings
+        ):
             if os.getenv("LOG_SUBSCRIPTIONS"):
                 logging.info(context_monitoring.builder.play_spec())
             logger.info("The entry point being used is : %s", entry_point)
@@ -259,7 +259,9 @@ def the_telescope_is_on(
     """I start up the telescope."""
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(
+            integration_test_exec_settings
+        ):
             if os.getenv("LOG_SUBSCRIPTIONS"):
                 logging.info(context_monitoring.builder.play_spec())
             logger.info("The entry point being used is : %s", entry_point)
@@ -277,7 +279,9 @@ def i_switch_off_the_telescope(
     # we disable automatic shutdown as this is done by the test itself
     running_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_shutting_down(integration_test_exec_settings):
+        with running_telescope.wait_for_shutting_down(
+            integration_test_exec_settings
+        ):
             if os.getenv("LOG_SUBSCRIPTIONS"):
                 logging.info(context_monitoring.builder.play_spec())
             entry_point.set_telescope_to_standby()
@@ -463,7 +467,9 @@ def i_command_it_to_abort(
         "obsstate"
     ).to_become_equal_to("ABORTED")
     with context_monitoring.context_monitoring():
-        with context_monitoring.wait_before_complete(integration_test_exec_settings):
+        with context_monitoring.wait_before_complete(
+            integration_test_exec_settings
+        ):
             if os.getenv("LOG_SUBSCRIPTIONS"):
                 logging.info(context_monitoring.builder.play_spec())
             if sut_settings.restart_after_abort:

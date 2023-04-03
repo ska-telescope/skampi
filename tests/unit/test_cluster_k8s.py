@@ -77,7 +77,9 @@ def fxt_k8s_cluster(assets_dir):
         for line in nodes.stdout.split("\n"):
             logging.info(line)
     except subprocess.CalledProcessError as err:
-        logging.warning("'kubectl get nodes' returned the following error: %s", str(err))
+        logging.warning(
+            "'kubectl get nodes' returned the following error: %s", str(err)
+        )
 
 
 @pytest.fixture(name="test_namespace")

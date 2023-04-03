@@ -59,7 +59,9 @@ class Channelization(TargetSpecs):
             raise ValueError("Channel configuration needs to be a dictionary")
         self._channel_configurations = new_config
 
-    def get_channel_configuration(self, config_name: str) -> ChannelConfiguration:
+    def get_channel_configuration(
+        self, config_name: str
+    ) -> ChannelConfiguration:
         assert (
             self._channel_configurations.get(config_name) is not None
         ), f"configuration {config_name} does not exist."

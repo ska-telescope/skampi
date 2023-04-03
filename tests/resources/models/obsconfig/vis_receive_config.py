@@ -7,13 +7,15 @@ import os
 from collections import OrderedDict
 from typing import Any
 
-from ska_tmc_cdm.messages.central_node.sdp import ScriptConfiguration
-from ska_tmc_cdm.messages.subarray_node.configure.core import Target, ReceiverBand
-
 from resources.models.obsconfig import Observation
 from resources.models.obsconfig.channelisation import DEFAULT_CHANNELS
 from resources.models.obsconfig.sdp_config import ProcessingSpec
 from resources.models.obsconfig.target_spec import TargetSpec
+from ska_tmc_cdm.messages.central_node.sdp import ScriptConfiguration
+from ska_tmc_cdm.messages.subarray_node.configure.core import (
+    ReceiverBand,
+    Target,
+)
 
 VIS_RECEIVE_SCRIPT = ScriptConfiguration(
     kind="realtime", name="vis-receive", version="0.8.1"
@@ -58,6 +60,7 @@ class VisRecObservation(Observation):
     """
     Observation object for the SDP visibility receive test.
     """
+
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         self.target_specs = VIS_REC_SPEC
@@ -65,5 +68,6 @@ class VisRecObservation(Observation):
         self.processing_specs = {
             "vis-receive": ProcessingSpec(
                 script=VIS_RECEIVE_SCRIPT,
-                parameters=_load_json(VIS_PARAMS_FILE))
-            }
+                parameters=_load_json(VIS_PARAMS_FILE),
+            )
+        }

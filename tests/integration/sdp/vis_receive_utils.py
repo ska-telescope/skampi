@@ -32,7 +32,9 @@ DATA_POD_DEF = {
     "kind": "Pod",
     "metadata": {"name": "receive-data"},
     "spec": {
-        "securityContext": {"runAsUser": 0},  # run as root so that we can download data
+        "securityContext": {
+            "runAsUser": 0
+        },  # run as root so that we can download data
         "containers": [
             {
                 "image": "artefact.skao.int/ska-sdp-realtime-receive-modules:3.5.0",
@@ -49,11 +51,11 @@ DATA_POD_DEF = {
 
 
 def _k8s_pod_exec(
-    exec_command,
-    pod_name,
-    container_name,
-    namespace,
-    stdout=True,
+    exec_command: list,
+    pod_name: str,
+    container_name: str,
+    namespace: str,
+    stdout: bool = True,
 ):
     """
     Execute a command in a Kubernetes Pod
@@ -115,7 +117,7 @@ class K8sElementManager:
         for cleanup_function, data in self.to_remove[::-1]:
             cleanup_function(*data)
 
-    def create_pod(self, pod_name, namespace, pvc_name):
+    def create_pod(self, pod_name: str, namespace: str, pvc_name: str):
         """
         Create the requested POD and keep track of it for later deletion.
 
@@ -129,7 +131,9 @@ class K8sElementManager:
 
         # Update the name of the pod and the data PVC
         pod_spec["metadata"]["name"] = pod_name
-        pod_spec["spec"]["volumes"][0]["persistentVolumeClaim"]["claimName"] = pvc_name
+        pod_spec["spec"]["volumes"][0]["persistentVolumeClaim"][
+            "claimName"
+        ] = pvc_name
 
         # Check Pod does not already exist
         k8s_pods = core_api.list_namespaced_pod(namespace)
@@ -156,7 +160,9 @@ class K8sElementManager:
             pod_name, namespace
         )
 
-    def helm_install(self, release, chart, namespace, values_file):
+    def helm_install(
+        self, release: str, chart: str, namespace: str, values_file: str
+    ):
         """
         Install the requested Helm chart and keep track of it for later
         deletion.
@@ -164,7 +170,7 @@ class K8sElementManager:
         :param release: The name of the release
         :param chart: The name of the chart
         :param namespace: The namespace where the chart will be installed
-        :param values_file: A file with values to be handed over to the chart
+        :param values_file: A path to file with values to be handed over to the chart
         """
         cmd = [
             "helm",
@@ -182,7 +188,7 @@ class K8sElementManager:
         self.to_remove.append((self.helm_uninstall, (release, namespace)))
 
     @staticmethod
-    def helm_uninstall(release, namespace):
+    def helm_uninstall(release: str, namespace: str):
         """
         Uninstall a Helm chart
 
@@ -199,14 +205,13 @@ class K8sElementManager:
             "--no-hooks",
         ]
         subprocess.run(cmd, check=True)
-        wait_for_predicate(
-            helm_release_uninstalled,
-            f"Helm release {release} uninstalled",
-            timeout=30,
-        )(release, namespace)
 
     def output_directory(
-        self, dataproduct_directory, pod_name, container_name, namespace
+        self,
+        dataproduct_directory: str,
+        pod_name: str,
+        container_name: str,
+        namespace: str,
     ):
         """
         Remove the output data directory once the test is finished.
@@ -224,7 +229,12 @@ class K8sElementManager:
         )
 
     @staticmethod
-    def delete_directory(dataproduct_directory, pod_name, container_name, namespace):
+    def delete_directory(
+        dataproduct_directory: str,
+        pod_name: str,
+        container_name: str,
+        namespace: str,
+    ):
         """
         Delete a directory
 
@@ -271,26 +281,6 @@ def pod_deleted(pod_name: str, namespace: str):
     for item in k8s_pod.items:
         if item.metadata.name == pod_name:
             return False
-    return True
-
-
-def helm_release_uninstalled(release, namespace):
-    """
-    Check if a Helm chart is uninstalled
-
-    :param release: The name of the release to be checked
-    :param namespace: The namespace where the release lives
-    """
-    cmd = [
-        "helm",
-        "status",
-        release,
-        "-n",
-        namespace,
-    ]
-    ret_code = subprocess.run(cmd).returncode
-    if ret_code == 0:
-        return False
     return True
 
 
@@ -389,7 +379,12 @@ def check_data_present(
     return resp
 
 
-def wait_for_predicate(func, description, timeout=TIMEOUT, interval=0.5):
+def wait_for_predicate(
+    func: callable,
+    description: str,
+    timeout: int = TIMEOUT,
+    interval: float = 0.5,
+):
     """
     Wait for predicate to be true.
 
@@ -406,7 +401,9 @@ def wait_for_predicate(func, description, timeout=TIMEOUT, interval=0.5):
             if func(*args, **kwargs):
                 break
             if time.time() >= start + timeout:
-                pytest.fail(f"{description} not achieved after {timeout} seconds")
+                pytest.fail(
+                    f"{description} not achieved after {timeout} seconds"
+                )
             time.sleep(interval)
 
     return wrapper
@@ -438,7 +435,9 @@ def compare_data(
     return resp
 
 
-def deploy_cbf_emulator(host, scan_id, k8s_element_manager):
+def deploy_cbf_emulator(
+    host: str, scan_id: int, k8s_element_manager: K8sElementManager
+):
     """
     Deploy the CBF emulator and check that it finished sending the data.
 
@@ -472,14 +471,18 @@ def deploy_cbf_emulator(host, scan_id, k8s_element_manager):
         "pvc": {"name": os.environ.get("SDP_DATA_PVC_NAME", "shared")},
     }
 
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as file:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".yaml", delete=False
+    ) as file:
         file.write(yaml.dump(values))
 
     filename = file.name
     namespace = os.environ.get("KUBE_NAMESPACE")
     sender_name = f"cbf-send-scan-{scan_id}"
 
-    LOG.info("Deploying CBF sender for Scan %d on chart %s", scan_id, sender_name)
+    LOG.info(
+        "Deploying CBF sender for Scan %d on chart %s", scan_id, sender_name
+    )
     k8s_element_manager.helm_install(
         sender_name,
         "tests/resources/charts/cbf-sender",

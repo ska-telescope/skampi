@@ -2,13 +2,11 @@
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-
-from ska_ser_skallop.connectors import configuration as con_config
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
 from resources.models.mvp_model.states import ObsState
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+
 from ...conftest import SutTestSettings
 
 
@@ -24,8 +22,7 @@ def test_assign_resources_on_sdp_in_low():
 
 @given("a SDP subarray in the EMPTY state", target_fixture="composition")
 def an_sdp_subarray_in_empty_state(
-    set_sdp_ln_entry_point,
-    base_composition: conf_types.Composition
+    set_sdp_ln_entry_point, base_composition: conf_types.Composition
 ) -> conf_types.Composition:
     """an SDP subarray in Empty state."""
     return base_composition

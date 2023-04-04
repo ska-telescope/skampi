@@ -1,8 +1,3 @@
-# pylint: disable=unused-argument
-import logging
-import socket
-
-import pytest
 # from kubernetes import client, config, watch
 
 # import tango
@@ -36,6 +31,7 @@ def pytest_addoption(parser):
             "need to spin up a Tango test context"
         ),
     )
+
 
 # @pytest.fixture
 # def tango_context(devices_to_load, request):

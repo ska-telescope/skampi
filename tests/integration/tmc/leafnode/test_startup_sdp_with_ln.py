@@ -4,7 +4,6 @@ import logging
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 
@@ -47,6 +46,7 @@ def a_sdp_ln():
 # use @when("I start up the telescope") from ...conftest
 
 # thens
+
 
 @then("the sdp must be on")
 def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):

@@ -1,16 +1,36 @@
 import pytest
-from pytest_bdd import given, scenario, then, when
+from pytest_bdd import given, parsers, scenario, then, when
 
-from .oet_helpers import ScriptExecutor
+from .oet_helpers import ACTIVITY_ADAPTER, ScriptExecutor, add_sb_to_oda
 
 EXECUTOR = ScriptExecutor()
+
 
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario("features/oet_basic.feature", "Run the hello_world test script")
 def test_hello_world():
-    """Telescope startup test."""
+    """
+    Given The OET is integrated with SKAMPI
+    When the script is run
+    Then script execution completes successfully
+    """
+
+
+@pytest.mark.oet
+@pytest.mark.skamid
+@pytest.mark.k8s
+@scenario(
+    "features/oet_basic.feature",
+    "Run the hello_world test script via an SB activity",
+)
+def test_activity():
+    """
+    Given a test SB with activity helloworld exists in ODA
+    When I tell the OET to run helloworld activity on the test SB
+    Then script started by the activity completes successfully
+    """
 
 
 @given("The OET is integrated with SKAMPI")
@@ -18,15 +38,56 @@ def hello_world_script_created():
     "The OET is integrated with SKAMPI"
 
 
-@when("the script is ran")
-def hello_world_script_ran():
-    EXECUTOR.execute_script("file:///tmp/oda/hello_world.py")
+@given(parsers.parse("a test SB with activity {activity_name} exists in ODA"))
+def hello_world_sb_in_oda(activity_name, test_sbd):
+    """"""
+    assert (
+        activity_name in test_sbd.activities
+    ), f"Activity test setup failed, no activity called {activity_name} in test SB"
+
+    add_sb_to_oda(test_sbd)
+
+
+@when(parsers.parse("the script {script} is run"))
+def hello_world_script_ran(script):
+    EXECUTOR.execute_script(script)
+
+
+@when(
+    parsers.parse(
+        "I tell the OET to run {activity_name} activity on the test SB"
+    )
+)
+def when_allocate_resources_from_activity(
+    activity_name,
+    test_sbd,
+):
+    """ """
+    summary = ACTIVITY_ADAPTER.run(
+        activity_name,
+        test_sbd.sbd_id,
+    )
+    assert (
+        summary.state == "TODO"
+    ), f"Expected activity with status TODO, instead got {summary.state}"
+
+
+@then("script started by the activity completes successfully")
+def hello_world_script_complete():
+    "script execution completes successfully"
+
+    summaries = ACTIVITY_ADAPTER.list()
+    pid = summaries[0].procedure_id
+    procedure_status = EXECUTOR.wait_for_script_state(
+        pid, "COMPLETE", timeout=20
+    )
+
+    assert procedure_status == "COMPLETE"
 
 
 @then("script execution completes successfully")
 def hello_world_script_complete():
     "script execution completes successfully"
-    latest_task = EXECUTOR.get_latest_script()
+    procedure = EXECUTOR.get_latest_script()
 
-    assert latest_task
-    assert latest_task.state == "COMPLETE"
+    assert procedure.state == "COMPLETE"

@@ -1,26 +1,25 @@
 """Domain logic for the sdp."""
 import logging
-from typing import Union, List
 import os
 from time import sleep
+from typing import Any, List, Union
 
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.utils.singleton import Memo
-from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.event_handling.builders import get_message_board_builder
+from ska_ser_skallop.mvp_control.configuration import types
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
-    CompositeEntryPoint,
-    NoOpStep,
-    MessageBoardBuilder,
     AbortStep,
+    CompositeEntryPoint,
+    MessageBoardBuilder,
+    NoOpStep,
     ObsResetStep,
 )
+from ska_ser_skallop.utils.singleton import Memo
 
-from ska_ser_skallop.mvp_control.entry_points import base
-from ska_ser_skallop.event_handling.builders import get_message_board_builder
-from ..obsconfig.config import Observation
 from ..mvp_model.states import ObsState
-
+from ..obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +51,9 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.sdp.subarray(index)
-            subarray = con_config.get_device_proxy(self._tel.sdp.subarray(index))
+            subarray = con_config.get_device_proxy(
+                self._tel.sdp.subarray(index)
+            )
             self._log(f"commanding {subarray_name} to On")
             subarray.command_inout("On")
         self._log(f"commanding {self._sdp_master_name} to On")
@@ -69,13 +70,18 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         # subarrays
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.sdp.subarray(index)
-            brd.set_waiting_on(subarray_name).for_attribute("state").to_become_equal_to(
-                "ON", ignore_first=False
-            )
+            brd.set_waiting_on(subarray_name).for_attribute(
+                "state"
+            ).to_become_equal_to("ON", ignore_first=False)
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation is not done.
+        """
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
@@ -86,9 +92,9 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         ).to_become_equal_to("OFF", ignore_first=False)
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.sdp.subarray(index)
-            brd.set_waiting_on(subarray_name).for_attribute("state").to_become_equal_to(
-                "OFF", ignore_first=False
-            )
+            brd.set_waiting_on(subarray_name).for_attribute(
+                "state"
+            ).to_become_equal_to("OFF", ignore_first=False)
         return brd
 
     def undo(self):
@@ -131,8 +137,12 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        config = self.observation.generate_sdp_assign_resources_config().as_json
-        self._log(f"commanding {subarray_name} with AssignResources: {config} ")
+        config = (
+            self.observation.generate_sdp_assign_resources_config().as_json
+        )
+        self._log(
+            f"commanding {subarray_name} with AssignResources: {config} "
+        )
         subarray.command_inout("AssignResources", config)
 
     def undo(self, sub_array_id: int):
@@ -154,14 +164,23 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "IDLE"
-        )
+        brd.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
         return brd
 
-    def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Not implemented."""
-        raise NotImplementedError()
+    def set_wait_for_doing(
+        self, sub_array_id: int
+    ) -> Union[MessageBoardBuilder, None]:
+        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        brd = get_message_board_builder()
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("RESOURCING")
+        return brd
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for subarray releasing resources is done.
@@ -170,9 +189,9 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "EMPTY"
-        )
+        brd.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
         return brd
 
 
@@ -236,7 +255,6 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         ).to_become_equal_to("READY")
         return builder
 
-
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
@@ -283,6 +301,9 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+
+        Raises:
+            Exception: Raise exception in do method of scan command
         """
         scan_config = self.observation.generate_sdp_run_scan().as_json
         scan_duration = Memo().get("scan_duration")
@@ -322,6 +343,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
+
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
         ).to_become_equal_to("SCANNING", ignore_first=True)
@@ -336,34 +358,6 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         """
         return None
 
-class SDPAbortStep(AbortStep, LogEnabled):
-
-    """Implementation of Abort Step for SDP."""
-
-    def do(self, sub_array_id: int):
-        """Domain logic for running a abort on subarray in sdp.
-
-        This implments the scan method on the entry_point.
-
-        :param sub_array_id: The index id of the subarray to control
-        """
-        subarray_name = self._tel.sdp.subarray(sub_array_id)
-        subarray = con_config.get_device_proxy(subarray_name)
-        self._log(f"commanding {subarray_name} with Abort command")
-        subarray.command_inout("Abort")
-
-    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifying what needs to be waited for abort is done.
-
-        :param sub_array_id: The index id of the subarray to control
-        """
-        builder = get_message_board_builder()
-        subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("ABORTED", ignore_first=True)
-        return builder
-
 
 class SDPAbortStep(AbortStep, LogEnabled):
 
@@ -381,7 +375,9 @@ class SDPAbortStep(AbortStep, LogEnabled):
         self._log(f"commanding {subarray_name} with Abort command")
         subarray.command_inout("Abort")
 
-    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_do(
+        self, sub_array_id: int
+    ) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifying what needs to be waited for abort is done.
 
         :param sub_array_id: The index id of the subarray to control
@@ -396,7 +392,7 @@ class SDPAbortStep(AbortStep, LogEnabled):
 
 class SDPObsResetStep(ObsResetStep, LogEnabled):
 
-    """Implementation of ObsReset Step for SDP.""" 
+    """Implementation of ObsReset Step for SDP."""
 
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
@@ -423,7 +419,7 @@ class SDPObsResetStep(ObsResetStep, LogEnabled):
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with ObsReset command")
         subarray.command_inout("Obsreset")
-    
+
     def undo(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
 
@@ -443,11 +439,28 @@ class SDPObsResetStep(ObsResetStep, LogEnabled):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "EMPTY"
-        )
+        brd.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
         return brd
 
+
+class SDPRestart(base.RestartStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(
+        self, sub_array_id: int, _: Any = None
+    ) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
+        return builder
 
 
 class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
@@ -468,5 +481,4 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
         self.scan_step = SDPScanStep(observation)
         self.abort_step = SDPAbortStep()
         self.obsreset_step = SDPObsResetStep()
-
-
+        self.restart_step = SDPRestart()

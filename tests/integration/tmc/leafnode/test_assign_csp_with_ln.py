@@ -1,17 +1,18 @@
 """Assign Resource on a CSP Subarray"""
+import logging
+
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-
-from ska_ser_skallop.connectors import configuration as con_config
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
 from resources.models.mvp_model.states import ObsState
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+
 from ...conftest import SutTestSettings
-import logging
+
 logger = logging.getLogger(__name__)
+
 
 @pytest.mark.skalow
 @pytest.mark.assign
@@ -25,8 +26,7 @@ def test_assign_resources_on_csp_in_low():
 
 @given("a CSP subarray in the EMPTY state", target_fixture="composition")
 def an_csp_subarray_in_empty_state(
-    set_csp_ln_entry_point,
-    base_composition: conf_types.Composition
+    set_csp_ln_entry_point, base_composition: conf_types.Composition
 ) -> conf_types.Composition:
     """an CSP subarray in Empty state."""
     logger.info("an_csp_subarray_in_empty_state")

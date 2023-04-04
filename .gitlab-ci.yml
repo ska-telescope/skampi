@@ -7,7 +7,7 @@ variables:
   CHARTS_TO_PUBLISH: ska-low ska-mid ska-landingpage
   INGRESS_HOST: "k8s.stfc.skao.int"
   GIT_SUBMODULE_STRATEGY: recursive
-  SKALLOP_VERSION: "2.20.5"
+  SKALLOP_VERSION: "2.24.2"
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-tango-images-pytango-builder:9.3.3
   KUBE_BRANCH: $CI_JOB_ID
   DOMAIN: "branch"
@@ -15,11 +15,11 @@ variables:
   CONFIG: "common"
 
 stages:
+  - lint
   - on-demand
   - build
   - test
   - clean_test_env
-  - lint
   - publish
   - deploy
   - integration
@@ -85,4 +85,8 @@ include:
   # .post steps
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
+
+  # linting job
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
     

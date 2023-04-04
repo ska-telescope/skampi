@@ -3,13 +3,11 @@ import os
 
 import pytest
 from pytest_bdd import given
-
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-
 from resources.models.sdp_model.entry_point import SDPEntryPoint
 from resources.models.sdp_model.mocking import setup_sdp_mock
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
 
@@ -19,7 +17,6 @@ def fxt_update_sut_settings(sut_settings: conftest.SutTestSettings):
     tel = names.TEL()
     if tel.skalow:
         sut_settings.nr_of_subarrays = 1
-
 
 
 @pytest.fixture(name="set_sdp_entry_point", autouse=True)
@@ -39,9 +36,6 @@ def fxt_set_entry_point(
     sut_settings.default_subarray_name = sut_settings.tel.sdp.subarray(
         sut_settings.subarray_id
     )
-
-
-
 
 
 @pytest.fixture(name="setup_sdp_mock")
@@ -79,7 +73,8 @@ def fxt_sdp_assign_resources_exec_settings(
 @pytest.fixture(name="set_up_subarray_log_checking_for_sdp", autouse=True)
 @pytest.mark.usefixtures("set_sdp_entry_point")
 def fxt_set_up_log_capturing_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 

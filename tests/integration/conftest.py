@@ -1,29 +1,23 @@
 """pytest global settings, fixtures and global bdd step implementations for
 integration tests."""
 import logging
-from types import SimpleNamespace
 import os
-
+from types import SimpleNamespace
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
-from mock import patch, Mock
-from assertpy import assert_that
+
 import pytest
-from pytest_bdd import when, given, then, parsers
-
-from ska_ser_skallop.connectors import configuration as con_config
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_management import telescope_management as tel
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.entry_point import TMCEntryPoint
-from resources.models.obsconfig.config import Observation
+from assertpy import assert_that
+from mock import Mock, patch
+from pytest_bdd import given, parsers, then, when
+from resources.models.mvp_model.env import Observation, init_observation_config
 from resources.models.mvp_model.states import ObsState
-from resources.models.mvp_model.env import init_observation_config, Observation
+
+# from resources.models.obsconfig.config import Observation
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +37,11 @@ class SutTestSettings(SimpleNamespace):
         self.tel = names.TEL()
         logger.info("initialising sut settings")
         self.observation = init_observation_config()
-        self.default_subarray_name: DeviceName = self.tel.tm.subarray(self.subarray_id)
+        self.default_subarray_name: DeviceName = self.tel.tm.subarray(
+            self.subarray_id
+        )
+        self.disable_subarray_teardown = False
+        self.restart_after_abort = False
 
     @property
     def nr_of_receptors(self):
@@ -90,7 +88,9 @@ def fxt_online():
     return OnlineFlag()
 
 
-@pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
+@pytest.fixture(
+    name="set_session_exec_settings", autouse=True, scope="session"
+)
 def fxt_set_session_exec_settings(
     session_exec_settings: fxt_types.session_exec_settings,
 ):
@@ -209,6 +209,7 @@ def fxt_observation_config_interjector(
 
     return interject_observation_method
 
+
 # global when steps
 # start up
 
@@ -222,7 +223,9 @@ def i_start_up_the_telescope(
 ):
     """I start up the telescope."""
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(
+            integration_test_exec_settings
+        ):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
@@ -237,7 +240,9 @@ def the_telescope_is_on(
     """I start up the telescope."""
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
+        with standby_telescope.wait_for_starting_up(
+            integration_test_exec_settings
+        ):
             logger.info("The entry point being used is : %s", entry_point)
             entry_point.set_telescope_to_running()
 
@@ -253,7 +258,9 @@ def i_switch_off_the_telescope(
     # we disable automatic shutdown as this is done by the test itself
     running_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_shutting_down(integration_test_exec_settings):
+        with running_telescope.wait_for_shutting_down(
+            integration_test_exec_settings
+        ):
             entry_point.set_telescope_to_standby()
 
 
@@ -333,13 +340,15 @@ def i_configure_it_for_a_scan(
                 sub_array_id, receptors, configuration, sb_id, scan_duration
             )
 
+
 @when("I command it to scan for a given period")
-def i_command_it_to_scan(
+def i_execute_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """I configure it for a scan."""
     configured_subarray.set_to_scanning(integration_test_exec_settings)
+
 
 # scans
 @given("an subarray busy scanning")
@@ -352,8 +361,6 @@ def i_command_it_to_scan(
     integration_test_exec_settings.attr_synching = False
     with context_monitoring.context_monitoring():
         configured_subarray.set_to_scanning(integration_test_exec_settings)
-
-
 
 
 @when("I release all resources assigned to it")
@@ -373,11 +380,45 @@ def i_release_all_resources_assigned_to_it(
             entry_point.tear_down_subarray(sub_array_id)
 
 
-
 @given("an subarray busy configuring")
-def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
+def an_subarray_busy_configuring(
+    allocated_subarray: fxt_types.allocated_subarray,
+):
     """an subarray busy configuring"""
     allocated_subarray.set_to_configuring(clear_afterwards=False)
+
+
+@given("an subarray busy assigning", target_fixture="allocated_subarray")
+def an_subarray_busy_assigning(
+    running_telescope: fxt_types.running_telescope,
+    sb_config: fxt_types.sb_config,
+    composition: conf_types.Composition,
+    exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    """an subarray busy assigning"""
+
+    """Create a subarray but block only until it is in RESOURCING.
+
+    :param subarray_id: the identification nr for the subarray
+    :param receptors: the receptors that will be used for the subarray.
+        If none is given it will use a default set of two receptors 1 and 2.
+    :param sb_config: The SB configuration to use as context, defaults to SBConfig()
+    :param settings: the execution settings to use during the IO calls., defaults to
+        ExecSettings()
+    :param composition: The type of composition configuration to use.
+        , defaults to conf_types.Composition( conf_types.CompositionType.STANDARD )
+    :type composition: conf_types.Composition, optional
+    :return: A subarray context manager to ue for subsequent commands.
+    """
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    allocated_subbaray = running_telescope.set_to_resourcing(
+        subarray_id, receptors, sb_config, exec_settings, composition
+    )
+    allocated_subbaray.disable_automatic_teardown()
+    return allocated_subbaray
+
 
 @when("I command it to Abort")
 def i_command_it_to_abort(
@@ -393,11 +434,21 @@ def i_command_it_to_abort(
         "obsstate"
     ).to_become_equal_to("ABORTED")
     with context_monitoring.context_monitoring():
-        with context_monitoring.wait_before_complete(integration_test_exec_settings):
-            allocated_subarray.reset_after_test(integration_test_exec_settings)
+        with context_monitoring.wait_before_complete(
+            integration_test_exec_settings
+        ):
+            if sut_settings.restart_after_abort:
+                allocated_subarray.restart_after_test(
+                    integration_test_exec_settings
+                )
+            else:
+                allocated_subarray.reset_after_test(
+                    integration_test_exec_settings
+                )
             entry_point.abort_subarray(sub_array_id)
 
     integration_test_exec_settings.touch()
+
 
 @then("the subarray should go into an aborted state")
 def the_subarray_should_go_into_an_aborted_state(

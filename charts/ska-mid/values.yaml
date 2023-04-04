@@ -140,6 +140,11 @@ ska-sdp:
         resources:
           requests:
             cpu: 100m
+    api:
+      version: 0.15.0
+    display:
+      version: 0.6.1
+
   ska-tango-base:
     enabled: false
 

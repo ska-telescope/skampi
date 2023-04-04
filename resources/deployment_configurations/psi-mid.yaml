@@ -8,5 +8,5 @@ ska-sdp:
     create:
       enabled: true
       size: 5Gi
-      storageClassName: standard
+      storageClassName: nfss1
 

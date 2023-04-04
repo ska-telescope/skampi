@@ -7,6 +7,7 @@ Feature: Observations using OET
 		Then the subarray must be in the SCANNING state until finished
 
     Scenario: Run multiple scans on TMC subarray in low for different scan type from OET
+        Given an OET
         Given a subarray defined to perform scans for types .default and target:a
         Given a subarray configured for scan type .default
         And the subarray has just completed it's first scan for given configuration

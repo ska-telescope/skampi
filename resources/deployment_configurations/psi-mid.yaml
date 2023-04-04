@@ -2,4 +2,11 @@
 ska-mid-cbf-mcs:
   hostInfo:
     environment: "mid-psi"
+ska-sdp:
+  data-pvc:
+    name: ska-sdp-pvc
+    create:
+      enabled: true
+      size: 5Gi
+      storageClassName: standard
 

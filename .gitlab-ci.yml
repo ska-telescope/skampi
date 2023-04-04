@@ -88,4 +88,8 @@ include:
   # linting job
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
-    
+
+# OET depends on pytango 9.3.3, hence we need to downgrade the image
+# for quicker build
+python-lint:
+  image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.32

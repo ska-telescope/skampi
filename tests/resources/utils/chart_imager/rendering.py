@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from diagrams import Node, Edge, Diagram, Cluster
 from .base import ItemDict, AbstractNodeItem
-from typing import Self
+from typing_extensions import Self
 
 
 class NodeItem(AbstractNodeItem):

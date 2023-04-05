@@ -1,6 +1,7 @@
 import abc
 from typing_extensions import TypedDict, NotRequired
-from typing import Union, Self
+from typing import Union
+from typing_extensions import Self
 
 
 class ItemDict(TypedDict):

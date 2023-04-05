@@ -1,22 +1,20 @@
 import pytest
-
-
-from pytest_bdd import given, scenario, then
 from assertpy import assert_that
-
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from pytest_bdd import given, scenario, then
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
-from resources.models.mvp_model.states import ObsState
-
 from ..conftest import SutTestSettings
+
 
 @pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.assign
 @scenario(
-    "features/cbf_assign_resources.feature", "Assign resources to CBF mid subarray"
+    "features/cbf_assign_resources.feature",
+    "Assign resources to CBF mid subarray",
 )
 def test_assign_resources_to_cbf_mid_subarray():
     """Assign resources to CBF mid subarray."""
@@ -26,7 +24,8 @@ def test_assign_resources_to_cbf_mid_subarray():
 @pytest.mark.cbf
 @pytest.mark.assign
 @scenario(
-    "features/cbf_assign_resources.feature", "Assign resources to CBF low subarray"
+    "features/cbf_assign_resources.feature",
+    "Assign resources to CBF low subarray",
 )
 def test_assign_resources_to_cbf_low_subarray():
     """Assign resources to CBF low subarray."""

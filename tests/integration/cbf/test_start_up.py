@@ -1,16 +1,14 @@
 """Start up the cbf feature tests."""
 import logging
 import os
-from typing import cast, List
+from typing import List, cast
 
 import pytest
 from assertpy import assert_that
-
 from pytest_bdd import given, scenario, then
-
+from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.connectors import configuration as con_config
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +28,12 @@ def test_cbf_start_up_telescope_mid():
 def test_cbf_start_up_telescope_low():
     """Start up the cbf in low."""
 
+
 @pytest.fixture(name="set_up_transit_checking_for_cbf")
 @pytest.mark.usefixtures("set_cbf_entry_point")
-def fxt_set_up_transit_checking_for_cbf(transit_checking: fxt_types.transit_checking):
+def fxt_set_up_transit_checking_for_cbf(
+    transit_checking: fxt_types.transit_checking,
+):
     """set up transit checking for cbf startup (if DEVENV enabled)
 
     :param transit_checking: fixture used by skallop
@@ -47,7 +48,9 @@ def fxt_set_up_transit_checking_for_cbf(transit_checking: fxt_types.transit_chec
             transit_checking.check_that(subject_device).transits_according_to(
                 ["ON"]
             ).on_attr("state").when_transit_occur_on(
-                devices_to_follow, ignore_first=True, devices_to_follow_attr="state"
+                devices_to_follow,
+                ignore_first=True,
+                devices_to_follow_attr="state",
             )
 
 

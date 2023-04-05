@@ -1,20 +1,20 @@
+import os
+
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-import os
-
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
-from resources.models.mvp_model.states import ObsState
 
 from tests.integration import conftest
 
 
 @pytest.fixture(name="setup_log_checking")
 def fxt_setup_log_checking(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
@@ -22,17 +22,23 @@ def fxt_setup_log_checking(
             tel.tm.subarray(sut_settings.subarray_id).csp_leaf_node
         )
         csp_subarray = str(tel.csp.subarray(sut_settings.subarray_id))
-        log_checking.capture_logs_from_devices(csp_subarray_leaf_node, csp_subarray)
+        log_checking.capture_logs_from_devices(
+            csp_subarray_leaf_node, csp_subarray
+        )
 
 
 @pytest.mark.skamid
-@scenario("features/tmc_cspln_scan.feature", "Scan the csp mid using csp leaf node")
+@scenario(
+    "features/tmc_cspln_scan.feature", "Scan the csp mid using csp leaf node"
+)
 def test_scan_cspsubarray_for_a_scan_in_mid():
     """Scan cspsubarray for a scan in mid using the csp leaf node."""
 
 @pytest.mark.skip
 @pytest.mark.skalow
-@scenario("features/tmc_cspln_scan.feature", "Scan the csp low using csp leaf node")
+@scenario(
+    "features/tmc_cspln_scan.feature", "Scan the csp low using csp leaf node"
+)
 def test_scan_cspsubarray_for_a_scan_in_low():
     """Scan cspsubarray for a scan in low using the csp leaf node."""
 

@@ -1,15 +1,14 @@
 """Assign resources to subarray feature tests."""
 import logging
+
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
-from resources.models.mvp_model.states import ObsState
 
 from ..conftest import SutTestSettings
 
@@ -32,9 +31,12 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
 @pytest.mark.assign
 @pytest.mark.sdp
 @scenario(
-    "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in low"
+    "features/sdp_assign_resources.feature",
+    "Assign resources to sdp subarray in low",
 )
-def test_assign_resources_to_sdp_subarray_in_low(assign_resources_test_exec_settings):
+def test_assign_resources_to_sdp_subarray_in_low(
+    assign_resources_test_exec_settings,
+):
     """Assign resources to sdp subarray in low."""
 
 
@@ -42,9 +44,12 @@ def test_assign_resources_to_sdp_subarray_in_low(assign_resources_test_exec_sett
 @pytest.mark.assign
 @pytest.mark.sdp
 @scenario(
-    "features/sdp_assign_resources.feature", "Assign resources to sdp subarray in mid"
+    "features/sdp_assign_resources.feature",
+    "Assign resources to sdp subarray in mid",
 )
-def test_assign_resources_to_sdp_subarray_in_mid(assign_resources_test_exec_settings):
+def test_assign_resources_to_sdp_subarray_in_mid(
+    assign_resources_test_exec_settings,
+):
     """Assign resources to sdp subarray in mid."""
 
 
@@ -60,7 +65,8 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
 
 @given("an SDP subarray", target_fixture="composition")
 def an_sdp_subarray(
-    set_up_subarray_log_checking_for_sdp, sdp_base_composition: conf_types.Composition
+    set_up_subarray_log_checking_for_sdp,
+    sdp_base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """an SDP subarray."""
     return sdp_base_composition

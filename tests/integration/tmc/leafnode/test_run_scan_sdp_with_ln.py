@@ -1,14 +1,12 @@
 """Run scan on subarray feature tests."""
 import pytest
-from pytest_bdd import scenario
-
 from assertpy import assert_that
-from pytest_bdd import given, then
+from pytest_bdd import given, scenario, then
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.mvp_model.states import ObsState
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from ... import conftest
 
@@ -22,7 +20,11 @@ from ... import conftest
 def test_run_scan_on_sdp_subarray_in_mid():
     """Run scan on sdp subarray in mid using the leaf node."""
 
+<<<<<<< HEAD
 @pytest.mark.skip
+=======
+
+>>>>>>> master
 @pytest.mark.skalow
 @pytest.mark.configure
 @scenario(
@@ -31,6 +33,7 @@ def test_run_scan_on_sdp_subarray_in_mid():
 )
 def test_run_scan_on_sdp_subarray_in_low():
     """Run scan on SDP subarray in low using the leaf node."""
+
 
 @given("an SDP subarray in READY state")
 def an_sdp_subarray_in_ready_state(
@@ -45,11 +48,14 @@ def an_sdp_subarray_in_ready_state(
     # subarray_allocation_spec.composition
     return sdp_base_configuration
 
+
 @given("a TMC SDP subarray Leaf Node")
 def a_sdp_sln(set_sdp_ln_entry_point):
     """a TMC SDP subarray Leaf Node."""
 
+
 # @when("I command it to scan for a given period") from ...conftest
+
 
 @then("the SDP subarray shall go from READY to SCANNING")
 def the_subarray_shall_be_in_the_scanning_state(

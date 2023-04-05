@@ -1,17 +1,15 @@
 """Pytest fixtures and bdd step implementations specific to cbf integration tests."""
+import logging
 import os
 from typing import Callable
+
 import pytest
-import logging
-
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-
 from resources.models.cbf_model.entry_point import CBFEntryPoint
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from resources.models.cbf_model.mocking import setup_cbf_mock
-
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
 
@@ -91,7 +89,8 @@ def fxt_set_cbf_online_from_cbf(
 @pytest.fixture(name="set_up_log_checking_for_cbf_subarray")
 @pytest.mark.usefixtures("set_cbf_entry_point")
 def fxt_set_up_log_checking_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 

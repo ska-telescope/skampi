@@ -2,8 +2,7 @@
 import logging
 
 import pytest
-from pytest_bdd import given, scenario, then
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from pytest_bdd import scenario
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from ..conftest import SutTestSettings

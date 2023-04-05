@@ -1,13 +1,14 @@
 """Run scan on telescope subarray feature tests."""
-import time
+
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from resources.models.mvp_model.states import ObsState
+
 from ..conftest import SutTestSettings
 
 
@@ -28,6 +29,7 @@ def test_tmc_scan_on_mid_subarray():
 def test_tmc_scan_on_low_subarray():
     """Run a scan on TMC low telescope subarray."""
 
+
 @given("an TMC")
 def a_tmc():
     """an TMC"""
@@ -45,6 +47,7 @@ def a_subarray_in_ready_state(
 
 
 # @when("I command it to scan for a given period")
+
 
 @then("the subarray must be in the SCANNING state until finished")
 def the_sdp_subarray_must_be_in_the_scanning_state(
@@ -66,6 +69,8 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
     ).to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(tmc_subarray_name)
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+        tmc_subarray_name
+    )
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

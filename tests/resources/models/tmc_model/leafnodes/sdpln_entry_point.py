@@ -1,27 +1,25 @@
 """Domain logic for the sdp."""
 import logging
-from typing import Union, List
-import json
 from time import sleep
+from typing import List, Union
 
-from ska_ser_skallop.utils.singleton import Memo
-from ska_ser_skallop.mvp_control.configuration import composition as comp
-from ska_ser_skallop.mvp_control.configuration import configuration as conf
-from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.event_handling.builders import get_message_board_builder
+from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
-    NoOpStep,
     MessageBoardBuilder,
+    NoOpStep,
 )
-from ska_ser_skallop.event_handling.builders import get_message_board_builder
+from ska_ser_skallop.utils.singleton import Memo
+
+from ...obsconfig.config import Observation
 from ...sdp_model.entry_point import (
-    StartUpStep,
     SdpAssignResourcesStep,
     SdpConfigureStep,
     SDPScanStep,
+    StartUpStep,
 )
-from ...obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
 
@@ -81,8 +79,12 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node  # type: ignore
         subarray = con_config.get_device_proxy(subarray_name)  # type: ignore
-        config = self.observation.generate_sdp_assign_resources_config().as_json
-        self._log(f"commanding {subarray_name} with AssignResources: {config} ")
+        config = (
+            self.observation.generate_sdp_assign_resources_config().as_json
+        )
+        self._log(
+            f"commanding {subarray_name} with AssignResources: {config} "
+        )
         subarray.command_inout("AssignResources", config)
 
     def undo(self, sub_array_id: int):
@@ -149,6 +151,9 @@ class SDPLnScanStep(SDPScanStep):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+
+        Raises:
+            Exception: Raise exception in do method of scan command
         """
         scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")

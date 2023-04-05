@@ -1,3 +1,24 @@
+import logging
+from pathlib import Path
+
+import pytest
+from assertpy import assert_that
+from pytest_bdd import given, parsers, scenario, then, when
+from resources.models.mvp_model.env import Observation
+from resources.models.mvp_model.states import ObsState
+from resources.models.obsconfig.target_spec import (
+    ReceiverBand,
+    Target,
+    TargetSpec,
+)
+from ska_oso_scripting.objects import SubArray
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+
+from ..conftest import SutTestSettings
+from .oet_helpers import ScriptExecutor
+
 """
 test_XTP-18866, test_XTP-776
 ----------------------------------
@@ -6,26 +27,6 @@ Tests for Configure the mid telescope subarray using OET (XTP-778)
 """
 
 """Configure scan on telescope subarray feature tests."""
-from pathlib import Path
-import logging
-import pytest
-from assertpy import assert_that
-from pytest_bdd import given, parsers, when, scenario, then
-
-from ska_ser_skallop.connectors import configuration as con_config
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_oso_scripting.objects import SubArray
-from resources.models.mvp_model.states import ObsState
-from ..conftest import SutTestSettings
-from resources.models.mvp_model.env import Observation
-from resources.models.obsconfig.target_spec import (
-    TargetSpec,
-    Target,
-    ReceiverBand,
-)
-
-from .oet_helpers import ScriptExecutor
 
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
@@ -34,7 +35,9 @@ EXECUTOR = ScriptExecutor()
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
-@scenario("features/oet_configure_scan.feature", "Observing a Scheduling Block")
+@scenario(
+    "features/oet_configure_scan.feature", "Observing a Scheduling Block"
+)
 def test_observing_sbi():
     """
     Given an OET
@@ -95,16 +98,21 @@ def an_oet(observation_config: Observation):
 
 @given("a valid scan configuration", target_fixture="valid_config_from_file")
 def a_valid_scan_configuration():
-    return Path("./tests/resources/test_data/OET_integration/configure_low.json")
+    return Path(
+        "./tests/resources/test_data/OET_integration/configure_low.json"
+    )
 
 
 @given("sub-array is in the ObsState IDLE")
 def the_subarray_must_be_in_idle_state(
-        allocated_subarray: fxt_types.allocated_subarray, sut_settings: SutTestSettings
+    allocated_subarray: fxt_types.allocated_subarray,
+    sut_settings: SutTestSettings,
 ):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
@@ -114,30 +122,33 @@ def the_subarray_must_be_in_idle_state(
 
 @when("I configure it for a scan")
 def i_configure_it_for_a_scan(
-        valid_config_from_file: Path,
-        allocated_subarray: fxt_types.allocated_subarray,
-        context_monitoring: fxt_types.context_monitoring,
-        integration_test_exec_settings: fxt_types.exec_settings,
-        sut_settings: SutTestSettings,
+    valid_config_from_file: Path,
+    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
 ):
     """I configure it for a scan."""
     subarray_id = sut_settings.subarray_id
     subarray = SubArray(subarray_id)
     with context_monitoring.context_monitoring():
         with allocated_subarray.wait_for_configuring_a_subarray(
-                integration_test_exec_settings
+            integration_test_exec_settings
         ):
             subarray.configure_from_file(str(valid_config_from_file), False)
 
 
 @when(
-    parsers.parse("I tell the OET to observe using script {script} and SBI {sb_json}"),
-    target_fixture="script_completion_state")
+    parsers.parse(
+        "I tell the OET to observe using script {script} and SBI {sb_json}"
+    ),
+    target_fixture="script_completion_state",
+)
 def when_observe_sbi(
-        script,
-        sb_json,
-        allocated_subarray: fxt_types.allocated_subarray,
-        context_monitoring: fxt_types.context_monitoring,
+    script,
+    sb_json,
+    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
 ):
     """
     Use the OET Rest API to run script that observe SBI.
@@ -150,15 +161,19 @@ def when_observe_sbi(
     with context_monitoring.context_monitoring():
         # Set the timeout here to lower than skallop timeout (300) so that if the script
         # is stuck, it will be stopped before context monitoring throws a timeout error
-        script_completion_state = EXECUTOR.execute_script(script, sb_json, timeout=280)
-    logger.info(f"observing script execution status set to {script_completion_state}")
+        script_completion_state = EXECUTOR.execute_script(
+            script, sb_json, timeout=280
+        )
+    logger.info(
+        f"observing script execution status set to {script_completion_state}"
+    )
     return script_completion_state
 
 
 @then("the subarray must be in the READY state")
 def the_subarray_must_be_in_the_ready_state(
-        sut_settings: SutTestSettings,
-        integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """the subarray must be in the READY state."""
     tel = names.TEL()
@@ -175,15 +190,15 @@ def the_subarray_must_be_in_the_ready_state(
 @then("the OET will execute the script correctly")
 def the_oet_will_execute_the_script_correctly(script_completion_state: str):
     assert (
-            script_completion_state == "COMPLETE"
+        script_completion_state == "COMPLETE"
     ), f"Expected observing script to be COMPLETED, instead was {script_completion_state}"
 
 
 @then(parsers.parse("the sub-array goes to ObsState {obsstate}"))
 def check_final_subarray_state(
-        obsstate: str,
-        sut_settings: SutTestSettings,
-        integration_test_exec_settings: fxt_types.exec_settings
+    obsstate: str,
+    sut_settings: SutTestSettings,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """
     Check that the final state of the sub-array is as expected.
@@ -193,10 +208,13 @@ def check_final_subarray_state(
     """
     tel = names.TEL()
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
-        str(tel.tm.subarray(sut_settings.subarray_id)))
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+        str(tel.tm.subarray(sut_settings.subarray_id))
+    )
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     subarray_state = ObsState(subarray.read_attribute("obsState").value).name
     logger.info("Sub-array is in ObsState %s", subarray_state)
     assert (
-            subarray_state == obsstate
+        subarray_state == obsstate
     ), f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"

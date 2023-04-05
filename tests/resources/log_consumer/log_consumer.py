@@ -1,7 +1,7 @@
 import time
-import numpy
-from tango import AttrQuality, AttrWriteType, DispLevel, DevState, DebugIt  # GreenMode
-from tango.server import Device, attribute, command, device_property
+
+from tango import AttrQuality  # GreenMode
+from tango.server import Device, attribute, command
 
 
 class LogConsumer(Device):
@@ -24,7 +24,10 @@ class LogConsumer(Device):
         if self.attr_message != result:
             self.attr_message = result
             self.push_change_event(
-                "message", self.attr_message, time.time(), AttrQuality.ATTR_VALID
+                "message",
+                self.attr_message,
+                time.time(),
+                AttrQuality.ATTR_VALID,
             )
 
 

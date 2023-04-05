@@ -62,7 +62,8 @@ def i_command_it_to_scan_low(
     ).for_attribute("obsstate").to_change_in_order(["SCANNING", "READY"])
     integration_test_exec_settings.attr_synching = False
     logging.info(
-        f"context_monitoring._wait_after_setting_builder = {context_monitoring._wait_after_setting_builder}"
+        "context_monitoring._wait_after_setting_builder ="
+        f" {context_monitoring._wait_after_setting_builder}"
     )
     with context_monitoring.observe_while_running(
         integration_test_exec_settings
@@ -97,7 +98,7 @@ def the_subarray_must_be_in_the_scanning_state(
             ["READY", "SCANNING", "READY"]
         )
     except AssertionError as error:
-        logging.info(f"events recorded not correct: {recorder._occurrences}")  # type: ignore
+        logging.info(f"events recorded not correct: {recorder._occurrences}")
         raise error
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

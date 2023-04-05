@@ -112,7 +112,8 @@ def a_tmc():
 
 @given("an telescope subarray", target_fixture="composition")
 def an_telescope_subarray(
-    set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition  # type: ignore
+    set_up_subarray_log_checking_for_tmc,
+    base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """an telescope subarray."""
     return base_composition
@@ -160,7 +161,7 @@ def the_subarray_should_go_into_an_aborted_state(
 ):
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(sut_settings.subarray_id))
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         tmc_subarray_name
     )
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)

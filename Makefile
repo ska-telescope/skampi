@@ -2,7 +2,7 @@
 THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)##find IP addresses of this machine, setting THIS_HOST to the first address found
 DISPLAY := $(THIS_HOST):0##for GUI applications
 XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
-PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR003,W503,F811 --max-line-length=180
+PYTHON_SWITCHES_FOR_FLAKE8=--ignore=F811,W503
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-skampi-chart
 PYTHON_LINT_TARGET ?= tests/

@@ -1,4 +1,7 @@
-"""Pytest fixtures and BDD step implementations specific to OET integration tests."""
+"""
+Pytest fixtures and BDD step implementations
+specific to OET integration tests.
+"""
 import logging
 import os
 from typing import Callable
@@ -25,8 +28,9 @@ def fxt_nr_of_subarrays() -> int:
     :return: _description_
     :rtype: int
     """
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
-    # cbf mid only controls the state of subarray 1 so will also limit to 1
+    # we only work with 1 subarray as CBF low currently limits
+    # deployment of only 1 cbf mid only controls the state of subarray 1
+    # so will also limit to 1
     tel = names.TEL()
     if tel.skalow:
         return 1
@@ -59,7 +63,10 @@ def fxt_set_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
     sut_settings: conftest.SutTestSettings,
 ):
-    """Fixture to use for setting up the entry point as from only the interface to sdp."""
+    """
+    Fixture to use for setting up the entry point as
+    from only the interface to sdp.
+    """
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = 1
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays

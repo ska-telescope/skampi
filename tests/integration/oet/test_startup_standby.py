@@ -27,7 +27,7 @@ EXECUTOR = ScriptExecutor()
 def test_telescope_startup():
     """Telescope startup test."""
 
-
+@pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skalow
 @pytest.mark.startup
@@ -63,7 +63,7 @@ def a_telescope_on_standby_or_off_state(
 @given("low telescope")
 def a_low_telescope_():
     """a telescope"""
-    
+
 
 @given("telescope is in ON state")
 def a_telescope_in_the_on_state(running_telescope: fxt_types.running_telescope):

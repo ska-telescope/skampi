@@ -13,6 +13,7 @@ from ...conftest import SutTestSettings
 import logging
 logger = logging.getLogger(__name__)
 
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(

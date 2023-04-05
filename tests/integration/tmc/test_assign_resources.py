@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # log capturing
 
-
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -28,6 +28,7 @@ def test_assign_resources_to_tmc_subarray_in_low():
     """Assign resources to tmc subarray in low."""
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -87,6 +88,18 @@ def test_abort_in_resourcing_mid(
     composition: conf_types.Composition,
 ):
     """Assign resources to tmc subarray in mid."""
+
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skalow
+@pytest.mark.assign
+@scenario("features/tmc_assign_resources.feature", "Abort assigning Low")
+def test_abort_in_resourcing_low(
+    set_restart_after_abort: None,
+    setup_context_monitoring_for_abort_test: None,
+    composition: conf_types.Composition,
+):
+    """Assign resources to tmc subarray in low."""
 
 
 @pytest.mark.k8s

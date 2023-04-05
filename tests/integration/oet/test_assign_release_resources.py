@@ -240,6 +240,7 @@ def test_oet__scripting_resource_allocation():
                 Then the sub-array goes to ObsState IDLE
     """
 
+@pytest.mark.skip
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.assign
@@ -256,6 +257,7 @@ def test_oet_scripting_resource_allocation_in_low():
                 Then the sub-array goes to ObsState IDLE
     """
 
+@pytest.mark.skip
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.k8s

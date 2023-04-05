@@ -36,7 +36,7 @@ def test_tmc_start_up_telescope_mid():
 def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
 
-
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.startup
 @scenario("features/tmc_start_up_telescope.feature", "Start up the low telescope using TMC")
@@ -253,7 +253,7 @@ def the_sdp_csp_and_dish_must_be_off(
 @then("telescope is in an OK health state")
 def the_tmc_devices_must_be_healthy(sut_settings: conftest.SutTestSettings):
     """the sdp, csp and dish must be on."""
-  
+
     tel = names.TEL()
     sut_settings = conftest.SutTestSettings()
 

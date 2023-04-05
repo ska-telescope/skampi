@@ -278,24 +278,5 @@ k8s-post-test: # post test hook for processing received reports
 		exit 1; \
 	fi
 
-# override the target from .make as there is a problem in using poetry in a non virtual env
-k8s-do-test-runner:
-##  Cleanup
-	@rm -fr build; mkdir build
-	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
-
-##  Install requirements (linking to embedded .venv)
-	echo 'test: installing python dependencies'
-	bash scripts/gitlab_section.sh pip_install "Installing Pytest Requirements" pip install .; \
-
-##  Run tests
-	export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs)
-	mkdir -p build
-	cd $(K8S_RUN_TEST_FOLDER) && $(K8S_TEST_TEST_COMMAND); echo $$? > $(BASE)/build/status
-
-##  Post tests reporting
-	pip list > build/pip_list.txt
-	@echo "k8s_test_command: test command exit is: $$(cat build/status)"
-
 foo:
 	@echo $(CASED_CONFIG)

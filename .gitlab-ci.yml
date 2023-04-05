@@ -1,5 +1,5 @@
 # TODO: Make this image version dynamic per pipeline as it's hard-coded here
-image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.3
+image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
 
 variables:
   MINIKUBE: "false"
@@ -51,8 +51,8 @@ build-base-image:
       when: never
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.3 images/ska-skampi-ci/
-    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.3
+    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4 images/ska-skampi-ci/
+    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:

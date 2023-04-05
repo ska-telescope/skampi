@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 def test_sdpln_start_up_telescope_mid():
     """Start up the sdp in mid using the ln."""
 
+
 @pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.startup

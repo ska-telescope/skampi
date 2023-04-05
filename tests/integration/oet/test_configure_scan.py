@@ -46,6 +46,7 @@ def test_observing_sbi():
     Then the sub-array goes to ObsState IDLE
     """
 
+
 @pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly

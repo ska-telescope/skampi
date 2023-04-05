@@ -14,6 +14,7 @@ from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
 
+
 @pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -30,11 +31,16 @@ def test_assign_resources_from_tmc_subarray_in_low():
 # @given("the Telescope is in ON state")
 
 
-@given(parsers.parse("the subarray {subarray_id} obsState is EMPTY"),
-       target_fixture="composition")
-def subarray_obstate_is_empty(subarray_id, sut_settings: SutTestSettings,
-                              set_up_subarray_log_checking_for_tmc,
-                              base_composition):
+@given(
+    parsers.parse("the subarray {subarray_id} obsState is EMPTY"),
+    target_fixture="composition",
+)
+def subarray_obstate_is_empty(
+    subarray_id,
+    sut_settings: SutTestSettings,
+    set_up_subarray_log_checking_for_tmc,
+    base_composition,
+):
     """a telescope subarray in EMPTY obsState."""
     sut_settings.subarray_id = subarray_id
     tel = names.TEL()
@@ -72,7 +78,9 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
 
     tel = names.TEL()
     sdpsubarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
-    cspsubarray = con_config.get_device_proxy(tel.csp.cbf.subarray(subarray_id))
+    cspsubarray = con_config.get_device_proxy(
+        tel.csp.cbf.subarray(subarray_id)
+    )
 
     result_sdp = sdpsubarray.read_attribute("Resources").value
     result_csp = cspsubarray.read_attribute("assignedResources").value
@@ -81,5 +89,3 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
 
     assert_that(result_sdp).is_equal_to(sdp_resources)
     assert_that(result_csp).is_equal_to(resources[::-1])
-
-

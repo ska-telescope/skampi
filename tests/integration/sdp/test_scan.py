@@ -10,6 +10,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
 
+
 @pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.scan

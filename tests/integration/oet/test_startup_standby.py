@@ -29,6 +29,7 @@ EXECUTOR = ScriptExecutor()
 def test_telescope_startup():
     """Telescope startup test."""
 
+
 @pytest.mark.skip
 @pytest.mark.oet
 @pytest.mark.skalow

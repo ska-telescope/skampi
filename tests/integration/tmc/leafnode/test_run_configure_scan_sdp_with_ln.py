@@ -17,11 +17,8 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid using the leaf node."""
 
-<<<<<<< HEAD
-@pytest.mark.skip
-=======
 
->>>>>>> master
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.configure
 @scenario(

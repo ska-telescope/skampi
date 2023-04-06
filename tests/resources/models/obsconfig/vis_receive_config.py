@@ -20,6 +20,22 @@ from ska_tmc_cdm.messages.subarray_node.configure.core import (
 VIS_RECEIVE_SCRIPT = ScriptConfiguration(
     kind="realtime", name="vis-receive", version="0.8.1"
 )
+
+# The current set up for the vis-receive test is a mish-mash of
+# parameters for Mid and for Low. The code is set up to run
+# receive for Low, but some of the underlying testing infrastructure
+# in skampi doesn't allow proper distinguishing between Mid and Low,
+# this includes using Low stations instead of Mid dishes.
+# Below, VIS_REC_SPEC defines a "target_spec" which is based on the
+# existing hard-coded versions in
+# tests/resources/models/obsconfig/target_spec.py:23
+# This means, some of the information is inaccurately used for Low data
+# (e.g. referring to "dishes" instead of "stations", see comment in
+# tests.resources.models.obsconfig.dishes.Dishes)
+# TODO: GH will take a bit of time to update the test to be as accurate
+#  with using telescope-specific data as possible and will look into
+#  implementing proper station references instead of adding station names
+#  to the dishes.py file.
 VIS_REC_SPEC = OrderedDict(
     {
         "target:a": TargetSpec(
@@ -40,14 +56,19 @@ VIS_REC_SPEC = OrderedDict(
             "all",
             "field_a",
             "vis-receive",
-            "vis-rec",  # the type / number of dishes in tests.resources.models.obsconfig.dishes.Dishes
+            # below: the type / number of dishes in
+            # tests.resources.models.obsconfig.dishes.Dishes
+            "vis-rec",
         ),
     }
 )
 VIS_REC_CHANNELS = DEFAULT_CHANNELS.copy()
 VIS_REC_CHANNELS["vis_channels"].spectral_windows[0].count = 13824
 
-VIS_PARAMS_FILE = f"{os.path.dirname(os.path.abspath(__file__))}/../sdp_model/vis_rec_params.json"
+VIS_PARAMS_FILE = (
+    f"{os.path.dirname(os.path.abspath(__file__))}"
+    "/../sdp_model/vis_rec_params.json"
+)
 
 
 def _load_json(json_file):

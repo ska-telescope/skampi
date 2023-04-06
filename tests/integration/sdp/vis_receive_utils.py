@@ -22,7 +22,7 @@ POD_COMMAND = [
     "/bin/bash",
     "-c",
     "apt-get update; apt-get -y install curl;"
-    "curl https://gitlab.com/ska-telescope/sdp/ska-sdp-realtime-receive-core/-/raw/3.6.0/data/AA05LOW.ms.tar.gz "
+    "curl https://gitlab.com/ska-telescope/sdp/ska-sdp-realtime-receive-core/-/raw/3.6.0/data/AA05LOW.ms.tar.gz "  # noqa: E501
     "--output /mnt/data/AA05LOW.ms.tar.gz;"
     "cd /mnt/data/; tar -xzf AA05LOW.ms.tar.gz; cd -;"
     " trap : TERM; sleep infinity & wait",
@@ -37,7 +37,7 @@ DATA_POD_DEF = {
         },  # run as root so that we can download data
         "containers": [
             {
-                "image": "artefact.skao.int/ska-sdp-realtime-receive-modules:3.5.0",
+                "image": "artefact.skao.int/ska-sdp-realtime-receive-modules:3.5.0",  # noqa: E501
                 "name": POD_CONTAINER,
                 "command": POD_COMMAND,
                 "volumeMounts": [{"mountPath": "/mnt/data", "name": "data"}],
@@ -60,7 +60,8 @@ def _k8s_pod_exec(
     """
     Execute a command in a Kubernetes Pod
 
-    :param exec_command: command to be executed (eg ["bash", "-c", tar_command])
+    :param exec_command: command to be executed
+            (eg ["bash", "-c", tar_command])
     :param pod_name: pod name where command is executed
     :param container_name: container name within pod
     :param namespace: namespace where pod is running
@@ -170,7 +171,8 @@ class K8sElementManager:
         :param release: The name of the release
         :param chart: The name of the chart
         :param namespace: The namespace where the chart will be installed
-        :param values_file: A path to file with values to be handed over to the chart
+        :param values_file: A path to file with values to be
+                    handed over to the chart
         """
         cmd = [
             "helm",
@@ -216,7 +218,8 @@ class K8sElementManager:
         """
         Remove the output data directory once the test is finished.
 
-        :param dataproduct_directory: directory where data products are saved by test
+        :param dataproduct_directory:
+                    directory where data products are saved by test
         :param pod_name: name of pod through which we access the data directory
         :param container_name: name of container within pod
         :param namespace: namespace where pod lives
@@ -243,7 +246,8 @@ class K8sElementManager:
         :param container_name: name of container within pod
         :param namespace: namespace where pod lives
 
-        Method assumes that the PVC where data are saved is mounted at /mnt/data/
+        Method assumes that the PVC where data are saved
+            is mounted at /mnt/data/
         """
         del_command = ["rm", "-rf", f"/mnt/data/{dataproduct_directory}"]
         resp = _k8s_pod_exec(del_command, pod_name, container_name, namespace)

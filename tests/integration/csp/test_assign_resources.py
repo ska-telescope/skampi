@@ -78,6 +78,7 @@ def test_abort_in_resourcing_mid(
     """Assign resources to csp subarray in mid."""
 
 
+@pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

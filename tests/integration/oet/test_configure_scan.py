@@ -42,7 +42,9 @@ def test_observing_sbi():
     """
     Given an OET
     Given sub-array is in the ObsState IDLE
-    When I tell the OET to observe using script file:///scripts/observe_mid_sb.py and SBI /tmp/oda/mid_sb_example.json
+    When I tell the OET to observe using script
+     file:///scripts/observe_mid_sb.py
+     and SBI /tmp/oda/mid_sb_example.json
     Then the sub-array goes to ObsState IDLE
     """
 
@@ -62,7 +64,8 @@ def test_oet_configure_scan_on_low_subarray():
 @given("an OET")
 def an_oet(observation_config: Observation):
     """Set up the observation before starting the test"""
-    # This step has to executed before allocated_subarray fixture is used so that
+    # This step has to executed before allocated_subarray
+    # fixture is used so that
     # additional scan types are recognised.
     observation_config.add_scan_type_configuration(
         "science_A", ("vis0", "default_beam_type")
@@ -159,8 +162,9 @@ def when_observe_sbi(
     """
     script_completion_state = "UNKNOWN"
     with context_monitoring.context_monitoring():
-        # Set the timeout here to lower than skallop timeout (300) so that if the script
-        # is stuck, it will be stopped before context monitoring throws a timeout error
+        # Set the timeout here to lower than skallop timeout (300)
+        # so that if the script is stuck, it will be stopped before
+        # context monitoring throws a timeout error
         script_completion_state = EXECUTOR.execute_script(
             script, sb_json, timeout=280
         )
@@ -177,7 +181,7 @@ def the_subarray_must_be_in_the_ready_state(
 ):
     """the subarray must be in the READY state."""
     tel = names.TEL()
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.subarray(sut_settings.subarray_id))
     )
     oet_subarray = con_config.get_device_proxy(
@@ -189,9 +193,10 @@ def the_subarray_must_be_in_the_ready_state(
 
 @then("the OET will execute the script correctly")
 def the_oet_will_execute_the_script_correctly(script_completion_state: str):
-    assert (
-        script_completion_state == "COMPLETE"
-    ), f"Expected observing script to be COMPLETED, instead was {script_completion_state}"
+    assert script_completion_state == "COMPLETE", (
+        "Expected observing script to be COMPLETED, instead was"
+        f" {script_completion_state}"
+    )
 
 
 @then(parsers.parse("the sub-array goes to ObsState {obsstate}"))
@@ -207,7 +212,7 @@ def check_final_subarray_state(
         obsstate (str): Sub-array Tango device ObsState
     """
     tel = names.TEL()
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.subarray(sut_settings.subarray_id))
     )
     subarray = con_config.get_device_proxy(
@@ -215,6 +220,7 @@ def check_final_subarray_state(
     )
     subarray_state = ObsState(subarray.read_attribute("obsState").value).name
     logger.info("Sub-array is in ObsState %s", subarray_state)
-    assert (
-        subarray_state == obsstate
-    ), f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
+    assert subarray_state == obsstate, (
+        f"Expected sub-array to be in {obsstate} but instead was in"
+        f" {subarray_state}"
+    )

@@ -39,7 +39,8 @@ activity_adapter = ActivityAdapter(rest_cli_uri)
 def test_sbi_creation():
     """
     Given the SKUID service is running
-    When I tell the OET to run file:///scripts/create_sbi.py using data/mid_sb_example.json
+    When I tell the OET to run
+     file:///scripts/create_sbi.py using data/mid_sb_example.json
     Then the script completes successfully
     """
 
@@ -55,7 +56,9 @@ def test_resource_allocation():
     """
     Given an OET
     And  sub-array is in ObsState EMPTY
-    When I tell the OET to allocate resources using script file:///scripts/allocate_from_file_mid_sb.py and SBI data/mid_sb_example.json
+    When I tell the OET to allocate resources using
+     script file:///scripts/allocate_from_file_mid_sb.py
+     and SBI data/mid_sb_example.json
     Then the sub-array goes to ObsState IDLE
     """
 
@@ -70,7 +73,8 @@ def test_resource_allocation():
 def test_resource_release():
     """
     Given sub-array with resources allocated to it
-    When I tell the OET to release resources using script git:///scripts/deallocate.py
+    When I tell the OET to release resources
+     using script git:///scripts/deallocate.py
     Then the sub-array goes to ObsState EMPTY
     """
 
@@ -130,14 +134,16 @@ def when_create_sbi(
     """
     with context_monitoring.observe_while_running():
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
-        assert (
-            script_completion_state == "COMPLETE"
-        ), f"Expected SBI creation script to be COMPLETED, instead was {script_completion_state}"
+        assert script_completion_state == "COMPLETE", (
+            "Expected SBI creation script to be COMPLETED, instead was"
+            f" {script_completion_state}"
+        )
 
 
 @when(
     parsers.parse(
-        "I tell the OET to allocate resources using script {script} and SBI {sb_json}"
+        "I tell the OET to allocate resources using script {script} and SBI"
+        " {sb_json}"
     )
 )
 def when_allocate_resources_from_sbi(
@@ -160,9 +166,10 @@ def when_allocate_resources_from_sbi(
             sut_settings.subarray_id, sut_settings.receptors, exec_settings
         )
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
-        assert (
-            script_completion_state == "COMPLETE"
-        ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
+        assert script_completion_state == "COMPLETE", (
+            "Expected resource allocation script to be COMPLETED, instead was"
+            f" {script_completion_state}"
+        )
 
 
 @when(
@@ -182,9 +189,10 @@ def when_release_resources(
     allocated_subarray.disable_automatic_teardown()
     with context_monitoring.context_monitoring():
         script_completion_state = EXECUTOR.execute_script(script)
-        assert (
-            script_completion_state == "COMPLETE"
-        ), f"Expected resource allocation script to be COMPLETED, instead was {script_completion_state}"
+        assert script_completion_state == "COMPLETE", (
+            "Expected resource allocation script to be COMPLETED, instead was"
+            f" {script_completion_state}"
+        )
 
 
 @when("I tell the OET to release resources")
@@ -233,9 +241,10 @@ def check_final_subarray_state(
         tel.tm.subarray(sut_settings.subarray_id)
     )
     subarray_state = ObsState(subarray.read_attribute("obsState").value).name
-    assert (
-        subarray_state == obsstate
-    ), f"Expected sub-array to be in {obsstate} but instead was in {subarray_state}"
+    assert subarray_state == obsstate, (
+        f"Expected sub-array to be in {obsstate} but instead was in"
+        f" {subarray_state}"
+    )
     logger.info("Sub-array is in ObsState %s", obsstate)
 
 
@@ -327,7 +336,6 @@ def i_assign_resources_to_it_low(
     sut_settings: SutTestSettings,
     subarray: SubArray,
 ):
-
     """I assign resources to it in low."""
 
     subarray_id = sut_settings.subarray_id

@@ -14,19 +14,21 @@
             "NODE_VERSION": "none"
         }
     },
-    "mounts": [
-        "source=${localEnv:HOME}${localEnv:USERPROFILE},target=/home/host/,type=bind,consistency=cached",
-        //"source=${localEnv:HOME}${localEnv:USERPROFILE/.kube/,target=/home/node/.kube/,type=bind,consistency=cached"
-    ],
+    //"mounts": [
+    //    "source=${localEnv:HOME}${localEnv:USERPROFILE},target=/home/host/,type=bind,consistency=cached",
+    //    "source=${localEnv:HOME}${localEnv:USERPROFILE/.kube/,target=/home/node/.kube/,type=bind,consistency=cached"
+    //],
     // Set *default* container specific settings.json values on container create.
     "settings": {
+        "workspaceMount": "source=${localWorkspaceFolder},target=/home/host,type=volume",
+        "workspaceFolder": "/workspace",
         "terminal.integrated.shell.linux": "/bin/bash",
         "python.pythonPath": ".venv/bin/python",
         "python.formatting.provider": "black",
         "python.linting.enabled": true,
         "python.linting.flake8Enabled": true,
         "python.testing.pytestArgs": [
-            "./tests/integration/",
+            "./tests/integration/"
         ],
         "python.testing.unittestEnabled": false,
         "python.testing.pytestEnabled": true,
@@ -59,5 +61,6 @@
     // Use 'postCreateCommand' to run commands after the container is created.
     "postCreateCommand": "poetry config virtualenvs.in-project true",
     // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-    "remoteUser": "tango",
+    "remoteUser": "tango"
 }
+

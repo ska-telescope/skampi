@@ -25,7 +25,7 @@ RUN poetry config virtualenvs.in-project true
 
 RUN pip install virtualenv
 
-RUN https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+# RUN https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 ENTRYPOINT ["/bin/bash"]
 

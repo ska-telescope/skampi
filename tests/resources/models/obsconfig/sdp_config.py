@@ -157,9 +157,10 @@ class ScanTypes(TargetSpecs):
     def add_beam_types(
         self, grouping_id: str, beam_types: dict[str, EBScanTypeBeam]
     ):
-        assert self._beam_configurations.get(
-            grouping_id
-        ), f"grouping {grouping_id} does not exist, did you call `add_beam_configuration()`."
+        assert self._beam_configurations.get(grouping_id), (
+            f"grouping {grouping_id} does not exist, did you call"
+            " `add_beam_configuration()`."
+        )
         current_beam_types = self._beam_configurations[grouping_id].types
         current_beam_configuration = self._beam_configurations[
             grouping_id
@@ -180,19 +181,18 @@ class ScanTypes(TargetSpecs):
         ],
         derive_from: str | None = None,
     ):
-
         agg_beam_types: dict[str, EBScanTypeBeam] = dict()
 
         def add_beam(grouping_id: str, beam_type_id: str):
             beam_configuration = self.get_beam_configurations(grouping_id)
             assert beam_configuration, (
-                f"Beam grouping {grouping_id} does not exist, did you add a beam configuration"
-                " by calling `add_beam_configuration'"
+                f"Beam grouping {grouping_id} does not exist, did you add a"
+                " beam configuration by calling `add_beam_configuration'"
             )
             beam_type = beam_configuration.types.get(beam_type_id)
             assert beam_type, (
-                f"Beam type {beam_type_id} does not exist, did you add a beam configuration"
-                " by calling `add_beam_configuration'"
+                f"Beam type {beam_type_id} does not exist, did you add a beam"
+                " configuration by calling `add_beam_configuration'"
             )
             return {grouping_id: beam_type}
 
@@ -203,8 +203,9 @@ class ScanTypes(TargetSpecs):
             for beam_grouping_id, beam_types in beams.items():
                 beam_grouping = self._beam_configurations.get(beam_grouping_id)
                 assert beam_grouping, (
-                    f"beam configuration {beam_grouping_id} does not exist,"
-                    "you first need to create a beam configuration by calling `add_beam_configuration'"
+                    f"beam configuration {beam_grouping_id} does not exist,you"
+                    " first need to create a beam configuration by calling"
+                    " `add_beam_configuration'"
                 )
                 agg_beam_types = {**agg_beam_types, **beam_types}
         elif isinstance(beams, tuple):
@@ -298,7 +299,7 @@ class Polarisations(TargetSpecs):
             self.polarizations = {
                 **self.polarizations,
                 **{
-                    additional_polarization.polarisations_id: additional_polarization
+                    additional_polarization.polarisations_id: additional_polarization  # noqa: E501
                     for additional_polarization in additional_polarizations
                 },
             }
@@ -385,7 +386,6 @@ class ProcessingSpecs(TargetSpecs):
         script_kind: str = "realtime",
         parameters: dict[Any, Any] | None = None,
     ):
-
         assert (
             self._processing_specs.get(spec_name) is None
         ), f"The processing spec {spec_name}already exists"

@@ -99,14 +99,16 @@ class ScriptExecutor:
             if procedure.state == "FAILED":
                 stacktrace = procedure.history["stacktrace"]
                 LOGGER.info(
-                    f"Script {procedure.script['script_uri']} (PID={pid}) failed. Stacktrace follows:"
+                    f"Script {procedure.script['script_uri']} (PID={pid})"
+                    " failed. Stacktrace follows:"
                 )
                 LOGGER.exception(stacktrace)
                 return procedure.state
 
             if procedure.state == state:
                 LOGGER.info(
-                    f"Script {procedure.script['script_uri']} state changed to {state}"
+                    f"Script {procedure.script['script_uri']} state changed to"
+                    f" {state}"
                 )
                 return procedure.state
 
@@ -137,11 +139,13 @@ class ScriptExecutor:
             the script execution is started
             timeout: Timeout (~seconds) for how long to wait for script
             stages to complete
-            script_create_kwargs: Any keyword arguments (e.g. git related args) to pass to
+            script_create_kwargs: Any keyword arguments
+             (e.g. git related args) to pass to
             OET rest server when creating the script
 
         Returns:
-            state (str): The OET state for the script after execution (eg 'COMPLETE')
+            state (str): The OET state for the script
+             after execution (eg 'COMPLETE')
             None if something goes wrong.
         """
         LOGGER.info(f"Running script {script}")

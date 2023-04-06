@@ -1,4 +1,6 @@
-"""Pytest fixtures and bdd step implementations specific to sdp integration tests."""
+"""
+Pytest fixtures and bdd step implementations specific to sdp integration tests
+"""
 import os
 
 import pytest
@@ -40,7 +42,10 @@ def fxt_set_entry_point(
     update_sut_settings,
     sut_settings: conftest.SutTestSettings,
 ):
-    """Fixture to use for setting up the entry point as from only the interface to sdp."""
+    """
+    Fixture to use for setting up the entry point as
+    from only the interface to sdp.
+    """
     exec_env = set_session_exec_env
     if not sut_settings.mock_sut:
         SDPEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
@@ -57,7 +62,10 @@ def fxt_set_entry_point(
 
 @pytest.fixture(name="setup_sdp_mock")
 def fxt_setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
-    """Fixture to use for injecting a mocked entrypoint for sdp in stead of the real one."""
+    """
+    Fixture to use for injecting a mocked entrypoint for
+    sdp in stead of the real one.
+    """
     setup_sdp_mock(mock_entry_point)
 
 

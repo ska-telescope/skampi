@@ -100,7 +100,7 @@ def run_startup_script(
     script,
     standby_telescope: fxt_types.standby_telescope,
     integration_test_exec_settings: fxt_types.exec_settings,
-    observe_csp_during_on_of,  # type: ignore
+    observe_csp_during_on_of,
     context_monitoring: fxt_types.context_monitoring,
 ):
     """
@@ -117,9 +117,10 @@ def run_startup_script(
         script_completion_state = EXECUTOR.execute_script(
             script=script, timeout=30
         )
-        assert (
-            script_completion_state == "COMPLETE"
-        ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
+        assert script_completion_state == "COMPLETE", (
+            "Expected script to be COMPLETE, instead was"
+            f" {script_completion_state}"
+        )
         # after success we marked the telescope state to be ON
         standby_telescope.state = "ON"
 
@@ -146,9 +147,10 @@ def run_standby_script(
             script_completion_state = EXECUTOR.execute_script(
                 script=script, timeout=30
             )
-        assert (
-            script_completion_state == "COMPLETE"
-        ), f"Expected script to be COMPLETE, instead was {script_completion_state}"
+        assert script_completion_state == "COMPLETE", (
+            "Expected script to be COMPLETE, instead was"
+            f" {script_completion_state}"
+        )
 
 
 @when(parsers.parse("I turn telescope to ON state"))

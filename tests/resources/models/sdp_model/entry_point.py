@@ -61,7 +61,10 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         sdp_master.command_inout("On")
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifying what needs to be waited for before startup of sdp is done."""
+        """
+        Domain logic specifying what needs to be waited
+        for before startup of sdp is done.
+        """
         brd = get_message_board_builder()
 
         brd.set_waiting_on(self._tel.sdp.master).for_attribute(
@@ -80,12 +83,15 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         Not implemented.
 
         Raises:
-            NotImplementedError: Raises the error when implementation is not done.
+            NotImplementedError:
+             Raises the error when implementation is not done.
         """
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic for what needs to be waited for switching the sdp off."""
+        """
+        Domain logic for what needs to be waited for switching the sdp off.
+        """
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.sdp.master).for_attribute(
             "state"
@@ -158,7 +164,9 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         subarray.command_inout("ReleaseAllResources")
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray assign resources is done.
+        """
+        Domain logic specifying what needs to be waited for
+        subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -172,7 +180,9 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
     def set_wait_for_doing(
         self, sub_array_id: int
     ) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+        """
+        Domain logic specifyig what needs to be done for waiting
+        for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -183,7 +193,9 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         return brd
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray releasing resources is done.
+        """
+        Domain logic specifying what needs to be waited
+        for subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -221,7 +233,8 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         :param composition: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        # scan duration needs to be a memorised for future objects that mnay require it
+        # scan duration needs to be a memorised for future
+        # objects that mnay require it
         Memo(scan_duration=duration)
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -245,7 +258,9 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for configuring a scan is done.
+        """
+        Domain logic specifying what needs to be waited
+        for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -259,7 +274,9 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for a subarray to be in a state of configuring.
+        """
+        Domain logic specifying what needs to be waited for
+        a subarray to be in a state of configuring.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -273,7 +290,9 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray clear scan config is done.
+        """
+        Domain logic specifying what needs to be waited
+        for subarray clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
@@ -338,7 +357,9 @@ class SDPScanStep(base.ScanStep, LogEnabled):
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+        """
+        Domain logic specifyig what needs to be done for waiting
+        for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -412,7 +433,8 @@ class SDPObsResetStep(ObsResetStep, LogEnabled):
         return builder
 
     def do(self, sub_array_id: int):
-        """Domain logic specifying what needs to be waited for obsreset is done.
+        """
+        Domain logic specifying what needs to be waited for obsreset is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -422,7 +444,8 @@ class SDPObsResetStep(ObsResetStep, LogEnabled):
         subarray.command_inout("Obsreset")
 
     def undo(self, sub_array_id: int):
-        """Domain logic for releasing resources on a subarray in sdp.
+        """
+        Domain logic for releasing resources on a subarray in sdp.
 
         This implments the tear_down_subarray method on the entry_point.
 
@@ -434,7 +457,9 @@ class SDPObsResetStep(ObsResetStep, LogEnabled):
         subarray.command_inout("ReleaseAllResources")
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray releasing resources is done.
+        """
+        Domain logic specifying what needs to be waited
+        for subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """

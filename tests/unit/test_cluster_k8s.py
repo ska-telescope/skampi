@@ -113,7 +113,8 @@ def fxt_test_namespace(manifest):
             logging.info(f"Namespace {namespace.metadata.name} created")
         else:
             logging.info(
-                f"Namespace {_namespace} already existed - bad sign for test setup"
+                f"Namespace {_namespace} already existed - bad sign for test"
+                " setup"
             )
 
     else:
@@ -156,7 +157,8 @@ def fxt_pvc(test_namespace):
         namespace=test_namespace
     )
     logging.info(
-        f"PVC {pvcs.items[0].metadata.name} currently {pvcs.items[0].status.phase}"
+        f"PVC {pvcs.items[0].metadata.name} currently"
+        f" {pvcs.items[0].status.phase}"
     )
     assert len(pvcs.items) == 1
 
@@ -172,7 +174,6 @@ def fxt_pvc(test_namespace):
 def fxt_deployments_and_services(
     test_namespace, manifest, persistentvolumeclaim
 ):
-
     logging.info(f"Creating resources in namespace: {test_namespace}")
     k_cmd = [
         "kubectl",
@@ -278,7 +279,8 @@ def fxt_create_ingress(test_namespace, assets_dir):
     assert destroy_ingress.returncode == 0
 
 
-# TODO: PATCH THE INGRESS RESOURCE SO THAT IT IS CREATED WITH NAMESPACED HOSTNAME
+# TODO: PATCH THE INGRESS RESOURCE SO THAT
+# IT IS CREATED WITH NAMESPACED HOSTNAME
 def write_to_volume(
     write_service_name, test_namespace, all_the_things, ingress
 ):
@@ -359,7 +361,8 @@ def wait_for_pod(test_namespace, service_name):
                 if wait_for_seconds > 10:
                     break
                 logging.info(
-                    f"{item.metadata.name} not yet ready, waiting for {wait_for_seconds}"
+                    f"{item.metadata.name} not yet ready, waiting for"
+                    f" {wait_for_seconds}"
                 )
                 continue
 

@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
-@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -29,7 +28,6 @@ def test_assign_resources_to_tmc_subarray_in_low():
     """Assign resources to tmc subarray in low."""
 
 
-@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

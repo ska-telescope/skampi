@@ -264,7 +264,6 @@ def test_oet__scripting_resource_allocation():
     """
 
 
-@pytest.mark.skip
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.assign
@@ -282,7 +281,6 @@ def test_oet_scripting_resource_allocation_in_low():
     """
 
 
-@pytest.mark.skip
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.k8s

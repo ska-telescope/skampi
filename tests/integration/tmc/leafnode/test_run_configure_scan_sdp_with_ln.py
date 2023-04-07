@@ -18,7 +18,6 @@ def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid using the leaf node."""
 
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.configure
 @scenario(

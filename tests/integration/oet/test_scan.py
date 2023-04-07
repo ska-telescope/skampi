@@ -51,6 +51,22 @@ def test_multiple_scans_on_tmc_subarray_in_low():
 def test_multiple_scans_on_tmc_subarray_in_low_for_different_scantype():
     """Run multiple scans on TMC subarray in low for different scan type from OET"""
 
+@pytest.mark.k8s
+@pytest.mark.oet
+@pytest.mark.scan
+@pytest.mark.skamid
+@scenario("features/oet_multi_scan.feature", "Run multiple scans on mid subarray for same scan type from OET")
+def test_oet_multi_scan_on_mid_subarray():
+    """Run multiple scans on mid subarray for same scan type from OET."""
+
+@pytest.mark.k8s
+@pytest.mark.oet
+@pytest.mark.skamid
+@pytest.mark.scanning
+@scenario("features/oet_multi_scan.feature","Run multiple scans on mid subarray for different scan type from OET")
+def test_oet_multi_scan_on_mid_subarray_for_different_scantype():
+    """Run multiple scans on mid subarray for different scan type from OET"""
+
 @given("an OET")
 def a_oet():
     """an OET"""

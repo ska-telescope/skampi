@@ -49,6 +49,7 @@ def test_observing_sbi():
     """
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

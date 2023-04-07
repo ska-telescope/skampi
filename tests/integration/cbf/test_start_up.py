@@ -43,7 +43,8 @@ def fxt_set_up_transit_checking_for_cbf(
     # only do this for skamid as no inner devices used for low
     if tel.skamid:
         if os.getenv("DEVENV"):
-            # only do transit checking in dev as timeout problems can lead to false positives
+            # only do transit checking in dev as timeout problems
+            # can lead to false positives
             devices_to_follow = cast(List, [tel.csp.cbf.subarray(1)])
             subject_device = tel.csp.cbf.controller
             transit_checking.check_that(subject_device).transits_according_to(

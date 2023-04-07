@@ -70,7 +70,7 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
     ).to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         tmc_subarray_name
     )
     result = tmc_subarray.read_attribute("obsstate").value

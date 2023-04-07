@@ -31,7 +31,7 @@ class StartUpLnStep(StartUpStep):
 
     def __init__(self, nr_of_subarrays: int) -> None:
         super().__init__(nr_of_subarrays)
-        self._csp_master_ln_name = self._tel.tm.csp_leaf_node  # type: ignore
+        self._csp_master_ln_name = self._tel.tm.csp_leaf_node
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to CSP LN.
@@ -39,13 +39,13 @@ class StartUpLnStep(StartUpStep):
         This implements the set_telescope_to_running method on the entry_point.
         """
         self._log(f"commanding {self._csp_master_ln_name} to On")
-        csp_master_ln = con_config.get_device_proxy(self._csp_master_ln_name)  # type: ignore
+        csp_master_ln = con_config.get_device_proxy(self._csp_master_ln_name)
         csp_master_ln.command_inout("On")
 
     def undo(self):
         """Domain logic for switching the CSP LN off."""
         self._log(f"commanding {self._csp_master_ln_name} to Off")
-        csp_master_ln = con_config.get_device_proxy(self._csp_master_ln_name)  # type: ignore
+        csp_master_ln = con_config.get_device_proxy(self._csp_master_ln_name)
         csp_master_ln.command_inout("Off")
 
 
@@ -73,25 +73,28 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         """
 
         try:
-            csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
-            csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+            csp_subarray_ln_name = self._tel.tm.subarray(
+                sub_array_id
+            ).csp_leaf_node
+            csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
             if self._tel.skamid:
                 config = self.observation.generate_assign_resources_config(
                     sub_array_id
                 ).as_json
             elif self._tel.skalow:
-                # TODO Low json from CDM is not available. Once it is available pull json from CDM
+                # TODO Low json from CDM is not available.
+                # Once it is available pull json from CDM
 
                 config_json = copy.deepcopy(ASSIGN_RESOURCE_CSP_JSON_LOW)
                 config = json.dumps(config_json)
 
             logger.info(
-                f"commanding {csp_subarray_ln_name} with AssignResources: {config} "
+                f"commanding {csp_subarray_ln_name} with AssignResources:"
+                f" {config} "
             )
             csp_subarray_ln.command_inout("AssignResources", config)
 
         except Exception as exception:
-
             logger.exception(exception)
             raise exception
 
@@ -102,8 +105,10 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
-        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+        csp_subarray_ln_name = self._tel.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
+        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         self._log(f"Commanding {csp_subarray_ln_name} to ReleaseAllResources")
         csp_subarray_ln.command_inout("ReleaseAllResources")
 
@@ -128,10 +133,13 @@ class CspLnConfigureStep(CspConfigureStep):
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        # scan duration needs to be a memorized for future objects that many require it
+        # scan duration needs to be a memorized for future objects
+        # that many require it
         Memo(scan_duration=duration)
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
-        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+        csp_subarray_ln_name = self._tel.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
+        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         if self._tel.skamid:
             config = self.observation.generate_scan_config_parsed_for_csp(
                 scan_duration=duration
@@ -152,8 +160,10 @@ class CspLnConfigureStep(CspConfigureStep):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
-        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+        csp_subarray_ln_name = self._tel.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
+        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         self._log(f"commanding {csp_subarray_ln_name} with the End command")
         csp_subarray_ln.command_inout("End")
 
@@ -173,8 +183,10 @@ class CSPLnScanStep(CspScanStep):
         """
         # scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node  # type: ignore
-        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)  # type: ignore
+        csp_subarray_ln_name = self._tel.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
+        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
 
         if self._tel.skamid:
             csp_run_scan_config = (
@@ -185,7 +197,8 @@ class CSPLnScanStep(CspScanStep):
             csp_run_scan_config = copy.deepcopy(SCAN_CSP_JSON_LOW)
 
         self._log(
-            f"Commanding {csp_subarray_ln_name} to Scan with {csp_run_scan_config}"
+            f"Commanding {csp_subarray_ln_name} to Scan with"
+            f" {csp_run_scan_config}"
         )
         try:
             csp_subarray_ln.command_inout(
@@ -214,7 +227,8 @@ class CSPLnScanStep(CspScanStep):
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifying what needs to be done for waiting for subarray to be scanning.
+        """Domain logic specifying what needs to be done for waiting
+        for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -267,7 +281,9 @@ configure_csp = {
         "subarray_id": "1",
     },
     "cbf": {
-        "delay_model_subscription_point": "ska_mid/tm_leaf_node/csp_subarray01/delayModel",
+        "delay_model_subscription_point": (
+            "ska_mid/tm_leaf_node/csp_subarray01/delayModel"
+        ),
         "fsp": [
             {
                 "fsp_id": 1,

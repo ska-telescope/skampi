@@ -68,7 +68,9 @@ def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
 
 @pytest.fixture(name="sut_settings", scope="function", autouse=True)
 def fxt_conftest_settings() -> SutTestSettings:
-    """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
+    """
+    Fixture to use for setting env like  SUT settings for fixtures in conftest
+    """
     return SutTestSettings()
 
 
@@ -116,7 +118,7 @@ def fxt_run_mock_wrapper(
             "ska_ser_skallop.mvp_fixtures.fixtures.TransitChecking"
         ) as transit_checking_mock:
             transit_checking_mock.return_value.checker = Mock(unsafe=True)
-            mock_test(request, _pytest_bdd_example)  # type: ignore
+            mock_test(request, _pytest_bdd_example)
 
     return run_mock
 
@@ -196,7 +198,6 @@ ObservationConfigInterjector = Callable[
 def fxt_observation_config_interjector(
     observation_config: Observation, mocked_observation_config: Mock
 ) -> ObservationConfigInterjector[P, R]:
-
     obs = observation_config
 
     def interject_observation_method(
@@ -264,10 +265,12 @@ def i_switch_off_the_telescope(
             entry_point.set_telescope_to_standby()
 
 
-# Currently, resources_list is not utilised, raised SKB for the same:https://jira.skatelescope.org/browse/SKB-202
+# Currently, resources_list is not utilised, raised SKB for the same:
+# https://jira.skatelescope.org/browse/SKB-202
 @when(
     parsers.parse(
-        "I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"
+        "I issue the assignResources command with the {resources_list} to the"
+        " subarray {subarray_id}"
     )
 )
 def assign_resources_with_subarray_id(
@@ -398,18 +401,20 @@ def an_subarray_busy_assigning(
 ):
     """an subarray busy assigning"""
 
-    """Create a subarray but block only until it is in RESOURCING.
+    """Create a subarray but block only until it is in RESOURCING
 
     :param subarray_id: the identification nr for the subarray
-    :param receptors: the receptors that will be used for the subarray.
-        If none is given it will use a default set of two receptors 1 and 2.
-    :param sb_config: The SB configuration to use as context, defaults to SBConfig()
-    :param settings: the execution settings to use during the IO calls., defaults to
-        ExecSettings()
-    :param composition: The type of composition configuration to use.
-        , defaults to conf_types.Composition( conf_types.CompositionType.STANDARD )
+    :param receptors: the receptors that will be used for the subarray
+        If none is given it will use a default set of two receptors 1 and 2
+    :param sb_config: The SB configuration to use as context
+        defaults to SBConfig()
+    :param settings: the execution settings to use during the IO calls
+        defaults to ExecSettings()
+    :param composition: The type of composition configuration to use
+        , defaults to conf_types.Composition
+        ( conf_types.CompositionType.STANDARD )
     :type composition: conf_types.Composition, optional
-    :return: A subarray context manager to ue for subsequent commands.
+    :return: A subarray context manager to ue for subsequent commands
     """
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors

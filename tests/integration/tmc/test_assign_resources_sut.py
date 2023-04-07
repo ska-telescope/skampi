@@ -53,7 +53,8 @@ def subarray_obstate_is_empty(
 
 
 # using when from conftest
-# @when("I issue the assignResources command with the {resources_list} to the subarray {subarray_id}")
+# @when("I issue the assignResources command with the
+#  {resources_list} to the subarray {subarray_id}")
 
 
 @then(parsers.parse("the subarray {subarray_id} obsState is IDLE"))

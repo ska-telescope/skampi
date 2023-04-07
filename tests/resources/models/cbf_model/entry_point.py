@@ -57,10 +57,13 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 subarray = con_config.get_device_proxy(
                     self._tel.csp.cbf.subarray(index)
                 )
-                subarray.command_inout(("On"))
+                subarray.command_inout("On")
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifying what needs to be waited for before startup of cbf is done."""
+        """
+        Domain logic specifying what needs to be waited
+        for before startup of cbf is done.
+        """
         brd = get_message_board_builder()
 
         brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
@@ -80,12 +83,15 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         Not implemented.
 
         Raises:
-            NotImplementedError: Raises the error when implementation is not done.
+            NotImplementedError: Raises the error
+             when implementation is not done.
         """
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic for what needs to be waited for switching the sdp off."""
+        """
+        Domain logic for what needs to be waited for switching the sdp off.
+        """
         brd = get_message_board_builder()
         if self._tel.skamid:
             brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
@@ -149,7 +155,8 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             subarray = con_config.get_device_proxy(subarray_name)
             cbf_low_configuration = json.dumps(cbf_low_assign_resources)
             self._log(
-                f"commanding {subarray_name} with AssignResources: {cbf_low_configuration} "
+                f"commanding {subarray_name} with AssignResources:"
+                f" {cbf_low_configuration} "
             )
             subarray.command_inout("AssignResources", cbf_low_configuration)
 
@@ -172,7 +179,9 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             subarray.command_inout("ReleaseAllResources")
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray assign resources is done.
+        """
+        Domain logic specifying what needs to be waited for
+        subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -189,12 +198,15 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         Not implemented.
 
         Raises:
-            NotImplementedError: Raises the error when implementation is not done.
+            NotImplementedError: Raises the error
+             when implementation is not done.
         """
         raise NotImplementedError()
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray releasing resources is done.
+        """
+        Domain logic specifying what needs to be waited for
+        subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -250,7 +262,8 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
                 {"cbf": cbf_config, "common": common}
             )
             self._log(
-                f"commanding {subarray_name} with ConfigureScan: {cbf_standard_configuration} "
+                f"commanding {subarray_name} with ConfigureScan:"
+                f" {cbf_standard_configuration} "
             )
             subarray.command_inout("ConfigureScan", cbf_standard_configuration)
         if self._tel.skalow:
@@ -258,7 +271,8 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
             subarray = con_config.get_device_proxy(subarray_name)
             cbf_low_configuration = json.dumps(cbf_low_configure_scan)
             self._log(
-                f"commanding {subarray_name} with ConfigureScan: {cbf_low_configuration} "
+                f"commanding {subarray_name} with ConfigureScan:"
+                f" {cbf_low_configuration} "
             )
             subarray.command_inout("ConfigureScan", cbf_low_configuration)
 
@@ -277,7 +291,9 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for configuring a scan is done.
+        """
+        Domain logic specifying what needs to be waited
+        for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -295,14 +311,17 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         Not implemented.
 
         Raises:
-            NotImplementedError: Raises the error when implementation is not done.
+            NotImplementedError: Raises the error when
+            implementation is not done.
         """
         raise NotImplementedError()
 
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray clear scan config is done.
+        """
+        Domain logic specifying what needs to be waited for
+        subarray clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
@@ -376,7 +395,9 @@ class CbfScanStep(base.ScanStep, LogEnabled):
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+        """
+        Domain logic specifyig what needs to be done for waiting
+        for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -469,7 +490,8 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
         Not implemented.
 
         Raises:
-            NotImplementedError: Raises the error when implementation is not done.
+            NotImplementedError: Raises the error when
+            implementation is not done.
         """
         raise NotImplementedError()
 
@@ -548,7 +570,9 @@ cbf_low_configure_scan = {
                 "pst_beams": [
                     {
                         "pst_beam_id": 1,
-                        "pst_beam_delay_src": "tango://host:port/domain/family/member",
+                        "pst_beam_delay_src": (
+                            "tango://host:port/domain/family/member"
+                        ),
                         "pst_beam_dest": [
                             {
                                 "dest_ip": "10.0.3.1",

@@ -33,7 +33,7 @@ def a_csp():
 
 
 @given("a TMC CSP subarray Leaf Node", target_fixture="configuration")
-def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):  # type: ignore
+def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
     """a tmc CSP subarray leaf node."""
 
 

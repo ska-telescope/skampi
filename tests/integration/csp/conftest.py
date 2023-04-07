@@ -1,4 +1,6 @@
-"""Pytest fixtures and bdd step implementations specific to csp integration tests."""
+"""
+Pytest fixtures and bdd step implementations specific to csp integration tests.
+"""
 import logging
 import os
 from typing import Callable
@@ -25,8 +27,10 @@ def fxt_nr_of_subarrays() -> int:
     :return: _description_
     :rtype: int
     """
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
-    # cbf mid only controls the state of subarray 1 so will also limit to 1
+    # we only work with 1 subarray as CBF low currently limits
+    # deployment of only 1
+    # cbf mid only controls the state of subarray 1
+    # so will also limit to 1
     tel = names.TEL()
     if tel.skalow:
         return 1

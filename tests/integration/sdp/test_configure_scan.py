@@ -42,12 +42,12 @@ def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid."""
 
 
-# @pytest.mark.skalow
-# @pytest.mark.configure
-# @pytest.mark.sdp
-# @scenario("features/sdp_configure_scan.feature", "Abort configuring SDP Low")
-# def test_abort_configuring_sdp_low(set_up_subarray_log_checking_for_csp: Non
-#     """Abort in configuring obstate."""
+@pytest.mark.skalow
+@pytest.mark.configure
+@pytest.mark.sdp
+@scenario("features/sdp_configure_scan.feature", "Abort configuring SDP Low")
+def test_abort_configuring_sdp_low(set_up_subarray_log_checking_for_sdp: None):
+    """Abort in configuring obstate."""
 
 
 # use from local conftest

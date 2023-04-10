@@ -2,7 +2,7 @@ import logging
 
 import pytest
 from assertpy import assert_that
-from pytest_bdd import given, scenario, then, when, parsers
+from pytest_bdd import given, parsers, scenario, then, when
 from resources.models.mvp_model.configuration import SKAScanConfiguration
 from resources.models.mvp_model.env import Observation
 from resources.models.mvp_model.states import ObsState
@@ -15,7 +15,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import (
     fxt_types,
 )
 
-from .. import conftest
+from ..conftest import SutTestSettings
 
 """
 test_XTP-18866
@@ -87,7 +87,7 @@ def an_subarray_that_has_just_completed_its_first_scan(
 def a_low_subarray_in_ready_state(
     base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-    sut_settings: conftest.SutTestSettings,
+    sut_settings: SutTestSettings,
 ) -> conf_types.ScanConfiguration:
     """a subarray in READY state"""
     subarray_allocation_spec.receptors = sut_settings.receptors
@@ -99,7 +99,7 @@ def i_command_it_to_scan_low(
     configured_subarray: fxt_types.configured_subarray,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
-    sut_settings: conftest.SutTestSettings,
+    sut_settings: SutTestSettings,
 ):
     """I configure it for a scan."""
     subarray_id = sut_settings.subarray_id
@@ -175,7 +175,7 @@ def a_subarray_configured_for_scan_type(
     scan_type: str,
     factory_configured_subarray: fxt_types.factory_configured_subarray,
     observation_config: Observation,
-    sut_settings: conftest.SutTestSettings,
+    sut_settings: SutTestSettings,
     scan_targets: dict[str, str],
 ):
     """a subarray configured for scan type {scan_type}"""

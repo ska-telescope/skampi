@@ -2,12 +2,12 @@
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from resources.models.mvp_model.states import ObsState
+
 from ..conftest import SutTestSettings
 
 
@@ -42,7 +42,8 @@ def fxt_disable_abort(allocated_subarray: fxt_types.allocated_subarray):
 
 @pytest.fixture(name="setup_monitoring_for_config_abort")
 def fxt_setup_monitoring_for_config_abort(
-    context_monitoring: fxt_types.context_monitoring, sut_settings: SutTestSettings
+    context_monitoring: fxt_types.context_monitoring,
+    sut_settings: SutTestSettings,
 ):
     tel = names.TEL()
     sub_id = sut_settings.subarray_id
@@ -52,7 +53,6 @@ def fxt_setup_monitoring_for_config_abort(
     context_monitoring.set_waiting_on(tel.sdp.subarray(sub_id)).for_attribute(
         "obsstate"
     ).and_observe()
-
 
 
 @pytest.mark.skamid
@@ -97,7 +97,7 @@ def the_subarray_must_be_in_the_ready_state(
 ):
     """the subarray must be in the READY state."""
     tel = names.TEL()
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.subarray(sut_settings.subarray_id))
     )
     tmc_subarray = con_config.get_device_proxy(

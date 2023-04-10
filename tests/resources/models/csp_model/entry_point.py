@@ -16,9 +16,8 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
-from ..obsconfig.config import Observation
 from ..mvp_model.states import ObsState
-
+from ..obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +44,9 @@ class StartUpStep(base.ObservationStep, LogEnabled):
     def __init__(self, nr_of_subarrays: int) -> None:
         super().__init__()
         self.nr_of_subarrays = nr_of_subarrays
-        self.csp_controller = con_config.get_device_proxy(self._tel.csp.controller)
+        self.csp_controller = con_config.get_device_proxy(
+            self._tel.csp.controller
+        )
 
     def do(self):
         """Domain logic for starting up a telescope on the interface to csp.
@@ -55,18 +56,23 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         self.csp_controller.command_inout("On", [])
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifying what needs to be waited for before startup of csp is done."""
+        """
+        Domain logic specifying what needs to be waited
+        for before startup of csp is done.
+        """
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
             "state"
         ).to_become_equal_to("ON", ignore_first=False)
-        # Note we do not wait for controller on skalow as it seems it does not change state
-        # subarrays
+        # Note we do not wait for controller on skalow as
+        # it seems it does not change state subarrays
         if self._tel.skamid:
             # we wait for cbf vccs to be in proper initialised state
             brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
                 "reportVccState"
-            ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
+            ).to_become_equal_to(
+                ["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False
+            )
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
@@ -74,11 +80,19 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when
+             implementation is not done.
+        """
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic for what needs to be waited for switching the csp off."""
+        """
+        Domain logic for what needs to be waited for switching the csp off.
+        """
         brd = get_message_board_builder()
         # controller
         # the low telescope does not switch off so there is no wait
@@ -88,9 +102,11 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             ).to_become_equal_to("OFF", ignore_first=False)
             # subarrays
             for index in range(1, self.nr_of_subarrays + 1):
-                brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
-                    "state"
-                ).to_become_equal_to("OFF", ignore_first=False)
+                brd.set_waiting_on(
+                    self._tel.csp.subarray(index)
+                ).for_attribute("state").to_become_equal_to(
+                    "OFF", ignore_first=False
+                )
         return brd
 
     def undo(self):
@@ -128,15 +144,20 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             subarray = con_config.get_device_proxy(subarray_name)
             csp_low_configuration = json.dumps(csp_low_assign_resources)
             self._log(
-                f"commanding {subarray_name} with AssignResources: {csp_low_configuration} "
+                f"commanding {subarray_name} with AssignResources:"
+                f" {csp_low_configuration} "
             )
             subarray.set_timeout_millis(6000)
             subarray.command_inout("AssignResources", csp_low_configuration)
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            config = self.observation.generate_assign_resources_config().as_json
-            self._log(f"commanding {subarray_name} with AssignResources: {config} ")
+            config = (
+                self.observation.generate_assign_resources_config().as_json
+            )
+            self._log(
+                f"commanding {subarray_name} with AssignResources: {config} "
+            )
             subarray.set_timeout_millis(6000)
             subarray.command_inout("AssignResources", config)
 
@@ -154,7 +175,9 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         subarray.command_inout("ReleaseAllResources")
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray assign resources is done.
+        """
+        Domain logic specifying what needs to be waited
+        for subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -176,7 +199,9 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         return brd
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray releasing resources is done.
+        """
+        Domain logic specifying what needs to be waited for
+        subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -215,29 +240,35 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         :param composition: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        # scan duration needs to be a memorised for future objects that mnay require it
+        # scan duration needs to be a memorised for
+        # future objects that mnay require it
         Memo(scan_duration=duration)
         if self._tel.skalow:
             subarray_name = self._tel.skalow.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
             cbf_low_configuration = json.dumps(csp_low_configure_scan)
             self._log(
-                f"commanding {subarray_name} with Configure: {cbf_low_configuration} "
+                f"commanding {subarray_name} with Configure:"
+                f" {cbf_low_configuration} "
             )
             subarray.set_timeout_millis(6000)
             subarray.command_inout("Configure", cbf_low_configuration)
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            csp_mid_configuration = self.observation.generate_csp_scan_config().as_json
+            csp_mid_configuration = (
+                self.observation.generate_csp_scan_config().as_json
+            )
             self._log(
-                f"commanding {subarray_name} with Configure: {csp_mid_configuration} "
+                f"commanding {subarray_name} with Configure:"
+                f" {csp_mid_configuration} "
             )
             subarray.set_timeout_millis(6000)
             subarray.command_inout("Configure", csp_mid_configuration)
 
     def undo(self, sub_array_id: int):
-        """Domain logic for clearing configuration on a subarray in csp.
+        """
+        Domain logic for clearing configuration on a subarray in csp.
 
         This implments the clear_configuration method on the entry_point.
 
@@ -251,7 +282,9 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for configuring a scan is done.
+        """
+        Domain logic specifying what needs to be waited
+        for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -265,7 +298,9 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for a subarray to be in a state of configuring.
+        """
+        Domain logic specifying what needs to be waited
+        for a subarray to be in a state of configuring.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -279,7 +314,9 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray clear scan config is done.
+        """
+        Domain logic specifying what needs to be waited for
+        subarray clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
@@ -308,6 +345,9 @@ class CspScanStep(base.ScanStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+
+        Raises:
+            Exception: Raise exception in do method of scan command
         """
         if self._tel.skalow:
             scan_config_arg = json.dumps(csp_low_scan)
@@ -345,7 +385,9 @@ class CspScanStep(base.ScanStep, LogEnabled):
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+        """
+        Domain logic specifyig what needs to be done for
+        waiting for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -400,9 +442,9 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
             builder.set_waiting_on(subarray).for_attribute(
                 "adminMode"
             ).to_become_equal_to("ONLINE", ignore_first=False)
-            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
-                ["OFF", "ON"], ignore_first=False
-            )
+            builder.set_waiting_on(subarray).for_attribute(
+                "state"
+            ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
         return builder
 
     def undo(self):
@@ -414,7 +456,9 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.csp.subarray(index)
             subarray = con_config.get_device_proxy(subarray_name)
-            self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
+            self._log(
+                f"Setting adminMode for {subarray_name} to '1' (OFFLINE)"
+            )
             subarray.write_attribute("adminmode", 1)
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
@@ -432,7 +476,13 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         return builder
 
     def set_wait_for_doing(self) -> MessageBoardBuilder:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when
+            implementation is not done.
+        """
         raise NotImplementedError()
 
 
@@ -452,7 +502,9 @@ class CSPAbortStep(base.AbortStep, LogEnabled):
         self._log(f"commanding {subarray_name} with Abort command")
         subarray.command_inout("Abort")
 
-    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_do(
+        self, sub_array_id: int
+    ) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifying what needs to be waited for abort is done.
 
         :param sub_array_id: The index id of the subarray to control
@@ -472,7 +524,8 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
-        """Domain logic for running a obsreset on subarray in csp.
+        """
+        Domain logic for running a obsreset on subarray in csp.
 
         This implments the scan method on the entry_point.
 
@@ -486,7 +539,8 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         return builder
 
     def do(self, sub_array_id: int):
-        """Domain logic specifying what needs to be waited for obsreset is done.
+        """
+        Domain logic specifying what needs to be waited for obsreset is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -496,7 +550,8 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         subarray.command_inout("Obsreset")
 
     def undo(self, sub_array_id: int):
-        """Domain logic for releasing resources on a subarray in csp.
+        """
+        Domain logic for releasing resources on a subarray in csp.
 
         This implments the tear_down_subarray method on the entry_point.
 
@@ -509,7 +564,9 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         subarray.command_inout("ReleaseAllResources")
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray releasing resources is done.
+        """
+        Domain logic specifying what needs to be waited for
+        subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -529,7 +586,9 @@ class CSPRestart(base.RestartStep, LogEnabled):
         self._log(f"commanding {subarray_name} with Restart command")
         subarray.command_inout("Restart")
 
-    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_do(
+        self, sub_array_id: int
+    ) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
@@ -625,78 +684,23 @@ csp_low_assign_resources = {
                 "fw_image": "pst",
                 "fw_mode": "unused",
             },
-            {"device": "p4_01", "shared": True, "fw_image": "p4.bin", "fw_mode": "p4"},
+            {
+                "device": "p4_01",
+                "shared": True,
+                "fw_image": "p4.bin",
+                "fw_mode": "p4",
+            },
         ]
     },
 }
 
-# csp_low_configure_scan = {
-#     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
-#     "subarray": {"subarray_name": "science period 23"},
-#     "common": {
-#         "config_id": "sbi-mvp01-20200325-00001-science_A",
-#         "subarray_id": 1,
-#     },
-#     "lowcbf": {
-#         "jones_source": "tango://host:port/domain/family/member",
-#         "station_beams": [
-#             {
-#                 "station_beam_id": 1,
-#                 "station_delay_src": "tango://host:port/domain/family/member",
-#                 "visibility_dest": [
-#                     {"dest_ip": "10.0.2.1", "dest_mac": "02:00:00:00:02:01"}
-#                 ],
-#                 "zooms": [
-#                     {
-#                         "zoom_id": 1,
-#                         "zoom_centre_hz": 90000000,
-#                         "zoom_resolution_hz": 14,
-#                         "zoom_channels": 2000,
-#                         "zoom_dest": {
-#                             "dest_ip": "10.0.5.1",
-#                             "dest_mac": "02:00:00:00:05:01",
-#                         },
-#                     },
-#                     {
-#                         "zoom_id": 2,
-#                         "zoom_centre_hz": 120000000,
-#                         "zoom_resolution_hz": 30,
-#                         "zoom_channels": 2000,
-#                         "zoom_dest": {
-#                             "dest_ip": "10.0.5.2",
-#                             "dest_mac": "02:00:00:00:05:02",
-#                         },
-#                     },
-#                 ],
-#             },
-#             {
-#                 "station_beam_id": 2,
-#                 "station_delay_src": "tango://host:port/domain/family/member",
-#                 "visibility_dest": [
-#                     {"dest_ip": "10.0.2.2", "dest_mac": "02:00:00:00:02:02"}
-#                 ],
-#                 "zooms": [
-#                     {
-#                         "zoom_id": 3,
-#                         "zoom_centre_hz": 190000000,
-#                         "zoom_resolution_hz": 60,
-#                         "zoom_channels": 2000,
-#                         "zoom_dest": {
-#                             "dest_ip": "10.0.5.3",
-#                             "dest_mac": "02:00:00:00:05:03",
-#                         },
-#                     }
-#                 ],
-#             },
-#         ],
-#     },
-# }
-
-
 csp_low_configure_scan = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
     "subarray": {"subarray_name": "science period 23"},
-    "common": {"config_id": "sbi-mvp01-20200325-00001-science_A", "subarray_id": 1},
+    "common": {
+        "config_id": "sbi-mvp01-20200325-00001-science_A",
+        "subarray_id": 1,
+    },
     "lowcbf": {
         "stations": {
             "stns": [[1, 0], [2, 0], [3, 0], [4, 0]],

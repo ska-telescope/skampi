@@ -1,4 +1,6 @@
-"""Pytest fixtures and bdd step implementations specific to csp integration tests."""
+"""
+Pytest fixtures and bdd step implementations specific to csp integration tests.
+"""
 import logging
 import os
 from typing import Callable
@@ -25,8 +27,10 @@ def fxt_nr_of_subarrays() -> int:
     :return: _description_
     :rtype: int
     """
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
-    # cbf mid only controls the state of subarray 1 so will also limit to 1
+    # we only work with 1 subarray as CBF low currently limits
+    # deployment of only 1
+    # cbf mid only controls the state of subarray 1
+    # so will also limit to 1
     tel = names.TEL()
     if tel.skalow:
         return 1
@@ -96,7 +100,6 @@ def fxt_set_csp_entry_point(
     )
 
 
-
 # log checking
 
 
@@ -120,7 +123,9 @@ def fxt_set_up_log_checking_for_csp(
 
 
 @pytest.fixture(autouse=True)
-def fxt_setup_transition_monitoring(context_monitoring: fxt_types.context_monitoring):
+def fxt_setup_transition_monitoring(
+    context_monitoring: fxt_types.context_monitoring,
+):
     tel = names.TEL()
     (
         context_monitoring.set_waiting_on(tel.csp.cbf.subarray(1))
@@ -202,7 +207,9 @@ def the_csp_subarray_must_be_in_some_obsstate(
     csp_subarray_name = tel.csp.subarray(sut_settings.subarray_id)
     recorder = integration_test_exec_settings.recorder
     recorder.assert_no_devices_transitioned_after(str(csp_subarray_name))
-    csp_subarray = con_config.get_device_proxy(csp_subarray_name, fast_load=True)
+    csp_subarray = con_config.get_device_proxy(
+        csp_subarray_name, fast_load=True
+    )
     result = csp_subarray.read_attribute("obsstate").value
 
     assert_that(result).is_equal_to(eval(f"ObsState.{obsstate}"))

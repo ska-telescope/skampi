@@ -1,7 +1,10 @@
 from collections import OrderedDict
 from typing import NamedTuple
 
-from ska_tmc_cdm.messages.subarray_node.configure.core import ReceiverBand, Target
+from ska_tmc_cdm.messages.subarray_node.configure.core import (
+    ReceiverBand,
+    Target,
+)
 
 from .base import SchedulingBlock
 
@@ -57,11 +60,16 @@ class Scan:
         self._inc()
         if backwards:
             return {"id": self._instance_count}
-        return {"interface": "https://schema.skao.intg/ska-tmc-scan/2.0", "scan_id": self._instance_count}
+        return {
+            "interface": "https://schema.skao.intg/ska-tmc-scan/2.0",
+            "scan_id": self._instance_count,
+        }
 
 
 class TargetSpecs(SchedulingBlock, Scan):
-    def __init__(self, target_specs: dict[str, TargetSpec] | None = None) -> None:
+    def __init__(
+        self, target_specs: dict[str, TargetSpec] | None = None
+    ) -> None:
         super().__init__()
         self._init_scan()
         self.target_specs = DEFAULT_TARGET_SPECS

@@ -1,14 +1,12 @@
 """Default feature tests."""
 import os
 from typing import NamedTuple
-import json
-import logging
 
-import requests
 import pytest
+import requests
+from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
 from requests.models import Response
-from assertpy import assert_that
 from ska_ser_skallop.connectors.configuration import get_device_proxy
 
 
@@ -23,7 +21,12 @@ def test_tangogql_service_available():
 
 @pytest.fixture(name="inject_build_out")
 def fxt_inject_build_out():
-    """Inject a value into os env for using build out"""
+    """I
+    Inject a value into os env for using build out
+
+    Yields:
+        None
+    """
     original_value = os.environ["TEST_ENV"]
     os.environ["TEST_ENV"] = "BUILD_OUT"
     yield
@@ -52,7 +55,9 @@ def i_expect_a_response_to_be_returned_from_the_device_server():
 @pytest.mark.skalow
 @pytest.mark.taranta
 @pytest.mark.k8s
-@scenario("features/taranta_basic.feature", "taranta dashboard services available")
+@scenario(
+    "features/taranta_basic.feature", "taranta dashboard services available"
+)
 def test_taranta_dashboard_services_available():
     """taranta dashboard services available."""
 
@@ -67,11 +72,15 @@ def fxt_env() -> ENV:
     host = os.getenv("KUBE_HOST")
     assert host, "Unable to continue with test as KUBE_HOST is not set"
     namespace = os.getenv("KUBE_NAMESPACE")
-    assert namespace, "Unable to continue with test as KUBE_NAMESPACE is not set"
+    assert (
+        namespace
+    ), "Unable to continue with test as KUBE_NAMESPACE is not set"
     return ENV(host, namespace)
 
 
-@given("a deployed Taranta web dashboard service", target_fixture="service_url")
+@given(
+    "a deployed Taranta web dashboard service", target_fixture="service_url"
+)
 def a_deployed_taranta_web_dashboard_service(env: ENV) -> str:
     """a deployed Taranta web dashboard service."""
     return f"http://{env.host}/{env.namespace}/taranta/dashboard/"
@@ -81,7 +90,9 @@ def a_deployed_taranta_web_dashboard_service(env: ENV) -> str:
 @pytest.mark.skamid
 @pytest.mark.skalow
 @pytest.mark.k8s
-@scenario("features/taranta_basic.feature", "taranta devices service available")
+@scenario(
+    "features/taranta_basic.feature", "taranta devices service available"
+)
 def test_taranta_devices_service_available(env: ENV):
     """taranta devices service available."""
 

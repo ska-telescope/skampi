@@ -1,7 +1,6 @@
 """Start up the csp feature tests."""
 import logging
 import os
-from typing import List, cast
 
 import pytest
 from assertpy import assert_that
@@ -13,6 +12,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from .. import conftest
 
 logger = logging.getLogger(__name__)
+
 
 @pytest.mark.skamid
 @pytest.mark.csp
@@ -31,6 +31,7 @@ def test_csp_start_up_telescope_low():
 
 
 # log checking
+
 
 @pytest.fixture(name="set_up_log_checking_for_csp")
 @pytest.mark.usefixtures("set_csp_entry_point")

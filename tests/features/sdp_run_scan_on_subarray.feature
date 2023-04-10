@@ -11,5 +11,5 @@ Feature: Start the SUT's components,assign resources,configure a scan,wait for c
     And the <scan_id> is correctly represented in the measurement set
 
     Examples:
-      | <subarray_id> | <scan_id> |
+      | subarray_id | scan_id |
       | 01            | 123       |

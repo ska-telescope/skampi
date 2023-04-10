@@ -20,3 +20,10 @@ Feature: Run a scan on sdp subarray
         Given an subarray busy scanning
         When I command it to Abort
         Then the subarray should go into an aborted state
+
+	@XTP-20121
+	Scenario: Abort scanning SDP Low
+        Given an subarray busy scanning
+        When I command it to Abort
+        Then the subarray should go into an aborted state
+

@@ -11,7 +11,6 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from .. import conftest
 
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.sdp
@@ -33,6 +32,14 @@ def test_run_a_scan_on_sdp_subarray_in_mid():
 @pytest.mark.sdp
 @scenario("features/sdp_scan.feature", "Abort SDP scanning")
 def test_abort_scanning(disable_clear):
+    """Abort scanning."""
+
+
+@pytest.mark.skalow
+@pytest.mark.scan
+@pytest.mark.sdp
+@scenario("features/sdp_scan.feature", "Abort scanning SDP Low")
+def test_abort_scanning_low(disable_clear):
     """Abort scanning."""
 
 

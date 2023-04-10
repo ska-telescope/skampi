@@ -24,6 +24,7 @@ def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
 def test_tmc_abort_scanning_on_mid_subarray(disable_clear_and_tear_down: None):
     """Run a abort on TMC mid subarray when Scanning"""
 
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -31,6 +32,8 @@ def test_tmc_abort_scanning_on_mid_subarray(disable_clear_and_tear_down: None):
 @scenario("features/tmc_abort_scanning.feature", "Abort scanning Low")
 def test_tmc_abort_scanning_on_low_subarray(disable_clear_and_tear_down: None):
     """Run a abort on TMC low subarray when Scanning"""
+
+
 # from conftest
 # @given("an subarray busy scanning")
 

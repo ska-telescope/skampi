@@ -73,7 +73,6 @@ def test_oet_multi_scan_on_mid_subarray_for_different_scantype():
 def a_oet():
     """an OET"""
 
-@given("the subarray has just completed it's first scan for given configuration")
 @given("an subarray that has just completed it's first scan")
 def an_subarray_that_has_just_completed_its_first_scan(
     configured_subarray: fxt_types.configured_subarray,
@@ -100,7 +99,7 @@ def i_command_it_to_scan_low(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: conftest.SutTestSettings,
 ):
-    """I configure it for a scan."""
+    """I configure it for a scan using OET scan() command."""
     subarray_id = sut_settings.subarray_id
     tel = names.TEL()
     context_monitoring.set_waiting_on(
@@ -125,13 +124,7 @@ def the_subarray_must_be_in_the_scanning_state(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """
-    The subarray must be in the SCANNING state until finished.
-
-    Raises:
-        AssertionError: If the subarray is not in the expected state.
-
-    """
+    """The subarray must be in the SCANNING state until finished and check if the obsState is READY."""
     recorder = integration_test_exec_settings.recorder
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
@@ -156,23 +149,20 @@ def a_subarray_defined_to_perform_scan_types(
     scan_target2: str,
     observation_config: Observation,
 ) -> dict[str, str]:
-    assert (
-        scan_target1 in observation_config.scan_type_configurations
-    ), f"Scan target {scan_target1} not defined"
-    assert (
-        scan_target2 in observation_config.scan_type_configurations
-    ), f"Scan target {scan_target2} not defined"
+    """The subarray is defined to perform scans for provided scan types by validating the scan types."""
+    scan_target = [scan_target1,scan_target2]
     # check that we have targets referencing this scan types
     scan_targets = {
         target_spec.scan_type: target_name
         for target_name, target_spec in observation_config.target_specs.items()
     }
-    assert scan_targets.get(
-        scan_target1
-    ), f"Scan target {scan_target1} not defined as part of scan targets"
-    assert scan_targets.get(
-        scan_target2
-    ), f"Scan target {scan_target2} not defined as part of scan targets"
+    for scan_t in scan_target:
+        assert (
+			scan_t in observation_config.scan_type_configurations
+		), f"Scan target {scan_t} not defined"
+        assert scan_targets.get(
+            scan_t
+        ), f"Scan target {scan_t} not defined as part of scan targets"
     return scan_targets
 
 @when(

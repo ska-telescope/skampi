@@ -3,6 +3,8 @@ import logging
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when, parsers
+from resources.models.mvp_model.configuration import SKAScanConfiguration
+from resources.models.mvp_model.env import Observation
 from resources.models.mvp_model.states import ObsState
 from ska_oso_scripting.objects import SubArray
 from ska_ser_skallop.connectors import configuration as con_config
@@ -12,8 +14,6 @@ from ska_ser_skallop.mvp_fixtures.fixtures import (
     SubarrayConfigurationSpec,
     fxt_types,
 )
-from resources.models.mvp_model.configuration import SKAScanConfiguration
-from resources.models.mvp_model.env import Observation
 
 from .. import conftest
 

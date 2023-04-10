@@ -15,6 +15,12 @@ Feature: Configure scan on sdp subarray
 		When I configure it for a scan
 		Then the subarray must be in the READY state
 
+	@XTP-20122
+	Scenario:Abort configuring SDP Low
+		Given an subarray busy configuring
+		When I command it to Abort
+		Then the subarray should go into an aborted state
+
 
 	 @XTP-16343
 	    Scenario: Abort configuring
@@ -22,8 +28,3 @@ Feature: Configure scan on sdp subarray
         When I command it to Abort
         Then the subarray should go into an aborted state
 
-	@XTP-20122
-	Scenario:Abort configuring SDP Low
-		Given an subarray busy configuring
-		When I command it to Abort
-		Then the subarray should go into an aborted state

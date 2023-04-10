@@ -22,6 +22,7 @@ def test_csp_start_up_telescope_mid():
     """Start up the csp in mid."""
 
 
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.startup

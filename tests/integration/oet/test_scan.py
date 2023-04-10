@@ -52,10 +52,10 @@ def test_multiple_scans_on_tmc_subarray_in_low():
 @pytest.mark.scanning
 @scenario(
     "features/oet_multi_scan.feature",
-    "Run multiple scans on TMC subarray in low for different scan type from OET",
+    "Run multiple scans on TMC subarray in low for different scan type",
 )
 def test_multiple_scans_on_tmc_subarray_in_low_for_different_scantype():
-    """Run multiple scans on TMC subarray in low for different scan type from OET"""
+    """Run multiple scans on TMC subarray in low for different scan type"""
 
 
 @pytest.mark.k8s
@@ -139,7 +139,10 @@ def the_subarray_must_be_in_the_scanning_state(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """The subarray must be in the SCANNING state until finished and check if the obsState is READY."""
+    """
+    The subarray must be in the SCANNING state until finished
+    and check if the obsState is READY.
+    """
     recorder = integration_test_exec_settings.recorder
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
@@ -167,7 +170,10 @@ def a_subarray_defined_to_perform_scan_types(
     scan_target2: str,
     observation_config: Observation,
 ) -> dict[str, str]:
-    """The subarray is defined to perform scans for provided scan types by validating the scan types."""
+    """
+    The subarray is defined to perform scans
+    for provided scan types by validating the scan types.
+    """
     scan_target = [scan_target1, scan_target2]
     # check that we have targets referencing this scan types
     scan_targets = {

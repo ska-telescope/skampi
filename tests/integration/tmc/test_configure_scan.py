@@ -66,6 +66,19 @@ def test_abort_configuring_on_mid_tmc_subarray(
     """Abort configuring."""
 
 
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skalow
+@pytest.mark.configure
+@scenario("features/tmc_configure_scan.feature", "Abort configuring Low")
+def test_abort_configuring_on_low_tmc_subarray(
+    disable_clear_and_tear_down: None,
+    set_up_subarray_log_checking_for_tmc: None,
+    setup_monitoring_for_config_abort: None,
+):
+    """Abort TMC low configuring obstate."""
+
+
 @given("an TMC")
 def a_tmc():
     """an TMC"""

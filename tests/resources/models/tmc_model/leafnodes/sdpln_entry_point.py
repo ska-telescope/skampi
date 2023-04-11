@@ -79,12 +79,8 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
-        config = (
-            self.observation.generate_sdp_assign_resources_config().as_json
-        )
-        self._log(
-            f"commanding {subarray_name} with AssignResources: {config} "
-        )
+        config = self.observation.generate_sdp_assign_resources_config().as_json
+        self._log(f"commanding {subarray_name} with AssignResources: {config} ")
         subarray.command_inout("AssignResources", config)
 
     def undo(self, sub_array_id: int):
@@ -193,9 +189,9 @@ class SDPLnScanStep(SDPScanStep):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("SCANNING", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "SCANNING", ignore_first=True
+        )
         return builder
 
     def set_wait_for_undo(

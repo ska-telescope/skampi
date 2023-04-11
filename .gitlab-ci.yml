@@ -13,6 +13,7 @@ variables:
   DOMAIN: "branch"
   EXPOSE_All_DS: "true"
   CONFIG: "common"
+  SHOW_STEP_FUNCTIONS: "true"
 
 stages:
   - lint

@@ -1,10 +1,12 @@
 import json
 from pathlib import Path
 from typing import Callable, NamedTuple, cast
-from typing_extensions import TypedDict, NotRequired
-from jsonschema import validate
-from .base import ValidationError, ItemDict, AbstractNodeItem
+
 import yaml
+from jsonschema import validate
+from typing_extensions import NotRequired, TypedDict
+
+from .base import AbstractNodeItem, ItemDict, ValidationError
 
 
 class DependencyDict(TypedDict):

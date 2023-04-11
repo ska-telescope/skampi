@@ -1,6 +1,4 @@
-from . import diagram_building
-from . import data_loading
-from . import rendering
+from . import data_loading, diagram_building, rendering
 
 
 def main():

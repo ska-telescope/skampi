@@ -1,6 +1,7 @@
-from contextlib import _GeneratorContextManager, contextmanager
-from typing import Callable
-from .base import ValidationError, AbstractNodeItem
+from contextlib import AbstractContextManager, contextmanager
+from typing import Callable, Generator
+
+from .base import AbstractNodeItem, ValidationError
 
 
 @contextmanager
@@ -12,7 +13,7 @@ class DiagramBuilder:
     def __init__(
         self,
         graph_items: list[AbstractNodeItem],
-        diagram_context: Callable[[str], _GeneratorContextManager[None]] | None,
+        diagram_context: Callable[[str], AbstractContextManager[None]] | None,
     ) -> None:
         self._graph_items = graph_items
         self._start = False
@@ -32,7 +33,9 @@ class DiagramBuilder:
             return result[0]
         raise ValidationError(f"The referenced dependency {name} has not been defined")
 
-    def _traverse_vertical(self, item: AbstractNodeItem):
+    def _traverse_vertical(
+        self, item: AbstractNodeItem
+    ) -> Generator[AbstractNodeItem, None, None]:
         for item_name in item.dependencies:
             new_item = self._get(item_name)
             item.connect_to(new_item)

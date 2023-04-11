@@ -1,7 +1,8 @@
 import abc
-from typing_extensions import TypedDict, NotRequired
 from typing import Union
-from typing_extensions import Self
+
+from diagrams import Node
+from typing_extensions import NotRequired, Self, TypedDict
 
 
 class ItemDict(TypedDict):
@@ -41,7 +42,7 @@ class AbstractNodeItem(DataItem):
 
     @property
     @abc.abstractmethod
-    def node(self):
+    def node(self) -> Node:
         """"""
 
     @abc.abstractmethod

@@ -9,10 +9,9 @@ import pytest
 from assertpy import assert_that
 from mock import Mock, patch
 from pytest_bdd import given, parsers, then, when
+from pytest_bdd.parser import Feature, Scenario, Step
 from resources.models.mvp_model.env import Observation, init_observation_config
 from resources.models.mvp_model.states import ObsState
-
-# from resources.models.obsconfig.config import Observation
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
@@ -20,6 +19,22 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 logger = logging.getLogger(__name__)
+
+
+def pytest_bdd_before_step_call(
+    request: Any,
+    feature: Feature,
+    scenario: Scenario,
+    step: Step,
+    step_func: Callable[[Any], Any],
+    step_func_args: dict[str, Any],
+):
+    if os.getenv("SHOW_STEP_FUNCTIONS"):
+        logger.info(
+            "\n**********************************************************\n"
+            f"***** {step.keyword} {step.name} *****\n"
+            "**********************************************************"
+        )
 
 
 class SutTestSettings(SimpleNamespace):
@@ -31,6 +46,9 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 4
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
+    # specify if a specific test case needs running
+    # for SDP visibility receive test: test_case = "vis-receive"
+    test_case = None
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -68,7 +86,9 @@ def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
 
 @pytest.fixture(name="sut_settings", scope="function", autouse=True)
 def fxt_conftest_settings() -> SutTestSettings:
-    """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
+    """
+    Fixture to use for setting env like  SUT settings for fixtures in conftest
+    """
     return SutTestSettings()
 
 
@@ -116,7 +136,7 @@ def fxt_run_mock_wrapper(
             "ska_ser_skallop.mvp_fixtures.fixtures.TransitChecking"
         ) as transit_checking_mock:
             transit_checking_mock.return_value.checker = Mock(unsafe=True)
-            mock_test(request, _pytest_bdd_example)  # type: ignore
+            mock_test(request, _pytest_bdd_example)
 
     return run_mock
 
@@ -196,7 +216,6 @@ ObservationConfigInterjector = Callable[
 def fxt_observation_config_interjector(
     observation_config: Observation, mocked_observation_config: Mock
 ) -> ObservationConfigInterjector[P, R]:
-
     obs = observation_config
 
     def interject_observation_method(
@@ -264,10 +283,12 @@ def i_switch_off_the_telescope(
             entry_point.set_telescope_to_standby()
 
 
-# Currently, resources_list is not utilised, raised SKB for the same:https://jira.skatelescope.org/browse/SKB-202
+# Currently, resources_list is not utilised, raised SKB for the same:
+# https://jira.skatelescope.org/browse/SKB-202
 @when(
     parsers.parse(
-        "I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"
+        "I issue the assignResources command with the {resources_list} to the"
+        " subarray {subarray_id}"
     )
 )
 def assign_resources_with_subarray_id(
@@ -398,18 +419,20 @@ def an_subarray_busy_assigning(
 ):
     """an subarray busy assigning"""
 
-    """Create a subarray but block only until it is in RESOURCING.
+    """Create a subarray but block only until it is in RESOURCING
 
     :param subarray_id: the identification nr for the subarray
-    :param receptors: the receptors that will be used for the subarray.
-        If none is given it will use a default set of two receptors 1 and 2.
-    :param sb_config: The SB configuration to use as context, defaults to SBConfig()
-    :param settings: the execution settings to use during the IO calls., defaults to
-        ExecSettings()
-    :param composition: The type of composition configuration to use.
-        , defaults to conf_types.Composition( conf_types.CompositionType.STANDARD )
+    :param receptors: the receptors that will be used for the subarray
+        If none is given it will use a default set of two receptors 1 and 2
+    :param sb_config: The SB configuration to use as context
+        defaults to SBConfig()
+    :param settings: the execution settings to use during the IO calls
+        defaults to ExecSettings()
+    :param composition: The type of composition configuration to use
+        , defaults to conf_types.Composition
+        ( conf_types.CompositionType.STANDARD )
     :type composition: conf_types.Composition, optional
-    :return: A subarray context manager to ue for subsequent commands.
+    :return: A subarray context manager to ue for subsequent commands
     """
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors

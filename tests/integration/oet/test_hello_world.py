@@ -41,9 +41,10 @@ def hello_world_script_created():
 @given(parsers.parse("a test SB with activity {activity_name} exists in ODA"))
 def hello_world_sb_in_oda(activity_name, test_sbd):
     """"""
-    assert (
-        activity_name in test_sbd.activities
-    ), f"Activity test setup failed, no activity called {activity_name} in test SB"
+    assert activity_name in test_sbd.activities, (
+        f"Activity test setup failed, no activity called {activity_name} in"
+        " test SB"
+    )
 
     add_sb_to_oda(test_sbd)
 

@@ -1,3 +1,4 @@
+import logging
 from contextlib import AbstractContextManager, contextmanager
 from typing import Callable, Generator
 
@@ -21,6 +22,9 @@ class DiagramBuilder:
         self._diagram_context = (
             empty_context_manager if diagram_context is None else diagram_context
         )
+        
+    def __repr__(self) -> str:
+        return "(%d items)" % len(self._graph_items)
 
     @property
     def _root(self) -> AbstractNodeItem:
@@ -38,9 +42,11 @@ class DiagramBuilder:
     ) -> Generator[AbstractNodeItem, None, None]:
         for item_name in item.dependencies:
             new_item = self._get(item_name)
+            logging.debug("New connection to %s", item_name)
             item.connect_to(new_item)
             yield new_item
             for inner_item in self._traverse_vertical(new_item):
+                logging.debug("Connect to %s", inner_item)
                 yield inner_item
 
     def build(self, diagram_name: str):

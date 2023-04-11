@@ -29,6 +29,9 @@ class DataItem:
         self._root = root
         self.platform_dependents = platformDependents
         self.dependencies = dependencies
+        
+    def __repr__(self) -> str:
+        return "%s" % self.name
 
     def is_root(self) -> bool:
         return self._root in [None, True]

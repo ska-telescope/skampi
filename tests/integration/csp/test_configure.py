@@ -22,7 +22,7 @@ def test_abort_configuring(set_up_subarray_log_checking_for_csp: None):
     "features/csp_configure_scan.feature", "Abort configuring on CSP Low"
 )
 def test_csp_abort_configuring_low(set_up_subarray_log_checking_for_csp: None):
-    """Abort in scanning obstate."""
+    """Abort in configuring obstate."""
 
 
 @pytest.mark.skamid

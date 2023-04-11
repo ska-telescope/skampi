@@ -40,7 +40,7 @@ def test_abort_scanning(disable_clear):
 @pytest.mark.scan
 @pytest.mark.csp
 @scenario("features/csp_scan.feature", "Abort scanning on CSP Low")
-def test_abort_scanning_low(disable_clear):
+def test_abort_scanning_csp_low(disable_clear):
     """Abort scanning."""
 
 

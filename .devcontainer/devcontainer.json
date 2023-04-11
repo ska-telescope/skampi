@@ -19,45 +19,49 @@
         //"source=${localEnv:HOME}${localEnv:USERPROFILE/.kube/,target=/home/node/.kube/,type=bind,consistency=cached"
     ],
     // Set *default* container specific settings.json values on container create.
-    "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash",
-        "python.pythonPath": ".venv/bin/python",
-        "python.formatting.provider": "black",
-        "python.linting.enabled": true,
-        "python.linting.flake8Enabled": true,
-        "python.testing.pytestArgs": [
-            "./tests/integration/",
-        ],
-        "python.testing.unittestEnabled": false,
-        "python.testing.pytestEnabled": true,
-        "python.envFile": "${workspaceFolder}/.vscode/.env",
-        "yaml.customTags": [
-            "!reference sequence"
-        ],
-        "python.formatting.blackPath": "/home/tango/.local/bin/black",
-        "autoDocstring.docstringFormat": "sphinx",
-        "python.linting.flake8Path": "/home/tango/.local/bin/flake8",
-        "gitPrefix.pattern": "(\\w+-\\d+).*",
-        "gitPrefix.replacement": "p1.replace(/(\\w+)/, function(v) { return v.toUpperCase();})+\": \"",
-        "gitPrefix.replacementIsFunction": true
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash",
+                "python.pythonPath": ".venv/bin/python",
+                "python.formatting.provider": "black",
+                "python.linting.enabled": true,
+                "python.linting.flake8Enabled": true,
+                "python.testing.pytestArgs": [
+                    "./tests/integration/",
+                ],
+                "python.testing.unittestEnabled": false,
+                "python.testing.pytestEnabled": true,
+                "python.envFile": "${workspaceFolder}/.vscode/.env",
+                "yaml.customTags": [
+                    "!reference sequence"
+                ],
+                "python.formatting.blackPath": "/home/tango/.local/bin/black",
+                "autoDocstring.docstringFormat": "sphinx",
+                "python.linting.flake8Path": "/home/tango/.local/bin/flake8",
+                "gitPrefix.pattern": "(\\w+-\\d+).*",
+                "gitPrefix.replacement": "p1.replace(/(\\w+)/, function(v) { return v.toUpperCase();})+\": \"",
+                "gitPrefix.replacementIsFunction": true
+            }
+        },
+        // Add the IDs of extensions you want installed when the container is created.
+        "extensions": [
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "ms-kubernetes-tools.vscode-kubernetes-tools",
+            "donjayamanne.githistory",
+            "eamodio.gitlens",
+            "njpwerner.autodocstring",
+            "lextudio.restructuredtext",
+            "streetsidesoftware.code-spell-checker",
+            "bungcip.better-toml",
+            "srmeyers.git-prefix"
+        ]
     },
-    // Add the IDs of extensions you want installed when the container is created.
-    "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "ms-kubernetes-tools.vscode-kubernetes-tools",
-        "donjayamanne.githistory",
-        "eamodio.gitlens",
-        "njpwerner.autodocstring",
-        "lextudio.restructuredtext",
-        "streetsidesoftware.code-spell-checker",
-        "bungcip.better-toml",
-        "srmeyers.git-prefix"
-    ],
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],
     // Use 'postCreateCommand' to run commands after the container is created.
     "postCreateCommand": "poetry config virtualenvs.in-project true",
     // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-    "remoteUser": "tango",
+    "remoteUser": "tango"
 }

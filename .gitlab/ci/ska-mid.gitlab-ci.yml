@@ -10,10 +10,10 @@ mid-test:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
-    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
-    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
-    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
+    HELM_RELEASE: "test-$CONFIG-$CI_PIPELINE_ID"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_PIPELINE_ID-$CONFIG"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_PIPELINE_ID-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_PIPELINE_ID"
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     DISABLE_MAINTAIN_ON: "True"
     OET_INGRESS_ENABLED: "true"
@@ -24,8 +24,10 @@ mid-test:
     ODA_URI: "http://ska-db-oda-rest-$HELM_RELEASE.$KUBE_NAMESPACE:5000/$KUBE_NAMESPACE/api/v1"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
-    EXIT_AT_FAIL: "True"
+    #ADDMARKS: "XTP-4636"
+    EXIT_AT_FAIL: "false"
     CAPTURE_LOGS: "True"
+    SKALLOP_LOG_FILTER_ERRORS: "True"
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
@@ -54,7 +56,7 @@ mid-test:
   retry: 1
 
 # Mid on-demand deployment
-mid_on_demand_deploy:
+mid_deploy_on_demand:
   stage: on-demand
   variables:
     CONFIG: mid
@@ -83,7 +85,7 @@ mid_on_demand_deploy:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    on_stop: mid_on_demand_destroy
+    on_stop: mid_destroy_on_demand
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -93,7 +95,7 @@ mid_on_demand_deploy:
   when: manual
   allow_failure: true # need to keep this to unlock the pipeline
 
-mid_on_demand_destroy:
+mid_destroy_on_demand:
   stage: on-demand
   variables:
     CONFIG: mid
@@ -129,7 +131,7 @@ mid_on_demand_destroy:
     KUBE_NAMESPACE_SDP: integration-$CONFIG-sdp
     HELM_RELEASE: $CONFIG
     SERVICE_ACCOUNT: integration-svc-$CONFIG
-    ARCHIVER_DBNAME: integration-$CONFIG-archiver_db
+    ARCHIVER_DBNAME: integration_${CONFIG}_archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
     SKA_TELESCOPE: SKA-$CONFIG
@@ -207,7 +209,7 @@ mid-redeploy-integration:
     KUBE_NAMESPACE_SDP: staging-$CONFIG-sdp
     HELM_RELEASE: $CONFIG
     SERVICE_ACCOUNT: staging-svc-$CONFIG
-    ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
+    ARCHIVER_DBNAME: staging_${CONFIG}_archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
     SKA_TELESCOPE: SKA-$CONFIG

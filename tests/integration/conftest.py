@@ -64,6 +64,8 @@ class SutTestSettings(SimpleNamespace):
         self.previous_state: Any = None
         self.next_state: Any = None
         self.observation = init_observation_config()
+        self.disable_subarray_teardown = False
+        self.restart_after_abort = False
 
     @property
     def nr_of_receptors(self):
@@ -917,6 +919,38 @@ def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarra
     allocated_subarray.set_to_configuring(clear_afterwards=False)
 
 
+@given("an subarray busy assigning", target_fixture="allocated_subarray")
+def an_subarray_busy_assigning(
+    running_telescope: fxt_types.running_telescope,
+    sb_config: fxt_types.sb_config,
+    composition: conf_types.Composition,
+    exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    """an subarray busy assigning"""
+
+    """Create a subarray but block only until it is in RESOURCING.
+
+    :param subarray_id: the identification nr for the subarray
+    :param receptors: the receptors that will be used for the subarray.
+        If none is given it will use a default set of two receptors 1 and 2.
+    :param sb_config: The SB configuration to use as context, defaults to SBConfig()
+    :param settings: the execution settings to use during the IO calls., defaults to
+        ExecSettings()
+    :param composition: The type of composition configuration to use.
+        , defaults to conf_types.Composition( conf_types.CompositionType.STANDARD )
+    :type composition: conf_types.Composition, optional
+    :return: A subarray context manager to ue for subsequent commands.
+    """
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    allocated_subbaray = running_telescope.set_to_resourcing(
+        subarray_id, receptors, sb_config, exec_settings, composition
+    )
+    allocated_subbaray.disable_automatic_teardown()
+    return allocated_subbaray
+
+
 @when("I command it to Abort")
 def i_command_it_to_abort(
     context_monitoring: fxt_types.context_monitoring,
@@ -932,7 +966,10 @@ def i_command_it_to_abort(
     ).to_become_equal_to("ABORTED")
     with context_monitoring.context_monitoring():
         with context_monitoring.wait_before_complete(integration_test_exec_settings):
-            allocated_subarray.reset_after_test(integration_test_exec_settings)
+            if sut_settings.restart_after_abort:
+                allocated_subarray.restart_after_test(integration_test_exec_settings)
+            else:
+                allocated_subarray.reset_after_test(integration_test_exec_settings)
             entry_point.abort_subarray(sub_array_id)
 
     integration_test_exec_settings.touch()

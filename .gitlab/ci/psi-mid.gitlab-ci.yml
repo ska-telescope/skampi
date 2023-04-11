@@ -36,12 +36,12 @@
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
-psi_mid_on_demand_deploy:
+psi_mid_deploy_on_demand:
   extends:
     - .psi_mid_branch_job
     - .psi_mid_deploy
 
-psi_mid_on_demand_destroy:
+psi_mid_destroy_on_demand:
   extends:
     - .psi_mid_branch_job
     - .uninstall_chart

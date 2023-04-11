@@ -22,7 +22,6 @@
     reports:
       junit: build/report.xml
 
-
 # on-demand deployment from branch to branch namespace
 .psi_low_branch_job:
   stage: on-demand
@@ -37,18 +36,17 @@
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
-psi_low_on_demand_deploy:
+psi_low_deploy_on_demand:
   extends:
     - .psi_low_branch_job
     - .psi_low_deploy
 
-psi_low_on_demand_destroy:
+psi_low_destroy_on_demand:
   extends:
     - .psi_low_branch_job
     - .uninstall_chart
   variables:
     KEEP_NAMESPACE: "true"
-
 
 # on-demand from master to integration namespace
 .psi_low_integration_job:
@@ -75,7 +73,6 @@ psi_low_destroy_integration:
     - .uninstall_chart
   variables:
     KEEP_NAMESPACE: "true"
-
 
 # on-demand from tags to staging namespace
 .psi_low_staging_job:

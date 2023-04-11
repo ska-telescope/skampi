@@ -16,6 +16,16 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
+@pytest.fixture(name="composition")
+def fxt_default_composition(sdp_base_configuration: conf_types.Composition):
+    return sdp_base_configuration
+
+
+@pytest.fixture(name="set_restart_after_abort")
+def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
+    sut_settings.restart_after_abort = True
+
+
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -66,6 +76,13 @@ def test_assign_resources_duplicate_commands(assign_resources_test_exec_settings
 )
 def test_assign_resources_with_invalid_script(assign_resources_test_exec_settings):  # type: ignore
     """Command assign resources twice in order."""
+
+
+@scenario("features/sdp_assign_resources.feature", "Abort assigning SDP")
+def test_abort_in_resourcing_sdp_subarray_in_mid(
+    set_restart_after_abort: None, composition: conf_types.Composition
+):
+    """Assign resources to sdp subarray in mid."""
 
 
 @given("an SDP subarray", target_fixture="composition")

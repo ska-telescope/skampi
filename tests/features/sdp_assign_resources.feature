@@ -8,7 +8,6 @@ Feature: Assign resources to sdp subarray
 		When I assign resources to it
 		Then the subarray must be in IDLE state
 
-
 	@XTP-4508 @XTP-4503 @XTP-3325
 	Scenario: Assign resources to sdp subarray in low
 		Given an SDP subarray
@@ -40,6 +39,8 @@ Feature: Assign resources to sdp subarray
 		When I assign resources with an invalid processing block script name
 		Then the subarray should throw an exception and remain in the previous state
 
-		
-
-
+	@XTP-20083
+	Scenario: Abort assigning SDP
+		Given an subarray busy assigning
+		When I command it to Abort
+		Then the subarray should go into an aborted state

@@ -3,6 +3,7 @@ THIS_HOST := $(shell (ip a 2> /dev/null || ifconfig) | sed -En 's/127.0.0.1//;s/
 DISPLAY := $(THIS_HOST):0##for GUI applications
 XAUTHORITYx ?= ${XAUTHORITY}##for GUI applications
 PYTHON_SWITCHES_FOR_FLAKE8=--ignore=F811,W503,DAR003,DAR101,DAR201# Doc related warning will be fixed later(DAR*)
+PYTHON_LINE_LENGTH=99# As per ADR-70
 VALUES ?= values.yaml# root level values files. This will override the chart values files.
 SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-skampi-chart
 

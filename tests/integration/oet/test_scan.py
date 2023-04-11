@@ -20,9 +20,17 @@ from .. import conftest
 """
 test_XTP-18866
 ----------------------------------
-Tests to Run a scan on low subarray from OET (XTP-19865)
+Test to Run a scan on
+low subarray from OET(XTP-19865),
+Test to Run multi scan on
+low subarray for same scan type from OET(XTP-21538),
+Test to Run multi scan on
+low subarray for same different type from OET(XTP-21541),
+Tests to Run multi scan on
+mid subarray for same scan type from OET(XTP-21542),
+Test to Run multi scan on
+mid subarray for same different type from OET(XTP-21543),
 """
-
 """Scan on telescope subarray feature tests."""
 
 
@@ -35,6 +43,8 @@ def test_oet_scan_on_low_subarray():
     """Run a scan on OET low telescope subarray."""
 
 
+@pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.oet
@@ -47,9 +57,10 @@ def test_multiple_scans_on_tmc_subarray_in_low():
 
 
 @pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.oet
 @pytest.mark.skalow
-@pytest.mark.scanning
+@pytest.mark.scan
 @scenario(
     "features/oet_multi_scan.feature",
     "Run multiple scans on TMC subarray in low for different scan type",
@@ -59,6 +70,7 @@ def test_multiple_scans_on_tmc_subarray_in_low_for_different_scantype():
 
 
 @pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.oet
 @pytest.mark.scan
 @pytest.mark.skamid
@@ -71,9 +83,10 @@ def test_oet_multi_scan_on_mid_subarray():
 
 
 @pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.oet
 @pytest.mark.skamid
-@pytest.mark.scanning
+@pytest.mark.scan
 @scenario(
     "features/oet_multi_scan.feature",
     "Run multiple scans on mid subarray for different scan type from OET",
@@ -153,7 +166,8 @@ def the_subarray_must_be_in_the_scanning_state(
     tmc_state_changes = recorder.get_transitions_for(
         tmc_subarray_name, "obsstate"
     )
-    assert_that(tmc_state_changes).is_equal_to(["READY", "SCANNING", "READY"])
+    assert_that(tmc_state_changes).is_equal_to(["READY", "SCANNING", "READY"]),
+    f"events recorded not correct: {recorder._occurrences}"
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)
 

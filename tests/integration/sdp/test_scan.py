@@ -1,14 +1,11 @@
 """Configure scan on subarray feature tests."""
 import pytest
 from assertpy import assert_that
-from pytest_bdd import given, scenario, then
+from pytest_bdd import scenario, then
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
-from .. import conftest
 
 
 @pytest.mark.skalow
@@ -35,19 +32,8 @@ def test_abort_scanning(disable_clear):
     """Abort scanning."""
 
 
-@given("an SDP subarray in READY state")
-def an_sdp_subarray_in_ready_state(
-    set_up_subarray_log_checking_for_sdp,
-    sdp_base_configuration: conf_types.ScanConfiguration,
-    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-    sut_settings: conftest.SutTestSettings,
-) -> conf_types.ScanConfiguration:
-    """an SDP subarray in READY state."""
-    subarray_allocation_spec.receptors = sut_settings.receptors
-    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
-    # will use default composition for the allocated subarray
-    # subarray_allocation_spec.composition
-    return sdp_base_configuration
+# use from local conftest
+# @given("an SDP subarray in READY state")
 
 
 # use when from global conftest

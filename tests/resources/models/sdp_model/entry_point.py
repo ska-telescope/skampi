@@ -240,6 +240,7 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         subarray = con_config.get_device_proxy(subarray_name)
         config = self.observation.generate_sdp_scan_config().as_json
         self._log(f"commanding {subarray_name} with Configure: {config} ")
+        subarray.set_timeout_millis(6000)
         subarray.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
@@ -492,18 +493,22 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2
+    obs_to_use = None
 
     def __init__(self, observation: Observation | None = None) -> None:
         """Init Object"""
         super().__init__()
-        if not observation:
-            observation = Observation()
-        self.observation = observation
+        if not self.obs_to_use:
+            if not observation:
+                self.obs_to_use = Observation()
+            else:
+                self.obs_to_use = observation
+        self.observation = self.obs_to_use
         self.set_online_step = NoOpStep()
         self.start_up_step = StartUpStep(self.nr_of_subarrays)
-        self.assign_resources_step = SdpAssignResourcesStep(observation)
-        self.configure_scan_step = SdpConfigureStep(observation)
-        self.scan_step = SDPScanStep(observation)
+        self.assign_resources_step = SdpAssignResourcesStep(self.observation)
+        self.configure_scan_step = SdpConfigureStep(self.observation)
+        self.scan_step = SDPScanStep(self.observation)
         self.abort_step = SDPAbortStep()
         self.obsreset_step = SDPObsResetStep()
         self.restart_step = SDPRestart()

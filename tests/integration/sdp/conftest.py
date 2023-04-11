@@ -5,6 +5,7 @@ import os
 
 import pytest
 from pytest_bdd import given
+from resources.models.obsconfig.vis_receive_config import VisRecObservation
 from resources.models.sdp_model.entry_point import SDPEntryPoint
 from resources.models.sdp_model.mocking import setup_sdp_mock
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -12,6 +13,20 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
+from .vis_receive_utils import K8sElementManager
+
+
+@pytest.fixture(scope="module")
+def k8s_element_manager():
+    """
+    Allow easy creation, and later automatic destruction, of k8s elements
+
+    Yields:
+        K8sElementManager object
+    """
+    manager = K8sElementManager()
+    yield manager
+    manager.cleanup()
 
 
 @pytest.fixture(name="update_sut_settings")
@@ -34,6 +49,8 @@ def fxt_set_entry_point(
     exec_env = set_session_exec_env
     if not sut_settings.mock_sut:
         SDPEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+        if sut_settings.test_case == "vis-receive":
+            SDPEntryPoint.obs_to_use = VisRecObservation()
         exec_env.entrypoint = SDPEntryPoint
     else:
         exec_env.entrypoint = "mock"
@@ -46,7 +63,7 @@ def fxt_set_entry_point(
 @pytest.fixture(name="setup_sdp_mock")
 def fxt_setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
     """
-    Fixture to use for injecting a mocked entrypoin for
+    Fixture to use for injecting a mocked entrypoint for
     sdp in stead of the real one.
     """
     setup_sdp_mock(mock_entry_point)
@@ -80,7 +97,7 @@ def fxt_sdp_assign_resources_exec_settings(
 
 @pytest.fixture(name="set_up_subarray_log_checking_for_sdp", autouse=True)
 @pytest.mark.usefixtures("set_sdp_entry_point")
-def fxt_set_up_log_capturing_for_cbf(
+def fxt_set_up_log_capturing_for_sdp(
     log_checking: fxt_types.log_checking,
     sut_settings: conftest.SutTestSettings,
 ):
@@ -137,6 +154,21 @@ def an_sdp_subarray_in_idle_state(
     sut_settings: conftest.SutTestSettings,
 ) -> conf_types.ScanConfiguration:
     """an SDP subarray in IDLE state."""
+    subarray_allocation_spec.receptors = sut_settings.receptors
+    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
+    # will use default composition for the allocated subarray
+    # subarray_allocation_spec.composition
+    return sdp_base_configuration
+
+
+@given("an SDP subarray in READY state")
+def an_sdp_subarray_in_ready_state(
+    set_up_subarray_log_checking_for_sdp,
+    sdp_base_configuration: conf_types.ScanConfiguration,
+    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
+    sut_settings: conftest.SutTestSettings,
+) -> conf_types.ScanConfiguration:
+    """an SDP subarray in READY state."""
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     # will use default composition for the allocated subarray

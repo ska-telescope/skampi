@@ -9,10 +9,9 @@ import pytest
 from assertpy import assert_that
 from mock import Mock, patch
 from pytest_bdd import given, parsers, then, when
+from pytest_bdd.parser import Feature, Scenario, Step
 from resources.models.mvp_model.env import Observation, init_observation_config
 from resources.models.mvp_model.states import ObsState
-
-# from resources.models.obsconfig.config import Observation
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
@@ -20,6 +19,22 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 logger = logging.getLogger(__name__)
+
+
+def pytest_bdd_before_step_call(
+    request: Any,
+    feature: Feature,
+    scenario: Scenario,
+    step: Step,
+    step_func: Callable[[Any], Any],
+    step_func_args: dict[str, Any],
+):
+    if os.getenv("SHOW_STEP_FUNCTIONS"):
+        logger.info(
+            "\n**********************************************************\n"
+            f"***** {step.keyword} {step.name} *****\n"
+            "**********************************************************"
+        )
 
 
 class SutTestSettings(SimpleNamespace):
@@ -31,6 +46,9 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 4
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
+    # specify if a specific test case needs running
+    # for SDP visibility receive test: test_case = "vis-receive"
+    test_case = None
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

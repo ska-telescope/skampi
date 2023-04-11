@@ -173,7 +173,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """This method will generate unique eb and sb ids.
         Update it in config json
         Args:
-            config_json (Dict): Config json for Assign Resource command
+        config_json (Dict): Config json for Assign Resource command
         """
         config_json["sdp"]["execution_block"]["eb_id"] = get_id(
             "eb-test-********-*****"

@@ -76,6 +76,18 @@ def test_abort_in_resourcing_mid(
     """Assign resources to csp subarray in mid."""
 
 
+@pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skalow
+@pytest.mark.assign
+@scenario("features/csp_assign_resources.feature", "Abort assigning CSP Low")
+def test_abort_in_resourcing_low(
+    set_restart_after_abort: None, composition: conf_types.Composition
+):
+    """Assign resources to csp subarray in low."""
+
+
 # use when from ..shared_assign_resources in ..conftest.py
 # @when("I assign resources to it")
 

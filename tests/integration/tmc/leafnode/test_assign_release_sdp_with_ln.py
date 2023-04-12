@@ -40,8 +40,6 @@ def a_sdp_sln():
 def the_sdp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the SDP Subarray must be in IDLE state."""
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(
-        tel.sdp.subarray(sut_settings.subarray_id)
-    )
+    subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)

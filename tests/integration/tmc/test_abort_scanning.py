@@ -42,8 +42,6 @@ def the_subarray_should_go_into_aborted_state(
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.subarray(sut_settings.subarray_id))
     )
-    tmc_subarray = con_config.get_device_proxy(
-        tel.tm.subarray(sut_settings.subarray_id)
-    )
+    tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = tmc_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.ABORTED)

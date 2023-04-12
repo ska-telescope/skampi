@@ -50,8 +50,10 @@ def load(factory: Callable[[str, str, ItemDict], AbstractNodeItem]) -> Data:
             chart_version = chart_versions[0]
             logging.debug("Add item %s version %s", item_name, chart_version)
         else:
-            raise ValidationError(f"Listed chart {item_name} not defined in chart.yaml")
+            # logging.debug("Listed chart %s not defined in %s", item_name, chart_path)
+            raise ValidationError(f"Listed chart {item_name} not defined in {chart_path}")
         new_item = factory(item_name, chart_version, item_values)
+        logging.debug("Add %s to graph items", new_item)
         graph_items.append(new_item)
     logging.debug("Loaded %d graph items", len(graph_items))
     return Data(chart["name"], chart["version"], graph_items)

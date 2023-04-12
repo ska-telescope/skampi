@@ -39,7 +39,7 @@ def the_subarray_should_go_into_aborted_state(
 ):
     """the subarray should go into an aborted state."""
     tel = names.TEL()
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.subarray(sut_settings.subarray_id))
     )
     tmc_subarray = con_config.get_device_proxy(

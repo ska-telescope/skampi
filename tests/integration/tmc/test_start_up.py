@@ -226,7 +226,7 @@ def the_sdp_csp_and_dish_must_be_off(
     tel = names.TEL()
     mid = names.Mid()
     # Check state attribute of SDP Master
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.central_node)
     )
     sdp_master = con_config.get_device_proxy(tel.sdp.master)

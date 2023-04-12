@@ -96,6 +96,19 @@ def test_abort_in_resourcing_mid(
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
+@pytest.mark.skalow
+@pytest.mark.assign
+@scenario("features/tmc_assign_resources.feature", "Abort assigning Low")
+def test_abort_in_resourcing_low(
+    set_restart_after_abort: None,
+    setup_context_monitoring_for_abort_test: None,
+    composition: conf_types.Composition,
+):
+    """Assign resources to tmc subarray in low."""
+
+
+@pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skamid
 @scenario(
     "features/tmc_assign_resources.feature",
@@ -112,7 +125,8 @@ def a_tmc():
 
 @given("an telescope subarray", target_fixture="composition")
 def an_telescope_subarray(
-    set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition  # type: ignore
+    set_up_subarray_log_checking_for_tmc,
+    base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """an telescope subarray."""
     return base_composition
@@ -160,7 +174,7 @@ def the_subarray_should_go_into_an_aborted_state(
 ):
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(sut_settings.subarray_id))
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         tmc_subarray_name
     )
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)

@@ -1,0 +1,61 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "cbf_sdp_emulator.fullname" . }}-send
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "cbf_sdp_emulator.labels" . | indent 4 }}
+spec:
+  completions: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "cbf_sdp_emulator.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      restartPolicy: {{ .Values.cbf_sdp_emulator.restartPolicy }}
+      initContainers:
+      - image: {{ .Values.cbf_sdp_emulator.container }}:{{ .Values.cbf_sdp_emulator.version }}
+        imagePullPolicy: {{ .Values.cbf_sdp_emulator.imagePullPolicy }}
+        name: resolve-receiver
+        command:
+          - python3
+          - -c
+          - |
+            import socket
+            import sys
+            import time
+            timeout = {{ .Values.receiver.address_resolution_timeout }}
+            hostname = "{{ .Values.receiver.hostname }}"
+            while timeout:
+              try:
+                  addr = socket.gethostbyname(hostname)
+                  print(f"{hostname} resolved to {addr}")
+                  break
+              except:
+                  print(f"Couldn't resolve {hostname}, trying again in 1s")
+                  time.sleep(1)
+                  timeout -= 1
+            sys.exit(timeout == 0)
+      containers:
+      - image: {{ .Values.cbf_sdp_emulator.container }}:{{ .Values.cbf_sdp_emulator.version }}
+        imagePullPolicy: {{ .Values.cbf_sdp_emulator.imagePullPolicy }}
+        name: sender
+        {{- with .Values.command }}
+        command:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: "{{ $.Values.pvc.name }}"
+          mountPath: "{{ $.Values.pvc.path }}"
+        {{- with .Values.sender.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        terminationMessagePath: "/dev/termination-log"
+        terminationMessagePolicy: "File"
+      volumes:
+        - name: "{{ $.Values.pvc.name }}"
+          persistentVolumeClaim:
+            claimName: "{{ $.Values.pvc.name }}"
+  backoffLimit: 1

@@ -60,7 +60,10 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         central_node.command_inout("TelescopeOn")
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifying what needs to be waited for before startup of telescope is done."""
+        """
+        Domain logic specifying what needs to be waited for
+         before startup of telescope is done.
+        """
         brd = get_message_board_builder()
         # set sdp master and sdp subarray to be waited before startup completes
         brd.set_waiting_on(self._tel.sdp.master).for_attribute(
@@ -70,7 +73,8 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("ON", ignore_first=False)
-        # set csp controller and csp subarray to be waited before startup completes
+        # set csp controller and csp subarray to be waited
+        # before startup completes
         brd.set_waiting_on(self._tel.csp.controller).for_attribute(
             "state"
         ).to_become_equal_to("ON", ignore_first=False)
@@ -102,12 +106,16 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         Not implemented.
 
         Raises:
-            NotImplementedError: Raises the error when implementation is not done.
+            NotImplementedError: Raises the error when
+             implementation is not done.
         """
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic for what needs to be waited for switching the telescope off."""
+        """
+        Domain logic for what needs to be waited
+         for switching the telescope off.
+        """
         brd = get_message_board_builder()
         # TODO set what needs to be waited before start up completes
         brd.set_waiting_on(self._tel.sdp.master).for_attribute(
@@ -165,7 +173,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """This method will generate unique eb and sb ids.
         Update it in config json
         Args:
-            config_json (Dict): Config json for Assign Resource command
+        config_json (Dict): Config json for Assign Resource command
         """
         config_json["sdp"]["execution_block"]["eb_id"] = get_id(
             "eb-test-********-*****"
@@ -199,7 +207,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
                 sub_array_id
             ).as_json
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
             config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
             self._generate_unique_eb_sb_ids(config_json)
             config = json.dumps(config_json)
@@ -222,11 +231,12 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
             central_node_name, fast_load=True
         )
         if self._tel.skamid:
-            config = self.observation.generate_release_all_resources_config_for_central_node(
+            config = self.observation.generate_release_all_resources_config_for_central_node(  # noqa: disable=E501
                 sub_array_id
             )
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
             config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
         self._log(
             f"Commanding {central_node_name} with ReleaseResources {config}"
@@ -234,7 +244,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         central_node.command_inout("ReleaseResources", config)
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray assign resources is done.
+        """Domain logic specifying what needs to be waited
+         for subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -255,7 +266,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
     def set_wait_for_doing(
         self, sub_array_id: int
     ) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+        """Domain logic specifyig what needs to be done
+         for waiting for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -274,7 +286,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         return brd
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray releasing resources is done.
+        """Domain logic specifying what needs to be waited
+         for subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -319,7 +332,8 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        # scan duration needs to be a memorized for future objects that may require it
+        # scan duration needs to be a memorized for
+        # future objects that may require it
         Memo(scan_duration=duration)
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -327,7 +341,8 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
             config = self.observation.generate_scan_config().as_json
 
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
             config = json.dumps(CONFIGURE_JSON_LOW)
         self._log(f"commanding {subarray_name} with Configure: {config} ")
         subarray.command_inout("Configure", config)
@@ -347,7 +362,8 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for configuring a scan is done.
+        """Domain logic specifying what needs to be waited
+         for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -385,7 +401,8 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
     def set_wait_for_undo(
         self, sub_array_id: int, receptors: List[int]
     ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray clear scan config is done.
+        """Domain logic specifying what needs to be waited for subarray
+         clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
@@ -429,7 +446,8 @@ class ScanStep(base.ScanStep, LogEnabled):
         if self._tel.skamid:
             scan_config = self.observation.generate_run_scan_conf().as_json
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
             scan_config = json.dumps(SCAN_JSON_LOW)
         scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id)
@@ -462,7 +480,8 @@ class ScanStep(base.ScanStep, LogEnabled):
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+        """Domain logic specifyig what needs to be done for waiting
+         for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -569,7 +588,8 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         Not implemented.
 
         Raises:
-            NotImplementedError: Raises the error when implementation is not done.
+            NotImplementedError: Raises the error when implementation
+                is not done.
         """
         raise NotImplementedError()
 

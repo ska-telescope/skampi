@@ -15,7 +15,6 @@ def test_abort_configuring(set_up_subarray_log_checking_for_csp: None):
     """Abort scanning."""
 
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.configure
 @pytest.mark.csp

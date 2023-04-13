@@ -140,7 +140,6 @@ def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
     """Set up general execution settings during setup and teardown.
 
     :param exec_settings: The global test execution settings as a fixture.
-    :return: test specific execution settings as a fixture
     """
     if os.getenv("LIVE_LOGGING_EXTENDED"):
         logger.info("running live logs globally")

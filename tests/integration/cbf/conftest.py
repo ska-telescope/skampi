@@ -26,10 +26,13 @@ def fxt_nr_of_subarrays() -> int:
 
 @pytest.fixture(name="set_nr_of_subarray", autouse=True)
 def fxt_set_nr_of_subarray(sut_settings: conftest.SutTestSettings, nr_of_subarrays: int):
-    """_summary_
+    """
+    Set the number of subarrays in the SUT settings.
 
     :param sut_settings: _description_
     :type sut_settings: conftest.SutTestSettings
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings.
+    :type nr_of_subarrays: int
     """
     sut_settings.nr_of_subarrays = nr_of_subarrays
 

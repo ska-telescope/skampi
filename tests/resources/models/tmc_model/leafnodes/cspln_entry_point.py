@@ -65,7 +65,6 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration parameters
         :param sb_id: a generic id to identify a sb to assign resources
 
         Raises:
@@ -121,7 +120,6 @@ class CspLnConfigureStep(CspConfigureStep):
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         # scan duration needs to be a memorized for future objects

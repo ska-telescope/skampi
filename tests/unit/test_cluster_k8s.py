@@ -77,8 +77,7 @@ def fxt_test_namespace(manifest):
     is used. As a 'local default', in case users don't want to use their
     default namespace, we provide the preset value `ci-local` in the makefiles
 
-    Yields:
-        Namespace
+    :yields: Namespace
     """
     logging.info(f"Current working directory: {os.getcwd()}")
     logging.info(f"Manifest returns: {manifest}")
@@ -195,8 +194,7 @@ def fxt_create_ingress(test_namespace, assets_dir):
     kubernetes lib doesn't have the V1 ingress API implemented yet.
     Therefore this method can be updated in future to use the API directly.
 
-    Yields:
-        Return Code
+    :yields: Return Code
     """
     import yaml
 

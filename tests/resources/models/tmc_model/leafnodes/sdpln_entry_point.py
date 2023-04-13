@@ -113,8 +113,8 @@ class SdpLnConfigureStep(SdpConfigureStep):
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
+        :param duration: scan duration for the do method
         """
         # scan duration needs to be a memorised for future objects
         # that mnay require it

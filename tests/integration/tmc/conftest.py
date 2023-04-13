@@ -88,7 +88,7 @@ def fxt_sdp_start_up_test_exec_settings(
 ):
     """General startup test execution settings specific to telescope from tmc.
 
-    :param exec_settings: Fixture as used by skallop
+    :param integration_test_exec_settings: Fixture as used by skallop
     """
     integration_test_exec_settings.time_out = 100
 
@@ -99,8 +99,7 @@ def fxt_tmc_assign_resources_exec_settings(
 ):
     """Set up test specific execution settings.
 
-    :param exec_settings: The global test execution settings as a fixture.
-    :return: test specific execution settings as a fixture
+    :param integration_test_exec_settings: The global test execution settings as a fixture.
     """
     integration_test_exec_settings.time_out = 100
 

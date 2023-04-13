@@ -305,7 +305,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration parameters
+        :param configuration: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         # scan duration needs to be a memorized for
@@ -375,7 +375,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
          clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
+        :param receptors: this dish indices (in case of mid) to control
         """
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
@@ -406,9 +406,6 @@ class ScanStep(base.ScanStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration parameters
-        :param sb_id: a generic ide to identify a sb to assign resources
 
         Raises:
             Exception: Raise exception in do method of scan command

@@ -222,7 +222,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration paramaters
+        :param configuration: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         # scan duration needs to be a memorised for
@@ -288,7 +288,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         subarray clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
+        :param receptors: this dish indices (in case of mid) to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)

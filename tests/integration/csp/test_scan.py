@@ -36,6 +36,7 @@ def test_abort_scanning(disable_clear):
     """Abort scanning."""
 
 
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.csp

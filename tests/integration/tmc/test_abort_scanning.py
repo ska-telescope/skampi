@@ -25,7 +25,6 @@ def test_tmc_abort_scanning_on_mid_subarray(disable_clear_and_tear_down: None):
     """Run a abort on TMC mid subarray when Scanning"""
 
 
-@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

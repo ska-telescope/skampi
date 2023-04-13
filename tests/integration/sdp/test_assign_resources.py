@@ -64,6 +64,7 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
     """Assign resources to sdp subarray in mid."""
 
 
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp

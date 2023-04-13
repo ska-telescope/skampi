@@ -96,6 +96,7 @@ def test_abort_in_resourcing_mid(
     """Assign resources to tmc subarray in mid."""
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

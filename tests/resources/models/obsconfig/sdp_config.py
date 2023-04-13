@@ -360,6 +360,16 @@ class ProcessingSpecs(TargetSpecs):
             }
 
     @property
+    def processing_specs(self):
+        return self._processing_specs
+
+    @processing_specs.setter
+    def processing_specs(self, new_spec):
+        if not isinstance(new_spec, dict):
+            raise ValueError("Processing specs needs to be a dictionary")
+        self._processing_specs = new_spec
+
+    @property
     def target_processings(self):
         return {target.processing for target in self.target_specs.values()}
 

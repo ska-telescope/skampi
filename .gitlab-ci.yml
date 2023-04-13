@@ -15,10 +15,10 @@ variables:
   CONFIG: "common"
 
 stages:
-  - lint
   - on-demand
   - build
   - test
+  - lint
   - clean_test_env
   - publish
   - deploy
@@ -92,4 +92,3 @@ include:
 
 python-lint:
   image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
-    

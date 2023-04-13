@@ -67,14 +67,19 @@ def fxt_k8s_cluster(assets_dir):
     os.environ["KUBECONFIG"] = kubeconfig_filepath
     config.load_kube_config(kubeconfig_filepath)
 
-    nodes = subprocess.run(
-        ["kubectl", "get", "nodes", "-o", "wide"],
-        check=True,
-        stdout=subprocess.PIPE,
-        universal_newlines=True,
-    )
-    for line in nodes.stdout.split("\n"):
-        logging.info(line)
+    try:
+        nodes = subprocess.run(
+            ["kubectl", "get", "nodes", "-o", "wide"],
+            check=True,
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+        )
+        for line in nodes.stdout.split("\n"):
+            logging.info(line)
+    except subprocess.CalledProcessError as err:
+        logging.warning(
+            "'kubectl get nodes' returned the following error: %s", str(err)
+        )
 
 
 @pytest.fixture(name="test_namespace")

@@ -79,8 +79,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error when
+        :raises NotImplementedError: Raises the error when
                 implementation is not done.
         """
         raise NotImplementedError()
@@ -112,7 +111,13 @@ class CspAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
     """Implementation of Assign Resources Step for CSP."""
 
     def __init__(self, observation: Observation) -> None:
-        """Init object."""
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+
+        """
         super().__init__()
         self.observation = observation
         self._tel = names.TEL()
@@ -203,7 +208,12 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
     """Implementation of Configure Scan Step for CSP."""
 
     def __init__(self, observation: Observation) -> None:
-        """Init object."""
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         self.observation = observation
         self._tel = names.TEL()
@@ -224,6 +234,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         :param dish_ids: this dish indices (in case of mid) to control
         :param configuration: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
+        :param duration: duration of scan
         """
         # scan duration needs to be a memorised for
         # future objects that mnay require it
@@ -262,6 +273,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -274,6 +286,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         for a subarray to be in a state of configuring.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -301,7 +314,12 @@ class CspScanStep(base.ScanStep, LogEnabled):
     """Implementation of Scan Step for CBF."""
 
     def __init__(self, observation: Observation) -> None:
-        """Init object."""
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         self.observation = observation
         self._tel = names.TEL()
@@ -313,8 +331,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
 
-        Raises:
-            Exception: Raise exception in do method of scan command
+        :raises Exception: Raise exception in do method of scan command
         """
         if self._tel.skalow:
             scan_config_arg = json.dumps(csp_low_scan)
@@ -341,6 +358,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
 
     def undo(self, sub_array_id: int):
@@ -357,6 +375,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
         waiting for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -371,6 +390,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         return None
 
@@ -444,8 +464,7 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error when
+        :raises NotImplementedError: Raises the error when
                 implementation is not done.
         """
         raise NotImplementedError()
@@ -493,6 +512,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -562,7 +582,12 @@ class CSPEntryPoint(CompositeEntryPoint):
     nr_of_subarrays = 2
 
     def __init__(self, observation: Observation | None = None) -> None:
-        """Init Object"""
+        """
+        Init Object
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         if observation is None:
             observation = Observation()

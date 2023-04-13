@@ -36,6 +36,9 @@ def fxt_k8s_cluster(assets_dir):
     3. a PSI cluster
 
     Getting the kubeconfig for these different scenarios is slightly different.
+
+    :param assets_dir: A string representing the path to the directory containing
+        the necessary assets for accessing the Kubernetes cluster.
     """
     kubeconfig_filepath = None
     if "KUBECONFIG" in os.environ:
@@ -76,6 +79,9 @@ def fxt_test_namespace(manifest):
     When run locally, no CI job exists - thus the default namespace
     is used. As a 'local default', in case users don't want to use their
     default namespace, we provide the preset value `ci-local` in the makefiles
+
+    :param manifest:  A dictionary containing the manifest data
+        for the namespace setup to be tested
 
     :yields: Namespace
     """
@@ -189,6 +195,10 @@ def fxt_create_ingress(test_namespace, assets_dir):
     patch the host names with namespace
     create ingress with temp manifest
     Teardown
+
+    :param test_namespace: A test namespace for cluster
+    :param assets_dir: A string representing the path to the directory containing
+        the necessary assets for accessing the Kubernetes cluster.
 
     TODO: This is needed because the currently used version of the python
     kubernetes lib doesn't have the V1 ingress API implemented yet.

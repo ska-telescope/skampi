@@ -117,7 +117,16 @@ def i_configure_it_for_a_scan(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):
-    """I configure it for a scan."""
+    """
+    I configure it for a scan.
+
+    :param valid_config_from_file: object for valid config from file with given path
+    :param allocated_subarray: The allocated subarray to be configured.
+    :param context_monitoring: Context monitoring object.
+    :param integration_test_exec_settings: The integration test execution settings.
+    :param sut_settings: SUT settings object.
+
+    """
     subarray_id = sut_settings.subarray_id
     subarray = SubArray(subarray_id)
     with context_monitoring.context_monitoring():

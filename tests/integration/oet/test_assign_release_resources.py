@@ -148,9 +148,12 @@ def when_allocate_resources_from_sbi(
     """
     Use the OET Rest API to run script that allocates resources from given SBI.
 
-    Args:
-        script (str): file path to an observing script
-        sb_json (str): file path to a scheduling block
+    :param script (str): file path to an observing script
+    :param sb_json (str): file path to a scheduling block
+    :param context_monitoring: for context monitoring
+    :param running_telescope: A fixture for running telescope
+    :param sut_settings: A class representing the settings for the system under test.
+    :param exec_settings: A class representing the execution settings for the script.
     """
     with context_monitoring.context_monitoring():
         running_telescope.release_subarray_when_finished(
@@ -296,7 +299,15 @@ def i_assign_resources_to_it(
     sut_settings: SutTestSettings,
     subarray: SubArray,
 ):
-    """I assign resources to it."""
+    """
+    I assign resources to it.
+
+    :param running_telescope: the running telescope object
+    :param context_monitoring: context monitoring object
+    :param integration_test_exec_settings: integration test execution settings object
+    :param sut_settings: SUT test settings object
+    :param subarray: the subarray object to assign resources to subarray
+    """
 
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
@@ -318,7 +329,15 @@ def i_assign_resources_to_it_low(
     sut_settings: SutTestSettings,
     subarray: SubArray,
 ):
-    """I assign resources to it in low."""
+    """
+    I assign resources to it in low.
+
+    :param running_telescope: the running telescope object
+    :param context_monitoring: context monitoring object
+    :param integration_test_exec_settings: integration test execution settings object
+    :param sut_settings: SUT test settings object
+    :param subarray: the subarray object to assign resources to subarray
+    """
 
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors

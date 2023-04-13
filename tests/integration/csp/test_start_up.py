@@ -41,6 +41,7 @@ def fxt_set_up_log_checking_for_csp(
 ):
     """Set up log checking (using log consumer) on cbf.
     :param log_checking: skallop fixture used to set up log checking.
+    :param sut_settings: A class representing the settings for the system under test.
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
@@ -64,7 +65,11 @@ def a_csp(
 def the_csp_must_be_on(
     sut_settings: conftest.SutTestSettings,
 ):
-    """the csp must be on."""
+    """
+    the csp must be on.
+
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     tel = names.TEL()
     csp_master = con_config.get_device_proxy(tel.csp.controller)
     result = csp_master.read_attribute("state").value

@@ -100,6 +100,7 @@ def fxt_set_up_log_capturing_for_sdp(
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
     :param log_checking: The skallop log_checking fixture to use
+    :param sut_settings: A class representing the settings for the system under test.
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
@@ -147,7 +148,15 @@ def an_sdp_subarray_in_idle_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """an SDP subarray in IDLE state."""
+    """
+    an SDP subarray in IDLE state.
+
+    :param set_up_subarray_log_checking_for_sdp: fixture to set up logging for the subarray
+    :param sdp_base_configuration: base configuration for the SDP subarray
+    :param subarray_allocation_spec: specification for the subarray allocation
+    :param sut_settings: settings for the system under test
+    :return: the updated sdp base configuration for the SDP subarray
+    """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     # will use default composition for the allocated subarray
@@ -162,7 +171,14 @@ def an_sdp_subarray_in_ready_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """an SDP subarray in READY state."""
+    """
+    an SDP subarray in READY state.
+    :param set_up_subarray_log_checking_for_sdp: a fixture for setting up logging
+        and checking for the SDP subarray
+    :param sdp_base_configuration: the base configuration for the SDP subarray
+    :param subarray_allocation_spec: the allocation specification for the subarray
+    :param sut_settings: the SUT test settings
+    """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     # will use default composition for the allocated subarray

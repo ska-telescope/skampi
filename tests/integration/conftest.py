@@ -178,6 +178,14 @@ def fxt_integration_test_exec_settings(
 
 @pytest.fixture(name="observation_config")
 def fxt_observation_config(sut_settings: SutTestSettings) -> Observation:
+    """
+    Pytest fixture that provides an instance of the `Observation`
+    class representing the observation configuration
+    for the system under test.
+
+    :param sut_settings: A class representing the settings for the system under test.
+    :return: A class representing the observation configuration for the system under test.
+    """
     return sut_settings.observation
 
 
@@ -227,7 +235,14 @@ def i_start_up_the_telescope(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I start up the telescope."""
+    """
+    I start up the telescope.
+
+    :param standby_telescope: The standby telescope instance to be started.
+    :param entry_point: The entry point to the system under test.
+    :param context_monitoring: The context monitoring configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
             logger.info("The entry point being used is : %s", entry_point)
@@ -241,7 +256,14 @@ def the_telescope_is_on(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I start up the telescope."""
+    """
+    I start up the telescope.
+
+    :param standby_telescope: The standby telescope instance to be started.
+    :param entry_point: The entry point to the system under test.
+    :param context_monitoring: The context monitoring configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
@@ -256,7 +278,14 @@ def i_switch_off_the_telescope(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I switch off the telescope."""
+    """
+    I switch off the telescope.
+    :param running_telescope: The running telescope instance.
+    :param entry_point: The entry point to the system under test.
+    :param context_monitoring: The context monitoring configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
+
+    """
     # we disable automatic shutdown as this is done by the test itself
     running_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
@@ -283,7 +312,22 @@ def assign_resources_with_subarray_id(
     resources_list: list,
     subarray_id: int,
 ):
-    """I assign resources to it."""
+    """
+    I assign resources to it
+
+    :param telescope_context: A fixture that represents the telescope context.
+    :param context_monitoring: A fixture that represents the context monitoring service.
+    :param entry_point: A fixture that represents the entry point for the subarray.
+    :param sb_config: A fixture that represents the scan configuration for the subarray.
+    :param composition: A fixture that represents the composition of the subarray.
+    :param integration_test_exec_settings: A fixture that represents the execution
+        settings for the integration test.
+    :param sut_settings: An instance of the `SutTestSettings` class representing
+        the settings for the system under test.
+    :param resources_list: A list of resources to be assigned to the subarray.
+    :param subarray_id: An integer representing the ID of the subarray to which
+        the resources should be assigned.
+    """
 
     receptors = sut_settings.receptors
     with context_monitoring.context_monitoring():
@@ -303,7 +347,19 @@ def i_assign_resources_to_it(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):
-    """I assign resources to it."""
+    """
+    I assign resources to it
+
+    :param running_telescope: Dictionary containing the running telescope's devices
+    :param context_monitoring: Object containing information about
+        the context in which the test is being executed
+    :param entry_point: Information about the entry point used for the test
+    :param sb_config: Object containing the Subarray Configuration
+    :param composition: Object containing information about the composition of the subarray
+    :param integration_test_exec_settings: Object containing
+        the execution settings for the integration test
+    :param sut_settings: Object containing the system under test settings
+    """
 
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
@@ -324,7 +380,16 @@ def i_configure_it_for_a_scan(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):
-    """I configure it for a scan."""
+    """
+    I configure it for a scan.
+
+    :param allocated_subarray: The allocated subarray to be configured.
+    :param context_monitoring: Context monitoring object.
+    :param entry_point: The entry point to be used for the configuration.
+    :param configuration: The scan configuration to be used for the scan.
+    :param integration_test_exec_settings: The integration test execution settings.
+    :param sut_settings: SUT settings object.
+    """
     sub_array_id = allocated_subarray.id
     receptors = allocated_subarray.receptors
     sb_id = allocated_subarray.sb_config.sbid
@@ -342,7 +407,12 @@ def i_execute_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I configure it for a scan."""
+    """
+    I configure it for a scan.
+
+    :param configured_subarray: The configured subarray.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
     configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
@@ -353,7 +423,13 @@ def i_command_it_to_scan(
     integration_test_exec_settings: fxt_types.exec_settings,
     context_monitoring: fxt_types.context_monitoring,
 ):
-    """I configure it for a scan."""
+    """
+    I configure it for a scan.
+
+    :param configured_subarray: The configured subarray.
+    :param integration_test_exec_settings: The integration test execution settings.
+    :param context_monitoring: Context monitoring object.
+    """
     integration_test_exec_settings.attr_synching = False
     with context_monitoring.context_monitoring():
         configured_subarray.set_to_scanning(integration_test_exec_settings)
@@ -366,7 +442,14 @@ def i_release_all_resources_assigned_to_it(
     entry_point: fxt_types.entry_point,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I release all resources assigned to it."""
+    """
+    I release all resources assigned to it.
+
+    :param allocated_subarray: The allocated subarray to be configured.
+    :param context_monitoring: Context monitoring object.
+    :param entry_point: The entry point to be used for the configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
     sub_array_id = allocated_subarray.id
 
     with context_monitoring.context_monitoring():
@@ -378,7 +461,11 @@ def i_release_all_resources_assigned_to_it(
 def an_subarray_busy_configuring(
     allocated_subarray: fxt_types.allocated_subarray,
 ):
-    """an subarray busy configuring"""
+    """
+    an subarray busy configuring
+
+    :param allocated_subarray: The allocated subarray to be configured.
+    """
     allocated_subarray.set_to_configuring(clear_afterwards=False)
 
 
@@ -390,21 +477,18 @@ def an_subarray_busy_assigning(
     exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):
-    """an subarray busy assigning"""
+    """an subarray busy assigning
 
-    """Create a subarray but block only until it is in RESOURCING
-
-    :param subarray_id: the identification nr for the subarray
-    :param receptors: the receptors that will be used for the subarray
-        If none is given it will use a default set of two receptors 1 and 2
+    Create a subarray but block only until it is in RESOURCING
+    :param running_telescope: An object for running telescope
     :param sb_config: The SB configuration to use as context
         defaults to SBConfig()
-    :param settings: the execution settings to use during the IO calls
-        defaults to ExecSettings()
     :param composition: The type of composition configuration to use
         , defaults to conf_types.Composition
         ( conf_types.CompositionType.STANDARD )
     :type composition: conf_types.Composition, optional
+    :param exec_settings: A fixture that returns the execution settings of the test
+    :param sut_settings: The settings of the system under test
     :return: A subarray context manager to ue for subsequent commands
     """
     subarray_id = sut_settings.subarray_id

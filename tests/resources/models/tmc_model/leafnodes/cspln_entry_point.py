@@ -66,9 +66,8 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
         :param sb_id: a generic id to identify a sb to assign resources
-
-        Raises:
-            Exception: Raise exception in do method of assign resources command
+        :param composition: The assign resources configuration paramaters
+        :raises Exception: Raise exception in do method of assign resources command
         """
 
         try:
@@ -121,6 +120,8 @@ class CspLnConfigureStep(CspConfigureStep):
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
         :param sb_id: a generic ide to identify a sb to assign resources
+        :param configuration: The assign resources configuration paramaters
+        :param duration: duration of scan
         """
         # scan duration needs to be a memorized for future objects
         # that many require it
@@ -159,8 +160,7 @@ class CSPLnScanStep(CspScanStep):
 
         :param sub_array_id: The index id of the subarray to control
 
-        Raises:
-            Exception: Raise exception in do method of scan command
+        :raises Exception: Raise exception in do method of scan command
         """
         # scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
@@ -188,6 +188,7 @@ class CSPLnScanStep(CspScanStep):
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
 
     def undo(self, sub_array_id: int):
@@ -203,6 +204,7 @@ class CSPLnScanStep(CspScanStep):
         for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -217,6 +219,7 @@ class CSPLnScanStep(CspScanStep):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         return None
 
@@ -227,7 +230,11 @@ class CSPLnEntryPoint(CompositeEntryPoint):
     nr_of_subarrays = 2
 
     def __init__(self, observation: Observation | None = None) -> None:
-        """Init Object"""
+        """
+        Init Object
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         if observation is None:
             observation = Observation()

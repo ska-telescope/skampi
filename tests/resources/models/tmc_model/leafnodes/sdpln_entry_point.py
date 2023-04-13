@@ -114,6 +114,7 @@ class SdpLnConfigureStep(SdpConfigureStep):
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
         :param sb_id: a generic ide to identify a sb to assign resources
+        :param configuration: The assign resources configuration paramaters
         :param duration: scan duration for the do method
         """
         # scan duration needs to be a memorised for future objects
@@ -149,8 +150,7 @@ class SDPLnScanStep(SDPScanStep):
 
         :param sub_array_id: The index id of the subarray to control
 
-        Raises:
-            Exception: Raise exception in do method of scan command
+        :raises Exception: Raise exception in do method of scan command
         """
         scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
@@ -171,6 +171,7 @@ class SDPLnScanStep(SDPScanStep):
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
 
     def undo(self, sub_array_id: int):
@@ -186,6 +187,7 @@ class SDPLnScanStep(SDPScanStep):
         waiting for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
@@ -200,6 +202,7 @@ class SDPLnScanStep(SDPScanStep):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         return None
 
@@ -210,7 +213,12 @@ class SDPLnEntryPoint(CompositeEntryPoint):
     nr_of_subarrays = 2
 
     def __init__(self, observation: Observation = None) -> None:
-        """Init Object"""
+        """
+        Init Object
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         if not observation:
             observation = Observation()

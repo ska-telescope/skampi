@@ -21,8 +21,6 @@ USER tango
 
 RUN python3 -m pip install black flake8 pre-commit isort
 
-RUN python3 -m pip install --no-cache-dir notebook jupyterlab
-
 RUN poetry config virtualenvs.in-project true
 
 RUN pip install virtualenv

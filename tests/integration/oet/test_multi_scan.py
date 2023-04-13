@@ -25,7 +25,7 @@ low subarray for same scan type from OET(XTP-21538),
 Test to Run multi scan on
 low subarray for same different type from OET(XTP-21541),
 
-test_XTP-
+test_XTP-2328
 ----------------------------------
 Tests to Run multi scan on
 mid subarray for same scan type from OET(XTP-21542),

@@ -42,7 +42,14 @@ def a_subarray_in_ready_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """a subarray in READY state"""
+    """
+    a subarray in READY state
+
+    :param base_configuration: the base scan configuration.
+    :param subarray_allocation_spec: the specification for the subarray allocation.
+    :param sut_settings: the SUT test settings.
+    :return: the scan configuration for the subarray.
+    """
     return base_configuration
 
 

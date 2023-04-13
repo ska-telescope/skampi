@@ -80,8 +80,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error
+        :raises NotImplementedError: Raises the error
                 when implementation is not done.
         """
         raise NotImplementedError()
@@ -117,7 +116,12 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
     """Implementation of Assign Resources Step for SDP."""
 
     def __init__(self, observation: Observation) -> None:
-        """Init object."""
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
@@ -207,7 +211,12 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
     """Implementation of Configure Scan Step for SDP."""
 
     def __init__(self, observation: Observation) -> None:
-        """Init object."""
+        """
+        Init object.
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+
+        """
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
@@ -225,7 +234,7 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration paramaters
+        :param configuration: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         # scan duration needs to be a memorised for future
@@ -256,6 +265,7 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
@@ -270,6 +280,7 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         a subarray to be in a state of configuring.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
@@ -284,7 +295,7 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         for subarray clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
+        :param receptors: this dish indices (in case of mid) to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
@@ -299,7 +310,12 @@ class SDPScanStep(base.ScanStep, LogEnabled):
     """Implementation of Scan Step for SDP."""
 
     def __init__(self, observation: Observation) -> None:
-        """Init object."""
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
@@ -311,8 +327,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
 
-        Raises:
-            Exception: Raise exception in do method of scan command
+        :raises Exception: Raise exception in do method of scan command
         """
         scan_config = self.observation.generate_sdp_run_scan().as_json
         scan_duration = cast(float, Memo().get("scan_duration"))
@@ -333,6 +348,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         return get_message_board_builder()
 
@@ -348,6 +364,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
@@ -361,6 +378,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         return get_message_board_builder()
 
@@ -404,6 +422,7 @@ class SDPObsResetStep(base.ObsResetStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
@@ -476,7 +495,12 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
     obs_to_use = None
 
     def __init__(self, observation: Observation | None = None) -> None:
-        """Init Object"""
+        """
+        Init Object
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         if not self.obs_to_use:
             if not observation:

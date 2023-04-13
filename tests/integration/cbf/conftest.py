@@ -26,10 +26,13 @@ def fxt_nr_of_subarrays() -> int:
 
 @pytest.fixture(name="set_nr_of_subarray", autouse=True)
 def fxt_set_nr_of_subarray(sut_settings: conftest.SutTestSettings, nr_of_subarrays: int):
-    """_summary_
+    """
+    Set the number of subarrays in the SUT settings.
 
     :param sut_settings: _description_
     :type sut_settings: conftest.SutTestSettings
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings.
+    :type nr_of_subarrays: int
     """
     sut_settings.nr_of_subarrays = nr_of_subarrays
 
@@ -96,6 +99,7 @@ def fxt_set_up_log_checking_for_cbf(
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
     :param log_checking: The skallop log_checking fixture to use
+    :param sut_settings: A class representing the settings for the system under test.
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()

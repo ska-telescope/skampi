@@ -24,7 +24,9 @@ def fxt_set_entry_point(
     sut_settings: conftest.SutTestSettings,
 ):
     """Fixture to use for setting up the entry point as from only the
-    interface to sdp."""
+    interface to sdp.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
     sut_settings.nr_of_receptors = 4
@@ -88,7 +90,7 @@ def fxt_sdp_start_up_test_exec_settings(
 ):
     """General startup test execution settings specific to telescope from tmc.
 
-    :param exec_settings: Fixture as used by skallop
+    :param integration_test_exec_settings: Fixture as used by skallop
     """
     integration_test_exec_settings.time_out = 100
 
@@ -99,8 +101,7 @@ def fxt_tmc_assign_resources_exec_settings(
 ):
     """Set up test specific execution settings.
 
-    :param exec_settings: The global test execution settings as a fixture.
-    :return: test specific execution settings as a fixture
+    :param integration_test_exec_settings: The global test execution settings as a fixture.
     """
     integration_test_exec_settings.time_out = 100
 
@@ -116,6 +117,7 @@ def fxt_set_up_log_capturing_for_cbf(
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
     :param log_checking: The skallop log_checking fixture to use
+    :param sut_settings: A class representing the settings for the system under test.
     """
     index = sut_settings.subarray_id
     if os.getenv("CAPTURE_LOGS"):

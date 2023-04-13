@@ -163,7 +163,14 @@ def the_telescope_is_on(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I start up the telescope."""
+    """
+    I start up the telescope.
+
+    :param standby_telescope: The standby telescope instance to be started.
+    :param entry_point: The entry point to the system under test.
+    :param context_monitoring: The context monitoring configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(integration_test_exec_settings):

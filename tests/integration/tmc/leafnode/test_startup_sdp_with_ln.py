@@ -50,7 +50,11 @@ def a_sdp_ln():
 
 @then("the sdp must be on")
 def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
-    """the sdp must be on."""
+    """
+    the sdp must be on.
+    :param sut_settings: A class representing the settings for the system under test.
+
+    """
     tel = names.TEL()
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value

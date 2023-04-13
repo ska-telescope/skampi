@@ -204,7 +204,10 @@ def the_sdp_csp_and_dish_must_be_off(
     sut_settings: conftest.SutTestSettings,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """the sdp, csp and dish must be off."""
+    """
+    the sdp, csp and dish must be off.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     tel = names.TEL()
     mid = names.Mid()
     # Check state attribute of SDP Master

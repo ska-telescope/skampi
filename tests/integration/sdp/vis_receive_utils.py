@@ -293,7 +293,7 @@ def wait_for_pod(
     :param phase: phase of the pod
     :param timeout: time to wait for the change
     :param pod_condition: if given, the condition through which the pod must
-    have passed
+        have passed
 
     :returns: whether the pod was in the indicated status within the timeout
     """

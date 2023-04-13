@@ -100,8 +100,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error when
+        :raises NotImplementedError: Raises the error when
                 implementation is not done.
         """
         raise NotImplementedError()
@@ -155,7 +154,12 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
     """Implementation of Assign Resources Step for TMC"""
 
     def __init__(self, observation: Observation) -> None:
-        """Init object."""
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
@@ -295,7 +299,12 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
     """Implementation of Configure Scan Step for TMC."""
 
     def __init__(self, observation: Observation) -> None:
-        """Init object."""
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
@@ -313,7 +322,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration parameters
+        :param configuration: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         # scan duration needs to be a memorized for
@@ -348,6 +357,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
          for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         brd = get_message_board_builder()
 
@@ -383,7 +393,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
          clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
+        :param receptors: this dish indices (in case of mid) to control
         """
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
@@ -403,7 +413,12 @@ class ScanStep(base.ScanStep, LogEnabled):
     """Implementation of Scan Step for TMC."""
 
     def __init__(self, observation: Observation) -> None:
-        """Init object."""
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
@@ -414,12 +429,8 @@ class ScanStep(base.ScanStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration parameters
-        :param sb_id: a generic ide to identify a sb to assign resources
 
-        Raises:
-            Exception: Raise exception in do method of scan command
+        :raises Exception: Raise exception in do method of scan command
         """
         if self._tel.skamid:
             scan_config = self.observation.generate_run_scan_conf().as_json
@@ -445,6 +456,7 @@ class ScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         return get_message_board_builder()
 
@@ -459,6 +471,7 @@ class ScanStep(base.ScanStep, LogEnabled):
          for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
@@ -477,6 +490,7 @@ class ScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         return get_message_board_builder()
 
@@ -550,8 +564,7 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error when implementation
+        :raises NotImplementedError: Raises the error when implementation
                 is not done.
         """
         raise NotImplementedError()
@@ -667,7 +680,12 @@ class TMCEntryPoint(CompositeEntryPoint):
     receptors = [1, 2, 3, 4]
 
     def __init__(self, observation: Observation | None = None) -> None:
-        """Init Object"""
+        """
+        Init Object
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         if not observation:
             observation = get_observation_config()

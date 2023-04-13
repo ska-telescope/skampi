@@ -76,8 +76,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error
+        :raises NotImplementedError: Raises the error
                 when implementation is not done.
         """
         raise NotImplementedError()
@@ -184,8 +183,7 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error
+        :raises NotImplementedError: Raises the error
                 when implementation is not done.
         """
         raise NotImplementedError()
@@ -229,8 +227,9 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration paramaters
+        :param configuration: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
+        :param duration: duration for scan
         """
         # scan duration needs to be a singleton in order to keep track of scan
         # settings between configure scan and run scan
@@ -275,6 +274,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
@@ -285,8 +285,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error when
+        :raises NotImplementedError: Raises the error when
                 implementation is not done.
         """
         raise NotImplementedError()
@@ -297,7 +296,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         subarray clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
+        :param receptors: this dish indices (in case of mid) to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
@@ -321,8 +320,7 @@ class CbfScanStep(base.ScanStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
 
-        Raises:
-            Exception: Raise exception if the scan command fails
+        :raises Exception: Raise exception if the scan command fails
         """
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -351,6 +349,7 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
 
     def undo(self, sub_array_id: int):
@@ -367,6 +366,7 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
@@ -381,6 +381,7 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
+        :param receptors: The index id of the dish to control
         """
         return None
 
@@ -454,8 +455,7 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error when
+        :raises NotImplementedError: Raises the error when
                 implementation is not done.
         """
         raise NotImplementedError()

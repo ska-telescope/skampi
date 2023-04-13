@@ -24,8 +24,7 @@ def fxt_inject_build_out():
     """I
     Inject a value into os env for using build out
 
-    Yields:
-        None
+    :yields: None
     """
     original_value = os.environ["TEST_ENV"]
     os.environ["TEST_ENV"] = "BUILD_OUT"

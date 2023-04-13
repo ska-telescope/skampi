@@ -1,5 +1,5 @@
 @VTS-225
-Feature: Observations using OET
+Feature: Verification of OET scripts being executed successfully during an observation
 
     #*Scenario: Run multiple scans on TMC subarray in low same scan type*
     @XTP-21538 @XTP-18866

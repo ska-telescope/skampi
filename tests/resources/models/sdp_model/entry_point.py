@@ -81,8 +81,8 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         Not implemented.
 
         Raises:
-            NotImplementedError:
-             Raises the error when implementation is not done.
+            NotImplementedError: Raises the error
+                when implementation is not done.
         """
         raise NotImplementedError()
 

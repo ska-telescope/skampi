@@ -43,10 +43,8 @@ def fxt_k8s_cluster(assets_dir):
         kubeconfig_filepath = os.environ["KUBECONFIG"]
     else:
         if os.path.isfile(os.path.join(os.environ["HOME"], ".kube", "config")):
-            logging.info(
-                "kubeconfig already exists, skipping: "
-                + os.path.join(os.environ["HOME"], ".kube", "config")
-            )
+            path = os.path.join(os.environ["HOME"], ".kube", "config")
+            logging.info(f"kubeconfig already exists, skipping: {path}")
             kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
         else:
             logging.info(f"Defaulting to loading kubeconfig from {kubeconfig_filepath}.")

@@ -79,11 +79,11 @@ class ScriptExecutor:
             pid (int): ID of the script in the OET
             state (str): The desired OET state for the script (eg 'READY')
             timeout (int): timeout (~seconds) how long to wait
-            for script to complete
+                for script to complete
 
         Returns:
             state (str): Either the desired state, STOPPED if the timeout was
-            reached or FAILED if the script failed
+                reached or FAILED if the script failed
         """
         t = timeout
         while t > 0:
@@ -124,17 +124,17 @@ class ScriptExecutor:
         Args:
             script (str): Script file to execute
             script_run_args: Arguments to pass to the script when
-            the script execution is started
+                the script execution is started
             timeout: Timeout (~seconds) for how long to wait for script
-            stages to complete
+                stages to complete
             script_create_kwargs: Any keyword arguments
-             (e.g. git related args) to pass to
-            OET rest server when creating the script
+                (e.g. git related args) to pass to
+                OET rest server when creating the script
 
         Returns:
             state (str): The OET state for the script
-             after execution (eg 'COMPLETE')
-            None if something goes wrong.
+                after execution (eg 'COMPLETE')
+                None if something goes wrong.
         """
         LOGGER.info(f"Running script {script}")
 

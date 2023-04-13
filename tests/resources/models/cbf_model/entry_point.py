@@ -78,7 +78,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
 
         Raises:
             NotImplementedError: Raises the error
-             when implementation is not done.
+                when implementation is not done.
         """
         raise NotImplementedError()
 
@@ -186,7 +186,7 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
 
         Raises:
             NotImplementedError: Raises the error
-             when implementation is not done.
+                when implementation is not done.
         """
         raise NotImplementedError()
 
@@ -287,7 +287,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
 
         Raises:
             NotImplementedError: Raises the error when
-            implementation is not done.
+                implementation is not done.
         """
         raise NotImplementedError()
 
@@ -456,7 +456,7 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
 
         Raises:
             NotImplementedError: Raises the error when
-            implementation is not done.
+                implementation is not done.
         """
         raise NotImplementedError()
 

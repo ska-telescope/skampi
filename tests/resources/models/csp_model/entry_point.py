@@ -699,7 +699,6 @@ csp_low_configure_scan = {
     "subarray": {"subarray_name": "science period 23"},
     "common": {
         "config_id": "sbi-mvp01-20200325-00001-science_A",
-        "subarray_id": 1,
     },
     "lowcbf": {
         "stations": {
@@ -707,30 +706,12 @@ csp_low_configure_scan = {
             "stn_beams": [
                 {
                     "beam_id": 1,
-                    "freq_ids": [64, 65, 66, 67, 68, 68, 70, 71],
+                    "freq_ids": [64, 65, 66, 67, 68, 69, 70, 71],
                     "boresight_dly_poly": "url",
                 }
             ],
         },
-        "timing_beams": {
-            "beams": [
-                {
-                    "pst_beam_id": 13,
-                    "stn_beam_id": 1,
-                    "offset_dly_poly": "url",
-                    "stn_weights": [0.9, 1.0, 1.0, 0.9],
-                    "jones": "url",
-                    "dest_ip": ["10.22.0.1:2345", "10.22.0.3:3456"],
-                    "dest_chans": [128, 256],
-                    "rfi_enable": ["true", "true", "true"],
-                    "rfi_static_chans": [1, 206, 997],
-                    "rfi_dynamic_chans": [242, 1342],
-                    "rfi_weighted": 0.87,
-                }
-            ]
-        },
-        "search_beams": "tbd",
-        "zooms": "tbd",
+        "timing_beams": {"beams": []},
     },
 }
 

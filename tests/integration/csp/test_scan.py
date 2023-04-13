@@ -36,9 +36,6 @@ def test_abort_scanning(disable_clear):
     """Abort scanning."""
 
 
-@pytest.mark.skip(
-    reason="Disable test as it need update to support new JSON Schema"
-)
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.csp

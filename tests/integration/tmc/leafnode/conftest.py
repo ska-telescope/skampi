@@ -145,6 +145,7 @@ def an_sdp_subarray_in_idle_state(
     :param subarray_allocation_spec: An instance of the SubarrayAllocationSpec class
         representing the subarray allocation specification.
     :param sut_settings: A class representing the settings for the system under test.
+    :return: the updated sdp base configuration for the SDP subarray
     """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id

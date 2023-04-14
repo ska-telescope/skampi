@@ -96,6 +96,8 @@ def an_oet(observation_config: Observation):
 def a_valid_scan_configuration():
     """
     A valid scan configuration
+
+    :return: path to json file
     """
     return Path("./tests/resources/test_data/OET_integration/configure_low.json")
 
@@ -164,6 +166,7 @@ def when_observe_sbi(
     :type sb_json: str
     :param allocated_subarray: The allocated subarray to be configured.
     :param context_monitoring: Context monitoring object.
+    :return: script completion state
     """
     script_completion_state = "UNKNOWN"
     with context_monitoring.context_monitoring():

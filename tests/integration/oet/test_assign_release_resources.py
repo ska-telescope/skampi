@@ -133,6 +133,8 @@ def when_create_sbi(
     :type script: str
     :param sb_json: file path to a scheduling block
     :type sb_json: str
+    :param context_monitoring: An instance of the ContextMonitoring class
+        containing context monitoring settings.
     """
     with context_monitoring.observe_while_running():
         script_completion_state = EXECUTOR.execute_script(script, sb_json)
@@ -156,8 +158,8 @@ def when_allocate_resources_from_sbi(
     """
     Use the OET Rest API to run script that allocates resources from given SBI.
 
-    :param script (str): file path to an observing script
-    :param sb_json (str): file path to a scheduling block
+    :param script: file path to an observing script
+    :param sb_json: file path to a scheduling block
     :param context_monitoring: for context monitoring
     :param running_telescope: A fixture for running telescope
     :param sut_settings: A class representing the settings for the system under test.
@@ -310,6 +312,7 @@ def an_oet_subarray_object_in_state_empty(
     an oet subarray in empty state
     :param running_telescope: A fixture for running telescope
     :param sut_settings: A class representing the settings for the system under test.
+    :return: a subarray with input as subarray id
     """
     return SubArray(sut_settings.subarray_id)
 

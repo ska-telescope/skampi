@@ -231,6 +231,7 @@ def dataproduct_directory(entry_point: fxt_types.entry_point):
     The directory where output files will be written.
 
     :param entry_point: entry point to test
+    :return: dataproduct directory
     """
     eb_id = entry_point.observation.execution_block.eb_id
     pb_id = entry_point.observation.processing_blocks[0].pb_id

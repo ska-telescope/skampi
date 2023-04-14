@@ -54,6 +54,7 @@ def an_csp_subarray_in_ready_state(
         representing the subarray allocation specification.
     :param sut_settings: An instance of the SutTestSettings class
         representing the settings for the system under test.
+    :return: A class representing the csp base configuration for the system under test.
     """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id

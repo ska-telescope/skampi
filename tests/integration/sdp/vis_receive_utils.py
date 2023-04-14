@@ -63,7 +63,7 @@ def _k8s_pod_exec(
     :param namespace: namespace where pod is running
     :param stdout: enable stdout on channel
 
-    :returns api_response: channel connection object
+    :return: api response - channel connection object
     """
     core_api = client.CoreV1Api()
     LOG.debug(
@@ -251,6 +251,8 @@ def pvc_exists(pvc_name: str, namespace: str):
 
     :param pvc_name: name of the PVC to check
     :param namespace: namespace where to look for the PVC
+
+    :return: boolean value if pvc exists
     """
     core_api = client.CoreV1Api()
 
@@ -268,6 +270,7 @@ def pod_deleted(pod_name: str, namespace: str):
 
     :param pod_name: name of the pod to check
     :param namespace: namespace where to look for the PVC
+    :return: boolean value if pod is deleted or not
     """
     core_api = client.CoreV1Api()
 
@@ -378,6 +381,7 @@ def wait_for_predicate(
     :param description: description to use if test fails
     :param timeout: timeout in seconds
     :param interval: interval between tests of the predicate in seconds
+    :return: wrapper for wait for predicate function
     """
 
     @functools.wraps(func)  # preserves information about the original function

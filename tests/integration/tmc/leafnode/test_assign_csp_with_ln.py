@@ -32,6 +32,7 @@ def an_csp_subarray_in_empty_state(
 
     :param set_csp_ln_entry_point: An object to set csp leafnode entry point
     :param base_composition : An object for base composition
+    :return: base composition
     """
     logger.info("an_csp_subarray_in_empty_state")
     return base_composition

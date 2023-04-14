@@ -45,10 +45,11 @@ def a_subarray_in_ready_state(
     """
     a subarray in READY state
 
+    :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
     :param base_configuration: the base scan configuration.
     :param subarray_allocation_spec: the specification for the subarray allocation.
     :param sut_settings: the SUT test settings.
-    :return: the scan configuration for the subarray.
+    :return: the base configuration for the subarray.
     """
     return base_configuration
 
@@ -62,7 +63,13 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """the SDP subarray must be in the SCANNING state until finished."""
+    """
+    the SDP subarray must be in the SCANNING state until finished.
+
+    :param configured_subarray: The configured subarray.
+    :param context_monitoring: The context monitoring configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
     tel = names.TEL()
     tmc_subarray_name = tel.tm.subarray(configured_subarray.id)
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)

@@ -203,7 +203,7 @@ def an_csp_subarray(
         set_up_subarray_log_checking_for_csp parameter.
     :param monitor_cbf: Object for monitor_cbf parameter.
     :param csp_base_composition: Object for csp_base_composition parameter.
-
+    :return: A class representing the csp base configuration for the system under test.
     """
     return csp_base_composition
 
@@ -226,6 +226,7 @@ def an_csp_subarray_in_idle_state(
         representing the subarray allocation specification.
     :param sut_settings: An instance of the SutTestSettings class
         representing the settings for the system under test.
+    :return: A class representing the csp base configuration for the system under test.
     """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id

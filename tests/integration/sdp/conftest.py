@@ -189,6 +189,8 @@ def an_sdp_subarray_in_ready_state(
     :param sdp_base_configuration: the base configuration for the SDP subarray
     :param subarray_allocation_spec: the allocation specification for the subarray
     :param sut_settings: the SUT test settings
+    :return: the updated sdp base configuration for the SDP subarray
+
     """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id

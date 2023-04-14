@@ -48,6 +48,7 @@ def subarray_obstate_is_empty(
     :param sut_settings: A class representing the settings for the system under test.
     :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
     :param base_composition : An object for base composition
+    :return: base composition
     """
     sut_settings.subarray_id = subarray_id
     tel = names.TEL()

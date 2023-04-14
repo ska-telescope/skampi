@@ -9,6 +9,8 @@ from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import base
+
+# pylint :disable=E0611
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
@@ -60,12 +62,13 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         """
         Domain logic specifying what needs to be waited
         for before startup of sdp is done.
+        :return: brd
         """
         brd = get_message_board_builder()
 
-        brd.set_waiting_on(self._tel.sdp.master).for_attribute(
-            "state"
-        ).to_become_equal_to("ON", ignore_first=False)
+        brd.set_waiting_on(self._tel.sdp.master).for_attribute("state").to_become_equal_to(
+            "ON", ignore_first=False
+        )
         # subarrays
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.sdp.subarray(index)
@@ -86,11 +89,13 @@ class StartUpStep(base.StartUpStep, LogEnabled):
     def set_wait_for_undo_startup(self) -> MessageBoardBuilder:
         """
         Domain logic for what needs to be waited for switching the sdp off.
+
+        :return: brd
         """
         brd = get_message_board_builder()
-        brd.set_waiting_on(self._tel.sdp.master).for_attribute(
-            "state"
-        ).to_become_equal_to("OFF", ignore_first=False)
+        brd.set_waiting_on(self._tel.sdp.master).for_attribute("state").to_become_equal_to(
+            "OFF", ignore_first=False
+        )
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.sdp.subarray(index)
             brd.set_waiting_on(subarray_name).for_attribute("state").to_become_equal_to(
@@ -159,30 +164,26 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
         subarray.command_inout("ReleaseAllResources")
 
-    def set_wait_for_do_assign_resources(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited for
         subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: brd
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "IDLE"
-        )
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
         return brd
 
-    def set_wait_for_doing_assign_resources(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifyig what needs to be done for waiting
         for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: brd
         """
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
@@ -196,12 +197,11 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         for subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: brd
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "EMPTY"
-        )
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
         return brd
 
 
@@ -231,9 +231,9 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         This implments the compose_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
         :param configuration: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
+        :param duration: duration of scan
         """
         # scan duration needs to be a memorised for future
         # objects that mnay require it
@@ -263,13 +263,11 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("READY")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("READY")
         return builder
 
     def set_wait_for_doing_configure(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -278,13 +276,13 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         a subarray to be in a state of configuring.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to(["CONFIGURING", "READY"])
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            ["CONFIGURING", "READY"]
+        )
         return builder
 
     def set_wait_for_undo_configure(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -293,13 +291,11 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         for subarray clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: this dish indices (in case of mid) to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
         return builder
 
 
@@ -346,7 +342,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: message board_builder
         """
         return get_message_board_builder()
 
@@ -362,21 +358,21 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
 
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("SCANNING", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "SCANNING", ignore_first=True
+        )
         return builder
 
     def set_wait_for_undo_scan(self, sub_array_id: int) -> MessageBoardBuilder:
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: message board builder
         """
         return get_message_board_builder()
 
@@ -401,12 +397,13 @@ class SDPAbortStep(base.AbortStep, LogEnabled):
         """Domain logic specifying what needs to be waited for abort is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("ABORTED", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "ABORTED", ignore_first=True
+        )
         return builder
 
 
@@ -420,13 +417,13 @@ class SDPObsResetStep(base.ObsResetStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "IDLE", ignore_first=True
+        )
         return builder
 
     def do_obsreset(self, sub_array_id: int):
@@ -459,12 +456,11 @@ class SDPObsResetStep(base.ObsResetStep, LogEnabled):
         for subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: brd
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "EMPTY"
-        )
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
         return brd
 
 
@@ -475,14 +471,12 @@ class SDPRestart(base.RestartStep, LogEnabled):
         self._log(f"commanding {subarray_name} with Restart command")
         subarray.command_inout("Restart")
 
-    def set_wait_for_do_restart(
-        self, sub_array_id: int, _: Any = None
-    ) -> MessageBoardBuilder:
+    def set_wait_for_do_restart(self, sub_array_id: int, _: Any = None) -> MessageBoardBuilder:
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "EMPTY", ignore_first=True
+        )
         return builder
 
 

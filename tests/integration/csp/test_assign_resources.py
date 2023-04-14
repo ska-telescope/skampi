@@ -16,6 +16,7 @@ def fxt_default_composition(csp_base_composition: conf_types.Composition):
     A fixture for default composition
     :param csp_base_composition: A csp base composition object
     :type csp_base_composition: conf_types.Composition
+    :return: A class representing the csp base configuration for the system under test.
     """
     return csp_base_composition
 

@@ -41,6 +41,7 @@ def an_cbf_subarray(
     :param set_up_log_checking_for_cbf_subarray: An object to set up
         log checking for cbf subarray
     :param cbf_base_composition : An object for cbf base composition
+    :return: cbf base composition
     """
     return cbf_base_composition
 

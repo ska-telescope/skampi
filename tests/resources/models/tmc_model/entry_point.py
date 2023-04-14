@@ -58,6 +58,8 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         """
         Domain logic specifying what needs to be waited for
          before startup of telescope is done.
+
+         :return: brd
         """
         brd = get_message_board_builder()
         # set sdp master and sdp subarray to be waited before startup completes
@@ -107,6 +109,8 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         """
         Domain logic for what needs to be waited
          for switching the telescope off.
+
+         :return: brd
         """
         brd = get_message_board_builder()
         # TODO set what needs to be waited before start up completes
@@ -165,8 +169,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
     def _generate_unique_eb_sb_ids(self, config_json: dict[str, Any]):
         """This method will generate unique eb and sb ids.
         Update it in config json
-        Args:
-        config_json (Dict): Config json for Assign Resource command
+        :param config_json: Config json for Assign Resource command
         """
         config_json["sdp"]["execution_block"]["eb_id"] = get_id("eb-test-********-*****")
         for pb in config_json["sdp"]["processing_blocks"]:
@@ -229,6 +232,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
          for subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: brd
         """
         brd = get_message_board_builder()
 
@@ -249,6 +253,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
          for waiting for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: brd
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
@@ -267,6 +272,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
          for subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: brd
         """
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
@@ -309,9 +315,9 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         This implements the compose_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
         :param configuration: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
+        :param duration: duration of scan
         """
         # scan duration needs to be a memorized for
         # future objects that may require it
@@ -345,7 +351,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
          for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: brd
         """
         brd = get_message_board_builder()
 
@@ -364,7 +370,12 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         return brd
 
     def set_wait_for_doing_configure(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: brd
+        """
         brd = get_message_board_builder()
 
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
@@ -381,7 +392,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
          clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: this dish indices (in case of mid) to control
+        :return: brd
         """
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
@@ -444,7 +455,7 @@ class ScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: message board builder
         """
         return get_message_board_builder()
 
@@ -459,7 +470,7 @@ class ScanStep(base.ScanStep, LogEnabled):
          for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: brd
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
@@ -476,7 +487,7 @@ class ScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: message board builder
         """
         return get_message_board_builder()
 
@@ -501,7 +512,11 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
             subarray.write_attribute("adminmode", 0)
 
     def set_wait_for_do_set_online(self) -> MessageBoardBuilder:
-        """Domain logic for waiting for setting to online to be complete."""
+        """
+        Domain logic for waiting for setting to online to be complete.
+
+        :return: brd
+        """
         controller_name = self._tel.csp.controller
         builder = get_message_board_builder()
         builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
@@ -533,7 +548,11 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
             subarray.write_attribute("adminmode", 1)
 
     def set_wait_for_undo_set_online(self) -> MessageBoardBuilder:
-        """Domain logic for waiting for setting to offline to be complete."""
+        """
+        Domain logic for waiting for setting to offline to be complete.
+
+        :return: builder
+        """
         controller_name = self._tel.csp.controller
         builder = get_message_board_builder()
         builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(

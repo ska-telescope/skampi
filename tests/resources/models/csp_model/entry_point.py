@@ -57,6 +57,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         """
         Domain logic specifying what needs to be waited
         for before startup of csp is done.
+        :return: brd
         """
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.csp.controller).for_attribute("state").to_become_equal_to(
@@ -87,6 +88,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
     def set_wait_for_undo_startup(self) -> MessageBoardBuilder:
         """
         Domain logic for what needs to be waited for switching the csp off.
+        :return: brd
         """
         brd = get_message_board_builder()
         # controller
@@ -174,6 +176,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         for subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: builder
         """
         builder = get_message_board_builder()
         self._tel = names.TEL()
@@ -183,7 +186,12 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         return builder
 
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: brd
+        """
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
@@ -196,6 +204,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -271,7 +280,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -284,7 +293,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         for a subarray to be in a state of configuring.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -299,7 +308,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         subarray clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: this dish indices (in case of mid) to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
@@ -354,7 +363,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: message board builder
         """
         return get_message_board_builder()
 
@@ -370,7 +379,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
         waiting for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -383,7 +392,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: message board builder
         """
         return get_message_board_builder()
 
@@ -408,7 +417,11 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
             subarray.write_attribute("adminmode", 0)
 
     def set_wait_for_do_set_online(self) -> MessageBoardBuilder:
-        """Domain logic for waiting for setting to online to be complete."""
+        """
+        Domain logic for waiting for setting to online to be complete.
+
+        :return: builder
+        """
         controller_name = self._tel.csp.controller
         builder = get_message_board_builder()
         builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
@@ -440,7 +453,11 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
             subarray.write_attribute("adminmode", 1)
 
     def set_wait_for_undo_set_online(self) -> MessageBoardBuilder:
-        """Domain logic for waiting for setting to offline to be complete."""
+        """
+        Domain logic for waiting for setting to offline to be complete.
+
+        :return: builder
+        """
         controller_name = self._tel.csp.controller
         builder = get_message_board_builder()
         builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
@@ -483,6 +500,7 @@ class CSPAbortStep(base.AbortStep, LogEnabled):
         """Domain logic specifying what needs to be waited for abort is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
@@ -504,6 +522,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         :param receptors: The index id of the dish to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -543,6 +562,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)

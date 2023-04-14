@@ -117,7 +117,6 @@ class CspLnConfigureStep(CspConfigureStep):
         This implements the compose_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
         :param sb_id: a generic ide to identify a sb to assign resources
         :param configuration: The assign resources configuration paramaters
         :param duration: duration of scan
@@ -185,7 +184,7 @@ class CSPLnScanStep(CspScanStep):
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: message board builder
         """
         return get_message_board_builder()
 
@@ -200,7 +199,7 @@ class CSPLnScanStep(CspScanStep):
         for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -213,7 +212,7 @@ class CSPLnScanStep(CspScanStep):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
+        :return: message board builder
         """
         return get_message_board_builder()
 

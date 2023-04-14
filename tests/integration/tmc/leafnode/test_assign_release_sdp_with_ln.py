@@ -29,6 +29,7 @@ def an_sdp_subarray_in_empty_state(
 
     :param set_sdp_ln_entry_point: An object to set sdp leafnode entry point
     :param base_composition : An object for base composition
+    :return: base composition
     """
     return base_composition
 

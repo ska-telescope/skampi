@@ -120,7 +120,11 @@ def fxt_set_up_log_capturing_for_cbf(
 
 @pytest.fixture
 def test_sbd() -> SBDefinition:
-    """Test sbd"""
+    """
+    Test sbd
+
+    :return: SBDefinition
+    """
     cwd, _ = os.path.split(__file__)
     path = os.path.join(cwd, "data/mid_sb.json")
     return CODEC.load_from_file(SBDefinition, path)

@@ -90,6 +90,6 @@ def the_csp_must_be_on(
 @pytest.mark.usefixtures("setup_csp_mock")
 def test_test_csp_startup(run_mock):
     """Test the test using a mock SUT
-    :param: a run mock object
+    :param run_mock: a run mock object
     """
     run_mock(test_csp_start_up_telescope_mid)

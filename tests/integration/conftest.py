@@ -86,6 +86,8 @@ def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
 def fxt_conftest_settings() -> SutTestSettings:
     """
     Fixture to use for setting env like  SUT settings for fixtures in conftest
+
+    :return: sut test settings
     """
     return SutTestSettings()
 
@@ -120,10 +122,21 @@ def fxt_set_session_exec_settings(
 
 @pytest.fixture(name="run_mock")
 def fxt_run_mock_wrapper(request, _pytest_bdd_example, conftest_settings: SutTestSettings):
-    """Fixture that returns a function to use for running a test as a mock."""
+    """
+    Fixture that returns a function to use for running a test as a mock.
+
+    :param request: A request object
+    :param _pytest_bdd_example: An object for pytest bdd example
+    :param conftest_settings: An object for conftest_settings
+    :return: run mock
+    """
 
     def run_mock(mock_test: Callable):
-        """Test the test using a mock SUT"""
+        """
+        Test the test using a mock SUT
+
+        :param mock_test: A mock_test object
+        """
         conftest_settings.mock_sut = True
         # pylint: disable-next=too-many-function-args
         with patch(

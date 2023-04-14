@@ -22,6 +22,7 @@ def fxt_default_composition(sdp_base_configuration: conf_types.Composition):
     """
     A default composition fixture
     :param sdp_base_configuration: A sdp base configuration object
+    :return: A class representing the sdp base configuration for the system under test.
     """
     return sdp_base_configuration
 
@@ -80,6 +81,7 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
     Assign resources to sdp subarray in mid.
 
     :param set_restart_after_abort: object for set_restart_after_abort
+    :param composition: A fixture that represents the composition of the subarray.
     """
 
 
@@ -107,6 +109,7 @@ def an_sdp_subarray(
     :param set_up_subarray_log_checking_for_sdp: A fixture for
         setting up log checking for the SDP subarray.
     :param sdp_base_composition: The base composition for the SDP subarray.
+    :return: A class representing the sdp base configuration for the system under test.
     """
     return sdp_base_composition
 

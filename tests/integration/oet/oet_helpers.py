@@ -84,9 +84,9 @@ class ScriptExecutor:
                 for script to complete
         :type timeout: int
 
-        :return state: Either the desired state, STOPPED if the timeout was
+        :return: Either the desired state, STOPPED if the timeout was
                 reached or FAILED if the script failed
-        :rtype state: str
+        :rtype: str
         """
         t = timeout
         while t > 0:
@@ -132,10 +132,10 @@ class ScriptExecutor:
                 (e.g. git related args) to pass to
                 OET rest server when creating the script
 
-        :returns state: The OET state for the script
+        :return: The OET state for the script
                 after execution (eg 'COMPLETE')
                 None if something goes wrong.
-        :rtype state: str
+        :rtype: str
         """
         LOGGER.info(f"Running script {script}")
 

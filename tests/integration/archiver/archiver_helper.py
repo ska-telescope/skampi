@@ -20,6 +20,7 @@ class ArchiverHelper:
         :type polling_period: int
         :param period_event: Period event in milliseconds. Default is 3000.
         :type period_event: int
+        :return: True or False
         """
         if not self.is_already_archived(fqdn):
             AttributeProxy(fqdn).read()
@@ -33,7 +34,11 @@ class ArchiverHelper:
         return False
 
     def attribute_list(self):
-        """Method for attribute list"""
+        """
+        Method for attribute list
+
+        :return: Attribute list
+        """
         return self.evt_subscriber_proxy.read_attribute("AttributeList").value
 
     def is_already_archived(self, fqdn):
@@ -41,6 +46,7 @@ class ArchiverHelper:
         Object to check if attribute is already archived
         :param fqdn: Fully qualified domain name of the attribute to be added.
         :type fqdn: str
+        :return: True if attribute is already archived
         """
         attr_list = self.attribute_list()
         if attr_list is not None:
@@ -58,6 +64,8 @@ class ArchiverHelper:
         :type polling_period: int
         :param period_event: Period event in milliseconds. Default is 3000.
         :type period_event: int
+        :return: Start on archiver
+
         """
         if fqdn is not None:
             self.attribute_add(fqdn, polling_period, period_event)
@@ -68,6 +76,7 @@ class ArchiverHelper:
         A method for stopping archiving process
         :param fqdn: Fully qualified domain name of the attribute to be added.
         :type fqdn: str
+        :return: removed attribute
         """
         self.evt_subscriber_proxy.AttributeStop(fqdn)
         return self.conf_manager_proxy.AttributeRemove(fqdn)
@@ -77,6 +86,7 @@ class ArchiverHelper:
         A method to get event subscriber attribute status
         :param fqdn: Fully qualified domain name of the attribute to be added.
         :type fqdn: str
+        :return: event subscriber attribute status
         """
         return self.evt_subscriber_proxy.AttributeStatus(fqdn)
 
@@ -85,6 +95,7 @@ class ArchiverHelper:
         A method to get configuration manager attribute status
         :param fqdn: Fully qualified domain name of the attribute to be added.
         :type fqdn: str
+        :return: configuration manager attribute status
         """
         return self.conf_manager_proxy.AttributeStatus(fqdn)
 
@@ -93,6 +104,7 @@ class ArchiverHelper:
         A method to know if archiving is started
         :param fqdn: Fully qualified domain name of the attribute to be added.
         :type fqdn: str
+        :return: status
         """
         return "Archiving          : Started" in self.evt_subscriber_attribute_status(fqdn)
 
@@ -103,6 +115,7 @@ class ArchiverHelper:
         :type fqdn: str
         :param sleep_time: Default is 0.1
         :param max_retries: Default is 30
+        :return: total sleep time
         """
         total_sleep_time = 0
         while max_retries > 0:

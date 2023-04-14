@@ -40,7 +40,11 @@ def hello_world_script_created():
 
 @given(parsers.parse("a test SB with activity {activity_name} exists in ODA"))
 def hello_world_sb_in_oda(activity_name, test_sbd):
-    """"""
+    """
+    a test SB with activity  exists in ODA
+    :param activity_name : activity name which exists in ODA
+    :param test_sbd: An object for test_sbd
+    """
     assert activity_name in test_sbd.activities, (
         f"Activity test setup failed, no activity called {activity_name} in" " test SB"
     )
@@ -58,7 +62,11 @@ def when_allocate_resources_from_activity(
     activity_name,
     test_sbd,
 ):
-    """ """
+    """
+    I tell the OET to run activity on the test SB
+    :param activity_name : activity name which exists in ODA
+    :param test_sbd: An object for test_sbd
+    """
     summary = ACTIVITY_ADAPTER.run(
         activity_name,
         test_sbd.sbd_id,

@@ -12,6 +12,11 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture(name="composition")
 def fxt_default_composition(csp_base_composition: conf_types.Composition):
+    """
+    A fixture for default composition
+    :param csp_base_composition: A csp base composition object
+    :type csp_base_composition: conf_types.Composition
+    """
     return csp_base_composition
 
 

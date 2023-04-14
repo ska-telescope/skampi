@@ -49,6 +49,7 @@ def fxt_set_nr_of_subarray(
     :param sut_settings: _description_
     :type sut_settings: conftest.SutTestSettings
     :param exec_settings: A fixture that returns the execution settings of the test
+    :type exec_settings: fxt_types.exec_settings
     """
 
     CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
@@ -68,6 +69,7 @@ def fxt_set_csp_online_from_csp(
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
     :param set_session_exec_settings: A fixture to set session execution settings.
+    :type set_session_exec_settings: fxt_types.session_exec_settings
     """
     logging.info("setting csp components online within csp context")
     CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
@@ -84,6 +86,8 @@ def fxt_set_csp_entry_point(
 ):
     """_summary_
 
+    :param set_nr_of_subarray: To set the number of subarray
+    :type set_nr_of_subarray: int
     :param set_session_exec_env: _description_
     :type set_session_exec_env: fxt_types.set_session_exec_env
     :param exec_settings: _description_

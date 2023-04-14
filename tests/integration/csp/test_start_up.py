@@ -54,7 +54,11 @@ def fxt_set_up_log_checking_for_csp(
 def a_csp(
     set_up_log_checking_for_csp,  # pylint: disable=unused-argument
 ):
-    """a CSP."""
+    """
+    a CSP.
+
+    :param set_up_log_checking_for_csp: skallop fixture used to set up log checking.
+    """
 
 
 # when

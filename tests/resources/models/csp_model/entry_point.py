@@ -230,7 +230,6 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         This implments the compose_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
         :param configuration: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
         :param duration: duration of scan

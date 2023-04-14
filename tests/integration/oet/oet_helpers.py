@@ -75,15 +75,18 @@ class ScriptExecutor:
         """
         Wait until the script with the given ID is in the given state
 
-        Args:
-            pid (int): ID of the script in the OET
-            state (str): The desired OET state for the script (eg 'READY')
-            timeout (int): timeout (~seconds) how long to wait
-                for script to complete
 
-        Returns:
-            state (str): Either the desired state, STOPPED if the timeout was
+        :param pid: ID of the script in the OET
+        :type pid: int
+        :param state: The desired OET state for the script (eg 'READY')
+        :type state: str
+        :param timeout: timeout (~seconds) how long to wait
+                for script to complete
+        :type timeout: int
+
+        :return state: Either the desired state, STOPPED if the timeout was
                 reached or FAILED if the script failed
+        :rtype state: str
         """
         t = timeout
         while t > 0:
@@ -119,20 +122,20 @@ class ScriptExecutor:
         """
         Execute the given script using OET REST client.
 
-        Args:
-            script (str): Script file to execute
-            script_run_args: Arguments to pass to the script when
+        :parma script: Script file to execute
+        :type script: str
+        :param script_run_args: Arguments to pass to the script when
                 the script execution is started
-            timeout: Timeout (~seconds) for how long to wait for script
+        :param timeout: Timeout (~seconds) for how long to wait for script
                 stages to complete
-            script_create_kwargs: Any keyword arguments
+        :param script_create_kwargs: Any keyword arguments
                 (e.g. git related args) to pass to
                 OET rest server when creating the script
 
-        Returns:
-            state (str): The OET state for the script
+        :returns state: The OET state for the script
                 after execution (eg 'COMPLETE')
                 None if something goes wrong.
+        :rtype state: str
         """
         LOGGER.info(f"Running script {script}")
 

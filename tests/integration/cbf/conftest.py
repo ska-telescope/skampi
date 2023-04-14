@@ -51,6 +51,8 @@ def fxt_set_cbf_entry_point(
     :type set_session_exec_env: fxt_types.set_session_exec_env
     :param exec_settings: _description_
     :type exec_settings: fxt_types.exec_settings
+    :param sut_settings: A class representing the settings for the system under test.
+    :type sut_settings: conftest.SutTestSettings
     """
     exec_env = set_session_exec_env
     if not sut_settings.mock_sut:
@@ -78,7 +80,8 @@ def fxt_set_cbf_online_from_cbf(
     :type nr_of_subarrays: int
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
-    :param: An object for online flag
+    :param online: An object for online flag
+    :type online: conftest.OnlineFlag
     """
     if not online:
         if names.TEL().skalow:

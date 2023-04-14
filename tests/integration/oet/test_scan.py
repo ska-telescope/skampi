@@ -94,6 +94,9 @@ def the_subarray_must_be_in_the_scanning_state(
 ):
     """
     The subarray must be in the SCANNING state until finished.
+    :param configured_subarray: The configured subarray
+    :param context_monitoring: Context monitoring object.
+    :param integration_test_exec_settings: The integration test execution settings.
 
     :raises AssertionError: If the subarray is not in the expected state.
 

@@ -12,7 +12,9 @@ logger = logging.getLogger(__name__)
 @pytest.mark.csp
 @scenario("features/csp_configure_scan.feature", "Abort configuring")
 def test_abort_configuring(set_up_subarray_log_checking_for_csp: None):
-    """Abort scanning."""
+    """Abort scanning.
+    :param: set_up_subarray_log_checking_for_csp: sets up subarray log checking for csp
+    """
 
 
 @pytest.mark.skamid

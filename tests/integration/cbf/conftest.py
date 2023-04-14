@@ -45,7 +45,8 @@ def fxt_set_cbf_entry_point(
     sut_settings: conftest.SutTestSettings,
 ):
     """_summary_
-
+    :param set_nr_of_subarray: The number of subarrays to set in the SUT settings.
+    :type set_nr_of_subarray: int
     :param set_session_exec_env: _description_
     :type set_session_exec_env: fxt_types.set_session_exec_env
     :param exec_settings: _description_
@@ -77,6 +78,7 @@ def fxt_set_cbf_online_from_cbf(
     :type nr_of_subarrays: int
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
+    :param: An object for online flag
     """
     if not online:
         if names.TEL().skalow:

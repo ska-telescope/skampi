@@ -99,9 +99,7 @@ class ScriptExecutor:
                 return procedure.state
 
             if procedure.state == state:
-                LOGGER.info(
-                    f"Script {procedure.script['script_uri']} state changed to" f" {state}"
-                )
+                LOGGER.info(f"Script {procedure.script['script_uri']} state changed to" f" {state}")
                 return procedure.state
 
             time.sleep(2)

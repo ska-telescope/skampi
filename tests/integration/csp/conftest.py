@@ -44,9 +44,11 @@ def fxt_set_nr_of_subarray(
     nr_of_subarrays: int,
 ):
     """_summary_
-
+    :param nr_of_subarrays: _description_
+    :type nr_of_subarrays: int
     :param sut_settings: _description_
     :type sut_settings: conftest.SutTestSettings
+    :param exec_settings: A fixture that returns the execution settings of the test
     """
 
     CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
@@ -65,6 +67,7 @@ def fxt_set_csp_online_from_csp(
     :type nr_of_subarrays: int
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
+    :param set_session_exec_settings: A fixture to set session execution settings.
     """
     logging.info("setting csp components online within csp context")
     CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
@@ -125,6 +128,13 @@ def fxt_set_up_log_checking_for_csp(
 def fxt_setup_transition_monitoring(
     context_monitoring: fxt_types.context_monitoring,
 ):
+    """
+    A fixture for setting up the transition monitoring.
+
+    :param context_monitoring: An instance of the ContextMonitoring class
+        containing context monitoring settings.
+    :type context_monitoring: fxt_types.context_monitoring
+    """
     tel = names.TEL()
     (
         context_monitoring.set_waiting_on(tel.csp.cbf.subarray(1))
@@ -159,6 +169,13 @@ def fxt_csp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 
 @pytest.fixture(name="monitor_cbf")
 def fxt_monitor_cbf(context_monitoring: fxt_types.context_monitoring):
+    """
+    A fixture for monitoring the CBF.
+
+    :param context_monitoring: An instance of the ContextMonitoring class
+        containing context monitoring settings.
+    :type context_monitoring: fxt_types.context_monitoring
+    """
     tel = names.TEL()
     (
         context_monitoring.set_waiting_on(tel.csp.cbf.subarray(1))
@@ -176,7 +193,14 @@ def an_csp_subarray(
     monitor_cbf,  # pylint: disable=unused-argument
     csp_base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
-    """an CSP subarray."""
+    """
+    an CSP subarray.
+    :param set_up_subarray_log_checking_for_csp: Object for
+        set_up_subarray_log_checking_for_csp parameter.
+    :param monitor_cbf: Object for monitor_cbf parameter.
+    :param csp_base_composition: Object for csp_base_composition parameter.
+
+    """
     return csp_base_composition
 
 
@@ -210,7 +234,19 @@ def the_csp_subarray_must_be_in_some_obsstate(
     obsstate: ObsState,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """the subarray must be in IDLE state."""
+    """the subarray must be in IDLE state.
+
+    :param sut_settings: An instance of SutTestSettings class
+        containing test settings for the SUT.
+    :type sut_settings: SutTestSettings
+
+    :param obsstate: An instance of ObsState enum class representing the observation state.
+    :type obsstate: ObsState
+
+    :param integration_test_exec_settings: A dictionary containing the execution
+        settings for the integration tests.
+    :type integration_test_exec_settings: fxt_types.exec_settings
+    """
     tel = names.TEL()
     csp_subarray_name = tel.csp.subarray(sut_settings.subarray_id)
     recorder = integration_test_exec_settings.recorder

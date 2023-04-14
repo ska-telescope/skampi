@@ -119,9 +119,7 @@ def fxt_set_session_exec_settings(
 
 
 @pytest.fixture(name="run_mock")
-def fxt_run_mock_wrapper(
-    request, _pytest_bdd_example, conftest_settings: SutTestSettings
-):
+def fxt_run_mock_wrapper(request, _pytest_bdd_example, conftest_settings: SutTestSettings):
     """Fixture that returns a function to use for running a test as a mock."""
 
     def run_mock(mock_test: Callable):
@@ -201,18 +199,14 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
-def _inject_method(
-    injectable: T, method: Callable[Concatenate[T, P], R]
-) -> Callable[P, R]:
+def _inject_method(injectable: T, method: Callable[Concatenate[T, P], R]) -> Callable[P, R]:
     def _replaced_method(*args: P.args, **kwargs: P.kwargs) -> R:
         return method(injectable, *args, **kwargs)
 
     return _replaced_method
 
 
-ObservationConfigInterjector = Callable[
-    [str, Callable[Concatenate[Observation, P], R]], None
-]
+ObservationConfigInterjector = Callable[[str, Callable[Concatenate[Observation, P], R]], None]
 
 
 @pytest.fixture(name="interject_into_observation_config")
@@ -225,9 +219,7 @@ def fxt_observation_config_interjector(
         method_name: str, intj_fn: Callable[Concatenate[Observation, P], R]
     ):
         injected_method = _inject_method(obs, intj_fn)
-        mocked_observation_config.configure_mock(
-            **{f"{method_name}.side_effect": injected_method}
-        )
+        mocked_observation_config.configure_mock(**{f"{method_name}.side_effect": injected_method})
 
     return interject_observation_method
 
@@ -342,9 +334,7 @@ def assign_resources_with_subarray_id(
         with telescope_context.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            entry_point.compose_subarray(
-                subarray_id, receptors, composition, sb_config.sbid
-            )
+            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
 @when("I assign resources to it")
@@ -377,9 +367,7 @@ def i_assign_resources_to_it(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            entry_point.compose_subarray(
-                subarray_id, receptors, composition, sb_config.sbid
-            )
+            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
 # scan configuration
@@ -407,12 +395,8 @@ def i_configure_it_for_a_scan(
     scan_duration = sut_settings.scan_duration
 
     with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_configuring_a_subarray(
-            integration_test_exec_settings
-        ):
-            entry_point.configure_subarray(
-                sub_array_id, configuration, sb_id, scan_duration
-            )
+        with allocated_subarray.wait_for_configuring_a_subarray(integration_test_exec_settings):
+            entry_point.configure_subarray(sub_array_id, configuration, sb_id, scan_duration)
 
 
 @when("I command it to scan for a given period")
@@ -466,9 +450,7 @@ def i_release_all_resources_assigned_to_it(
     sub_array_id = allocated_subarray.id
 
     with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_releasing_a_subarray(
-            integration_test_exec_settings
-        ):
+        with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
             entry_point.tear_down_subarray(sub_array_id)
 
 

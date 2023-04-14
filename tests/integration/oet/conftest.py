@@ -44,7 +44,7 @@ def fxt_set_csp_online_from_tmc(
     nr_of_subarrays,
 ):
     """_summary_
-
+    :param online: A online flag from conftest
     :param nr_of_subarrays: _description_
     :type nr_of_subarrays: int
     :param set_subsystem_online: _description_
@@ -66,6 +66,8 @@ def fxt_set_entry_point(
     """
     Fixture to use for setting up the entry point as
     from only the interface to sdp.
+    :param set_session_exec_env: A fixture to set session execution environment
+    :param sut_settings: A class representing the settings for the system under test.
     """
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = 1
@@ -118,6 +120,7 @@ def fxt_set_up_log_capturing_for_cbf(
 
 @pytest.fixture
 def test_sbd() -> SBDefinition:
+    """Test sbd"""
     cwd, _ = os.path.split(__file__)
     path = os.path.join(cwd, "data/mid_sb.json")
     return CODEC.load_from_file(SBDefinition, path)

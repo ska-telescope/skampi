@@ -59,9 +59,9 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         for before startup of csp is done.
         """
         brd = get_message_board_builder()
-        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-            "state"
-        ).to_become_equal_to("ON", ignore_first=False)
+        brd.set_waiting_on(self._tel.csp.controller).for_attribute("state").to_become_equal_to(
+            "ON", ignore_first=False
+        )
         # Note we do not wait for controller on skalow as
         # it seems it does not change state subarrays
         if self._tel.skamid:
@@ -92,9 +92,9 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         # controller
         # the low telescope does not switch off so there is no wait
         if self._tel.skamid:
-            brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-                "state"
-            ).to_become_equal_to("OFF", ignore_first=False)
+            brd.set_waiting_on(self._tel.csp.controller).for_attribute("state").to_become_equal_to(
+                "OFF", ignore_first=False
+            )
             # subarrays
             for index in range(1, self.nr_of_subarrays + 1):
                 brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
@@ -143,8 +143,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
             subarray = con_config.get_device_proxy(subarray_name)
             csp_low_configuration = json.dumps(csp_low_assign_resources)
             self._log(
-                f"commanding {subarray_name} with AssignResources:"
-                f" {csp_low_configuration} "
+                f"commanding {subarray_name} with AssignResources:" f" {csp_low_configuration} "
             )
             subarray.set_timeout_millis(6000)
             subarray.command_inout("AssignResources", csp_low_configuration)
@@ -169,9 +168,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         subarray.set_timeout_millis(6000)
         subarray.command_inout("ReleaseAllResources")
 
-    def set_wait_for_do_assign_resources(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited
         for subarray assign resources is done.
@@ -181,15 +178,11 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         builder = get_message_board_builder()
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
 
         return builder
 
-    def set_wait_for_doing_assign_resources(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """Not implemented."""
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
@@ -206,9 +199,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
 
         return builder
 
@@ -251,20 +242,14 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
             subarray_name = self._tel.skalow.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
             cbf_low_configuration = json.dumps(csp_low_configure_scan)
-            self._log(
-                f"commanding {subarray_name} with Configure:"
-                f" {cbf_low_configuration} "
-            )
+            self._log(f"commanding {subarray_name} with Configure:" f" {cbf_low_configuration} ")
             subarray.set_timeout_millis(6000)
             subarray.command_inout("Configure", cbf_low_configuration)
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
             csp_mid_configuration = self.observation.generate_csp_scan_config().as_json
-            self._log(
-                f"commanding {subarray_name} with Configure:"
-                f" {csp_mid_configuration} "
-            )
+            self._log(f"commanding {subarray_name} with Configure:" f" {csp_mid_configuration} ")
             subarray.set_timeout_millis(6000)
             subarray.command_inout("Configure", csp_mid_configuration)
 
@@ -291,9 +276,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("READY")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("READY")
         return builder
 
     def set_wait_for_doing_configure(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -306,9 +289,9 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("CONFIGURING")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "CONFIGURING"
+        )
         return builder
 
     def set_wait_for_undo_configure(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -321,9 +304,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
         return builder
 
 
@@ -394,9 +375,9 @@ class CspScanStep(base.ScanStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("SCANNING", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "SCANNING", ignore_first=True
+        )
         return builder
 
     def set_wait_for_undo_scan(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -431,17 +412,17 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
         """Domain logic for waiting for setting to online to be complete."""
         controller_name = self._tel.csp.controller
         builder = get_message_board_builder()
-        builder.set_waiting_on(controller_name).for_attribute(
-            "adminMode"
-        ).to_become_equal_to("ONLINE", ignore_first=False)
-        builder.set_waiting_on(controller_name).for_attribute(
-            "state"
-        ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
+        builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
+            "ONLINE", ignore_first=False
+        )
+        builder.set_waiting_on(controller_name).for_attribute("state").to_become_equal_to(
+            ["OFF", "ON"], ignore_first=False
+        )
         for index in range(1, self.nr_of_subarrays + 1):
             subarray = self._tel.csp.subarray(index)
-            builder.set_waiting_on(subarray).for_attribute(
-                "adminMode"
-            ).to_become_equal_to("ONLINE", ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("adminMode").to_become_equal_to(
+                "ONLINE", ignore_first=False
+            )
             builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
                 ["OFF", "ON"], ignore_first=False
             )
@@ -463,14 +444,14 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
         """Domain logic for waiting for setting to offline to be complete."""
         controller_name = self._tel.csp.controller
         builder = get_message_board_builder()
-        builder.set_waiting_on(controller_name).for_attribute(
-            "adminMode"
-        ).to_become_equal_to("OFFLINE", ignore_first=False)
+        builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
+            "OFFLINE", ignore_first=False
+        )
         for index in range(1, self.nr_of_subarrays + 1):
             subarray = self._tel.csp.subarray(index)
-            builder.set_waiting_on(subarray).for_attribute(
-                "adminMode"
-            ).to_become_equal_to("OFFLINE", ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("adminMode").to_become_equal_to(
+                "OFFLINE", ignore_first=False
+            )
         return builder
 
     def set_wait_for_doing_set_online(self) -> MessageBoardBuilder:
@@ -506,9 +487,9 @@ class CSPAbortStep(base.AbortStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("ABORTED", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "ABORTED", ignore_first=True
+        )
         return builder
 
 
@@ -516,9 +497,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
 
     """Implementation of ObsReset Step for CSP."""
 
-    def set_wait_for_do(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> MessageBoardBuilder:
+    def set_wait_for_do(self, sub_array_id: int, receptors: List[int]) -> MessageBoardBuilder:
         """
         Domain logic for running a obsreset on subarray in csp.
 
@@ -529,9 +508,9 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "IDLE", ignore_first=True
+        )
         return builder
 
     def do_obsreset(self, sub_array_id: int):
@@ -568,9 +547,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
 
         return builder
 
@@ -585,9 +562,9 @@ class CSPRestart(base.RestartStep, LogEnabled):
     def set_wait_for_do_restart(self, sub_array_id: int) -> MessageBoardBuilder:
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "EMPTY", ignore_first=True
+        )
         return builder
 
 

@@ -14,9 +14,7 @@ class SB(NamedTuple):
 
 def load_next_sb():
     date = datetime.now()
-    unique = (
-        f"{date.year}{date.month:02}{date.day:02}" "-" f"{str(int(date.timestamp()*100))[-5:]}"
-    )
+    unique = f"{date.year}{date.month:02}{date.day:02}" "-" f"{str(int(date.timestamp()*100))[-5:]}"
     sbi = f"sbi-mvp01-{unique}"
     pb = f"pb-mvp01-{unique}"
     eb = f"eb-mvp01-{unique}"

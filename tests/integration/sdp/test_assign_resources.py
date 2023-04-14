@@ -19,11 +19,20 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture(name="composition")
 def fxt_default_composition(sdp_base_configuration: conf_types.Composition):
+    """
+    A default composition fixture
+    :param sdp_base_configuration: A sdp base configuration object
+    """
     return sdp_base_configuration
 
 
 @pytest.fixture(name="set_restart_after_abort")
 def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
+    """
+    A set restart after abort fixture
+
+    :param sut_settings: Object for system under tests setting
+    """
     sut_settings.restart_after_abort = True
 
 
@@ -37,7 +46,10 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
 def test_assign_resources_to_sdp_subarray_in_low(
     assign_resources_test_exec_settings,
 ):
-    """Assign resources to sdp subarray in low."""
+    """
+    Assign resources to sdp subarray in low.
+    :param assign_resources_test_exec_settings: Object for assign_resources_test_exec_settings
+    """
 
 
 @pytest.mark.skamid
@@ -123,6 +135,9 @@ def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
 def test_test_sdp_assign_resources(run_mock, mock_entry_point: fxt_types.mock_entry_point):
     """
     Test the test using a mock SUT
+
+    :param: run_mock: A mock device initialization
+    :param: mock_entry_point : a mock entry point object
 
     """
     run_mock(test_assign_resources_to_sdp_subarray_in_mid)

@@ -24,8 +24,12 @@ def fxt_set_sdp_ln_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
     sut_settings: conftest.SutTestSettings,
 ):
-    """Fixture to use for setting up the entry point as from only the
+    """
+    Fixture to use for setting up the entry point as from only the
     interface to sdp.
+
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings
+    :param set_session_exec_env: A fixture to set session execution environment.
     :param sut_settings: A class representing the settings for the system under test.
     """
     exec_env = set_session_exec_env
@@ -51,6 +55,8 @@ def fxt_set_csp_ln_entry_point(
     Fixture to use for setting up the entry point as from only the
     interface to csp.
 
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings
+    :param set_session_exec_env: A fixture to set session execution environment.
     :param sut_settings: A class representing the settings for the system under test.
     """
     exec_env = set_session_exec_env
@@ -134,6 +140,10 @@ def an_sdp_subarray_in_idle_state(
 ) -> conf_types.ScanConfiguration:
     """
     an SDP subarray in the IDLE state.
+
+    :param sdp_base_configuration: the base configuration for the SDP subarray
+    :param subarray_allocation_spec: An instance of the SubarrayAllocationSpec class
+        representing the subarray allocation specification.
     :param sut_settings: A class representing the settings for the system under test.
     """
     subarray_allocation_spec.receptors = sut_settings.receptors

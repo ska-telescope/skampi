@@ -40,7 +40,15 @@ def subarray_obstate_is_empty(
     set_up_subarray_log_checking_for_tmc,
     base_composition,
 ):
-    """a telescope subarray in EMPTY obsState."""
+    """
+    a telescope subarray in EMPTY obsState.
+
+    :param subarray_id: An integer representing the ID of the subarray to which
+        the resources should be assigned.
+    :param sut_settings: A class representing the settings for the system under test.
+    :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
+    :param base_composition : An object for base composition
+    """
     sut_settings.subarray_id = subarray_id
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
@@ -56,7 +64,13 @@ def subarray_obstate_is_empty(
 
 @then(parsers.parse("the subarray {subarray_id} obsState is IDLE"))
 def the_subarray_must_be_in_idle_state(subarray_id, sut_settings: SutTestSettings):
-    """the subarray must be in IDLE state."""
+    """
+    the subarray must be in IDLE state.
+
+    :param subarray_id: An integer representing the ID of the subarray to which
+        the resources should be assigned.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(subarray_id))
     result = subarray.read_attribute("obsState").value
@@ -65,7 +79,12 @@ def the_subarray_must_be_in_idle_state(subarray_id, sut_settings: SutTestSetting
 
 @then(parsers.parse("the correct resources {resources_list} are assigned"))
 def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
-    """Check assigned resources on sdp and csp subsystems."""
+    """Check assigned resources on sdp and csp subsystems.
+
+    :param subarray_id: An integer representing the ID of the subarray to which
+        the resources should be assigned.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
     sdp_resources = config_json["sdp"]["resources"]
     csp_resources = config_json["csp"]["lowcbf"]["resources"]

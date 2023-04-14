@@ -25,6 +25,8 @@ def fxt_set_entry_point(
 ):
     """Fixture to use for setting up the entry point as from only the
     interface to sdp.
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings.
+    :param set_session_exec_env: A fixture to set session execution environment
     :param sut_settings: A class representing the settings for the system under test.
     """
     exec_env = set_session_exec_env
@@ -75,6 +77,7 @@ def fxt_set_csp_online_from_tmc(
     :type nr_of_subarrays: int
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
+    :param online: An object for online flag
     """
     if not online:
         logging.info("setting csp components online within tmc context")
@@ -164,5 +167,8 @@ def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 
 @pytest.fixture(autouse=True)
 def override_timeouts(exec_settings):
-    """Sets timeout for test environment."""
+    """
+    Sets timeout for test environment.
+    :param exec_settings: _Description_
+    """
     exec_settings.time_out = 100

@@ -28,7 +28,11 @@ def test_assign_resources_on_csp_in_low():
 def an_csp_subarray_in_empty_state(
     set_csp_ln_entry_point, base_composition: conf_types.Composition
 ) -> conf_types.Composition:
-    """an CSP subarray in Empty state."""
+    """an CSP subarray in Empty state.
+
+    :param set_csp_ln_entry_point: An object to set csp leafnode entry point
+    :param base_composition : An object for base composition
+    """
     logger.info("an_csp_subarray_in_empty_state")
     return base_composition
 
@@ -43,7 +47,11 @@ def a_csp_sln():
 
 @then("the CSP subarray must be in IDLE state")
 def the_csp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
-    """the CSP Subarray must be in IDLE state."""
+    """
+    the CSP Subarray must be in IDLE state.
+
+    :param sut_settings: A class representing the settings for the system under test.
+    """
 
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.csp.subarray(sut_settings.subarray_id))

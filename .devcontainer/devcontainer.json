@@ -36,7 +36,7 @@
                 "yaml.customTags": [
                     "!reference sequence"
                 ],
-                "python.formatting.blackPath": "/home/tango/.local/bin/black",
+                "python.formatting.blackPath": ".venv/bin/black",
                 "autoDocstring.docstringFormat": "sphinx",
                 "python.linting.flake8Path": "/home/tango/.local/bin/flake8",
                 "gitPrefix.pattern": "(\\w+-\\d+).*",

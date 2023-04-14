@@ -2,7 +2,7 @@
 import logging
 import os
 from time import sleep
-from typing import Any, List, Union, cast
+from typing import Any, List, cast
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -10,11 +10,9 @@ from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
-    AbortStep,
     CompositeEntryPoint,
     MessageBoardBuilder,
     NoOpStep,
-    ObsResetStep,
 )
 from ska_ser_skallop.utils.singleton import Memo
 
@@ -65,9 +63,9 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         """
         brd = get_message_board_builder()
 
-        brd.set_waiting_on(self._tel.sdp.master).for_attribute("state").to_become_equal_to(
-            "ON", ignore_first=False
-        )
+        brd.set_waiting_on(self._tel.sdp.master).for_attribute(
+            "state"
+        ).to_become_equal_to("ON", ignore_first=False)
         # subarrays
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.sdp.subarray(index)
@@ -90,9 +88,9 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         Domain logic for what needs to be waited for switching the sdp off.
         """
         brd = get_message_board_builder()
-        brd.set_waiting_on(self._tel.sdp.master).for_attribute("state").to_become_equal_to(
-            "OFF", ignore_first=False
-        )
+        brd.set_waiting_on(self._tel.sdp.master).for_attribute(
+            "state"
+        ).to_become_equal_to("OFF", ignore_first=False)
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.sdp.subarray(index)
             brd.set_waiting_on(subarray_name).for_attribute("state").to_become_equal_to(
@@ -161,7 +159,9 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
         subarray.command_inout("ReleaseAllResources")
 
-    def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_do_assign_resources(
+        self, sub_array_id: int
+    ) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited for
         subarray assign resources is done.
@@ -170,10 +170,14 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "IDLE"
+        )
         return brd
 
-    def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_doing_assign_resources(
+        self, sub_array_id: int
+    ) -> MessageBoardBuilder:
         """
         Domain logic specifyig what needs to be done for waiting
         for subarray to be scanning.
@@ -195,7 +199,9 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "EMPTY"
+        )
         return brd
 
 
@@ -261,7 +267,9 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("READY")
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("READY")
         return builder
 
     def set_wait_for_doing_configure(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -274,9 +282,9 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            ["CONFIGURING", "READY"]
-        )
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to(["CONFIGURING", "READY"])
         return builder
 
     def set_wait_for_undo_configure(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -289,7 +297,9 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
         return builder
 
 
@@ -357,9 +367,9 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
 
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "SCANNING", ignore_first=True
-        )
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING", ignore_first=True)
         return builder
 
     def set_wait_for_undo_scan(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -394,9 +404,9 @@ class SDPAbortStep(base.AbortStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "ABORTED", ignore_first=True
-        )
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
         return builder
 
 
@@ -414,9 +424,9 @@ class SDPObsResetStep(base.ObsResetStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "IDLE", ignore_first=True
-        )
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE", ignore_first=True)
         return builder
 
     def do_obsreset(self, sub_array_id: int):
@@ -452,7 +462,9 @@ class SDPObsResetStep(base.ObsResetStep, LogEnabled):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "EMPTY"
+        )
         return brd
 
 
@@ -463,12 +475,14 @@ class SDPRestart(base.RestartStep, LogEnabled):
         self._log(f"commanding {subarray_name} with Restart command")
         subarray.command_inout("Restart")
 
-    def set_wait_for_do_restart(self, sub_array_id: int, _: Any = None) -> MessageBoardBuilder:
+    def set_wait_for_do_restart(
+        self, sub_array_id: int, _: Any = None
+    ) -> MessageBoardBuilder:
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "EMPTY", ignore_first=True
-        )
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
         return builder
 
 

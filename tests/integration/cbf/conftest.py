@@ -61,6 +61,10 @@ def fxt_set_cbf_entry_point(
     else:
         exec_env.scope = ["cbf scope"]
 
+    sut_settings.default_subarray_name = sut_settings.tel.csp.cbf.subarray(
+        sut_settings.subarray_id
+    )
+
 
 # set online:
 @pytest.fixture(autouse=True, scope="session")

@@ -461,7 +461,7 @@ cbf_low_start_scan = {
         "unix_epoch_seconds": 1616971738,
         "timestamp_ns": 987654321,
         "packet_offset": 123456789,
-        "scan_seconds": 2,
+        "scan_seconds": 30,
     },
 }
 
@@ -496,47 +496,41 @@ cbf_low_release_resources = (
     },
 )
 
+
 cbf_low_configure_scan = {
     "id": 1,
     "scanId": 1,
     "stationType": 0,
     "common": {"id": 1},
     "lowcbf": {
-        "jones_source": "tango://host:port/domain/family/member",
-        "station_beams": [
-            {
-                "station_beam_id": 1,
-                "station_delay_src": "tango://host:port/domain/family/member",
-                "visibility_dest": [
-                    {"dest_ip": "10.0.2.1", "dest_mac": "02:00:00:00:02:01"}
-                ],
-                "pst_beams": [
-                    {
-                        "pst_beam_id": 1,
-                        "pst_beam_delay_src": "tango://host:port/domain/family/member",
-                        "pst_beam_dest": [
-                            {
-                                "dest_ip": "10.0.3.1",
-                                "dest_mac": "02:00:00:00:03:01",
-                                "channels": 200,
-                            },
-                            {
-                                "dest_ip": "10.0.3.2",
-                                "dest_mac": "02:00:00:00:03:02",
-                                "channels": 500,
-                            },
-                        ],
-                    }
-                ],
-            },
-            {
-                "station_beam_id": 2,
-                "station_delay_src": "tango://host:port/domain/family/member",
-                "visibility_dest": [
-                    {"dest_ip": "10.0.3.3", "dest_mac": "02:00:00:00:03:03"}
-                ],
-                "pst_beams": [],
-            },
-        ],
+        "stations": {
+            "stns": [[1, 0], [2, 0], [3, 0], [4, 0]],
+            "stn_beams": [
+                {
+                    "beam_id": 1,
+                    "freq_ids": [64, 65, 66, 67, 68, 68, 70, 71],
+                    "boresight_dly_poly": "url",
+                }
+            ],
+        },
+        "timing_beams": {
+            "beams": [
+                {
+                    "pst_beam_id": 13,
+                    "stn_beam_id": 1,
+                    "offset_dly_poly": "url",
+                    "stn_weights": [0.9, 1.0, 1.0, 0.9],
+                    "jones": "url",
+                    "dest_ip": ["10.22.0.1:2345", "10.22.0.3:3456"],
+                    "dest_chans": [128, 256],
+                    "rfi_enable": ["true", "true", "true"],
+                    "rfi_static_chans": [1, 206, 997],
+                    "rfi_dynamic_chans": [242, 1342],
+                    "rfi_weighted": 0.87,
+                }
+            ]
+        },
+        "search_beams": "tbd",
+        "zooms": "tbd",
     },
 }

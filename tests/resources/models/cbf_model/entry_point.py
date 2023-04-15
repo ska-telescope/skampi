@@ -499,9 +499,7 @@ cbf_low_release_resources = (
 
 cbf_low_configure_scan = {
     "id": 1,
-    "scanId": 1,
-    "stationType": 0,
-    "common": {"id": 1},
+    "common": {"subarrayID": 1},
     "lowcbf": {
         "stations": {
             "stns": [[1, 0], [2, 0], [3, 0], [4, 0]],
@@ -523,7 +521,7 @@ cbf_low_configure_scan = {
                     "jones": "url",
                     "dest_ip": ["10.22.0.1:2345", "10.22.0.3:3456"],
                     "dest_chans": [128, 256],
-                    "rfi_enable": ["true", "true", "true"],
+                    "rfi_enable": [True, True, True],
                     "rfi_static_chans": [1, 206, 997],
                     "rfi_dynamic_chans": [242, 1342],
                     "rfi_weighted": 0.87,

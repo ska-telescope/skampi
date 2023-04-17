@@ -552,7 +552,7 @@ class CBFEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = CbfAsignResourcesStep()
         self.configure_scan_step = CbfConfigureStep()
         self.scan_step = CbfScanStep()
-         self.abort_step = CBFAbortStep()
+        self.abort_step = CBFAbortStep()
         self.obsreset_step = CBFObsResetStep()
         self.restart_step = CBFRestart()
 

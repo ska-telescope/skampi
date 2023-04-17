@@ -514,7 +514,9 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
 
     """Implementation of ObsReset Step for CSP."""
 
-    def set_wait_for_do_obsreset(self, sub_array_id: int, receptors: List[int]) -> MessageBoardBuilder:
+    def set_wait_for_do_obsreset(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> MessageBoardBuilder:
         """
         Domain logic for running a obsreset on subarray in csp.
 
@@ -531,7 +533,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         )
         return builder
 
-    def do_obsreset(self, sub_array_id: int):
+    def do_obsreset(self, sub_array_id: int, receptors: List[int]):
         """
         Domain logic specifying what needs to be waited for obsreset is done.
 
@@ -542,7 +544,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         self._log(f"commanding {subarray_name} with ObsReset command")
         subarray.command_inout("Obsreset")
 
-    def undo_obsreset(self, sub_array_id: int):
+    def undo_obsreset(self, sub_array_id: int, receptors: List[int]):
         """
         Domain logic for releasing resources on a subarray in csp.
 
@@ -556,7 +558,9 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         subarray.set_timeout_millis(6000)
         subarray.command_inout("ReleaseAllResources")
 
-    def set_wait_for_undo_obsreset(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_undo_obsreset(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited for
         subarray releasing resources is done.

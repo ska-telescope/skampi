@@ -476,7 +476,7 @@ def an_subarray_busy_configuring(
 
     :param allocated_subarray: The allocated subarray to be configured.
     """
-    allocated_subarray.set_to_configuring(clear_afterwards=False)
+    allocated_subarray.set_to_configuring(clear_afterwards=True)
 
 
 @given("an subarray busy assigning", target_fixture="allocated_subarray")

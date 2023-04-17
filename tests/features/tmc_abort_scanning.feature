@@ -4,9 +4,8 @@ Scenario: Abort scanning
     When I command it to Abort
     Then the subarray should go into an aborted state
 
-
 @XTP-20112
-Scenerio: Abort scanning Low
+Scenario: Abort scanning Low
     Given an subarray busy scanning
     When I command it to Abort
     Then the subarray should go into an aborted state

@@ -438,6 +438,106 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
         """Not implemented."""
         raise NotImplementedError()
 
+class CBFAbortStep(base.AbortStep, LogEnabled):
+
+    """Implementation of Abort Step for CSP."""
+
+    def do(self, sub_array_id: int):
+        """Domain logic for running a abort on subarray in csp.
+
+        This implments the scan method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Abort command")
+        subarray.command_inout("Abort")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        """Domain logic specifying what needs to be waited for abort is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("ABORTED", ignore_first=True)
+        return builder
+
+
+class CBFObsResetStep(base.ObsResetStep, LogEnabled):
+
+    """Implementation of ObsReset Step for CSP."""
+
+    def set_wait_for_do(
+        self, sub_array_id: int, receptors: List[int]
+    ) -> Union[MessageBoardBuilder, None]:
+        """Domain logic for running a obsreset on subarray in csp.
+
+        This implments the scan method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE", ignore_first=True)
+        return builder
+
+    def do(self, sub_array_id: int):
+        """Domain logic specifying what needs to be waited for obsreset is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ObsReset command")
+        subarray.command_inout("Obsreset")
+
+    def undo(self, sub_array_id: int):
+        """Domain logic for releasing resources on a subarray in csp.
+
+        This implments the tear_down_subarray method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with ReleaseAllResources")
+        subarray.set_timeout_millis(6000)
+        subarray.command_inout("ReleaseAllResources")
+
+    def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
+        """Domain logic specifying what needs to be waited for subarray releasing resources is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+
+        return builder
+
+
+class CBFRestart(base.RestartStep, LogEnabled):
+    def do(self, sub_array_id: int):
+        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        subarray = con_config.get_device_proxy(subarray_name)
+        self._log(f"commanding {subarray_name} with Restart command")
+        subarray.command_inout("Restart")
+
+    def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
+        builder = get_message_board_builder()
+        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY", ignore_first=True)
+        return builder
 
 class CBFEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
@@ -452,6 +552,9 @@ class CBFEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = CbfAsignResourcesStep()
         self.configure_scan_step = CbfConfigureStep()
         self.scan_step = CbfScanStep()
+         self.abort_step = CBFAbortStep()
+        self.obsreset_step = CBFObsResetStep()
+        self.restart_step = CBFRestart()
 
 
 cbf_low_start_scan = {

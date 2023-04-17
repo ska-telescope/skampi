@@ -28,6 +28,11 @@ def fxt_set_up_log_checking_for_cbf(
         log_checking.capture_logs_from_devices(cbf_subarray)
 
 
+@pytest.fixture(name="test_settings")
+def fxt_test_settings(sut_settings: SutTestSettings):
+    sut_settings.scan_duration=4
+
+
 @pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.assign

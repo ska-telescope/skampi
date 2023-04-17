@@ -503,7 +503,7 @@ class CSPAbortStep(base.AbortStep, LogEnabled):
         :return: builder
         """
         builder = get_message_board_builder()
-        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        subarray_name = self._tel.csp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
             "ABORTED", ignore_first=True
         )
@@ -588,7 +588,7 @@ class CSPRestart(base.RestartStep, LogEnabled):
 
 
 class CSPEntryPoint(CompositeEntryPoint):
-    """Derived Entrypoint scoped to SDP element."""
+    """Derived Entrypoint scoped to CSP element."""
 
     nr_of_subarrays = 2
 

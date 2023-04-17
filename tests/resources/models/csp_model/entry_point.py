@@ -514,7 +514,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
 
     """Implementation of ObsReset Step for CSP."""
 
-    def set_wait_for_do(self, sub_array_id: int, receptors: List[int]) -> MessageBoardBuilder:
+    def set_wait_for_do_obsreset(self, sub_array_id: int, receptors: List[int]) -> MessageBoardBuilder:
         """
         Domain logic for running a obsreset on subarray in csp.
 

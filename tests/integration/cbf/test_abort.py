@@ -68,6 +68,7 @@ def i_restart_the_subarray(
 ):
     """I restart the subarray."""
     subarray = sut_settings.default_subarray_name
+    integration_test_exec_settings.attr_synching = True
     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
         "obsstate"
     ).to_become_equal_to("EMPTY")

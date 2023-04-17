@@ -42,6 +42,7 @@ def fxt_disable_abort(allocated_subarray: fxt_types.allocated_subarray):
 
     :param allocated_subarray: skallop allocated_subarray fixture
     """
+    allocated_subarray.disable_automatic_clear()
     allocated_subarray.disable_automatic_teardown()
 
 

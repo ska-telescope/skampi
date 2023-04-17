@@ -1,4 +1,6 @@
-"""Pytest fixtures and bdd step implementations specific to csp integration tests."""
+"""
+Pytest fixtures and bdd step implementations specific to csp integration tests.
+"""
 import logging
 import os
 from typing import Callable
@@ -25,8 +27,10 @@ def fxt_nr_of_subarrays() -> int:
     :return: _description_
     :rtype: int
     """
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
-    # cbf mid only controls the state of subarray 1 so will also limit to 1
+    # we only work with 1 subarray as CBF low currently limits
+    # deployment of only 1
+    # cbf mid only controls the state of subarray 1
+    # so will also limit to 1
     tel = names.TEL()
     if tel.skalow:
         return 1
@@ -91,10 +95,7 @@ def fxt_set_csp_entry_point(
     else:
         exec_env.entrypoint = "mock"
     exec_env.scope = ["csp"]
-    sut_settings.default_subarray_name = sut_settings.tel.csp.subarray(
-        sut_settings.subarray_id
-    )
-
+    sut_settings.default_subarray_name = sut_settings.tel.csp.subarray(sut_settings.subarray_id)
 
 
 # log checking
@@ -120,7 +121,9 @@ def fxt_set_up_log_checking_for_csp(
 
 
 @pytest.fixture(autouse=True)
-def fxt_setup_transition_monitoring(context_monitoring: fxt_types.context_monitoring):
+def fxt_setup_transition_monitoring(
+    context_monitoring: fxt_types.context_monitoring,
+):
     tel = names.TEL()
     (
         context_monitoring.set_waiting_on(tel.csp.cbf.subarray(1))
@@ -136,9 +139,7 @@ def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    composition = conf_types.CompositionByFile(
-        tmp_path, conf_types.CompositionType.STANDARD
-    )
+    composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
     return composition
 
 

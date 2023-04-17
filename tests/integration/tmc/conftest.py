@@ -1,18 +1,15 @@
 """Pytest fixtures and bdd step implementations specific to tmc integration
 tests."""
-import os
-
 import logging
+import os
 from typing import Callable
+
 import pytest
-
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-
 from resources.models.tmc_model.entry_point import TMCEntryPoint
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
 
@@ -113,7 +110,8 @@ def fxt_tmc_assign_resources_exec_settings(
 
 @pytest.fixture(name="set_up_subarray_log_checking_for_tmc")
 def fxt_set_up_log_capturing_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
@@ -142,9 +140,7 @@ def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    composition = conf_types.CompositionByFile(
-        tmp_path, conf_types.CompositionType.STANDARD
-    )
+    composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
     return composition
 
 

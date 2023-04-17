@@ -1,14 +1,12 @@
 """Default feature tests."""
 import os
 from typing import NamedTuple
-import json
-import logging
 
-import requests
 import pytest
+import requests
+from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
 from requests.models import Response
-from assertpy import assert_that
 from ska_ser_skallop.connectors.configuration import get_device_proxy
 
 
@@ -23,7 +21,12 @@ def test_tangogql_service_available():
 
 @pytest.fixture(name="inject_build_out")
 def fxt_inject_build_out():
-    """Inject a value into os env for using build out"""
+    """I
+    Inject a value into os env for using build out
+
+    Yields:
+        None
+    """
     original_value = os.environ["TEST_ENV"]
     os.environ["TEST_ENV"] = "BUILD_OUT"
     yield

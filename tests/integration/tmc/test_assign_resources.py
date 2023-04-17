@@ -1,16 +1,14 @@
 """Assign resources to subarray feature tests."""
 import logging
+
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
-from resources.models.mvp_model.states import ObsState
 
 from ..conftest import SutTestSettings
 
@@ -32,7 +30,8 @@ def test_assign_resources_to_tmc_subarray_in_low():
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @scenario(
-    "features/tmc_assign_resources.feature", "Release resources from low subarray"
+    "features/tmc_assign_resources.feature",
+    "Release resources from low subarray",
 )
 def test_release_resources_from_tmc_subarray_in_low():
     """Release resources from tmc subarrays in low."""
@@ -68,12 +67,12 @@ def fxt_setup_context_monitoring_for_abort_test(
         str(_tel.tm.subarray(sut_settings.subarray_id)),
         str(_tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node),
     )
-    context_monitoring.set_waiting_on(
-        _tel.csp.subarray(sut_settings.subarray_id)
-    ).for_attribute("obsstate").to_become_equal_to("ABORTED")
-    context_monitoring.set_waiting_on(
-        _tel.sdp.subarray(sut_settings.subarray_id)
-    ).for_attribute("obsstate").to_become_equal_to(["ABORTED", "EMPTY", "IDLE"])
+    context_monitoring.set_waiting_on(_tel.csp.subarray(sut_settings.subarray_id)).for_attribute(
+        "obsstate"
+    ).to_become_equal_to("ABORTED")
+    context_monitoring.set_waiting_on(_tel.sdp.subarray(sut_settings.subarray_id)).for_attribute(
+        "obsstate"
+    ).to_become_equal_to(["ABORTED", "EMPTY", "IDLE"])
 
 
 @pytest.mark.k8s
@@ -91,9 +90,23 @@ def test_abort_in_resourcing_mid(
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
+@pytest.mark.skalow
+@pytest.mark.assign
+@scenario("features/tmc_assign_resources.feature", "Abort assigning Low")
+def test_abort_in_resourcing_low(
+    set_restart_after_abort: None,
+    setup_context_monitoring_for_abort_test: None,
+    composition: conf_types.Composition,
+):
+    """Assign resources to tmc subarray in low."""
+
+
+@pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skamid
 @scenario(
-    "features/tmc_assign_resources.feature", "Release resources from mid subarray"
+    "features/tmc_assign_resources.feature",
+    "Release resources from mid subarray",
 )
 def test_release_resources_from_tmc_subarray_in_mid():
     """Release resources from tmc subarrays in mid."""
@@ -106,7 +119,8 @@ def a_tmc():
 
 @given("an telescope subarray", target_fixture="composition")
 def an_telescope_subarray(
-    set_up_subarray_log_checking_for_tmc, base_composition: conf_types.Composition  # type: ignore
+    set_up_subarray_log_checking_for_tmc,
+    base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """an telescope subarray."""
     return base_composition
@@ -150,8 +164,9 @@ def the_subarray_should_go_into_an_aborted_state(
 ):
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(sut_settings.subarray_id))
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
-        tmc_subarray_name)
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
+        tmc_subarray_name
+    )
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
     result = tmc_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.ABORTED)

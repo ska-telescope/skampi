@@ -1,32 +1,31 @@
-"""Pytest fixtures and bdd step implementations specific to cbf integration tests."""
+"""
+Pytest fixtures and bdd step implementations specific to cbf integration tests.
+"""
+import logging
 import os
 from typing import Callable
+
 import pytest
-import logging
-
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-
 from resources.models.cbf_model.entry_point import CBFEntryPoint
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from resources.models.cbf_model.mocking import setup_cbf_mock
-
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
 
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
 def fxt_nr_of_subarrays() -> int:
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
+    # we only work with 1 subarray as CBF low currently
+    # limits deployment of only 1
     # cbf mid only controls the state of subarray 1 so will also limit to 1
     return 1
 
 
 @pytest.fixture(name="set_nr_of_subarray", autouse=True)
-def fxt_set_nr_of_subarray(
-    sut_settings: conftest.SutTestSettings, nr_of_subarrays: int
-):
+def fxt_set_nr_of_subarray(sut_settings: conftest.SutTestSettings, nr_of_subarrays: int):
     """_summary_
 
     :param sut_settings: _description_
@@ -95,7 +94,8 @@ def fxt_set_cbf_online_from_cbf(
 @pytest.fixture(name="set_up_log_checking_for_cbf_subarray")
 @pytest.mark.usefixtures("set_cbf_entry_point")
 def fxt_set_up_log_checking_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
@@ -114,9 +114,7 @@ def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    composition = conf_types.CompositionByFile(
-        tmp_path, conf_types.CompositionType.STANDARD
-    )
+    composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
     return composition
 
 

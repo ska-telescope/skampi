@@ -32,6 +32,14 @@ class Dishes(TargetSpecs):
             "two": ["SKA001", "SKA002"],
             "three": ["SKA001", "SKA002", "SKA003"],
             "four": ["SKA001", "SKA002", "SKA003", "SKA004"],
+            # vis-receive script doesn't allow the above resources
+            # in the current visibility-receive test because it is running
+            # for Low, and the above names are for Mid dishes,
+            # while below we have Low station names.
+            # TODO: set up the testing infrastructure to properly
+            #  distinguish between Mid and Low
+            #  (see tests/resources/models/obsconfig/vis_receive_config.py)
+            "vis-rec": ["C10", "C136", "C1", "C217", "C13", "C42"],
         }
 
     @property

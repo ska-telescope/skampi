@@ -1,20 +1,17 @@
 """Start up the telescope from tmc feature tests."""
 import logging
 
-# import os
-
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-from ska_ser_skallop.mvp_fixtures.context_management import (
-    TelescopeContext,
-)
 from .. import conftest
+
+# import os
+
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +36,10 @@ def test_tmc_off_telescope_mid():
 
 @pytest.mark.skalow
 @pytest.mark.startup
-@scenario("features/tmc_start_up_telescope.feature", "Start up the low telescope using TMC")
+@scenario(
+    "features/tmc_start_up_telescope.feature",
+    "Start up the low telescope using TMC",
+)
 def test_tmc_start_up_telescope_low():
     """Start up the telescope in low."""
 
@@ -47,7 +47,10 @@ def test_tmc_start_up_telescope_low():
 @pytest.mark.skip(reason="OFF command is not supported in LOW CBF 0.5.7")
 @pytest.mark.skalow
 @pytest.mark.standby
-@scenario("features/tmc_start_up_telescope.feature", "Switch off the low telescope using TMC")
+@scenario(
+    "features/tmc_start_up_telescope.feature",
+    "Switch off the low telescope using TMC",
+)
 def test_tmc_off_telescope_low():
     """Switch Off the telescope in low."""
 
@@ -77,16 +80,12 @@ def a_tmc():
     assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        csp_subarray_leaf_node = con_config.get_device_proxy(
-            tel.tm.subarray(index).csp_leaf_node
-        )
+        csp_subarray_leaf_node = con_config.get_device_proxy(tel.tm.subarray(index).csp_leaf_node)
         result = csp_subarray_leaf_node.ping()
         assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        sdp_subarray_leaf_node = con_config.get_device_proxy(
-            tel.tm.subarray(index).sdp_leaf_node
-        )
+        sdp_subarray_leaf_node = con_config.get_device_proxy(tel.tm.subarray(index).sdp_leaf_node)
         result = sdp_subarray_leaf_node.ping()
         assert result > 0
     if tel.skamid:
@@ -112,16 +111,12 @@ def a_telescope_with_csp_sdp_and_dish():
     assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        csp_subarray_leaf_node = con_config.get_device_proxy(
-            tel.tm.subarray(index).csp_leaf_node
-        )
+        csp_subarray_leaf_node = con_config.get_device_proxy(tel.tm.subarray(index).csp_leaf_node)
         result = csp_subarray_leaf_node.ping()
         assert result > 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        sdp_subarray_leaf_node = con_config.get_device_proxy(
-            tel.tm.subarray(index).sdp_leaf_node
-        )
+        sdp_subarray_leaf_node = con_config.get_device_proxy(tel.tm.subarray(index).sdp_leaf_node)
         result = sdp_subarray_leaf_node.ping()
         assert result > 0
     if tel.skamid:
@@ -147,16 +142,12 @@ def a_telescope_with_sdp_csp_and_dish_on():
     assert_that(str(result)).is_equal_to("ON")
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        csp_subarray_leaf_node = con_config.get_device_proxy(
-            tel.tm.subarray(index).csp_leaf_node
-        )
+        csp_subarray_leaf_node = con_config.get_device_proxy(tel.tm.subarray(index).csp_leaf_node)
         result = csp_subarray_leaf_node.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        sdp_subarray_leaf_node = con_config.get_device_proxy(
-            tel.tm.subarray(index).sdp_leaf_node
-        )
+        sdp_subarray_leaf_node = con_config.get_device_proxy(tel.tm.subarray(index).sdp_leaf_node)
         result = sdp_subarray_leaf_node.read_attribute("state").value
         assert_that(str(result)).is_equal_to("ON")
     if tel.skamid:
@@ -210,14 +201,14 @@ def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
 @then("the sdp and csp must be off")
 @then("the sdp, csp and dish must be off")
 def the_sdp_csp_and_dish_must_be_off(
-        sut_settings: conftest.SutTestSettings,
-        integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: conftest.SutTestSettings,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
     """the sdp, csp and dish must be off."""
     tel = names.TEL()
     mid = names.Mid()
     # Check state attribute of SDP Master
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.central_node)
     )
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
@@ -253,7 +244,7 @@ def the_sdp_csp_and_dish_must_be_off(
 @then("telescope is in an OK health state")
 def the_tmc_devices_must_be_healthy(sut_settings: conftest.SutTestSettings):
     """the sdp, csp and dish must be on."""
-  
+
     tel = names.TEL()
     sut_settings = conftest.SutTestSettings()
 
@@ -266,24 +257,15 @@ def the_tmc_devices_must_be_healthy(sut_settings: conftest.SutTestSettings):
     assert result == 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        csp_subarray_leaf_node = con_config.get_device_proxy(
-            tel.tm.subarray(index).csp_leaf_node
-        )
+        csp_subarray_leaf_node = con_config.get_device_proxy(tel.tm.subarray(index).csp_leaf_node)
         result = csp_subarray_leaf_node.read_attribute("healthState").value
         assert result == 0
 
     for index in range(1, sut_settings.nr_of_subarrays + 1):
-        sdp_subarray_leaf_node = con_config.get_device_proxy(
-            tel.tm.subarray(index).sdp_leaf_node
-        )
+        sdp_subarray_leaf_node = con_config.get_device_proxy(tel.tm.subarray(index).sdp_leaf_node)
         result = sdp_subarray_leaf_node.read_attribute("healthState").value
         assert result == 0
 
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     result = central_node.read_attribute("healthState").value
     assert result == 0
-
-
-
-
-

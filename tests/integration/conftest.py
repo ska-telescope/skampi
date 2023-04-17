@@ -1,31 +1,40 @@
 """pytest global settings, fixtures and global bdd step implementations for
 integration tests."""
 import logging
-from types import SimpleNamespace
 import os
-
+from types import SimpleNamespace
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
-from mock import patch, Mock
-from assertpy import assert_that
+
 import pytest
-from pytest_bdd import when, given, then, parsers
-
-from ska_ser_skallop.connectors import configuration as con_config
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_management import telescope_management as tel
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
-from ska_ser_skallop.mvp_fixtures.base import ExecSettings
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_control.entry_points import configuration as entry_conf
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from resources.models.tmc_model.entry_point import TMCEntryPoint
-from resources.models.obsconfig.config import Observation
+from assertpy import assert_that
+from mock import Mock, patch
+from pytest_bdd import given, parsers, then, when
+from pytest_bdd.parser import Feature, Scenario, Step
+from resources.models.mvp_model.env import Observation, init_observation_config
 from resources.models.mvp_model.states import ObsState
-from resources.models.mvp_model.env import init_observation_config, Observation
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 logger = logging.getLogger(__name__)
+
+
+def pytest_bdd_before_step_call(
+    request: Any,
+    feature: Feature,
+    scenario: Scenario,
+    step: Step,
+    step_func: Callable[[Any], Any],
+    step_func_args: dict[str, Any],
+):
+    if os.getenv("SHOW_STEP_FUNCTIONS"):
+        logger.info(
+            "\n**********************************************************\n"
+            f"***** {step.keyword} {step.name} *****\n"
+            "**********************************************************"
+        )
 
 
 class SutTestSettings(SimpleNamespace):
@@ -37,6 +46,9 @@ class SutTestSettings(SimpleNamespace):
     scan_duration = 4
     _receptors = [1, 2, 3, 4]
     _nr_of_receptors = 4
+    # specify if a specific test case needs running
+    # for SDP visibility receive test: test_case = "vis-receive"
+    test_case = None
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -72,7 +84,9 @@ def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
 
 @pytest.fixture(name="sut_settings", scope="function", autouse=True)
 def fxt_conftest_settings() -> SutTestSettings:
-    """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
+    """
+    Fixture to use for setting env like  SUT settings for fixtures in conftest
+    """
     return SutTestSettings()
 
 
@@ -105,9 +119,7 @@ def fxt_set_session_exec_settings(
 
 
 @pytest.fixture(name="run_mock")
-def fxt_run_mock_wrapper(
-    request, _pytest_bdd_example, conftest_settings: SutTestSettings
-):
+def fxt_run_mock_wrapper(request, _pytest_bdd_example, conftest_settings: SutTestSettings):
     """Fixture that returns a function to use for running a test as a mock."""
 
     def run_mock(mock_test: Callable):
@@ -118,7 +130,7 @@ def fxt_run_mock_wrapper(
             "ska_ser_skallop.mvp_fixtures.fixtures.TransitChecking"
         ) as transit_checking_mock:
             transit_checking_mock.return_value.checker = Mock(unsafe=True)
-            mock_test(request, _pytest_bdd_example)  # type: ignore
+            mock_test(request, _pytest_bdd_example)
 
     return run_mock
 
@@ -180,36 +192,30 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
-def _inject_method(
-    injectable: T, method: Callable[Concatenate[T, P], R]
-) -> Callable[P, R]:
+def _inject_method(injectable: T, method: Callable[Concatenate[T, P], R]) -> Callable[P, R]:
     def _replaced_method(*args: P.args, **kwargs: P.kwargs) -> R:
         return method(injectable, *args, **kwargs)
 
     return _replaced_method
 
 
-ObservationConfigInterjector = Callable[
-    [str, Callable[Concatenate[Observation, P], R]], None
-]
+ObservationConfigInterjector = Callable[[str, Callable[Concatenate[Observation, P], R]], None]
 
 
 @pytest.fixture(name="interject_into_observation_config")
 def fxt_observation_config_interjector(
     observation_config: Observation, mocked_observation_config: Mock
 ) -> ObservationConfigInterjector[P, R]:
-
     obs = observation_config
 
     def interject_observation_method(
         method_name: str, intj_fn: Callable[Concatenate[Observation, P], R]
     ):
         injected_method = _inject_method(obs, intj_fn)
-        mocked_observation_config.configure_mock(
-            **{f"{method_name}.side_effect": injected_method}
-        )
+        mocked_observation_config.configure_mock(**{f"{method_name}.side_effect": injected_method})
 
     return interject_observation_method
+
 
 # global when steps
 # start up
@@ -259,10 +265,12 @@ def i_switch_off_the_telescope(
             entry_point.set_telescope_to_standby()
 
 
-# Currently, resources_list is not utilised, raised SKB for the same:https://jira.skatelescope.org/browse/SKB-202
+# Currently, resources_list is not utilised, raised SKB for the same:
+# https://jira.skatelescope.org/browse/SKB-202
 @when(
     parsers.parse(
-        "I issue the assignResources command with the {resources_list} to the subarray {subarray_id}"
+        "I issue the assignResources command with the {resources_list} to the"
+        " subarray {subarray_id}"
     )
 )
 def assign_resources_with_subarray_id(
@@ -283,9 +291,7 @@ def assign_resources_with_subarray_id(
         with telescope_context.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            entry_point.compose_subarray(
-                subarray_id, receptors, composition, sb_config.sbid
-            )
+            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
 @when("I assign resources to it")
@@ -306,9 +312,7 @@ def i_assign_resources_to_it(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            entry_point.compose_subarray(
-                subarray_id, receptors, composition, sb_config.sbid
-            )
+            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
 # scan configuration
@@ -328,16 +332,14 @@ def i_configure_it_for_a_scan(
     scan_duration = sut_settings.scan_duration
 
     with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_configuring_a_subarray(
-            integration_test_exec_settings
-        ):
+        with allocated_subarray.wait_for_configuring_a_subarray(integration_test_exec_settings):
             entry_point.configure_subarray(
                 sub_array_id, receptors, configuration, sb_id, scan_duration
             )
 
 
 @when("I command it to scan for a given period")
-def i_command_it_to_scan(
+def i_execute_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
@@ -369,14 +371,14 @@ def i_release_all_resources_assigned_to_it(
     sub_array_id = allocated_subarray.id
 
     with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_releasing_a_subarray(
-            integration_test_exec_settings
-        ):
+        with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
             entry_point.tear_down_subarray(sub_array_id)
 
 
 @given("an subarray busy configuring")
-def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
+def an_subarray_busy_configuring(
+    allocated_subarray: fxt_types.allocated_subarray,
+):
     """an subarray busy configuring"""
     allocated_subarray.set_to_configuring(clear_afterwards=False)
 
@@ -391,18 +393,20 @@ def an_subarray_busy_assigning(
 ):
     """an subarray busy assigning"""
 
-    """Create a subarray but block only until it is in RESOURCING.
+    """Create a subarray but block only until it is in RESOURCING
 
     :param subarray_id: the identification nr for the subarray
-    :param receptors: the receptors that will be used for the subarray.
-        If none is given it will use a default set of two receptors 1 and 2.
-    :param sb_config: The SB configuration to use as context, defaults to SBConfig()
-    :param settings: the execution settings to use during the IO calls., defaults to
-        ExecSettings()
-    :param composition: The type of composition configuration to use.
-        , defaults to conf_types.Composition( conf_types.CompositionType.STANDARD )
+    :param receptors: the receptors that will be used for the subarray
+        If none is given it will use a default set of two receptors 1 and 2
+    :param sb_config: The SB configuration to use as context
+        defaults to SBConfig()
+    :param settings: the execution settings to use during the IO calls
+        defaults to ExecSettings()
+    :param composition: The type of composition configuration to use
+        , defaults to conf_types.Composition
+        ( conf_types.CompositionType.STANDARD )
     :type composition: conf_types.Composition, optional
-    :return: A subarray context manager to ue for subsequent commands.
+    :return: A subarray context manager to ue for subsequent commands
     """
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors

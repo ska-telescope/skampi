@@ -2,10 +2,11 @@
 import pytest
 from assertpy import assert_that
 from pytest_bdd import scenario, then
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from resources.models.mvp_model.states import ObsState
+
 from ..conftest import SutTestSettings
 
 
@@ -38,11 +39,9 @@ def the_subarray_should_go_into_aborted_state(
 ):
     """the subarray should go into an aborted state."""
     tel = names.TEL()
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.subarray(sut_settings.subarray_id))
     )
-    tmc_subarray = con_config.get_device_proxy(
-        tel.tm.subarray(sut_settings.subarray_id)
-    )
+    tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = tmc_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.ABORTED)

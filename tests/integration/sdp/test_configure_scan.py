@@ -2,28 +2,29 @@
 import pytest
 from assertpy import assert_that
 from pytest_bdd import scenario, then
-
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
-from resources.models.mvp_model.states import ObsState
 
 
 @pytest.mark.skalow
 @pytest.mark.configure
 @pytest.mark.sdp
 @scenario(
-    "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in low"
+    "features/sdp_configure_scan.feature",
+    "Configure scan on sdp subarray in low",
 )
 def test_configure_scan_on_sdp_subarray_in_low():
     """Configure scan on sdp subarray in low."""
+
 
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.sdp
 @scenario(
-    "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in mid"
+    "features/sdp_configure_scan.feature",
+    "Configure scan on sdp subarray in mid",
 )
 def test_abort_configuring_in_mid():
     """Configure scan on sdp subarray in mid."""
@@ -33,7 +34,8 @@ def test_abort_configuring_in_mid():
 @pytest.mark.configure
 @pytest.mark.sdp
 @scenario(
-    "features/sdp_configure_scan.feature", "Configure scan on sdp subarray in mid"
+    "features/sdp_configure_scan.feature",
+    "Configure scan on sdp subarray in mid",
 )
 def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid."""

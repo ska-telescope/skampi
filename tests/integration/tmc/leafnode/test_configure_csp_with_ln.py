@@ -2,27 +2,29 @@
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-from resources.models.mvp_model.states import ObsState
-
 
 @pytest.mark.skamid
 @scenario(
-    "features/tmc_cspln_configure.feature", "Configure the csp mid using csp leaf node"
+    "features/tmc_cspln_configure.feature",
+    "Configure the csp mid using csp leaf node",
 )
 def test_configure_cspsubarray_for_a_scan_in_mid():
     """Configure cspsubarray for a scan in mid using the csp leaf node."""
 
+
 @pytest.mark.skalow
 @scenario(
-    "features/tmc_cspln_configure.feature", "Configure the csp low using csp leaf node"
+    "features/tmc_cspln_configure.feature",
+    "Configure the csp low using csp leaf node",
 )
 def test_configure_cspsubarray_for_a_scan_in_low():
     """Configure cspsubarray for a scan in low using the csp leaf node."""
+
 
 @given("a CSP subarray in the IDLE state")
 def a_csp():
@@ -30,7 +32,7 @@ def a_csp():
 
 
 @given("a TMC CSP subarray Leaf Node", target_fixture="configuration")
-def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):  # type: ignore
+def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
     """a tmc CSP subarray leaf node."""
 
 

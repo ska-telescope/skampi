@@ -4,8 +4,9 @@ from os import environ
 from typing import List, Optional
 
 from ska_db_oda.unit_of_work.restunitofwork import RESTUnitOfWork
-from ska_oso_oet_client.procedureclient import ProcedureAdapter, ProcedureSummary
 from ska_oso_oet_client.activityclient import ActivityAdapter
+from ska_oso_oet_client.procedureclient import ProcedureAdapter, ProcedureSummary
+
 LOGGER = logging.getLogger(__name__)
 
 kube_namespace = environ.get("KUBE_NAMESPACE", "test")
@@ -33,7 +34,6 @@ def add_sb_to_oda(test_sbd):
 
 
 class ScriptExecutor:
-
     @staticmethod
     def init_script(script_uri: str, create_kwargs, *args, **kwargs) -> ProcedureSummary:
         if not kwargs:
@@ -76,14 +76,14 @@ class ScriptExecutor:
         Wait until the script with the given ID is in the given state
 
         Args:
-            pid (str): ID of the script in the OET
+            pid (int): ID of the script in the OET
             state (str): The desired OET state for the script (eg 'READY')
             timeout (int): timeout (~seconds) how long to wait
             for script to complete
 
         Returns:
             state (str): Either the desired state, STOPPED if the timeout was
-                reached or FAILED if the script failed
+            reached or FAILED if the script failed
         """
         t = timeout
         while t > 0:
@@ -91,12 +91,17 @@ class ScriptExecutor:
 
             if procedure.state == "FAILED":
                 stacktrace = procedure.history["stacktrace"]
-                LOGGER.info(f"Script {procedure.script['script_uri']} (PID={pid}) failed. Stacktrace follows:")
+                LOGGER.info(
+                    f"Script {procedure.script['script_uri']} (PID={pid})"
+                    " failed. Stacktrace follows:"
+                )
                 LOGGER.exception(stacktrace)
                 return procedure.state
 
             if procedure.state == state:
-                LOGGER.info(f"Script {procedure.script['script_uri']} state changed to {state}")
+                LOGGER.info(
+                    f"Script {procedure.script['script_uri']} state changed to" f" {state}"
+                )
                 return procedure.state
 
             time.sleep(2)
@@ -122,29 +127,27 @@ class ScriptExecutor:
             the script execution is started
             timeout: Timeout (~seconds) for how long to wait for script
             stages to complete
-            script_create_kwargs: Any keyword arguments (e.g. git related args) to pass to
+            script_create_kwargs: Any keyword arguments
+             (e.g. git related args) to pass to
             OET rest server when creating the script
 
         Returns:
-            state: The OET state for the script after execution (eg 'COMPLETE')
+            state (str): The OET state for the script
+             after execution (eg 'COMPLETE')
             None if something goes wrong.
         """
         LOGGER.info(f"Running script {script}")
 
         procedure = ScriptExecutor.init_script(script, create_kwargs=script_create_kwargs)
-        pid = procedure.uri.split('/')[-1]
+        pid = procedure.uri.split("/")[-1]
 
         # confirm that creating the script worked and we have a valid ID
         state = ScriptExecutor.wait_for_script_state(pid, "READY", timeout)
         if state != "READY":
-            LOGGER.info(
-                f"Script {script} did not reach READY state"
-            )
+            LOGGER.info(f"Script {script} did not reach READY state")
             return state
 
         # start execution of created script
         ScriptExecutor.start_script(pid, *script_run_args)
 
-        return ScriptExecutor.wait_for_script_state(
-            pid, "COMPLETE", timeout
-        )
+        return ScriptExecutor.wait_for_script_state(pid, "COMPLETE", timeout)

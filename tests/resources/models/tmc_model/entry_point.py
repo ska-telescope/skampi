@@ -3,10 +3,9 @@ import copy
 import json
 import logging
 import os
-from typing import Any, List, Union
 from time import sleep
-from ska_ser_skallop.utils.singleton import Memo
-from ska_ser_skallop.mvp_control.configuration import configuration as conf
+from typing import Any, List, Union
+
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import types
@@ -15,12 +14,12 @@ from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
-    AbortStep,
     ObsResetStep,
 )
 from ska_ser_skallop.utils.nrgen import get_id
+from ska_ser_skallop.utils.singleton import Memo
 
-from ..mvp_model.env import get_observation_config, Observation
+from ..mvp_model.env import Observation, get_observation_config
 from ..mvp_model.states import ObsState
 
 logger = logging.getLogger(__name__)
@@ -41,9 +40,7 @@ class LogEnabled:
 class StartUpStep(base.ObservationStep, LogEnabled):
     """Implementation of Startup step for TMC"""
 
-    def __init__(
-        self, nr_of_subarrays: int = 3, receptors: list[int] = [1, 2, 3, 4]
-    ) -> None:
+    def __init__(self, nr_of_subarrays: int = 3, receptors: list[int] = [1, 2, 3, 4]) -> None:
         super().__init__()
         self.nr_of_subarrays = nr_of_subarrays
         self.receptors = receptors
@@ -59,20 +56,24 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         central_node.command_inout("TelescopeOn")
 
     def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifying what needs to be waited for before startup of telescope is done."""
+        """
+        Domain logic specifying what needs to be waited for
+         before startup of telescope is done.
+        """
         brd = get_message_board_builder()
         # set sdp master and sdp subarray to be waited before startup completes
-        brd.set_waiting_on(self._tel.sdp.master).for_attribute(
-            "state"
-        ).to_become_equal_to("ON", ignore_first=False)
+        brd.set_waiting_on(self._tel.sdp.master).for_attribute("state").to_become_equal_to(
+            "ON", ignore_first=False
+        )
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("ON", ignore_first=False)
-        # set csp controller and csp subarray to be waited before startup completes
-        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-            "state"
-        ).to_become_equal_to("ON", ignore_first=False)
+        # set csp controller and csp subarray to be waited
+        # before startup completes
+        brd.set_waiting_on(self._tel.csp.controller).for_attribute("state").to_become_equal_to(
+            "ON", ignore_first=False
+        )
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
@@ -95,25 +96,34 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         return brd
 
     def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when
+             implementation is not done.
+        """
         raise NotImplementedError()
 
     def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic for what needs to be waited for switching the telescope off."""
+        """
+        Domain logic for what needs to be waited
+         for switching the telescope off.
+        """
         brd = get_message_board_builder()
         # TODO set what needs to be waited before start up completes
-        brd.set_waiting_on(self._tel.sdp.master).for_attribute(
-            "state"
-        ).to_become_equal_to("OFF", ignore_first=False)
+        brd.set_waiting_on(self._tel.sdp.master).for_attribute("state").to_become_equal_to(
+            "OFF", ignore_first=False
+        )
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.sdp.subarray(index)).for_attribute(
                 "state"
             ).to_become_equal_to("OFF", ignore_first=False)
         # set dish master to be waited before startup completes
         if self._tel.skamid:
-            brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-                "state"
-            ).to_become_equal_to("OFF", ignore_first=False)
+            brd.set_waiting_on(self._tel.csp.controller).for_attribute("state").to_become_equal_to(
+                "OFF", ignore_first=False
+            )
             for index in range(1, self.nr_of_subarrays + 1):
                 brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                     "state"
@@ -153,11 +163,9 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """This method will generate unique eb and sb ids.
         Update it in config json
         Args:
-            config_json (Dict): Config json for Assign Resource command
+        config_json (Dict): Config json for Assign Resource command
         """
-        config_json["sdp"]["execution_block"]["eb_id"] = get_id(
-            "eb-test-********-*****"
-        )
+        config_json["sdp"]["execution_block"]["eb_id"] = get_id("eb-test-********-*****")
         for pb in config_json["sdp"]["processing_blocks"]:
             pb["pb_id"] = get_id("pb-test-********-*****")
 
@@ -181,11 +189,10 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         if self._tel.skamid:
-            config = self.observation.generate_assign_resources_config(
-                sub_array_id
-            ).as_json
+            config = self.observation.generate_assign_resources_config(sub_array_id).as_json
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
             config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
             self._generate_unique_eb_sb_ids(config_json)
             config = json.dumps(config_json)
@@ -204,19 +211,19 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         if self._tel.skamid:
-            config = (
-                self.observation.generate_release_all_resources_config_for_central_node(
-                    sub_array_id
-                )
+            config = self.observation.generate_release_all_resources_config_for_central_node(  # noqa: disable=E501
+                sub_array_id
             )
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
             config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         central_node.command_inout("ReleaseResources", config)
 
     def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray assign resources is done.
+        """Domain logic specifying what needs to be waited
+         for subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -235,7 +242,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         return brd
 
     def set_wait_for_doing(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+        """Domain logic specifyig what needs to be done
+         for waiting for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -246,7 +254,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         )
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
-        # ).to_become_equal_to("RESOURCING")
+            # ).to_become_equal_to("RESOURCING")
         ).to_become_equal_to("IDLE")
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
@@ -254,7 +262,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         return brd
 
     def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray releasing resources is done.
+        """Domain logic specifying what needs to be waited
+         for subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -299,7 +308,8 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
-        # scan duration needs to be a memorized for future objects that may require it
+        # scan duration needs to be a memorized for
+        # future objects that may require it
         Memo(scan_duration=duration)
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -307,7 +317,8 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
             config = self.observation.generate_scan_config().as_json
 
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
             config = json.dumps(CONFIGURE_JSON_LOW)
         self._log(f"commanding {subarray_name} with Configure: {config} ")
         subarray.command_inout("Configure", config)
@@ -324,10 +335,9 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         self._log(f"commanding {subarray_name} with End command")
         subarray.command_inout("End")
 
-    def set_wait_for_do(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for configuring a scan is done.
+    def set_wait_for_do(self, sub_array_id: int, receptors: List[int]) -> MessageBoardBuilder:
+        """Domain logic specifying what needs to be waited
+         for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
         """
@@ -347,9 +357,7 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         ).to_become_equal_to("READY")
         return brd
 
-    def set_wait_for_doing(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> MessageBoardBuilder:
+    def set_wait_for_doing(self, sub_array_id: int, receptors: List[int]) -> MessageBoardBuilder:
         """Not implemented."""
         brd = get_message_board_builder()
 
@@ -362,10 +370,9 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         ).to_become_equal_to("CONFIGURING")
         return brd
 
-    def set_wait_for_undo(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> MessageBoardBuilder:
-        """Domain logic specifying what needs to be waited for subarray clear scan config is done.
+    def set_wait_for_undo(self, sub_array_id: int, receptors: List[int]) -> MessageBoardBuilder:
+        """Domain logic specifying what needs to be waited for subarray
+         clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
         :param dish_ids: this dish indices (in case of mid) to control
@@ -402,11 +409,15 @@ class ScanStep(base.ScanStep, LogEnabled):
         :param dish_ids: this dish indices (in case of mid) to control
         :param composition: The assign resources configuration parameters
         :param sb_id: a generic ide to identify a sb to assign resources
+
+        Raises:
+            Exception: Raise exception in do method of scan command
         """
         if self._tel.skamid:
             scan_config = self.observation.generate_run_scan_conf().as_json
         elif self._tel.skalow:
-            # TODO Low json from CDM is not available. Once it is available pull json from CDM
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
             scan_config = json.dumps(SCAN_JSON_LOW)
         scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id)
@@ -439,15 +450,14 @@ class ScanStep(base.ScanStep, LogEnabled):
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:
-        """Domain logic specifyig what needs to be done for waiting for subarray to be scanning.
+        """Domain logic specifyig what needs to be done for waiting
+         for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "SCANNING"
-        )
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("SCANNING")
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("SCANNING")
@@ -489,17 +499,17 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         """Domain logic for waiting for setting to online to be complete."""
         controller_name = self._tel.csp.controller
         builder = get_message_board_builder()
-        builder.set_waiting_on(controller_name).for_attribute(
-            "adminMode"
-        ).to_become_equal_to("ONLINE", ignore_first=False)
-        builder.set_waiting_on(controller_name).for_attribute(
-            "state"
-        ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
+        builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
+            "ONLINE", ignore_first=False
+        )
+        builder.set_waiting_on(controller_name).for_attribute("state").to_become_equal_to(
+            ["OFF", "ON"], ignore_first=False
+        )
         for index in range(1, self.nr_of_subarrays + 1):
             subarray = self._tel.csp.subarray(index)
-            builder.set_waiting_on(subarray).for_attribute(
-                "adminMode"
-            ).to_become_equal_to("ONLINE", ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("adminMode").to_become_equal_to(
+                "ONLINE", ignore_first=False
+            )
             builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
                 ["OFF", "ON"], ignore_first=False
             )
@@ -521,18 +531,24 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         """Domain logic for waiting for setting to offline to be complete."""
         controller_name = self._tel.csp.controller
         builder = get_message_board_builder()
-        builder.set_waiting_on(controller_name).for_attribute(
-            "adminMode"
-        ).to_become_equal_to("OFFLINE", ignore_first=False)
+        builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
+            "OFFLINE", ignore_first=False
+        )
         for index in range(1, self.nr_of_subarrays + 1):
             subarray = self._tel.csp.subarray(index)
-            builder.set_waiting_on(subarray).for_attribute(
-                "adminMode"
-            ).to_become_equal_to("OFFLINE", ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("adminMode").to_become_equal_to(
+                "OFFLINE", ignore_first=False
+            )
         return builder
 
     def set_wait_for_doing(self) -> MessageBoardBuilder:
-        """Not implemented."""
+        """
+        Not implemented.
+
+        Raises:
+            NotImplementedError: Raises the error when implementation
+                is not done.
+        """
         raise NotImplementedError()
 
 
@@ -542,9 +558,7 @@ class TMCObsResetStep(ObsResetStep, LogEnabled):
     ) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to(
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
             "ABORTED", ignore_first=True
         )  # IDLE
         return builder
@@ -566,17 +580,17 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
     def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("ABORTED", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "ABORTED", ignore_first=True
+        )
         csp_subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(csp_subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("ABORTED", ignore_first=True)
+        builder.set_waiting_on(csp_subarray_name).for_attribute("obsState").to_become_equal_to(
+            "ABORTED", ignore_first=True
+        )
         sdp_subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(sdp_subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("ABORTED", ignore_first=True)
+        builder.set_waiting_on(sdp_subarray_name).for_attribute("obsState").to_become_equal_to(
+            "ABORTED", ignore_first=True
+        )
         return builder
 
     def undo(self, sub_array_id: int):
@@ -594,9 +608,9 @@ class TMCAbortStep(base.AbortStep, LogEnabled):
     def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY", ignore_first=True)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "EMPTY", ignore_first=True
+        )
         return builder
 
 
@@ -612,17 +626,17 @@ class TMCRestart(base.RestartStep, LogEnabled):
     ) -> Union[MessageBoardBuilder, None]:
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY", ignore_first=False)
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "EMPTY", ignore_first=False
+        )
         csp_subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(csp_subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("EMPTY", ignore_first=False)
+        builder.set_waiting_on(csp_subarray_name).for_attribute("obsState").to_become_equal_to(
+            "EMPTY", ignore_first=False
+        )
         sdp_subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(sdp_subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to(["EMPTY", "IDLE"], ignore_first=False)
+        builder.set_waiting_on(sdp_subarray_name).for_attribute("obsState").to_become_equal_to(
+            ["EMPTY", "IDLE"], ignore_first=False
+        )
         return builder
 
 
@@ -657,7 +671,11 @@ ASSIGN_RESOURCE_JSON_LOW = {
     "interface": "https://schema.skao.int/ska-low-tmc-assignresources/3.0",
     "transaction_id": "txn-....-00001",
     "subarray_id": 1,
-    "mccs": {"subarray_beam_ids": [1], "station_ids": [[1, 2]], "channel_blocks": [3]},
+    "mccs": {
+        "subarray_beam_ids": [1],
+        "station_ids": [[1, 2]],
+        "channel_blocks": [3],
+    },
     "sdp": {
         "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
         "resources": {"receptors": ["SKA001", "SKA002", "SKA003", "SKA004"]},
@@ -704,7 +722,10 @@ ASSIGN_RESOURCE_JSON_LOW = {
                 }
             ],
             "polarisations": [
-                {"polarisations_id": "all", "corr_type": ["XX", "XY", "YX", "YY"]}
+                {
+                    "polarisations_id": "all",
+                    "corr_type": ["XX", "XY", "YX", "YY"],
+                }
             ],
             "fields": [
                 {
@@ -842,5 +863,3 @@ SCAN_JSON_LOW = {
     "transaction_id": "txn-....-00001",
     "scan_id": 1,
 }
-
-

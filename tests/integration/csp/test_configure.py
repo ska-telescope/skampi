@@ -4,7 +4,6 @@ import logging
 import pytest
 from pytest_bdd import scenario
 
-
 logger = logging.getLogger(__name__)
 
 

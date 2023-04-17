@@ -1,15 +1,13 @@
 """Basic cluster functionality tests."""
 import logging
-from kubernetes.client.api.networking_v1_api import NetworkingV1Api
-from kubernetes.client.exceptions import ApiException
-import pytest
 import os
-import requests
-import time
-from shutil import copyfile
 import subprocess
-from kubernetes import config, client
-from kubernetes.stream import stream
+import time
+
+import pytest
+import requests
+from kubernetes import client, config
+from kubernetes.client.exceptions import ApiException
 
 
 @pytest.fixture(name="assets_dir")
@@ -41,10 +39,7 @@ def fxt_k8s_cluster(assets_dir):
     """
     kubeconfig_filepath = None
     if "KUBECONFIG" in os.environ:
-        logging.info(
-            "kubeconfig already exists in ENV VAR, skipping: "
-            + os.environ["KUBECONFIG"]
-        )
+        logging.info("kubeconfig already exists in ENV VAR, skipping: " + os.environ["KUBECONFIG"])
         kubeconfig_filepath = os.environ["KUBECONFIG"]
     else:
         if os.path.isfile(os.path.join(os.environ["HOME"], ".kube", "config")):
@@ -54,9 +49,7 @@ def fxt_k8s_cluster(assets_dir):
             )
             kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
         else:
-            logging.info(
-                f"Defaulting to loading kubeconfig from {kubeconfig_filepath}."
-            )
+            logging.info(f"Defaulting to loading kubeconfig from {kubeconfig_filepath}.")
             kubeconfig_filepath = os.path.join(assets_dir, "kubeconfig")
 
     assert os.path.isfile(kubeconfig_filepath)
@@ -65,14 +58,17 @@ def fxt_k8s_cluster(assets_dir):
     os.environ["KUBECONFIG"] = kubeconfig_filepath
     config.load_kube_config(kubeconfig_filepath)
 
-    nodes = subprocess.run(
-        ["kubectl", "get", "nodes", "-o", "wide"],
-        check=True,
-        stdout=subprocess.PIPE,
-        universal_newlines=True,
-    )
-    for line in nodes.stdout.split("\n"):
-        logging.info(line)
+    try:
+        nodes = subprocess.run(
+            ["kubectl", "get", "nodes", "-o", "wide"],
+            check=True,
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+        )
+        for line in nodes.stdout.split("\n"):
+            logging.info(line)
+    except subprocess.CalledProcessError as err:
+        logging.warning("'kubectl get nodes' returned the following error: %s", str(err))
 
 
 @pytest.fixture(name="test_namespace")
@@ -82,6 +78,9 @@ def fxt_test_namespace(manifest):
     When run locally, no CI job exists - thus the default namespace
     is used. As a 'local default', in case users don't want to use their
     default namespace, we provide the preset value `ci-local` in the makefiles
+
+    Yields:
+        Namespace
     """
     logging.info(f"Current working directory: {os.getcwd()}")
     logging.info(f"Manifest returns: {manifest}")
@@ -102,9 +101,7 @@ def fxt_test_namespace(manifest):
             client.CoreV1Api().create_namespace(namespace)
             logging.info(f"Namespace {namespace.metadata.name} created")
         else:
-            logging.info(
-                f"Namespace {_namespace} already existed - bad sign for test setup"
-            )
+            logging.info(f"Namespace {_namespace} already existed - bad sign for test" " setup")
 
     else:
         _namespace = "default"
@@ -136,13 +133,12 @@ def fxt_pvc(test_namespace):
         response = api.create_namespaced_persistent_volume_claim(
             namespace=test_namespace, body=pvc_body
         )
+        logging.info("Response is %s", response)
     except ApiException as e:
         logging.error("That didn't work: %s" % e)
 
     pvcs = api.list_namespaced_persistent_volume_claim(namespace=test_namespace)
-    logging.info(
-        f"PVC {pvcs.items[0].metadata.name} currently {pvcs.items[0].status.phase}"
-    )
+    logging.info(f"PVC {pvcs.items[0].metadata.name} currently" f" {pvcs.items[0].status.phase}")
     assert len(pvcs.items) == 1
 
     yield pvc_name
@@ -155,7 +151,6 @@ def fxt_pvc(test_namespace):
 
 @pytest.fixture(name="all_the_things")
 def fxt_deployments_and_services(test_namespace, manifest, persistentvolumeclaim):
-
     logging.info(f"Creating resources in namespace: {test_namespace}")
     k_cmd = [
         "kubectl",
@@ -201,12 +196,13 @@ def fxt_create_ingress(test_namespace, assets_dir):
     TODO: This is needed because the currently used version of the python
     kubernetes lib doesn't have the V1 ingress API implemented yet.
     Therefore this method can be updated in future to use the API directly.
+
+    Yields:
+        Return Code
     """
     import yaml
 
-    manifest_filepath = os.path.realpath(
-        os.path.join(assets_dir, "cluster_test_ingress.yaml")
-    )
+    manifest_filepath = os.path.realpath(os.path.join(assets_dir, "cluster_test_ingress.yaml"))
     patched_manifest_filepath = os.path.join(assets_dir, "tmp_ingress.yaml")
     with open(manifest_filepath) as f:
         ingress = yaml.safe_load(f)
@@ -229,7 +225,10 @@ def fxt_create_ingress(test_namespace, assets_dir):
     ]
 
     ingress_result = subprocess.run(
-        k_cmd_ingress, check=True, stdout=subprocess.PIPE, universal_newlines=True
+        k_cmd_ingress,
+        check=True,
+        stdout=subprocess.PIPE,
+        universal_newlines=True,
     )
 
     for line in ingress_result.stdout.split("\n"):
@@ -255,7 +254,8 @@ def fxt_create_ingress(test_namespace, assets_dir):
     assert destroy_ingress.returncode == 0
 
 
-# TODO: PATCH THE INGRESS RESOURCE SO THAT IT IS CREATED WITH NAMESPACED HOSTNAME
+# TODO: PATCH THE INGRESS RESOURCE SO THAT
+# IT IS CREATED WITH NAMESPACED HOSTNAME
 def write_to_volume(write_service_name, test_namespace, all_the_things, ingress):
     # def write_to_volume(write_service_name, test_namespace, all_the_things):
     logging.info(f"Result of creating all the things: {all_the_things}")
@@ -265,9 +265,7 @@ def write_to_volume(write_service_name, test_namespace, all_the_things, ingress)
 
     v1 = client.CoreV1Api()
     podname = (
-        v1.list_namespaced_pod(
-            test_namespace, label_selector="app=" + write_service_name
-        )
+        v1.list_namespaced_pod(test_namespace, label_selector="app=" + write_service_name)
         .items[0]
         .metadata.name
     )
@@ -308,12 +306,8 @@ def curl_service_with_shared_volume(host0, host1, test_namespace):
     logging.info("Status1: {}".format(result1.status_code))
     logging.info("Result2: {}".format(result2.text))
     logging.info("Status2: {}".format(result2.status_code))
-    assert (
-        result1.status_code == 200
-    ), f"Expected a 200 response, got {result1.status_code}"
-    assert (
-        result2.status_code == 200
-    ), f"Expected a 200 response, got {result2.status_code}"
+    assert result1.status_code == 200, f"Expected a 200 response, got {result1.status_code}"
+    assert result2.status_code == 200, f"Expected a 200 response, got {result2.status_code}"
     assert result1.text == result2.text, f"{result1.text} ain't {result2.text}"
 
 
@@ -332,7 +326,7 @@ def wait_for_pod(test_namespace, service_name):
                 if wait_for_seconds > 10:
                     break
                 logging.info(
-                    f"{item.metadata.name} not yet ready, waiting for {wait_for_seconds}"
+                    f"{item.metadata.name} not yet ready, waiting for" f" {wait_for_seconds}"
                 )
                 continue
 
@@ -344,27 +338,19 @@ def wait_for_pod(test_namespace, service_name):
         if all_running:
             break
         else:
-            ret = v1.list_namespaced_pod(
-                test_namespace, label_selector="app=" + service_name
-            )
+            ret = v1.list_namespaced_pod(test_namespace, label_selector="app=" + service_name)
     logging.info("Pod Ready")
 
 
-@pytest.mark.skipif(
-    os.getenv("CLUSTER_TESTS") == "skip", reason="Skipping Cluster Tests"
-)
+@pytest.mark.skipif(os.getenv("CLUSTER_TESTS") == "skip", reason="Skipping Cluster Tests")
 @pytest.mark.infra
 def test_cluster(test_namespace, all_the_things, ingress):
     wait_for_pod(test_namespace, "nginx1")
-    logging.info(f"Test: Deployment nginx1 Ready")
+    logging.info("Test: Deployment nginx1 Ready")
     wait_for_pod(test_namespace, "nginx2")
-    logging.info(f"Test: Deployment nginx2 Ready")
+    logging.info("Test: Deployment nginx2 Ready")
     write_to_volume("nginx1", test_namespace, all_the_things, ingress)
     logging.info("Test: Successfully executed a write to a shared volume")
-    curl_service_with_shared_volume(
-        "nginx1", "nginx2", test_namespace
-    )  # this is the actual test
+    curl_service_with_shared_volume("nginx1", "nginx2", test_namespace)  # this is the actual test
     logging.info("Test: Successfully executed a write to a shared volume")
-    curl_service_with_shared_volume(
-        "nginx1", "nginx2", test_namespace
-    )  # this is the actual test
+    curl_service_with_shared_volume("nginx1", "nginx2", test_namespace)  # this is the actual test

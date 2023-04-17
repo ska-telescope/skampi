@@ -1,26 +1,24 @@
+import os
+
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-import os
-
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
-from resources.models.mvp_model.states import ObsState
 
 from tests.integration import conftest
 
 
 @pytest.fixture(name="setup_log_checking")
 def fxt_setup_log_checking(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
-        csp_subarray_leaf_node = str(
-            tel.tm.subarray(sut_settings.subarray_id).csp_leaf_node
-        )
+        csp_subarray_leaf_node = str(tel.tm.subarray(sut_settings.subarray_id).csp_leaf_node)
         csp_subarray = str(tel.csp.subarray(sut_settings.subarray_id))
         log_checking.capture_logs_from_devices(csp_subarray_leaf_node, csp_subarray)
 
@@ -71,9 +69,7 @@ def the_csp_subarray_goes_back_to_ready_state(
     csp_subarray = con_config.get_device_proxy(csp_subarray_name)
     context_monitoring.re_init_builder()
     integration_test_exec_settings.attr_synching = True
-    context_monitoring.wait_for(csp_subarray_name).for_attribute(
-        "obsstate"
-    ).to_become_equal_to(
+    context_monitoring.wait_for(csp_subarray_name).for_attribute("obsstate").to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
     result = csp_subarray.read_attribute("obsstate").value

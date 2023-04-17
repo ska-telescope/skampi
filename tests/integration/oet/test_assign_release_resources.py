@@ -145,7 +145,9 @@ def when_create_sbi(
 
 
 @when(
-    parsers.parse("I tell the OET to allocate resources using script {script} and SBI" " {sb_json}")
+    parsers.parse(
+        "I tell the OET to allocate resources using script {script} and SBI" " {sb_json}"
+    )
 )
 def when_allocate_resources_from_sbi(
     script,

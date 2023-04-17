@@ -521,7 +521,6 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
-        :param receptors: The index id of the dish to control
         :return: builder
         """
         builder = get_message_board_builder()

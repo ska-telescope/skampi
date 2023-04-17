@@ -257,7 +257,9 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("RESOURCING")
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "RESOURCING"
+        )
         brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
             "obsState"
             # ).to_become_equal_to("RESOURCING")

@@ -49,7 +49,9 @@ DEFAULT_BEAMS = {
         "vis0",
         BeamConfiguration(beam_id="vis0", function="visibilities"),
         {
-            "default_beam_type": EBScanTypeBeam(channels_id="vis_channels", polarisations_id="all"),
+            "default_beam_type": EBScanTypeBeam(
+                channels_id="vis_channels", polarisations_id="all"
+            ),
             "field_a_beam_type": EBScanTypeBeam(field_id="field_a"),
         },
     ),

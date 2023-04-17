@@ -21,7 +21,7 @@ low-test:
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
-    ADDMARKS: "XTP-2174"
+    ADDMARKS: "XTP-21747"
     COUNT: 1
     EXIT_AT_FAIL: "false"
     CAPTURE_LOGS: "True"

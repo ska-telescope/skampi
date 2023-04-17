@@ -32,7 +32,7 @@ def fxt_set_up_log_checking_for_cbf(
 @pytest.mark.cbf
 @pytest.mark.assign
 @scenario("features/cbf_abort_scan.feature", "Test successful Abort Scan on CBF")
-def test_test_successful_abort_scan_on_cbf(set_up_log_checking_for_cbf_subarray_during_abort_test):
+def test_test_successful_abort_scan_on_cbf():
     """Test successful Abort Scan on CBF."""
 
 
@@ -53,11 +53,13 @@ def a_subarray_in_aborted_state_whilst_busy_running_a_scan(
     ).to_become_equal_to("ABORTED")
     with context_monitoring.wait_before_complete(integration_test_exec_settings):
         entry_point.abort_subarray(sut_settings.subarray_id)
+    context_monitoring.re_init_builder()
     return configured_subarray
 
 
 @when("I restart the subarray")
 def i_restart_the_subarray(
+    set_up_log_checking_for_cbf_subarray_during_abort_test,
     context_monitoring: fxt_types.context_monitoring,
     sut_settings: SutTestSettings,
     integration_test_exec_settings: fxt_types.exec_settings,

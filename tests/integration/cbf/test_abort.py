@@ -32,6 +32,7 @@ def a_subarray_in_aborted_state_whilst_busy_running_a_scan(
 ):
     """a subarray in aborted state whilst busy running a scan."""
     subarray = sut_settings.default_subarray_name
+    integration_test_exec_settings.attr_synching = False
     configured_subarray.set_to_scanning(integration_test_exec_settings)
     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
         "obsstate"

@@ -3,8 +3,8 @@ import copy
 import functools
 import json
 import logging
-from time import sleep
 import time
+from time import sleep
 from typing import Callable, List, ParamSpec, TypeVar
 
 from ska_ser_skallop.connectors import configuration as con_config
@@ -27,13 +27,13 @@ from ...obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
 
-T  = TypeVar("T")
+T = TypeVar("T")
 P = ParamSpec("P")
 
-    
-def retry(nr_of_reties: int = 3, wait_time: int=1):
+
+def retry(nr_of_reties: int = 3, wait_time: int = 1):
     @functools.wraps
-    def wrapper(command: Callable[P,T], *args: P.args, **kwargs: P.kwargs) -> T:
+    def wrapper(command: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
         try:
             return command(*args, **kwargs)
         except Exception:
@@ -48,8 +48,8 @@ def retry(nr_of_reties: int = 3, wait_time: int=1):
                     exception_to_raise = exception
             assert exception_to_raise
             raise exception_to_raise
-    return wrapper
 
+    return wrapper
 
 
 class StartUpLnStep(StartUpStep):
@@ -171,16 +171,14 @@ class CspLnConfigureStep(CspConfigureStep):
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         self._log(f"commanding {csp_subarray_ln_name} with the End command")
-        # we retry this command three times in case there is a transitory race 
+        # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             csp_subarray_ln.command_inout("End")
-        
-        command()
-                
 
-        
+        command()
 
 
 class CSPLnScanStep(CspScanStep):

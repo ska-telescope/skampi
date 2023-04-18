@@ -205,7 +205,7 @@ def when_release_resources(
 
 
 @when("I tell the OET to release resources")
-def when_release_resources(
+def when_release_all_resources(
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,

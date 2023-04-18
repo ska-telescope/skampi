@@ -1,10 +1,11 @@
 """Domain logic for the cdp."""
 import copy
+import functools
 import json
 import logging
 from time import sleep
 import time
-from typing import List
+from typing import Callable, List, ParamSpec, TypeVar
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -25,6 +26,30 @@ from ...csp_model.entry_point import (
 from ...obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
+
+T  = TypeVar("T")
+P = ParamSpec("P")
+
+    
+def retry(nr_of_reties: int = 3, wait_time: int=1):
+    @functools.wraps
+    def wrapper(command: Callable[P,T], *args: P.args, **kwargs: P.kwargs) -> T:
+        try:
+            return command(*args, **kwargs)
+        except Exception:
+            nr_of_retries = 0
+            exception_to_raise = None
+            while nr_of_retries < nr_of_reties:
+                time.sleep(wait_time)
+                try:
+                    return command(*args, **kwargs)
+                except Exception as exception:
+                    nr_of_retries += 1
+                    exception_to_raise = exception
+            assert exception_to_raise
+            raise exception_to_raise
+    return wrapper
+
 
 
 class StartUpLnStep(StartUpStep):
@@ -146,23 +171,13 @@ class CspLnConfigureStep(CspConfigureStep):
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         self._log(f"commanding {csp_subarray_ln_name} with the End command")
-        # we retry thsi command three times in case there is a transitory race 
+        # we retry this command three times in case there is a transitory race 
         # condition
-        try:
+        @retry(nr_of_reties=3)
+        def command():
             csp_subarray_ln.command_inout("End")
-        except Exception:
-            nr_of_retries = 0
-            exception_to_raise = None
-            while nr_of_retries < 3:
-                time.sleep(1)
-                try:
-                    csp_subarray_ln.command_inout("End")
-                    return
-                except Exception as exception:
-                    nr_of_retries += 1
-                    exception_to_raise = exception
-            assert exception_to_raise
-            raise exception_to_raise
+        
+        command()
                 
 
         

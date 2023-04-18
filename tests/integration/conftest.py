@@ -468,15 +468,14 @@ def i_release_all_resources_assigned_to_it(
 
 
 @given("an subarray busy configuring")
-def an_subarray_busy_configuring(
-    allocated_subarray: fxt_types.allocated_subarray,
-):
+def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
     """
     an subarray busy configuring
 
     :param allocated_subarray: The allocated subarray to be configured.
     """
     allocated_subarray.set_to_configuring(clear_afterwards=False)
+    allocated_subarray.disable_automatic_teardown()
 
 
 @given("an subarray busy assigning", target_fixture="allocated_subarray")

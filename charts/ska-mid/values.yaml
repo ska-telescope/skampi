@@ -103,7 +103,7 @@ ska-db-oda:
 
 #telescope control
 ## mid-cbf
-ska-mid-cbf:
+ska-mid-cbf-mcs:
   enabled: true
 
 ## mid-csp

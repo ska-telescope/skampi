@@ -4,10 +4,10 @@
   "subarray_id": 1,
   "dish": {
     "receptor_ids": [
-      "0001",
-      "0002",
-      "0003",
-      "0004"
+      "SKA001",
+      "SKA002",
+      "SKA003",
+      "SKA004"
     ]
   },
   "sdp": {
@@ -125,7 +125,7 @@
           "version": "0.3.6"
         },
         "parameters": {
-          
+
         }
       }
     ]

@@ -1,7 +1,7 @@
 """Domain logic for the sdp."""
 import logging
 from time import sleep
-from typing import List, Union
+from typing import List
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder

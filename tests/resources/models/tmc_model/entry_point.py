@@ -4,7 +4,7 @@ import json
 import logging
 import os
 from time import sleep
-from typing import Any, List, Union
+from typing import Any, List
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder

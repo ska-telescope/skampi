@@ -526,11 +526,8 @@ def i_command_it_to_abort(
     with context_monitoring.context_monitoring():
         with context_monitoring.wait_before_complete(integration_test_exec_settings):
             if sut_settings.restart_after_abort:
-                allocated_subarray.disable_automatic_clear()
-                allocated_subarray.disable_automatic_teardown()
                 allocated_subarray.restart_after_test(integration_test_exec_settings)
             else:
-                allocated_subarray.disable_automatic_clear()
                 allocated_subarray.reset_after_test(integration_test_exec_settings)
             entry_point.abort_subarray(sub_array_id)
 

@@ -3,6 +3,7 @@ import copy
 import json
 import logging
 from time import sleep
+import time
 from typing import List
 
 from ska_ser_skallop.connectors import configuration as con_config
@@ -145,7 +146,26 @@ class CspLnConfigureStep(CspConfigureStep):
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         self._log(f"commanding {csp_subarray_ln_name} with the End command")
-        csp_subarray_ln.command_inout("End")
+        # we retry thsi command three times in case there is a transitory race 
+        # condition
+        try:
+            csp_subarray_ln.command_inout("End")
+        except Exception:
+            nr_of_retries = 0
+            exception_to_raise = None
+            while nr_of_retries < 3:
+                time.sleep(1)
+                try:
+                    csp_subarray_ln.command_inout("End")
+                    return
+                except Exception as exception:
+                    nr_of_retries += 1
+                    exception_to_raise = exception
+            assert exception_to_raise
+            raise exception_to_raise
+                
+
+        
 
 
 class CSPLnScanStep(CspScanStep):

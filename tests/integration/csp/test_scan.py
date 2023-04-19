@@ -30,13 +30,21 @@ def test_run_a_scan_on_csp_subarray_in_mid():
 @pytest.mark.scan
 @pytest.mark.csp
 @scenario("features/csp_scan.feature", "Abort Csp scanning")
-def test_abort_scanning(disable_clear):
+def test_abort_scanning(disable_clear: None):
     """Abort scanning."""
+
+
+@pytest.mark.skalow
+@pytest.mark.cbf
+@pytest.mark.assign
+@scenario("features/csp_scan.feature", "Test successful Abort Scan on CSP")
+def test_test_successful_abort_scan_on_csp():
+    """Test successful Abort Scan on CSP."""
 
 
 @given("an CSP subarray in READY state")
 def an_csp_subarray_in_ready_state(
-    set_up_subarray_log_checking_for_csp,
+    set_up_subarray_log_checking_for_csp: None,
     csp_base_configuration: conf_types.ScanConfiguration,
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,

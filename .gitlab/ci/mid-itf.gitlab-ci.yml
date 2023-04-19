@@ -30,6 +30,7 @@
     - .mid_itf_base
   variables:
     VALUES: "charts/ska-mid/mid-itf-values.yaml" #TODO: Use CONFIG variable and define in shared definition.
+    CLUSTER_DOMAIN: "za-itf.skao.int"           ## Domain used for naming Tango Device Servers
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
     KUBE_NAMESPACE_SDP: "$KUBE_NAMESPACE-sdp"

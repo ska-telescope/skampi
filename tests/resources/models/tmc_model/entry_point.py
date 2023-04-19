@@ -375,10 +375,16 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with End command")
+        if self._tel.skalow:
 
-        @retry(nr_of_reties=3)
-        def command():
-            subarray.command_inout("End")
+            @retry(nr_of_reties=3)
+            def command():
+                subarray.command_inout("End")
+
+        elif self._tel.skamid:
+
+            def command():
+                subarray.command_inout("End")
 
         command()
 

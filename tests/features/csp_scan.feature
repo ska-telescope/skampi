@@ -20,7 +20,7 @@ Feature: Run a scan on CSP subarray
         When I command it to Abort
         Then the subarray should go into an aborted state
 
-    @XTP-21747
+    @XTP-22046
     Scenario: Test successful Abort Scan on CSP
         Given a subarray in aborted state whilst busy running a scan
         When I restart the subarray

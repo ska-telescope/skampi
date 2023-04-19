@@ -1,7 +1,7 @@
 """Domain logic for the sdp."""
 import logging
 from time import sleep
-from typing import List, Union
+from typing import List
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -31,7 +31,7 @@ class StartUpLnStep(StartUpStep):
         super().__init__(nr_of_subarrays)
         self._sdp_master_ln_name = self._tel.tm.sdp_leaf_node
 
-    def do(self):
+    def do_startup(self):
         """Domain logic for starting up a telescope on the interface to SDP LN.
 
         This implments the set_telescope_to_running method on the entry_point.
@@ -45,7 +45,7 @@ class StartUpLnStep(StartUpStep):
         sdp_master_ln = con_config.get_device_proxy(self._sdp_master_ln_name)
         sdp_master_ln.command_inout("On")
 
-    def undo(self):
+    def undo_startup(self):
         """Domain logic for switching the SDP LN off."""
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.tm.subarray(index).sdp_leaf_node
@@ -60,7 +60,7 @@ class StartUpLnStep(StartUpStep):
 class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
     """Implementation of Assign Resources Step for SDP LN."""
 
-    def do(
+    def do_assign_resources(
         self,
         sub_array_id: int,
         dish_ids: List[int],
@@ -87,7 +87,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         )
         subarray.command_inout("AssignResources", config)
 
-    def undo(self, sub_array_id: int):
+    def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
 
         This implments the tear_down_subarray method on the entry_point.
@@ -103,10 +103,9 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
 class SdpLnConfigureStep(SdpConfigureStep):
     """Implementation of Configure Scan Step for SDP LN."""
 
-    def do(
+    def do_configure(
         self,
         sub_array_id: int,
-        dish_ids: List[int],
         configuration: types.ScanConfiguration,
         sb_id: str,
         duration: float,
@@ -116,9 +115,9 @@ class SdpLnConfigureStep(SdpConfigureStep):
         This implements the compose_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
+        :param configuration: The assign resources configuration paramaters
+        :param duration: scan duration for the do method
         """
         # scan duration needs to be a memorised for future objects
         # that mnay require it
@@ -129,7 +128,7 @@ class SdpLnConfigureStep(SdpConfigureStep):
         self._log(f"commanding {subarray_name} with Configure: {config} ")
         subarray.command_inout("Configure", config)
 
-    def undo(self, sub_array_id: int):
+    def undo_configure(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in sdp LN.
 
         This implments the clear_configuration method on the entry_point.
@@ -146,15 +145,14 @@ class SDPLnScanStep(SDPScanStep):
 
     """Implementation of Scan Step for SDP LN."""
 
-    def do(self, sub_array_id: int):
+    def do_scan(self, sub_array_id: int):
         """Domain logic for running a scan on subarray in sdp.
 
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
 
-        Raises:
-            Exception: Raise exception in do method of scan command
+        :raises Exception: Raise exception in do method of scan command
         """
         scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
@@ -169,27 +167,28 @@ class SDPLnScanStep(SDPScanStep):
             logger.exception(exception)
             raise exception
 
-    def set_wait_for_do(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_do_scan(self, sub_array_id: int) -> MessageBoardBuilder:
         """This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
+        :return: message board builder
         """
+        return get_message_board_builder()
 
-    def undo(self, sub_array_id: int):
+    def undo_scan(self, sub_array_id: int):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
         """
 
-    def set_wait_for_doing(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_doing_scan(
+        self, sub_array_id: int
+    ) -> MessageBoardBuilder:
         """Domain logic specifyig what needs to be done for
         waiting for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
@@ -198,14 +197,13 @@ class SDPLnScanStep(SDPScanStep):
         ).to_become_equal_to("SCANNING", ignore_first=True)
         return builder
 
-    def set_wait_for_undo(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_undo_scan(self, sub_array_id: int) -> MessageBoardBuilder:
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
+        :return: message board builder
         """
-        return None
+        return get_message_board_builder()
 
 
 class SDPLnEntryPoint(CompositeEntryPoint):
@@ -214,7 +212,12 @@ class SDPLnEntryPoint(CompositeEntryPoint):
     nr_of_subarrays = 2
 
     def __init__(self, observation: Observation = None) -> None:
-        """Init Object"""
+        """
+        Init Object
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
         super().__init__()
         if not observation:
             observation = Observation()

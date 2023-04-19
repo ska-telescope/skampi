@@ -34,7 +34,11 @@ def test_configure_scan_on_sdp_subarray_in_low():
 
 @given("a TMC SDP subarray Leaf Node")
 def a_sdp_sln(set_sdp_ln_entry_point):
-    """a TMC SDP subarray Leaf Node."""
+    """
+    a TMC SDP subarray Leaf Node.
+
+    :param set_sdp_ln_entry_point: An object to set sdp leafnode entry point
+    """
 
 
 # @when("I configure it for a scan") from ...conftest
@@ -45,7 +49,11 @@ def a_sdp_sln(set_sdp_ln_entry_point):
 def the_subarray_must_be_in_the_ready_state(
     allocated_subarray: fxt_types.allocated_subarray,
 ):
-    """the SDP subarray shall go from IDLE to READY state."""
+    """
+    the SDP subarray shall go from IDLE to READY state.
+
+    :param allocated_subarray: The allocated subarray to be configured.
+    """
     sub_array_id = allocated_subarray.id
     tel = names.TEL()
     sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(sub_array_id))

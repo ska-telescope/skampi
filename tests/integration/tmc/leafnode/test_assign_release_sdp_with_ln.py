@@ -25,7 +25,13 @@ def test_assign_resources_on_sdp_in_low():
 def an_sdp_subarray_in_empty_state(
     set_sdp_ln_entry_point, base_composition: conf_types.Composition
 ) -> conf_types.Composition:
-    """an SDP subarray in Empty state."""
+    """
+    an SDP subarray in Empty state.
+
+    :param set_sdp_ln_entry_point: An object to set sdp leafnode entry point
+    :param base_composition : An object for base composition
+    :return: base composition
+    """
     return base_composition
 
 
@@ -39,7 +45,11 @@ def a_sdp_sln():
 
 @then("the SDP subarray must be in IDLE state")
 def the_sdp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
-    """the SDP Subarray must be in IDLE state."""
+    """
+    the SDP Subarray must be in IDLE state.
+
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     tel = names.TEL()
     subarray = con_config.get_device_proxy(
         tel.sdp.subarray(sut_settings.subarray_id)

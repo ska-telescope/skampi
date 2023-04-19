@@ -186,7 +186,11 @@ def a_telescope_with_sdp_csp_and_dish_on():
 @then("the sdp and csp must be on")
 @then("the sdp, csp and dish must be on")
 def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
-    """the sdp, csp and dish must be on."""
+    """
+    the sdp, csp and dish must be on.
+
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     tel = names.TEL()
     mid = names.Mid()
     # Check state attribute of SDP Master
@@ -223,7 +227,12 @@ def the_sdp_csp_and_dish_must_be_off(
     sut_settings: conftest.SutTestSettings,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """the sdp, csp and dish must be off."""
+    """
+    the sdp, csp and dish must be off.
+
+    :param sut_settings: A class representing the settings for the system under test.
+    :param integration_test_exec_settings: integration test execution settings object
+    """
     tel = names.TEL()
     mid = names.Mid()
     # Check state attribute of SDP Master
@@ -262,7 +271,11 @@ def the_sdp_csp_and_dish_must_be_off(
 
 @then("telescope is in an OK health state")
 def the_tmc_devices_must_be_healthy(sut_settings: conftest.SutTestSettings):
-    """the sdp, csp and dish must be on."""
+    """
+    the sdp, csp and dish must be on.
+
+    :param sut_settings: A class representing the settings for the system under test.
+    """
 
     tel = names.TEL()
     sut_settings = conftest.SutTestSettings()

@@ -17,7 +17,10 @@ logger = logging.getLogger(__name__)
 @pytest.mark.sdp
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in mid")
 def test_sdp_start_up_telescope_mid(sdp_start_up_test_exec_settings):
-    """Start up the sdp in mid."""
+    """
+    Start up the sdp in mid.
+    :param sdp_start_up_test_exec_settings: A sdp start up test exec settings object
+    """
 
 
 @pytest.mark.skip
@@ -26,7 +29,11 @@ def test_sdp_start_up_telescope_mid(sdp_start_up_test_exec_settings):
 @pytest.mark.sdp
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in low")
 def test_sdp_start_up_telescope_low(sdp_start_up_test_exec_settings):
-    """Start up the sdp in low."""
+    """
+    Start up the sdp in low.
+
+    :param sdp_start_up_test_exec_settings: A sdp start up test exec settings object
+    """
 
 
 @given("an SDP")
@@ -42,7 +49,10 @@ def a_sdp():
 
 @then("the sdp must be on")
 def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
-    """the sdp must be on."""
+    """
+    the sdp must be on.
+    :param sut_settings: the SUT test settings.
+    """
     tel = names.TEL()
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value
@@ -59,5 +69,9 @@ def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_startup(run_mock):
-    """Test the test using a mock SUT"""
+    """
+    Test the test using a mock SUT
+
+    :param run_mock: run mock object
+    """
     run_mock(test_sdp_start_up_telescope_mid)

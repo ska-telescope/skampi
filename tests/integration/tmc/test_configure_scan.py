@@ -38,6 +38,12 @@ def test_tmc_configure_scan_on_low_subarray():
 
 @pytest.fixture(name="disable_clear_and_tear_down")
 def fxt_disable_abort(allocated_subarray: fxt_types.allocated_subarray):
+    """
+    A fixture for disable abort
+
+    :param allocated_subarray: skallop allocated_subarray fixture
+    """
+    allocated_subarray.disable_automatic_clear()
     allocated_subarray.disable_automatic_teardown()
 
 
@@ -46,6 +52,12 @@ def fxt_setup_monitoring_for_config_abort(
     context_monitoring: fxt_types.context_monitoring,
     sut_settings: SutTestSettings,
 ):
+    """
+    A fixture to setup context monitoring for configure abort
+
+    :param context_monitoring: The context monitoring configuration.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     tel = names.TEL()
     sub_id = sut_settings.subarray_id
     context_monitoring.set_waiting_on(tel.csp.subarray(sub_id)).for_attribute(
@@ -64,7 +76,14 @@ def test_abort_configuring_on_mid_tmc_subarray(
     set_up_subarray_log_checking_for_tmc: None,
     setup_monitoring_for_config_abort: None,
 ):
-    """Abort configuring."""
+    """
+    Abort configuring.
+
+    :param disable_clear_and_tear_down: object to disable clear and tear down
+    :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
+    :param setup_monitoring_for_config_abort: To set up monitoring for config abort
+
+    """
 
 
 @pytest.mark.k8s
@@ -92,7 +111,16 @@ def an_telescope_subarray(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """an telescope subarray."""
+    """
+    an telescope subarray.
+
+    :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
+    :param base_configuration: the base scan configuration.
+    :param subarray_allocation_spec: specification for the subarray allocation
+    :param sut_settings: A class representing the settings for the system under test.
+    :return: the updated base configuration for the subarray
+
+    """
     return base_configuration
 
 
@@ -109,7 +137,13 @@ def the_subarray_must_be_in_the_ready_state(
     sut_settings: SutTestSettings,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """the subarray must be in the READY state."""
+    """
+    the subarray must be in the READY state.
+
+    :param sut_settings: A class representing the settings for the system under test.
+    :param integration_test_exec_settings: A fixture that represents the execution
+        settings for the integration test.
+    """
     tel = names.TEL()
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.subarray(sut_settings.subarray_id))

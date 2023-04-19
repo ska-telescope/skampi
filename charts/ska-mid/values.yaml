@@ -39,6 +39,7 @@ global:
       image: ska-tango-images-tango-itango
       tag: 9.3.5
       pullPolicy: IfNotPresent
+  dishes: ["001", "002", "003", "004"]
 
 ska-landingpage:
   enabled: true
@@ -154,7 +155,22 @@ ska-tango-archiver:
 
 ## dishmasters
 ska-sim-dishmaster:
+  enabled: false
+
+## dishmanager
+ska-dish-lmc:
   enabled: true
+  ska-mid-dish-manager:
+    enabled: true
+    ska-mid-dish-simulators:
+      enabled: true
+      ska-tango-base:
+        enabled: false
+      deviceServers:
+        spfdevice:
+          enabled: true
+        spfrxdevice:
+          enabled: true
 
 # alarm-handler
 ska-tango-alarmhandler:

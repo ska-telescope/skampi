@@ -4,11 +4,12 @@
     - ska-k8srunner-za-itf
   variables:
     CONFIG: mid
+    VALUES: "charts/ska-$CONFIG/$CONFIG-itf-values.yaml" #TODO: Use CONFIG in shared definitions.
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     INGRESS_HOST: "10.164.0.3"
-    CLUSTER_DOMAIN: za-itf.skao.int
-    K8S_EXTRA_PARMS: '--set global.ska-tango-archiver.enabled=false  --set ska-tango-archiver.enabled=false'
+    CLUSTER_DOMAIN: "za-itf.skao.int" ## Domain used for naming Tango Device Servers
+    K8S_EXTRA_PARMS: "--set global.ska-tango-archiver.enabled=false  --set ska-tango-archiver.enabled=false"
   when: manual
 
 .mid_itf_deploy:
@@ -29,9 +30,7 @@
   extends:
     - .mid_itf_base
   variables:
-    VALUES: "charts/ska-mid/mid-itf-values.yaml" #TODO: Use CONFIG variable and define in shared definition.
-    CLUSTER_DOMAIN: "za-itf.skao.int"           ## Domain used for naming Tango Device Servers
-    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    HELM_RELEASE: "test-$CONFIG-$CI_COMMIT_REF_SLUG"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
     KUBE_NAMESPACE_SDP: "$KUBE_NAMESPACE-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
@@ -57,7 +56,7 @@ mid_itf_on_demand_destroy:
   extends:
     - .mid_itf_base
   variables:
-    HELM_RELEASE: "integration-$CONFIG-$CI_JOB_ID"
+    HELM_RELEASE: "integration-$CONFIG-$CI_COMMIT_REF_SLUG"
     KUBE_NAMESPACE: "integration-$CONFIG"
     KUBE_NAMESPACE_SDP: "integration-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-integration-$CONFIG"
@@ -83,7 +82,7 @@ mid_itf_destroy_integration:
   extends:
     - .mid_itf_base
   variables:
-    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    HELM_RELEASE: "test-$CONFIG-$CI_COMMIT_REF_SLUG"
     KUBE_NAMESPACE: "staging-$CONFIG"
     KUBE_NAMESPACE_SDP: "staging-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-staging-$CONFIG"

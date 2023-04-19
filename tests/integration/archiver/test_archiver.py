@@ -28,11 +28,13 @@ def configure_attribute(attribute):
     archiver_helper.start_archiving()
     slept_for = archiver_helper.wait_for_start(attribute)
     logging.info("Slept for " + str(slept_for) + "s before archiving started.")
-    assert "Archiving          : Started" in archiver_helper.conf_manager_attribute_status(
-        attribute
+    assert (
+        "Archiving          : Started"
+        in archiver_helper.conf_manager_attribute_status(attribute)
     )
-    assert "Archiving          : Started" in archiver_helper.evt_subscriber_attribute_status(
-        attribute
+    assert (
+        "Archiving          : Started"
+        in archiver_helper.evt_subscriber_attribute_status(attribute)
     )
     archiver_helper.stop_archiving(attribute)
 
@@ -56,7 +58,9 @@ def test_configure_attribute():
                 deviceAdm = DeviceProxy("dserver/hdbppcm-srv/01")
                 deviceAdm.RestartServer()
             except Exception:
-                logging.error(f"reset_conf_manager exception: {sys.exc_info()[0]}")
+                logging.error(
+                    f"reset_conf_manager exception: {sys.exc_info()[0]}"
+                )
             if x == (max_retries - 1):
                 raise df
 
@@ -64,4 +68,8 @@ def test_configure_attribute():
         total_slept += 1
 
     if total_slept > 0:
-        logging.info("Slept for {}s for the test configuration!".format(total_slept * sleep_time))
+        logging.info(
+            "Slept for {}s for the test configuration!".format(
+                total_slept * sleep_time
+            )
+        )

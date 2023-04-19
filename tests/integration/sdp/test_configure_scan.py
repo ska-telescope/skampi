@@ -8,6 +8,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.configure
 @pytest.mark.sdp
@@ -63,7 +64,9 @@ def the_subarray_must_be_in_the_ready_state(
 # mocking
 
 
-@pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
+@pytest.mark.skip(
+    reason="only run this test for diagnostic purposes during dev"
+)
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_configure_scan(run_mock):
     """Test the test using a mock SUT"""

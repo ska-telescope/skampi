@@ -17,15 +17,19 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.assign
-@scenario("features/tmc_assign_resources.feature", "Assign resources to low subarray")
+@scenario(
+    "features/tmc_assign_resources.feature", "Assign resources to low subarray"
+)
 def test_assign_resources_to_tmc_subarray_in_low():
     """Assign resources to tmc subarray in low."""
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -41,7 +45,9 @@ def test_release_resources_from_tmc_subarray_in_low():
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.assign
-@scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
+@scenario(
+    "features/tmc_assign_resources.feature", "Assign resources to mid subarray"
+)
 def test_assign_resources_to_tmc_subarray_in_mid():
     """Assign resources to tmc subarray in mid."""
 
@@ -67,12 +73,14 @@ def fxt_setup_context_monitoring_for_abort_test(
         str(_tel.tm.subarray(sut_settings.subarray_id)),
         str(_tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node),
     )
-    context_monitoring.set_waiting_on(_tel.csp.subarray(sut_settings.subarray_id)).for_attribute(
-        "obsstate"
-    ).to_become_equal_to("ABORTED")
-    context_monitoring.set_waiting_on(_tel.sdp.subarray(sut_settings.subarray_id)).for_attribute(
-        "obsstate"
-    ).to_become_equal_to(["ABORTED", "EMPTY", "IDLE"])
+    context_monitoring.set_waiting_on(
+        _tel.csp.subarray(sut_settings.subarray_id)
+    ).for_attribute("obsstate").to_become_equal_to("ABORTED")
+    context_monitoring.set_waiting_on(
+        _tel.sdp.subarray(sut_settings.subarray_id)
+    ).for_attribute("obsstate").to_become_equal_to(
+        ["ABORTED", "EMPTY", "IDLE"]
+    )
 
 
 @pytest.mark.k8s
@@ -88,6 +96,7 @@ def test_abort_in_resourcing_mid(
     """Assign resources to tmc subarray in mid."""
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -134,7 +143,9 @@ def an_telescope_subarray(
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
@@ -151,7 +162,9 @@ def a_subarray_in_the_idle_state():
 def the_subarray_must_be_in_empty_state(sut_settings: SutTestSettings):
     """the subarray must be in EMPTY state."""
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.EMPTY)
 

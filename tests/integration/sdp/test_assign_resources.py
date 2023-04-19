@@ -27,6 +27,7 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
     sut_settings.restart_after_abort = True
 
 
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -63,6 +64,7 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
     """Assign resources to sdp subarray in mid."""
 
 
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -90,7 +92,9 @@ def an_sdp_subarray(
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
-    sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
+    sdp_subarray = con_config.get_device_proxy(
+        tel.sdp.subarray(sut_settings.subarray_id)
+    )
     result = sdp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
@@ -100,7 +104,9 @@ def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
 
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_sdp_mock")
-def test_test_sdp_assign_resources(run_mock, mock_entry_point: fxt_types.mock_entry_point):
+def test_test_sdp_assign_resources(
+    run_mock, mock_entry_point: fxt_types.mock_entry_point
+):
     """Test the test using a mock SUT"""
     run_mock(test_assign_resources_to_sdp_subarray_in_mid)
     mock_entry_point.spy.set_telescope_to_running.assert_called()

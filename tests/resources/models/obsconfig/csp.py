@@ -41,13 +41,17 @@ class CSPconfig(TargetSpecs):
                 },
             ]
         }
-        return CSPConfiguration(interface=interface, common=common, lowcbf=lowcbf)
+        return CSPConfiguration(
+            interface=interface, common=common, lowcbf=lowcbf
+        )
 
     @encoded
     def generate_low_csp_assign_resources_config(self):
         return self._generate_low_csp_assign_resources_config()
 
-    def _generate_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
+    def _generate_csp_scan_config(
+        self, target_id: str | None = None, subarray_id: int = 1
+    ):
         mode: FSPFunctionMode = FSPFunctionMode.CORR
         if target_id:
             spec = self.target_specs[target_id]
@@ -83,7 +87,9 @@ class CSPconfig(TargetSpecs):
         )
 
     @encoded
-    def generate_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
+    def generate_csp_scan_config(
+        self, target_id: str | None = None, subarray_id: int = 1
+    ):
         return self._generate_csp_scan_config(target_id, subarray_id)
 
     def generate_csp_run_scan_config(
@@ -94,7 +100,9 @@ class CSPconfig(TargetSpecs):
             CSPrunScanConfig,
             {
                 **config,
-                **{"interface": "https://schema.skao.int/ska-mid-csp-scan/2.0"},
+                **{
+                    "interface": "https://schema.skao.int/ska-mid-csp-scan/2.0"
+                },
             },
         )
         return csp_run_scan_config

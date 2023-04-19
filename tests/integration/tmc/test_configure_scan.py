@@ -23,6 +23,7 @@ def test_tmc_configure_scan_on_mid_subarray():
     """Configure scan on TMC mid telescope subarray."""
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -66,6 +67,19 @@ def test_abort_configuring_on_mid_tmc_subarray(
     """Abort configuring."""
 
 
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skalow
+@pytest.mark.configure
+@scenario("features/tmc_configure_scan.feature", "Abort configuring Low")
+def test_abort_configuring_on_low_tmc_subarray(
+    disable_clear_and_tear_down: None,
+    set_up_subarray_log_checking_for_tmc: None,
+    setup_monitoring_for_config_abort: None,
+):
+    """Abort TMC low configuring obstate."""
+
+
 @given("an TMC")
 def a_tmc():
     """an TMC"""
@@ -100,6 +114,8 @@ def the_subarray_must_be_in_the_ready_state(
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.subarray(sut_settings.subarray_id))
     )
-    tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    tmc_subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = tmc_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.READY)

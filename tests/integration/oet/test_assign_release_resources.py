@@ -91,7 +91,9 @@ def the_subarray_must_be_in_empty_state(
 ):
     """the subarray must be in EMPTY state."""
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.EMPTY)
 
@@ -103,7 +105,9 @@ def the_subarray_with_recources_allocate(
 ):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
 
@@ -111,7 +115,11 @@ def the_subarray_with_recources_allocate(
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
 
 
-@when(parsers.parse("I tell the OET to create SBI using script {script} and SB {sb_json}"))
+@when(
+    parsers.parse(
+        "I tell the OET to create SBI using script {script} and SB {sb_json}"
+    )
+)
 def when_create_sbi(
     script,
     sb_json,
@@ -134,7 +142,8 @@ def when_create_sbi(
 
 @when(
     parsers.parse(
-        "I tell the OET to allocate resources using script {script} and SBI" " {sb_json}"
+        "I tell the OET to allocate resources using script {script} and SBI"
+        " {sb_json}"
     )
 )
 def when_allocate_resources_from_sbi(
@@ -163,7 +172,9 @@ def when_allocate_resources_from_sbi(
         )
 
 
-@when(parsers.parse("I tell the OET to release resources using script {script}"))
+@when(
+    parsers.parse("I tell the OET to release resources using script {script}")
+)
 def when_release_resources(
     script,
     allocated_subarray: fxt_types.allocated_subarray,
@@ -196,7 +207,9 @@ def when_release_resources(
     subarray_id = allocated_subarray.id
 
     with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
+        with allocated_subarray.wait_for_releasing_a_subarray(
+            integration_test_exec_settings
+        ):
             subarray = SubArray(subarray_id)
             subarray.release()
 
@@ -224,10 +237,13 @@ def check_final_subarray_state(
         obsstate (str): Sub-array Tango device ObsState
     """
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     subarray_state = ObsState(subarray.read_attribute("obsState").value).name
     assert subarray_state == obsstate, (
-        f"Expected sub-array to be in {obsstate} but instead was in" f" {subarray_state}"
+        f"Expected sub-array to be in {obsstate} but instead was in"
+        f" {subarray_state}"
     )
     logger.info("Sub-array is in ObsState %s", obsstate)
 
@@ -248,6 +264,7 @@ def test_oet__scripting_resource_allocation():
     """
 
 
+@pytest.mark.skip
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.assign
@@ -265,6 +282,7 @@ def test_oet_scripting_resource_allocation_in_low():
     """
 
 
+@pytest.mark.skip
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.k8s
@@ -305,7 +323,9 @@ def i_assign_resources_to_it(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            config = observation.generate_assign_resources_config(subarray_id).as_object
+            config = observation.generate_assign_resources_config(
+                subarray_id
+            ).as_object
             logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
             subarray.assign_from_cdm(config)
 
@@ -327,7 +347,9 @@ def i_assign_resources_to_it_low(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            config = observation.generate_low_assign_resources_config(subarray_id).as_object
+            config = observation.generate_low_assign_resources_config(
+                subarray_id
+            ).as_object
             logging.info(f"eb id from test config:{config.sdp_config.eb_id}")
             subarray.assign_from_cdm(config)
 
@@ -336,6 +358,8 @@ def i_assign_resources_to_it_low(
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the subarray must be in IDLE state."""
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)

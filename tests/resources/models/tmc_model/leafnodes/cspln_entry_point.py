@@ -73,10 +73,14 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
         """
 
         try:
-            csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+            csp_subarray_ln_name = self._tel.tm.subarray(
+                sub_array_id
+            ).csp_leaf_node
             csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
             if self._tel.skamid:
-                config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+                config = self.observation.generate_assign_resources_config(
+                    sub_array_id
+                ).as_json
             elif self._tel.skalow:
                 # TODO Low json from CDM is not available.
                 # Once it is available pull json from CDM
@@ -84,7 +88,10 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
                 config_json = copy.deepcopy(ASSIGN_RESOURCE_CSP_JSON_LOW)
                 config = json.dumps(config_json)
 
-            logger.info(f"commanding {csp_subarray_ln_name} with AssignResources:" f" {config} ")
+            logger.info(
+                f"commanding {csp_subarray_ln_name} with AssignResources:"
+                f" {config} "
+            )
             csp_subarray_ln.command_inout("AssignResources", config)
 
         except Exception as exception:
@@ -98,7 +105,9 @@ class CspLnAssignResourcesStep(CspAsignResourcesStep):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+        csp_subarray_ln_name = self._tel.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         self._log(f"Commanding {csp_subarray_ln_name} to ReleaseAllResources")
         csp_subarray_ln.command_inout("ReleaseAllResources")
@@ -127,15 +136,21 @@ class CspLnConfigureStep(CspConfigureStep):
         # scan duration needs to be a memorized for future objects
         # that many require it
         Memo(scan_duration=duration)
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+        csp_subarray_ln_name = self._tel.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         if self._tel.skamid:
-            config = self.observation.generate_scan_config_parsed_for_csp(scan_duration=duration)
+            config = self.observation.generate_scan_config_parsed_for_csp(
+                scan_duration=duration
+            )
         elif self._tel.skalow:
             config_json = copy.deepcopy(CONFIGURE_CSP_JSON_LOW)
             config = json.dumps(config_json)
 
-        logger.info(f"commanding {csp_subarray_ln_name} with Configure: {config}")
+        logger.info(
+            f"commanding {csp_subarray_ln_name} with Configure: {config}"
+        )
         csp_subarray_ln.command_inout("Configure", config)
 
     def undo(self, sub_array_id: int):
@@ -145,7 +160,9 @@ class CspLnConfigureStep(CspConfigureStep):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+        csp_subarray_ln_name = self._tel.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         self._log(f"commanding {csp_subarray_ln_name} with the End command")
         csp_subarray_ln.command_inout("End")
@@ -166,18 +183,27 @@ class CSPLnScanStep(CspScanStep):
         """
         # scan_config = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+        csp_subarray_ln_name = self._tel.tm.subarray(
+            sub_array_id
+        ).csp_leaf_node
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
 
         if self._tel.skamid:
-            csp_run_scan_config = self.observation.generate_csp_run_scan_config()
+            csp_run_scan_config = (
+                self.observation.generate_csp_run_scan_config()
+            )
 
         elif self._tel.skalow:
             csp_run_scan_config = copy.deepcopy(SCAN_CSP_JSON_LOW)
 
-        self._log(f"Commanding {csp_subarray_ln_name} to Scan with" f" {csp_run_scan_config}")
+        self._log(
+            f"Commanding {csp_subarray_ln_name} to Scan with"
+            f" {csp_run_scan_config}"
+        )
         try:
-            csp_subarray_ln.command_inout("Scan", json.dumps(csp_run_scan_config))
+            csp_subarray_ln.command_inout(
+                "Scan", json.dumps(csp_run_scan_config)
+            )
             sleep(scan_duration)
             csp_subarray_ln.command_inout("EndScan")
         except Exception as exception:
@@ -208,9 +234,9 @@ class CSPLnScanStep(CspScanStep):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "SCANNING", ignore_first=True
-        )
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING", ignore_first=True)
         return builder
 
     def set_wait_for_undo(
@@ -255,7 +281,9 @@ configure_csp = {
         "subarray_id": "1",
     },
     "cbf": {
-        "delay_model_subscription_point": ("ska_mid/tm_leaf_node/csp_subarray01/delayModel"),
+        "delay_model_subscription_point": (
+            "ska_mid/tm_leaf_node/csp_subarray01/delayModel"
+        ),
         "fsp": [
             {
                 "fsp_id": 1,

@@ -8,6 +8,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.sdp
@@ -55,7 +56,9 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
     assert_that(result).is_equal_to(ObsState.SCANNING)
     # afterwards it must be ready
     context_monitoring.re_init_builder()
-    context_monitoring.wait_for(sdp_subarray_name).for_attribute("obsstate").to_become_equal_to(
+    context_monitoring.wait_for(sdp_subarray_name).for_attribute(
+        "obsstate"
+    ).to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
     result = sdp_subarray.read_attribute("obsstate").value

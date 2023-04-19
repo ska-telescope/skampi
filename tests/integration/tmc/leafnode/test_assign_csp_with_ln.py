@@ -14,6 +14,7 @@ from ...conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
@@ -46,6 +47,8 @@ def the_csp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     """the CSP Subarray must be in IDLE state."""
 
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.csp.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.csp.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)

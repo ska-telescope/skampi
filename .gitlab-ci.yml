@@ -3,7 +3,7 @@ image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
 
 variables:
   MINIKUBE: "false"
-  VALUES: "pipeline.yaml"
+  VALUES: "gitlab_values.yaml"
   CHARTS_TO_PUBLISH: ska-low ska-mid ska-landingpage
   INGRESS_HOST: "k8s.stfc.skao.int"
   GIT_SUBMODULE_STRATEGY: recursive

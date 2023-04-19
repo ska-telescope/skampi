@@ -366,7 +366,6 @@ def i_release_all_resources_assigned_to_it(
 
 @when("I restart the subarray")
 def i_restart_the_subarray(
-    set_up_log_checking_for_cbf_subarray_during_abort_test,
     context_monitoring: fxt_types.context_monitoring,
     sut_settings: SutTestSettings,
     integration_test_exec_settings: fxt_types.exec_settings,

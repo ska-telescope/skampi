@@ -42,7 +42,13 @@ def a_low_subarray_in_ready_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """a subarray in READY state"""
+    """
+    a subarray in READY state
+    :param base_configuration: the base scan configuration.
+    :param subarray_allocation_spec: the specification for the subarray allocation.
+    :param sut_settings: the SUT test settings.
+    :return: the base configuration for the subarray.`
+    """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     return base_configuration
@@ -55,7 +61,14 @@ def i_command_it_to_scan_low(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: conftest.SutTestSettings,
 ):
-    """I configure it for a scan."""
+    """
+    I configure it for a scan.
+    :param configured_subarray: The configured subarray
+    :param context_monitoring: Context monitoring object.
+    :param integration_test_exec_settings: The integration test execution settings.
+    :param sut_settings: SUT settings object.
+
+    """
     subarray_id = sut_settings.subarray_id
     tel = names.TEL()
     context_monitoring.set_waiting_on(
@@ -82,9 +95,11 @@ def the_subarray_must_be_in_the_scanning_state(
 ):
     """
     The subarray must be in the SCANNING state until finished.
+    :param configured_subarray: The configured subarray
+    :param context_monitoring: Context monitoring object.
+    :param integration_test_exec_settings: The integration test execution settings.
 
-    Raises:
-        AssertionError: If the subarray is not in the expected state.
+    :raises AssertionError: If the subarray is not in the expected state.
 
     """
     recorder = integration_test_exec_settings.recorder

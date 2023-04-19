@@ -59,7 +59,11 @@ def test_telescope_standby():
 def a_telescope_on_standby_or_off_state(
     standby_telescope: fxt_types.standby_telescope,
 ):
-    """a telescope on standby or off state"""
+    """
+    a telescope on standby or off state
+    :param standby_telescope: The standby telescope instance to be started.
+
+    """
     tel = names.TEL()
     central_node = con_config.get_device_proxy(
         tel.tm.central_node, fast_load=True
@@ -79,7 +83,10 @@ def a_low_telescope_():
 def a_telescope_in_the_on_state(
     running_telescope: fxt_types.running_telescope,
 ):
-    """a telescope in the ON state"""
+    """
+    a telescope in the ON state
+    :param running_telescope: The running telescope instance.
+    """
     tel = names.TEL()
     central_node = con_config.get_device_proxy(tel.tm.central_node)
     assert str(central_node.read_attribute("telescopeState").value) == "ON"
@@ -89,6 +96,10 @@ def a_telescope_in_the_on_state(
 def fxt_observe_csp_during_on_of(
     context_monitoring: fxt_types.context_monitoring,
 ):
+    """
+    A fixture to observe csp during on off
+    :param context_monitoring: The context monitoring configuration.
+    """
     tel = names.TEL()
     if tel.skalow:
         context_monitoring.set_waiting_on(tel.csp.controller).for_attribute(
@@ -107,8 +118,13 @@ def run_startup_script(
     """
     Use the OET Rest API to run a script
 
-    Args:
-        script (str): file path to an observing script
+    :param script: file path to an observing script
+    :type script: str
+    :param standby_telescope: The standby telescope instance to be started.
+    :param integration_test_exec_settings: The integration test execution settings.
+    :param context_monitoring: The context monitoring configuration.
+    :param observe_csp_during_on_of: A fixture to observe csp during on off
+
     """
 
     with context_monitoring.observe_while_running(
@@ -136,8 +152,10 @@ def run_standby_script(
     """
     Use the OET Rest API to run a script
 
-    Args:
-        script (str): file path to an observing script
+    :param script: file path to an observing script
+    :param running_telescope: The running telescope instance.
+    :param integration_test_exec_settings: The integration test execution settings.
+    :param context_monitoring: The context monitoring configuration.
     """
 
     with context_monitoring.observe_while_running(
@@ -162,6 +180,10 @@ def startup_telescope_low(
 ):
     """
     Use the OET OSO Scripting to Turn On Telescope
+
+    :param standby_telescope: The standby telescope instance to be started.
+    :param integration_test_exec_settings: The integration test execution settings.
+    :param context_monitoring: The context monitoring configuration.
     """
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
@@ -180,7 +202,14 @@ def the_telescope_is_on(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I start up the telescope."""
+    """
+    I start up the telescope.
+
+    :param standby_telescope: The standby telescope instance to be started.
+    :param entry_point: The entry point to the system under test.
+    :param context_monitoring: The context monitoring configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
     standby_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(

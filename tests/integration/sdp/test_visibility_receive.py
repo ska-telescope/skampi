@@ -57,7 +57,11 @@ PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
     "Execute visibility receive script for a single scan",
 )
 def test_visibility_receive_in_low(assign_resources_test_exec_settings):
-    """SDP Visibility receive test."""
+    """
+    SDP Visibility receive test.
+
+    :param assign_resources_test_exec_settings: Object for assign_resources_test_exec_settings
+    """
 
 
 @pytest.fixture(name="update_sut_settings")
@@ -65,6 +69,8 @@ def fxt_update_sut_settings_vis_rec(sut_settings: conftest.SutTestSettings):
     """
     Update SUT settings. Specify that we're running the
     visibility receive test.
+
+    :param sut_settings: the SUT test settings.
     """
     tel = names.TEL()
     if tel.skalow:
@@ -242,6 +248,7 @@ def dataproduct_directory(entry_point: fxt_types.entry_point):
     The directory where output files will be written.
 
     :param entry_point: entry point to test
+    :return: dataproduct directory
     """
     eb_id = entry_point.observation.execution_block.eb_id
     pb_id = entry_point.observation.processing_blocks[0].pb_id

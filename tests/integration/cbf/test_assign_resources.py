@@ -37,7 +37,13 @@ def an_cbf_subarray(
     set_up_log_checking_for_cbf_subarray,  # pylint: disable=unused-argument
     cbf_base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
-    """an SDP subarray."""
+    """
+    an SDP subarray.
+    :param set_up_log_checking_for_cbf_subarray: An object to set up
+        log checking for cbf subarray
+    :param cbf_base_composition : An object for cbf base composition
+    :return: cbf base composition
+    """
     return cbf_base_composition
 
 
@@ -47,7 +53,10 @@ def an_cbf_subarray(
 
 @then("the CBF subarray must be in IDLE state")
 def the_cbf_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
-    """the subarray must be in IDLE state."""
+    """
+    the subarray must be in IDLE state.
+    :param sut_settings: An object for system under test settings
+    """
     tel = names.TEL()
     cbf_subarray = con_config.get_device_proxy(
         tel.csp.cbf.subarray(sut_settings.subarray_id)

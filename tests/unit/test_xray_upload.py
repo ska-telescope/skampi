@@ -113,8 +113,8 @@ def check_if_fix_version_matches(
 ):
     """Test to see if they matched
 
-    :param current_pi_in_jira: fixture
-    :type current_pi_in_jira: str
+    :param unreleased_fixversion: fixture
+    :type unreleased_fixversion: str
     :param local_version: fixture
     :type local_version: str
     """

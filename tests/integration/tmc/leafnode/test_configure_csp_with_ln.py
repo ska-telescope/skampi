@@ -34,7 +34,11 @@ def a_csp():
 
 @given("a TMC CSP subarray Leaf Node", target_fixture="configuration")
 def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
-    """a tmc CSP subarray leaf node."""
+    """
+    a tmc CSP subarray leaf node.
+
+    :param set_csp_ln_entry_point: An object to set csp leafnode entry point
+    """
 
 
 # @when("I configure it for a scan") from ...conftest
@@ -44,7 +48,11 @@ def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point):
 def the_csp_subarray_shall_go_from_idle_to_ready_state(
     allocated_subarray: fxt_types.allocated_subarray,
 ):
-    """the CSP subarray shall go from IDLE to READY state."""
+    """
+    the CSP subarray shall go from IDLE to READY state.
+
+    :param allocated_subarray: The allocated subarray to be configured.
+    """
     sub_array_id = allocated_subarray.id
     tel = names.TEL()
     csp_subarray = con_config.get_device_proxy(tel.csp.subarray(sub_array_id))

@@ -12,7 +12,9 @@ logger = logging.getLogger(__name__)
 @pytest.mark.csp
 @scenario("features/csp_configure_scan.feature", "Abort configuring")
 def test_abort_configuring(set_up_subarray_log_checking_for_csp: None):
-    """Abort scanning."""
+    """Abort scanning.
+    :param: set_up_subarray_log_checking_for_csp: sets up subarray log checking for csp
+    """
 
 
 @pytest.mark.skalow
@@ -33,7 +35,7 @@ def test_csp_abort_configuring_low(set_up_subarray_log_checking_for_csp: None):
     "Configure scan on csp subarray in mid",
 )
 def test_configure_csp_mid_subarray():
-    """Configure CSP low subarray."""
+    """Configure CSP mid subarray."""
 
 
 @pytest.mark.skip(
@@ -48,3 +50,13 @@ def test_configure_csp_mid_subarray():
 )
 def test_configure_csp_low_subarray():
     """Configure CSP low subarray."""
+
+
+@pytest.mark.skalow
+@pytest.mark.configure
+@pytest.mark.csp
+@scenario(
+    "features/csp_configure_scan.feature", "Abort configuring on CSP Low"
+)
+def test_csp_abort_configuring_low(set_up_subarray_log_checking_for_csp: None):
+    """Abort in configuring obstate."""

@@ -19,3 +19,4 @@ Feature: Run a scan on CSP subarray
         Given an subarray busy scanning
         When I command it to Abort
         Then the subarray should go into an aborted state
+

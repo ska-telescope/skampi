@@ -57,7 +57,7 @@ mid_itf_on_demand_destroy:
   variables:
     KEEP_NAMESPACE: "true"
   environment:
-    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
+    name: itf/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE

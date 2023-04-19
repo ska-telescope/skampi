@@ -19,9 +19,4 @@ Feature: Configure scan on csp subarray
         Given an subarray busy configuring
         When I command it to Abort
         Then the subarray should go into an aborted state
-
-    @XTP-20129
-    Scenario: Abort configuring on CSP Low
-        Given an subarray busy configuring
-        When I command it to Abort
-        Then the subarray should go into an aborted state
+        

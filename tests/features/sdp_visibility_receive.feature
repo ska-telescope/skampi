@@ -18,7 +18,7 @@ Feature: Visibility Receive Script
 #		Then the data received matches with the data sent
 
 	@gabi
-	Scenario: Execute visibility receive script for a single scan (full)
+	Scenario: Execute visibility receive script for a single scan (SDP)
 		Given I connect to an SDP subarray
 		And obsState is EMPTY
 		And the test volumes are present and the test data are downloaded

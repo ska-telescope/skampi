@@ -17,7 +17,7 @@ import os
 from datetime import date
 
 import pytest
-from pytest_bdd import given, parsers, scenarios, then, when
+from pytest_bdd import given, parsers, scenario, then, when
 
 from integration.sdp.vis_receive_utils import (
     wait_for_obs_state,
@@ -59,7 +59,21 @@ TRANSLATIONS = {
     }
 }
 
-scenarios("visibility_receive.feature")
+# scenarios("visibility_receive.feature")
+
+@pytest.mark.skalow
+@pytest.mark.sdp
+@scenario(
+    "features/sdp_visibility_receive.feature",
+    "Execute visibility receive script for a single scan (SDP)",
+)
+def test_visibility_receive_in_low():
+    """
+    SDP Visibility receive test.
+
+    :param assign_resources_test_exec_settings: Object for assign_resources_test_exec_settings
+    """
+
 
 @pytest.fixture(name="assign_resources_config")
 def read_assign_resources_config():

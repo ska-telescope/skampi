@@ -23,7 +23,6 @@ def test_sdp_start_up_telescope_mid(sdp_start_up_test_exec_settings):
     """
 
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.startup
 @pytest.mark.sdp

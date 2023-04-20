@@ -23,7 +23,6 @@ def test_tmc_configure_scan_on_mid_subarray():
     """Configure scan on TMC mid telescope subarray."""
 
 
-@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

@@ -34,7 +34,6 @@ def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
 
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.startup
 @scenario(

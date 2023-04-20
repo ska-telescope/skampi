@@ -49,7 +49,6 @@ NAMESPACE_SDP = os.environ.get("KUBE_NAMESPACE_SDP")
 PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
 
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.sdp
 @scenario(

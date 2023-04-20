@@ -12,4 +12,4 @@ RUN curl -sSL https://install.python-poetry.org | python3 - --yes
 RUN ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
 
 
-RUN apt-get update && apt-get install -y net-tools jq
+RUN apt-get update && apt-get install -y net-tools jq make

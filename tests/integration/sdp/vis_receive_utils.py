@@ -477,3 +477,19 @@ def deploy_cbf_emulator(host: str, scan_id: int, k8s_element_manager: K8sElement
         "Succeeded",
         timeout=300,
     )
+
+
+def wait_for_obs_state(device, obs_state, timeout=TIMEOUT):
+    """
+    Wait for obsState to have the expected value.
+
+    :param device: device proxy
+    :param obs_state: the expected value
+    :param timeout: timeout in seconds
+    """
+
+    def predicate():
+        return device.get_attribute("obsState") == obs_state
+
+    description = f"obsState {obs_state}"
+    wait_for_predicate(predicate, description, timeout=timeout)

@@ -23,12 +23,14 @@ from integration.sdp.vis_receive_utils import (
     wait_for_obs_state,
     compare_data,
     POD_CONTAINER,
-    deploy_sender,
+    deploy_cbf_emulator,
     wait_for_pod,
     check_data_present,
     pvc_exists,
     wait_for_predicate,
 )
+
+pytest_plugins = ["unit.test_cluster_k8s"]
 
 LOG = logging.getLogger(__name__)
 
@@ -365,7 +367,7 @@ def run_scans(
 
     host = receive_addresses["target:a"]["vis0"]["host"][0][1]
     with subarray_scan(1, "target:a"):
-        deploy_sender(
+        deploy_cbf_emulator(
             host,
             1,
             k8s_element_manager,

@@ -3,7 +3,7 @@
   tags:
     - ska-k8srunner-za-itf
   variables:
-    #TANGO_HOST: tango-databaseds:10000 # try to sync with Mid ITF Tests value
+    TANGO_HOST: tango-databaseds:10000 # try to sync with Mid ITF Tests value
     CONFIG: mid
     VALUES: "charts/ska-$CONFIG/$CONFIG-itf-values.yaml" #TODO: Use CONFIG in shared definitions.
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"

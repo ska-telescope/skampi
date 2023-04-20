@@ -32,7 +32,7 @@ from integration.sdp.vis_receive_utils import (
 from ska_ser_skallop.connectors.remoting.tangobridge.authentication import Authenticator
 from ska_ser_skallop.connectors.remoting.tangobridge.configuration import Environment
 
-pytest_plugins = ["unit.test_cluster_k8s"]
+# pytest_plugins = ["unit.test_cluster_k8s"]
 
 LOG = logging.getLogger(__name__)
 
@@ -215,7 +215,6 @@ def connect_to_subarray():
         kube_branch=os.getenv("KUBE_BRANCH"),
         telescope=os.getenv("TEL"),
         kubehost=os.getenv("KUBE_HOST"),
-        # tango_bridge_ip=os.getenv("DOMAIN"),
         bypass_auth=False,
         kube_namespace=os.getenv("KUBE_NAMESPACE"),
     )
@@ -224,11 +223,7 @@ def connect_to_subarray():
     cookies = auth_user.cookies
     kube_host = os.getenv("KUBE_HOST", "k8s.skao.stfc")
 
-    job_id = os.getenv("CI_JOB_ID", "4147765005")
-    # tango_url = f"tangogql-ska-tango-tangogql-test-low-{job_id}.{namespace}:5004"
-    # taranta-taranta-test-{env.telescope}-{env.kube_branch}/{settings.tangogql}/
-    tango_url = f"http://{kube_host}/{namespace}/taranta"  # works locally
-    # tango_url = f"http://taranta-taranta-test-low-skb-215/graphiql"
+    tango_url = f"http://{kube_host}/{namespace}/taranta"
     subarray = f"low-sdp/subarray/01"
     return TangoClientGQL(
         tango_url, subarray, translations=TRANSLATIONS, cookies=cookies
@@ -264,7 +259,7 @@ def set_obs_state(subarray_device, obs_state):
 
 
 @given("the test volumes are present and the test data are downloaded")
-def local_volume(k8s_element_manager, fxt_k8s_cluster):
+def local_volume(k8s_element_manager):
     """
     Check if the local volumes are present and the data
     have been successfully downloaded.
@@ -342,7 +337,6 @@ def deploy_script(
     receive_addresses = json.loads(
         subarray_device.get_attribute("receiveAddresses")
     )
-    print("REC ADDR: ", receive_addresses)
     # Get the DNS hostname from receive addresses attribute
     host = receive_addresses["science"]["vis0"]["host"][0][1]
 

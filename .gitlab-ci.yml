@@ -13,6 +13,7 @@ variables:
   DOMAIN: "branch"
   EXPOSE_All_DS: "true"
   CONFIG: "common"
+  CONFIG_TIMEOUT: "3000"
 
 stages:
   - lint

@@ -9,26 +9,26 @@ ska-sdp:
 ska-oso-scripting:
   enabled: false
 ska-taranta:
-  enabled: true
+  enabled: false
 ska-ser-skuid:
-  enabled: true
+  enabled: false
 ska-tango-archiver:
-  enabled: true
+  enabled: false
 ska-landingpage:
-  enabled: true
+  enabled: false
 
 # Mid specific products
 ska-mid-cbf:
-  enabled: true
+  enabled: false
 ska-csp-lmc-mid:
-  enabled: true
+  enabled: false
 ska-tmc-mid:
-  enabled: true
+  enabled: false
 ska-sim-dishmaster:
-  enabled: true
+  enabled: false
 
 # Low specific products
 ska-tmc-low:
-  enabled: true
+  enabled: false
 ska-low-mccs:
   enabled: false

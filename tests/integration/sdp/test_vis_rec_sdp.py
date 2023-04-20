@@ -222,12 +222,13 @@ def connect_to_subarray():
     auth = Authenticator(env)
     auth_user = auth.get_authenticated_user()
     cookies = auth_user.cookies
+    kube_host = os.getenv("KUBE_HOST", "k8s.skao.stfc")
 
     job_id = os.getenv("CI_JOB_ID", "4147765005")
     # tango_url = f"tangogql-ska-tango-tangogql-test-low-{job_id}.{namespace}:5004"
     # taranta-taranta-test-{env.telescope}-{env.kube_branch}/{settings.tangogql}/
-    # tango_url = f"http://k8s.skao.stfc/{namespace}/taranta"  # works locally
-    tango_url = f"http://taranta-taranta-test-low-skb-215/graphiql"
+    tango_url = f"http://{kube_host}/{namespace}/taranta"  # works locally
+    # tango_url = f"http://taranta-taranta-test-low-skb-215/graphiql"
     subarray = f"low-sdp/subarray/01"
     return TangoClientGQL(
         tango_url, subarray, translations=TRANSLATIONS, cookies=cookies

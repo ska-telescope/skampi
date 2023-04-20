@@ -1,0 +1,176 @@
+{
+   "interface":"https://schema.skao.int/ska-sdp-assignres/0.4",
+
+   "resources": {
+      "csp_links": [ 1, 2, 3, 4 ],
+      "receptors": ["C10", "C136", "C1", "C217", "C13", "C42"],
+      "receive_nodes": 1
+   },
+
+   "execution_block": {
+      "eb_id":"eb-test-20210630-00000",
+      "context": {},
+      "max_length":21600.0,
+
+      "channels": [ {
+         "channels_id": "vis_channels",
+         "spectral_windows": [ {
+             "spectral_window_id": "fsp_1_channels",
+             "count": 13824,
+             "start": 0,
+             "stride": 2,
+             "freq_min": 0.35e9,
+             "freq_max": 0.368e9,
+             "link_map": [ [0, 0], [200, 1], [744, 2], [944, 3] ]
+         } ]
+      } ],
+
+      "polarisations": [ {
+         "polarisations_id": "all",
+         "corr_type": [ "XX", "XY", "YY", "YX" ]
+      } ],
+
+      "fields": [ {
+         "field_id": "field_a",
+         "phase_dir" : {
+           "ra": [ 2.711325 ],
+           "dec": [ -0.01328889 ],
+           "reference_time": "...",
+           "reference_frame": "ICRF3"
+         },
+         "pointing_fqdn": "low-tmc/telstate/0/pointing"
+      }, {
+         "field_id": "field_b",
+         "phase_dir" : {
+           "ra": [ 12.48519 ],
+           "dec": [ 2.052388 ],
+           "reference_time": "...",
+           "reference_frame": "ICRF3"
+         },
+         "pointing_fqdn": "low-tmc/telstate/0/pointing"
+      } ],
+
+      "beams": [ {
+         "beam_id": "vis0",
+         "function": "visibilities"
+      } ],
+
+      "scan_types":[
+         {
+            "scan_type_id": ".default",
+            "beams": {
+               "vis0": {
+                  "polarisations_id": "all",
+                  "channels_id": "vis_channels"
+               }
+            }
+         },
+         {
+            "scan_type_id": "science",
+            "derive_from": ".default",
+            "beams": {
+              "vis0": { "field_id": "field_a" }
+            }
+         },
+         {
+            "scan_type_id": "calibration",
+            "derive_from": ".default",
+            "beams": {
+              "vis0": { "field_id": "field_b" }
+            }
+         }
+      ]
+   },
+   "processing_blocks":[
+      {
+         "pb_id":"pb-test-20211111-00000",
+         "script":{
+            "kind":"realtime",
+            "name":"vis-receive",
+            "version":"0.8.1"
+         },
+         "parameters": {
+            "image":"artefact.skao.int/ska-sdp-realtime-receive-modules",
+            "version":"3.8.1",
+            "plasmaEnabled": true,
+            "reception": {
+               "layout": "/mnt/data/low-layout.json",
+               "num_channels": 13824,
+               "channels_per_stream": 6912,
+               "continuous_mode": true,
+               "transport_protocol": "tcp",
+               "payloads_in_flight": 3,
+               "disable_astropy_iers_autodownload": true
+            },
+            "pvc": {
+               "name": "testing"
+            },
+            "plasma_parameters": {
+               "initContainers":[
+                  {
+                     "name":"existing-output-remover",
+                     "image":"artefact.skao.int/ska-sdp-realtime-receive-processors:0.4.0",
+                     "command":["rm", "-rf", "/mnt/data/output*.ms"],
+                     "volumeMounts":[
+                        {
+                           "mountPath":"/mnt/data",
+                           "name":"testing"
+                        }
+                     ]
+                  },
+                  {
+                     "name":"start-telmodel",
+                     "image":"python:3.10-slim",
+                     "env": [
+                        {
+                           "name": "SKA_TELMODEL_SOURCES",
+                           "value": "gitlab://gitlab.com/ska-telescope/sdp/ska-sdp-tmlite-repository?dfa075be#tmdata"
+                        }
+                     ],
+                     "command":["/bin/bash", "-c", "pip install --extra-index-url=https://artefact.skao.int/repository/pypi-internal/simple ska-telmodel==1.5.0 ; rm -f /mnt/data/low-layout.json ; ska-telmodel cat instrument/ska1_low/layout/low-layout.json > /mnt/data/low-layout.json"],
+                     "volumeMounts":[
+                        {
+                           "mountPath":"/mnt/data",
+                           "name":"receive-data"
+                        }
+                     ]
+                  }
+               ],
+               "extraContainers":[
+                  {
+                     "name":"plasma-processor",
+                     "image":"artefact.skao.int/ska-sdp-realtime-receive-processors:0.4.0",
+                     "args":[
+                        "--max-payloads",
+                        "12",
+                        "--readiness-file",
+                        "/tmp/processor_ready",
+                        "output.ms"
+                     ],
+                     "volumeMounts":[
+                        {
+                           "name":"plasma-storage-volume",
+                           "mountPath":"/plasma"
+                        },
+                        {
+                           "mountPath":"/mnt/data",
+                           "name":"testing"
+                        }
+                     ],
+                     "readinessProbe":{
+                        "initialDelaySeconds": 5,
+                        "periodSeconds": 5,
+                        "exec":{
+                           "command":[
+                              "cat",
+                              "/tmp/processor_ready"
+                           ]
+                        }
+                     }
+                  }
+               ]
+            }
+         }
+      }
+   ]
+}

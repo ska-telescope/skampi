@@ -1,0 +1,6 @@
+{
+  "interface": "https://schema.skao.int/ska-sdp-releaseres/0.4",
+  "resources": {
+    "receptors": ["SKA001", "SKA002", "SKA003", "SKA004"]
+  }
+}

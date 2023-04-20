@@ -29,6 +29,8 @@ from integration.sdp.vis_receive_utils import (
     pvc_exists,
     wait_for_predicate,
 )
+from ska_ser_skallop.connectors.remoting.tangobridge.authentication import Authenticator
+from ska_ser_skallop.connectors.remoting.tangobridge.configuration import Environment
 
 pytest_plugins = ["unit.test_cluster_k8s"]
 
@@ -206,12 +208,29 @@ def connect_to_subarray():
     :returns: SDP subarray device client
 
     """
+    env = Environment(
+        username=os.getenv("TARANTA_USER"),
+        password=os.getenv("TARANTA_PASSWORD"),
+        domain=os.getenv("DOMAIN"),
+        kube_branch=os.getenv("KUBE_BRANCH"),
+        telescope=os.getenv("TEL"),
+        kubehost=os.getenv("KUBE_HOST"),
+        # tango_bridge_ip=os.getenv("DOMAIN"),
+        bypass_auth=False,
+        kube_namespace=os.getenv("KUBE_NAMESPACE"),
+    )
+    auth = Authenticator(env)
+    auth_user = auth.get_authenticated_user()
+    cookies = auth_user.cookies
 
-    job_id = os.getenv("CI_JOB_ID")
-    tango_url = f"http://tangogql-ska-tango-tangogql-test-low-{job_id}.{namespace}:5004"
-    subarray = f"ska-sdp/subarray/01"
+    job_id = os.getenv("CI_JOB_ID", "4147765005")
+    # tango_url = f"tangogql-ska-tango-tangogql-test-low-{job_id}.{namespace}:5004"
+    # taranta-taranta-test-{env.telescope}-{env.kube_branch}/{settings.tangogql}/
+    tango_url = f"http://k8s.skao.stfc/{namespace}/taranta"
+    # tango_url = f"taranta-ska-tango-taranta-test-low-{job_id}.{namespace}:80"
+    subarray = f"low-sdp/subarray/01"
     return TangoClientGQL(
-        tango_url, subarray, translations=TRANSLATIONS
+        tango_url, subarray, translations=TRANSLATIONS, cookies=cookies
     )
 
 
@@ -322,8 +341,10 @@ def deploy_script(
     receive_addresses = json.loads(
         subarray_device.get_attribute("receiveAddresses")
     )
+    print("REC ADDR: ", receive_addresses)
     # Get the DNS hostname from receive addresses attribute
-    host = receive_addresses["target:a"]["vis0"]["host"][0][1]
+    host = receive_addresses["science"]["vis0"]["host"][0][1]
+
     receiver_pod_name = host.split(".")[0]
 
     # Check if the receiver is running
@@ -365,8 +386,8 @@ def run_scans(
         subarray_device.get_attribute("receiveAddresses")
     )
 
-    host = receive_addresses["target:a"]["vis0"]["host"][0][1]
-    with subarray_scan(1, "target:a"):
+    host = receive_addresses["science"]["vis0"]["host"][0][1]
+    with subarray_scan(1, "science"):
         deploy_cbf_emulator(
             host,
             1,
@@ -512,8 +533,9 @@ class GraphQLClient:
 
     # pylint: disable=too-few-public-methods
 
-    def __init__(self, url: str):
+    def __init__(self, url: str, **kwargs):
         self._url = url
+        self.options = kwargs
 
     def execute(self, query: str, variables: dict = None):
         """
@@ -524,7 +546,7 @@ class GraphQLClient:
 
         """
         data = {"query": query, "variables": variables}
-        response = requests.post(url=self._url, json=data, timeout=10.0)
+        response = requests.post(url=self._url, json=data, timeout=10.0, **self.options)
         response.raise_for_status()
         return response.json()
 
@@ -582,10 +604,10 @@ class TangoClientGQL(TangoClient):
     """  # noqa: E501
 
     def __init__(
-        self, url: str, device: str, translations: Optional[dict] = None
+        self, url: str, device: str, translations: Optional[dict] = None, **kwargs
     ):
         super().__init__(device, translations=translations)
-        self._client = GraphQLClient(f"{url}/db")
+        self._client = GraphQLClient(f"{url}/db", **kwargs)
 
     def get_commands(self) -> Optional[List[str]]:
         """
@@ -726,7 +748,7 @@ def read_json_data(filename):
     :param filename: name of the file to read
 
     """
-    path = os.path.join("tests", "resources", "subarray-json", filename)
+    path = os.path.join("tests", "integration", "sdp", filename)
     with open(path, "r", encoding="utf-8") as file_n:
         data = json.load(file_n)
     return data

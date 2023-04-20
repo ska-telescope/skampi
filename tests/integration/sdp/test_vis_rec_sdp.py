@@ -227,7 +227,7 @@ def connect_to_subarray():
     # tango_url = f"tangogql-ska-tango-tangogql-test-low-{job_id}.{namespace}:5004"
     # taranta-taranta-test-{env.telescope}-{env.kube_branch}/{settings.tangogql}/
     # tango_url = f"http://k8s.skao.stfc/{namespace}/taranta"  # works locally
-    tango_url = f"taranta-ska-tango-taranta-test-low-{job_id}.{namespace}:80"
+    tango_url = f"http://taranta-taranta-test-low-skb-215/graphiql"
     subarray = f"low-sdp/subarray/01"
     return TangoClientGQL(
         tango_url, subarray, translations=TRANSLATIONS, cookies=cookies

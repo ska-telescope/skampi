@@ -1,12 +1,10 @@
 """Domain logic for the tmc."""
 import copy
-import functools
 import json
 import logging
 import os
-import time
 from time import sleep
-from typing import Any, Callable, List, ParamSpec, TypeVar
+from typing import Any, List
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -24,32 +22,6 @@ from ..mvp_model.env import Observation, get_observation_config
 from ..mvp_model.states import ObsState
 
 logger = logging.getLogger(__name__)
-
-T = TypeVar("T")
-P = ParamSpec("P")
-
-
-def retry(nr_of_reties: int = 3, wait_time: int = 1):
-    @functools.wraps
-    def wrapper(
-        command: Callable[P, T], *args: P.args, **kwargs: P.kwargs
-    ) -> T:
-        try:
-            return command(*args, **kwargs)
-        except Exception:
-            nr_of_retries = 0
-            exception_to_raise = None
-            while nr_of_retries < nr_of_reties:
-                time.sleep(wait_time)
-                try:
-                    return command(*args, **kwargs)
-                except Exception as exception:
-                    nr_of_retries += 1
-                    exception_to_raise = exception
-            assert exception_to_raise
-            raise exception_to_raise
-
-    return wrapper
 
 
 class LogEnabled:
@@ -399,24 +371,10 @@ class ConfigureStep(base.ConfigureStep, LogEnabled):
 
         :param sub_array_id: The index id of the subarray to control
         """
-        # we retry this command three times in case there is a transitory race
-        # condition
-
         subarray_name = self._tel.tm.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with End command")
-        if self._tel.skalow:
-
-            @retry(nr_of_reties=3)
-            def command():
-                subarray.command_inout("End")
-
-        elif self._tel.skamid:
-
-            def command():
-                subarray.command_inout("End")
-
-        command()
+        subarray.command_inout("End")
 
     def set_wait_for_do_configure(
         self, sub_array_id: int

@@ -37,7 +37,6 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
     sut_settings.restart_after_abort = True
 
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -86,7 +85,6 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
     """
 
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp

@@ -1,9 +1,4 @@
-from .sdp_config import (
-    EBScanTypeBeam,
-    ProcessingSpec,
-    ScriptConfiguration,
-    SDPScanConfiguration,
-)
+from .sdp_config import EBScanTypeBeam, ProcessingSpec, ScriptConfiguration, SDPScanConfiguration
 from .target_spec import ReceiverBand, Target, TargetSpec
 
 __all__ = [

@@ -1,0 +1,257 @@
+{
+  "interface": "https://schema.skao.int/ska-oso-pdm-sbd/0.1",
+  "sbd_id": "sbi-mvp01-20200325-00002",
+  "telescope": "ska_mid",
+  "metadata": {
+    "version": 1,
+    "created_by": "Liz Bartlett",
+    "created_on": "2022-03-28T15:43:53.971548",
+    "last_modified_on": "2022-03-28T15:43:53.971548",
+    "last_modified_by": "Liz Bartlett"
+  },
+  "activities": {
+    "allocate": {
+      "kind": "filesystem",
+      "path": "file:///scripts/allocate_from_file_mid_sb.py",
+      "function_args": {
+        "init": {
+          "args": [],
+          "kwargs": {
+            "subarray_id": 1
+          }
+        },
+        "main": {
+          "args": [],
+          "kwargs": {}
+        }
+      }
+    },
+    "observe": {
+      "kind": "filesystem",
+      "path": "file:///scripts/observe_mid_sb.py",
+      "function_args": {
+        "init": {
+          "args": [],
+          "kwargs": {
+            "subarray_id": 1
+          }
+        },
+        "main": {
+          "args": [],
+          "kwargs": {}
+        }
+      }
+    },
+    "helloworld": {
+      "kind": "filesystem",
+      "path": "file:///tmp/oda/hello_world_sb.py",
+      "function_args": {
+        "init": {
+          "args": [],
+          "kwargs": {
+            "subarray_id": 1
+          }
+        },
+        "main": {
+          "args": [],
+          "kwargs": {}
+        }
+      }
+    }
+  },
+  "scan_definitions": [
+    {
+      "scan_definition_id": "calibrator scan",
+      "scan_duration": 6000,
+      "target": "Polaris Australis",
+      "dish_configuration": "dish config 123",
+      "scan_type": "calibration_B",
+      "csp_configuration": "csp config 123"
+    },
+    {
+      "scan_duration": 6000,
+      "target": "M83",
+      "dish_configuration": "dish config 123",
+      "scan_type": "science_A",
+      "scan_definition_id": "science scan",
+      "csp_configuration": "csp config 123"
+    }
+  ],
+  "scan_sequence": [
+    "calibrator scan",
+    "science scan",
+    "science scan",
+    "calibrator scan"
+  ],
+  "targets": [
+    {
+      "target_id": "Polaris Australis",
+      "pointing_pattern": {
+        "active": "SinglePointParameters",
+        "parameters": [
+          {
+            "kind": "SinglePointParameters",
+            "offset_x_arcsec": 0.0,
+            "offset_y_arcsec": 0.0
+          }
+        ]
+      },
+      "reference_coordinate": {
+        "kind": "equatorial",
+        "ra": "21:08:47.92",
+        "dec": "-88:57:22.9",
+        "reference_frame": "ICRS",
+        "unit": ["hourangle","deg"]
+      }
+    },
+    {
+      "target_id": "M83",
+      "pointing_pattern": {
+        "active": "SinglePointParameters",
+        "parameters": [
+          {
+            "kind": "SinglePointParameters",
+            "offset_x_arcsec": 0.0,
+            "offset_y_arcsec": 0.0
+          }
+        ]
+      },
+      "reference_coordinate": {
+        "kind": "equatorial",
+        "ra": "13:37:00.919",
+        "dec": "-29:51:56.74",
+        "reference_frame": "ICRS",
+        "unit": ["hourangle","deg"]
+      }
+    }
+  ],
+  "sdp_configuration": {
+    "execution_block": {
+      "eb_id": "eb-mvp01-20200325-00001",
+      "max_length": 100.0,
+      "context": {},
+      "beams": [
+        {
+          "beam_id": "vis0",
+          "function": "visibilities"
+        }
+      ],
+      "channels": [
+        {
+          "channels_id": "vis_channels",
+          "spectral_windows": [
+            {
+              "spectral_window_id": "fsp_1_channels",
+              "count": 744,
+              "start": 0,
+              "stride": 2,
+              "freq_min": 350000000,
+              "freq_max": 368000000,
+              "link_map": [
+                [0, 0],
+                [200, 1],
+                [744, 2],
+                [944, 3]
+              ]
+            }
+          ]
+        }
+      ],
+      "scan_types": [
+        {
+          "beams": [
+            {
+              "beam_id": "vis0",
+              "channels_id": "vis_channels",
+              "polarisations_id": "all"
+            }
+          ],
+          "scan_type_id": ".default"
+        },
+        {
+          "derive_from": ".default",
+          "beams": [
+            {
+              "beam_id": "vis0",
+              "field_id": "M83"
+            }
+          ],
+          "scan_type_id": "target:a"
+        }
+      ],
+      "polarisations": [
+        {
+          "polarisations_id": "all",
+          "corr_type": ["XX", "XY", "YY", "YX"]
+        }
+      ]
+    },
+    "processing_blocks": [
+      {
+        "pb_id": "pb-mvp01-20200325-00001",
+        "sbi_ids": [
+          "sbi-mvp01-20200325-00001"
+        ],
+        "script": {
+          "kind": "realtime",
+          "version": "0.5.0",
+          "name": "test-receive-addresses"
+        },
+        "parameters": {}
+      }
+    ],
+    "resources": {
+      "receptors": [
+        "SKA001",
+        "SKA002"
+      ]
+    }
+  },
+  "csp_configurations": [
+    {
+      "config_id": "csp config 123",
+      "subarray": {
+        "subarray_name": "science period 23"
+      },
+      "common": {
+        "subarray_id": 1,
+        "band_5_tuning": [5.85, 7.25]
+      },
+      "cbf": {
+        "fsp": [
+          {
+            "fsp_id": 1,
+            "function_mode": "CORR",
+            "frequency_slice_id": 1,
+            "integration_factor": 1,
+            "zoom_factor": 0,
+            "channel_averaging_map": [[0, 2], [744, 0]],
+            "channel_offset": 0,
+            "output_link_map": [[0, 0], [200, 1]]
+          },
+          {
+            "fsp_id": 2,
+            "function_mode": "CORR",
+            "frequency_slice_id": 2,
+            "integration_factor": 1,
+            "zoom_factor": 1,
+            "zoom_window_tuning": 4900000,
+            "output_link_map": [[0, 0], [200, 1]]
+          }
+        ]
+      }
+    }
+  ],
+  "dish_allocations": {
+    "receptor_ids": [
+      "0001",
+      "0002"
+    ]
+  },
+  "dish_configurations": [
+    {
+      "dish_configuration_id": "dish config 123",
+      "receiver_band": "5a"
+    }
+  ]
+}

@@ -4,7 +4,6 @@ import logging
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
-
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 
@@ -35,7 +34,11 @@ def test_sdpln_start_up_telescope_low():
 
 @given("an SDP")
 def a_sdp(set_sdp_ln_entry_point):
-    """a SDP."""
+    """
+    a SDP.
+
+    :param set_sdp_ln_entry_point: An object to set sdp leafnode entry point
+    """
 
 
 @given("an SDP leaf node")
@@ -48,9 +51,14 @@ def a_sdp_ln():
 
 # thens
 
+
 @then("the sdp must be on")
 def the_sdp_must_be_on(sut_settings: conftest.SutTestSettings):
-    """the sdp must be on."""
+    """
+    the sdp must be on.
+    :param sut_settings: A class representing the settings for the system under test.
+
+    """
     tel = names.TEL()
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value

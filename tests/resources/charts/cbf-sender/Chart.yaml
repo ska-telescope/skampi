@@ -1,0 +1,10 @@
+# needed for SDP visibility receive test
+apiVersion: v1
+appVersion: "1.0"
+description: A Helm chart to deploy a sender/receiver CBF-SDP emulator example
+home: https://developer.skatelescope.org/projects/cbf-sdp-emulator
+maintainers:
+- email: rtobar@icrar.org, stephen.ord@csiro.au
+  name: Rodrigo Tobar, Steve Ord
+name: cbf-sender
+version: 0.1.0

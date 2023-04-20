@@ -57,7 +57,10 @@ class Scan:
         self._inc()
         if backwards:
             return {"id": self._instance_count}
-        return {"scan_id": self._instance_count}
+        return {
+            "interface": "https://schema.skao.intg/ska-tmc-scan/2.0",
+            "scan_id": self._instance_count,
+        }
 
 
 class TargetSpecs(SchedulingBlock, Scan):

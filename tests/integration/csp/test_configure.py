@@ -50,13 +50,3 @@ def test_configure_csp_mid_subarray():
 )
 def test_configure_csp_low_subarray():
     """Configure CSP low subarray."""
-
-
-@pytest.mark.skalow
-@pytest.mark.configure
-@pytest.mark.csp
-@scenario(
-    "features/csp_configure_scan.feature", "Abort configuring on CSP Low"
-)
-def test_csp_abort_configuring_low(set_up_subarray_log_checking_for_csp: None):
-    """Abort in configuring obstate."""

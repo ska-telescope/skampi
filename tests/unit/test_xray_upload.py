@@ -47,7 +47,10 @@ def test_fix_version_is_correct():
 
 
 @given(
-    "the SKA Jira project for Solution and System Acceptance Tests (skampi tests) with project key XTP",
+    (
+        "the SKA Jira project for Solution and System Acceptance Tests (skampi"
+        " tests) with project key XTP"
+    ),
     target_fixture="unreleased_fixversion",
 )
 def get_earliest_unreleased_fix_version():
@@ -78,11 +81,7 @@ def fxt_load_file():
     :return: Current PI that all uploads will be associated with
     :rtype: str
     """
-    fn = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__), os.path.pardir, "test-exec.json"
-        )
-    )
+    fn = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, "test-exec.json"))
     with open(
         fn,
         "rb",
@@ -93,26 +92,23 @@ def fxt_load_file():
     return curr_pi
 
 
-@when(
-    "integration tests are uploaded after tests executed in Skampi master branch pipelines"
-)
+@when("integration tests are uploaded after tests executed in Skampi master" " branch pipelines")
 def get_fix_version_from_test_exec_json_file():
     """This step will happen after all the tests were executed"""
 
 
 @then(
-    "the results will be associated with the Earliest Unreleased FixVersion in the XTP project"
+    "the results will be associated with the Earliest Unreleased FixVersion in" " the XTP project"
 )
-def check_if_fix_version_matches(
-    local_version: str, unreleased_fixversion: str
-):
+def check_if_fix_version_matches(local_version: str, unreleased_fixversion: str):
     """Test to see if they matched
 
-    :param current_pi_in_jira: fixture
-    :type current_pi_in_jira: str
+    :param unreleased_fixversion: fixture
+    :type unreleased_fixversion: str
     :param local_version: fixture
     :type local_version: str
     """
-    assert (
-        local_version == unreleased_fixversion
-    ), f"{local_version} in test-exec.json; earliest unreleased version in Jira: {unreleased_fixversion}"
+    assert local_version == unreleased_fixversion, (
+        f"{local_version} in test-exec.json; earliest unreleased version in"
+        f" Jira: {unreleased_fixversion}"
+    )

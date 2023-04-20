@@ -1,4 +1,6 @@
-"""Pytest fixtures and bdd step implementations specific to cbf integration tests."""
+"""
+Pytest fixtures and bdd step implementations specific to cbf integration tests.
+"""
 import logging
 import os
 from typing import Callable
@@ -16,19 +18,21 @@ from .. import conftest
 
 @pytest.fixture(name="nr_of_subarrays", autouse=True, scope="session")
 def fxt_nr_of_subarrays() -> int:
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
+    # we only work with 1 subarray as CBF low currently
+    # limits deployment of only 1
     # cbf mid only controls the state of subarray 1 so will also limit to 1
     return 1
 
 
 @pytest.fixture(name="set_nr_of_subarray", autouse=True)
-def fxt_set_nr_of_subarray(
-    sut_settings: conftest.SutTestSettings, nr_of_subarrays: int
-):
-    """_summary_
+def fxt_set_nr_of_subarray(sut_settings: conftest.SutTestSettings, nr_of_subarrays: int):
+    """
+    Set the number of subarrays in the SUT settings.
 
     :param sut_settings: _description_
     :type sut_settings: conftest.SutTestSettings
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings.
+    :type nr_of_subarrays: int
     """
     sut_settings.nr_of_subarrays = nr_of_subarrays
 
@@ -41,11 +45,14 @@ def fxt_set_cbf_entry_point(
     sut_settings: conftest.SutTestSettings,
 ):
     """_summary_
-
+    :param set_nr_of_subarray: The number of subarrays to set in the SUT settings.
+    :type set_nr_of_subarray: int
     :param set_session_exec_env: _description_
     :type set_session_exec_env: fxt_types.set_session_exec_env
     :param exec_settings: _description_
     :type exec_settings: fxt_types.exec_settings
+    :param sut_settings: A class representing the settings for the system under test.
+    :type sut_settings: conftest.SutTestSettings
     """
     exec_env = set_session_exec_env
     if not sut_settings.mock_sut:
@@ -73,6 +80,8 @@ def fxt_set_cbf_online_from_cbf(
     :type nr_of_subarrays: int
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
+    :param online: An object for online flag
+    :type online: conftest.OnlineFlag
     """
     if not online:
         if names.TEL().skalow:
@@ -95,6 +104,7 @@ def fxt_set_up_log_checking_for_cbf(
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
     :param log_checking: The skallop log_checking fixture to use
+    :param sut_settings: A class representing the settings for the system under test.
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
@@ -109,9 +119,7 @@ def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    composition = conf_types.CompositionByFile(
-        tmp_path, conf_types.CompositionType.STANDARD
-    )
+    composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
     return composition
 
 

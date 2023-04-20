@@ -26,3 +26,9 @@ Feature: Assign resources to sdp subarray
 		Given an subarray busy assigning
 		When I command it to Abort
 		Then the subarray should go into an aborted state
+
+	@XTP-20123
+	Scenario: Abort assigning SDP Low
+		Given an subarray busy assigning
+		When I command it to Abort
+		Then the subarray should go into an aborted state

@@ -22,7 +22,7 @@ POD_COMMAND = [
     "/bin/bash",
     "-c",
     "apt-get update; apt-get -y install curl;"
-    "curl https://gitlab.com/ska-telescope/sdp/ska-sdp-realtime-receive-core/-/raw/3.6.0/data/AA05LOW.ms.tar.gz "
+    "curl https://gitlab.com/ska-telescope/sdp/ska-sdp-realtime-receive-core/-/raw/3.6.0/data/AA05LOW.ms.tar.gz "  # noqa: E501
     "--output /mnt/data/AA05LOW.ms.tar.gz;"
     "cd /mnt/data/; tar -xzf AA05LOW.ms.tar.gz; cd -;"
     " trap : TERM; sleep infinity & wait",
@@ -32,20 +32,16 @@ DATA_POD_DEF = {
     "kind": "Pod",
     "metadata": {"name": "receive-data"},
     "spec": {
-        "securityContext": {
-            "runAsUser": 0
-        },  # run as root so that we can download data
+        "securityContext": {"runAsUser": 0},  # run as root so that we can download data
         "containers": [
             {
-                "image": "artefact.skao.int/ska-sdp-realtime-receive-modules:3.5.0",
+                "image": "artefact.skao.int/ska-sdp-realtime-receive-modules:3.5.0",  # noqa: E501
                 "name": POD_CONTAINER,
                 "command": POD_COMMAND,
                 "volumeMounts": [{"mountPath": "/mnt/data", "name": "data"}],
             }
         ],
-        "volumes": [
-            {"name": "data", "persistentVolumeClaim": {"claimName": "testing"}}
-        ],
+        "volumes": [{"name": "data", "persistentVolumeClaim": {"claimName": "testing"}}],
     },
 }
 
@@ -60,13 +56,14 @@ def _k8s_pod_exec(
     """
     Execute a command in a Kubernetes Pod
 
-    :param exec_command: command to be executed (eg ["bash", "-c", tar_command])
+    :param exec_command: command to be executed
+            (eg ["bash", "-c", tar_command])
     :param pod_name: pod name where command is executed
     :param container_name: container name within pod
     :param namespace: namespace where pod is running
     :param stdout: enable stdout on channel
 
-    :returns api_response: channel connection object
+    :return: api response - channel connection object
     """
     core_api = client.CoreV1Api()
     LOG.debug(
@@ -131,9 +128,7 @@ class K8sElementManager:
 
         # Update the name of the pod and the data PVC
         pod_spec["metadata"]["name"] = pod_name
-        pod_spec["spec"]["volumes"][0]["persistentVolumeClaim"][
-            "claimName"
-        ] = pvc_name
+        pod_spec["spec"]["volumes"][0]["persistentVolumeClaim"]["claimName"] = pvc_name
 
         # Check Pod does not already exist
         k8s_pods = core_api.list_namespaced_pod(namespace)
@@ -156,13 +151,9 @@ class K8sElementManager:
         """
         core_api = client.CoreV1Api()
         core_api.delete_namespaced_pod(pod_name, namespace, async_req=False)
-        wait_for_predicate(pod_deleted, f"Pod {pod_name} delete", timeout=100)(
-            pod_name, namespace
-        )
+        wait_for_predicate(pod_deleted, f"Pod {pod_name} delete", timeout=100)(pod_name, namespace)
 
-    def helm_install(
-        self, release: str, chart: str, namespace: str, values_file: str
-    ):
+    def helm_install(self, release: str, chart: str, namespace: str, values_file: str):
         """
         Install the requested Helm chart and keep track of it for later
         deletion.
@@ -170,7 +161,8 @@ class K8sElementManager:
         :param release: The name of the release
         :param chart: The name of the chart
         :param namespace: The namespace where the chart will be installed
-        :param values_file: A path to file with values to be handed over to the chart
+        :param values_file: A path to file with values to be
+                    handed over to the chart
         """
         cmd = [
             "helm",
@@ -216,7 +208,8 @@ class K8sElementManager:
         """
         Remove the output data directory once the test is finished.
 
-        :param dataproduct_directory: directory where data products are saved by test
+        :param dataproduct_directory:
+                    directory where data products are saved by test
         :param pod_name: name of pod through which we access the data directory
         :param container_name: name of container within pod
         :param namespace: namespace where pod lives
@@ -243,7 +236,8 @@ class K8sElementManager:
         :param container_name: name of container within pod
         :param namespace: namespace where pod lives
 
-        Method assumes that the PVC where data are saved is mounted at /mnt/data/
+        Method assumes that the PVC where data are saved
+            is mounted at /mnt/data/
         """
         del_command = ["rm", "-rf", f"/mnt/data/{dataproduct_directory}"]
         resp = _k8s_pod_exec(del_command, pod_name, container_name, namespace)
@@ -257,6 +251,8 @@ def pvc_exists(pvc_name: str, namespace: str):
 
     :param pvc_name: name of the PVC to check
     :param namespace: namespace where to look for the PVC
+
+    :return: boolean value if pvc exists
     """
     core_api = client.CoreV1Api()
 
@@ -274,6 +270,7 @@ def pod_deleted(pod_name: str, namespace: str):
 
     :param pod_name: name of the pod to check
     :param namespace: namespace where to look for the PVC
+    :return: boolean value if pod is deleted or not
     """
     core_api = client.CoreV1Api()
 
@@ -299,7 +296,7 @@ def wait_for_pod(
     :param phase: phase of the pod
     :param timeout: time to wait for the change
     :param pod_condition: if given, the condition through which the pod must
-    have passed
+        have passed
 
     :returns: whether the pod was in the indicated status within the timeout
     """
@@ -309,9 +306,7 @@ def wait_for_pod(
 
         def check_condition(k8s_pod):
             return any(
-                c.status == "True"
-                for c in k8s_pod.status.conditions
-                if c.type == pod_condition
+                c.status == "True" for c in k8s_pod.status.conditions if c.type == pod_condition
             )
 
     else:
@@ -328,11 +323,7 @@ def wait_for_pod(
     ):
         pod = event["object"]
 
-        if (
-            pod_name in pod.metadata.name
-            and pod.status.phase == phase
-            and check_condition(pod)
-        ):
+        if pod_name in pod.metadata.name and pod.status.phase == phase and check_condition(pod):
             watch_pod.stop()
             return True
 
@@ -354,9 +345,7 @@ def _consume_response(api_response):
     api_response.close()
 
 
-def check_data_present(
-    pod_name: str, container_name: str, namespace: str, mount_location: str
-):
+def check_data_present(pod_name: str, container_name: str, namespace: str, mount_location: str):
     """
     Check if the data are present in pod
 
@@ -392,6 +381,7 @@ def wait_for_predicate(
     :param description: description to use if test fails
     :param timeout: timeout in seconds
     :param interval: interval between tests of the predicate in seconds
+    :return: wrapper for wait for predicate function
     """
 
     @functools.wraps(func)  # preserves information about the original function
@@ -401,17 +391,13 @@ def wait_for_predicate(
             if func(*args, **kwargs):
                 break
             if time.time() >= start + timeout:
-                pytest.fail(
-                    f"{description} not achieved after {timeout} seconds"
-                )
+                pytest.fail(f"{description} not achieved after {timeout} seconds")
             time.sleep(interval)
 
     return wrapper
 
 
-def compare_data(
-    pod_name: str, container_name: str, namespace: str, measurement_set: str
-):
+def compare_data(pod_name: str, container_name: str, namespace: str, measurement_set: str):
     """
     Compare the data sent with the data received using ms-assert.
     This compares two Measurement Sets.
@@ -435,9 +421,7 @@ def compare_data(
     return resp
 
 
-def deploy_cbf_emulator(
-    host: str, scan_id: int, k8s_element_manager: K8sElementManager
-):
+def deploy_cbf_emulator(host: str, scan_id: int, k8s_element_manager: K8sElementManager):
     """
     Deploy the CBF emulator and check that it finished sending the data.
 
@@ -471,18 +455,14 @@ def deploy_cbf_emulator(
         "pvc": {"name": os.environ.get("SDP_DATA_PVC_NAME", "shared")},
     }
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".yaml", delete=False
-    ) as file:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as file:
         file.write(yaml.dump(values))
 
     filename = file.name
     namespace = os.environ.get("KUBE_NAMESPACE")
     sender_name = f"cbf-send-scan-{scan_id}"
 
-    LOG.info(
-        "Deploying CBF sender for Scan %d on chart %s", scan_id, sender_name
-    )
+    LOG.info("Deploying CBF sender for Scan %d on chart %s", scan_id, sender_name)
     k8s_element_manager.helm_install(
         sender_name,
         "tests/resources/charts/cbf-sender",

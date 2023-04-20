@@ -40,10 +40,14 @@ def hello_world_script_created():
 
 @given(parsers.parse("a test SB with activity {activity_name} exists in ODA"))
 def hello_world_sb_in_oda(activity_name, test_sbd):
-    """"""
-    assert (
-        activity_name in test_sbd.activities
-    ), f"Activity test setup failed, no activity called {activity_name} in test SB"
+    """
+    a test SB with activity  exists in ODA
+    :param activity_name : activity name which exists in ODA
+    :param test_sbd: An object for test_sbd
+    """
+    assert activity_name in test_sbd.activities, (
+        f"Activity test setup failed, no activity called {activity_name} in" " test SB"
+    )
 
     add_sb_to_oda(test_sbd)
 
@@ -53,16 +57,16 @@ def hello_world_script_ran(script):
     EXECUTOR.execute_script(script)
 
 
-@when(
-    parsers.parse(
-        "I tell the OET to run {activity_name} activity on the test SB"
-    )
-)
+@when(parsers.parse("I tell the OET to run {activity_name} activity on the test SB"))
 def when_allocate_resources_from_activity(
     activity_name,
     test_sbd,
 ):
-    """ """
+    """
+    I tell the OET to run activity on the test SB
+    :param activity_name : activity name which exists in ODA
+    :param test_sbd: An object for test_sbd
+    """
     summary = ACTIVITY_ADAPTER.run(
         activity_name,
         test_sbd.sbd_id,
@@ -73,14 +77,12 @@ def when_allocate_resources_from_activity(
 
 
 @then("script started by the activity completes successfully")
-def hello_world_script_complete():
+def hello_world_script_complete_activity():
     "script execution completes successfully"
 
     summaries = ACTIVITY_ADAPTER.list()
     pid = summaries[0].procedure_id
-    procedure_status = EXECUTOR.wait_for_script_state(
-        pid, "COMPLETE", timeout=20
-    )
+    procedure_status = EXECUTOR.wait_for_script_state(pid, "COMPLETE", timeout=20)
 
     assert procedure_status == "COMPLETE"
 

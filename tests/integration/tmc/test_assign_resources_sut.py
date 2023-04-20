@@ -40,26 +40,38 @@ def subarray_obstate_is_empty(
     set_up_subarray_log_checking_for_tmc,
     base_composition,
 ):
-    """a telescope subarray in EMPTY obsState."""
+    """
+    a telescope subarray in EMPTY obsState.
+
+    :param subarray_id: An integer representing the ID of the subarray to which
+        the resources should be assigned.
+    :param sut_settings: A class representing the settings for the system under test.
+    :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
+    :param base_composition : An object for base composition
+    :return: base composition
+    """
     sut_settings.subarray_id = subarray_id
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(
-        tel.tm.subarray(sut_settings.subarray_id)
-    )
+    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.EMPTY)
     return base_composition
 
 
 # using when from conftest
-# @when("I issue the assignResources command with the {resources_list} to the subarray {subarray_id}")
+# @when("I issue the assignResources command with the
+#  {resources_list} to the subarray {subarray_id}")
 
 
 @then(parsers.parse("the subarray {subarray_id} obsState is IDLE"))
-def the_subarray_must_be_in_idle_state(
-    subarray_id, sut_settings: SutTestSettings
-):
-    """the subarray must be in IDLE state."""
+def the_subarray_must_be_in_idle_state(subarray_id, sut_settings: SutTestSettings):
+    """
+    the subarray must be in IDLE state.
+
+    :param subarray_id: An integer representing the ID of the subarray to which
+        the resources should be assigned.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(subarray_id))
     result = subarray.read_attribute("obsState").value
@@ -68,7 +80,12 @@ def the_subarray_must_be_in_idle_state(
 
 @then(parsers.parse("the correct resources {resources_list} are assigned"))
 def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
-    """Check assigned resources on sdp and csp subsystems."""
+    """Check assigned resources on sdp and csp subsystems.
+
+    :param subarray_id: An integer representing the ID of the subarray to which
+        the resources should be assigned.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
     sdp_resources = config_json["sdp"]["resources"]
     csp_resources = config_json["csp"]["lowcbf"]["resources"]
@@ -77,9 +94,7 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
 
     tel = names.TEL()
     sdpsubarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
-    cspsubarray = con_config.get_device_proxy(
-        tel.csp.cbf.subarray(subarray_id)
-    )
+    cspsubarray = con_config.get_device_proxy(tel.csp.cbf.subarray(subarray_id))
 
     result_sdp = sdpsubarray.read_attribute("Resources").value
     result_csp = cspsubarray.read_attribute("assignedResources").value

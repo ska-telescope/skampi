@@ -41,7 +41,13 @@ def a_low_subarray_in_ready_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """a subarray in READY state"""
+    """
+    a subarray in READY state
+    :param base_configuration: the base scan configuration.
+    :param subarray_allocation_spec: the specification for the subarray allocation.
+    :param sut_settings: the SUT test settings.
+    :return: the base configuration for the subarray.`
+    """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     return base_configuration
@@ -54,15 +60,23 @@ def i_command_it_to_scan_low(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: conftest.SutTestSettings,
 ):
-    """I configure it for a scan."""
+    """
+    I configure it for a scan.
+    :param configured_subarray: The configured subarray
+    :param context_monitoring: Context monitoring object.
+    :param integration_test_exec_settings: The integration test execution settings.
+    :param sut_settings: SUT settings object.
+
+    """
     subarray_id = sut_settings.subarray_id
     tel = names.TEL()
-    context_monitoring.set_waiting_on(
-        tel.tm.subarray(subarray_id)
-    ).for_attribute("obsstate").to_change_in_order(["SCANNING", "READY"])
+    context_monitoring.set_waiting_on(tel.tm.subarray(subarray_id)).for_attribute(
+        "obsstate"
+    ).to_change_in_order(["SCANNING", "READY"])
     integration_test_exec_settings.attr_synching = False
     logging.info(
-        f"context_monitoring._wait_after_setting_builder = {context_monitoring._wait_after_setting_builder}"
+        "context_monitoring._wait_after_setting_builder ="
+        f" {context_monitoring._wait_after_setting_builder}"
     )
     with context_monitoring.observe_while_running(
         integration_test_exec_settings
@@ -80,24 +94,22 @@ def the_subarray_must_be_in_the_scanning_state(
 ):
     """
     The subarray must be in the SCANNING state until finished.
+    :param configured_subarray: The configured subarray
+    :param context_monitoring: Context monitoring object.
+    :param integration_test_exec_settings: The integration test execution settings.
 
-    Raises:
-        AssertionError: If the subarray is not in the expected state.
+    :raises AssertionError: If the subarray is not in the expected state.
 
     """
     recorder = integration_test_exec_settings.recorder
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
-    tmc_state_changes = recorder.get_transitions_for(
-        tmc_subarray_name, "obsstate"
-    )
+    tmc_state_changes = recorder.get_transitions_for(tmc_subarray_name, "obsstate")
     try:
-        assert_that(tmc_state_changes).is_equal_to(
-            ["READY", "SCANNING", "READY"]
-        )
+        assert_that(tmc_state_changes).is_equal_to(["READY", "SCANNING", "READY"])
     except AssertionError as error:
-        logging.info(f"events recorded not correct: {recorder._occurrences}")  # type: ignore
+        logging.info(f"events recorded not correct: {recorder._occurrences}")
         raise error
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

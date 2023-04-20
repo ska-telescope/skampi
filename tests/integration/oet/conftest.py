@@ -1,4 +1,7 @@
-"""Pytest fixtures and BDD step implementations specific to OET integration tests."""
+"""
+Pytest fixtures and BDD step implementations
+specific to OET integration tests.
+"""
 import logging
 import os
 from typing import Callable
@@ -25,8 +28,9 @@ def fxt_nr_of_subarrays() -> int:
     :return: _description_
     :rtype: int
     """
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
-    # cbf mid only controls the state of subarray 1 so will also limit to 1
+    # we only work with 1 subarray as CBF low currently limits
+    # deployment of only 1 cbf mid only controls the state of subarray 1
+    # so will also limit to 1
     tel = names.TEL()
     if tel.skalow:
         return 1
@@ -40,7 +44,7 @@ def fxt_set_csp_online_from_tmc(
     nr_of_subarrays,
 ):
     """_summary_
-
+    :param online: A online flag from conftest
     :param nr_of_subarrays: _description_
     :type nr_of_subarrays: int
     :param set_subsystem_online: _description_
@@ -59,7 +63,12 @@ def fxt_set_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
     sut_settings: conftest.SutTestSettings,
 ):
-    """Fixture to use for setting up the entry point as from only the interface to sdp."""
+    """
+    Fixture to use for setting up the entry point as
+    from only the interface to sdp.
+    :param set_session_exec_env: A fixture to set session execution environment
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = 1
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
@@ -101,6 +110,7 @@ def fxt_set_up_log_capturing_for_cbf(
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
     :param log_checking: The skallop log_checking fixture to use
+    :param sut_settings: A class representing the settings for the system under test.
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
@@ -110,6 +120,11 @@ def fxt_set_up_log_capturing_for_cbf(
 
 @pytest.fixture
 def test_sbd() -> SBDefinition:
+    """
+    Test sbd
+
+    :return: SBDefinition
+    """
     cwd, _ = os.path.split(__file__)
     path = os.path.join(cwd, "data/mid_sb.json")
     return CODEC.load_from_file(SBDefinition, path)

@@ -32,7 +32,7 @@ from integration.sdp.vis_receive_utils import (
 from ska_ser_skallop.connectors.remoting.tangobridge.authentication import Authenticator
 from ska_ser_skallop.connectors.remoting.tangobridge.configuration import Environment
 
-# pytest_plugins = ["unit.test_cluster_k8s"]
+pytest_plugins = ["unit.test_cluster_k8s"]
 
 LOG = logging.getLogger(__name__)
 
@@ -259,7 +259,7 @@ def set_obs_state(subarray_device, obs_state):
 
 
 @given("the test volumes are present and the test data are downloaded")
-def local_volume(k8s_element_manager):
+def local_volume(k8s_element_manager, fxt_k8s_cluster):
     """
     Check if the local volumes are present and the data
     have been successfully downloaded.

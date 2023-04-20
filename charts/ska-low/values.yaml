@@ -147,17 +147,17 @@ ska-tmc-centralnode:
       enabled: true
 
 ska-low-cbf:
-  enabled: true
+  enabled: false
   ska-low-cbf-conn:
     enabled: false
 
 ska-low-cbf-proc:
-  enabled: true
+  enabled: false
 
 ska-csp-lmc-low:
-  enabled: true
+  enabled: false
 
 ## tmc
 ska-tmc-low:
-  enabled: true
+  enabled: false
   telescope: SKA-low

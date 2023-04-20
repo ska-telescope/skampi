@@ -32,12 +32,3 @@ ska-tmc-low:
   enabled: false
 ska-low-mccs:
   enabled: false
-
-ska-low-cbf:
-  enabled: false
-
-ska-low-cbf-proc:
-  enabled: false
-
-ska-csp-lmc-low:
-  enabled: false

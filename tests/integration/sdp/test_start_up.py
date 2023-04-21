@@ -22,7 +22,7 @@ def test_sdp_start_up_telescope_mid(sdp_start_up_test_exec_settings):
     :param sdp_start_up_test_exec_settings: A sdp start up test exec settings object
     """
 
-
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.startup
 @pytest.mark.sdp

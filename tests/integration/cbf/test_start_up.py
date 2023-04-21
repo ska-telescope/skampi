@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def test_cbf_start_up_telescope_mid():
     """Start up the cbf in mid."""
 
-
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.startup

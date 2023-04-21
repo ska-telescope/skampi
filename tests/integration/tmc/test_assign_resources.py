@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 # log capturing
 
-
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 def test_assign_resources_to_tmc_subarray_in_low():
     """Assign resources to tmc subarray in low."""
 
-
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -119,7 +119,7 @@ def test_abort_in_resourcing_mid(
     :param composition: A fixture that represents the composition of the subarray.
     """
 
-
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

@@ -110,9 +110,14 @@ ska-db-oda:
 
 #telescope control
 ## mid-cbf
-ska-mid-cbf:
+ska-mid-cbf-mcs:
   legacy_compatibility: true
   enabled: true
+  global:
+    minikube: false
+  deviceServers:
+    talondxlogconsumer:
+      instances: []
 
 ## mid-csp
 ska-csp-lmc-mid:

@@ -244,8 +244,8 @@
   ],
   "dish_allocations": {
     "receptor_ids": [
-      "0001",
-      "0002"
+      "SKA001",
+      "SKA002"
     ]
   },
   "dish_configurations": [

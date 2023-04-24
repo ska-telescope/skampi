@@ -4,9 +4,7 @@ from tango import AttributeProxy, DeviceProxy
 
 
 class ArchiverHelper:
-    def __init__(
-        self, conf_manager="mid-eda/cm/01", eventsubscriber="mid-eda/es/01"
-    ):
+    def __init__(self, conf_manager="mid-eda/cm/01", eventsubscriber="mid-eda/es/01"):
         self.conf_manager = conf_manager
         self.eventsubscriber = eventsubscriber
         self.conf_manager_proxy = DeviceProxy(self.conf_manager)
@@ -27,16 +25,10 @@ class ArchiverHelper:
         if not self.is_already_archived(fqdn):
             AttributeProxy(fqdn).read()
             self.conf_manager_proxy.write_attribute("SetAttributeName", fqdn)
-            self.conf_manager_proxy.write_attribute(
-                "SetArchiver", self.eventsubscriber
-            )
+            self.conf_manager_proxy.write_attribute("SetArchiver", self.eventsubscriber)
             self.conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
-            self.conf_manager_proxy.write_attribute(
-                "SetPollingPeriod", int(polling_period)
-            )
-            self.conf_manager_proxy.write_attribute(
-                "SetPeriodEvent", int(period_event)
-            )
+            self.conf_manager_proxy.write_attribute("SetPollingPeriod", int(polling_period))
+            self.conf_manager_proxy.write_attribute("SetPeriodEvent", int(period_event))
             self.conf_manager_proxy.AttributeAdd()
             return True
         return False
@@ -63,9 +55,7 @@ class ArchiverHelper:
                     return True
         return False
 
-    def start_archiving(
-        self, fqdn=None, polling_period=1000, period_event=3000
-    ):
+    def start_archiving(self, fqdn=None, polling_period=1000, period_event=3000):
         """
         A method for initializing archiving process
         :param fqdn: Fully qualified domain name of the attribute to be added.
@@ -116,10 +106,7 @@ class ArchiverHelper:
         :type fqdn: str
         :return: status
         """
-        return (
-            "Archiving          : Started"
-            in self.evt_subscriber_attribute_status(fqdn)
-        )
+        return "Archiving          : Started" in self.evt_subscriber_attribute_status(fqdn)
 
     def wait_for_start(self, fqdn, sleep_time=0.1, max_retries=30):
         """
@@ -134,10 +121,7 @@ class ArchiverHelper:
         while max_retries > 0:
             max_retries -= 1
             try:
-                if (
-                    "Archiving          : Started"
-                    in self.conf_manager_attribute_status(fqdn)
-                ):
+                if "Archiving          : Started" in self.conf_manager_attribute_status(fqdn):
                     break
             except Exception:
                 pass

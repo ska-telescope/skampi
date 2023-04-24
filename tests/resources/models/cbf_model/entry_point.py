@@ -41,9 +41,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
     def __init__(self, nr_of_subarrays: int) -> None:
         super().__init__()
         self.nr_of_subarrays = nr_of_subarrays
-        self.cbf_controller = con_config.get_device_proxy(
-            self._tel.csp.cbf.controller
-        )
+        self.cbf_controller = con_config.get_device_proxy(self._tel.csp.cbf.controller)
 
     def do_startup(self):
         """Domain logic for starting up a telescope on the interface to CBF.
@@ -54,9 +52,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         if self._tel.skalow:
             # cbf low needs to start up subarrays individually
             for index in range(1, self.nr_of_subarrays + 1):
-                subarray = con_config.get_device_proxy(
-                    self._tel.csp.cbf.subarray(index)
-                )
+                subarray = con_config.get_device_proxy(self._tel.csp.cbf.subarray(index))
                 subarray.command_inout("On")
 
     def set_wait_for_do_startup(self) -> MessageBoardBuilder:
@@ -67,16 +63,14 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         """
         brd = get_message_board_builder()
 
-        brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
-            "state"
-        ).to_become_equal_to("ON", ignore_first=False)
+        brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute("state").to_become_equal_to(
+            "ON", ignore_first=False
+        )
         # subarrays
         for index in range(1, self.nr_of_subarrays + 1):
-            brd.set_waiting_on(
-                self._tel.csp.cbf.subarray(index)
-            ).for_attribute("state").to_become_equal_to(
-                "ON", ignore_first=False
-            )
+            brd.set_waiting_on(self._tel.csp.cbf.subarray(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("ON", ignore_first=False)
         return brd
 
     def set_wait_for_doing_startup(self) -> MessageBoardBuilder:
@@ -100,11 +94,9 @@ class StartUpStep(base.StartUpStep, LogEnabled):
             ).to_become_equal_to("OFF", ignore_first=False)
             # subarrays
             for index in range(1, self.nr_of_subarrays + 1):
-                brd.set_waiting_on(
-                    self._tel.csp.cbf.subarray(index)
-                ).for_attribute("state").to_become_equal_to(
-                    "OFF", ignore_first=False
-                )
+                brd.set_waiting_on(self._tel.csp.cbf.subarray(index)).for_attribute(
+                    "state"
+                ).to_become_equal_to("OFF", ignore_first=False)
         return brd
 
     def undo_startup(self):
@@ -147,17 +139,14 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         if self._tel.skamid:
             subarray_name = self._tel.skamid.csp.cbf.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            self._log(
-                f"commanding {subarray_name} with AddReceptors: {dish_ids} "
-            )
+            self._log(f"commanding {subarray_name} with AddReceptors: {dish_ids} ")
             subarray.command_inout("AddReceptors", dish_ids)
         elif self._tel.skalow:
             subarray_name = self._tel.skalow.csp.cbf.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
             cbf_low_configuration = json.dumps(cbf_low_assign_resources)
             self._log(
-                f"commanding {subarray_name} with AssignResources:"
-                f" {cbf_low_configuration} "
+                f"commanding {subarray_name} with AssignResources:" f" {cbf_low_configuration} "
             )
             subarray.command_inout("AssignResources", cbf_low_configuration)
 
@@ -179,9 +168,7 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             self._log(f"commanding {subarray_name} with ReleaseAllResources")
             subarray.command_inout("ReleaseAllResources")
 
-    def set_wait_for_do_assign_resources(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited for
         subarray assign resources is done.
@@ -191,15 +178,11 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
 
         return builder
 
-    def set_wait_for_doing_assign_resources(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Not implemented.
 
@@ -209,9 +192,7 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         raise NotImplementedError()
 
-    def set_wait_for_undo_resources(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited for
         subarray releasing resources is done.
@@ -222,9 +203,9 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         builder = get_message_board_builder()
         if self._tel.skamid:
             subarray_name = self._tel.skamid.csp.cbf.subarray(sub_array_id)
-            builder.set_waiting_on(subarray_name).for_attribute(
-                "obsState"
-            ).to_become_equal_to("EMPTY")
+            builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+                "EMPTY"
+            )
 
         return builder
 
@@ -260,18 +241,13 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         if self._tel.skamid:
             subarray_name = self._tel.skamid.csp.cbf.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            standard_configuration = conf.generate_standard_conf(
-                sub_array_id, sb_id, duration
-            )
+            standard_configuration = conf.generate_standard_conf(sub_array_id, sb_id, duration)
             cbf_config = json.loads(standard_configuration)["csp"]["cbf"]
             common = json.loads(standard_configuration)["csp"]["common"]
             cbf_config["common"] = common
-            cbf_standard_configuration = json.dumps(
-                {"cbf": cbf_config, "common": common}
-            )
+            cbf_standard_configuration = json.dumps({"cbf": cbf_config, "common": common})
             self._log(
-                f"commanding {subarray_name} with ConfigureScan:"
-                f" {cbf_standard_configuration} "
+                f"commanding {subarray_name} with ConfigureScan:" f" {cbf_standard_configuration} "
             )
             subarray.command_inout("ConfigureScan", cbf_standard_configuration)
         if self._tel.skalow:
@@ -279,8 +255,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
             subarray = con_config.get_device_proxy(subarray_name)
             cbf_low_configuration = json.dumps(cbf_low_configure_scan)
             self._log(
-                f"commanding {subarray_name} with ConfigureScan:"
-                f" {cbf_low_configuration} "
+                f"commanding {subarray_name} with ConfigureScan:" f" {cbf_low_configuration} "
             )
             subarray.command_inout("ConfigureScan", cbf_low_configuration)
 
@@ -296,9 +271,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         self._log(f"commanding {subarray_name} with command GoToIdle")
         subarray.command_inout("GoToIdle")
 
-    def set_wait_for_do_configure(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_do_configure(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited
         for configuring a scan is done.
@@ -308,14 +281,10 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("READY")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("READY")
         return builder
 
-    def set_wait_for_doing_configure(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_doing_configure(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Not implemented.
 
@@ -325,9 +294,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         """
         raise NotImplementedError()
 
-    def set_wait_for_undo_configure(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_undo_configure(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited for
         subarray clear scan config is done.
@@ -337,9 +304,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("IDLE")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
         return builder
 
 
@@ -365,9 +330,7 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         subarray = con_config.get_device_proxy(subarray_name)
         if self._tel.skalow:
             scan_config_arg = json.dumps(cbf_low_start_scan)
-            self._log(
-                f"Commanding {subarray_name} to Scan with {scan_config_arg}"
-            )
+            self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg}")
             try:
                 subarray.command_inout("Scan", scan_config_arg)
             except Exception as exception:
@@ -375,9 +338,7 @@ class CbfScanStep(base.ScanStep, LogEnabled):
                 raise exception
         else:
             scan_config_arg = json.dumps({"scan_id": 1})
-            self._log(
-                f"Commanding {subarray_name} to Scan with {scan_config_arg}"
-            )
+            self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg}")
             try:
                 subarray.command_inout("Scan", scan_config_arg)
                 sleep(SCAN_DURATION)
@@ -401,9 +362,7 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         :param sub_array_id: The index id of the subarray to control
         """
 
-    def set_wait_for_doing_scan(
-        self, sub_array_id: int
-    ) -> MessageBoardBuilder:
+    def set_wait_for_doing_scan(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifyig what needs to be done for waiting
         for subarray to be scanning.
@@ -413,9 +372,9 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute(
-            "obsState"
-        ).to_become_equal_to("SCANNING")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "SCANNING"
+        )
         return builder
 
     def set_wait_for_undo_scan(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -454,20 +413,20 @@ class CBFSetOnlineStep(base.SetOnlineStep, LogEnabled):
         """
         controller_name = self._tel.csp.cbf.controller
         builder = get_message_board_builder()
-        builder.set_waiting_on(controller_name).for_attribute(
-            "adminMode"
-        ).to_become_equal_to("ONLINE", ignore_first=False)
-        builder.set_waiting_on(controller_name).for_attribute(
-            "state"
-        ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
+        builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
+            "ONLINE", ignore_first=False
+        )
+        builder.set_waiting_on(controller_name).for_attribute("state").to_become_equal_to(
+            ["OFF", "ON"], ignore_first=False
+        )
         for index in range(1, self.nr_of_subarrays + 1):
             subarray = self._tel.csp.cbf.subarray(index)
-            builder.set_waiting_on(subarray).for_attribute(
-                "adminMode"
-            ).to_become_equal_to("ONLINE", ignore_first=False)
-            builder.set_waiting_on(subarray).for_attribute(
-                "state"
-            ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("adminMode").to_become_equal_to(
+                "ONLINE", ignore_first=False
+            )
+            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
+                ["OFF", "ON"], ignore_first=False
+            )
         return builder
 
     def undo_set_online(self):
@@ -479,9 +438,7 @@ class CBFSetOnlineStep(base.SetOnlineStep, LogEnabled):
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.csp.cbf.subarray(index)
             subarray = con_config.get_device_proxy(subarray_name)
-            self._log(
-                f"Setting adminMode for {subarray_name} to '1' (OFFLINE)"
-            )
+            self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
             subarray.write_attribute("adminmode", 1)
 
     def set_wait_for_undo_set_online(self) -> MessageBoardBuilder:
@@ -492,14 +449,14 @@ class CBFSetOnlineStep(base.SetOnlineStep, LogEnabled):
         """
         controller_name = self._tel.csp.cbf.controller
         builder = get_message_board_builder()
-        builder.set_waiting_on(controller_name).for_attribute(
-            "adminMode"
-        ).to_become_equal_to("OFFLINE", ignore_first=False)
+        builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
+            "OFFLINE", ignore_first=False
+        )
         for index in range(1, self.nr_of_subarrays + 1):
             subarray = self._tel.csp.cbf.subarray(index)
-            builder.set_waiting_on(subarray).for_attribute(
-                "adminMode"
-            ).to_become_equal_to("OFFLINE", ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("adminMode").to_become_equal_to(
+                "OFFLINE", ignore_first=False
+            )
         return builder
 
     def set_wait_for_doing_set_online(self) -> MessageBoardBuilder:
@@ -580,15 +537,11 @@ cbf_low_configure_scan = {
             {
                 "station_beam_id": 1,
                 "station_delay_src": "tango://host:port/domain/family/member",
-                "visibility_dest": [
-                    {"dest_ip": "10.0.2.1", "dest_mac": "02:00:00:00:02:01"}
-                ],
+                "visibility_dest": [{"dest_ip": "10.0.2.1", "dest_mac": "02:00:00:00:02:01"}],
                 "pst_beams": [
                     {
                         "pst_beam_id": 1,
-                        "pst_beam_delay_src": (
-                            "tango://host:port/domain/family/member"
-                        ),
+                        "pst_beam_delay_src": ("tango://host:port/domain/family/member"),
                         "pst_beam_dest": [
                             {
                                 "dest_ip": "10.0.3.1",
@@ -607,9 +560,7 @@ cbf_low_configure_scan = {
             {
                 "station_beam_id": 2,
                 "station_delay_src": "tango://host:port/domain/family/member",
-                "visibility_dest": [
-                    {"dest_ip": "10.0.3.3", "dest_mac": "02:00:00:00:03:03"}
-                ],
+                "visibility_dest": [{"dest_ip": "10.0.3.3", "dest_mac": "02:00:00:00:03:03"}],
                 "pst_beams": [],
             },
         ],

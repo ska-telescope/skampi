@@ -11,9 +11,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from .. import conftest
 
 
-@pytest.mark.skip(
-    reason="Disable test as it need update to support new JSON Schema"
-)
+@pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
 @pytest.mark.skalow
 @pytest.mark.scan
 @scenario("features/csp_scan.feature", "Run a scan on csp subarray in low")
@@ -90,9 +88,7 @@ def the_csp_subarray_must_be_in_the_scanning_state(
     assert_that(result).is_equal_to(ObsState.SCANNING)
     # afterwards it must be ready
     context_monitoring.re_init_builder()
-    context_monitoring.wait_for(csp_subarray_name).for_attribute(
-        "obsstate"
-    ).to_become_equal_to(
+    context_monitoring.wait_for(csp_subarray_name).for_attribute("obsstate").to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
     result = csp_subarray.read_attribute("obsstate").value

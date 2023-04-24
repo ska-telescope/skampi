@@ -22,7 +22,7 @@ from ..conftest import SutTestSettings
 def test_tmc_configure_scan_on_mid_subarray():
     """Configure scan on TMC mid telescope subarray."""
 
-@pytest.mark.skip
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -83,6 +83,7 @@ def test_abort_configuring_on_mid_tmc_subarray(
     :param setup_monitoring_for_config_abort: To set up monitoring for config abort
 
     """
+
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly

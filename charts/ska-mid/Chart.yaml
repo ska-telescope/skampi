@@ -22,8 +22,8 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-csp-lmc-mid.enabled
   - name: ska-sdp
-    version: 0.14.1-dev.c29370191
-    repository: registry.gitlab.com/ska-telescope/sdp/ska-sdp-integration
+    version: 0.14.1
+    repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
   - name: ska-tmc-mid
     version: 0.8.5

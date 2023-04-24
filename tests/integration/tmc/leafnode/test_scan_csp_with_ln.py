@@ -35,7 +35,6 @@ def test_scan_cspsubarray_for_a_scan_in_mid():
     """Scan cspsubarray for a scan in mid using the csp leaf node."""
 
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @scenario("features/tmc_cspln_scan.feature", "Scan the csp low using csp leaf node")
 def test_scan_cspsubarray_for_a_scan_in_low():

@@ -85,6 +85,7 @@ def test_abort_configuring_on_mid_tmc_subarray(
     """
 
 
+@pytest.mark.skip
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

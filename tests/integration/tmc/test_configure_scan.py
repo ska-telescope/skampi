@@ -95,12 +95,18 @@ def test_abort_configuring_on_low_tmc_subarray(
     set_up_subarray_log_checking_for_tmc: None,
     setup_monitoring_for_config_abort: None,
 ):
-    """Abort TMC low configuring obstate."""
+    """Abort TMC low configuring obstate.
+
+    :param disable_clear_and_tear_down: object to disable clear and tear down
+    :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
+    :param setup_monitoring_for_config_abort: To set up monitoring for config abort
+
+    """
 
 
 @given("an TMC")
 def a_tmc():
-    """an TMC"""
+    """a TMC"""
 
 
 @given("an telescope subarray", target_fixture="configuration")

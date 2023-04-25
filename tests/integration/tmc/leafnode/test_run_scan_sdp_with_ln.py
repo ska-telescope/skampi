@@ -37,7 +37,14 @@ def an_sdp_subarray_in_ready_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """an SDP subarray in READY state."""
+    """
+    an SDP subarray in READY state.
+
+    :param sdp_base_configuration: the base configuration for the SDP subarray
+    :param subarray_allocation_spec: Fixture for subarray allocation specification
+    :param sut_settings: A class representing the settings for the system under test.
+    :return: the updated sdp base configuration for the SDP subarray
+    """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     # will use default composition for the allocated subarray
@@ -47,7 +54,11 @@ def an_sdp_subarray_in_ready_state(
 
 @given("a TMC SDP subarray Leaf Node")
 def a_sdp_sln(set_sdp_ln_entry_point):
-    """a TMC SDP subarray Leaf Node."""
+    """
+    a TMC SDP subarray Leaf Node.
+
+    :param set_sdp_ln_entry_point: An object to set sdp leafnode entry point
+    """
 
 
 # @when("I command it to scan for a given period") from ...conftest
@@ -57,7 +68,11 @@ def a_sdp_sln(set_sdp_ln_entry_point):
 def the_subarray_shall_be_in_the_scanning_state(
     configured_subarray: fxt_types.configured_subarray,
 ):
-    """the SDP subarray shall go from READY to SCANNING."""
+    """
+    the SDP subarray shall go from READY to SCANNING.
+
+    :param configured_subarray: The configured subarray.
+    """
     tel = names.TEL()
     sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
     sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
@@ -72,7 +87,13 @@ def the_subarray_goes_back_to_ready_state(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """The SDP goes back to READY state when finished"""
+    """
+    The SDP goes back to READY state when finished
+
+    :param configured_subarray: The configured subarray
+    :param context_monitoring: Context monitoring object.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
     tel = names.TEL()
     sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
     sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)

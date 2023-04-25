@@ -36,7 +36,7 @@
                 "yaml.customTags": [
                     "!reference sequence"
                 ],
-                "python.formatting.blackPath": "/home/tango/.local/bin/black",
+                "python.formatting.blackPath": ".venv/bin/black",
                 "autoDocstring.docstringFormat": "sphinx",
                 "python.linting.flake8Path": "/home/tango/.local/bin/flake8",
                 "gitPrefix.pattern": "(\\w+-\\d+).*",
@@ -57,6 +57,9 @@
             "bungcip.better-toml",
             "srmeyers.git-prefix"
         ]
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/sshd:1": "1.0.9"
     },
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],

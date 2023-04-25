@@ -24,8 +24,14 @@ def fxt_set_sdp_ln_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
     sut_settings: conftest.SutTestSettings,
 ):
-    """Fixture to use for setting up the entry point as from only the
-    interface to sdp."""
+    """
+    Fixture to use for setting up the entry point as from only the
+    interface to sdp.
+
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings
+    :param set_session_exec_env: A fixture to set session execution environment.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
     sut_settings.scan_duration = 6
@@ -45,8 +51,14 @@ def fxt_set_csp_ln_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
     sut_settings: conftest.SutTestSettings,
 ):
-    """Fixture to use for setting up the entry point as from only the
-    interface to csp."""
+    """
+    Fixture to use for setting up the entry point as from only the
+    interface to csp.
+
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings
+    :param set_session_exec_env: A fixture to set session execution environment.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
     CSPLnEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
@@ -66,6 +78,7 @@ def fxt_set_up_log_capturing_for_sdp(
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
     :param log_checking: The skallop log_checking fixture to use
+    :param sut_settings: A class representing the settings for the system under test.
     """
 
     if os.getenv("CAPTURE_LOGS"):
@@ -89,9 +102,11 @@ def fxt_set_up_log_capturing_for_csp(
     log_checking: fxt_types.log_checking,
     sut_settings: conftest.SutTestSettings,
 ):
-    """Set up log capturing (if enabled by CAPTURE_LOGS).
+    """
+    Set up log capturing (if enabled by CAPTURE_LOGS).
 
     :param log_checking: The skallop log_checking fixture to use
+    :param sut_settings: A class representing the settings for the system under test.
     """
 
     if os.getenv("CAPTURE_LOGS"):
@@ -123,7 +138,15 @@ def an_sdp_subarray_in_idle_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """an SDP subarray in the IDLE state."""
+    """
+    an SDP subarray in the IDLE state.
+
+    :param sdp_base_configuration: the base configuration for the SDP subarray
+    :param subarray_allocation_spec: An instance of the SubarrayAllocationSpec class
+        representing the subarray allocation specification.
+    :param sut_settings: A class representing the settings for the system under test.
+    :return: the updated sdp base configuration for the SDP subarray
+    """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     # will use default composition for the allocated subarray

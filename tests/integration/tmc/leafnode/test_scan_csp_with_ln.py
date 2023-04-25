@@ -16,6 +16,12 @@ def fxt_setup_log_checking(
     log_checking: fxt_types.log_checking,
     sut_settings: conftest.SutTestSettings,
 ):
+    """ "
+    A fixture to setup log check
+
+    :param log_checking: skallop fixture used to set up log checking.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
         csp_subarray_leaf_node = str(tel.tm.subarray(sut_settings.subarray_id).csp_leaf_node)
@@ -42,14 +48,23 @@ def a_csp():
 
 @given("a TMC CSP subarray Leaf Node", target_fixture="configuration")
 def a_tmc_csp_subarray_leaf_node(set_csp_ln_entry_point, setup_log_checking):
-    """a tmc CSP subarray leaf node."""
+    """
+    a tmc CSP subarray leaf node.
+
+    :param set_csp_ln_entry_point: An object to set csp leafnode entry point
+    :param setup_log_checking: skallop fixture used to set up log checking.
+    """
 
 
 @then("the CSP subarray shall go from READY to SCANNING")
 def the_csp_subarray_shall_go_from_ready_to_scanning_state(
     configured_subarray: fxt_types.configured_subarray,
 ):
-    """the CSP subarray shall go from READY to SCANNING."""
+    """
+    the CSP subarray shall go from READY to SCANNING.
+
+    :param configured_subarray: The configured subarray
+    """
     tel = names.TEL()
     sub_array_id = configured_subarray.id
     csp_subarray = con_config.get_device_proxy(tel.csp.subarray(sub_array_id))
@@ -63,7 +78,13 @@ def the_csp_subarray_goes_back_to_ready_state(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """The CSP goes back to READY state when finished"""
+    """
+    The CSP goes back to READY state when finished.
+
+    :param configured_subarray: The configured subarray
+    :param context_monitoring: Context monitoring object.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
     tel = names.TEL()
     csp_subarray_name = tel.csp.subarray(configured_subarray.id)
     csp_subarray = con_config.get_device_proxy(csp_subarray_name)

@@ -755,12 +755,14 @@ def _assign_resources_with_invalid_config(
                     "exception raised when calling assign but it seems be"
                     " stuck in RESOURCING"
                 )
+                return step_result
             else:
                 step_result.result_ok = False
                 step_result.result = lambda: except_it(
                     "exception not raised when calling assign but it seems"
                     " to be stuck in RESOURCING"
                 )
+                return step_result
     assert step_result.result_ok
     return step_result
 

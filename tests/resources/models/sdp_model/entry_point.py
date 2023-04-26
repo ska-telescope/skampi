@@ -510,3 +510,4 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
         self.scan_step = SDPScanStep(self.observation)
         self.abort_step = SDPAbortStep()
         self.obsreset_step = SDPObsResetStep()
+        self.restart_step = SDPRestart()

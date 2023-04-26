@@ -20,6 +20,7 @@ from ska_ser_skallop.utils.singleton import Memo
 
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
+from ..mvp_model.env import get_observation_config, Observation
 from ..mvp_model.env import Observation
 from ..mvp_model.states import ObsState
 from ..obsconfig.config import Observation
@@ -499,7 +500,7 @@ class SDPEntryPoint(CompositeEntryPoint, LogEnabled):
         super().__init__()
         if not self.obs_to_use:
             if not observation:
-                self.obs_to_use = Observation()
+                self.obs_to_use = get_observation_config()
             else:
                 self.obs_to_use = observation
         self.observation = self.obs_to_use

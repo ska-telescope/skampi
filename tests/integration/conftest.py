@@ -691,7 +691,7 @@ def when_i_assign_resources_with_invalid_config(
             step_result.result_ok = False
             step_result.result = lambda: except_it(
                 "exception not raised when calling assign but it did "
-                "successfully go to IDLE"
+                "successfully go to IDLE\n"
                 "Are you sure the config is invalid?"
             )
     return step_result
@@ -812,7 +812,7 @@ def when_i_assign_resources_with_a_duplicate_sb_id(
                 step_result.result_ok = False
                 step_result.result = lambda: except_it(
                     "exception not raised when calling assign but it did "
-                    "successfully go to IDLE"
+                    "successfully go to IDLE\n"
                     "Are you sure the config is invalid?"
                 )
     return step_result

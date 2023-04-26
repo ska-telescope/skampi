@@ -39,6 +39,7 @@ from ska_ser_skallop.mvp_management.subarray_scanning import scanning_subarray
 
 from .. import conftest
 from .vis_receive_utils import K8sElementManager
+from .conftest import SDPEntryPoint
 
 pytest_plugins = ["unit.test_cluster_k8s"]
 
@@ -55,7 +56,7 @@ PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
     "features/sdp_visibility_receive.feature",
     "Execute visibility receive script for a single scan",
 )
-def test_visibility_receive_in_low(assign_resources_test_exec_settings):
+def test_visibility_receive_in_low(assign_resources_test_exec_settings: None):
     """
     SDP Visibility receive test.
 
@@ -78,7 +79,7 @@ def fxt_update_sut_settings_vis_rec(sut_settings: conftest.SutTestSettings):
 
 
 @given("the test volumes are present and the test data are downloaded")
-def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
+def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster: None):
     """
     Check if the local volumes are present and the data
     have been successfully downloaded.
@@ -105,7 +106,9 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
     ms_file_mount_location = "/mnt/data/AA05LOW.ms/"
 
     # Check if the measurement set has been download into pods
+    
     def _wait_for_receive_data():
+        assert NAMESPACE_SDP
         receiver_result = check_data_present(
             receive_pod,
             data_container,
@@ -118,6 +121,7 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
         return False
 
     def _wait_for_sender_data():
+        assert NAMESPACE
         sender_result = check_data_present(
             sender_pod,
             data_container,
@@ -157,6 +161,7 @@ def check_rec_adds(configured_subarray: fxt_types.configured_subarray):
 
     # Check if the receiver is running
     LOG.info("Waiting for receive pod to be 'Running'")
+    assert NAMESPACE_SDP
     assert wait_for_pod(
         receiver_pod_name,
         NAMESPACE_SDP,
@@ -173,7 +178,7 @@ def check_rec_adds(configured_subarray: fxt_types.configured_subarray):
 
 @when("SDP is commanded to capture data from a scan")
 def run_scan(
-    check_rec_adds,
+    check_rec_adds: None,
     k8s_element_manager: K8sElementManager,
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
@@ -208,6 +213,7 @@ def run_scan(
         integration_test_exec_settings,
         clean_up_after_scanning=True,
     ):
+        error = None
         try:
             scan_id = 1
             obs_state = sdp_subarray.read_attribute("obsstate").value
@@ -216,17 +222,17 @@ def run_scan(
             deploy_cbf_emulator(host, scan_id, k8s_element_manager)
 
         except Exception as err:
-            err = err
+            error = err
             LOG.exception("Scan step failed")
 
-    if err:
-        # raise error after Subarray went back to READY
-        # so that ReleaseAllResource can work
-        raise err
+        if error:
+            # raise error after Subarray went back to READY
+            # so that ReleaseAllResource can work
+            raise error
 
 
 @pytest.fixture
-def dataproduct_directory(entry_point: fxt_types.entry_point):
+def dataproduct_directory(entry_point: SDPEntryPoint):
     """
     The directory where output files will be written.
 
@@ -240,7 +246,7 @@ def dataproduct_directory(entry_point: fxt_types.entry_point):
 
 @then("the data received matches with the data sent")
 def check_measurement_set(
-    dataproduct_directory,
+    dataproduct_directory: str,
     k8s_element_manager: K8sElementManager,
     sut_settings: conftest.SutTestSettings,
 ):
@@ -261,6 +267,7 @@ def check_measurement_set(
     # Add data product directory to k8s element manager for cleanup
     parse_dir = dataproduct_directory.index("ska-sdp")
     data_eb_dir = dataproduct_directory[:parse_dir]
+    assert NAMESPACE_SDP
     k8s_element_manager.output_directory(
         data_eb_dir,
         receive_pod,

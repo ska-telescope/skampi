@@ -2,7 +2,7 @@ import pytest
 from pytest_bdd import given, parsers, scenario, then, when
 from ska_oso_pdm.entities.common.sb_definition import SBDefinition
 
-from .oet_helpers import ACTIVITY_ADAPTER, ScriptExecutor, add_sb_to_oda, 
+from .oet_helpers import ACTIVITY_ADAPTER, ScriptExecutor, add_sb_to_oda
 
 EXECUTOR = ScriptExecutor()
 

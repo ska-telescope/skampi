@@ -32,7 +32,6 @@ mid-test:
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
     SHOW_STEP_FUNCTIONS: "True"
-    ADDMARKS: ""
     COUNT: 1
   extends:
     - .tags_default

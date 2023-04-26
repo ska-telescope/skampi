@@ -8,6 +8,7 @@ Feature: Assign resources to sdp subarray
 		When I assign resources to it
 		Then the subarray must be in IDLE state
 
+
 	@XTP-4508 @XTP-4503 @XTP-3325
 	Scenario: Assign resources to sdp subarray in low
 		Given an SDP subarray

@@ -65,7 +65,7 @@ class SutTestSettings(SimpleNamespace):
     _nr_of_receptors = 4
     # specify if a specific test case needs running
     # for SDP visibility receive test: test_case = "vis-receive"
-    test_case = None
+    test_case: str | None = None
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

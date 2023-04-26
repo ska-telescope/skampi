@@ -46,7 +46,7 @@ def fxt_update_sut_settings(sut_settings: conftest.SutTestSettings):
 @pytest.fixture(name="set_sdp_entry_point", autouse=True)
 def fxt_set_entry_point(
     set_session_exec_env: fxt_types.set_session_exec_env,
-    update_sut_settings,
+    update_sut_settings: None,
     sut_settings: conftest.SutTestSettings,
 ):
     """

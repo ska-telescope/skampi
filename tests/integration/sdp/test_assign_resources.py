@@ -71,9 +71,7 @@ def test_assign_resources_to_sdp_subarray_in_mid(
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
-@scenario(
-    "features/sdp_assign_resources.feature", "Assign resources with duplicate id to SDP"
-)
+@scenario("features/sdp_assign_resources.feature", "Assign resources with duplicate id to SDP")
 def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings):  # type: ignore
     """Assign resources with duplicate id."""
 
@@ -81,9 +79,7 @@ def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings)
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
-@scenario(
-    "features/sdp_assign_resources.feature", "Command assign resources twice in order"
-)
+@scenario("features/sdp_assign_resources.feature", "Command assign resources twice in order")
 def test_assign_resources_duplicate_commands(assign_resources_test_exec_settings):  # type: ignore
     """Command assign resources twice in order."""
 
@@ -139,10 +135,8 @@ def an_sdp_subarray(
     :param sdp_base_composition: The base composition for the SDP subarray.
     :return: A class representing the sdp base configuration for the system under test.
     """
-    sut_settings.default_subarray_name = sut_settings.tel.sdp.subarray(
-        sut_settings.subarray_id
-    )
-    
+    sut_settings.default_subarray_name = sut_settings.tel.sdp.subarray(sut_settings.subarray_id)
+
     return sdp_base_composition
 
 

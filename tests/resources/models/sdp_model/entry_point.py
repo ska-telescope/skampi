@@ -18,10 +18,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
-from ska_ser_skallop.mvp_control.entry_points import base
-from ska_ser_skallop.event_handling.builders import get_message_board_builder
-from ..mvp_model.env import get_observation_config, Observation
-from ..mvp_model.env import Observation
+from ..mvp_model.env import Observation, get_observation_config
 from ..mvp_model.states import ObsState
 from ..obsconfig.config import Observation
 

@@ -158,9 +158,7 @@ def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings)
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
-@scenario(
-    "features/tmc_assign_resources.feature", "Command assign resources twice in order"
-)
+@scenario("features/tmc_assign_resources.feature", "Command assign resources twice in order")
 def test_assign_resources_duplicate_commands(assign_resources_test_exec_settings):  # type: ignore
     """Assign resources with duplicate id."""
 
@@ -183,10 +181,8 @@ def an_telescope_subarray(
     :param base_composition : An object for base composition
     :return: base composition
     """
-    sut_settings.default_subarray_name = sut_settings.tel.tm.subarray(
-        sut_settings.subarray_id
-    )
-    
+    sut_settings.default_subarray_name = sut_settings.tel.tm.subarray(sut_settings.subarray_id)
+
     return base_composition
 
 

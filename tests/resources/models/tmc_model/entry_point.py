@@ -1,13 +1,10 @@
 """Domain logic for the tmc."""
+import copy
+import json
 import logging
 import os
-import json
-from typing import List, Any, cast
 from time import sleep
-import copy
-from ska_ser_skallop.utils.singleton import Memo
-from time import sleep
-from typing import Any, List
+from typing import Any, List, cast
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -202,8 +199,8 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         else:
             # TODO Low json from CDM is not available.
             # Once it is available pull json from CDM
-            config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW) # type: ignore
-            self._generate_unique_eb_sb_ids(cast(dict[str, Any],config_json))
+            config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)  # type: ignore
+            self._generate_unique_eb_sb_ids(cast(dict[str, Any], config_json))
             config = json.dumps(config_json)
 
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
@@ -450,7 +447,7 @@ class ScanStep(base.ScanStep, LogEnabled):
         self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         try:
             subarray.command_inout("Scan", scan_config)
-            sleep(cast(float,scan_duration))
+            sleep(cast(float, scan_duration))
             current_state = subarray.read_attribute("obsState")
             if current_state.value == ObsState.SCANNING:
                 subarray.command_inout("EndScan")
@@ -708,7 +705,6 @@ class TMCEntryPoint(CompositeEntryPoint):
         # IDLE
         self.obsreset_step = TMCObsReset()
         self.restart_step = TMCRestart()
-
 
 
 ASSIGN_RESOURCE_JSON_LOW = {

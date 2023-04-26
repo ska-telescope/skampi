@@ -1,38 +1,27 @@
 """pytest global settings, fixtures and global bdd step implementations for
 integration tests."""
+import copy
 import logging
 import os
-import copy
 from types import SimpleNamespace
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
 
 import pytest
-from pytest_bdd import when, then, given, parsers
-from pytest_bdd.parser import Feature, Scenario, Step
-
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting
-from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.connectors import configuration as con_config
-from resources.models.mvp_model.env import (
-    init_observation_config,
-    Observation,
-    interject_observation_config,
-)
-from resources.models.mvp_model.states import ObsState
-from resources.models.obsconfig.base import EncodedObject
-
 from assertpy import assert_that
 from mock import Mock, patch
 from pytest_bdd import given, parsers, then, when
 from pytest_bdd.parser import Feature, Scenario, Step
-from resources.models.mvp_model.env import Observation, init_observation_config
+from resources.models.mvp_model.env import (
+    Observation,
+    init_observation_config,
+    interject_observation_config,
+)
 from resources.models.mvp_model.states import ObsState
+from resources.models.obsconfig.base import EncodedObject
 from ska_ser_skallop.connectors import configuration as con_config
-from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
+from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 logger = logging.getLogger(__name__)
@@ -559,17 +548,13 @@ def fxt_invalid_assign_config_interjected(
     ],
     entry_point: fxt_types.entry_point,
 ):
-    interject_into_observation_config(
-        "generate_assign_resources_config", generate_invalid_config
-    )
+    interject_into_observation_config("generate_assign_resources_config", generate_invalid_config)
     entry_point.__init__()
 
 
 @pytest.fixture(name="invalid_processing_block_script_interjected")
 def fxt_invalid_processing_block_script_interjected(
-    interject_into_observation_config: ObservationConfigInterjector[
-        [], EncodedObject[Any]
-    ],
+    interject_into_observation_config: ObservationConfigInterjector[[], EncodedObject[Any]],
     entry_point: fxt_types.entry_point,
 ):
     interject_into_observation_config(
@@ -624,15 +609,12 @@ def when_i_assign_resources_with_invalid_pb(
         sut_settings,
     )
     if step_result.result_ok_but_expected_exception_not_raised():
-        subarray_device = con_config.get_device_proxy(
-            sut_settings.default_subarray_name
-        )
+        subarray_device = con_config.get_device_proxy(sut_settings.default_subarray_name)
         result = subarray_device.read_attribute("obsstate").value
         if result == ObsState.EMPTY:
             step_result.result_ok = False
             step_result.result = lambda: except_it(
-                "exception not raised when calling assign but it did return "
-                "back to EMPTY"
+                "exception not raised when calling assign but it did return " "back to EMPTY"
             )
         else:
             integration_test_exec_settings.touch()
@@ -673,15 +655,12 @@ def when_i_assign_resources_with_invalid_config(
         sut_settings,
     )
     if step_result.result_ok_but_expected_exception_not_raised():
-        subarray_device = con_config.get_device_proxy(
-            sut_settings.default_subarray_name
-        )
+        subarray_device = con_config.get_device_proxy(sut_settings.default_subarray_name)
         result = subarray_device.read_attribute("obsstate").value
         if result == ObsState.EMPTY:
             step_result.result_ok = False
             step_result.result = lambda: except_it(
-                "exception not raised when calling assign but it "
-                "did return back to EMPTY"
+                "exception not raised when calling assign but it " "did return back to EMPTY"
             )
         else:
             integration_test_exec_settings.touch()
@@ -752,8 +731,7 @@ def _assign_resources_with_invalid_config(
             if step_result.expected_exception_raised:
                 step_result.result_ok = False
                 step_result.result = lambda: except_it(
-                    "exception raised when calling assign but it seems be"
-                    " stuck in RESOURCING"
+                    "exception raised when calling assign but it seems be" " stuck in RESOURCING"
                 )
                 return step_result
             else:
@@ -797,16 +775,13 @@ def when_i_assign_resources_with_a_duplicate_sb_id(
     )
     if step_result.result_ok:
         if not step_result.expected_exception_raised:
-            subarray_device = con_config.get_device_proxy(
-                sut_settings.default_subarray_name
-            )
+            subarray_device = con_config.get_device_proxy(sut_settings.default_subarray_name)
             result = subarray_device.read_attribute("obsstate").value
             if result == ObsState.EMPTY:
                 allocated_subarray.disable_automatic_teardown()
                 step_result.result_ok = False
                 step_result.result = lambda: except_it(
-                    "exception not raised when calling assign but it did "
-                    "return back to EMPTY"
+                    "exception not raised when calling assign but it did " "return back to EMPTY"
                 )
             else:
                 step_result.result_ok = False
@@ -833,17 +808,11 @@ def fxt_invalid_scan_config_interjected(
     csp_subarray_name = str(sut_settings.tel.csp.subarray(subarray_id))
 
     if subarray_name == sdp_subarray_name:
-        interject_into_observation_config(
-            "generate_sdp_scan_config", generate_invalid_config
-        )
+        interject_into_observation_config("generate_sdp_scan_config", generate_invalid_config)
     elif subarray_name == csp_subarray_name:
-        interject_into_observation_config(
-            "generate_csp_scan_config", generate_invalid_config
-        )
+        interject_into_observation_config("generate_csp_scan_config", generate_invalid_config)
     else:
-        interject_into_observation_config(
-            "generate_scan_config", generate_invalid_config
-        )
+        interject_into_observation_config("generate_scan_config", generate_invalid_config)
     entry_point.__init__()
 
 
@@ -921,19 +890,14 @@ def i_configure_it_for_a_scan_with_an_invalid_config(
                 )
             return step_result
     if not step_result.expected_exception_raised:
-        subarray_device = con_config.get_device_proxy(
-            sut_settings.default_subarray_name
-        )
+        subarray_device = con_config.get_device_proxy(sut_settings.default_subarray_name)
         result = subarray_device.read_attribute("obsstate").value
         if result == ObsState.IDLE:
             step_result.result = lambda: except_it(
-                "exception not raised when calling configure but it did return "
-                "back to IDLE"
+                "exception not raised when calling configure but it did return " "back to IDLE"
             )
         else:
-            allocated_subarray.clear_configuration_when_finished(
-                integration_test_exec_settings
-            )
+            allocated_subarray.clear_configuration_when_finished(integration_test_exec_settings)
             step_result.result = lambda: except_it(
                 "exception not raised when calling configure but it did "
                 "successfully go to IDLE"
@@ -966,13 +930,9 @@ def i_command_the_assign_resources_twice_in_consecutive_fashion(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            entry_point.compose_subarray(
-                subarray_id, receptors, composition, sb_config.sbid
-            )
+            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
             try:
-                entry_point.compose_subarray(
-                    subarray_id, receptors, composition, sb_config.sbid
-                )
+                entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
             except Exception as exception:
                 step_result.expected_exception_raised = True
                 step_result.result_ok = True

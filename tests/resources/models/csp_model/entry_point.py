@@ -16,7 +16,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
-from ..mvp_model.env import get_observation_config, Observation
+from ..mvp_model.env import Observation, get_observation_config
 from ..mvp_model.states import ObsState
 from ..obsconfig.config import Observation
 
@@ -345,7 +345,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
             scan_config_arg = json.dumps(csp_low_scan)
         else:
             scan_config_arg = self.observation.generate_run_scan_conf().as_json
-        scan_duration = cast(float,Memo().get("scan_duration"))
+        scan_duration = cast(float, Memo().get("scan_duration"))
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)

@@ -32,6 +32,7 @@ Feature: Assign resources to CSP subarray
 		Given an CSP subarray
 		When I assign resources with invalid config
 		Then the subarray should throw an exception and remain in the previous state
+
 	@XTP-20082 @XTP-5537 @XTP-4635 @XTP-3324
 	Scenario: Abort assigning CSP
 		Given an subarray busy assigning

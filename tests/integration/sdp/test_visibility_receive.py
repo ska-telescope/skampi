@@ -38,8 +38,8 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management.subarray_scanning import scanning_subarray
 
 from .. import conftest
-from .vis_receive_utils import K8sElementManager
 from .conftest import SDPEntryPoint
+from .vis_receive_utils import K8sElementManager
 
 pytest_plugins = ["unit.test_cluster_k8s"]
 
@@ -106,7 +106,7 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster: None):
     ms_file_mount_location = "/mnt/data/AA05LOW.ms/"
 
     # Check if the measurement set has been download into pods
-    
+
     def _wait_for_receive_data():
         assert NAMESPACE_SDP
         receiver_result = check_data_present(

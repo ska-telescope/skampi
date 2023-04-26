@@ -1,8 +1,8 @@
 import pytest
-from pytest_bdd import given, scenario, then, when, parsers
+from pytest_bdd import given, parsers, scenario, then, when
+from ska_oso_pdm.entities.common.sb_definition import SBDefinition
 
-from .oet_helpers import ScriptExecutor, ACTIVITY_ADAPTER, add_sb_to_oda
-from os import environ
+from .oet_helpers import ACTIVITY_ADAPTER, ScriptExecutor, add_sb_to_oda, 
 
 EXECUTOR = ScriptExecutor()
 
@@ -24,7 +24,8 @@ def test_hello_world():
 @pytest.mark.skamid
 @pytest.mark.k8s
 @scenario(
-    "features/oet_basic.feature", "Run the hello_world test script via an SB activity"
+    "features/oet_basic.feature",
+    "Run the hello_world test script via an SB activity",
 )
 def test_activity():
     """
@@ -40,26 +41,34 @@ def hello_world_script_created():
 
 
 @given(parsers.parse("a test SB with activity {activity_name} exists in ODA"))
-def hello_world_sb_in_oda(activity_name, test_sbd):
-    """"""
-    assert (
-        activity_name in test_sbd.activities
-    ), f"Activity test setup failed, no activity called {activity_name} in test SB"
+def hello_world_sb_in_oda(activity_name: str, test_sbd: SBDefinition):
+    """
+    a test SB with activity  exists in ODA
+    :param activity_name : activity name which exists in ODA
+    :param test_sbd: An object for test_sbd
+    """
+    assert activity_name in test_sbd.activities, (
+        f"Activity test setup failed, no activity called {activity_name} in" " test SB"
+    )
 
     add_sb_to_oda(test_sbd)
 
 
 @when(parsers.parse("the script {script} is run"))
-def hello_world_script_ran(script):
+def hello_world_script_ran(script: str):
     EXECUTOR.execute_script(script)
 
 
 @when(parsers.parse("I tell the OET to run {activity_name} activity on the test SB"))
 def when_allocate_resources_from_activity(
-    activity_name,
-    test_sbd,
+    activity_name: str,
+    test_sbd: SBDefinition,
 ):
-    """ """
+    """
+    I tell the OET to run activity on the test SB
+    :param activity_name : activity name which exists in ODA
+    :param test_sbd: An object for test_sbd
+    """
     summary = ACTIVITY_ADAPTER.run(
         activity_name,
         test_sbd.sbd_id,
@@ -70,7 +79,7 @@ def when_allocate_resources_from_activity(
 
 
 @then("script started by the activity completes successfully")
-def hello_world_script_complete():
+def hello_world_script_complete_activity():
     "script execution completes successfully"
 
     summaries = ACTIVITY_ADAPTER.list()
@@ -84,5 +93,5 @@ def hello_world_script_complete():
 def hello_world_script_complete():
     "script execution completes successfully"
     procedure = EXECUTOR.get_latest_script()
-
+    assert procedure
     assert procedure.state == "COMPLETE"

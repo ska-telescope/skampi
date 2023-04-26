@@ -1,7 +1,6 @@
 """Start up the csp feature tests."""
 import logging
 import os
-from typing import List, cast
 
 import pytest
 from assertpy import assert_that
@@ -13,6 +12,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from .. import conftest
 
 logger = logging.getLogger(__name__)
+
 
 @pytest.mark.skamid
 @pytest.mark.csp
@@ -32,6 +32,7 @@ def test_csp_start_up_telescope_low():
 
 # log checking
 
+
 @pytest.fixture(name="set_up_log_checking_for_csp")
 @pytest.mark.usefixtures("set_csp_entry_point")
 def fxt_set_up_log_checking_for_csp(
@@ -40,6 +41,7 @@ def fxt_set_up_log_checking_for_csp(
 ):
     """Set up log checking (using log consumer) on cbf.
     :param log_checking: skallop fixture used to set up log checking.
+    :param sut_settings: A class representing the settings for the system under test.
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
@@ -52,7 +54,11 @@ def fxt_set_up_log_checking_for_csp(
 def a_csp(
     set_up_log_checking_for_csp,  # pylint: disable=unused-argument
 ):
-    """a CSP."""
+    """
+    a CSP.
+
+    :param set_up_log_checking_for_csp: skallop fixture used to set up log checking.
+    """
 
 
 # when
@@ -63,7 +69,11 @@ def a_csp(
 def the_csp_must_be_on(
     sut_settings: conftest.SutTestSettings,
 ):
-    """the csp must be on."""
+    """
+    the csp must be on.
+
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     tel = names.TEL()
     csp_master = con_config.get_device_proxy(tel.csp.controller)
     result = csp_master.read_attribute("state").value
@@ -79,5 +89,7 @@ def the_csp_must_be_on(
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_csp_mock")
 def test_test_csp_startup(run_mock):
-    """Test the test using a mock SUT"""
+    """Test the test using a mock SUT
+    :param run_mock: a run mock object
+    """
     run_mock(test_csp_start_up_telescope_mid)

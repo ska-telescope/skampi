@@ -1,16 +1,9 @@
-import sys
-import pytest
 import logging
+import socket
 import threading
-from tango import (
-    Database,
-    DeviceProxy,
-    DeviceData,
-    EventType,
-    LogLevel,
-    DevVarStringArray,
-)
 import time
+
+from tango import DeviceProxy, EventType
 
 
 class TraceHelper:
@@ -66,7 +59,11 @@ class TraceHelper:
             self.messages = []
 
     def get_messages(self):
-        """ "Return a copy of the current messages."""
+        """
+        Return a copy of the current messages.
+
+        :return: a copy of the current messages
+        """
         with self.lock:
             return list(self.messages)
 
@@ -89,5 +86,5 @@ class TraceHelper:
             location = (address, int(port))
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             return sock.connect_ex(location)
-        except Exception as e1:
+        except Exception:
             return -1

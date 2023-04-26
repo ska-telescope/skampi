@@ -1,4 +1,5 @@
 from typing import TypedDict, cast
+
 from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     CBFConfiguration,
     CommonConfiguration,
@@ -23,38 +24,30 @@ class CSPconfig(TargetSpecs):
 
     def _generate_low_csp_assign_resources_config(self):
         interface = "https://schema.skao.int/ska-low-csp-assignresources/2.0"
-        common = {
-            "subarray_id": 1
-        }
+        common = {"subarray_id": 1}
         lowcbf = {
             "resources": [
                 {
                     "device": "fsp_01",
                     "shared": True,
                     "fw_image": "pst",
-                    "fw_mode": "unused"
+                    "fw_mode": "unused",
                 },
                 {
                     "device": "p4_01",
                     "shared": True,
                     "fw_image": "p4.bin",
-                    "fw_mode": "p4"
-                }
+                    "fw_mode": "p4",
+                },
             ]
         }
-        return CSPConfiguration(
-            interface=interface,
-            common=common,
-            lowcbf=lowcbf
-        )
+        return CSPConfiguration(interface=interface, common=common, lowcbf=lowcbf)
 
     @encoded
     def generate_low_csp_assign_resources_config(self):
         return self._generate_low_csp_assign_resources_config()
 
-    def _generate_csp_scan_config(
-        self, target_id: str | None = None, subarray_id: int = 1
-    ):
+    def _generate_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
         mode: FSPFunctionMode = FSPFunctionMode.CORR
         if target_id:
             spec = self.target_specs[target_id]
@@ -90,9 +83,7 @@ class CSPconfig(TargetSpecs):
         )
 
     @encoded
-    def generate_csp_scan_config(
-        self, target_id: str | None = None, subarray_id: int = 1
-    ):
+    def generate_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
         return self._generate_csp_scan_config(target_id, subarray_id)
 
     def generate_csp_run_scan_config(

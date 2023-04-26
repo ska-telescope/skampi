@@ -52,3 +52,9 @@ Feature: Assign resources to subarray using TMC
 		Given an subarray busy assigning
 		When I command it to Abort
 		Then the subarray should go into an aborted state
+
+	@XTP-20111
+	Scenario: Abort assigning Low
+		Given an subarray busy assigning
+		When I command it to Abort
+		Then the subarray should go into an aborted state

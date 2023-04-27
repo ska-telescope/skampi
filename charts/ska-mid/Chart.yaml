@@ -7,14 +7,14 @@ appVersion: 0.12.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
   - name: ska-tango-base
-    version: 0.3.23
+    version: 0.4.4
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-base.enabled
   - name: ska-tango-util
-    version: 0.3.23
+    version: 0.4.3
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-mid-cbf-mcs # CIPA team
-    version: 0.7.1
+    version: 0.8.1
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-mid-cbf-mcs.enabled
   - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs

@@ -12,9 +12,7 @@ from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
-    CompositeEntryPoint,
-    MessageBoardBuilder,
-)
+from .aborted_from_state_helper import AbortedStateHelper
 
 logger = logging.getLogger(__name__)
 
@@ -560,6 +558,29 @@ class CBFRestart(base.RestartStep, LogEnabled):
             "obsState"
         ).to_become_equal_to("EMPTY", ignore_first=True)
         return builder
+    
+class CBFRestartWithHelper(CBFRestart):
+
+    def __init__(self, aborted_state_helper: AbortedStateHelper) -> None:
+        super().__init__()
+        self._aborted_state_helper = aborted_state_helper
+
+    def do(self, sub_array_id: int):
+        # first do clear config if aborted from state higher than IDLE
+        self._aborted_state_helper.prepare_for_restarting(sub_array_id)
+        super().do(sub_array_id)
+
+
+class CBFAbortStepWithHelper(CBFAbortStep):
+
+    def __init__(self, aborted_state_helper: AbortedStateHelper) -> None:
+        super().__init__()
+        self._aborted_state_helper = aborted_state_helper
+
+    def do(self, sub_array_id: int):
+        self._aborted_state_helper.set_going_into_aborted(sub_array_id)
+        super().do(sub_array_id)
+        
 
 class CBFEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
@@ -574,9 +595,14 @@ class CBFEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = CbfAsignResourcesStep()
         self.configure_scan_step = CbfConfigureStep()
         self.scan_step = CbfScanStep()
-        self.abort_step = CBFAbortStep()
         self.obsreset_step = CBFObsResetStep()
-        self.restart_step = CBFRestart()
+        if os.getenv("PATCH_CBF_RESTART_PROBLEM"):
+            aborted_from_state = AbortedStateHelper()
+            self.abort_step = CBFAbortStepWithHelper(aborted_from_state)
+            self.restart_step = CBFRestartWithHelper(aborted_from_state)
+        else:
+            self.abort_step = CBFAbortStep()
+            self.restart_step = CBFRestart()
 
 
 cbf_low_start_scan = {

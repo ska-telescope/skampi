@@ -18,6 +18,7 @@ from ska_ser_skallop.utils.singleton import Memo
 
 from ..mvp_model.states import ObsState
 from ..obsconfig.config import Observation
+from ..cbf_model.aborted_from_state_helper import AbortedStateHelper
 
 logger = logging.getLogger(__name__)
 
@@ -318,9 +319,10 @@ class CspScanStep(base.ScanStep, LogEnabled):
         """
         if self._tel.skalow:
             scan_config_arg = json.dumps(csp_low_scan)
-        elif self._tel.skamid:
+        else:
             scan_config_arg = self.observation.generate_run_scan_conf().as_json
         scan_duration = Memo().get("scan_duration")
+        assert scan_duration
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -554,7 +556,27 @@ class CSPRestart(base.RestartStep, LogEnabled):
             "EMPTY", ignore_first=True
         )
         return builder
+class CSPRestartWithHelper(CSPRestart):
 
+    def __init__(self, aborted_state_helper: AbortedStateHelper) -> None:
+        super().__init__()
+        self._aborted_state_helper = aborted_state_helper
+
+    def do(self, sub_array_id: int):
+        # first do clear config if aborted from state higher than IDLE
+        self._aborted_state_helper.prepare_for_restarting(sub_array_id)
+        super().do(sub_array_id)
+
+
+class CSPAbortStepWithHelper(CSPAbortStep):
+
+    def __init__(self, aborted_state_helper: AbortedStateHelper) -> None:
+        super().__init__()
+        self._aborted_state_helper = aborted_state_helper
+
+    def do(self, sub_array_id: int):
+        self._aborted_state_helper.set_going_into_aborted(sub_array_id)
+        super().do(sub_array_id)
 
 class CSPEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
@@ -572,9 +594,14 @@ class CSPEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = CspAsignResourcesStep(observation)
         self.configure_scan_step = CspConfigureStep(observation)
         self.scan_step = CspScanStep(observation)
-        self.abort_step = CSPAbortStep()
         self.obsreset_step = CSPObsResetStep()
-        self.restart_step = CSPRestart()
+        if os.getenv("PATCH_CBF_RESTART_PROBLEM"):
+            aborted_from_state = AbortedStateHelper()
+            self.abort_step = CSPAbortStepWithHelper(aborted_from_state)
+            self.restart_step = CSPRestartWithHelper(aborted_from_state)
+        else:
+            self.abort_step = CSPAbortStep()
+            self.restart_step = CSPRestart()
 
 
 csp_mid_assign_resources_template = {

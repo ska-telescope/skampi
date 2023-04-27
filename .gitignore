@@ -78,4 +78,3 @@ KUBECONFIG
 tests/resources/assets/kubeconfig
 tests/resources/assets/tmp_ingress.yaml
 .vscode
-.devcontainer

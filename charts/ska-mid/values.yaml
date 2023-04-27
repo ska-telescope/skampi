@@ -153,7 +153,7 @@ ska-tango-archiver:
   dbname: default_mvp_archiver_db
 
 ## dishmasters
-ska-dish-lmc:
+ska-sim-dishmaster:
   enabled: true
 
 # alarm-handler

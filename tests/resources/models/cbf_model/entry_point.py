@@ -12,13 +12,13 @@ from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
+    CompositeEntryPoint, MessageBoardBuilder)
+from ska_ser_skallop.utils.singleton import Memo
+
+from ..mvp_model.states import ObsState
 from .aborted_from_state_helper import AbortedStateHelper
 
 logger = logging.getLogger(__name__)
-
-# scan duration needs to be a singleton in order to keep track of scan
-# settings between configure scan and run scan
-SCAN_DURATION = 4
 
 
 class LogEnabled:
@@ -232,8 +232,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         """
         # scan duration needs to be a singleton in order to keep track of scan
         # settings between configure scan and run scan
-        global SCAN_DURATION  # pylint: disable=global-statement
-        SCAN_DURATION = duration
+        Memo(scan_duration=duration)
         if self._tel.skamid:
             subarray_name = self._tel.skamid.csp.cbf.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
@@ -324,11 +323,17 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         """
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
+        scan_duration = Memo().get("scan_duration")
+        assert scan_duration
         if self._tel.skalow:
             scan_config_arg = json.dumps(cbf_low_start_scan)
             self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg}")
             try:
                 subarray.command_inout("Scan", scan_config_arg)
+                sleep(scan_duration)
+                current_state = subarray.read_attribute("obsState")
+                if current_state.value == ObsState.SCANNING:
+                    subarray.command_inout("EndScan")
             except Exception as exception:
                 logger.exception(exception)
                 raise exception
@@ -337,7 +342,7 @@ class CbfScanStep(base.ScanStep, LogEnabled):
             self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg}")
             try:
                 subarray.command_inout("Scan", scan_config_arg)
-                sleep(SCAN_DURATION)
+                sleep(scan_duration)
                 subarray.command_inout("EndScan")
             except Exception as exception:
                 logger.exception(exception)
@@ -457,10 +462,13 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
             implementation is not done.
         """
         raise NotImplementedError()
+        
+
 
 class CBFAbortStep(base.AbortStep, LogEnabled):
 
     """Implementation of Abort Step for CSP."""
+
 
     def do(self, sub_array_id: int):
         """Domain logic for running a abort on subarray in csp.
@@ -473,6 +481,7 @@ class CBFAbortStep(base.AbortStep, LogEnabled):
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with Abort command")
         subarray.command_inout("Abort")
+        
 
     def set_wait_for_do(self, sub_array_id: int) -> Union[MessageBoardBuilder, None]:
         """Domain logic specifying what needs to be waited for abort is done.
@@ -545,6 +554,8 @@ class CBFObsResetStep(base.ObsResetStep, LogEnabled):
 
 
 class CBFRestart(base.RestartStep, LogEnabled):
+
+
     def do(self, sub_array_id: int):
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -603,6 +614,7 @@ class CBFEntryPoint(CompositeEntryPoint):
         else:
             self.abort_step = CBFAbortStep()
             self.restart_step = CBFRestart()
+
 
 
 cbf_low_start_scan = {

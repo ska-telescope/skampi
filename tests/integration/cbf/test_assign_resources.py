@@ -33,7 +33,7 @@ def test_assign_resources_to_cbf_low_subarray():
 
 @given("an CBF subarray", target_fixture="composition")
 def an_cbf_subarray(
-    set_up_log_checking_for_cbf_subarray,  # pylint: disable=unused-argument
+    set_up_log_checking_for_cbf_subarray: None,  # pylint: disable=unused-argument
     cbf_base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """an SDP subarray."""

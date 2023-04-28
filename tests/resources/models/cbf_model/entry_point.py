@@ -3,7 +3,7 @@ import json
 import logging
 import os
 from time import sleep
-from typing import List, Union
+from typing import List
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -33,7 +33,7 @@ class LogEnabled:
             logger.info(mssage)
 
 
-class StartUpStep(base.ObservationStep, LogEnabled):
+class StartUpStep(base.StartUpStep, LogEnabled):
     """Implementation of Startup step for CSP"""
 
     def __init__(self, nr_of_subarrays: int) -> None:
@@ -41,7 +41,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         self.nr_of_subarrays = nr_of_subarrays
         self.cbf_controller = con_config.get_device_proxy(self._tel.csp.cbf.controller)
 
-    def do(self):
+    def do_startup(self):
         """Domain logic for starting up a telescope on the interface to CBF.
 
         This implments the set_telescope_to_running method on the entry_point.
@@ -53,10 +53,11 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 subarray = con_config.get_device_proxy(self._tel.csp.cbf.subarray(index))
                 subarray.command_inout("On")
 
-    def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_do_startup(self) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited
         for before startup of cbf is done.
+        :return: brd
         """
         brd = get_message_board_builder()
 
@@ -70,19 +71,19 @@ class StartUpStep(base.ObservationStep, LogEnabled):
             ).to_become_equal_to("ON", ignore_first=False)
         return brd
 
-    def set_wait_for_doing(self) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_doing_startup(self) -> MessageBoardBuilder:
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error
-             when implementation is not done.
+        :raises NotImplementedError: Raises the error
+                when implementation is not done.
         """
         raise NotImplementedError()
 
-    def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_undo_startup(self) -> MessageBoardBuilder:
         """
         Domain logic for what needs to be waited for switching the sdp off.
+        :return: brd
         """
         brd = get_message_board_builder()
         if self._tel.skamid:
@@ -96,7 +97,7 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 ).to_become_equal_to("OFF", ignore_first=False)
         return brd
 
-    def undo(self):
+    def undo_startup(self):
         """Domain logic for switching the cbf off."""
         if self._tel.skamid:
             self.cbf_controller.command_inout("Off")
@@ -117,7 +118,7 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         super().__init__()
         self._tel = names.TEL()
 
-    def do(
+    def do_assign_resources(
         self,
         sub_array_id: int,
         dish_ids: List[int],
@@ -147,7 +148,7 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             )
             subarray.command_inout("AssignResources", cbf_low_configuration)
 
-    def undo(self, sub_array_id: int):
+    def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
 
         This implments the tear_down_subarray method on the entry_point.
@@ -165,12 +166,13 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
             self._log(f"commanding {subarray_name} with ReleaseAllResources")
             subarray.command_inout("ReleaseAllResources")
 
-    def set_wait_for_do(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited for
         subarray assign resources is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
@@ -178,22 +180,23 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
 
         return builder
 
-    def set_wait_for_doing(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error
-             when implementation is not done.
+        :param sub_array_id: The index id of the subarray to control
+        :raises NotImplementedError: Raises the error
+                when implementation is not done.
         """
         raise NotImplementedError()
 
-    def set_wait_for_undo(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited for
         subarray releasing resources is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: builder
         """
         builder = get_message_board_builder()
         if self._tel.skamid:
@@ -213,10 +216,9 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         super().__init__()
         self._tel = names.TEL()
 
-    def do(
+    def do_configure(
         self,
         sub_array_id: int,
-        dish_ids: List[int],
         configuration: types.ScanConfiguration,
         sb_id: str,
         duration: float,
@@ -226,9 +228,9 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         This implments the compose_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
-        :param composition: The assign resources configuration paramaters
+        :param configuration: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
+        :param duration: duration for scan
         """
         # scan duration needs to be a singleton in order to keep track of scan
         # settings between configure scan and run scan
@@ -254,7 +256,7 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
             )
             subarray.command_inout("ConfigureScan", cbf_low_configuration)
 
-    def undo(self, sub_array_id: int):
+    def undo_configure(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in cbf.
 
         This implments the clear_configuration method on the entry_point.
@@ -266,35 +268,36 @@ class CbfConfigureStep(base.ConfigureStep, LogEnabled):
         self._log(f"commanding {subarray_name} with command GoToIdle")
         subarray.command_inout("GoToIdle")
 
-    def set_wait_for_do(self, sub_array_id: int, receptors: List[int]) -> MessageBoardBuilder:
+    def set_wait_for_do_configure(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited
         for configuring a scan is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("READY")
         return builder
 
-    def set_wait_for_doing(self, sub_array_id: int, receptors: List[int]) -> MessageBoardBuilder:
+    def set_wait_for_doing_configure(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error when
-            implementation is not done.
+        :param sub_array_id: The index id of the subarray to control
+        :raises NotImplementedError: Raises the error when
+                implementation is not done.
         """
         raise NotImplementedError()
 
-    def set_wait_for_undo(self, sub_array_id: int, receptors: List[int]) -> MessageBoardBuilder:
+    def set_wait_for_undo_configure(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifying what needs to be waited for
         subarray clear scan config is done.
 
         :param sub_array_id: The index id of the subarray to control
-        :param dish_ids: this dish indices (in case of mid) to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
@@ -311,15 +314,14 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         super().__init__()
         self._tel = names.TEL()
 
-    def do(self, sub_array_id: int):
+    def do_scan(self, sub_array_id: int):
         """Domain logic for running a scan on subarray in cbf.
 
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
 
-        Raises:
-            Exception: Raise exception if the scan command fails
+        :raises Exception: Raise exception if the scan command fails
         """
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
@@ -348,28 +350,28 @@ class CbfScanStep(base.ScanStep, LogEnabled):
                 logger.exception(exception)
                 raise exception
 
-    def set_wait_for_do(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> Union[MessageBoardBuilder, None]:
-        """This is a no-op as there is no scanning command
+    def set_wait_for_do_scan(self, sub_array_id: int) -> MessageBoardBuilder:
+        """
+        This is a no-op as there is no scanning command
 
         :param sub_array_id: The index id of the subarray to control
+        :return: message board builder
         """
+        return get_message_board_builder()
 
-    def undo(self, sub_array_id: int):
+    def undo_scan(self, sub_array_id: int):
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
         """
 
-    def set_wait_for_doing(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_doing_scan(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifyig what needs to be done for waiting
         for subarray to be scanning.
 
         :param sub_array_id: The index id of the subarray to control
+        :return: builder
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
@@ -378,24 +380,23 @@ class CbfScanStep(base.ScanStep, LogEnabled):
         )
         return builder
 
-    def set_wait_for_undo(
-        self, sub_array_id: int, receptors: List[int]
-    ) -> Union[MessageBoardBuilder, None]:
+    def set_wait_for_undo_scan(self, sub_array_id: int) -> MessageBoardBuilder:
         """This is a no-op as no undo for scan is needed
 
         :param sub_array_id: The index id of the subarray to control
+        :return: None
         """
-        return None
+        return get_message_board_builder()
 
 
-class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
+class CBFSetOnlineStep(base.SetOnlineStep, LogEnabled):
     """Domain logic for setting csp to online"""
 
     def __init__(self, nr_of_subarrays: int) -> None:
         super().__init__()
         self.nr_of_subarrays = nr_of_subarrays
 
-    def do(self):
+    def do_set_online(self):
         """Domain logic for setting devices in csp to online."""
         controller_name = self._tel.csp.cbf.controller
         controller = con_config.get_device_proxy(controller_name)
@@ -407,8 +408,12 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
             self._log(f"Setting adminMode for {subarray_name} to '0' (ONLINE)")
             subarray.write_attribute("adminmode", 0)
 
-    def set_wait_for_do(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic for waiting for setting to online to be complete."""
+    def set_wait_for_do_set_online(self) -> MessageBoardBuilder:
+        """
+        Domain logic for waiting for setting to online to be complete.
+
+        :return: builder
+        """
         controller_name = self._tel.csp.cbf.controller
         builder = get_message_board_builder()
         builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
@@ -427,7 +432,7 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
             )
         return builder
 
-    def undo(self):
+    def undo_set_online(self):
         """Domain logic for setting devices in csp to offline."""
         controller_name = self._tel.csp.cbf.controller
         controller = con_config.get_device_proxy(controller_name)
@@ -439,8 +444,12 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
             self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
             subarray.write_attribute("adminmode", 1)
 
-    def set_wait_for_undo(self) -> Union[MessageBoardBuilder, None]:
-        """Domain logic for waiting for setting to offline to be complete."""
+    def set_wait_for_undo_set_online(self) -> MessageBoardBuilder:
+        """
+        Domain logic for waiting for setting to offline to be complete.
+
+        :return: builder
+        """
         controller_name = self._tel.csp.cbf.controller
         builder = get_message_board_builder()
         builder.set_waiting_on(controller_name).for_attribute("adminMode").to_become_equal_to(
@@ -453,13 +462,12 @@ class CBFSetOnlineStep(base.ObservationStep, LogEnabled):
             )
         return builder
 
-    def set_wait_for_doing(self) -> MessageBoardBuilder:
+    def set_wait_for_doing_set_online(self) -> MessageBoardBuilder:
         """
         Not implemented.
 
-        Raises:
-            NotImplementedError: Raises the error when
-            implementation is not done.
+        :raises NotImplementedError: Raises the error when
+                implementation is not done.
         """
         raise NotImplementedError()
         

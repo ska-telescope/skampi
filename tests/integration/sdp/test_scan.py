@@ -29,7 +29,10 @@ def test_run_a_scan_on_sdp_subarray_in_mid():
 @pytest.mark.sdp
 @scenario("features/sdp_scan.feature", "Abort SDP scanning")
 def test_abort_scanning(disable_clear):
-    """Abort scanning."""
+    """
+    Abort scanning.
+    :param disable_clear: A disable clear object
+    """
 
 
 # use from local conftest
@@ -46,7 +49,13 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """the SDP subarray must be in the SCANNING state until finished."""
+    """
+    the SDP subarray must be in the SCANNING state until finished.
+
+    :param configured_subarray: The configured subarray
+    :param context_monitoring: Context monitoring object.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
     tel = names.TEL()
     sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
     sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)

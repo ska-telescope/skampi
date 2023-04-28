@@ -1,0 +1,28 @@
+minikube: false
+
+# Common products
+ska-tango-base:
+  vnc:
+    enabled: false
+ska-sdp:
+  enabled: true
+ska-oso-scripting:
+  enabled: true
+ska-taranta:
+  enabled: true
+ska-ser-skuid:
+  enabled: true
+ska-tango-archiver:
+  enabled: true
+ska-landingpage:
+  enabled: true
+
+# Mid specific products
+ska-mid-cbf:
+  enabled: true
+ska-csp-lmc-mid:
+  enabled: true
+ska-tmc-mid:
+  enabled: true
+ska-sim-dishmaster:
+  enabled: false

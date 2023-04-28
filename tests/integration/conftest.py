@@ -18,6 +18,7 @@ from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -76,6 +77,15 @@ class SutTestSettings(SimpleNamespace):
     def receptors(self, receptor: list[int]):
         self._receptors = receptor
 
+
+@pytest.fixture(autouse=True)
+def fxt_set_default_attr_sync(exec_settings: fxt_types.exec_settings):
+    exec_settings.attr_synching = True
+
+
+@pytest.fixture(autouse=True, scope="session")
+def fxt_set_default_attr_sync_per_session(session_exec_settings: fxt_types.session_exec_settings):
+    session_exec_settings.attr_synching = True
 
 @pytest.fixture(name="disable_clear")
 def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
@@ -375,6 +385,7 @@ def i_restart_the_subarray(
     """I restart the subarray."""
     subarray = sut_settings.default_subarray_name
     integration_test_exec_settings.attr_synching = True
+    context_monitoring.re_init_builder()
     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
         "obsstate"
     ).to_become_equal_to("EMPTY")
@@ -382,6 +393,7 @@ def i_restart_the_subarray(
         aborted_subarray.disable_automatic_clear()
         aborted_subarray.disable_automatic_teardown()
         entry_point.restart_subarray(sut_settings.subarray_id)
+        foo = 'bar'
 
 # global given steps
 

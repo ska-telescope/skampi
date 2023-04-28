@@ -84,10 +84,13 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 "reportVccState"
             ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
         # set dish master to be waited before startup completes
+        dishes = []
+        for receptor in self.receptors:
+            dishes.append(f"ska{receptor:03}/dish/master")
         if self._tel.skamid:
-            for dish in self._tel.skamid.dishes(self.receptors):
+            for dish in dishes:
                 brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
-                    "ON", ignore_first=False
+                    "STANDBY", ignore_first=False
                 )
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(
@@ -128,7 +131,10 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                     "state"
                 ).to_become_equal_to("OFF", ignore_first=False)
-            for dish in self._tel.skamid.dishes(self.receptors):
+            dishes = []
+            for receptor in self.receptors:
+                dishes.append(f"ska{receptor:03}/dish/master")
+            for dish in dishes:
                 brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
                     "STANDBY", ignore_first=False
                 )

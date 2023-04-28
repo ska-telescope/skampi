@@ -3,7 +3,7 @@ Pytest fixtures and bdd step implementations specific to cbf integration tests.
 """
 import logging
 import os
-from typing import Callable
+from typing import Any, Callable
 
 import pytest
 from resources.models.cbf_model.entry_point import CBFEntryPoint
@@ -116,6 +116,18 @@ def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
     """
     composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
     return composition
+
+@pytest.fixture(name="cbf_base_configuration")
+def fxt_csp_base_configuration(tmp_path: Any) -> conf_types.ScanConfiguration:
+    """Setup a base scan configuration to use for csp/cbf.
+
+    :param tmp_path: a temporary path for sending configuration as a file.
+    :return: the configuration settings.
+    """
+    configuration = conf_types.ScanConfigurationByFile(
+        tmp_path, conf_types.ScanConfigurationType.STANDARD
+    )
+    return configuration
 
 
 # mocking

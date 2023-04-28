@@ -10,6 +10,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
@@ -86,7 +87,14 @@ class StartUpStep(base.ObservationStep, LogEnabled):
         # set dish master to be waited before startup completes
         dishes = []
         for receptor in self.receptors:
-            dishes.append(f"ska{receptor:03}/dish/master")
+            dishes.append(
+                DeviceName(
+                    f"ska{receptor:03}/elt/master",
+                    "dishes scope",
+                    "dishes",
+                    "sensor domain",
+                )
+            )
         if self._tel.skamid:
             for dish in dishes:
                 brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
@@ -133,7 +141,14 @@ class StartUpStep(base.ObservationStep, LogEnabled):
                 ).to_become_equal_to("OFF", ignore_first=False)
             dishes = []
             for receptor in self.receptors:
-                dishes.append(f"ska{receptor:03}/dish/master")
+                dishes.append(
+                    DeviceName(
+                        f"ska{receptor:03}/elt/master",
+                        "dishes scope",
+                        "dishes",
+                        "sensor domain",
+                    )
+                )
             for dish in dishes:
                 brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
                     "STANDBY", ignore_first=False

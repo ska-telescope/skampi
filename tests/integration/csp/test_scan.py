@@ -74,6 +74,7 @@ def the_csp_subarray_must_be_in_the_scanning_state(
     assert_that(result).is_equal_to(ObsState.SCANNING)
     # afterwards it must be ready
     context_monitoring.re_init_builder()
+    integration_test_exec_settings.attr_synching = True
     context_monitoring.wait_for(csp_subarray_name).for_attribute("obsstate").to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )

@@ -65,5 +65,9 @@ you should see output like ``got response from sys/database/2``
 .. code-block:: console
 
     $ kubectl --kubeconfig=KUBECONFIG logs <pod_name>
+* You can also run particular test from terminal
+.. code-block:: console
+
+    $ pytest tests/integration/tmc/test_assign_resources.py
 
 

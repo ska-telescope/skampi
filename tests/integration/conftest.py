@@ -540,9 +540,10 @@ def a_subarray_in_aborted_state_whilst_busy_running_a_scan(
     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
         "obsstate"
     ).to_become_equal_to("ABORTED")
-    with context_monitoring.wait_before_complete(integration_test_exec_settings):
+    with context_monitoring.wait_before_complete(
+        integration_test_exec_settings
+    ):
         entry_point.abort_subarray(sut_settings.subarray_id)
-    context_monitoring.re_init_builder()
     return configured_subarray
 
 

@@ -1,7 +1,7 @@
 import pytest
 import os
 
-from pytest_bdd import given, scenario, then, when
+from pytest_bdd import scenario, then
 from assertpy import assert_that
 
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -12,6 +12,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from resources.models.mvp_model.states import ObsState
 
 from ..conftest import SutTestSettings
+
 
 
 @pytest.fixture(name="set_up_log_checking_for_cbf_subarray_during_abort_test")

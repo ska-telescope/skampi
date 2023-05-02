@@ -609,17 +609,6 @@ class CSPRestart(base.RestartStep, LogEnabled):
         return builder
 
 
-class CSPRestartWithHelper(CSPRestart):
-    def __init__(self, aborted_state_helper: AbortedStateHelper) -> None:
-        super().__init__()
-        self._aborted_state_helper = aborted_state_helper
-
-    def do(self, sub_array_id: int):
-        # first do clear config if aborted from state higher than IDLE
-        self._aborted_state_helper.prepare_for_restarting(sub_array_id)
-        super().do(sub_array_id)
-
-
 class CSPAbortStepWithHelper(CSPAbortStep):
     def __init__(self, aborted_state_helper: AbortedStateHelper) -> None:
         super().__init__()
@@ -627,7 +616,7 @@ class CSPAbortStepWithHelper(CSPAbortStep):
 
     def do(self, sub_array_id: int):
         self._aborted_state_helper.set_going_into_aborted(sub_array_id)
-        super().do(sub_array_id)
+        super().do_abort(sub_array_id)
 
 
 class CSPEntryPoint(CompositeEntryPoint):
@@ -652,13 +641,11 @@ class CSPEntryPoint(CompositeEntryPoint):
         self.configure_scan_step = CspConfigureStep(observation)
         self.scan_step = CspScanStep(observation)
         self.obsreset_step = CSPObsResetStep()
-        if os.getenv("PATCH_CBF_RESTART_PROBLEM"):
+        if names.TEL().skalow and os.getenv("PATCH_CBF_RESTART_PROBLEM"):
             aborted_from_state = AbortedStateHelper(self)
             self.abort_step = CSPAbortStepWithHelper(aborted_from_state)
-            self.restart_step = CSPRestartWithHelper(aborted_from_state)
         else:
             self.abort_step = CSPAbortStep()
-            self.restart_step = CSPRestart()
 
 
 csp_mid_assign_resources_template = {

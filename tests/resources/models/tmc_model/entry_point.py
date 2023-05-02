@@ -20,6 +20,7 @@ from ska_ser_skallop.utils.singleton import Memo
 
 from ..mvp_model.env import Observation, get_observation_config
 from ..mvp_model.states import ObsState
+from ..cbf_model.aborted_from_state_helper import AbortedStateHelper
 
 logger = logging.getLogger(__name__)
 
@@ -673,6 +674,16 @@ class TMCObsReset(base.ObsResetStep, TMCRestart, LogEnabled):
         return self.set_wait_for_do_restart(sub_array_id)
 
 
+class TMCAbortStepWithHelper(TMCAbortStep):
+    def __init__(self, aborted_state_helper: AbortedStateHelper) -> None:
+        super().__init__()
+        self._aborted_state_helper = aborted_state_helper
+
+    def do(self, sub_array_id: int):
+        self._aborted_state_helper.set_going_into_aborted(sub_array_id)
+        super().do_abort(sub_array_id)
+
+
 class TMCEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""
 
@@ -701,8 +712,14 @@ class TMCEntryPoint(CompositeEntryPoint):
         # currently we do obsreset via an restart
         #  not this results in the SUT going to EMPTY and not
         # IDLE
+        
         self.obsreset_step = TMCObsReset()
         self.restart_step = TMCRestart()
+        if names.TEL().skalow and os.getenv("PATCH_CBF_RESTART_PROBLEM"):
+            aborted_from_state = AbortedStateHelper(self)
+            self.abort_step = TMCAbortStepWithHelper(aborted_from_state)
+        else:
+            self.abort_step = TMCAbortStep()
 
 
 ASSIGN_RESOURCE_JSON_LOW = {

@@ -18,15 +18,15 @@ Set Environment to run test locally
 * Create Merge Request(MR) on gitlab
 * Navigate to the Pipeline view(under CI/CD heading) for the MR
 * Hit Play on the deploy-on-demand job that best fits your goal (the facility is typically in the name of the job, except for STFC Cloud, which is the "1st class citizen" of Skampi pipelines.
-.. image:: _static/img/mid_on_demand.png
+.. image:: ../_static/img/mid_on_demand.png
    :align: center
 * Navigate to the job logs(under CI/CD heading) and wait for the link to the job output. Once the job has completed, click on the Landing Page URL to confirm the deployment.
 * Copy the KUBECONFIG file to your local machine - use the curl command given in the pipeline output (near the top - see screenshot). This KUBECONFIG file is used by any Kubernetes client ( kubectl , k9s , the VSCode kubernetes plugin, etc).
-.. image:: _static/img/kubeconfig_ss.png
+.. image:: ../_static/img/kubeconfig_ss.png
    :align: center
 * You should now be able to connect to the cluster. Set the kubeconfig of your VSCode Kubernetes plugin to point to this cluster, so that you can see the resources (click on the three dots of that plugin's window panel and select "Set Kubeconfig" option).
 * Locate the pipeline test job environment variable by searching for "Make config dump" in the logs. Scroll down a bit to see them.
-.. image:: _static/img/job_env.png
+.. image:: ../_static/img/job_env.png
    :align: center
 * Set the environment variables on your local machine to match those used by the pipeline test jobs.
 .. code-block:: console
@@ -55,7 +55,7 @@ Testing and Debugging
 you should see output like ``got response from sys/database/2``
 
 * If your test discovery is not working, try re-launching the Gitlens extension. You should be having something like below:
-.. image:: _static/img/gitlens.png
+.. image:: ../_static/img/gitlens.png
    :align: center
 * To check list of pods deployed run following command
 .. code-block:: console

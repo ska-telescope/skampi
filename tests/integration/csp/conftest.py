@@ -204,6 +204,7 @@ def an_csp_subarray(
         set_up_subarray_log_checking_for_csp parameter.
     :param monitor_cbf: Object for monitor_cbf parameter.
     :param csp_base_composition: Object for csp_base_composition parameter.
+    :param sut_settings: sut_settings fixture
     :return: A class representing the csp base configuration for the system under test.
     """
     sut_settings.default_subarray_name = sut_settings.tel.csp.subarray(sut_settings.subarray_id)

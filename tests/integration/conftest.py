@@ -92,7 +92,7 @@ def fxt_sdp_assign_resources_exec_settings(
 ):
     """Set up test specific execution settings.
 
-    :param exec_settings: The global test execution settings as a fixture.
+    :param integration_test_exec_settings: The global test execution settings as a fixture.
     :return: test specific execution settings as a fixture
     """
     return integration_test_exec_settings
@@ -268,7 +268,11 @@ def an_subarray_busy_scanning(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """an subarray busy scanning"""
+    """an subarray busy scanning
+
+    :param configured_subarray: configured_subarray fixture
+    :param integration_test_exec_settings: integration_test_exec_settings fixture
+    """
     configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
@@ -357,7 +361,7 @@ def assign_resources_with_subarray_id(
     composition: conf_types.Composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
-    resources_list: list,
+    resources_list: list,  # type: ignore
     subarray_id: int,
 ):
     """
@@ -480,26 +484,6 @@ def i_command_it_to_scan(
         configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
-@when("I command it to Abort")
-def i_command_it_to_abort(
-    context_monitoring: fxt_types.context_monitoring,
-    allocated_subarray: fxt_types.allocated_subarray,
-    entry_point: fxt_types.entry_point,
-    integration_test_exec_settings: fxt_types.exec_settings,
-    sut_settings: SutTestSettings,
-):
-    subarray = sut_settings.default_subarray_name
-    sub_array_id = sut_settings.subarray_id
-    context_monitoring.builder.set_waiting_on(subarray).for_attribute(
-        "obsstate"
-    ).to_become_equal_to("ABORTED")
-    with context_monitoring.context_monitoring():
-        with context_monitoring.wait_before_complete(integration_test_exec_settings):
-            allocated_subarray.reset_after_test(integration_test_exec_settings)
-            entry_point.abort_subarray(sub_array_id)
-    integration_test_exec_settings.touch()
-
-
 @when("I release all resources assigned to it")
 def i_release_all_resources_assigned_to_it(
     allocated_subarray: fxt_types.allocated_subarray,
@@ -593,7 +577,7 @@ def when_i_assign_resources_with_invalid_pb(
     composition: conf_types.Composition,
     sb_config: fxt_types.sb_config,
     sut_settings: SutTestSettings,
-    invalid_processing_block_script_interjected,  # type: ignore this creates an empty assign config
+    invalid_processing_block_script_interjected: None,
 ) -> StepResult:
     subarray_id = sut_settings.subarray_id
     sut_settings.previous_state = ObsState.EMPTY
@@ -919,7 +903,17 @@ def i_command_the_assign_resources_twice_in_consecutive_fashion(
     sb_config: fxt_types.sb_config,
     sut_settings: SutTestSettings,
 ) -> StepResult:
-    """I assign resources to it."""
+    """I assign resources to it.
+
+    :param running_telescope: running_telescope fixture
+    :param entry_point: entry_point fixture
+    :param context_monitoring: context_monitoring fixture
+    :param integration_test_exec_settings: integration_test_exec_settings fixture
+    :param composition: composition fixture (sets the default args for assign resources)
+    :param sb_config: sb_config  fixture (sets the default args for assign resources)
+    :param sut_settings: sut_settings fixture
+    :return: step_result fixture for checking the outcome in subsequent steps
+    """
 
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors

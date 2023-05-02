@@ -160,7 +160,10 @@ def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings)
 @pytest.mark.sdp
 @scenario("features/tmc_assign_resources.feature", "Command assign resources twice in order")
 def test_assign_resources_duplicate_commands(assign_resources_test_exec_settings):  # type: ignore
-    """Assign resources with duplicate id."""
+    """Assign resources with duplicate id.
+
+    :param assign_resources_test_exec_settings: assign_resources_test_exec_settings fixture
+    """
 
 
 @given("an TMC")
@@ -179,6 +182,7 @@ def an_telescope_subarray(
 
     :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
     :param base_composition : An object for base composition
+    :param sut_settings: sut_settings fixture
     :return: base composition
     """
     sut_settings.default_subarray_name = sut_settings.tel.tm.subarray(sut_settings.subarray_id)

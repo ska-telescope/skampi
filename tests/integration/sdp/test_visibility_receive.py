@@ -206,29 +206,26 @@ def run_scan(
 
     LOG.info("Executing scan.")
 
-    err = None
+    error = None
     with scanning_subarray(
         subarray_id,
         receptors,
         integration_test_exec_settings,
         clean_up_after_scanning=True,
     ):
-        error = None
         try:
             scan_id = 1
             obs_state = sdp_subarray.read_attribute("obsstate").value
             assert_that(obs_state).is_equal_to(ObsState.SCANNING)
             LOG.info("Scanning")
             deploy_cbf_emulator(host, scan_id, k8s_element_manager)
-
-        except Exception as err:
+        except Exception as err:  # type: ignore
             error = err
-            LOG.exception("Scan step failed")
-
-        if error:
-            # raise error after Subarray went back to READY
-            # so that ReleaseAllResource can work
-            raise error
+            LOG.exception(f"Scan step failed: \n{err}")
+    if error:
+        # raise error after Subarray went back to READY
+        # so that ReleaseAllResource can work
+        raise error
 
 
 @pytest.fixture

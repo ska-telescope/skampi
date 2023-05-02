@@ -73,7 +73,10 @@ def test_assign_resources_to_sdp_subarray_in_mid(
 @pytest.mark.sdp
 @scenario("features/sdp_assign_resources.feature", "Assign resources with duplicate id to SDP")
 def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings):  # type: ignore
-    """Assign resources with duplicate id."""
+    """Assign resources with duplicate id.
+
+    :param assign_resources_test_exec_settings: setup assign_resources_test_exec_settings
+    """
 
 
 @pytest.mark.skamid
@@ -81,7 +84,10 @@ def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings)
 @pytest.mark.sdp
 @scenario("features/sdp_assign_resources.feature", "Command assign resources twice in order")
 def test_assign_resources_duplicate_commands(assign_resources_test_exec_settings):  # type: ignore
-    """Command assign resources twice in order."""
+    """Command assign resources twice in order.
+
+    :param assign_resources_test_exec_settings: setup assign_resources_test_exec_settings
+    """
 
 
 @pytest.mark.skip(reason="Unable to correctly tear down after this test")
@@ -93,7 +99,10 @@ def test_assign_resources_duplicate_commands(assign_resources_test_exec_settings
     "Assign resources with invalid processing block script name to SDP",
 )
 def test_assign_resources_with_invalid_script(assign_resources_test_exec_settings):  # type: ignore
-    """Command assign resources twice in order."""
+    """Command assign resources twice in order.
+
+    :param assign_resources_test_exec_settings: setup assign_resources_test_exec_settings
+    """
 
 
 @scenario("features/sdp_assign_resources.feature", "Abort assigning SDP")
@@ -132,7 +141,8 @@ def an_sdp_subarray(
     an SDP subarray.
     :param set_up_subarray_log_checking_for_sdp: A fixture for
         setting up log checking for the SDP subarray.
-    :param sdp_base_composition: The base composition for the SDP subarray.
+    :param sdp_base_composition: sdp_base_composition fixture
+    :param sut_settings: sut_settings fixture
     :return: A class representing the sdp base configuration for the system under test.
     """
     sut_settings.default_subarray_name = sut_settings.tel.sdp.subarray(sut_settings.subarray_id)
@@ -156,7 +166,10 @@ def an_sdp_subarray(
 
 @then("the subarray must be in IDLE state")
 def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
-    """the subarray must be in IDLE state."""
+    """the subarray must be in IDLE state.
+
+    :param sut_settings: sut_settings fixture
+    """
     sdp_subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
     result = sdp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.IDLE)

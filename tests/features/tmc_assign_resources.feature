@@ -17,7 +17,7 @@ Feature: Assign resources to subarray using TMC
 		When I release all resources assigned to it
 		Then the subarray must be in EMPTY state
 
-	@XTP-16109
+	@XTP-16109 @XTP-22419 @XTP-6186 @XTP-3324 @COM @Resource_Management @TMC
 	Scenario: Assign resources with duplicate id
 		Given an TMC
 		Given an telescope subarray

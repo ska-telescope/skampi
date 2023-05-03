@@ -6,6 +6,11 @@ Running SKAMPI Tests Locally
 Set Environment to run test locally
 +++++++++++++++++++++++++++++++++++
 
+* Clone the SKAMPI Repo
+.. code-block:: console
+
+   $ git clone https://gitlab.com/ska-telescope/ska-skampi.git
+   $ cd ska-skampi
 * Checkout to your working branch
 .. code-block:: console
 

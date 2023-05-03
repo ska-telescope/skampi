@@ -18,6 +18,7 @@ import json
 import logging
 import os
 import time
+import requests
 
 import pytest
 from assertpy import assert_that
@@ -36,6 +37,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management.subarray_scanning import scanning_subarray
+from requests.models import Response
 
 from .. import conftest
 from .vis_receive_utils import K8sElementManager
@@ -276,3 +278,30 @@ def check_measurement_set(
     )
     assert result.returncode == 0
     LOG.info("Data sent matches the data received")
+
+
+@then("a list of data products can be retrieved", target_fixture="http_response")
+def retrieveDataProducts(service_url: str) -> Response:
+    """
+    Check the data products are available
+
+    :param service_url: a service url
+    :return: url for data product dashboard service
+    """
+    response = requests.get("http://localhost:8000/dataproductlist")
+    assert response.status_code == 200
+
+
+@then("an available data product can be downloaded")
+def downloadDataProduct():
+    """
+    Check the data products can be downloaded.
+    """
+
+
+url = 'http://localhost:8000/download'
+myobj = {'somekey': 'somevalue'}
+
+requests.post(url, json=myobj)
+
+LOG.info("Data product downloaded")

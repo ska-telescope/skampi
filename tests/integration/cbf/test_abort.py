@@ -38,7 +38,7 @@ def fxt_test_settings(sut_settings: SutTestSettings):
 @pytest.mark.cbf
 @pytest.mark.assign
 @scenario("features/cbf_abort_scan.feature", "Test successful Abort Scan on CBF")
-def test_test_successful_abort_scan_on_cbf():
+def test_successful_abort_scan_on_cbf():
     """Test successful Abort Scan on CBF."""
 
 

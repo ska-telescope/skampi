@@ -39,7 +39,7 @@ def fxt_set_nr_of_subarray(sut_settings: conftest.SutTestSettings, nr_of_subarra
 
 @pytest.fixture(name="set_cbf_entry_point", autouse=True)
 def fxt_set_cbf_entry_point(
-    set_nr_of_subarray,
+    set_nr_of_subarray: None,
     set_session_exec_env: fxt_types.set_session_exec_env,
     exec_settings: fxt_types.exec_settings,
     sut_settings: conftest.SutTestSettings,
@@ -143,7 +143,7 @@ def fxt_csp_base_configuration(tmp_path: Any) -> conf_types.ScanConfiguration:
 
 
 @pytest.fixture(name="setup_cbf_mock")
-def fxt_setup_cbf_mock(mock_entry_point: fxt_types.mock_entry_point):
+def fxt_setup_cbf_mock(mock_entry_point: fxt_types.mock_entry_point, sut_settings: conftest.SutTestSettings):
     """_summary_
 
     :param mock_entry_point: _description_

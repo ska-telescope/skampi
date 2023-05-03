@@ -135,7 +135,7 @@ def fxt_set_session_exec_settings(
 
 @pytest.fixture(name="run_mock")
 def fxt_run_mock_wrapper(
-    request: Any, _pytest_bdd_example: Any, conftest_settings: SutTestSettings
+    request: Any, _pytest_bdd_example: Any, sut_settings: SutTestSettings
 ):
     """
     Fixture that returns a function to use for running a test as a mock.
@@ -152,7 +152,7 @@ def fxt_run_mock_wrapper(
 
         :param mock_test: A mock_test object
         """
-        conftest_settings.mock_sut = True
+        sut_settings.mock_sut = True
         # pylint: disable-next=too-many-function-args
         with patch(
             "ska_ser_skallop.mvp_fixtures.fixtures.TransitChecking"

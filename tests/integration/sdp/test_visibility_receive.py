@@ -18,26 +18,23 @@ import json
 import logging
 import os
 import time
-import requests
 
 import pytest
+import requests
 from assertpy import assert_that
-from integration.sdp.vis_receive_utils import (
-    POD_CONTAINER,
-    check_data_present,
-    compare_data,
-    deploy_cbf_emulator,
-    pvc_exists,
-    wait_for_pod,
-    wait_for_predicate,
-)
+from integration.sdp.vis_receive_utils import (POD_CONTAINER,
+                                               check_data_present,
+                                               compare_data,
+                                               deploy_cbf_emulator, pvc_exists,
+                                               wait_for_pod,
+                                               wait_for_predicate)
 from pytest_bdd import given, scenario, then, when
+from requests.models import Response
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ska_ser_skallop.mvp_management.subarray_scanning import scanning_subarray
-from requests.models import Response
 
 from .. import conftest
 from .vis_receive_utils import K8sElementManager

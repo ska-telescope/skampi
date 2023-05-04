@@ -1,7 +1,7 @@
 @XTP-20968
 Feature: Visibility Receive Script
 
-	@XTP-20969
+	@XTP-20969 @XTP-20275 @XTP-20282
 	Scenario: Execute visibility receive script for a single scan
 		Given the test volumes are present and the test data are downloaded
 		And an SDP subarray in READY state

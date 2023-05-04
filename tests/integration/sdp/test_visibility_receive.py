@@ -302,7 +302,7 @@ f = open('/workspaces/ska-skampi/tests/test-download-data-product.json')
 
 data = json.load(f)
 
-requests.post(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/download", data)
+response = requests.post(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/download", data)
 assert response.status_code == 200
 
 LOG.info("Data product downloaded")

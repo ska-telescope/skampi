@@ -46,6 +46,7 @@ pytest_plugins = ["unit.test_cluster_k8s"]
 
 LOG = logging.getLogger(__name__)
 
+INGRESS = os.environ.get("INGRESS_HOST")
 NAMESPACE = os.environ.get("KUBE_NAMESPACE")
 NAMESPACE_SDP = os.environ.get("KUBE_NAMESPACE_SDP")
 PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
@@ -285,7 +286,8 @@ def retrieveDataProducts() -> Response:
     """
     Check the data products are available
     """
-    response = requests.get("http://$INGRESS_HOST/$KUBE_NAMESPACE/dataproductlist")
+
+    response = requests.get(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/dataproductlist")
     assert response.status_code == 200
 
 
@@ -296,9 +298,10 @@ def downloadDataProduct():
     """
 
 
-url = 'http://$INGRESS_HOST/$KUBE_NAMESPACE/download'
-myobj = {'somekey': 'somevalue'}
+f = open('/workspaces/ska-skampi/tests/test-download-data-product.json')  
 
-requests.post(url, json=myobj)
+data = json.load(f)
+
+requests.post(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/download", data)
 
 LOG.info("Data product downloaded")

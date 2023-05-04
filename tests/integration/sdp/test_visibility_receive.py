@@ -298,7 +298,7 @@ def downloadDataProduct():
     """
 
 
-f = open('/workspaces/ska-skampi/tests/test-download-data-product.json')  
+f = open('/workspaces/ska-skampi/tests/test-download-data-product.json')
 
 data = json.load(f)
 

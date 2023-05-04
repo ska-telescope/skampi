@@ -151,7 +151,9 @@ def test_release_resources_from_tmc_subarray_in_mid():
 @pytest.mark.sdp
 @scenario("features/tmc_assign_resources.feature", "Assign resources with duplicate id")
 def test_assign_resources_with_duplicate_id(assign_resources_test_exec_settings):  # type: ignore
-    """Assign resources with duplicate id."""
+    """Assign resources with duplicate id.
+    :param assign_resources_test_exec_settings: assign_resources_test_exec_settings fixture
+    """
 
 
 @pytest.mark.xfail

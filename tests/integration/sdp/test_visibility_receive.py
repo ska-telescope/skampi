@@ -296,7 +296,7 @@ def downloadDataProduct():
     """
 
 
-url = 'http://localhost:8000/download'
+url = 'http://$INGRESS_HOST/$KUBE_NAMESPACE/download'
 myobj = {'somekey': 'somevalue'}
 
 requests.post(url, json=myobj)

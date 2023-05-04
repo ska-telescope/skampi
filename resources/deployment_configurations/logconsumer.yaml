@@ -1,0 +1,63 @@
+name: talondxlogconsumer
+function: talon-dx-log-consumer
+domain: mid-csp-cbf
+command: "TalonDxLogConsumer"
+instances: ["talondxlogconsumer-001"]
+depends_on:
+  - device: mid_csp_cbf/sub_elt/controller
+readinessProbe:
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+livenessProbe:
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+server:
+  name: "TalonDxLogConsumer"
+  instances:
+  - name: "talondxlogconsumer-001"
+    classes:
+    - name: "TalonDxLogConsumer"
+      devices:
+      - name: "mid_csp_cbf/talondx_log_consumer/talondxlogconsumer-001"
+        properties:
+          - name: "LoggingLevelDefault"
+            values:
+            - "5"
+          - name: "LoggingTargetsDefault"
+            values:
+            - "console"
+          - name: "polled_attr"
+            values:
+            - "state"
+            - "1000"
+            - "healthstate"
+            - "3000"
+            - "adminmode"
+            - "3000"
+      - name: "psi-spfrx/rxpu/log-consumer-0"
+        properties:
+          - name: "LoggingLevelDefault"
+            values:
+            - "5"
+          - name: "LoggingTargetsDefault"
+            values:
+            - "console"
+          - name: "polled_attr"
+            values:
+            - "state"
+            - "1000"
+            - "healthstate"
+            - "3000"
+            - "adminmode"
+            - "3000"
+image:
+  registry: "{{.Values.midcbf.image.registry}}"
+  image: "{{.Values.midcbf.image.image}}"
+  tag: "{{.Values.midcbf.image.tag}}"
+  pullPolicy: "{{.Values.midcbf.image.pullPolicy}}"

@@ -39,7 +39,7 @@ def test_abort_scanning(disable_clear: None):
 @pytest.mark.cbf
 @pytest.mark.assign
 @scenario("features/csp_scan.feature", "Test successful Abort Scan on CSP")
-def test_test_successful_abort_scan_on_csp():
+def test_successful_abort_scan_on_csp():
     """Test successful Abort Scan on CSP."""
 
 

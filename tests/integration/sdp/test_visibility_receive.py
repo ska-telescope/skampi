@@ -281,14 +281,11 @@ def check_measurement_set(
 
 
 @then("a list of data products can be retrieved", target_fixture="http_response")
-def retrieveDataProducts(service_url: str) -> Response:
+def retrieveDataProducts() -> Response:
     """
     Check the data products are available
-
-    :param service_url: a service url
-    :return: url for data product dashboard service
     """
-    response = requests.get("http://localhost:8000/dataproductlist")
+    response = requests.get("http://$INGRESS_HOST/$KUBE_NAMESPACE/dataproductlist")
     assert response.status_code == 200
 
 

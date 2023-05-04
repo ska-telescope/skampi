@@ -3,6 +3,6 @@ ska-mid-cbf-mcs:
   engineeringConsoleVersion: 0.6.1
   hostInfo:
     environment: "mid-psi"
-  deviceServers:
-    talondxlogconsumer:
-      file: "logconsumer.yaml"
+#  deviceServers:
+#    talondxlogconsumer:
+#      file: "logconsumer.yaml"

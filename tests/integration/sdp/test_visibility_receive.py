@@ -298,7 +298,7 @@ def downloadDataProduct():
     """
 
 
-f = open('/tests/test-download-data-product.json')
+f = open('tests/test-download-data-product.json')
 
 data = json.load(f)
 

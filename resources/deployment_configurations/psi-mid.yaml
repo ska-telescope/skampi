@@ -5,6 +5,7 @@ ska-mid-cbf-mcs:
     environment: "mid-psi"
   deviceServers:
     talondxlogconsumer:
+      file: ""
       server:
         name: "TalonDxLogConsumer"
         instances:
@@ -12,22 +13,6 @@ ska-mid-cbf-mcs:
           classes:
           - name: "TalonDxLogConsumer"
             devices:
-            - name: "mid_csp_cbf/talondx_log_consumer/talondxlogconsumer-001"
-              properties:
-                - name: "LoggingLevelDefault"
-                  values:
-                  - "5"
-                - name: "LoggingTargetsDefault"
-                  values:
-                  - "console"
-                - name: "polled_attr"
-                  values:
-                  - "state"
-                  - "1000"
-                  - "healthstate"
-                  - "3000"
-                  - "adminmode"
-                  - "3000"
             - name: "psi-spfrx/rxpu/log-consumer-0"
               properties:
                 - name: "LoggingLevelDefault"

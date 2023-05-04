@@ -7,7 +7,8 @@ Feature: Configure the subarray using TMC
 		When I configure it for a scan
 		Then the subarray must be in the READY state
 
-	@XTP-16155
+	@XTP-16155 @XTP-22419 @XTP-6186 @XTP-3324 @Entry_point @Observation @TMC @configuration
+	
 	Scenario: Configure invalid scan on subarray using TMC
 		Given an TMC
 		Given an telescope subarray

@@ -5,7 +5,6 @@ ska-mid-cbf-mcs:
     environment: "mid-psi"
   deviceServers:
     talondxlogconsumer:
-      file: ""
       server:
         name: "TalonDxLogConsumer"
         instances:

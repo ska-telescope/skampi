@@ -107,7 +107,7 @@ def test_abort_configuring_on_low_tmc_subarray(
 
 @given("an TMC")
 def a_tmc():
-    """a TMC"""
+    """an TMC"""
 
 
 @given("an telescope subarray", target_fixture="configuration")

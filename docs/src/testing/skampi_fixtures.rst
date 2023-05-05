@@ -6,10 +6,10 @@ Understanding SKAMPI Fixtures [Basic]
 
     **Entry Points:**
 
-            The EntryPoint object provide the tester a high level API for commanding the System Under Test[SUT].More about this is explained in example which is demoed below.
+            The EntryPoint object provide the tester a high level API for commanding the System Under Test[SUT]. More about this is explained in example which is demoed below.
     
     **Composition:**
-            The term "Composition" is used as creating a Subarray using resources from various sub systems.            
+            The term "Composition" is used when creating a Subarray using resources from various sub systems.            
 
             The following source file can give more idea about this:
                 * https://gitlab.com/ska-telescope/ska-ser-skallop/-/blob/master/src/ska_ser_skallop/mvp_control/configuration/composition.py
@@ -53,7 +53,7 @@ Below fixtures are taken from above link for example purpose:
 
 `fxt_types.allocated_subarray <https://gitlab.com/ska-telescope/ska-ser-skallop/-/blob/master/src/ska_ser_skallop/mvp_fixtures/fixtures.py>`_
  
-* Generate a Subarray context object in the IDLE obsState with a set of resources assigned a fixture.
+* Generate a Subarray context object in the IDLE obsState with a set of resources assigned.
 
 * SKA-SKAMPI Reference:  tests/integration/tmc/test_configure_scan.py
 
@@ -131,7 +131,7 @@ Following is an example for Assigning Resources on SKA mid.
 		Given an TMC
 		Given an telescope subarray
 		When I assign resources to it
-		Then the subarray must be in IDLE state
+		Then the subarray must be in IDLE obsState
 
 **Fixtures used in this scenario**: 
       **pytest fixtures** can be found in the test file or in conftest.py of tests directory.
@@ -142,7 +142,7 @@ Following is an example for Assigning Resources on SKA mid.
            * **pytest.fixture:(name=sut_settings):** A fixture for System Under Test. Information like Subarray ID, number of receptors, Scan duration, Number of Subarrays is passed. Customizable as they are defined in tests.
            * **fxt_types.running_telescope:** Fixture used to set a telescope into a running (ON) state. Gives running telescope devices. Gives the Subarray in an EMPTY observation state. Which is needed or a must have condition/observation state for assigning resources.
            * **fxt_types.context_monitoring:** Fixture to construct ContextMonitor object. It contains information about the context (here, in this example allocation of a subarray) in which the test is being executed. Gives test context for execution.
-           * **fxt_types.entry_point:** For each subsytem there is different entry point. This entry point is used to run test cases related to that particular sub-system. For example TMC entry point is defined in tests/resources/models/tmc_model/entry_point.py[Class TMCEntryPoint]
+           * **fxt_types.entry_point:** For each subsytem there is different entry point. This entry point is used to run test cases related to that particular sub-system. For example TMC entry point is defined in `tests/resources/models/tmc_model/entry_point.py <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/resources/models/tmc_model/entry_point.py>`_ [Class TMCEntryPoint]
            * **fxt_types.sb_config:** Fixture for Subarray Configuration. Specifies the ID of the Scheduling Block to which this Scan belongs. It is non customizable as its unique and generated at run time.
            * **fxt_types.exec_settings:** Fixture for execution settings for the integration test. Contains execution related settings for a particular pytest test call.
 
@@ -177,8 +177,8 @@ Following is an example for Assigning Resources on SKA mid.
 		361		sut_settings: SutTestSettings, 
 		362	):
     
-    Then the subarray must be in IDLE state: Defined in tests/integration/tmc/test_assign_resources.py
-	172	@then("the subarray must be in IDLE state")
+    Then the subarray must be in IDLE obsState: Defined in tests/integration/tmc/test_assign_resources.py
+	172	@then("the subarray must be in IDLE obsState")
 	173 	def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings): 
 
 

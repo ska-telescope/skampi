@@ -1,18 +1,15 @@
 """Pytest fixtures and bdd step implementations specific to tmc integration
 tests."""
-import os
-
 import logging
+import os
 from typing import Callable
+
 import pytest
-
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-
 from resources.models.tmc_model.entry_point import TMCEntryPoint
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
 
@@ -27,7 +24,11 @@ def fxt_set_entry_point(
     sut_settings: conftest.SutTestSettings,
 ):
     """Fixture to use for setting up the entry point as from only the
-    interface to sdp."""
+    interface to sdp.
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings.
+    :param set_session_exec_env: A fixture to set session execution environment
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
     sut_settings.nr_of_receptors = 4
@@ -76,6 +77,7 @@ def fxt_set_csp_online_from_tmc(
     :type nr_of_subarrays: int
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
+    :param online: An object for online flag
     """
     if not online:
         logging.info("setting csp components online within tmc context")
@@ -91,7 +93,7 @@ def fxt_sdp_start_up_test_exec_settings(
 ):
     """General startup test execution settings specific to telescope from tmc.
 
-    :param exec_settings: Fixture as used by skallop
+    :param integration_test_exec_settings: Fixture as used by skallop
     """
     integration_test_exec_settings.time_out = 100
 
@@ -102,8 +104,7 @@ def fxt_tmc_assign_resources_exec_settings(
 ):
     """Set up test specific execution settings.
 
-    :param exec_settings: The global test execution settings as a fixture.
-    :return: test specific execution settings as a fixture
+    :param integration_test_exec_settings: The global test execution settings as a fixture.
     """
     integration_test_exec_settings.time_out = 100
 
@@ -113,11 +114,13 @@ def fxt_tmc_assign_resources_exec_settings(
 
 @pytest.fixture(name="set_up_subarray_log_checking_for_tmc")
 def fxt_set_up_log_capturing_for_cbf(
-    log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
     :param log_checking: The skallop log_checking fixture to use
+    :param sut_settings: A class representing the settings for the system under test.
     """
     index = sut_settings.subarray_id
     if os.getenv("CAPTURE_LOGS"):
@@ -142,9 +145,7 @@ def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    composition = conf_types.CompositionByFile(
-        tmp_path, conf_types.CompositionType.STANDARD
-    )
+    composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
     return composition
 
 
@@ -166,5 +167,8 @@ def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 
 @pytest.fixture(autouse=True)
 def override_timeouts(exec_settings):
-    """Sets timeout for test environment."""
+    """
+    Sets timeout for test environment.
+    :param exec_settings: _Description_
+    """
     exec_settings.time_out = 100

@@ -1,20 +1,21 @@
-"""Pytest fixtures and BDD step implementations specific to OET integration tests."""
+"""
+Pytest fixtures and BDD step implementations
+specific to OET integration tests.
+"""
 import logging
 import os
 from typing import Callable
 
 import pytest
-
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from resources.models.obsconfig.config import Observation
+from resources.models.tmc_model.entry_point import TMCEntryPoint
+from ska_oso_pdm.entities.common.sb_definition import SBDefinition
+from ska_oso_pdm.schemas import CODEC
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-from ska_oso_pdm.entities.common.sb_definition import SBDefinition
-from ska_oso_pdm.schemas import CODEC
-
-from resources.models.obsconfig.config import Observation
-from resources.models.tmc_model.entry_point import TMCEntryPoint
 from .. import conftest
 
 LOGGER = logging.getLogger(__name__)
@@ -27,8 +28,9 @@ def fxt_nr_of_subarrays() -> int:
     :return: _description_
     :rtype: int
     """
-    # we only work with 1 subarray as CBF low currently limits deployment of only 1
-    # cbf mid only controls the state of subarray 1 so will also limit to 1
+    # we only work with 1 subarray as CBF low currently limits
+    # deployment of only 1 cbf mid only controls the state of subarray 1
+    # so will also limit to 1
     tel = names.TEL()
     if tel.skalow:
         return 1
@@ -37,12 +39,12 @@ def fxt_nr_of_subarrays() -> int:
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online_from_tmc(
-        online: conftest.OnlineFlag,
-        set_subsystem_online: Callable[[EntryPoint], None],
-        nr_of_subarrays,
+    online: conftest.OnlineFlag,
+    set_subsystem_online: Callable[[EntryPoint], None],
+    nr_of_subarrays,
 ):
     """_summary_
-
+    :param online: A online flag from conftest
     :param nr_of_subarrays: _description_
     :type nr_of_subarrays: int
     :param set_subsystem_online: _description_
@@ -58,21 +60,26 @@ def fxt_set_csp_online_from_tmc(
 
 @pytest.fixture(name="set_tmc_entry_point", autouse=True)
 def fxt_set_entry_point(
-        set_session_exec_env: fxt_types.set_session_exec_env,
-        sut_settings: conftest.SutTestSettings,
+    set_session_exec_env: fxt_types.set_session_exec_env,
+    sut_settings: conftest.SutTestSettings,
 ):
-    """Fixture to use for setting up the entry point as from only the interface to sdp."""
+    """
+    Fixture to use for setting up the entry point as
+    from only the interface to sdp.
+    :param set_session_exec_env: A fixture to set session execution environment
+    :param sut_settings: A class representing the settings for the system under test.
+    """
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = 1
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     obs = Observation()
     obs.add_scan_type_configuration(
         "science_A",
-        {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}}
+        {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}},
     )
     obs.add_scan_type_configuration(
         "calibration_B",
-        {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}}
+        {"vis0": {"channels_id": "vis_channels", "polarisation_id": "all"}},
     )
     exec_env.entrypoint = TMCEntryPoint
     exec_env.entrypoint.observation = obs
@@ -97,11 +104,13 @@ def fxt_oet_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
 @pytest.fixture(name="set_up_tmc_log_checking", autouse=True)
 @pytest.mark.usefixtures("set_tmc_entry_point")
 def fxt_set_up_log_capturing_for_cbf(
-        log_checking: fxt_types.log_checking, sut_settings: conftest.SutTestSettings
+    log_checking: fxt_types.log_checking,
+    sut_settings: conftest.SutTestSettings,
 ):
     """Set up log capturing (if enabled by CATPURE_LOGS).
 
     :param log_checking: The skallop log_checking fixture to use
+    :param sut_settings: A class representing the settings for the system under test.
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
@@ -111,6 +120,11 @@ def fxt_set_up_log_capturing_for_cbf(
 
 @pytest.fixture
 def test_sbd() -> SBDefinition:
+    """
+    Test sbd
+
+    :return: SBDefinition
+    """
     cwd, _ = os.path.split(__file__)
     path = os.path.join(cwd, "data/mid_sb.json")
     return CODEC.load_from_file(SBDefinition, path)

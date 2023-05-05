@@ -2,8 +2,7 @@
 import logging
 
 import pytest
-from pytest_bdd import given, scenario, then
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from pytest_bdd import scenario
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from ..conftest import SutTestSettings
@@ -13,6 +12,12 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture(name="composition")
 def fxt_default_composition(csp_base_composition: conf_types.Composition):
+    """
+    A fixture for default composition
+    :param csp_base_composition: A csp base composition object
+    :type csp_base_composition: conf_types.Composition
+    :return: A class representing the csp base configuration for the system under test.
+    """
     return csp_base_composition
 
 
@@ -62,6 +67,11 @@ def test_release_resources_to_csp_mid_subarray():
 
 @pytest.fixture(name="set_restart_after_abort")
 def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
+    """
+    A fixture to set restart after abort
+    :param sut_settings: An instance of SutTestSettings class
+        containing test settings for the SUT.
+    """
     sut_settings.restart_after_abort = True
 
 
@@ -74,7 +84,25 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
 def test_abort_in_resourcing_mid(
     set_restart_after_abort: None, composition: conf_types.Composition
 ):
-    """Assign resources to csp subarray in mid."""
+    """Assign resources to csp subarray in mid.
+    :param set_restart_after_abort: A fixture to set restart after abort which is set as none
+    :param composition: The assign resources configuration paramaters
+    """
+
+
+@pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skalow
+@pytest.mark.assign
+@scenario("features/csp_assign_resources.feature", "Abort assigning CSP Low")
+def test_abort_in_resourcing_low(
+    set_restart_after_abort: None, composition: conf_types.Composition
+):
+    """Assign resources to csp subarray in low.
+    :param set_restart_after_abort: A fixture to set restart after abort which is set as none
+    :param composition: The assign resources configuration paramaters
+    """
 
 
 # use when from ..shared_assign_resources in ..conftest.py

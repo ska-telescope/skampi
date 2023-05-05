@@ -25,7 +25,12 @@ def test_tmc_mid_alarm_for_subarray_idle():
 def a_telescope_subarray(
     base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
-    """an telescope subarray."""
+    """
+    an telescope subarray.
+
+    :param base_composition : An object for base composition
+    :return: base composition
+    """
     return base_composition
 
 

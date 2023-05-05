@@ -11,3 +11,4 @@ Here you can find instructions to test SKAMPI software using different methods a
    :maxdepth: 2
 
    testing/testing_infrastructure
+   testing/testing_locally

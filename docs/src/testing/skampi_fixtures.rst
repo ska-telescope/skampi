@@ -6,40 +6,40 @@ Understanding SKAMPI Fixtures [Basic]
 
     **Entry Points:**
 
-            The EntryPoint object provide the tester a high level API for commanding the SUT.More about this is explained in demoed example.
+            The EntryPoint object provide the tester a high level API for commanding the System Under Test[SUT].More about this is explained in example which is demoed below.
     
     **Composition:**
-            Composition in tests generally refers to when we are assigning resources to a Subarray.
-            
-            The **standard_composition_template** in following source file can give more idea about this:
+            The term "Composition" is used as creating a Subarray using resources from various sub systems.            
+
+            The following source file can give more idea about this:
                 * https://gitlab.com/ska-telescope/ska-ser-skallop/-/blob/master/src/ska_ser_skallop/mvp_control/configuration/composition.py
   
     **Configuration:**
-            Configuration in tests refers when configuring a Subarray for scanning purpose.
+            The term "Configuration" is used when configuring a Subarray for scanning purpose.
 
-            The **standard_configuration_template** in following source file can give more idea about this:
+            The following source file can give more idea about this:
                 * https://gitlab.com/ska-telescope/ska-ser-skallop/-/blob/master/src/ska_ser_skallop/mvp_control/configuration/configuration.py
 
     
 **conftest.py**:
-   This file used to define the fixture functions to make them accessible across multiple test files.
+   This file is used to define the fixture functions to make them accessible across multiple test files.
 
 | Refer to ``tests/conftest.py``. 
 | Refer to ``tests/integration/conftest.py``.
 | Refer to ``tests/unit/conftest.py``.
 
 **Conftest Priority**:
-Consider one of the directory tree of SKAMPI:
+Consider one of the directory tree structure of SKAMPI:
 
 .. image:: ../_static/img/conftest_tree.png
 
-| As you can see conftest.py is present at different levels of the directory and our tests are in tmc directory.
+| As you can see, conftest.py is present at different levels of the directory structure. Our tests are in the tmc directory.
 
-| Here the fixtures defined in the tests would be first searched in tmc directory.
+| First, pytest searches the tmc directory for the fixtures used in the tests.
 
-| If not found it will be get searched in integration directory.
+| If it cannot find them there, then it moves onto the integration directory.
 
-| If not found will be get searched in tests directory.
+| Finally, if the fixture doesn't exist there either, it will search the tests directory.
 
 **Fixtures**: 
 
@@ -53,7 +53,7 @@ Below fixtures are taken from above link for example purpose:
 
 `fxt_types.allocated_subarray <https://gitlab.com/ska-telescope/ska-ser-skallop/-/blob/master/src/ska_ser_skallop/mvp_fixtures/fixtures.py>`_
  
-* Generate a Subarray context object in the IDLE state with a set of resources assigned a fixture.
+* Generate a Subarray context object in the IDLE obsState with a set of resources assigned a fixture.
 
 * SKA-SKAMPI Reference:  tests/integration/tmc/test_configure_scan.py
 
@@ -87,34 +87,35 @@ Below fixtures are referred from conftest.py:
 
 **pytest.fixture: sut_settings**:
 
-        *   Fixture to use for setting env like  SUT settings for fixtures in conftest
+        *   A fixture for System Under Test. Information like Subarray ID, number of receptors, Scan duration, Number of Subarrays is passed. Customizable as they are defined in tests.
         *   SKA-SKAMPI Reference: tests/integration/tmc/test_scan.py
 
 
-.. code-block:: console
+.. code-block:: python
 
-        169 	def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
-	181 		for index in range(1, sut_settings.nr_of_subarrays + 1):
-	182 		subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
+    def the_sdp_csp_and_dish_must_be_on(sut_settings: conftest.SutTestSettings):
+	    for index in range(1, sut_settings.nr_of_subarrays + 1):
+			subarray = con_config.get_device_proxy(tel.sdp.subarray(index))
 
 
 
 `integration/tmc/conftest.py <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/integration/tmc/conftest.py>`_ 
 
-**pytest.fixture: base_configuration**:
+**pytest.fixture: assign_resources_test_exec_settings**:
 
-        *  Setup a base scan configuration to use for SDP.
+        *  This fixture used to set test specific execution settings. Below code shows timeout in seconds for a pytest test.
   
-        *  SKA-SKAMPI Reference: tests/integration/tmc/
+        *  SKA-SKAMPI Reference: tests/integration/tmc/conftest.py
 
-.. code-block:: console
+.. code-block:: python
 
-        50 	    def fxt_default_composition(base_composition: conf_types.Composition):
-	57 		return base_composition
-
-
-
-|          
+    @pytest.fixture(name="assign_resources_test_exec_settings", autouse=True)
+    def fxt_tmc_assign_resources_exec_settings(
+     integration_test_exec_settings: fxt_types.exec_settings,
+    ):
+    
+        integration_test_exec_settings.time_out = 100
+         
 
 **Understanding Fixtures With an Example:**
 -------------------------------------------
@@ -139,11 +140,11 @@ Following is an example for Assigning Resources on SKA mid.
 
            * **pytest.fixture(name=composition):** A fixture for default composition. Here in the below example we are composing a Subarray through TMC entry point.
            * **pytest.fixture:(name=sut_settings):** A fixture for System Under Test. Information like Subarray ID, number of receptors, Scan duration, Number of Subarrays is passed. Customizable as they are defined in tests.
-           * **fxt_types.running_telescope:** Fixture used to set a telescope into a running (ON) state. Gives running telescope devices. Gives the Subarray in an EMPY observation state.Which is needed or a must have condition/observation state for assigning resources.
-           * **fxt_types.context_monitoring:** Fixture to construct ContextMonitor object. It contains information about the context(here in this example allocation of a subarray) in which the test is being executed. Gives test context for execution.
-           * **fxt_types.entry_point:** For each subsytem there is different entry point. This entry point is used to run test cases related to that particular sub-system. For example TMC entry point is defined in tests/resources/models/tmc_model/entry_point.py. 
-           * **fxt_types.sb_config:** Fixture for Subarray Configuration. It provides the scheduling block id. Specifies the ID of the Scheduling Block to which this Scan belongs. It is non customizable as its unique and generated at run time.
-           * **fxt_types.exec_settings:** Fixture for execution settings for the integration test.Contains execution related settings for a particular pytest test call.
+           * **fxt_types.running_telescope:** Fixture used to set a telescope into a running (ON) state. Gives running telescope devices. Gives the Subarray in an EMPTY observation state. Which is needed or a must have condition/observation state for assigning resources.
+           * **fxt_types.context_monitoring:** Fixture to construct ContextMonitor object. It contains information about the context (here, in this example allocation of a subarray) in which the test is being executed. Gives test context for execution.
+           * **fxt_types.entry_point:** For each subsytem there is different entry point. This entry point is used to run test cases related to that particular sub-system. For example TMC entry point is defined in tests/resources/models/tmc_model/entry_point.py[Class TMCEntryPoint]
+           * **fxt_types.sb_config:** Fixture for Subarray Configuration. Specifies the ID of the Scheduling Block to which this Scan belongs. It is non customizable as its unique and generated at run time.
+           * **fxt_types.exec_settings:** Fixture for execution settings for the integration test. Contains execution related settings for a particular pytest test call.
 
 **Example test case for above scenario:**
 
@@ -226,7 +227,7 @@ A fixture called “observation_config” is present in the `integration/conftes
     config = self.observation.generate_assign_resources_config(sub_array_id).as_json
 
 
-3. as you can see in the above code below instruction, is  generating the assign resource json.
+3. as you can see in the above code, below instruction is generating the assign resource json.
 
 .. code-block:: python
 

@@ -9,7 +9,7 @@ from time import sleep
 import pytest
 from tango import DevFailed, DeviceProxy, ApiUtil
 
-from archiver_helper import ArchiverHelper
+from .archiver_helper import ArchiverHelper
 
 CONF_MANAGER_LOW = "low-eda/cm/01"
 EVENT_SUBSCRIBER_LOW = "low-eda/es/01"

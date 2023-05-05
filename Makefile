@@ -44,6 +44,7 @@ else
 DASHMARK ?= ska$(CONFIG)
 endif
 
+TELESCOPE_ENVIRONMENT = "$(CONFIG) STFC" # For configurator tool display
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
 EVENT_SUBSCRIBER = "$(CONFIG)-eda/es/01"
 

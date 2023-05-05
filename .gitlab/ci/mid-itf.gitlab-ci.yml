@@ -10,7 +10,7 @@
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     INGRESS_HOST: "10.164.0.3"
     CLUSTER_DOMAIN: "za-itf.skao.int" ## Domain used for naming Tango Device Servers
-    K8S_EXTRA_PARMS: "--set global.ska-tango-archiver.enabled=false  --set ska-tango-archiver.enabled=false"
+    ARCHIVER_HOST_NAME: "timescaledb-1.ska-tango-archiver.svc.za-itf.skao.int"
   when: manual
 
 .mid_itf_deploy:

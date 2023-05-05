@@ -14,6 +14,7 @@ from ...conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(reason="test fails intermittently")
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(

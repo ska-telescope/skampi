@@ -1,11 +1,11 @@
 .. _`Testing Runway`:
 
-Understanding SKAMPI Fixtures [Basics]
+Understanding SKAMPI Fixtures [Basic]
 *************************************************************
 **General Terms in SKAMPI tests:**
 
     **Entry Points:**
-    
+
             The EntryPoint object provide the tester a high level API for commanding the SUT.More about this is explained in demoed example.
     
     **Composition:**
@@ -117,7 +117,7 @@ Below fixtures are referred from conftest.py:
 |          
 
 **Understanding Fixtures With an Example:**
-
+-------------------------------------------
 Information on BDD tests can be found at: https://developer.skao.int/en/latest/tools/bdd-test-context.html
 
 Following is an example for Assigning Resources on SKA mid.
@@ -179,3 +179,74 @@ Following is an example for Assigning Resources on SKA mid.
     Then the subarray must be in IDLE state: Defined in tests/integration/tmc/test_assign_resources.py
 	172	@then("the subarray must be in IDLE state")
 	173 	def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings): 
+
+
+**Modifying the default inputs/json to the tests:**
+---------------------------------------------------
+Manipulation of observation configuration data for some tests is important for testing.
+
+ **tests/resources/models/obsconfig :**  Most of the observational configuration data which is used throughout an observation (i.e throughout the lifetime of a single execution block/program block), can be found here.
+
+
+**Pytest.fixture(name=” observation_config”):**
+
+A fixture called “observation_config” is present in the `integration/conftest.py <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/integration/conftest.py>`_ which returns an instance of the `Observation <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/resources/models/obsconfig/config.py>`_ class.This fixture can be used to get the needed input for AssignResource, Configure, Scan commands. 
+
+**Lets see this with an example:**
+
+1. The TMC entrypoint(`tests/resources/models/tmc_model/entry_point.py <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/resources/models/tmc_model/entry_point.py>`_)  is responsible for generating the observation configuration data for given test.The constructor of class TMCEntryPoint gives the instance of class Observation.
+
+.. code-block:: python
+
+    tests/resources/models/tmc_model/entry_point.py:
+
+    if not observation:
+        observation = get_observation_config()
+
+    self.assign_resources_step = AssignResourcesStep(observation)
+
+
+
+2. This class is later used to get the generated configuration data. 
+
+.. code-block:: python
+
+    tests/resources/models/tmc_model/entry_point.py:
+
+    def do_assign_resources(
+    self,
+    sub_array_id: int,
+    dish_ids: List[int],
+    composition: types.Composition, # pylint: disable=
+    sb_id: str,
+    ):
+    central_node_name = self._tel.tm.central_node
+    central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
+    if self._tel.skamid:
+    config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+
+
+3. as you can see in the above code below instruction, is  generating the assign resource json.
+
+.. code-block:: python
+
+    config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+
+4. With the help of  “observation_config” or “sut_settings” fixture one can modify the input as needed.
+
+.. code-block:: python
+
+    my_test_function_that_adds_beam_configuration(observation_config):
+        observation_config.add_beam_configuration(...)
+
+    or  directly from fixture sut_settings as:
+
+    my_test_function_that_adds_beam_configuration(sut_settings: SutSettings):
+        sut_settings .observation.add_beam_configuration(...)
+
+5. The same steps can be followed for Configure and Scan commands.
+
+
+
+
+

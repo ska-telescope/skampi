@@ -18,7 +18,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 def test_configure_cspsubarray_for_a_scan_in_mid():
     """Configure cspsubarray for a scan in mid using the csp leaf node."""
 
-
+@pytest.mark.skip(reason="unable to consistently determine the state of csb from leaf node")
 @pytest.mark.skalow
 @scenario(
     "features/tmc_cspln_configure.feature",

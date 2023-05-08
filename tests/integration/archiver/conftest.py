@@ -1,13 +1,3 @@
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-import pytest, logging
-from .. import conftest
-from resources.models.tmc_model.entry_point import TMCEntryPoint
-from typing import Callable
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-
 """Pytest fixtures and bdd step implementations specific to tmc integration
 tests."""
 import logging

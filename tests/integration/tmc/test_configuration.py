@@ -17,6 +17,13 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 # log capturing
+#import psycopg2
+ 
+# DB_NAME = os.getenv("ARCHIVER_DBNAME")
+# DB_USER = os.getenv("ARCHIVER_DB_USER")
+# DB_PASS = os.getenv("ARCHIVER_DB_PWDARCHIVER_DB_USER")
+# DB_HOST = os.getenv("ARCHIVER_HOST_NAME")
+# DB_PORT = os.getenv("ARCHIVER_PORT")
 
 CONFIG = os.getenv("CONFIG")
 EVENT_SUBSCRIBER= f"{CONFIG}-eda/es/01"
@@ -128,4 +135,31 @@ def check_archived_attribute(sut_settings: SutTestSettings):
     final_len = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     print(final_len)
     assert final_len > INITIAL_LEN  
+    #teardown
+    with open(f"tests/integration/archiver/config_file/subarray_obsState.yaml", "rb") as file:
+        response = httpx.post(
+            f"http://configurator.{KUBE_NAMESPACE}.svc.cluster.local:8003/configure-archiver",
+            files={"file": ("subarray_obsState.yaml", file, "application/x-yaml")},
+            data={"option": "remove"},
+            timeout=None
+        )
+        assert response.status_code == 200
+        
+    # conn = psycopg2.connect(database=DB_NAME,
+    #                     user=DB_USER,
+    #                     password=DB_PASS,
+    #                     host=DB_HOST,
+    #                     port=DB_PORT)
+
+ 
+    # cur = conn.cursor()
+    # row = cur.execute("
+    # select value_r_label from att_scalar_devenum where att_conf_id = (
+        # select att_conf_id from att_conf where att_name like '%ska_mid/tm_subarray_node/1/obsstate'
+        # ) order by data_time desc limit 1;
+    # ")
+    # result = row.fetchall()
+    # assert result == 'IDLE'
+    # conn.close()
+    
     

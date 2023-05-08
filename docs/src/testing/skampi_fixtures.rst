@@ -19,17 +19,24 @@ Understanding SKAMPI Fixtures [Basic]
 
             The following source file can give more idea about this:
                 * https://gitlab.com/ska-telescope/ska-ser-skallop/-/blob/master/src/ska_ser_skallop/mvp_control/configuration/configuration.py
+  
 
-    
-**conftest.py**:
-   This file is used to define the fixture functions to make them accessible across multiple test files.
 
-| Refer to ``tests/conftest.py``. 
-| Refer to ``tests/integration/conftest.py``.
-| Refer to ``tests/unit/conftest.py``.
+|
+|   **conftest.py**:
 
-**Conftest Priority**:
-Consider one of the directory tree structure of SKAMPI:
+    | This file is used to define the fixture functions to make them accessible across multiple test files.
+
+    | Refer to ``tests/conftest.py``. 
+    | Refer to ``tests/integration/conftest.py``.
+    | Refer to ``tests/unit/conftest.py``.
+
+
+|
+|   **Conftest Priority**:
+
+    | Consider one of the directory tree structure of SKAMPI:
+
 
 .. image:: ../_static/img/conftest_tree.png
 
@@ -41,7 +48,8 @@ Consider one of the directory tree structure of SKAMPI:
 
 | Finally, if the fixture doesn't exist there either, it will search the tests directory.
 
-**Fixtures**: 
+| 
+| **Fixtures**: 
 
 Most of the SKAMPI fixtures are defined at ska-ser-skallop repository:
     * https://gitlab.com/ska-telescope/ska-ser-skallop/-/tree/master/src/ska_ser_skallop/mvp_fixtures
@@ -142,7 +150,7 @@ Following is an example for Assigning Resources on SKA mid.
            * **pytest.fixture:(name=sut_settings):** A fixture for System Under Test. Information like Subarray ID, number of receptors, Scan duration, Number of Subarrays is passed. Customizable as they are defined in tests.
            * **fxt_types.running_telescope:** Fixture used to set a telescope into a running (ON) state. Gives running telescope devices. Gives the Subarray in an EMPTY observation state. Which is needed or a must have condition/observation state for assigning resources.
            * **fxt_types.context_monitoring:** Fixture to construct ContextMonitor object. It contains information about the context (here, in this example allocation of a subarray) in which the test is being executed. Gives test context for execution.
-           * **fxt_types.entry_point:** For each subsytem there is different entry point. This entry point is used to run test cases related to that particular sub-system. For example TMC entry point is defined in `tests/resources/models/tmc_model/entry_point.py <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/resources/models/tmc_model/entry_point.py>`_ [Class TMCEntryPoint]
+           * **fxt_types.entry_point:** Each sub-system can have its own entry point. This entry point is used to run test cases related to that particular sub-system. For example TMC entry point is defined in `tests/resources/models/tmc_model/entry_point.py <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/resources/models/tmc_model/entry_point.py>`_ [Class TMCEntryPoint]. Suppose one want to build an entry point for SDP leaf node subsystem. First thing will need to check here will be the SDPLN is in ON state. If one wants to invoke commands like Assign, Configure and Scan the SDPLN must be in its respective state and ObsState. For example for AssignResource command the SDPLN must be ON and ObsState must be EMPTY. Same can be followed for Configure and Scan Command. Please refer `SDP Leaf Node EntryPoint <https://gitlab.com/ska-telescope/ska-skampi/-/blob/62eaa32aa65a4b3c1a6fae3aa3a1f43480d22a91/tests/resources/models/tmc_model/leafnodes/sdpln_entry_point.py>`_ for how its implemented[Class SDPLnEntryPoint] 
            * **fxt_types.sb_config:** Fixture for Subarray Configuration. Specifies the ID of the Scheduling Block to which this Scan belongs. It is non customizable as its unique and generated at run time.
            * **fxt_types.exec_settings:** Fixture for execution settings for the integration test. Contains execution related settings for a particular pytest test call.
 
@@ -178,8 +186,8 @@ Following is an example for Assigning Resources on SKA mid.
 		362	):
     
     Then the subarray must be in IDLE obsState: Defined in tests/integration/tmc/test_assign_resources.py
-	172	@then("the subarray must be in IDLE obsState")
-	173 	def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings): 
+	        172	@then("the subarray must be in IDLE obsState")
+	        173 	def the_subarray_must_be_in_idle_state(sut_settings: SutTestSettings): 
 
 
 **Modifying the default inputs/json to the tests:**

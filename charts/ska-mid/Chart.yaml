@@ -13,10 +13,11 @@ dependencies:
   - name: ska-tango-util
     version: 0.4.6-dev.c8bcdbccf
     repository: https://gitlab.com/api/v4/projects/9027158/packages/helm/dev
-  - name: ska-mid-cbf-mcs # CIPA team
+  - name: ska-mid-cbf # CIPA team
     version: 0.7.0
     repository: https://artefact.skao.int/repository/helm-internal
-    condition: ska-mid-cbf-mcs.enabled
+    condition: ska-mid-cbf.enabled
+    alias: ska-mid-cbf-mcs
   - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
     version: 0.14.0
     repository: https://artefact.skao.int/repository/helm-internal

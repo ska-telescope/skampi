@@ -87,11 +87,7 @@ skampi-upload-test-results: ## Upload Skampi system acceptance and integration t
 ##  Introspects the chosen chart and look for sub-charts.  Iterate over these
 ##  and k8s-wait for each one.
 
-skampi-wait-all: helm-install-yq  ## iterate over sub-charts and wait for each one
-	@for chart in `helm inspect chart $(K8S_UMBRELLA_CHART_PATH) | /usr/local/bin/yq e '.dependencies[].name' - | grep -v ska-tango-util`; do \
-		echo "Waiting for sub-chart: $${chart}"; \
-		make k8s-wait KUBE_APP=$${chart}; \
-	done
+skampi-wait-all: helm-install-yq k8s-wait ## iterate over sub-charts and wait for each one
 
 # Set up of the testing pod. This goes through the following steps:
 # 1. Create the pod, piping the contents of $(k8s_test_folder) in. This is

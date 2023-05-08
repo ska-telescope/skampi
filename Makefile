@@ -90,6 +90,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
 	--set global.device_server_port=$(TANGO_SERVER_PORT) \
+	--set global.labels.app=$(KUBE_APP) \
 	--set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) \
 	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) \
@@ -113,8 +114,7 @@ HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 OCI_IMAGES_TO_PUBLISH =
 
 # KUBE_APP is set to the ska-tango-images base chart value
-SKAMPI_KUBE_APP ?= skampi
-KUBE_APP = ska-tango-images
+KUBE_APP ?= ska-skampi
 
 CI_JOB_ID ?= local##local default for ci job id
 #

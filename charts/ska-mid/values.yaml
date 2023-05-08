@@ -6,6 +6,8 @@ tags:
   taranta_dashboard: false
 
 global:
+  labels:
+    app: ska-skampi
   minikube: true
   operator: true
   exposeAllDS: true

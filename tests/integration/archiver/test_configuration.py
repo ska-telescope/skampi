@@ -27,6 +27,7 @@ INITIAL_LEN = 0
 print(EVENT_SUBSCRIBER)
 
 @pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skamid
 @scenario("features/archiver.feature", "Configure an EDA database instance for Mid")
 def test_archiver_configuration_in_mid():
@@ -34,6 +35,7 @@ def test_archiver_configuration_in_mid():
 
 
 @pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skamid
 @scenario("features/archiver.feature", "Archive an change event on EDA database instance for Mid")
 def test_archiver_in_mid():
@@ -41,6 +43,7 @@ def test_archiver_in_mid():
 
 
 @pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skalow
 @scenario("features/archiver.feature", "Configure an EDA database instance for Low")
 def test_archiver_configuration_in_low():
@@ -48,6 +51,7 @@ def test_archiver_configuration_in_low():
 
 
 @pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skalow
 @scenario("features/archiver.feature", "Archive an change event on EDA database instance for Low")
 def test_archiver_in_low():
@@ -114,7 +118,7 @@ def configure_archiver():
 #@when("I assign resources to the subarray") from conftest
 
 @then("the subarray went to obststate to IDLE event must be archived")
-def check_archived_attribute(sut_settings):
+def check_archived_attribute(sut_settings: SutTestSettings):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value

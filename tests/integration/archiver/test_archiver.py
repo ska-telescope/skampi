@@ -3,7 +3,7 @@
 Test archiver
 """
 import logging
-import sys
+import sys,os
 from time import sleep
 
 import pytest
@@ -11,23 +11,16 @@ from tango import DevFailed, DeviceProxy, ApiUtil
 
 from .archiver_helper import ArchiverHelper
 
-CONF_MANAGER_LOW = "low-eda/cm/01"
-EVENT_SUBSCRIBER_LOW = "low-eda/es/01"
-CONF_MANAGER = "mid-eda/cm/01"
-EVENT_SUBSCRIBER = "mid-eda/es/01"
+CONFIG = os.getenv("CONFIG")
+CONF_MANAGER = f"{CONFIG}-eda/cm/01"
+EVENT_SUBSCRIBER = f"{CONFIG}-eda/es/01"
 CM_SERVER = "dserver/hdbppcm-srv/01"
 
-
-@pytest.mark.post_deployment
-@pytest.mark.skalow
-def test_init_low():
-    logging.info("Init test archiver low device")
-    archiver_helper = ArchiverHelper(CONF_MANAGER_LOW, EVENT_SUBSCRIBER_LOW)
-    archiver_helper.start_archiving()
 
 
 @pytest.mark.post_deployment
 @pytest.mark.skamid
+@pytest.mark.skalow
 def test_init():
     logging.info("Init test archiver mid")
     archiver_helper = ArchiverHelper(CONF_MANAGER, EVENT_SUBSCRIBER)
@@ -74,29 +67,12 @@ def test_configure_attribute(configuration_manager, event_subscriber, attribute,
 
 @pytest.mark.post_deployment
 @pytest.mark.skamid
+@pytest.mark.skalow
 @pytest.mark.parametrize(
     "attribute, strategy", [("sys/tg_test/1/double_scalar", "SetPeriodEvent"),
                             ("ska_mid/tm_central/central_node/state", "SetCodePushedEvent"),
                             ("ska_mid/tm_central/central_node/healthstate", "SetRelativeEvent"),
                             ("ska_mid/tm_central/central_node/telescopestate", "SetAbsoluteEvent")
                             ])
-def test_config_attribute_mid(attribute, strategy):
-    try:
-        test_configure_attribute(CONF_MANAGER, EVENT_SUBSCRIBER, attribute, strategy)
-    except Exception as e:
-        logging.error(e)
-
-
-@pytest.mark.post_deployment
-@pytest.mark.skalow
-@pytest.mark.parametrize(
-    "attribute, strategy", [("sys/tg_test/1/double_scalar", "SetPeriodEvent"),
-                            ("ska_low/tm_central/central_node/state", "SetCodePushedEvent"),
-                            ("ska_low/tm_central/central_node/healthstate", "SetRelativeEvent"),
-                            ("ska_low/tm_central/central_node/telescopestate", "SetAbsoluteEvent")
-                            ])
-def test_config_attribute_low(attribute, strategy):
-    try:
-        test_configure_attribute(CONF_MANAGER_LOW, EVENT_SUBSCRIBER_LOW, attribute, strategy)
-    except Exception as e:
-        logging.error(e)
+def test_config_attribute(attribute, strategy):
+    test_configure_attribute(CONF_MANAGER, EVENT_SUBSCRIBER, attribute, strategy)

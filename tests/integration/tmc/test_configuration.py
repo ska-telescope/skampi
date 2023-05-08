@@ -3,6 +3,7 @@ import logging
 import yaml, os
 import httpx
 import pytest
+import psycopg2
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then , when
 from resources.models.mvp_model.states import ObsState
@@ -17,13 +18,13 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 # log capturing
-#import psycopg2
+
  
-# DB_NAME = os.getenv("ARCHIVER_DBNAME")
-# DB_USER = os.getenv("ARCHIVER_DB_USER")
-# DB_PASS = os.getenv("ARCHIVER_DB_PWDARCHIVER_DB_USER")
-# DB_HOST = os.getenv("ARCHIVER_HOST_NAME")
-# DB_PORT = os.getenv("ARCHIVER_PORT")
+DB_NAME = os.getenv("ARCHIVER_DBNAME")
+DB_USER = os.getenv("ARCHIVER_DB_USER")
+DB_PASS = os.getenv("ARCHIVER_DB_PWD")
+DB_HOST = os.getenv("ARCHIVER_HOST_NAME")
+DB_PORT = os.getenv("ARCHIVER_PORT")
 
 CONFIG = os.getenv("CONFIG")
 EVENT_SUBSCRIBER= f"{CONFIG}-eda/es/01"
@@ -32,6 +33,7 @@ KUBE_NAMESPACE =  os.getenv("KUBE_NAMESPACE")
 INITIAL_LEN = 0
 
 print(EVENT_SUBSCRIBER)
+
 
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -145,21 +147,17 @@ def check_archived_attribute(sut_settings: SutTestSettings):
         )
         assert response.status_code == 200
         
-    # conn = psycopg2.connect(database=DB_NAME,
-    #                     user=DB_USER,
-    #                     password=DB_PASS,
-    #                     host=DB_HOST,
-    #                     port=DB_PORT)
+    conn = psycopg2.connect(database=DB_NAME,
+                        user=DB_USER,
+                        password=DB_PASS,
+                        host=DB_HOST,
+                        port=DB_PORT)
 
  
-    # cur = conn.cursor()
-    # row = cur.execute("
-    # select value_r_label from att_scalar_devenum where att_conf_id = (
-        # select att_conf_id from att_conf where att_name like '%ska_mid/tm_subarray_node/1/obsstate'
-        # ) order by data_time desc limit 1;
-    # ")
-    # result = row.fetchall()
-    # assert result == 'IDLE'
-    # conn.close()
+    cur = conn.cursor()
+    cur.execute("select value_r_label from att_scalar_devenum where att_conf_id = (select att_conf_id from att_conf where att_name like '%ska_mid/tm_subarray_node/1/obsstate')order by data_time desc limit 1;")
+    result = cur.fetchall()
+    assert result[0][0] == 'IDLE'
+    conn.close()
     
     

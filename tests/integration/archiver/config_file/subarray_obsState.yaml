@@ -4,7 +4,5 @@ archiver: mid-eda/es/01
 configuration:
 - class: SubarrayNodeMid
   attributes:
-    state:
-      code_push_event: true
-    obsState:
+    obsstate:
       code_push_event: true

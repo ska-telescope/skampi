@@ -16,6 +16,7 @@ def test_abort_configuring(set_up_subarray_log_checking_for_csp: None):
     :param: set_up_subarray_log_checking_for_csp: sets up subarray log checking for csp
     """
 
+
 @pytest.mark.skip(reason="This functionality not tested at CSP/CBF.")
 @pytest.mark.skalow
 @pytest.mark.configure

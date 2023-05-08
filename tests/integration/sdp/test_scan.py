@@ -40,7 +40,10 @@ def test_abort_scanning(disable_clear):
 @pytest.mark.sdp
 @scenario("features/sdp_scan.feature", "Abort scanning SDP Low")
 def test_abort_scanning_low(disable_clear):
-    """Abort scanning."""
+    """
+    Abort scanning.
+    :param disable_clear: A disable clear object
+    """
 
 
 # use from local conftest

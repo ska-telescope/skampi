@@ -35,7 +35,7 @@ def test_tmc_abort_scanning_on_mid_subarray(disable_clear_and_tear_down: None):
     """
 
 
-@pytest.mark.skip(reason="This functionality not tested at CSP/CBF.")
+@pytest.mark.skip(reason="This functionality not tested at CSP/CBF, raised SKB-221.")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

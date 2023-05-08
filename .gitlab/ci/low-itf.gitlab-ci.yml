@@ -17,7 +17,7 @@
   extends:
     - .deploy_chart_before
   script:
-    - LOADBALANCER_IP=10.134.10.1 make skampi-links
+    - LOADBALANCER_IP=10.134.10.25 make skampi-links
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

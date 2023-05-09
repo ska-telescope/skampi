@@ -5,9 +5,10 @@ Scenario: Run a scan from TMC
     When I command it to scan for a given period
     Then the subarray must be in the SCANNING state until finished
 
-@XTP-16186
+@XTP-16186 @XTP-17103
 Scenario: Run a scan on low subarray from TMC
     Given an TMC
     Given a subarray in READY state
     When I command it to scan for a given period
     Then the subarray must be in the SCANNING state until finished
+    And the data received matches with the data sent

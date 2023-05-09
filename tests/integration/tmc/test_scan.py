@@ -1,7 +1,12 @@
 """Run scan on telescope subarray feature tests."""
 
+import logging
+import os
+import time
+
 import pytest
 from assertpy import assert_that
+from integration.sdp.vis_receive_utils import POD_CONTAINER, compare_data
 from pytest_bdd import given, scenario, then
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
@@ -9,7 +14,13 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
+from .. import conftest
 from ..conftest import SutTestSettings
+from ..sdp.vis_receive_utils import K8sElementManager
+
+LOG = logging.getLogger(__name__)
+
+NAMESPACE_SDP = os.environ.get("KUBE_NAMESPACE_SDP")
 
 
 @pytest.mark.k8s
@@ -86,3 +97,43 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
     )
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)
+
+
+@then("the data received matches with the data sent")
+def check_measurement_set(
+    dataproduct_directory,
+    k8s_element_manager: K8sElementManager,
+    sut_settings: conftest.SutTestSettings,
+):
+    """
+    Check the data received are same as the data sent.
+
+    :param dataproduct_directory: The directory where outputs are written
+    :param k8s_element_manager: Kubernetes element manager
+    :param sut_settings: SUT settings fixture
+    """
+    # Wait 10 seconds before checking the measurement set.
+    # This gives enough time for the receiver for finish writing the data.
+    time.sleep(10)
+
+    receive_pod = "sdp-receive-data"
+    data_container = POD_CONTAINER
+
+    # Add data product directory to k8s element manager for cleanup
+    parse_dir = dataproduct_directory.index("ska-sdp")
+    data_eb_dir = dataproduct_directory[:parse_dir]
+    k8s_element_manager.output_directory(
+        data_eb_dir,
+        receive_pod,
+        data_container,
+        NAMESPACE_SDP,
+    )
+
+    result = compare_data(
+        receive_pod,
+        data_container,
+        NAMESPACE_SDP,
+        f"{dataproduct_directory}/output.scan-1.ms",
+    )
+    assert result.returncode == 0
+    LOG.info("Data sent matches the data received")

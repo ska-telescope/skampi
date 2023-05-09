@@ -29,7 +29,7 @@ CONFIG = os.getenv("CONFIG")
 
 EVENT_SUBSCRIBER= f"{CONFIG}-eda/es/01"
 CONFIGURATION_MANAGER = f"{CONFIG}-eda/cm/01"
-DB_HOST = f"timescaledb.ska-eda-${CONFIG}-db.svc.cluster.local"
+DB_HOST = f"timescaledb.ska-eda-{CONFIG}-db.svc.cluster.local"
 TANGO_DATABASE_DS = 'databaseds-tango-base'
 INITIAL_LEN = 0
 
@@ -139,6 +139,7 @@ def check_archived_attribute(sut_settings: SutTestSettings):
     status = eda_es.command_inout("AttributeStatus",f'ska_{CONFIG}/tm_subarray_node/1/obsstate')
     final_len = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     assert final_len > INITIAL_LEN  
+    
     #teardown
     with open(f"tests/integration/archiver/config_file/subarray_obsState.yaml", "rb") as file:
         response = httpx.post(

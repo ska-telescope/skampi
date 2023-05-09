@@ -26,9 +26,11 @@ from integration.sdp.vis_receive_utils import (
     POD_CONTAINER,
     check_data_present,
     compare_data,
-    deploy_cbf_emulator, pvc_exists,
+    deploy_cbf_emulator,
+    pvc_exists,
     wait_for_pod,
-    wait_for_predicate)
+    wait_for_predicate
+)
 from pytest_bdd import given, scenario, then, when
 from requests.models import Response
 from resources.models.mvp_model.states import ObsState
@@ -55,6 +57,7 @@ PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
 @scenario(
     "features/sdp_visibility_receive.feature",
     "Execute visibility receive script for a single scan",
+    "Execute visibility receive script for a single scan via TMC",
 )
 def test_visibility_receive_in_low(assign_resources_test_exec_settings):
     """

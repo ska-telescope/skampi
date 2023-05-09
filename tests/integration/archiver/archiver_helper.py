@@ -11,14 +11,14 @@ class ArchiverHelper:
         self.conf_manager_proxy = DeviceProxy(self.conf_manager)
         self.evt_subscriber_proxy = DeviceProxy(self.eventsubscriber)
 
-    def attribute_add(self, fqdn, strategy, polling_period=1000, period_event=3000):
+    def attribute_add(self, fqdn, strategy, polling_period, value):
         if not self.is_already_archived(fqdn):
             AttributeProxy(fqdn).read()
             self.conf_manager_proxy.write_attribute("SetAttributeName", fqdn)
             self.conf_manager_proxy.write_attribute("SetArchiver", self.eventsubscriber)
             self.conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
             self.conf_manager_proxy.write_attribute("SetPollingPeriod", int(polling_period))
-            self.conf_manager_proxy.write_attribute(strategy, int(period_event))
+            self.conf_manager_proxy.write_attribute(strategy, value)
             self.conf_manager_proxy.AttributeAdd()
             return True
         return False

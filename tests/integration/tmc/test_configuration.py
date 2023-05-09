@@ -30,6 +30,7 @@ CONFIG = os.getenv("CONFIG")
 EVENT_SUBSCRIBER= f"{CONFIG}-eda/es/01"
 CONFIGURATION_MANAGER = f"{CONFIG}-eda/cm/01"
 KUBE_NAMESPACE =  os.getenv("KUBE_NAMESPACE")
+TANGO_DATABASE_DS = os.getenv("TANGO_DATABASE_DS")
 INITIAL_LEN = 0
 
 print(EVENT_SUBSCRIBER)
@@ -155,7 +156,7 @@ def check_archived_attribute(sut_settings: SutTestSettings):
 
  
     cur = conn.cursor()
-    cur.execute("select value_r_label from att_scalar_devenum where att_conf_id = (select att_conf_id from att_conf where att_name like '%ska_mid/tm_subarray_node/1/obsstate')order by data_time desc limit 1;")
+    cur.execute(f"select value_r_label from att_scalar_devenum where att_conf_id = (select att_conf_id from att_conf where att_name like 'tango://{TANGO_DATABASE_DS}.{KUBE_NAMESPACE}.svc.cluster.local:10000/ska_mid/tm_subarray_node/1/obsstate')order by data_time desc limit 1;")
     result = cur.fetchall()
     assert result[0][0] == 'IDLE'
     conn.close()

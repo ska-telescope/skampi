@@ -27,9 +27,9 @@ def test_init():
     archiver_helper.start_archiving()
 
 
-def configure_attribute(attribute, configuration_manager, event_subsrciber, strategy):
-    archiver_helper = ArchiverHelper(configuration_manager, event_subsrciber)
-    archiver_helper.attribute_add(attribute, 100, 300, strategy)
+def configure_attribute(attribute, configuration_manager, event_subscriber, strategy, value):
+    archiver_helper = ArchiverHelper(configuration_manager, event_subscriber)
+    archiver_helper.attribute_add(attribute, strategy,1000, value)
     archiver_helper.start_archiving()
     slept_for = archiver_helper.wait_for_start(attribute)
     logging.info("Slept for " + str(slept_for) + 's before archiving started.')
@@ -38,7 +38,7 @@ def configure_attribute(attribute, configuration_manager, event_subsrciber, stra
     archiver_helper.stop_archiving(attribute)
 
 
-def test_configure_attribute(configuration_manager, event_subscriber, attribute, strategy):
+def test_configure_attribute(configuration_manager, event_subscriber, attribute, strategy,value):
     attribute = attribute
     sleep_time = 20
     max_retries = 3
@@ -46,7 +46,7 @@ def test_configure_attribute(configuration_manager, event_subscriber, attribute,
     for x in range(0, max_retries):
         try:
             ApiUtil.cleanup()
-            configure_attribute(attribute, configuration_manager, event_subscriber, strategy)
+            configure_attribute(attribute, configuration_manager, event_subscriber, strategy , value)
             break
         except DevFailed as df:
             logging.error("configure_attribute exception: " + str(sys.exc_info()))
@@ -69,10 +69,10 @@ def test_configure_attribute(configuration_manager, event_subscriber, attribute,
 @pytest.mark.skamid
 @pytest.mark.skalow
 @pytest.mark.parametrize(
-    "attribute, strategy", [("sys/tg_test/1/double_scalar", "SetPeriodEvent"),
-                            ("ska_mid/tm_central/central_node/state", "SetCodePushedEvent"),
-                            ("ska_mid/tm_central/central_node/healthstate", "SetRelativeEvent"),
-                            ("ska_mid/tm_central/central_node/telescopestate", "SetAbsoluteEvent")
+    "attribute, strategy", [("sys/tg_test/1/double_scalar", "SetPeriodEvent",2000),
+                            ("ska_mid/tm_central/central_node/state", "SetCodePushedEvent",True),
+                            ("ska_mid/tm_central/central_node/healthstate", "SetRelativeEvent",2.0),
+                            ("ska_mid/tm_central/central_node/telescopestate", "SetAbsoluteEvent",3.0)
                             ])
-def test_config_attribute(attribute, strategy):
-    test_configure_attribute(CONF_MANAGER, EVENT_SUBSCRIBER, attribute, strategy)
+def test_config_attribute(attribute, strategy,value):
+    test_configure_attribute(CONF_MANAGER, EVENT_SUBSCRIBER, attribute, strategy, value)

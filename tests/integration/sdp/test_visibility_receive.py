@@ -57,7 +57,6 @@ PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
 @scenario(
     "features/sdp_visibility_receive.feature",
     "Execute visibility receive script for a single scan",
-    "Execute visibility receive script for a single scan via TMC",
 )
 def test_visibility_receive_in_low(assign_resources_test_exec_settings):
     """

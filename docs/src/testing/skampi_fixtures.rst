@@ -35,7 +35,7 @@ Understanding SKAMPI Fixtures [Basic]
 |
 |   **Conftest Priority**:
 
-    | Consider one of the directory tree structure of SKAMPI:
+    | Lets have a look at the "tests" directory tree structure of SKAMPI:
 
 
 .. image:: ../_static/img/conftest_tree.png
@@ -146,13 +146,33 @@ Following is an example for Assigning Resources on SKA mid.
 
       **fxt_types** fixtures are defined in: ska_ser_skallop/mvp_fixtures/fixtures.py
 
-           * **pytest.fixture(name=composition):** A fixture for default composition. Here in the below example we are composing a Subarray through TMC entry point.
-           * **pytest.fixture:(name=sut_settings):** A fixture for System Under Test. Information like Subarray ID, number of receptors, Scan duration, Number of Subarrays is passed. Customizable as they are defined in tests.
-           * **fxt_types.running_telescope:** Fixture used to set a telescope into a running (ON) state. Gives running telescope devices. Gives the Subarray in an EMPTY observation state. Which is needed or a must have condition/observation state for assigning resources.
-           * **fxt_types.context_monitoring:** Fixture to construct ContextMonitor object. It contains information about the context (here, in this example allocation of a subarray) in which the test is being executed. Gives test context for execution.
-           * **fxt_types.entry_point:** Each sub-system can have its own entry point. This entry point is used to run test cases related to that particular sub-system. For example TMC entry point is defined in `tests/resources/models/tmc_model/entry_point.py <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/resources/models/tmc_model/entry_point.py>`_ [Class TMCEntryPoint]. Suppose one want to build an entry point for SDP leaf node subsystem. First thing will need to check here will be the SDPLN is in ON state. If one wants to invoke commands like Assign, Configure and Scan the SDPLN must be in its respective state and ObsState. For example for AssignResource command the SDPLN must be ON and ObsState must be EMPTY. Same can be followed for Configure and Scan Command. Please refer `SDP Leaf Node EntryPoint <https://gitlab.com/ska-telescope/ska-skampi/-/blob/62eaa32aa65a4b3c1a6fae3aa3a1f43480d22a91/tests/resources/models/tmc_model/leafnodes/sdpln_entry_point.py>`_ for how its implemented[Class SDPLnEntryPoint] 
-           * **fxt_types.sb_config:** Fixture for Subarray Configuration. Specifies the ID of the Scheduling Block to which this Scan belongs. It is non customizable as its unique and generated at run time.
-           * **fxt_types.exec_settings:** Fixture for execution settings for the integration test. Contains execution related settings for a particular pytest test call.
+           * **pytest.fixture(name=composition):** 
+            
+                A fixture for default composition. Here in the below example we are composing a Subarray through TMC entry point.
+
+           * **pytest.fixture(name=sut_settings):** 
+            
+                A fixture for System Under Test. Information like Subarray ID, number of receptors, Scan duration, Number of Subarrays is passed. Customizable as they are defined in tests.
+
+           * **fxt_types.running_telescope:** 
+            
+                 A Fixture used to set a telescope into a running (ON) state. Gives running telescope devices. Gives the Subarray in an EMPTY observation state. Which is needed or a must have condition/observation state for assigning resources.
+           * **fxt_types.context_monitoring:** 
+  
+                 A Fixture to construct ContextMonitor object. It contains information about the context (here, in this example allocation of a subarray) in which the test is being executed. Gives test context for execution.
+ 
+           * **fxt_types.entry_point:** 
+            
+                Each sub-system can have its own entry point. This entry point is used to run test cases related to that particular sub-system. For example TMC entry point is defined in `tests/resources/models/tmc_model/entry_point.py <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/resources/models/tmc_model/entry_point.py>`_  [Class TMCEntryPoint]. 
+                
+                | Suppose one want to build an entry point for SDP leaf node subsystem. First thing will need to check here will be the SDPLN is in ON state. If one wants to invoke commands like Assign, Configure and Scan the SDPLN must be in its respective state and ObsState. For example for AssignResource command the SDPLN must be ON and ObsState must be EMPTY. Same can be followed for Configure and Scan Command. Please refer `SDP Leaf Node EntryPoint <https://gitlab.com/ska-telescope/ska-skampi/-/blob/62eaa32aa65a4b3c1a6fae3aa3a1f43480d22a91/tests/resources/models/tmc_model/leafnodes/sdpln_entry_point.py>`_ for how its implemented [Class SDPLnEntryPoint] 
+           * **fxt_types.sb_config:** 
+            
+                Fixture for Subarray Configuration. Specifies the ID of the Scheduling Block to which this Scan belongs. It is non customizable as its unique and generated at run time.
+
+           * **fxt_types.exec_settings:** 
+            
+                 Fixture for execution settings for the integration test. Contains execution related settings for a particular pytest test call.
 
 **Example test case for above scenario:**
 
@@ -203,7 +223,7 @@ A fixture called “observation_config” is present in the `integration/conftes
 
 **Lets see this with an example:**
 
-1. The TMC entrypoint(`tests/resources/models/tmc_model/entry_point.py <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/resources/models/tmc_model/entry_point.py>`_)  is responsible for generating the observation configuration data for given test.The constructor of class TMCEntryPoint gives the instance of class Observation.
+1. The TMC entrypoint (`tests/resources/models/tmc_model/entry_point.py <https://gitlab.com/ska-telescope/ska-skampi/-/blob/master/tests/resources/models/tmc_model/entry_point.py>`_)  is responsible for generating the observation configuration data for given test.The constructor of class TMCEntryPoint gives the instance of class Observation.
 
 .. code-block:: python
 

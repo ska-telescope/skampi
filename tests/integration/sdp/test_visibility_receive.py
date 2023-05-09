@@ -22,12 +22,13 @@ import time
 import pytest
 import requests
 from assertpy import assert_that
-from integration.sdp.vis_receive_utils import (POD_CONTAINER,
-                                               check_data_present,
-                                               compare_data,
-                                               deploy_cbf_emulator, pvc_exists,
-                                               wait_for_pod,
-                                               wait_for_predicate)
+from integration.sdp.vis_receive_utils import (
+    POD_CONTAINER,
+    check_data_present,
+    compare_data,
+    deploy_cbf_emulator, pvc_exists,
+    wait_for_pod,
+    wait_for_predicate)
 from pytest_bdd import given, scenario, then, when
 from requests.models import Response
 from resources.models.mvp_model.states import ObsState
@@ -278,7 +279,7 @@ def check_measurement_set(
     LOG.info("Data sent matches the data received")
 
 
-@then("a list of data products can be retrieved", target_fixture="http_response")
+@then("a list of data products can be retrieved")
 def retrieveDataProducts() -> Response:
     """
     Check the data products are available
@@ -294,10 +295,9 @@ def downloadDataProduct():
     Check the data products can be downloaded.
     """
 
+with open("tests/test-download-data-product.json", "r") as json_file:
+    data = json.load(json_file)
 
-f = open('tests/test-download-data-product.json')
-
-data = json.load(f)
 
 response = requests.post(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/download", data)
 assert response.status_code == 200

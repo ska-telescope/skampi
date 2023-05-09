@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 DB_NAME = os.getenv("ARCHIVER_DBNAME")
 DB_USER = os.getenv("ARCHIVER_DB_USER")
 DB_PASS = os.getenv("ARCHIVER_DB_PWD")
-DB_HOST = os.getenv("ARCHIVER_HOST_NAME")
+DB_HOST = os.getenv("ARCHIVER_TIMESCALE_HOST_NAME")
 DB_PORT = os.getenv("ARCHIVER_PORT")
 
 CONFIG = os.getenv("CONFIG")

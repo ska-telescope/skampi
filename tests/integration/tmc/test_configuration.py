@@ -87,7 +87,7 @@ def configuration_file():
         data["archiver"] = EVENT_SUBSCRIBER
         data['manager'] = CONFIGURATION_MANAGER
         config = CONFIG.capitalize()
-        data['configuration']['class'] = f"SubarrayNode{config}"
+        data['configuration'][0]['class'] = f"SubarrayNode{config}"
         
     with open("tests/integration/archiver/config_file/subarray_obsState.yaml", "w", encoding="utf-8") as conf_stream:
         conf_stream.write(yaml.dump(data, sort_keys=False))

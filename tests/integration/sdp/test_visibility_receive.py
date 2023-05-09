@@ -22,12 +22,15 @@ import time
 import pytest
 import requests
 from assertpy import assert_that
-from integration.sdp.vis_receive_utils import (POD_CONTAINER,
-                                               check_data_present,
-                                               compare_data,
-                                               deploy_cbf_emulator, pvc_exists,
-                                               wait_for_pod,
-                                               wait_for_predicate)
+from integration.sdp.vis_receive_utils import (
+    POD_CONTAINER,
+    check_data_present,
+    compare_data,
+    deploy_cbf_emulator,
+    pvc_exists,
+    wait_for_pod,
+    wait_for_predicate,
+)
 from pytest_bdd import given, scenario, then, when
 from requests.models import Response
 from resources.models.mvp_model.states import ObsState

@@ -297,11 +297,10 @@ def downloadDataProduct():
     Check the data products can be downloaded.
     """
 
-with open("tests/test-download-data-product.json", "r") as json_file:
-    data = json.load(json_file)
+    with open("tests/test-download-data-product.json", "r") as json_file:
+        data = json.load(json_file)
 
+    response = requests.post(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/download", data)
+    assert response.status_code == 200
 
-response = requests.post(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/download", data)
-assert response.status_code == 200
-
-LOG.info("Data product downloaded")
+    LOG.info("Data product downloaded")

@@ -1,10 +1,9 @@
 from time import sleep
 
-from tango import DeviceProxy, AttributeProxy
+from tango import AttributeProxy, DeviceProxy
 
 
 class ArchiverHelper:
-
     def __init__(self, conf_manager, eventsubscriber):
         self.conf_manager = conf_manager
         self.eventsubscriber = eventsubscriber
@@ -34,9 +33,9 @@ class ArchiverHelper:
                     return True
         return False
 
-    def start_archiving(self, fqdn=None, polling_period=1000, period_event=3000):
-        if (fqdn is not None):
-            self.attribute_add(fqdn, polling_period, period_event)
+    def start_archiving(self, fqdn=None, strategy=None, polling_period=1000, value=None):
+        if fqdn is not None:
+            self.attribute_add(fqdn, strategy, polling_period, value)
         return self.evt_subscriber_proxy.Start()
 
     def stop_archiving(self, fqdn):
@@ -54,11 +53,11 @@ class ArchiverHelper:
 
     def wait_for_start(self, fqdn, sleep_time=0.1, max_retries=30):
         total_sleep_time = 0
-        for x in range(0, max_retries):
+        for _ in range(0, max_retries):
             try:
-                if ("Archiving          : Started" in self.conf_manager_attribute_status(fqdn)):
+                if "Archiving          : Started" in self.conf_manager_attribute_status(fqdn):
                     break
-            except:
+            except Exception:
                 pass
             sleep(sleep_time)
             total_sleep_time += 1

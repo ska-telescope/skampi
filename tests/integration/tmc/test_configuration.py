@@ -86,6 +86,8 @@ def configuration_file():
         data['db']=f'databaseds-tango-base.{KUBE_NAMESPACE}.svc.cluster.local:10000'
         data["archiver"] = EVENT_SUBSCRIBER
         data['manager'] = CONFIGURATION_MANAGER
+        config = CONFIG.capitalize()
+        data['configuration']['class'] = f"SubarrayNode{config}"
         
     with open("tests/integration/archiver/config_file/subarray_obsState.yaml", "w", encoding="utf-8") as conf_stream:
         conf_stream.write(yaml.dump(data, sort_keys=False))
@@ -119,7 +121,7 @@ def configure_archiver():
             timeout=None
         )
     assert response.status_code == 200
-    status = eda_es.command_inout("AttributeStatus",'ska_mid/tm_subarray_node/1/obsstate')
+    status = eda_es.command_inout("AttributeStatus",f'ska_{CONFIG}/tm_subarray_node/1/obsstate')
     INITIAL_LEN  = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     assert INITIAL_LEN  == 1
         
@@ -134,7 +136,7 @@ def check_archived_attribute(sut_settings: SutTestSettings):
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
     eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
-    status = eda_es.command_inout("AttributeStatus",'ska_mid/tm_subarray_node/1/obsstate')
+    status = eda_es.command_inout("AttributeStatus",f'ska_{CONFIG}/tm_subarray_node/1/obsstate')
     final_len = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     print(final_len)
     assert final_len > INITIAL_LEN  
@@ -156,7 +158,7 @@ def check_archived_attribute(sut_settings: SutTestSettings):
 
  
     cur = conn.cursor()
-    cur.execute(f"select value_r_label from att_scalar_devenum where att_conf_id = (select att_conf_id from att_conf where att_name like 'tango://{TANGO_DATABASE_DS}.{KUBE_NAMESPACE}.svc.cluster.local:10000/ska_mid/tm_subarray_node/1/obsstate')order by data_time desc limit 1;")
+    cur.execute(f"select value_r_label from att_scalar_devenum where att_conf_id = (select att_conf_id from att_conf where att_name like 'tango://{TANGO_DATABASE_DS}.{KUBE_NAMESPACE}.svc.cluster.local:10000/ska_{CONFIG}/tm_subarray_node/1/obsstate')order by data_time desc limit 1;")
     result = cur.fetchall()
     assert result[0][0] == 'IDLE'
     conn.close()

@@ -70,9 +70,9 @@ def test_configure_attribute(configuration_manager, event_subscriber, attribute,
 @pytest.mark.skalow
 @pytest.mark.parametrize(
     "attribute, strategy, value", [("sys/tg_test/1/double_scalar", "SetPeriodEvent",2000),
-                            ("ska_mid/tm_central/central_node/state", "SetCodePushedEvent",True),
-                            ("ska_mid/tm_central/central_node/healthstate", "SetRelativeEvent",2.0),
-                            ("ska_mid/tm_central/central_node/telescopestate", "SetAbsoluteEvent",3.0)
+                            (f"ska_{CONFIG}/tm_central/central_node/state", "SetCodePushedEvent",True),
+                            (f"ska_{CONFIG}/tm_central/central_node/healthstate", "SetRelativeEvent",2.0),
+                            (f"ska_{CONFIG}/tm_central/central_node/telescopestate", "SetAbsoluteEvent",3.0)
                             ])
 def test_config_attribute(attribute, strategy,value):
     test_configure_attribute(CONF_MANAGER, EVENT_SUBSCRIBER, attribute, strategy, value)

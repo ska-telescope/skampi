@@ -204,6 +204,12 @@ If not running in a Dev Container, do:
 - Install one by one the VSCode plugins listed under `"extensions"` in `.devcontainer/devcontainer.json`;
 - Run the commands in the `.devcontainer/devcontainer.json` file's `"postCreateCommand":` object (such as setting up the `poetry` virtualenvironment in your project - this is used in the linter setup);
 
+### Required dependencies
+On Ubuntu 22.04, the following dependencies are required:
+
+- `pkg-config`
+- `poetry`
+
 ### Adding a new product/component
 This is an example of how the deployment would look, if a new application ("Application three"), were to be added to the minimal deployment described in the section on [Modifying deployment configuration](#modifying-deployment-configuration):
 ```{mermaid}

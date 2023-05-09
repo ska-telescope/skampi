@@ -18,7 +18,7 @@ Feature: Finalize the EDA deployment and configuration approach
 	Scenario: Configure an EDA database instance for Mid
 		Given a EDA database instance
 		Given an EDA configuration service
-		Given am EDA archive configuration file specifying subarray obsstate to be archived
+		Given an EDA archive configuration file specifying subarray obsstate to be archived
 		Given an telescope subarray
 		When I upload the configuration file
 		When I assign resources to the subarray
@@ -36,7 +36,7 @@ Feature: Update the EDA deployment solution as per the outcome of SP-3254
 	Scenario: Configure an EDA database instance for Mid
 		Given a EDA database instance
 		Given an EDA configuration service
-		Given am EDA archive configuration file specifying subarray obsstate to be archived
+		Given an EDA archive configuration file specifying subarray obsstate to be archived
 		Given an telescope subarray
 		When I upload the configuration file
 		When I assign resources to the subarray
@@ -77,7 +77,7 @@ Feature: Finalize the EDA deployment and configuration approach
 	Scenario: Configure an EDA database instance for Low
 		Given a EDA database instance
 		Given an EDA configuration service
-		Given am EDA archive configuration file specifying subarray obsstate to be archived
+		Given an EDA archive configuration file specifying subarray obsstate to be archived
 		Given an telescope subarray
 		When I upload the configuration file
 		When I assign resources to the subarray
@@ -95,7 +95,7 @@ Feature: Update the EDA deployment solution as per the outcome of SP-3254
 	Scenario: Configure an EDA database instance for Low
 		Given a EDA database instance
 		Given an EDA configuration service
-		Given am EDA archive configuration file specifying subarray obsstate to be archived
+		Given an EDA archive configuration file specifying subarray obsstate to be archived
 		Given an telescope subarray
 		When I upload the configuration file
 		When I assign resources to the subarray

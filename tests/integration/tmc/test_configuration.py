@@ -79,7 +79,7 @@ def check_eda_service():
     assert eda_cm.ping() > 0
 
 
-@given("am EDA archive configuration file specifying subarray obsstate to be archived")
+@given("an EDA archive configuration file specifying subarray obsstate to be archived")
 def configuration_file():
 
     with open(

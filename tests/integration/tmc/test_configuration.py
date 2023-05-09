@@ -23,17 +23,17 @@ logger = logging.getLogger(__name__)
 DB_NAME = os.getenv("ARCHIVER_DBNAME")
 DB_USER = os.getenv("ARCHIVER_DB_USER")
 DB_PASS = os.getenv("ARCHIVER_DB_PWD")
-DB_HOST = os.getenv("ARCHIVER_TIMESCALE_HOST_NAME")
 DB_PORT = os.getenv("ARCHIVER_PORT")
-
+KUBE_NAMESPACE =  os.getenv("KUBE_NAMESPACE")
 CONFIG = os.getenv("CONFIG")
+
 EVENT_SUBSCRIBER= f"{CONFIG}-eda/es/01"
 CONFIGURATION_MANAGER = f"{CONFIG}-eda/cm/01"
-KUBE_NAMESPACE =  os.getenv("KUBE_NAMESPACE")
-TANGO_DATABASE_DS = os.getenv("TANGO_DATABASE_DS")
+DB_HOST = f"timescaledb.ska-eda-${CONFIG}-db.svc.cluster.local"
+TANGO_DATABASE_DS = 'databaseds-tango-base'
 INITIAL_LEN = 0
 
-print(EVENT_SUBSCRIBER)
+
 
 
 @pytest.mark.k8s
@@ -138,7 +138,6 @@ def check_archived_attribute(sut_settings: SutTestSettings):
     eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
     status = eda_es.command_inout("AttributeStatus",f'ska_{CONFIG}/tm_subarray_node/1/obsstate')
     final_len = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
-    print(final_len)
     assert final_len > INITIAL_LEN  
     #teardown
     with open(f"tests/integration/archiver/config_file/subarray_obsState.yaml", "rb") as file:
@@ -158,7 +157,8 @@ def check_archived_attribute(sut_settings: SutTestSettings):
 
  
     cur = conn.cursor()
-    cur.execute(f"select value_r_label from att_scalar_devenum where att_conf_id = (select att_conf_id from att_conf where att_name like 'tango://{TANGO_DATABASE_DS}.{KUBE_NAMESPACE}.svc.cluster.local:10000/ska_{CONFIG}/tm_subarray_node/1/obsstate')order by data_time desc limit 1;")
+    query = f"select value_r_label from att_scalar_devenum where att_conf_id = (select att_conf_id from att_conf where att_name like '%tango://{TANGO_DATABASE_DS}.{KUBE_NAMESPACE}.svc.cluster.local:10000/ska_{CONFIG}/tm_subarray_node/1/obsstate%')order by data_time desc limit 1;"
+    cur.execute(query)
     result = cur.fetchall()
     assert result[0][0] == 'IDLE'
     conn.close()

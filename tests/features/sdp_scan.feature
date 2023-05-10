@@ -1,7 +1,6 @@
 @XTP-4782
 Feature: Run a scan on sdp subarray
 
-
 	@XTP-4774 @XTP-4773 @XTP-4679 @XTP-4676 @XTP-3324
 	Scenario: Run a scan on sdp subarray in mid
 		Given an SDP subarray in READY state

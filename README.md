@@ -51,9 +51,20 @@ For information on Kubernetes and Kubectl, a quick list of references is availab
 ## Deployment
 
 ### Makefile Targets
-Deployment of SKAMPI is supported by Make targets, exactly as is the case with [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/). To check which targets are available and what default values are set for variables used by Make, run
+Deployment of SKAMPI is supported by Make targets, exactly as is the case with [SKA Tango Examples](https://gitlab.com/ska-telescope/ska-tango-examples/).
+
+Note that the variable `CONFIG` is required and should be set to `mid` for the MID telescope or `low` for LOW.
+The best place is to use `PrivateRules.mak`, e.g.
 ```
-$ make
+$ echo CONFIG=mid >> PrivateRules.mak
+```
+or via environment variables
+```
+$ export CONFIG=mid
+```
+To check which targets are available and what default values are set for variables used by Make. 
+```
+$ make 
 ```
 
 ### Environment Settings
@@ -143,6 +154,37 @@ Installation of Helm should be done as part of familiarising with SKA Tango Exam
 Helm Charts are basically a templating solution that enables a large project such as the SKA to configure a set of standard kubernetes resources using configuration parameters. A Chart is essentially a folder with a general structure, which can be packaged in a .tar.gz file and published to a Helm Repository, or used locally for deployment.
 
 For an understanding of how Helm Charts are used in the SKAMPI project, please go to the section on [Templating the Application](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html#templating-the-application) under the [Container Orchestration Guidelines](https://developer.skao.int/en/latest/tools/containers/orchestration-guidelines.html) of the [Developer Portal](https://developer.skao.int/en/latest/).
+
+## Deploy and use the signal display via Skampi
+
+### Deploy via skampi
+
+Access skampi pipelines via the following link https://gitlab.com/ska-telescope/ska-skampi/-/pipelines
+
+Click Run pipeline, default is to run against master
+
+From pipeline stages, run the mid_deploy_on_demand job
+
+When this completes, in the log a new link to the skampi landing page should be generated (see below example)
+
+https://k8s.stfc.skao.int/ci-ska-skampi-master-mid/start/
+
+### Use the signal display via skampi
+
+Run the jupyter notebooks via the following link:
+https://k8s.stfc.skao.int/binderhub/v2/gl/ska-telescope%2Fska-jupyter-scripting/HEAD
+
+Modify prelim_aa05.ipynb at stage 1.3 Define deployment to be tested
+
+set_cluster(namespace="staging") should be updated to include the namespace in use (see example below)
+
+set_cluster(namespace="ci-ska-skampi-master")
+
+When this block is run, a link to the dashboard will be generated (example below)
+
+Link to dashboard: https://k8s.stfc.skao.int//ci-ska-skampi-master-mid/qa/display/
+
+Run each stage of the notebook blocks in order and the qa display dashboard will be updated with data.
 
 ## Development
 The following sections are aimed at developers who want to integrate their products/components, or who want to add integration or system-level tests to the repository.
@@ -252,6 +294,8 @@ VALUES=values.yaml
 ```
 
 The values.yaml file controls all the variables that are used by Helm when interpreting the templates written for each of the Charts. In other words, if you want to modify the deployment of `SKAMPI` in any way, the simplest method would be to modify the appropriate variables in your own `yaml` file, and tell `Make` about this file. As a convenience, there is already a `yaml` file specified in `.gitignore`, so that you won't unnecessarily commit your local file.
+
+**NOTE** the following assumes that `CONFIG=mid` was set. Replace the `mid` with `low` if needed.
 
 1. Set your `VALUES` to this file and populate this file with a harmless default and check that Helm doesn't complain:
     ```

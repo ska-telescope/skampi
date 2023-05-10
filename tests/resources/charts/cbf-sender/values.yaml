@@ -1,0 +1,23 @@
+# Default values for CBF-SDP emulator
+# Declare variables to be passed into your templates.
+
+cbf_sdp_emulator:
+  container: artefact.skao.int/ska-sdp-cbf-emulator
+  version: 4.0.1
+  imagePullPolicy: IfNotPresent
+  restartPolicy: Never
+
+pvc:
+  name: testing
+  path: /mnt/data
+
+sender:
+  resources: {}
+
+receiver:
+  address_resolution_timeout: 20
+  hostname: ""
+
+nameOverride: ""
+fullnameOverride: ""
+

@@ -1,4 +1,6 @@
-"""module containing values for interpreting enumerated values (e.g. ObsState)"""
+"""
+module containing values for interpreting enumerated values (e.g. ObsState)
+"""
 
 import enum
 

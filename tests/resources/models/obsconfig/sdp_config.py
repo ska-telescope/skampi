@@ -13,9 +13,7 @@ from ska_tmc_cdm.messages.central_node.sdp import (
     ScriptConfiguration,
     SDPConfiguration,
 )
-from ska_tmc_cdm.messages.subarray_node.configure import (
-    SDPConfiguration as SDPScanConfiguration,
-)
+from ska_tmc_cdm.messages.subarray_node.configure import SDPConfiguration as SDPScanConfiguration
 
 from .base import encoded
 from .channelisation import Channelization
@@ -36,16 +34,14 @@ DEFAULT_FIELDS = {
         phase_dir=PhaseDir(
             ra=[123.0],
             dec=[-60.0],
-            reference_time="...",
+            reference_time="2023-02-16T01:23:45.678900",
             reference_frame="ICRF3",
         ),
     )
 }
 
 DEFAULT_POLARISATIONS = {
-    "all": PolarisationConfiguration(
-        polarisations_id="all", corr_type=["XX", "XY", "YY", "YX"]
-    )
+    "all": PolarisationConfiguration(polarisations_id="all", corr_type=["XX", "XY", "YY", "YX"])
 }
 
 DEFAULT_BEAMS = {
@@ -66,15 +62,11 @@ def DEFAULT_SCAN_TYPES(owner: "ScanTypes"):
     return {
         ".default": EBScanType(
             scan_type_id=".default",
-            beams={
-                "vis0": owner.get_beam_configurations("vis0").types["default_beam_type"]
-            },
+            beams={"vis0": owner.get_beam_configurations("vis0").types["default_beam_type"]},
         ),
         "target:a": EBScanType(
             scan_type_id="target:a",
-            beams={
-                "vis0": owner.get_beam_configurations("vis0").types["field_a_beam_type"]
-            },
+            beams={"vis0": owner.get_beam_configurations("vis0").types["field_a_beam_type"]},
             derive_from=".default",
         ),
     }
@@ -94,10 +86,7 @@ class ScanTypes(TargetSpecs):
         if additional_beam_groupings is not None:
             self._beam_configurations = {
                 **self._beam_configurations,
-                **{
-                    beam_grouping.id: beam_grouping
-                    for beam_grouping in additional_beam_groupings
-                },
+                **{beam_grouping.id: beam_grouping for beam_grouping in additional_beam_groupings},
             }
         if additional_scan_types is not None:
             self._scan_type_configurations = {
@@ -124,20 +113,24 @@ class ScanTypes(TargetSpecs):
         ), f"configuration {config_name} already exists."
         if search_beam_id:
             beam_configuration = BeamConfiguration(
-                beam_id=config_name, function=function, search_beam_id=search_beam_id
+                beam_id=config_name,
+                function=function,
+                search_beam_id=search_beam_id,
             )
         if timing_beam_id:
             beam_configuration = BeamConfiguration(
-                beam_id=config_name, function=function, timing_beam_id=timing_beam_id
+                beam_id=config_name,
+                function=function,
+                timing_beam_id=timing_beam_id,
             )
         if vlbi_beam_id:
             beam_configuration = BeamConfiguration(
-                beam_id=config_name, function=function, vlbi_beam_id=vlbi_beam_id
+                beam_id=config_name,
+                function=function,
+                vlbi_beam_id=vlbi_beam_id,
             )
         else:
-            beam_configuration = BeamConfiguration(
-                beam_id=config_name, function=function
-            )
+            beam_configuration = BeamConfiguration(beam_id=config_name, function=function)
         if beam_types is None:
             beam_types = dict()
         self._beam_configurations[config_name] = Beamgrouping(
@@ -145,13 +138,11 @@ class ScanTypes(TargetSpecs):
         )
 
     def add_beam_types(self, grouping_id: str, beam_types: dict[str, EBScanTypeBeam]):
-        assert self._beam_configurations.get(
-            grouping_id
-        ), f"grouping {grouping_id} does not exist, did you call `add_beam_configuration()`."
+        assert self._beam_configurations.get(grouping_id), (
+            f"grouping {grouping_id} does not exist, did you call" " `add_beam_configuration()`."
+        )
         current_beam_types = self._beam_configurations[grouping_id].types
-        current_beam_configuration = self._beam_configurations[
-            grouping_id
-        ].configuration
+        current_beam_configuration = self._beam_configurations[grouping_id].configuration
         self._beam_configurations[grouping_id] = Beamgrouping(
             grouping_id,
             current_beam_configuration,
@@ -162,29 +153,26 @@ class ScanTypes(TargetSpecs):
         self,
         config_name: str,
         beams: Union[
-            dict[str, dict[str, EBScanTypeBeam]], Tuple[str, str], list[Tuple[str, str]]
+            dict[str, dict[str, EBScanTypeBeam]],
+            Tuple[str, str],
+            list[Tuple[str, str]],
         ],
         derive_from: str | None = None,
     ):
-
         agg_beam_types: dict[str, EBScanTypeBeam] = dict()
 
-        def add_beam(
-            grouping_id: str,
-            beam_type_id: str,
-            agg_beam_types: dict[str, EBScanTypeBeam],
-        ):
+        def add_beam(grouping_id: str, beam_type_id: str):
             beam_configuration = self.get_beam_configurations(grouping_id)
             assert beam_configuration, (
-                f"Beam grouping {grouping_id} does not exist, did you add a beam configuration"
-                " by calling `add_beam_configuration'"
+                f"Beam grouping {grouping_id} does not exist, did you add a"
+                " beam configuration by calling `add_beam_configuration'"
             )
             beam_type = beam_configuration.types.get(beam_type_id)
             assert beam_type, (
-                f"Beam type {beam_type_id} does not exist, did you add a beam configuration"
-                " by calling `add_beam_configuration'"
+                f"Beam type {beam_type_id} does not exist, did you add a beam"
+                " configuration by calling `add_beam_configuration'"
             )
-            agg_beam_types = {**agg_beam_types, **{grouping_id: beam_type}}
+            return {grouping_id: beam_type}
 
         assert (
             self._scan_type_configurations.get(config_name) is None
@@ -193,26 +181,31 @@ class ScanTypes(TargetSpecs):
             for beam_grouping_id, beam_types in beams.items():
                 beam_grouping = self._beam_configurations.get(beam_grouping_id)
                 assert beam_grouping, (
-                    f"beam configuration {beam_grouping_id} does not exist,"
-                    "you first need to create a beam configuration by calling `add_beam_configuration'"
+                    f"beam configuration {beam_grouping_id} does not exist,you"
+                    " first need to create a beam configuration by calling"
+                    " `add_beam_configuration'"
                 )
                 agg_beam_types = {**agg_beam_types, **beam_types}
         elif isinstance(beams, tuple):
             grouping_id = beams[0]
             beam_type_id = beams[1]
-            add_beam(grouping_id, beam_type_id, agg_beam_types)
+            agg_beam_types = {
+                **agg_beam_types,
+                **add_beam(grouping_id, beam_type_id),
+            }
         else:
             for mapping in beams:
                 grouping_id = mapping[0]
                 beam_type_id = mapping[1]
-                add_beam(grouping_id, beam_type_id, agg_beam_types)
+                agg_beam_types = {
+                    **agg_beam_types,
+                    **add_beam(grouping_id, beam_type_id),
+                }
 
         if derive_from is None:
             eb_scan_type = EBScanType(config_name, beams=agg_beam_types)
         else:
-            eb_scan_type = EBScanType(
-                config_name, beams=agg_beam_types, derive_from=derive_from
-            )
+            eb_scan_type = EBScanType(config_name, beams=agg_beam_types, derive_from=derive_from)
         self._scan_type_configurations[config_name] = eb_scan_type
 
     @property
@@ -233,9 +226,7 @@ class ScanTypes(TargetSpecs):
         unique_keys = self.target_spec_beams
         return [
             beam_configuration.configuration
-            for beam_configuration in [
-                self._beam_configurations.get(key) for key in unique_keys
-            ]
+            for beam_configuration in [self._beam_configurations.get(key) for key in unique_keys]
             if beam_configuration
         ]
 
@@ -277,7 +268,7 @@ class Polarisations(TargetSpecs):
             self.polarizations = {
                 **self.polarizations,
                 **{
-                    additional_polarization.polarisations_id: additional_polarization
+                    additional_polarization.polarisations_id: additional_polarization  # noqa: E501
                     for additional_polarization in additional_polarizations
                 },
             }
@@ -322,9 +313,7 @@ class ProcessingSpecs(TargetSpecs):
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
-        self._processing_specs = {
-            "test-receive-addresses": ProcessingSpec(script=DEFAULT_SCRIPT)
-        }
+        self._processing_specs = {"test-receive-addresses": ProcessingSpec(script=DEFAULT_SCRIPT)}
         if additional_processing_specs is not None:
             self._processing_specs = {
                 **self._processing_specs,
@@ -333,6 +322,16 @@ class ProcessingSpecs(TargetSpecs):
                     for processing_spec in additional_processing_specs
                 },
             }
+
+    @property
+    def processing_specs(self):
+        return self._processing_specs
+
+    @processing_specs.setter
+    def processing_specs(self, new_spec):
+        if not isinstance(new_spec, dict):
+            raise ValueError("Processing specs needs to be a dictionary")
+        self._processing_specs = new_spec
 
     @property
     def target_processings(self):
@@ -351,7 +350,6 @@ class ProcessingSpecs(TargetSpecs):
         script_kind: str = "realtime",
         parameters: dict[Any, Any] | None = None,
     ):
-
         assert (
             self._processing_specs.get(spec_name) is None
         ), f"The processing spec {spec_name}already exists"
@@ -362,12 +360,8 @@ class ProcessingSpecs(TargetSpecs):
         if parameters is None:
             parameters = {}
 
-        script = ScriptConfiguration(
-            kind=script_kind, name=script_name, version=script_version
-        )
-        self._processing_specs[spec_name] = ProcessingSpec(
-            script=script, parameters=parameters
-        )
+        script = ScriptConfiguration(kind=script_kind, name=script_name, version=script_version)
+        self._processing_specs[spec_name] = ProcessingSpec(script=script, parameters=parameters)
 
 
 class ProcessingBlockSpec(ProcessingSpecs):
@@ -380,7 +374,7 @@ class ProcessingBlockSpec(ProcessingSpecs):
             ProcessingBlockConfiguration(
                 pb_id=self.pb_id,
                 script=processing_script.script,
-                sbi_ids=[self.eb_id],
+                sbi_ids=[self.sbi_id],
                 parameters=processing_script.parameters,
             )
             for processing_script in self.processing_scripts
@@ -437,7 +431,6 @@ class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
 
     def _generate_sdp_assign_resources_config(self):
         return SDPConfiguration(
-            eb_id=self.eb_id,
             interface=self.sdp_assign_resources_schema,
             execution_block=self.execution_block,
             resources=cast(dict[Any, Any], self.resource_configuration),
@@ -450,9 +443,7 @@ class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
         else:
             target_id = list(self.target_specs.keys())[0]
         self._pending_scan_type = target_id
-        return SDPScanConfiguration(
-            interface=self.sdp_configure_scan_schema, scan_type=target_id
-        )
+        return SDPScanConfiguration(interface=self.sdp_configure_scan_schema, scan_type=target_id)
 
     def _generate_sdp_run_scan(self):
         return self.get_scan_id(backwards=True)

@@ -153,7 +153,7 @@ def check_archived_attribute(sut_settings: SutTestSettings):
         )
         assert response.status_code == 200
 
-
+    # check obsState IDLE in database
     conn = psycopg2.connect(
         database=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT
     )

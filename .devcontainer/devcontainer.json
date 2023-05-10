@@ -42,21 +42,25 @@
                 "gitPrefix.pattern": "(\\w+-\\d+).*",
                 "gitPrefix.replacement": "p1.replace(/(\\w+)/, function(v) { return v.toUpperCase();})+\": \"",
                 "gitPrefix.replacementIsFunction": true
-            }
+            },
+            // Add the IDs of extensions you want installed when the container is created.
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-kubernetes-tools.vscode-kubernetes-tools",
+                "donjayamanne.githistory",
+                "eamodio.gitlens",
+                "njpwerner.autodocstring",
+                "lextudio.restructuredtext",
+                "streetsidesoftware.code-spell-checker",
+                "bungcip.better-toml",
+                "srmeyers.git-prefix",
+                "ms-python.flake8",
+                "ms-python.isort",
+                "mikoz.black-py",
+                "ms-vscode.makefile-tools"
+            ]
         },
-        // Add the IDs of extensions you want installed when the container is created.
-        "extensions": [
-            "ms-python.python",
-            "ms-python.vscode-pylance",
-            "ms-kubernetes-tools.vscode-kubernetes-tools",
-            "donjayamanne.githistory",
-            "eamodio.gitlens",
-            "njpwerner.autodocstring",
-            "lextudio.restructuredtext",
-            "streetsidesoftware.code-spell-checker",
-            "bungcip.better-toml",
-            "srmeyers.git-prefix"
-        ]
     },
     "features": {
         "ghcr.io/devcontainers/features/sshd:1": "1.0.9"

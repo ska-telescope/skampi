@@ -20,3 +20,15 @@ Feature: Assign resources to sdp subarray
 		Given an SDP subarray in IDLE state
 		When I release all resources assigned to it
 		Then the subarray must be in EMPTY state
+
+	@XTP-20083
+	Scenario: Abort assigning SDP
+		Given an subarray busy assigning
+		When I command it to Abort
+		Then the subarray should go into an aborted state
+
+	@XTP-20123
+	Scenario: Abort assigning SDP Low
+		Given an subarray busy assigning
+		When I command it to Abort
+		Then the subarray should go into an aborted state

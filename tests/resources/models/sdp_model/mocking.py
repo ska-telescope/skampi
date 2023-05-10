@@ -1,7 +1,8 @@
 """Module containg mock implementation of an entrypoint for SDP."""
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from resources.models.mvp_model.states import ObsState
+
 from .entry_point import SDPEntryPoint
 
 
@@ -32,30 +33,22 @@ def setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.RESOURCING)
             )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
+            mock_entry_point.model.sdp.subarray1.set_attribute("obsstate", ObsState(ObsState.IDLE))
         elif subarray_id == 2:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.RESOURCING)
             )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
+            mock_entry_point.model.sdp.subarray1.set_attribute("obsstate", ObsState(ObsState.IDLE))
         elif subarray_id == 3:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.RESOURCING)
             )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
+            mock_entry_point.model.sdp.subarray1.set_attribute("obsstate", ObsState(ObsState.IDLE))
         elif subarray_id == 4:
             mock_entry_point.model.sdp.subarray1.set_attribute(
                 "obsstate", ObsState(ObsState.RESOURCING)
             )
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
+            mock_entry_point.model.sdp.subarray1.set_attribute("obsstate", ObsState(ObsState.IDLE))
 
     @mock_entry_point.when_tear_down_subarray
     def mock_tear_down_subarray(subarray_id: int):
@@ -128,18 +121,10 @@ def setup_sdp_mock(mock_entry_point: fxt_types.mock_entry_point):
     @mock_entry_point.when_clear_configuration
     def mock_clear_configuration(subarray_id: int):
         if subarray_id == 1:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
+            mock_entry_point.model.sdp.subarray1.set_attribute("obsstate", ObsState(ObsState.IDLE))
         elif subarray_id == 2:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
+            mock_entry_point.model.sdp.subarray1.set_attribute("obsstate", ObsState(ObsState.IDLE))
         elif subarray_id == 3:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
+            mock_entry_point.model.sdp.subarray1.set_attribute("obsstate", ObsState(ObsState.IDLE))
         elif subarray_id == 4:
-            mock_entry_point.model.sdp.subarray1.set_attribute(
-                "obsstate", ObsState(ObsState.IDLE)
-            )
+            mock_entry_point.model.sdp.subarray1.set_attribute("obsstate", ObsState(ObsState.IDLE))

@@ -31,7 +31,6 @@ EVENT_SUBSCRIBER = f"{CONFIG}-eda/es/01"
 CONFIGURATION_MANAGER = f"{CONFIG}-eda/cm/01"
 DB_HOST = f"timescaledb.ska-eda-{CONFIG}-db.svc.cluster.local"
 TANGO_DATABASE_DS = "databaseds-tango-base"
-INITIAL_LEN = 0
 
 
 @pytest.mark.k8s
@@ -126,8 +125,8 @@ def configure_archiver():
         )
     assert response.status_code == 200
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
-    INITIAL_LEN = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
-    assert INITIAL_LEN == 1
+    event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
+    assert event_count == 1
 
 
 # @when("I assign resources to the subarray") from conftest
@@ -141,8 +140,8 @@ def check_archived_attribute(sut_settings: SutTestSettings):
     assert_that(result).is_equal_to(ObsState.IDLE)
     eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
-    final_len = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
-    assert final_len > INITIAL_LEN
+    event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
+    assert event_count > 1
 
     # teardown
     with open("tests/integration/archiver/config_file/subarray_obsState.yaml", "rb") as file:
@@ -153,6 +152,7 @@ def check_archived_attribute(sut_settings: SutTestSettings):
             timeout=None,
         )
         assert response.status_code == 200
+
 
     conn = psycopg2.connect(
         database=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT

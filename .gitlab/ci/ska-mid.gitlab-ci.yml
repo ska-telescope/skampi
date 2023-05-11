@@ -7,7 +7,7 @@
 mid-test:
   stage: test
   variables:
-    ADDMARKS: XTP-4636
+    ADDMARKS: "group"
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
@@ -32,7 +32,7 @@ mid-test:
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
-    COUNT: 100
+    COUNT: 1
   extends:
     - .tags_default
     - .set_dbname

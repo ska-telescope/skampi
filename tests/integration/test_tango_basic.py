@@ -52,7 +52,6 @@ def i_expect_a_response_to_be_returned_from_the_device_server():
     """I expect a response to be returned from the device server."""
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.taranta
 @pytest.mark.skalow
 @pytest.mark.taranta

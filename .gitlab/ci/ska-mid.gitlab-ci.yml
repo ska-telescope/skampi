@@ -33,7 +33,7 @@ mid-test:
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
-    COUNT: 1
+    COUNT: 100
   extends:
     - .tags_default
     - .set_dbname

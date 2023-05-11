@@ -28,6 +28,7 @@ kube_host = environ.get("KUBE_HOST")
 rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0"
 activity_adapter = ActivityAdapter(rest_cli_uri)
 
+
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -42,6 +43,7 @@ def test_sbi_creation():
      file:///scripts/create_sbi.py using data/mid_sb_example.json
     Then the script completes successfully
     """
+
 
 @pytest.mark.oet
 @pytest.mark.skamid

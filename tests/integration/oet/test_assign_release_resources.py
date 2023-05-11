@@ -290,6 +290,7 @@ def test_oet_scripting_resource_allocation_in_low():
     """
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.k8s

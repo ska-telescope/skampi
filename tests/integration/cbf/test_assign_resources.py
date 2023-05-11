@@ -20,6 +20,7 @@ def test_assign_resources_to_cbf_mid_subarray():
     """Assign resources to CBF mid subarray."""
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.assign

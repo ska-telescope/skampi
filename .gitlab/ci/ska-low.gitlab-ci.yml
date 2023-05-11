@@ -22,7 +22,7 @@ low-test:
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
-    COUNT: 1
+    COUNT: 100
     EXIT_AT_FAIL: "true"
     CAPTURE_LOGS: "True"
     SKALLOP_LOG_FILTER_ERRORS: "True"
@@ -30,6 +30,7 @@ low-test:
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
     SHOW_STEP_FUNCTIONS: "True"
+    DDMARKS: 'XTP-16185
   extends:
     - .tags_default
   script:

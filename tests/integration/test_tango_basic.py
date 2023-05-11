@@ -1,6 +1,7 @@
 """Default feature tests."""
 import os
 from typing import NamedTuple
+import logging
 
 import pytest
 import requests
@@ -119,6 +120,7 @@ def i_call_its_rest_url(service_url: str) -> Response:
     :param service_url: a service url
     :return: url for taranta service
     """
+    logging.info(f"calling url at : {service_url}")
     return requests.get(service_url)
 
 

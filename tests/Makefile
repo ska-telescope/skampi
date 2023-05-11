@@ -28,7 +28,7 @@ test: install
 	pytest --version; \
 	PYTHONPATH=/app:/app/skampi:/app/skampi/test KUBE_NAMESPACE=$(KUBE_NAMESPACE) pytest -v -r fEx \
 		$(if $(findstring all,$(MARK)),, -m '$(MARK)') \
-		--disable-pytest-warnings $(FILE) --count=$(COUNT) tests $(EXIT)| tee pytest.stdout; \
+		--disable-pytest-warnings $(FILE) --count=$(COUNT) --repeat-scope session tests $(EXIT)| tee pytest.stdout; \
 	status=$$?; \
 	echo "test: status is ($$status)"; \
 	cp -r ./build/* tests/build/; \

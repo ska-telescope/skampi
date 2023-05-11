@@ -59,7 +59,11 @@ class TraceHelper:
             self.messages = []
 
     def get_messages(self):
-        """ "Return a copy of the current messages."""
+        """
+        Return a copy of the current messages.
+
+        :return: a copy of the current messages
+        """
         with self.lock:
             return list(self.messages)
 

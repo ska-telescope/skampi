@@ -75,15 +75,18 @@ class ScriptExecutor:
         """
         Wait until the script with the given ID is in the given state
 
-        Args:
-            pid (int): ID of the script in the OET
-            state (str): The desired OET state for the script (eg 'READY')
-            timeout (int): timeout (~seconds) how long to wait
-            for script to complete
 
-        Returns:
-            state (str): Either the desired state, STOPPED if the timeout was
-            reached or FAILED if the script failed
+        :param pid: ID of the script in the OET
+        :type pid: int
+        :param state: The desired OET state for the script (eg 'READY')
+        :type state: str
+        :param timeout: timeout (~seconds) how long to wait
+                for script to complete
+        :type timeout: int
+
+        :return: Either the desired state, STOPPED if the timeout was
+                reached or FAILED if the script failed
+        :rtype: str
         """
         t = timeout
         while t > 0:
@@ -121,20 +124,20 @@ class ScriptExecutor:
         """
         Execute the given script using OET REST client.
 
-        Args:
-            script (str): Script file to execute
-            script_run_args: Arguments to pass to the script when
-            the script execution is started
-            timeout: Timeout (~seconds) for how long to wait for script
-            stages to complete
-            script_create_kwargs: Any keyword arguments
-             (e.g. git related args) to pass to
-            OET rest server when creating the script
+        :parma script: Script file to execute
+        :type script: str
+        :param script_run_args: Arguments to pass to the script when
+                the script execution is started
+        :param timeout: Timeout (~seconds) for how long to wait for script
+                stages to complete
+        :param script_create_kwargs: Any keyword arguments
+                (e.g. git related args) to pass to
+                OET rest server when creating the script
 
-        Returns:
-            state (str): The OET state for the script
-             after execution (eg 'COMPLETE')
-            None if something goes wrong.
+        :return: The OET state for the script
+                after execution (eg 'COMPLETE')
+                None if something goes wrong.
+        :rtype: str
         """
         LOGGER.info(f"Running script {script}")
 

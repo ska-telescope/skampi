@@ -36,6 +36,9 @@ def fxt_k8s_cluster(assets_dir):
     3. a PSI cluster
 
     Getting the kubeconfig for these different scenarios is slightly different.
+
+    :param assets_dir: A string representing the path to the directory containing
+        the necessary assets for accessing the Kubernetes cluster.
     """
     kubeconfig_filepath = None
     if "KUBECONFIG" in os.environ:
@@ -43,10 +46,8 @@ def fxt_k8s_cluster(assets_dir):
         kubeconfig_filepath = os.environ["KUBECONFIG"]
     else:
         if os.path.isfile(os.path.join(os.environ["HOME"], ".kube", "config")):
-            logging.info(
-                "kubeconfig already exists, skipping: "
-                + os.path.join(os.environ["HOME"], ".kube", "config")
-            )
+            path = os.path.join(os.environ["HOME"], ".kube", "config")
+            logging.info(f"kubeconfig already exists, skipping: {path}")
             kubeconfig_filepath = os.path.join(os.environ["HOME"], ".kube", "config")
         else:
             logging.info(f"Defaulting to loading kubeconfig from {kubeconfig_filepath}.")
@@ -79,8 +80,10 @@ def fxt_test_namespace(manifest):
     is used. As a 'local default', in case users don't want to use their
     default namespace, we provide the preset value `ci-local` in the makefiles
 
-    Yields:
-        Namespace
+    :param manifest:  A dictionary containing the manifest data
+        for the namespace setup to be tested
+
+    :yields: Namespace
     """
     logging.info(f"Current working directory: {os.getcwd()}")
     logging.info(f"Manifest returns: {manifest}")
@@ -193,12 +196,15 @@ def fxt_create_ingress(test_namespace, assets_dir):
     create ingress with temp manifest
     Teardown
 
+    :param test_namespace: A test namespace for cluster
+    :param assets_dir: A string representing the path to the directory containing
+        the necessary assets for accessing the Kubernetes cluster.
+
     TODO: This is needed because the currently used version of the python
     kubernetes lib doesn't have the V1 ingress API implemented yet.
     Therefore this method can be updated in future to use the API directly.
 
-    Yields:
-        Return Code
+    :yields: Return Code
     """
     import yaml
 

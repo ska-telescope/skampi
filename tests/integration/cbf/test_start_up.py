@@ -58,7 +58,9 @@ def fxt_set_up_transit_checking_for_cbf(
 @pytest.fixture(name="set_up_log_checking_for_cbf")
 @pytest.mark.usefixtures("set_cbf_entry_point")
 def fxt_set_up_log_capturing_for_cbf(log_checking: fxt_types.log_checking):
-    """Set up log checking (using log consumer) on cbf.
+    """
+    Set up log checking (using log consumer) on cbf.
+
     :param log_checking: skallop fixture used to set up log checking.
     """
     if os.getenv("CAPTURE_LOGS"):
@@ -74,7 +76,13 @@ def a_cbf(
     set_up_transit_checking_for_cbf,  # pylint: disable=unused-argument
     set_up_log_checking_for_cbf,  # pylint: disable=unused-argument
 ):
-    """a CBF."""
+    """
+    a CBF.
+
+    :param set_cbf_entry_point: Object to set cbf entry point
+    :param set_up_transit_checking_for_cbf: Object to set up transit checking for cbf
+    :param set_up_log_checking_for_cbf: Object to set up log checking for cbf
+    """
 
 
 # when
@@ -83,7 +91,11 @@ def a_cbf(
 
 @then("the cbf must be on")
 def the_cbf_must_be_on(transit_checking: fxt_types.transit_checking):
-    """the cbf must be on."""
+    """
+    the cbf must be on.
+
+    :param transit_checking: a fixture for transit checking
+    """
     tel = names.TEL()
     cbf_controller = con_config.get_device_proxy(tel.csp.cbf.controller)
     result = cbf_controller.read_attribute("state").value
@@ -102,5 +114,9 @@ def the_cbf_must_be_on(transit_checking: fxt_types.transit_checking):
 @pytest.mark.test_tests
 @pytest.mark.usefixtures("setup_cbf_mock")
 def test_test_cbf_startup(run_mock):
-    """Test the test using a mock SUT"""
+    """
+    Test the test using a mock SUT
+
+    :param run_mock: A mock device initialization
+    """
     run_mock(test_cbf_start_up_telescope_mid)

@@ -5,6 +5,7 @@ def pytest_addoption(parser):
     need for a :py:class:`tango.test_context.MultiDeviceTestContext`.
     :param parser: the command line options parser
     :type parser: :py:class:`argparse.ArgumentParser`
+
     """
     parser.addoption(
         "--true-context",

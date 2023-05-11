@@ -47,14 +47,14 @@ def test_configure_csp_mid_subarray():
 def test_configure_csp_low_subarray():
     """Configure CSP low subarray."""
 
-@pytest.mark.skalow
+@pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.configure
 @scenario(
     "features/csp_configure_scan.feature",
     "Clear scan configuration on csp subarray in mid",
 )
-def test_clear_configure_csp_low_subarray():
+def test_clear_configure_csp_mid_subarray():
     """Clear scan configuration on csp subarray in mid."""
 
 # use from local conftest

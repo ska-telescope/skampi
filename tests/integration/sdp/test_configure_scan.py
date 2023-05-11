@@ -7,7 +7,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.skalow
 @pytest.mark.configure
 @pytest.mark.sdp
@@ -18,7 +18,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 def test_configure_scan_on_sdp_subarray_in_low():
     """Configure scan on sdp subarray in low."""
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.sdp
@@ -29,7 +29,7 @@ def test_configure_scan_on_sdp_subarray_in_low():
 def test_abort_configuring_in_mid():
     """Configure scan on sdp subarray in mid."""
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.sdp

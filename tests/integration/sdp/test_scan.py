@@ -8,7 +8,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.sdp
@@ -17,7 +17,7 @@ def test_run_a_scan_on_sdp_subarray_in_low():
     """CRun a scan on sdp subarray in low."""
 
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.skamid
 @pytest.mark.scan
 @pytest.mark.sdp
@@ -26,7 +26,7 @@ def test_run_a_scan_on_sdp_subarray_in_mid():
     """Run a scan on sdp subarray in mid."""
 
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.skamid
 @pytest.mark.scan
 @pytest.mark.sdp

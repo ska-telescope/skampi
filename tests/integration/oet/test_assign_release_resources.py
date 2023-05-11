@@ -28,7 +28,7 @@ kube_host = environ.get("KUBE_HOST")
 rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0"
 activity_adapter = ActivityAdapter(rest_cli_uri)
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -44,7 +44,7 @@ def test_sbi_creation():
     Then the script completes successfully
     """
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -62,7 +62,7 @@ def test_resource_allocation():
     Then the sub-array goes to ObsState IDLE
     """
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

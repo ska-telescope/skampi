@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # log capturing
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.sdp
 @pytest.mark.skamid
 @pytest.mark.assign

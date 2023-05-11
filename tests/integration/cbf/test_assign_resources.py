@@ -9,7 +9,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ..conftest import SutTestSettings
 
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.assign
@@ -21,7 +21,7 @@ def test_assign_resources_to_cbf_mid_subarray():
     """Assign resources to CBF mid subarray."""
 
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.assign

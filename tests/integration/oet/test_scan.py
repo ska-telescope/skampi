@@ -20,7 +20,7 @@ Tests to Run a scan on low subarray from OET (XTP-19865)
 
 """Scan on telescope subarray feature tests."""
 
-@pytest.mark.skip("temporary for testing")
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

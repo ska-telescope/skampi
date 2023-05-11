@@ -260,3 +260,29 @@ def the_csp_subarray_must_be_in_some_obsstate(
     result = csp_subarray.read_attribute("obsstate").value
 
     assert_that(result).is_equal_to(eval(f"ObsState.{obsstate}"))
+
+@given("an CSP subarray in READY state")
+def an_csp_subarray_in_ready_state(
+    set_up_subarray_log_checking_for_csp,
+    csp_base_configuration: conf_types.ScanConfiguration,
+    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
+    sut_settings: conftest.SutTestSettings,
+) -> conf_types.ScanConfiguration:
+    """
+    an CSP subarray in READY state.
+
+    :param set_up_subarray_log_checking_for_csp: A fixture used for setting up
+        subarray log checking for the CSP.
+    :param csp_base_configuration: An instance of the ScanConfiguration class
+        representing the CSP base configuration.
+    :param subarray_allocation_spec: An instance of the SubarrayAllocationSpec class
+        representing the subarray allocation specification.
+    :param sut_settings: An instance of the SutTestSettings class
+        representing the settings for the system under test.
+    :return: A class representing the csp base configuration for the system under test.
+    """
+    subarray_allocation_spec.receptors = sut_settings.receptors
+    subarray_allocation_spec.subarray_id = sut_settings.subarray_id
+    # will use default composition for the allocated subarray
+    # subarray_allocation_spec.composition
+    return csp_base_configuration

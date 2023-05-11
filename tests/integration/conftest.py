@@ -412,6 +412,33 @@ def i_configure_it_for_a_scan(
             entry_point.configure_subarray(sub_array_id, configuration, sb_id, scan_duration)
 
 
+@when("I command it to clear configuration (End command)")
+def i_configure_it_for_a_scan(
+    configured_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+):
+    """
+    I configure it for a scan.
+
+    :param allocated_subarray: The allocated subarray to be configured.
+    :param context_monitoring: Context monitoring object.
+    :param entry_point: The entry point to be used for the configuration.
+    :param configuration: The scan configuration to be used for the scan.
+    :param integration_test_exec_settings: The integration test execution settings.
+    :param sut_settings: SUT settings object.
+    """
+    sub_array_id = configured_subarray.id
+
+    context_monitoring.builder = entry_point.set_waiting_for_clear_configure(sub_array_id)
+    with context_monitoring.context_monitoring():
+        with context_monitoring.wait_before_complete(integration_test_exec_settings):
+            entry_point.clear_configuration(sub_array_id)
+            configured_subarray.disable_automatic_clear()
+
+
 @when("I command it to scan for a given period")
 def i_execute_scan(
     configured_subarray: fxt_types.configured_subarray,

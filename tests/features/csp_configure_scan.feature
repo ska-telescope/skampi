@@ -14,6 +14,12 @@ Feature: Configure scan on csp subarray
         When I configure it for a scan
         Then the CSP subarray must be in READY state
 
+    @XTP-23270
+    Scenario: Clear scan configuration on csp subarray in mid
+        Given an CSP subarray in READY state
+        When I command it to clear configuration (End command)
+        Then the CSP subarray must be in IDLE state
+
     @XTP-16346
 	    Scenario: Abort configuring
         Given an subarray busy configuring

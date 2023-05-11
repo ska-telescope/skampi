@@ -2,7 +2,7 @@
 import logging
 
 import pytest
-from pytest_bdd import scenario
+from pytest_bdd import scenario, when
 
 logger = logging.getLogger(__name__)
 
@@ -46,3 +46,23 @@ def test_configure_csp_mid_subarray():
 )
 def test_configure_csp_low_subarray():
     """Configure CSP low subarray."""
+
+@pytest.mark.skalow
+@pytest.mark.csp
+@pytest.mark.configure
+@scenario(
+    "features/csp_configure_scan.feature",
+    "Clear scan configuration on csp subarray in mid",
+)
+def test_clear_configure_csp_low_subarray():
+    """Clear scan configuration on csp subarray in mid."""
+
+# use from local conftest
+# @given("an CSP subarray in READY state")
+
+# use from global conftest
+# @when("I command it to clear configuration (End command)")
+
+# use from local conftest
+# @then("the CSP subarray must be in IDLE/READY state")
+

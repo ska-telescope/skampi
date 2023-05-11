@@ -7,7 +7,7 @@
 mid-test:
   stage: test
   variables:
-    ADDMARKS: XTP-23270
+    ADDMARKS: "XTP-23270"
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"

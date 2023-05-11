@@ -17,6 +17,7 @@ def test_hello_world():
     Then script execution completes successfully
     """
 
+
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

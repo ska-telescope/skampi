@@ -4,6 +4,7 @@ import logging
 import os
 from types import SimpleNamespace
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
+import time
 
 import pytest
 from assertpy import assert_that
@@ -106,6 +107,11 @@ class OnlineFlag:
 @pytest.fixture(name="online", autouse=True, scope="session")
 def fxt_online():
     return OnlineFlag()
+
+@pytest.fixture(autouse=True, scope="session")
+def fxt_wait_after_test_session():
+    yield
+    time.sleep(5)
 
 
 @pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")

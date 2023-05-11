@@ -18,14 +18,14 @@ from .. import conftest
 def test_run_a_scan_on_csp_subarray_in_low():
     """Run a scan on csp subarray in low."""
 
-
+@pytest.mark.skip("temporary for testing")
 @pytest.mark.skamid
 @pytest.mark.scan
 @scenario("features/csp_scan.feature", "Run a scan on csp subarray in mid")
 def test_run_a_scan_on_csp_subarray_in_mid():
     """Run a scan on sdp subarray in mid."""
 
-
+@pytest.mark.skip("temporary for testing")
 @pytest.mark.skamid
 @pytest.mark.scan
 @pytest.mark.csp

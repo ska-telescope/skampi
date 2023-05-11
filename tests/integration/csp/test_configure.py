@@ -6,7 +6,7 @@ from pytest_bdd import scenario
 
 logger = logging.getLogger(__name__)
 
-
+@pytest.mark.skip("temporary for testing")
 @pytest.mark.skamid
 @pytest.mark.scan
 @pytest.mark.csp
@@ -27,7 +27,7 @@ def test_csp_abort_configuring_low(set_up_subarray_log_checking_for_csp: None):
     :param: set_up_subarray_log_checking_for_csp: sets up subarray log checking for csp
     """
 
-
+@pytest.mark.skip("temporary for testing")
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.configure

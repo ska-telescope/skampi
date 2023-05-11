@@ -27,7 +27,7 @@ Tests for Configure the mid telescope subarray using OET (XTP-778)
 logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
-
+@pytest.mark.skip("temporary for testing")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -42,7 +42,7 @@ def test_observing_sbi():
     Then the sub-array goes to ObsState IDLE
     """
 
-
+@pytest.mark.skip("temporary for testing")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

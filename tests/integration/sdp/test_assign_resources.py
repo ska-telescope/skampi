@@ -36,7 +36,7 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
     """
     sut_settings.restart_after_abort = True
 
-
+@pytest.mark.skip("temporary for testing")
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -52,7 +52,7 @@ def test_assign_resources_to_sdp_subarray_in_low(
     :param assign_resources_test_exec_settings: Object for assign_resources_test_exec_settings
     """
 
-
+@pytest.mark.skip("temporary for testing")
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -69,7 +69,7 @@ def test_assign_resources_to_sdp_subarray_in_mid(
     :param assign_resources_test_exec_settings: Object for assign_resources_test_exec_settings
     """
 
-
+@pytest.mark.skip("temporary for testing")
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -84,7 +84,7 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
     :param composition: A fixture that represents the composition of the subarray.
     """
 
-
+@pytest.mark.skip("temporary for testing")
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp

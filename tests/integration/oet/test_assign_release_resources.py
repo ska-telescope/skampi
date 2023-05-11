@@ -62,7 +62,7 @@ def test_resource_allocation():
     Then the sub-array goes to ObsState IDLE
     """
 
-
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

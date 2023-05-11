@@ -13,7 +13,6 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 logger = logging.getLogger(__name__)
 
 
-
 @pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.startup

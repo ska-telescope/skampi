@@ -12,7 +12,6 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
-
 @pytest.mark.skamid
 @pytest.mark.startup
 @pytest.mark.sdp

@@ -52,7 +52,6 @@ def i_expect_a_response_to_be_returned_from_the_device_server():
     """I expect a response to be returned from the device server."""
 
 
-
 @pytest.mark.taranta
 @pytest.mark.skalow
 @pytest.mark.taranta
@@ -85,7 +84,6 @@ def a_deployed_taranta_web_dashboard_service(env: ENV) -> str:
     :return: url for taranta dashboard
     """
     return f"http://{env.host}/{env.namespace}/taranta/dashboard/"
-
 
 
 @pytest.mark.taranta

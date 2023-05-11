@@ -55,7 +55,6 @@ def test_release_resources_to_csp_low_subarray():
     """Release resources assigned to an CSP low subarray"""
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.assign

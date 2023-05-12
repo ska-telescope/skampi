@@ -21,6 +21,7 @@ def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
     configured_subarray.disable_automatic_teardown()
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

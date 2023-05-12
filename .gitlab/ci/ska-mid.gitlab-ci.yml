@@ -52,7 +52,6 @@ mid-test:
     reports:
       junit: build/report.xml
     when: always
-  retry: 1
 
 # Mid on-demand deployment
 mid_deploy_on_demand:

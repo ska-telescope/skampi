@@ -48,7 +48,6 @@ low-test:
     reports:
       junit: build/report.xml
     when: always
-  retry: 1
 
 # Low on-demand deployment
 low_deploy_on_demand:

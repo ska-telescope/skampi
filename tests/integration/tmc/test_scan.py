@@ -21,6 +21,7 @@ def test_tmc_scan_on_mid_subarray():
     """Run a scan on TMC mid telescope subarray."""
 
 
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -28,6 +29,50 @@ def test_tmc_scan_on_mid_subarray():
 @scenario("features/tmc_scan.feature", "Run a scan on low subarray from TMC")
 def test_tmc_scan_on_low_subarray():
     """Run a scan on TMC low telescope subarray."""
+
+
+@pytest.mark.skamid
+@pytest.mark.scan
+@pytest.mark.tmc
+@scenario(
+    "features/tmc_multi_scan.feature",
+    "Run multiple scans on TMC subarray in mid for same scan type",
+)
+def test_run_multiple_scans_on_tmc_subarray_in_mid():
+    """Run multiple scans on TMC subarray in mid."""
+
+
+@pytest.mark.skalow
+@pytest.mark.scan
+@pytest.mark.tmc
+@scenario(
+    "features/tmc_multi_scan.feature",
+    "Run multiple scans on TMC subarray in low for same scan type",
+)
+def test_run_multiple_scans_on_tmc_subarray_in_low():
+    """Run multiple scans on TMC subarray in low."""
+
+
+@pytest.mark.skamid
+@pytest.mark.scanning
+@pytest.mark.tmc
+@scenario(
+    "features/tmc_multi_scan.feature",
+    "Run multiple scans on TMC subarray in mid for different scan types",
+)
+def test_run_multiple_scans_on_tmc_subarray_in_mid_for_different_scan_types():
+    """Run multiple scans on subarray in mid for different scan types"""
+
+
+@pytest.mark.skalow
+@pytest.mark.scanning
+@pytest.mark.tmc
+@scenario(
+    "features/tmc_multi_scan.feature",
+    "Run multiple scans on TMC subarray in low for different scan types",
+)
+def test_run_multiple_scans_on_tmc_subarray_in_low_for_different_scan_types():
+    """Run multiple scans on subarray in low for different scan types"""
 
 
 @given("an TMC")
@@ -69,7 +114,7 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
     ).to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
-    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
+    integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(
         tmc_subarray_name
     )
     result = tmc_subarray.read_attribute("obsstate").value

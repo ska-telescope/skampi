@@ -35,6 +35,50 @@ def test_abort_scanning(disable_clear):
     """Abort scanning."""
 
 
+@pytest.mark.skamid
+@pytest.mark.scanning
+@pytest.mark.sdp
+@scenario(
+    "features/sdp_multi_scan.feature",
+    "Run multiple scans on SDP subarray in mid for same scan type",
+)
+def test_run_multiple_scans_on_sdp_subarray_in_mid():
+    """Run multiple scans on sdp subarray in mid."""
+
+
+@pytest.mark.skalow
+@pytest.mark.scanning
+@pytest.mark.sdp
+@scenario(
+    "features/sdp_multi_scan.feature",
+    "Run multiple scans on SDP subarray in low for same scan type",
+)
+def test_run_multiple_scans_on_sdp_subarray_in_low():
+    """Run multiple scans on sdp subarray in low."""
+
+
+@pytest.mark.skamid
+@pytest.mark.scanning
+@pytest.mark.sdp
+@scenario(
+    "features/sdp_multi_scan.feature",
+    "Run multiple scans on SDP subarray in mid for different scan types",
+)
+def test_run_multiple_scans_on_sdp_subarray_in_mid_for_different_scan_types():
+    """Run multiple scans on SDP subarray in mid for different scan types"""
+
+
+@pytest.mark.skalow
+@pytest.mark.scanning
+@pytest.mark.sdp
+@scenario(
+    "features/sdp_multi_scan.feature",
+    "Run multiple scans on SDP subarray in low for different scan types",
+)
+def test_run_multiple_scans_on_sdp_subarray_in_low_for_different_scan_types():
+    """Run multiple scans on SDP subarray in low for different scan types"""
+
+
 @given("an SDP subarray in READY state")
 def an_sdp_subarray_in_ready_state(
     set_up_subarray_log_checking_for_sdp,

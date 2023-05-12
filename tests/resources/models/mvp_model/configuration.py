@@ -1,10 +1,11 @@
 from typing import Union
-
-from resources.models.obsconfig.config import Observation
 from ska_ser_skallop.mvp_control.configuration.types import (
     ScanConfiguration,
     ScanConfigurationType,
 )
+
+from tests.resources.models.obsconfig.config import Observation
+from tests.resources.models.obsconfig.target_spec import TargetSpec
 
 
 class SKAObservation:

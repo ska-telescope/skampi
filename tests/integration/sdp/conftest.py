@@ -11,6 +11,12 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
+from resources.models.sdp_model.entry_point import SDPEntryPoint
+from resources.models.sdp_model.mocking import setup_sdp_mock
+from resources.models.mvp_model.configuration import SKAScanConfiguration
+from tests.resources.models.obsconfig.config import Observation
+
+
 from .. import conftest
 
 
@@ -114,15 +120,21 @@ def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
 
 
 @pytest.fixture(name="sdp_base_configuration")
-def fxt_sdp_base_configuration(tmp_path) -> conf_types.ScanConfiguration:
+def fxt_sdp_base_configuration(
+    tmp_path: str, observation_config: Observation
+) -> conf_types.ScanConfiguration:
     """Setup a base scan configuration to use for sdp.
 
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    configuration = conf_types.ScanConfigurationByFile(
-        tmp_path, conf_types.ScanConfigurationType.STANDARD
-    )
+    tel = names.TEL()
+    if tel.skalow:
+        configuration = conf_types.ScanConfigurationByFile(
+            tmp_path, conf_types.ScanConfigurationType.STANDARD
+        )
+    else:
+        configuration = SKAScanConfiguration(observation_config)
     return configuration
 
 

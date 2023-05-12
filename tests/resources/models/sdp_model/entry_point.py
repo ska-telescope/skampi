@@ -1,5 +1,6 @@
 """Domain logic for the sdp."""
 import logging
+from typing import Union, List
 import os
 from time import sleep
 from typing import Any, List, Union
@@ -18,7 +19,8 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
-from ..mvp_model.states import ObsState
+from ska_ser_skallop.mvp_control.entry_points import base
+from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ..obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
@@ -238,7 +240,10 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         Memo(scan_duration=duration)
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        config = self.observation.generate_sdp_scan_config().as_json
+        if isinstance(configuration, SKAScanConfiguration):
+            config = configuration.generate_sdp_scan_config().as_json
+        else:
+            config = self.observation.generate_sdp_scan_config().as_json
         self._log(f"commanding {subarray_name} with Configure: {config} ")
         subarray.command_inout("Configure", config)
 
@@ -267,8 +272,9 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute(
             "obsState"
-        ).to_become_equal_to("READY")
+        ).to_become_equal_to("READY", ignore_first=False)
         return builder
+
 
     def set_wait_for_doing(
         self, sub_array_id: int, receptors: List[int]

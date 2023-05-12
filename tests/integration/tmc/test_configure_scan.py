@@ -152,7 +152,8 @@ def the_subarray_must_be_in_the_ready_state(
     """
     tel = names.TEL()
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
-        str(tel.tm.subarray(sut_settings.subarray_id))
+        str(tel.tm.subarray(sut_settings.subarray_id)),
+        time_source='local'
     )
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = tmc_subarray.read_attribute("obsState").value

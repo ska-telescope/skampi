@@ -4057,9 +4057,25 @@ ska-ser-logging = [
     {file = "ska_ser_logging-0.4.1+0a677a67-py3-none-any.whl", hash = "sha256:8b2bf14e9981966c22503b6b6477b6386dec1def1f71295579f0686d55b83841"},
     {file = "ska_ser_logging-0.4.1+0a677a67.tar.gz", hash = "sha256:558622000db39668d3a35b6986af9d70dac36635826636ef2c07f816a149a06d"},
 ]
-ska-ser-skallop = [
-    {file = "ska-ser-skallop-2.26.0.tar.gz", hash = "sha256:dc194315ca7d2cd3bca119391d27e806f83e2dfac8146c3c65e8f1656bd0c431"},
-    {file = "ska_ser_skallop-2.26.0-py3-none-any.whl", hash = "sha256:4b452c2761ddfbac5edbe9d48482efc8daf5be3ef076f8abd76763d93101c7d1"},
+
+[package.extras]
+dev = ["black", "isort", "prospector[with-pyroma]"]
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
+name = "ska-ser-skallop"
+version = "2.26.2"
+description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
+category = "main"
+optional = false
+python-versions = ">=3.9,<4.0"
+files = [
+    {file = "ska-ser-skallop-2.26.2.tar.gz", hash = "sha256:1acd4ad732915c1412896b00522762eb1ca95cc65a4c115052660807fea33dfe"},
+    {file = "ska_ser_skallop-2.26.2-py3-none-any.whl", hash = "sha256:762aae06306be0e92ae3ca5af86f8a05ca816e04b97f42229ab7120170765967"},
 ]
 ska-ser-skuid = [
     {file = "ska-ser-skuid-3.3.3.tar.gz", hash = "sha256:91ad1dda3e3a397e39dbb362046888f5a80e4f5ef022628cde7ccc93c4d9b057"},
@@ -4381,3 +4397,17 @@ yarl = [
     {file = "yarl-1.9.2-cp39-cp39-win_amd64.whl", hash = "sha256:61016e7d582bc46a5378ffdd02cd0314fb8ba52f40f9cf4d9a5e7dbef88dee18"},
     {file = "yarl-1.9.2.tar.gz", hash = "sha256:04ab9d4b9f587c06d801c2abfe9317b77cdf996c65a90d5e84ecc45010823571"},
 ]
+
+[package.dependencies]
+idna = ">=2.0"
+multidict = ">=4.0"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[metadata]
+lock-version = "2.0"
+python-versions = "^3.10"
+content-hash = "014ec9ce21eb2fd81758892a966eb8227a17b6e2dfe7710f4e93c130ea9eaa5a"

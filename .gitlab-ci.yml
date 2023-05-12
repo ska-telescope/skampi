@@ -81,6 +81,7 @@ include:
   - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
   - local: "/.gitlab/ci/psi-mid.gitlab-ci.yml"
   - local: "/.gitlab/ci/mid-itf.gitlab-ci.yml"
+  - local: "/.gitlab/ci/low-itf.gitlab-ci.yml"
 
   # .post steps
   - project: "ska-telescope/templates-repository"

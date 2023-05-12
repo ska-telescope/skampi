@@ -21,3 +21,10 @@ Feature: Configure the subarray using TMC
         Given an subarray busy configuring
         When I command it to Abort
         Then the subarray should go into an aborted state
+
+	@XTP-20114
+	Scenario: Abort configuring Low
+		Given an subarray busy configuring
+		When I command it to Abort
+		Then the subarray should go into an aborted state
+

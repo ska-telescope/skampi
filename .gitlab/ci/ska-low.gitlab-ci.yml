@@ -22,7 +22,7 @@ low-test:
     DISABLE_MAINTAIN_ON: "True"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
-    COUNT: 100
+    COUNT: 200
     EXIT_AT_FAIL: "true"
     CAPTURE_LOGS: "True"
     SKALLOP_LOG_FILTER_ERRORS: "True"

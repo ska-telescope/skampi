@@ -206,7 +206,9 @@ def the_csp_subarray_must_be_in_some_obsstate(
     tel = names.TEL()
     csp_subarray_name = tel.csp.subarray(sut_settings.subarray_id)
     recorder = integration_test_exec_settings.recorder
-    recorder.assert_no_devices_transitioned_after(str(csp_subarray_name),time_source='local')
+    recorder.assert_no_devices_transitioned_after(
+        str(csp_subarray_name), time_source="local"
+    )
     csp_subarray = con_config.get_device_proxy(
         csp_subarray_name, fast_load=True
     )

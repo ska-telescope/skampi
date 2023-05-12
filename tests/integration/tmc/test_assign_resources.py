@@ -81,7 +81,7 @@ def fxt_setup_context_monitoring_for_abort_test(
     )
 
 
-@pytest.mark.skip(reason="skipping for testing NAK-363")
+@pytest.mark.skip(reason="skipping for testing NAK--363")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

@@ -9,7 +9,7 @@ Feature: Start up the sdp
 		Then the sdp must be on	
 
 	
-	@AT-489-12 @XTP-3958 @XTP-3960 @XTP-3324 @XTP-4020
+	@XTP-3958 @XTP-3960 @XTP-3324 @XTP-4020
 	Scenario: Start up the sdp in mid
 		Given an SDP
 		When I start up the telescope

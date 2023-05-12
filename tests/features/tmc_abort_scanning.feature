@@ -1,4 +1,4 @@
-@AT-489-12 @XTP-16348
+@XTP-16348
 Scenario: Abort scanning
     Given an subarray busy scanning
     When I command it to Abort

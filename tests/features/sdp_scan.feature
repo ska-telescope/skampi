@@ -15,7 +15,7 @@ Feature: Run a scan on sdp subarray
 		When I command it to scan for a given period
 		Then the SDP subarray must be in the SCANNING state until finished
 
-	@AT-489-12 @XTP-16344
+	@XTP-16344
     Scenario: Abort SDP scanning
         Given an subarray busy scanning
         When I command it to Abort

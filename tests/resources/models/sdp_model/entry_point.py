@@ -10,11 +10,9 @@ from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
-    AbortStep,
     CompositeEntryPoint,
     MessageBoardBuilder,
     NoOpStep,
-    ObsResetStep,
 )
 from ska_ser_skallop.utils.singleton import Memo
 
@@ -380,7 +378,7 @@ class SDPScanStep(base.ScanStep, LogEnabled):
         return None
 
 
-class SDPAbortStep(AbortStep, LogEnabled):
+class SDPAbortStep(LogEnabled):
 
     """Implementation of Abort Step for SDP."""
 
@@ -411,7 +409,7 @@ class SDPAbortStep(AbortStep, LogEnabled):
         return builder
 
 
-class SDPObsResetStep(ObsResetStep, LogEnabled):
+class SDPObsResetStep(LogEnabled):
 
     """Implementation of ObsReset Step for SDP."""
 

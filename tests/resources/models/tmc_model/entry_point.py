@@ -14,7 +14,6 @@ from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
-    ObsResetStep,
 )
 from ska_ser_skallop.utils.nrgen import get_id
 from ska_ser_skallop.utils.singleton import Memo
@@ -594,7 +593,7 @@ class CSPSetOnlineStep(base.ObservationStep, LogEnabled):
         raise NotImplementedError()
 
 
-class TMCObsResetStep(ObsResetStep, LogEnabled):
+class TMCObsResetStep(LogEnabled):
     def set_wait_for_do(
         self, sub_array_id: int, receptors: List[int]
     ) -> Union[MessageBoardBuilder, None]:

@@ -468,7 +468,9 @@ def i_release_all_resources_assigned_to_it(
 
 
 @given("an subarray busy configuring")
-def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
+def an_subarray_busy_configuring(
+    allocated_subarray: fxt_types.allocated_subarray,
+):
     """
     an subarray busy configuring
 

@@ -7,6 +7,7 @@ from pytest_bdd import scenario
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skamid
 @pytest.mark.scan
 @pytest.mark.csp

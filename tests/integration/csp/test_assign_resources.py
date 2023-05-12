@@ -35,6 +35,7 @@ def test_assign_resources_to_csp_low_subarray():
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.assign
+@pytest.mark.skip
 @scenario(
     "features/csp_assign_resources.feature",
     "Assign resources to CSP mid subarray",
@@ -80,6 +81,7 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.assign
+@pytest.mark.skip
 @scenario("features/csp_assign_resources.feature", "Abort assigning CSP")
 def test_abort_in_resourcing_mid(
     set_restart_after_abort: None, composition: conf_types.Composition

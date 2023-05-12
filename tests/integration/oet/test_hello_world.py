@@ -18,7 +18,7 @@ def test_hello_world():
     """
 
 
-@pytest.mark.skip(reason="Fails intermittently due to a known bug (BTN-1744)")
+@pytest.mark.skip(reason="Fails intermittently due to a known bug (BTN-1774)")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

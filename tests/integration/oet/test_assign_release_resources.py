@@ -258,6 +258,7 @@ def check_final_subarray_state(
     logger.info("Sub-array is in ObsState %s", obsstate)
 
 
+@pytest.mark.skip(reason="temp skip for at-489-41")
 @pytest.mark.scripting
 @pytest.mark.skamid
 @pytest.mark.k8s

@@ -16,10 +16,10 @@ while failed > 0:
     for instance in instance_list.value_string:
         try:
             dev = tango.DeviceProxy(instance)
-            dev.ping()
-            print("Got ping working for dev %s" + str(instance))
+            ping=dev.ping()
+            print("Got ping ("+str(ping)+") working for dev " + str(instance))
         except:
             failed = failed + 1
-            print("Got exception for dev %s" + str(instance))
+            print("Got exception for dev " + str(instance))
 elapsed_time = time.time() - start_time
-print("TANGO waiting: all devices working in %s ss.", int(elapsed_time))
+print("TANGO waiting: all devices working in " + str(int(elapsed_time)) + "ss.")

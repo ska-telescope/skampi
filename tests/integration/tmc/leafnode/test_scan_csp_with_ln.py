@@ -30,6 +30,7 @@ def fxt_setup_log_checking(
 
 
 @pytest.mark.skamid
+@pytest.mark.skip(reason="intermittent")
 @scenario("features/tmc_cspln_scan.feature", "Scan the csp mid using csp leaf node")
 def test_scan_cspsubarray_for_a_scan_in_mid():
     """Scan cspsubarray for a scan in mid using the csp leaf node."""

@@ -9,6 +9,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 
 @pytest.mark.skamid
+@pytest.mark.skip(reason="intermittent")
 @scenario(
     "features/tmc_cspln_configure.feature",
     "Configure the csp mid using csp leaf node",

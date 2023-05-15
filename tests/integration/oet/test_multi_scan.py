@@ -10,10 +10,7 @@ from ska_oso_scripting.objects import SubArray
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_fixtures.fixtures import (
-    SubarrayConfigurationSpec,
-    fxt_types,
-)
+from ska_ser_skallop.mvp_fixtures.fixtures import SubarrayConfigurationSpec, fxt_types
 
 from .. import conftest
 
@@ -106,7 +103,16 @@ def a_low_subarray_in_ready_state(
     subarray_allocation_spec: fxt_types.subarray_allocation_spec,
     sut_settings: conftest.SutTestSettings,
 ) -> conf_types.ScanConfiguration:
-    """a subarray in READY state"""
+    """
+    a subarray in READY state
+    :param base_configuration: An instance of the ScanConfiguration class
+        representing the base configuration.
+    :param subarray_allocation_spec: An instance of the SubarrayAllocationSpec class
+        representing the subarray allocation specification.
+    :param sut_settings: An instance of the `SutTestSettings` class representing
+        the settings for the system under test.
+    :return: the base configuration for the subarray.
+    """
     subarray_allocation_spec.receptors = sut_settings.receptors
     subarray_allocation_spec.subarray_id = sut_settings.subarray_id
     return base_configuration
@@ -118,12 +124,18 @@ def i_command_it_to_scan_low(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: conftest.SutTestSettings,
 ):
-    """I configure it for a scan using OET scan() command."""
+    """
+    I configure it for a scan using OET scan() command.
+    :param context_monitoring: The context monitoring configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
+    :param sut_settings: An instance of the `SutTestSettings` class representing
+        the settings for the system under test.
+    """
     subarray_id = sut_settings.subarray_id
     tel = names.TEL()
-    context_monitoring.set_waiting_on(
-        tel.tm.subarray(subarray_id)
-    ).for_attribute("obsstate").to_change_in_order(["SCANNING", "READY"])
+    context_monitoring.set_waiting_on(tel.tm.subarray(subarray_id)).for_attribute(
+        "obsstate"
+    ).to_change_in_order(["SCANNING", "READY"])
     integration_test_exec_settings.attr_synching = False
     logging.info(
         "context_monitoring._wait_after_setting_builder ="
@@ -145,17 +157,15 @@ def the_subarray_must_be_in_the_scanning_state(
     """
     The subarray must be in the SCANNING state until finished
     and check if the obsState is READY.
+    :param configured_subarray: The configured subarray.
+    :param integration_test_exec_settings: The integration test execution settings.
     """
     recorder = integration_test_exec_settings.recorder
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
-    tmc_state_changes = recorder.get_transitions_for(
-        tmc_subarray_name, "obsstate"
-    )
-    tmc_state_changes = recorder.get_transitions_for(
-        tmc_subarray_name, "obsstate"
-    )
+    tmc_state_changes = recorder.get_transitions_for(tmc_subarray_name, "obsstate")
+    tmc_state_changes = recorder.get_transitions_for(tmc_subarray_name, "obsstate")
     assert_that(tmc_state_changes).is_equal_to(["READY", "SCANNING", "READY"]),
     f"events recorded not correct: {recorder._occurrences}"
     result = tmc_subarray.read_attribute("obsstate").value
@@ -164,8 +174,7 @@ def the_subarray_must_be_in_the_scanning_state(
 
 @given(
     parsers.parse(
-        "a subarray defined to perform scans for types {scan_target1} "
-        "and {scan_target2}"
+        "a subarray defined to perform scans for types {scan_target1} " "and {scan_target2}"
     ),
     target_fixture="scan_targets",
 )
@@ -177,6 +186,10 @@ def a_subarray_defined_to_perform_scan_types(
     """
     The subarray is defined to perform scans
     for provided scan types by validating the scan types.
+    :param scan_target1: First target to be scanned.
+    :param scan_target2: Second target to be scanned.
+    :param observation_config: An object for observation config
+    :return: scan targets in form of dictionary
     """
     scan_target = [scan_target1, scan_target2]
     # check that we have targets referencing this scan types
@@ -209,13 +222,19 @@ def a_subarray_configured_for_scan_type(
     sut_settings: conftest.SutTestSettings,
     scan_targets: dict[str, str],
 ):
-    """a subarray configured for scan type {scan_type}"""
+    """
+    a subarray configured for scan type {scan_type}
+    :param scan_type: next scan type to be configured
+    :param factory_configured_subarray: configured subarray
+    :param observation_config: An object for observation config
+    :param sut_settings: An instance of the `SutTestSettings` class representing
+        the settings for the system under test.
+    :param scan_targets: scan targets in form of dictionary
+    :return: factory configured subarray with next scan type configuration
+        specifications
+    """
     scan_duration = sut_settings.scan_duration
     configuration = SKAScanConfiguration(observation_config)
     configuration.set_next_target_to_be_configured(scan_targets[scan_type])
-    configuration_specs = SubarrayConfigurationSpec(
-        scan_duration, configuration
-    )
-    return factory_configured_subarray(
-        injected_subarray_configuration_spec=configuration_specs
-    )
+    configuration_specs = SubarrayConfigurationSpec(scan_duration, configuration)
+    return factory_configured_subarray(injected_subarray_configuration_spec=configuration_specs)

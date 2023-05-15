@@ -1,3 +1,5 @@
+ska_low_charts.png
+ska_mid_charts.png
 *-workspace
 .coverage
 kubeconfig
@@ -9,6 +11,7 @@ my_local_values.yaml
 gitlab_values.yaml
 /ska-cicd-deploy-minikube/
 docs/venv
+docs/.venv
 docs/Pipfile
 docs/Pipfile.lock
 /.vagrant

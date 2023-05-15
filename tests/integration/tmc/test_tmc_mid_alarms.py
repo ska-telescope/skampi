@@ -25,14 +25,16 @@ def test_tmc_mid_alarm_for_subarray_idle():
 def a_telescope_subarray(
     base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
-    """an telescope subarray."""
+    """
+    an telescope subarray.
+
+    :param base_composition : An object for base composition
+    :return: base composition
+    """
     return base_composition
 
 
-@given(
-    "an Alarm handler configured to raise an alarm when the subarray obsState"
-    " is IDLE"
-)
+@given("an Alarm handler configured to raise an alarm when the subarray obsState" " is IDLE")
 def an_alarm_handler():
     """an Alarm Handler"""
     alarm_handler = get_device_proxy("alarm/handler/01")
@@ -47,6 +49,6 @@ def an_alarm_handler():
 def validate_alarm_state():
     """Validate Alarm is raised for IDLE Observation state"""
     brd = get_message_board_builder()
-    brd.set_waiting_on("alarm/handler/01").for_attribute(
-        "alarmUnacknowledged"
-    ).to_become_equal_to(("subarray_idle",))
+    brd.set_waiting_on("alarm/handler/01").for_attribute("alarmUnacknowledged").to_become_equal_to(
+        ("subarray_idle",)
+    )

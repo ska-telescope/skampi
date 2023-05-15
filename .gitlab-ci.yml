@@ -17,8 +17,7 @@ variables:
 image: $CI_IMAGE
 
 stages:
-  - on-demand-stfc-techops
-  - on-demand-stfc-dp
+  - on-demand
   - build
   - test
   - lint

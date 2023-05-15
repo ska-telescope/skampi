@@ -51,7 +51,7 @@ low-test:
 
 # Low on-demand deployment on STFC Techops
 low_deploy_on_demand_techops:
-  stage: on-demand-stfc-techops
+  stage: on-demand
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
@@ -87,7 +87,7 @@ low_deploy_on_demand_techops:
   allow_failure: true
 
 low_destroy_on_demand_techops:
-  stage: on-demand-stfc-techops
+  stage: on-demand
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
@@ -113,13 +113,14 @@ low_destroy_on_demand_techops:
 
 # Low on-demand deployment on STFC DP
 low_deploy_on_demand_dp:
-  stage: on-demand-stfc-dp
+  stage: on-demand
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     INGRESS_HOST: "sdhp.stfc.skao.int"
+    LOADBALANCER_IP: 10.100.10.1
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-st-1640-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-st-1640-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
@@ -151,7 +152,7 @@ low_deploy_on_demand_dp:
   allow_failure: true
 
 low_destroy_on_demand_dp:
-  stage: on-demand-stfc-dp
+  stage: on-demand
   variables:
     CONFIG: low
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"

@@ -24,7 +24,7 @@
 
 # on-demand deployment from branch to branch namespace
 .psi_mid_branch_job:
-  stage: on-demand-stfc-techops
+  stage: on-demand
   extends:
     - .psi_mid_base
   variables:

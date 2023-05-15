@@ -57,7 +57,7 @@ mid-test:
 
 # Mid on-demand deployment
 mid_deploy_on_demand_techops:
-  stage: on-demand-stfc-techops
+  stage: on-demand
   variables:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
@@ -95,7 +95,7 @@ mid_deploy_on_demand_techops:
   allow_failure: true # need to keep this to unlock the pipeline
 
 mid_destroy_on_demand_techops:
-  stage: on-demand-stfc-techops
+  stage: on-demand
   variables:
     CONFIG: mid
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"

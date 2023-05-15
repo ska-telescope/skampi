@@ -15,7 +15,6 @@ from ..conftest import SutTestSettings
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.configure
-@pytest.mark.skip(reason="intermittent")
 @scenario(
     "features/tmc_configure_scan.feature",
     "Configure the mid telescope subarray using TMC",

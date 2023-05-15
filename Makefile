@@ -245,6 +245,7 @@ k8s_test_command = /bin/bash -o pipefail -c "\
         ( if [[ -f pyproject.toml ]]; then poetry export --format requirements.txt --output poetry-requirements.txt --without-hashes --dev; echo 'k8s-test: installing poetry-requirements.txt';  pip install -qUr poetry-requirements.txt; cd $(k8s_test_folder); else if [[ -f $(k8s_test_folder)/requirements.txt ]]; then echo 'k8s-test: installing $(k8s_test_folder)/requirements.txt'; pip install -qUr $(k8s_test_folder)/requirements.txt; fi; fi ) && \
 				 cd $(k8s_test_folder) && \
 		export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs) && \
+		TANGO_HOST=${TANGO_HOST} python3 scripts/wait_ping_devices.py && \
 		mkdir -p build && \
 	( \
 	$(K8S_TEST_TEST_COMMAND) \

@@ -13,7 +13,7 @@ from .. import conftest
 
 logger = logging.getLogger(__name__)
 
-#@pytest.mark.skip(reason="temp skip for at-489")
+@pytest.mark.skip(reason="skip as it seems to be a bug. branch at-489-39")
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.startup

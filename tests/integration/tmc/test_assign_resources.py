@@ -80,6 +80,7 @@ def fxt_setup_context_monitoring_for_abort_test(
         ["ABORTED", "EMPTY", "IDLE"]
     )
 
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -174,8 +175,7 @@ def the_subarray_should_go_into_an_aborted_state(
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(sut_settings.subarray_id))
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
-        tmc_subarray_name,
-        time_source='local'
+        tmc_subarray_name, time_source="local"
     )
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
     result = tmc_subarray.read_attribute("obsState").value

@@ -27,7 +27,7 @@
 
 # on-demand deployment from branch to branch namespace
 .low_itf_branch_job:
-  stage: on-demand
+  stage: on-demand-stfc-techops
   extends:
     - .low_itf_base
   variables:

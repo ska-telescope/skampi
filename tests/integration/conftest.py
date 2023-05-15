@@ -38,7 +38,9 @@ def fxt_check_infra_per_test(
         else:
             release = get_mvp_release()
         if release.devices_health != "READY":
-            logger.exception(release.device_states)
+            devices = release.get_devices_not_ready()
+            logger.exception(f"the following devices are not ready:\n: {devices}")
+
 
 def pytest_bdd_before_step_call(
     request: Any,

@@ -15,7 +15,8 @@ variables:
   CONFIG: "common"
 
 stages:
-  - on-demand
+  - on-demand-stfc-techops
+  - on-demand-stfc-dp
   - build
   - test
   - lint

@@ -27,6 +27,7 @@
     - make k8s-install-chart
     - kubectl get deviceservers.tango.tango-controls.org,all,pv,pvc,ingress -n $KUBE_NAMESPACE
     - make skampi-wait-all
+    - sleep 5
 
 .test_deployment:
   script:

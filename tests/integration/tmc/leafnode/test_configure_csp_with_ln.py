@@ -18,7 +18,6 @@ def test_configure_cspsubarray_for_a_scan_in_mid():
     """Configure cspsubarray for a scan in mid using the csp leaf node."""
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skalow
 @scenario(
     "features/tmc_cspln_configure.feature",

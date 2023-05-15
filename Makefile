@@ -279,8 +279,5 @@ k8s-post-test: # post test hook for processing received reports
 		exit 1; \
 	fi
 
-tango-wait-all:
-	TANGO_HOST="$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.$(CLUSTER_DOMAIN):10000" python3 scripts/wait_ping_devices.py
-
 foo:
 	@echo $(CASED_CONFIG)

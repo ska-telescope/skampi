@@ -27,7 +27,6 @@
     - make k8s-install-chart
     - kubectl get deviceservers.tango.tango-controls.org,all,pv,pvc,ingress -n $KUBE_NAMESPACE
     - make skampi-wait-all
-    - make tango-wait-all
 
 .test_deployment:
   script:
@@ -40,7 +39,6 @@
     - make skampi-upload-test-results
     # Exit based on the make-k8s-test-runner output which is writting in build/status file
     - make skampi-wait-all
-    - make tango-wait-all
     - '[ -f build/status ] || (echo "Something went wrong with the test (no build/status file); exit 1")'
     - echo "Cleaning the environment"
     - make k8s-uninstall-chart || true

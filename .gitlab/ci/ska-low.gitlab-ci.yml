@@ -48,7 +48,7 @@ low-test:
     when: always
   retry: 1
 
-# Low on-demand deployment on STFC Techops
+# Low on-demand deployment
 low_deploy_on_demand_techops:
   stage: on-demand
   variables:
@@ -110,7 +110,6 @@ low_destroy_on_demand_techops:
   when: manual
   allow_failure: true
 
-# Low on-demand deployment on STFC DP
 low_deploy_on_demand_dp:
   stage: on-demand
   variables:
@@ -119,7 +118,6 @@ low_deploy_on_demand_dp:
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     INGRESS_HOST: "sdhp.stfc.skao.int"
-    LOADBALANCER_IP: 10.100.10.1
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-st-1640-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-st-1640-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
@@ -133,7 +131,7 @@ low_deploy_on_demand_dp:
   tags:
     - ska-k8srunner-dp
   script:
-    - make skampi-links
+    - make skampi-links LOADBALANCER_IP=10.100.10.1
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:

@@ -60,6 +60,7 @@ def fxt_set_nr_of_subarray(
 def fxt_set_csp_online_from_csp(
     set_session_exec_settings: fxt_types.session_exec_settings,
     set_subsystem_online: Callable[[EntryPoint], None],
+    wait_sut_ready_for_session: Callable[[EntryPoint], None],
     nr_of_subarrays: int,
 ):
     """_summary_
@@ -71,6 +72,16 @@ def fxt_set_csp_online_from_csp(
     :param set_session_exec_settings: A fixture to set session execution settings.
     :type set_session_exec_settings: fxt_types.session_exec_settings
     """
+    # we first wait in case csp is not ready
+    set_session_exec_settings.time_out = 300
+    set_session_exec_settings.log_enabled = True
+    tel = names.TEL()
+    set_session_exec_settings.capture_logs_from(
+        str(tel.csp.subarray(1))
+    )
+    entry_point = CSPEntryPoint()
+    logging.info("wait for sut to be ready in the context of csp")
+    wait_sut_ready_for_session(entry_point)
     logging.info("setting csp components online within csp context")
     CSPEntryPoint.nr_of_subarrays = nr_of_subarrays
     entry_point = CSPEntryPoint()

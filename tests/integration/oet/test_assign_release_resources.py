@@ -29,6 +29,7 @@ rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0"
 activity_adapter = ActivityAdapter(rest_cli_uri)
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

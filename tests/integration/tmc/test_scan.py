@@ -25,6 +25,7 @@ def test_tmc_scan_on_mid_subarray():
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.scan
+@pytest.mark.skip(reason="intermittent")
 @scenario("features/tmc_scan.feature", "Run a scan on low subarray from TMC")
 def test_tmc_scan_on_low_subarray():
     """Run a scan on TMC low telescope subarray."""

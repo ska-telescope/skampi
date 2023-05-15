@@ -133,8 +133,8 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
             return True
         return False
 
-    wait_for_predicate(_wait_for_receive_data, "MS data not present in volume.", timeout=100)()
-    wait_for_predicate(_wait_for_sender_data, "MS data not present in volume.", timeout=100)()
+    wait_for_predicate(_wait_for_receive_data, "MS data not present in volume.", timeout=300)()
+    wait_for_predicate(_wait_for_sender_data, "MS data not present in volume.", timeout=300)()
 
     LOG.info("PVCs are present, pods created, and data downloaded successfully")
 

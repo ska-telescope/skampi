@@ -95,6 +95,7 @@ def fxt_setup_context_monitoring_for_abort_test(
     ).to_become_equal_to(["ABORTED", "EMPTY", "IDLE"])
 
 
+@pytest.mark.skip(reason="device not defined in the database error (at-489)")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

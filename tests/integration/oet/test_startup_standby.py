@@ -29,7 +29,7 @@ def test_telescope_startup():
     """Telescope startup test."""
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
+#@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.oet
 @pytest.mark.skalow
 @pytest.mark.startup

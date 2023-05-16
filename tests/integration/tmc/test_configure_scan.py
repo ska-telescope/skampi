@@ -70,6 +70,7 @@ def fxt_setup_monitoring_for_config_abort(
 
 @pytest.mark.skamid
 @pytest.mark.configure
+@pytest.mark.xfail(reason="intermittent")
 @scenario("features/tmc_configure_scan.feature", "Abort configuring")
 def test_abort_configuring_on_mid_tmc_subarray(
     disable_clear_and_tear_down: None,

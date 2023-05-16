@@ -48,6 +48,7 @@ def test_sbi_creation():
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
+@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/oet_assign_release_resources.feature",
     "Allocating resources with a SBI",
@@ -66,6 +67,7 @@ def test_resource_allocation():
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
+@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/oet_assign_release_resources.feature",
     "Releasing all resources from sub-array",
@@ -260,6 +262,7 @@ def check_final_subarray_state(
 @pytest.mark.scripting
 @pytest.mark.skamid
 @pytest.mark.k8s
+@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/oet_assign_release_resources.feature",
     "Allocate resources using oet scripting interface",

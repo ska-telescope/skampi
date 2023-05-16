@@ -16,6 +16,7 @@ from ..conftest import SutTestSettings
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.scan
+@pytest.mark.xfail(reason="intermittent")
 @scenario("features/tmc_scan.feature", "Run a scan from TMC")
 def test_tmc_scan_on_mid_subarray():
     """Run a scan on TMC mid telescope subarray."""

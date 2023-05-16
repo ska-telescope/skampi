@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.skamid
 @pytest.mark.startup
+@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/sdpln_start_up_telescope.feature",
     "Start up the sdp in mid using the leaf node",

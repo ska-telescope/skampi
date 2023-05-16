@@ -1,11 +1,9 @@
 """Domain logic for the cdp."""
 import copy
-import functools
 import json
 import logging
-import time
 from time import sleep
-from typing import Callable, List, ParamSpec, TypeVar
+from typing import  List, ParamSpec, TypeVar
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder

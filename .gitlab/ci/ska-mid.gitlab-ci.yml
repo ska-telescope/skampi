@@ -33,7 +33,7 @@ mid-test:
     LIVE_LOGGING_EXTENDED: "True"
     SHOW_STEP_FUNCTIONS: "True"
     #CHECK_INFRA_PER_TEST: "True"
-    #USE_OLD_DISH_IDS: "True"
+    USE_OLD_DISH_IDS: "True"
     COUNT: 1
   extends:
     - .tags_default

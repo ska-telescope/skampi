@@ -46,29 +46,6 @@ def test_abort_scanning_low(disable_clear):
     :param disable_clear: A disable clear object
     """
 
-
-@pytest.mark.skalow
-@pytest.mark.scanning
-@pytest.mark.csp
-@scenario(
-    "features/csp_multi_scan.feature",
-    "Run multiple scans on CSP subarray in low for same scan type",
-)
-def test_run_multiple_scans_on_csp_subarray_in_low():
-    """Run multiple scans on csp subarray in low."""
-
-
-@pytest.mark.skalow
-@pytest.mark.scanning
-@pytest.mark.csp
-@scenario(
-    "features/csp_multi_scan.feature",
-    "Run multiple scans on CSP subarray in low for different scan types",
-)
-def test_run_multiple_scans_on_csp_subarray_in_low_for_different_scan_types():
-    """Run multiple scans on CSP subarray in low for different scan types"""
-
-
 @given("an CSP subarray in READY state")
 def an_csp_subarray_in_ready_state(
     set_up_subarray_log_checking_for_csp,

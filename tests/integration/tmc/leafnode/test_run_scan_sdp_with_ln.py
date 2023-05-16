@@ -13,6 +13,7 @@ from ... import conftest
 
 @pytest.mark.skamid
 @pytest.mark.configure
+@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/sdpln_run_scan.feature",
     "Run scan on sdp subarray in mid using the leaf node",

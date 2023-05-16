@@ -24,7 +24,9 @@ class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
         )
         return assign_request
 
-    low_assign_resources_schema = "https://schema.skao.int/ska-low-tmc-assignresources/3.0"
+    low_assign_resources_schema = (
+        "https://schema.skao.int/ska-low-tmc-assignresources/3.0"
+    )
 
     def _generate_low_assign_resources_config(self, subarray_id: int = 1):
         transaction_id = "txn-....-00001"

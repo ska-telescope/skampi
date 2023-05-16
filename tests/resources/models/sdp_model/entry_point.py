@@ -19,6 +19,10 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 from ska_ser_skallop.utils.singleton import Memo
 
 from ..mvp_model.states import ObsState
+from ska_ser_skallop.mvp_control.entry_points import base
+from ska_ser_skallop.event_handling.builders import get_message_board_builder
+
+from tests.resources.models.mvp_model.configuration import SKAScanConfiguration
 from ..obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
@@ -240,7 +244,10 @@ class SdpConfigureStep(base.ConfigureStep, LogEnabled):
         Memo(scan_duration=duration)
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        config = self.observation.generate_sdp_scan_config().as_json
+        if isinstance(configuration, SKAScanConfiguration):
+            config = configuration.generate_sdp_scan_config().as_json
+        else:
+            config = self.observation.generate_sdp_scan_config().as_json
         self._log(f"commanding {subarray_name} with Configure: {config} ")
         subarray.set_timeout_millis(6000)
         subarray.command_inout("Configure", config)

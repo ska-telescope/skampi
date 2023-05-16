@@ -104,7 +104,6 @@ def fxt_set_csp_entry_point(
     exec_env.scope = ["csp"]
     sut_settings.default_subarray_name = sut_settings.tel.csp.subarray(sut_settings.subarray_id)
 
-
 # log checking
 
 

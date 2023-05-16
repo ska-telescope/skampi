@@ -6,11 +6,11 @@ metadata:
 spec:
   limits:
   - default:
-      memory: 1Gi
+      memory: 256Mi
       cpu: 200m
       ephemeral-storage: 256Mi
     defaultRequest:
-      memory: 256Mi
+      memory: 64Mi
       cpu: 65m
       ephemeral-storage: 256Mi
     type: Container

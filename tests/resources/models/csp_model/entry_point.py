@@ -597,7 +597,7 @@ class CSPWaitReadyStep(base.WaitReadyStep, LogEnabled):
         builder = get_message_board_builder()
         for sub_id in range(1, self._nr_of_subarrays+1):
             subarray = self._tel.csp.subarray(sub_id)
-            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(["OFF","ON"],ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(["OFF","ON","DISABLE"],ignore_first=False)
         return builder
 
 class CSPEntryPoint(CompositeEntryPoint):

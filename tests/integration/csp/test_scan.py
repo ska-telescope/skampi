@@ -46,6 +46,7 @@ def test_abort_scanning_low(disable_clear):
     :param disable_clear: A disable clear object
     """
 
+
 @given("an CSP subarray in READY state")
 def an_csp_subarray_in_ready_state(
     set_up_subarray_log_checking_for_csp,

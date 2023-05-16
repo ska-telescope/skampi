@@ -12,6 +12,9 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
+from tests.resources.models.mvp_model.configuration import SKAScanConfiguration
+from tests.resources.models.obsconfig.config import Observation
+
 from .. import conftest
 from .vis_receive_utils import K8sElementManager
 
@@ -143,6 +146,7 @@ def fxt_sdp_base_configuration(
     """Setup a base scan configuration to use for sdp.
 
     :param tmp_path: a temporary path for sending configuration as a file.
+    :param observation_config: An object for observation config.
     :return: the configuration settings.
     """
     tel = names.TEL()

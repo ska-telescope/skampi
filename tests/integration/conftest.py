@@ -10,13 +10,14 @@ from assertpy import assert_that
 from mock import Mock, patch
 from pytest_bdd import given, parsers, then, when
 from pytest_bdd.parser import Feature, Scenario, Step
+from resources.models.mvp_model.configuration import SKAScanConfiguration
 from resources.models.mvp_model.env import Observation, init_observation_config
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
-from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
+from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_fixtures.fixtures import SubarrayConfigurationSpec, fxt_types
 
 logger = logging.getLogger(__name__)
 
@@ -81,8 +82,10 @@ class SutTestSettings(SimpleNamespace):
 def fxt_configuration(
     tmp_path: str, observation_config: Observation
 ) -> conf_types.ScanConfiguration:
-    """Setup a base scan configuration to use for sdp.
+    """
+    Setup a base scan configuration to use for sdp.
 
+    :param observation_config: An object for observation config
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
@@ -305,8 +308,7 @@ def the_telescope_is_on(
 
 @given(
     parsers.parse(
-        "a subarray defined to perform scans for types {scan_target1} "
-        "and {scan_target2}"
+        "a subarray defined to perform scans for types {scan_target1} " "and {scan_target2}"
     ),
     target_fixture="scan_targets",
 )
@@ -351,14 +353,23 @@ def a_subarray_configured_for_scan_type(
     sut_settings: SutTestSettings,
     scan_targets: dict[str, str],
 ):
-    """a subarray configured for scan type {scan_type}"""
+    """
+    a subarray configured for scan type {scan_type}
+    :param scan_type: next scan type to be configured
+    :param factory_configured_subarray: configured subarray
+    :param observation_config: An object for observation config
+    :param configuration: The scan configuration to be used for the scan.
+    :param sut_settings: An instance of the `SutTestSettings` class representing
+        the settings for the system under test.
+    :param scan_targets: scan targets in form of dictionary
+    :return: factory configured subarray with next scan type configuration
+        specifications
+    """
     scan_duration = sut_settings.scan_duration
     configuration = SKAScanConfiguration(observation_config)
     configuration.set_next_target_to_be_configured(scan_targets[scan_type])
     configuration_specs = SubarrayConfigurationSpec(scan_duration, configuration)
-    return factory_configured_subarray(
-        injected_subarray_configuration_spec=configuration_specs
-    )
+    return factory_configured_subarray(injected_subarray_configuration_spec=configuration_specs)
 
 
 @when("I switch off the telescope")
@@ -457,9 +468,7 @@ def i_assign_resources_to_it(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            entry_point.compose_subarray(
-                subarray_id, receptors, composition, sb_config.sbid
-            )
+            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
 # scan configuration
@@ -481,6 +490,7 @@ def i_configure_it_for_a_scan(
     :param configuration: The scan configuration to be used for the scan.
     :param integration_test_exec_settings: The integration test execution settings.
     :param sut_settings: SUT settings object.
+
     """
     sub_array_id = allocated_subarray.id
     sb_id = allocated_subarray.sb_config.sbid
@@ -489,7 +499,6 @@ def i_configure_it_for_a_scan(
     with context_monitoring.context_monitoring():
         with allocated_subarray.wait_for_configuring_a_subarray(integration_test_exec_settings):
             entry_point.configure_subarray(sub_array_id, configuration, sb_id, scan_duration)
-
 
 
 @when("I command it to scan for a given period")
@@ -631,13 +640,3 @@ def the_subarray_should_go_into_an_aborted_state(
     subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
     result = subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.ABORTED)
-
-
-# scans
-@given("the subarray has just completed it's first scan for given configuration")
-@given("an subarray that has just completed it's first scan")
-def an_subarray_that_has_just_completed_its_first_scan(
-    configured_subarray: fxt_types.configured_subarray,
-    integration_test_exec_settings: fxt_types.exec_settings,
-):
-    configured_subarray.scan(integration_test_exec_settings)

@@ -1,27 +1,25 @@
 """pytest global settings, fixtures and global bdd step implementations for integration tests."""
 import logging
-from types import SimpleNamespace
 import os
-
+from types import SimpleNamespace
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
-from mock import patch, Mock
-from assertpy import assert_that
-import pytest
-from pytest_bdd import when, then, given
 
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting
-from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.connectors import configuration as con_config
+import pytest
+from assertpy import assert_that
+from mock import Mock, patch
+from pytest_bdd import given, then, when
 from resources.models.mvp_model.env import (
-    init_observation_config,
     Observation,
+    init_observation_config,
     interject_observation_config,
 )
 from resources.models.mvp_model.states import ObsState
 from resources.models.obsconfig.base import EncodedObject
-
+from ska_ser_skallop.connectors import configuration as con_config
+from ska_ser_skallop.mvp_control.describing.mvp_names import TEL, DeviceName
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.event_waiting.wait import EWhilstWaiting
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +67,7 @@ def fxt_sdp_assign_resources_exec_settings(
 ):
     """Set up test specific execution settings.
 
-    :param exec_settings: The global test execution settings as a fixture.
+    :param integration_test_exec_settings: The global test execution settings as a fixture.
     :return: test specific execution settings as a fixture
     """
     return integration_test_exec_settings
@@ -77,7 +75,10 @@ def fxt_sdp_assign_resources_exec_settings(
 
 @pytest.fixture(name="sut_settings", scope="function")
 def fxt_conftest_settings() -> SutTestSettings:
-    """Fixture to use for setting env like  SUT settings for fixtures in conftest"""
+    """
+    Fixture to use for setting env like  SUT settings for fixtures in conftest
+    :return: sut test settings
+    """
     return SutTestSettings()
 
 
@@ -97,13 +98,19 @@ def fxt_set_session_exec_settings(
 
 
 @pytest.fixture(name="run_mock")
-def fxt_run_mock_wrapper(
-    request, _pytest_bdd_example, conftest_settings: SutTestSettings
-):
-    """Fixture that returns a function to use for running a test as a mock."""
+def fxt_run_mock_wrapper(request, _pytest_bdd_example, conftest_settings: SutTestSettings):
+    """Fixture that returns a function to use for running a test as a mock.
+    :param request: request
+    :param conftest_settings: sut test settings
+    :return: run mock
+    """
 
     def run_mock(mock_test: Callable):
-        """Test the test using a mock SUT"""
+        """
+        Test the test using a mock SUT
+        :param mock_test: mock test
+
+        """
         conftest_settings.mock_sut = True
         # pylint: disable-next=too-many-function-args
         with patch(
@@ -120,7 +127,6 @@ def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
     """Set up general execution settings during setup and teardown.
 
     :param exec_settings: The global test execution settings as a fixture.
-    :return: test specific execution settings as a fixture
     """
     if os.getenv("LIVE_LOGGING_EXTENDED"):
         logger.info("running live logs globally")
@@ -174,18 +180,14 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
-def _inject_method(
-    injectable: T, method: Callable[Concatenate[T, P], R]
-) -> Callable[P, R]:
+def _inject_method(injectable: T, method: Callable[Concatenate[T, P], R]) -> Callable[P, R]:
     def _replaced_method(*args: P.args, **kwargs: P.kwargs) -> R:
         return method(injectable, *args, **kwargs)
 
     return _replaced_method
 
 
-ObservationConfigInterjector = Callable[
-    [str, Callable[Concatenate[Observation, P], R]], None
-]
+ObservationConfigInterjector = Callable[[str, Callable[Concatenate[Observation, P], R]], None]
 
 
 @pytest.fixture(name="interject_into_observation_config")
@@ -199,9 +201,7 @@ def fxt_observation_config_interjector(
         method_name: str, intj_fn: Callable[Concatenate[Observation, P], R]
     ):
         injected_method = _inject_method(obs, intj_fn)
-        mocked_observation_config.configure_mock(
-            **{f"{method_name}.side_effect": injected_method}
-        )
+        mocked_observation_config.configure_mock(**{f"{method_name}.side_effect": injected_method})
 
     return interject_observation_method
 
@@ -214,13 +214,20 @@ def an_subarray_busy_scanning(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """an subarray busy scanning"""
+    """
+    an subarray busy scanning
+    :param configured_subarray: a configured subarray
+    :param integration_test_exec_settings: test execution settings
+    """
     configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
 @given("an subarray busy configuring")
 def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
-    """an subarray busy configuring"""
+    """
+    an subarray busy configuring
+    :param allocated_subarray: a allocated subarray
+    """
     allocated_subarray.set_to_configuring(clear_afterwards=False)
 
 
@@ -235,7 +242,13 @@ def i_start_up_the_telescope(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I start up the telescope."""
+    """
+    I start up the telescope.
+    :param standby_telescope: a telescope in standby state
+    :param entry_point: entry point
+    :param context_monitoring: monitoring context
+    :param integration_test_exec_settings: test execution settings
+    """
     with context_monitoring.context_monitoring():
         with standby_telescope.wait_for_starting_up(integration_test_exec_settings):
             entry_point.set_telescope_to_running()
@@ -248,7 +261,13 @@ def i_switch_off_the_telescope(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I switch off the telescope."""
+    """
+    I switch off the telescope.
+    :param running_telescope: a telescope in running state
+    :param entry_point: entry point
+    :param context_monitoring: monitoring context
+    :param integration_test_exec_settings: test execution settings
+    """
     # we disable automatic shutdown as this is done by the test itself
     running_telescope.disable_automatic_setdown()
     with context_monitoring.context_monitoring():
@@ -269,7 +288,16 @@ def i_assign_resources_to_it(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):
-    """I assign resources to it."""
+    """
+    I assign resources to it.
+    :param running_telescope: a telescope in running state
+    :param entry_point: entry point
+    :param context_monitoring: monitoring context
+    :param integration_test_exec_settings: test execution settings
+    :param sb_config: sb config
+    :param composition: composite config
+    :param sut_settings: sut setting for test
+    """
 
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
@@ -277,9 +305,7 @@ def i_assign_resources_to_it(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            entry_point.compose_subarray(
-                subarray_id, receptors, composition, sb_config.sbid
-            )
+            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
 # scan configuration
@@ -292,16 +318,22 @@ def i_configure_it_for_a_scan(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):
-    """I configure it for a scan."""
+    """
+    I configure it for a scan.
+    :param allocated_subarray: a allocated subarray
+    :param context_monitoring: monitoring context
+    :param entry_point: entry point
+    :param configuration: configuration
+    :param integration_test_exec_settings: test execution settings
+    :param sut_settings: sut setting for test
+    """
     sub_array_id = allocated_subarray.id
     receptors = allocated_subarray.receptors
     sb_id = allocated_subarray.sb_config.sbid
     scan_duration = sut_settings.scan_duration
 
     with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_configuring_a_subarray(
-            integration_test_exec_settings
-        ):
+        with allocated_subarray.wait_for_configuring_a_subarray(integration_test_exec_settings):
             entry_point.configure_subarray(
                 sub_array_id, receptors, configuration, sb_id, scan_duration
             )
@@ -313,7 +345,11 @@ def i_command_it_to_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I configure it for a scan."""
+    """
+    I configure it for a scan.
+    :param configured_subarray: configured subarray
+    :param integration_test_exec_settings: test execution settings
+    """
     configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
@@ -325,6 +361,14 @@ def i_command_it_to_abort(
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
 ):
+    """
+    I command it to Abort
+    :param allocated_subarray: a allocated subarray
+    :param context_monitoring: monitoring context
+    :param entry_point: entry point
+    :param integration_test_exec_settings: test execution settings
+    :param sut_settings: sut setting for test
+    """
     subarray = sut_settings.default_subarray_name
     sub_array_id = sut_settings.subarray_id
     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
@@ -344,13 +388,17 @@ def i_release_all_resources_assigned_to_it(
     entry_point: fxt_types.entry_point,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """I release all resources assigned to it."""
+    """
+    I release all resources assigned to it.
+    :param allocated_subarray: a allocated subarray
+    :param context_monitoring: monitoring context
+    :param entry_point: entry point
+    :param integration_test_exec_settings: test execution settings
+    """
     sub_array_id = allocated_subarray.id
 
     with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_releasing_a_subarray(
-            integration_test_exec_settings
-        ):
+        with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
             entry_point.tear_down_subarray(sub_array_id)
 
 
@@ -366,9 +414,7 @@ def fxt_invalid_assign_config_interjected(
     ],
     entry_point: fxt_types.entry_point,
 ):
-    interject_into_observation_config(
-        "generate_assign_resources_config", generate_invalid_config
-    )
+    interject_into_observation_config("generate_assign_resources_config", generate_invalid_config)
     entry_point.__init__()
 
 
@@ -398,14 +444,10 @@ def when_i_assign_resources_with_invalid_config(
         sut_settings,
     )
     if not expected_exception_raised:
-        subarray_device = con_config.get_device_proxy(
-            sut_settings.default_subarray_name
-        )
+        subarray_device = con_config.get_device_proxy(sut_settings.default_subarray_name)
         result = subarray_device.read_attribute("obsstate").value
         if result == ObsState.EMPTY:
-            pytest.fail(
-                "exception not raised when calling assign but it did return back to EMPTY"
-            )
+            pytest.fail("exception not raised when calling assign but it did return back to EMPTY")
         else:
             running_telescope.release_subarray_when_finished(
                 subarray_id, receptors, integration_test_exec_settings
@@ -449,7 +491,10 @@ def _assign_resources_with_invalid_config(
         except EWhilstWaiting:
             if not expected_exception_raised:
                 pytest.fail(
-                    "expected timeout waiting for resourcing ocurred but no expected command exception thrown"
+                    """
+                    expected timeout waiting for resourcing ocurred
+                    but no expected command exception thrown
+                    """
                 )
             return expected_exception_raised
     # this means we did not have a time out waiting for RESOURCING so now we
@@ -467,11 +512,17 @@ def _assign_resources_with_invalid_config(
             # this means we are stuck in RESOURCING so will attempt to reset
             if expected_exception_raised:
                 pytest.fail(
-                    "exception raised when calling assign but it seems be stuck in RESOURCING"
+                    """
+                    exception raised when calling assign
+                    but it seems be stuck in RESOURCING
+                    """
                 )
             else:
                 pytest.fail(
-                    "exception not raised when calling assign but it seems to be stuck in RESOURCING"
+                    """
+                    exception not raised when calling assign
+                    but it seems to be stuck in RESOURCING
+                    """
                 )
     return expected_exception_raised
 
@@ -501,15 +552,11 @@ def when_i_assign_resources_with_a_duplicate_sb_id(
         sut_settings,
     )
     if not expected_exception_raised:
-        subarray_device = con_config.get_device_proxy(
-            sut_settings.default_subarray_name
-        )
+        subarray_device = con_config.get_device_proxy(sut_settings.default_subarray_name)
         result = subarray_device.read_attribute("obsstate").value
         if result == ObsState.EMPTY:
             allocated_subarray.disable_automatic_teardown()
-            pytest.fail(
-                "exception not raised when calling assign but it did return back to EMPTY"
-            )
+            pytest.fail("exception not raised when calling assign but it did return back to EMPTY")
         else:
             pytest.fail(
                 "exception not raised when calling assign but it did successfully go to IDLE"
@@ -532,17 +579,11 @@ def fxt_invalid_scan_config_interjected(
     csp_subarray_name = str(sut_settings.tel.csp.subarray(subarray_id))
 
     if subarray_name == sdp_subarray_name:
-        interject_into_observation_config(
-            "generate_sdp_scan_config", generate_invalid_config
-        )
+        interject_into_observation_config("generate_sdp_scan_config", generate_invalid_config)
     elif subarray_name == csp_subarray_name:
-        interject_into_observation_config(
-            "generate_csp_scan_config", generate_invalid_config
-        )
+        interject_into_observation_config("generate_csp_scan_config", generate_invalid_config)
     else:
-        interject_into_observation_config(
-            "generate_scan_config", generate_invalid_config
-        )
+        interject_into_observation_config("generate_scan_config", generate_invalid_config)
     entry_point.__init__()
 
 
@@ -584,7 +625,10 @@ def i_configure_it_for_a_scan_with_an_invalid_config(
         except EWhilstWaiting:
             if not expected_exception_raised:
                 pytest.fail(
-                    "expected timeout waiting for CONFIGURING ocurred but no expected command exception thrown"
+                    """
+                    expected timeout waiting for CONFIGURING ocurred
+                    but no expected command exception thrown
+                    """
                 )
             return
     # this means we did not have a time out waiting for RESOURCING so now we
@@ -602,28 +646,36 @@ def i_configure_it_for_a_scan_with_an_invalid_config(
             # this means we are stuck in CONFIGURING so will attempt to reset
             if expected_exception_raised:
                 pytest.fail(
-                    "exception raised when calling configure but it seems be stuck in CONFIGURING"
+                    """
+                    exception raised when calling configure
+                    but it seems be stuck in CONFIGURING
+                    """
                 )
             else:
                 pytest.fail(
-                    "exception not raised when calling configure but it seems to be stuck in CONFIGURING"
+                    """
+                    exception not raised when calling configure
+                    but it seems be stuck in CONFIGURING
+                    """
                 )
     if not expected_exception_raised:
-        subarray_device = con_config.get_device_proxy(
-            sut_settings.default_subarray_name
-        )
+        subarray_device = con_config.get_device_proxy(sut_settings.default_subarray_name)
         result = subarray_device.read_attribute("obsstate").value
         if result == ObsState.IDLE:
             pytest.fail(
-                "exception not raised when calling configure but it did return back to IDLE"
+                """
+                exception not raised when calling configure
+                but it did return back to IDLE
+                """
             )
         else:
-            allocated_subarray.clear_configuration_when_finished(
-                integration_test_exec_settings
-            )
+            allocated_subarray.clear_configuration_when_finished(integration_test_exec_settings)
             pytest.fail(
-                "exception not raised when calling configure but it did successfully go to IDLE"
+                """
+                exception not raised when calling configure
+                but it did successfully go to IDLE
                 "Are you sure the config is invalid?"
+                """
             )
 
 
@@ -640,7 +692,17 @@ def i_command_the_assign_resources_twice_in_consecutive_fashion(
     sb_config: fxt_types.sb_config,
     sut_settings: SutTestSettings,
 ):
-    """I assign resources to it."""
+    """
+    I assign resources to it.
+    :param running_telescope: a telescope in running state
+    :param entry_point: entry point
+    :param context_monitoring: monitoring context
+    :param integration_test_exec_settings: test execution settings
+    :param sb_config: sb config
+    :param composition: composite config
+    :param sut_settings: sut setting for test
+    :return: expected exception raised
+    """
 
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
@@ -650,13 +712,9 @@ def i_command_the_assign_resources_twice_in_consecutive_fashion(
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings
         ):
-            entry_point.compose_subarray(
-                subarray_id, receptors, composition, sb_config.sbid
-            )
+            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
             try:
-                entry_point.compose_subarray(
-                    subarray_id, receptors, composition, sb_config.sbid
-                )
+                entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
             except Exception as exception:
                 expected_exception_raised = exception
     return expected_exception_raised

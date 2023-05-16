@@ -18,11 +18,9 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
-from ..mvp_model.states import ObsState
-from ska_ser_skallop.mvp_control.entry_points import base
-from ska_ser_skallop.event_handling.builders import get_message_board_builder
-
 from tests.resources.models.mvp_model.configuration import SKAScanConfiguration
+
+from ..mvp_model.states import ObsState
 from ..obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)

@@ -17,8 +17,29 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_ser_skallop.mvp_control.infra_mon.configuration import get_mvp_release
 
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(name="check_infra_per_test", autouse=True)
+def fxt_check_infra_per_test(
+    check_infra_per_session: Any
+) -> Any:
+    """Set a fixture to automatically check infra per test.
+
+    :param check_infra_per_session: reference to session checking
+    :return: The fixture
+    """
+    if os.getenv("CHECK_INFRA_PER_TEST"):
+        logger.info("checking infra health before executing test")
+        if check_infra_per_session:
+            release = check_infra_per_session
+        else:
+            release = get_mvp_release()
+        if release.devices_health != "READY":
+            devices = release.get_devices_not_ready()
+            logger.exception(f"the following devices are not ready:\n: {devices}")
 
 
 def pytest_bdd_before_step_call(

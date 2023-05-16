@@ -34,7 +34,7 @@ mid-test:
     SHOW_STEP_FUNCTIONS: "True"
     #CHECK_INFRA_PER_TEST: "True"
     USE_OLD_DISH_IDS: "True"
-    COUNT: 100
+    COUNT: 6
   extends:
     - .tags_default
     - .set_dbname

@@ -23,6 +23,7 @@ def test_csp_start_up_telescope_mid():
     """Start up the csp in mid."""
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.startup

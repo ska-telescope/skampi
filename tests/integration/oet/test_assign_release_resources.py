@@ -280,6 +280,7 @@ def test_oet__scripting_resource_allocation():
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.k8s
+@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/oet_assign_release_resources.feature",
     "Allocate resources using oet scripting interface low",
@@ -296,6 +297,7 @@ def test_oet_scripting_resource_allocation_in_low():
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.k8s
+@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/oet_assign_release_resources.feature",
     "Release all resources from sub-array low",

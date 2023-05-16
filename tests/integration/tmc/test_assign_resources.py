@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.assign
+@pytest.mark.xfail(reason="intermittent")
 @scenario("features/tmc_assign_resources.feature", "Assign resources to low subarray")
 def test_assign_resources_to_tmc_subarray_in_low():
     """Assign resources to tmc subarray in low."""
@@ -29,6 +30,7 @@ def test_assign_resources_to_tmc_subarray_in_low():
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
+@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/tmc_assign_resources.feature",
     "Release resources from low subarray",

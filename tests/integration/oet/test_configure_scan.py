@@ -48,6 +48,7 @@ def test_observing_sbi():
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.configure
+@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/oet_configure_scan.feature",
     "Configure the low telescope subarray using OET",

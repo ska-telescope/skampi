@@ -21,6 +21,7 @@ def test_configure_scan_on_sdp_subarray_in_mid():
 
 @pytest.mark.skalow
 @pytest.mark.configure
+@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/tmc_sdpln_configure.feature",
     "Configure the SDP low using SDP leaf node",

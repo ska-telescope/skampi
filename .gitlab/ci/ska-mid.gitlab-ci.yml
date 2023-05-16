@@ -132,6 +132,7 @@ mid_deploy_on_demand_dp:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-st-1640-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+    ARCHIVER_ENABLED: "false"
     OET_INGRESS_ENABLED: "true"
     SKA_TELESCOPE: "SKA-${CONFIG}"
     CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"

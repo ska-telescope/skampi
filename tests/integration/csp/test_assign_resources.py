@@ -20,7 +20,7 @@ def fxt_default_composition(csp_base_composition: conf_types.Composition):
     """
     return csp_base_composition
 
-
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign

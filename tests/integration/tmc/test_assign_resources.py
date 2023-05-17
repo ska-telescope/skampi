@@ -117,7 +117,6 @@ def test_abort_in_resourcing_mid(
     """
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

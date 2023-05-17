@@ -311,7 +311,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         :return: builder
         """
         builder = get_message_board_builder()
-        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        subarray_name = self._tel.csp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
         return builder
 

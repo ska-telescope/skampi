@@ -31,7 +31,7 @@ reinstall-chart: uninstall install ## reinstall the  helm chart on the namespace
 install-or-upgrade: k8s-install-chart## install or upgrade the release
 
 quotas: k8s-namespace## delete and create the kubernetes namespace with quotas
-	kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
+##kubectl -n $(KUBE_NAMESPACE) apply -f resources/namespace_with_quotas.yaml
 
 upgrade-skampi-chart: ## upgrade the helm chart on the namespace KUBE_NAMESPACE
 	@echo "THIS IS A SKAMPI SPECIFIC MAKE TARGET"

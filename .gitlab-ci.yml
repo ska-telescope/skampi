@@ -15,6 +15,7 @@ variables:
   CONFIG: "common"
 
 stages:
+  - test-chart-uploader
   - on-demand
   - build
   - test
@@ -30,6 +31,19 @@ stages:
   - release
   - deploy_staging
   - clean_staging
+
+#check chart uploader
+test-on-demand:
+  stage: test-chart-uploader
+  id_tokens:
+    VAULT_ID_TOKEN:
+      aud: https://gitlab.com
+  secrets:
+    RT_API_TOKEN:
+      vault: kv/users/roshant.ska/credentials
+      token: $VAULT_ID_TOKEN
+  script:
+    - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py
 
 # Globally reused tags declaration for jobs
 .tags_default:
@@ -93,3 +107,12 @@ include:
 
 python-lint:
   image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
+
+
+# finaliser:
+#   extends:
+#     - create-ci-metrics
+#   before_script:
+#     - make confluence_chart_uploader
+
+

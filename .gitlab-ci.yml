@@ -39,8 +39,9 @@ test-on-demand:
     VAULT_ID_TOKEN:
       aud: https://gitlab.com
   secrets:
-    RT_API_TOKEN:
-      vault: kv/users/roshant.ska/credentials
+    CONFLUENCE_TOKEN:
+      vault: kv/users/roshant.ska/rt_api_token
+      file: false
       token: $VAULT_ID_TOKEN
   script:
     - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py

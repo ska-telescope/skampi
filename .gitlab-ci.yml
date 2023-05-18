@@ -37,7 +37,8 @@ test-on-demand:
   stage: test-chart-uploader
   script:
     - python3 -m pip install atlassian-python-api
-    - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py
+    - cd tests/resources/utils/chart_imager/
+    - python3 confluence_chart_uploader.py
 
 # Globally reused tags declaration for jobs
 .tags_default:

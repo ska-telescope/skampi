@@ -4,14 +4,13 @@ This is example to attach file with mimetype
 
 """
 import logging
-import linecache
 import os
 
 from atlassian import Confluence
 
 logging.basicConfig(level=logging.DEBUG)
 
-API_TOKEN = os.environ['CONFLUENCE_TOKEN']
+API_TOKEN = os.environ['RT_API_TOKEN']
 
 confluence = Confluence(
     url="https://confluence.skatelescope.org",

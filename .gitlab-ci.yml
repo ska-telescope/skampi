@@ -35,14 +35,6 @@ stages:
 #check chart uploader
 test-on-demand:
   stage: test-chart-uploader
-  id_tokens:
-    VAULT_ID_TOKEN:
-      aud: https://gitlab.com
-  secrets:
-    CONFLUENCE_TOKEN:
-      vault: users/roshant.ska/credentials/rt_api_token@kv
-      file: false
-      token: $VAULT_ID_TOKEN
   script:
     - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py
 

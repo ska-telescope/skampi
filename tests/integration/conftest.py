@@ -12,6 +12,7 @@ from pytest_bdd import given, parsers, then, when
 from pytest_bdd.parser import Feature, Scenario, Step
 from resources.models.mvp_model.env import Observation, init_observation_config
 from resources.models.mvp_model.states import ObsState
+from resources.models.tmc_model.leafnodes.utils import get_listener, Listener
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
@@ -128,6 +129,10 @@ class OnlineFlag:
 def fxt_online():
     return OnlineFlag()
 
+
+@pytest.fixture(name='listener')
+def fxt_listener() -> Listener:
+    return get_listener()
 
 @pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
 def fxt_set_session_exec_settings(

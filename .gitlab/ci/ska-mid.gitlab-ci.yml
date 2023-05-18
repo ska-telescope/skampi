@@ -33,6 +33,8 @@ mid-test:
     LIVE_LOGGING_EXTENDED: "True"
     SHOW_STEP_FUNCTIONS: "True"
     COUNT: 50
+    CHECK_INFRA_PER_TEST: "True"
+    USE_OLD_DISH_IDS: "True"
   extends:
     - .tags_default
     - .set_dbname
@@ -52,7 +54,6 @@ mid-test:
     reports:
       junit: build/report.xml
     when: always
-  retry: 1
 
 # Mid on-demand deployment
 mid_deploy_on_demand:

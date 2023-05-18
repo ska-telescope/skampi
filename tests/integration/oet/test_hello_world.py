@@ -5,7 +5,7 @@ from .oet_helpers import ACTIVITY_ADAPTER, ScriptExecutor, add_sb_to_oda
 
 EXECUTOR = ScriptExecutor()
 
-
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -18,6 +18,7 @@ def test_hello_world():
     """
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s

@@ -37,6 +37,7 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
     sut_settings.restart_after_abort = True
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp

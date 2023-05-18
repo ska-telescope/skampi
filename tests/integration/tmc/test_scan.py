@@ -82,8 +82,7 @@ def the_sdp_subarray_must_be_in_the_scanning_state(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
-        str(tmc_subarray_name),
-        time_source='local'
+        str(tmc_subarray_name), time_source="local"
     )
     result = tmc_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.READY)

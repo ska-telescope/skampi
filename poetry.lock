@@ -3612,14 +3612,14 @@ reference = 'ska'
 
 [[package]]
 name = "ska-ser-skallop"
-version = "2.26.2"
+version = "2.27.1"
 description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "ska-ser-skallop-2.26.2.tar.gz", hash = "sha256:1acd4ad732915c1412896b00522762eb1ca95cc65a4c115052660807fea33dfe"},
-    {file = "ska_ser_skallop-2.26.2-py3-none-any.whl", hash = "sha256:762aae06306be0e92ae3ca5af86f8a05ca816e04b97f42229ab7120170765967"},
+    {file = "ska-ser-skallop-2.27.1.tar.gz", hash = "sha256:6e9061852896b15197348ed903d47af06fb3cd44752df8cbe013bbfe5c8b1633"},
+    {file = "ska_ser_skallop-2.27.1-py3-none-any.whl", hash = "sha256:b8fbfb522c1b7878f14a23e1077b124418fb28df821af96f0db129cba89b4eb3"},
 ]
 
 [package.dependencies]
@@ -4399,4 +4399,4 @@ reference = 'ska'
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "014ec9ce21eb2fd81758892a966eb8227a17b6e2dfe7710f4e93c130ea9eaa5a"
+content-hash = "bea2872a50e58f7d57cea36e9d1937b4dac33764e0c2cb63f8cfa82172bb2284"

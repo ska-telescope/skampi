@@ -14,7 +14,6 @@ from ...conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(

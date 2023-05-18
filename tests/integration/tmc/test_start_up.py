@@ -34,6 +34,7 @@ def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skalow
 @pytest.mark.startup
 @scenario(

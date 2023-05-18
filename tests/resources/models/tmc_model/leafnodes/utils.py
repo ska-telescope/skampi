@@ -9,7 +9,7 @@ P = ParamSpec("P")
 
 logger = logging.getLogger(__name__)
 
-_listener: None | 'Listener' = None
+_listener: None | Listener = None
 
 def get_listener():
     global _listener

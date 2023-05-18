@@ -27,17 +27,18 @@ def update_skampi_charts():
     BODY = """
    <h2>Overview</h2>
     <p>
-        <br />The below graphs shows a view of helm charts decomposition in SKAMPI mid and low. 
+        <br />The below graphs shows a view of helm charts decomposition in SKAMPI mid and low.
         <br />The graphs created to make it easier to understand the helm charts used in SKAMPI mid and low are dependent on, their current versions, the flow/control.
     </p>
     <h2>SKAMPI Mid Chart</h2>
     <h2><ac:image ac:style="max-height: 250.0px;" ac:height="400">
-        <ri:attachment ri:filename="images/ska_mid_charts.png" />
+        <ri:attachment ri:filename="ska_mid_charts.png" />
     </ac:image>
     <br />SKAMPI Low Chart</h2>
-    <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<ac:image ac:style="max-height: 250.0px;" ac:height="400">
-        <ri:attachment ri:filename="images/ska_low_charts.jpg" />
-    </ac:image></p>
+    <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<ac:image ac:style="max-height: 250.0px;" ac:height="250">
+        <ri:attachment ri:filename="ska_low_charts.png" />
+    </ac:image>
+    </p>
     """
 
     try:

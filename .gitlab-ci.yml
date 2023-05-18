@@ -40,7 +40,7 @@ test-on-demand:
       aud: https://gitlab.com
   secrets:
     CONFLUENCE_TOKEN:
-      vault: kv/users/roshant.ska/credentials/rt_api_token
+      vault: users/roshant.ska/credentials/rt_api_token@kv
       file: false
       token: $VAULT_ID_TOKEN
   script:

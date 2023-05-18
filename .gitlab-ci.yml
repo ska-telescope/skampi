@@ -15,7 +15,6 @@ variables:
   CONFIG: "common"
 
 stages:
-  - test-chart-uploader
   - on-demand
   - build
   - test
@@ -31,13 +30,6 @@ stages:
   - release
   - deploy_staging
   - clean_staging
-
-#check chart uploader
-test-on-demand:
-  stage: test-chart-uploader
-  script:
-    - python3 -m pip install atlassian-python-api
-    - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py
 
 # Globally reused tags declaration for jobs
 .tags_default:
@@ -103,10 +95,11 @@ python-lint:
   image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
 
 
-# finaliser:
-#   extends:
-#     - create-ci-metrics
-#   before_script:
-#     - make confluence_chart_uploader
+finaliser:
+  extends:
+    - create-ci-metrics
+  before_script:
+    - python3 -m pip install atlassian-python-api
+    - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py
 
 

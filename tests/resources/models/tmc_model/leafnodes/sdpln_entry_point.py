@@ -83,6 +83,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         config = self.observation.generate_sdp_assign_resources_config().as_json
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("AssignResources", config)
@@ -137,6 +138,7 @@ class SdpLnConfigureStep(SdpConfigureStep):
         config = self.observation.generate_sdp_scan_config().as_json
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("Configure", config)
@@ -155,6 +157,7 @@ class SdpLnConfigureStep(SdpConfigureStep):
         subarray = con_config.get_device_proxy(subarray_name)
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("End")
@@ -182,6 +185,7 @@ class SDPLnScanStep(SDPScanStep):
         subarray = con_config.get_device_proxy(subarray_name)
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("Scan", scan_config)

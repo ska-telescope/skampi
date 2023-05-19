@@ -87,6 +87,7 @@ class CspLnAssignResourcesStep(CspAssignResourcesStep):
                 config = json.dumps(config_json)
             # we retry this command three times in case there is a transitory race
             # condition
+
             @retry(nr_of_reties=3)
             def command():
                 csp_subarray_ln.command_inout("AssignResources", config)
@@ -109,6 +110,7 @@ class CspLnAssignResourcesStep(CspAssignResourcesStep):
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             csp_subarray_ln.command_inout("ReleaseAllResources")
@@ -148,6 +150,7 @@ class CspLnConfigureStep(CspConfigureStep):
             config = json.dumps(config_json)
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             csp_subarray_ln.command_inout("Configure", config)

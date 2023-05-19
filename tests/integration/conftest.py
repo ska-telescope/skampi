@@ -27,7 +27,6 @@ def fxt_check_infra_per_test(check_infra_per_session: Any) -> Any:
     """Set a fixture to automatically check infra per test.
 
     :param check_infra_per_session: reference to session checking
-    :return: The fixture
     """
     if os.getenv("CHECK_INFRA_PER_TEST"):
         logger.info("checking infra health before executing test")

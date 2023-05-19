@@ -24,27 +24,19 @@ def fxt_setup_log_checking(
     """
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
-        csp_subarray_leaf_node = str(
-            tel.tm.subarray(sut_settings.subarray_id).csp_leaf_node
-        )
+        csp_subarray_leaf_node = str(tel.tm.subarray(sut_settings.subarray_id).csp_leaf_node)
         csp_subarray = str(tel.csp.subarray(sut_settings.subarray_id))
-        log_checking.capture_logs_from_devices(
-            csp_subarray_leaf_node, csp_subarray
-        )
+        log_checking.capture_logs_from_devices(csp_subarray_leaf_node, csp_subarray)
 
 
 @pytest.mark.skamid
-@scenario(
-    "features/tmc_cspln_scan.feature", "Scan the csp mid using csp leaf node"
-)
+@scenario("features/tmc_cspln_scan.feature", "Scan the csp mid using csp leaf node")
 def test_scan_cspsubarray_for_a_scan_in_mid():
     """Scan cspsubarray for a scan in mid using the csp leaf node."""
 
 
 @pytest.mark.skalow
-@scenario(
-    "features/tmc_cspln_scan.feature", "Scan the csp low using csp leaf node"
-)
+@scenario("features/tmc_cspln_scan.feature", "Scan the csp low using csp leaf node")
 def test_scan_cspsubarray_for_a_scan_in_low():
     """Scan cspsubarray for a scan in low using the csp leaf node."""
 
@@ -98,9 +90,7 @@ def the_csp_subarray_goes_back_to_ready_state(
     csp_subarray = con_config.get_device_proxy(csp_subarray_name)
     context_monitoring.re_init_builder()
     integration_test_exec_settings.attr_synching = True
-    context_monitoring.wait_for(csp_subarray_name).for_attribute(
-        "obsstate"
-    ).to_become_equal_to(
+    context_monitoring.wait_for(csp_subarray_name).for_attribute("obsstate").to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
     result = csp_subarray.read_attribute("obsstate").value

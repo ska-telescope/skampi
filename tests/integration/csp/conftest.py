@@ -111,9 +111,7 @@ def fxt_set_csp_entry_point(
     else:
         exec_env.entrypoint = "mock"
     exec_env.scope = ["csp"]
-    sut_settings.default_subarray_name = sut_settings.tel.csp.subarray(
-        sut_settings.subarray_id
-    )
+    sut_settings.default_subarray_name = sut_settings.tel.csp.subarray(sut_settings.subarray_id)
 
 
 # log checking
@@ -165,9 +163,7 @@ def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    composition = conf_types.CompositionByFile(
-        tmp_path, conf_types.CompositionType.STANDARD
-    )
+    composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
     return composition
 
 
@@ -268,12 +264,8 @@ def the_csp_subarray_must_be_in_some_obsstate(
     tel = names.TEL()
     csp_subarray_name = tel.csp.subarray(sut_settings.subarray_id)
     recorder = integration_test_exec_settings.recorder
-    recorder.assert_no_devices_transitioned_after(
-        str(csp_subarray_name), time_source="local"
-    )
-    csp_subarray = con_config.get_device_proxy(
-        csp_subarray_name, fast_load=True
-    )
+    recorder.assert_no_devices_transitioned_after(str(csp_subarray_name), time_source="local")
+    csp_subarray = con_config.get_device_proxy(csp_subarray_name, fast_load=True)
     result = csp_subarray.read_attribute("obsstate").value
 
     assert_that(result).is_equal_to(eval(f"ObsState.{obsstate}"))

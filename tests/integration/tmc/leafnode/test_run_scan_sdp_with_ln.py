@@ -98,9 +98,7 @@ def the_subarray_goes_back_to_ready_state(
     sdp_subarray_name = tel.sdp.subarray(configured_subarray.id)
     sdp_subarray = con_config.get_device_proxy(sdp_subarray_name)
     context_monitoring.re_init_builder()
-    context_monitoring.wait_for(sdp_subarray_name).for_attribute(
-        "obsstate"
-    ).to_become_equal_to(
+    context_monitoring.wait_for(sdp_subarray_name).for_attribute("obsstate").to_become_equal_to(
         "READY", ignore_first=False, settings=integration_test_exec_settings
     )
     result = sdp_subarray.read_attribute("obsstate").value

@@ -14,6 +14,7 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.csp_startup
 @pytest.mark.csp_related
 @pytest.mark.skamid
 @pytest.mark.csp
@@ -23,6 +24,7 @@ def test_csp_start_up_telescope_mid():
     """Start up the csp in mid."""
 
 
+@pytest.mark.csp_startup
 @pytest.mark.csp_related
 @pytest.mark.skalow
 @pytest.mark.csp

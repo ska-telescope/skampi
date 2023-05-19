@@ -46,6 +46,7 @@ build-base-image:
   rules:
     - changes:
         - images/ska-skampi-ci/Dockerfile
+        - images/ska-skampi-ci/release
     - if: $REBUILD_IMAGES
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never

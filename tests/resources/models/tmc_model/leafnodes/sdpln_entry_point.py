@@ -81,15 +81,19 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
-        config = self.observation.generate_sdp_assign_resources_config().as_json
+        config = (
+            self.observation.generate_sdp_assign_resources_config().as_json
+        )
         # we retry this command three times in case there is a transitory race
         # condition
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("AssignResources", config)
-        self._log(f"commanding {subarray_name} with AssignResources: {config} ")
+
+        self._log(
+            f"commanding {subarray_name} with AssignResources: {config} "
+        )
         command()
-        
 
     def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -100,15 +104,15 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         """
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
-        
+
         # we retry this command three times in case there is a transitory race
         # condition
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("ReleaseResources", "[]")
+
         self._log(f"Commanding {subarray_name} to ReleaseResources")
         command()
-        
 
 
 class SdpLnConfigureStep(SdpConfigureStep):
@@ -141,6 +145,7 @@ class SdpLnConfigureStep(SdpConfigureStep):
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("Configure", config)
+
         self._log(f"commanding {subarray_name} with Configure: {config} ")
         command()
 
@@ -158,6 +163,7 @@ class SdpLnConfigureStep(SdpConfigureStep):
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("End")
+
         self._log(f"commanding {subarray_name} with End command")
         command()
 
@@ -186,6 +192,7 @@ class SDPLnScanStep(SDPScanStep):
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)
             subarray.command_inout("EndScan")
+
         self._log(f"commanding {subarray_name} with End command")
         self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         try:
@@ -208,7 +215,9 @@ class SDPLnScanStep(SDPScanStep):
         :param sub_array_id: The index id of the subarray to control
         """
 
-    def set_wait_for_doing_scan(self, sub_array_id: int) -> MessageBoardBuilder:
+    def set_wait_for_doing_scan(
+        self, sub_array_id: int
+    ) -> MessageBoardBuilder:
         """Domain logic specifyig what needs to be done for
         waiting for subarray to be scanning.
 
@@ -217,9 +226,9 @@ class SDPLnScanStep(SDPScanStep):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-            "SCANNING", ignore_first=True
-        )
+        builder.set_waiting_on(subarray_name).for_attribute(
+            "obsState"
+        ).to_become_equal_to("SCANNING", ignore_first=True)
         return builder
 
     def set_wait_for_undo_scan(self, sub_array_id: int) -> MessageBoardBuilder:

@@ -5,9 +5,12 @@ from typing import Callable, ParamSpec, TypeVar
 T = TypeVar("T")
 P = ParamSpec("P")
 
+
 def retry(nr_of_reties: int = 3, wait_time: int = 1):
     @functools.wraps
-    def wrapper(command: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
+    def wrapper(
+        command: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+    ) -> T:
         try:
             return command(*args, **kwargs)
         except Exception:

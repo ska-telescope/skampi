@@ -52,7 +52,9 @@ def subarray_obstate_is_empty(
     """
     sut_settings.subarray_id = subarray_id
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(
+        tel.tm.subarray(sut_settings.subarray_id)
+    )
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.EMPTY)
     return base_composition
@@ -64,7 +66,9 @@ def subarray_obstate_is_empty(
 
 
 @then(parsers.parse("the subarray {subarray_id} obsState is IDLE"))
-def the_subarray_must_be_in_idle_state(subarray_id, sut_settings: SutTestSettings):
+def the_subarray_must_be_in_idle_state(
+    subarray_id, sut_settings: SutTestSettings
+):
     """
     the subarray must be in IDLE state.
 
@@ -94,7 +98,9 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
 
     tel = names.TEL()
     sdpsubarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
-    cspsubarray = con_config.get_device_proxy(tel.csp.cbf.subarray(subarray_id))
+    cspsubarray = con_config.get_device_proxy(
+        tel.csp.cbf.subarray(subarray_id)
+    )
 
     result_sdp = sdpsubarray.read_attribute("Resources").value
     result_csp = cspsubarray.read_attribute("assignedResources").value

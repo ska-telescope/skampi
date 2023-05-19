@@ -25,7 +25,9 @@ def fxt_nr_of_subarrays() -> int:
 
 
 @pytest.fixture(name="set_nr_of_subarray", autouse=True)
-def fxt_set_nr_of_subarray(sut_settings: conftest.SutTestSettings, nr_of_subarrays: int):
+def fxt_set_nr_of_subarray(
+    sut_settings: conftest.SutTestSettings, nr_of_subarrays: int
+):
     """
     Set the number of subarrays in the SUT settings.
 
@@ -119,7 +121,9 @@ def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
+    composition = conf_types.CompositionByFile(
+        tmp_path, conf_types.CompositionType.STANDARD
+    )
     return composition
 
 

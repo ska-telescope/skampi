@@ -93,14 +93,18 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
                 for performing k8s commands (see unit.test_cluster_k8s)
     """  # noqa: DAR401
     if NAMESPACE is None or NAMESPACE_SDP is None:
-        raise ValueError("Env var KUBE_NAMESPACE or KUBE_NAMESPACE_SDP is not defined")
+        raise ValueError(
+            "Env var KUBE_NAMESPACE or KUBE_NAMESPACE_SDP is not defined"
+        )
 
     receive_pod = "sdp-receive-data"
     sender_pod = "sdp-sender-data"
     data_container = POD_CONTAINER
 
     LOG.info("Check for existing PVC")
-    assert pvc_exists(PVC_NAME, NAMESPACE_SDP), f"PVC in {NAMESPACE_SDP} doesn't exist"
+    assert pvc_exists(
+        PVC_NAME, NAMESPACE_SDP
+    ), f"PVC in {NAMESPACE_SDP} doesn't exist"
     assert pvc_exists(PVC_NAME, NAMESPACE), f"PVC in {NAMESPACE} doesn't exist"
 
     LOG.info("Create Pod for receiver and sender")
@@ -134,10 +138,16 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
             return True
         return False
 
-    wait_for_predicate(_wait_for_receive_data, "MS data not present in volume.", timeout=100)()
-    wait_for_predicate(_wait_for_sender_data, "MS data not present in volume.", timeout=100)()
+    wait_for_predicate(
+        _wait_for_receive_data, "MS data not present in volume.", timeout=100
+    )()
+    wait_for_predicate(
+        _wait_for_sender_data, "MS data not present in volume.", timeout=100
+    )()
 
-    LOG.info("PVCs are present, pods created, and data downloaded successfully")
+    LOG.info(
+        "PVCs are present, pods created, and data downloaded successfully"
+    )
 
 
 # use given from sdp/conftest.py
@@ -153,9 +163,13 @@ def check_rec_adds(configured_subarray: fxt_types.configured_subarray):
     :param configured_subarray: skallop configured_subarray fixture
     """
     tel = names.TEL()
-    sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(configured_subarray.id))
+    sdp_subarray = con_config.get_device_proxy(
+        tel.sdp.subarray(configured_subarray.id)
+    )
 
-    receive_addresses = json.loads(sdp_subarray.read_attribute("receiveAddresses").value)
+    receive_addresses = json.loads(
+        sdp_subarray.read_attribute("receiveAddresses").value
+    )
     # Get the DNS hostname from receive addresses attribute
     host = receive_addresses["target:a"]["vis0"]["host"][0][1]
     receiver_pod_name = host.split(".")[0]
@@ -201,7 +215,9 @@ def run_scan(
     obs_state = sdp_subarray.read_attribute("obsState").value
     assert_that(obs_state).is_equal_to(ObsState.READY)
 
-    receive_addresses = json.loads(sdp_subarray.read_attribute("receiveAddresses").value)
+    receive_addresses = json.loads(
+        sdp_subarray.read_attribute("receiveAddresses").value
+    )
     host = receive_addresses["target:a"]["vis0"]["host"][0][1]
 
     LOG.info("Executing scan.")
@@ -289,7 +305,9 @@ def retrieveDataProducts() -> Response:
     Check the data products are available
     """
 
-    response = requests.get(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/dataproductlist")
+    response = requests.get(
+        f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/dataproductlist"
+    )
     assert response.status_code == 200
 
 
@@ -302,7 +320,9 @@ def downloadDataProduct():
     with open("tests/test-download-data-product.json", "r") as json_file:
         data = json.load(json_file)
 
-    response = requests.post(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/download", data)
+    response = requests.post(
+        f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/download", data
+    )
     assert response.status_code == 200
 
     LOG.info("Data product downloaded")

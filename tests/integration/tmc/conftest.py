@@ -129,10 +129,14 @@ def fxt_set_up_log_capturing_for_cbf(
         sdp_subarray1 = str(tel.sdp.subarray(index))
         if tel.skamid:
             subarray_ln = str(tel.skamid.tm.subarray(index).sdp_leaf_node)
-            log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
+            log_checking.capture_logs_from_devices(
+                subarray, sdp_subarray1, subarray_ln
+            )
         else:
             subarray_ln = str(tel.skalow.tm.subarray(index).sdp_leaf_node)
-            log_checking.capture_logs_from_devices(subarray, sdp_subarray1, subarray_ln)
+            log_checking.capture_logs_from_devices(
+                subarray, sdp_subarray1, subarray_ln
+            )
 
 
 # resource configurations
@@ -145,7 +149,9 @@ def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
+    composition = conf_types.CompositionByFile(
+        tmp_path, conf_types.CompositionType.STANDARD
+    )
     return composition
 
 

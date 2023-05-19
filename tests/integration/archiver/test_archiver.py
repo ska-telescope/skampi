@@ -12,6 +12,7 @@ import pytest
 from archiver_helper import ArchiverHelper
 from tango import ApiUtil, DevFailed, DeviceProxy
 
+
 @pytest.mark.skip(reason="temporary")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -35,6 +36,7 @@ def configure_attribute(attribute):
         attribute
     )
     archiver_helper.stop_archiving(attribute)
+
 
 @pytest.mark.skip(reason="temporary")
 @pytest.mark.k8s

@@ -80,6 +80,11 @@ def fxt_set_csp_online_from_tmc(
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
     :param online: An object for online flag
+    :param set_session_exec_settings: Fixture for session wide exec settings
+    :type set_session_exec_settings: fxt_types.session_exec_settings
+    :param wait_sut_ready_for_session: Fixture that is used to take a subsystem
+                                       online using the given entrypoint.
+    :type wait_sut_ready_for_session: Callable[[EntryPoint], None]
     """
     if not online:
         TMCEntryPoint.nr_of_subarrays = nr_of_subarrays

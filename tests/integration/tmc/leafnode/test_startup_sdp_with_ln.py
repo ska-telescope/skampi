@@ -11,6 +11,7 @@ from ... import conftest
 
 logger = logging.getLogger(__name__)
 
+
 @pytest.mark.sdp_startup
 @pytest.mark.skamid
 @pytest.mark.startup
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 )
 def test_sdpln_start_up_telescope_mid():
     """Start up the sdp in mid using the ln."""
+
 
 @pytest.mark.sdp_startup
 @pytest.mark.skalow

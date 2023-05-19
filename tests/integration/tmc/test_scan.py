@@ -11,6 +11,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from ..conftest import SutTestSettings
 
+
 @pytest.mark.skip(reason="temporary")
 @pytest.mark.k8s
 @pytest.mark.k8sonly

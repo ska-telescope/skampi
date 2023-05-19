@@ -18,9 +18,9 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 from ska_ser_skallop.utils.nrgen import get_id
 from ska_ser_skallop.utils.singleton import Memo
 
+from ..csp_model.entry_point import CSPWaitReadyStep
 from ..mvp_model.env import Observation, get_observation_config
 from ..mvp_model.states import ObsState
-from ..csp_model.entry_point import CSPWaitReadyStep
 
 logger = logging.getLogger(__name__)
 
@@ -673,8 +673,10 @@ class TMCObsReset(base.ObsResetStep, TMCRestart, LogEnabled):
     def set_wait_for_do_obsreset(self, sub_array_id: int, _: Any = None) -> MessageBoardBuilder:
         return self.set_wait_for_do_restart(sub_array_id)
 
+
 class TMCWaitReadyStep(CSPWaitReadyStep):
     pass
+
 
 class TMCEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP element."""

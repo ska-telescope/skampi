@@ -10,10 +10,7 @@ from ska_ser_skallop.event_handling.builders import MessageBoardBuilder, get_mes
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import base
-from ska_ser_skallop.mvp_control.entry_points.composite import (
-    CompositeEntryPoint,
-    MessageBoardBuilder,
-)
+from ska_ser_skallop.mvp_control.entry_points.composite import CompositeEntryPoint
 from ska_ser_skallop.utils.singleton import Memo
 
 from ..mvp_model.states import ObsState
@@ -587,18 +584,19 @@ class CSPRestart(base.RestartStep, LogEnabled):
 
 
 class CSPWaitReadyStep(base.WaitReadyStep, LogEnabled):
-
     def __init__(self, nr_of_subarrays: int) -> None:
         super().__init__()
         self._nr_of_subarrays = nr_of_subarrays
 
-
     def set_wait_for_sut_ready_for_session(self) -> MessageBoardBuilder:
         builder = get_message_board_builder()
-        for sub_id in range(1, self._nr_of_subarrays+1):
+        for sub_id in range(1, self._nr_of_subarrays + 1):
             subarray = self._tel.csp.subarray(sub_id)
-            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(["OFF","ON", "DISABLE"],ignore_first=False)
+            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
+                ["OFF", "ON", "DISABLE"], ignore_first=False
+            )
         return builder
+
 
 class CSPEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to CSP element."""

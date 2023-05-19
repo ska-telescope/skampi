@@ -11,6 +11,7 @@ from .. import conftest
 
 logger = logging.getLogger(__name__)
 
+
 @pytest.mark.sdp_startup
 @pytest.mark.skamid
 @pytest.mark.startup
@@ -21,6 +22,7 @@ def test_sdp_start_up_telescope_mid(sdp_start_up_test_exec_settings):
     Start up the sdp in mid.
     :param sdp_start_up_test_exec_settings: A sdp start up test exec settings object
     """
+
 
 @pytest.mark.sdp_startup
 @pytest.mark.skalow

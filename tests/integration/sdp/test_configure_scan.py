@@ -19,6 +19,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 def test_configure_scan_on_sdp_subarray_in_low():
     """Configure scan on sdp subarray in low."""
 
+
 @pytest.mark.skip(reason="temporary")
 @pytest.mark.skamid
 @pytest.mark.configure
@@ -29,6 +30,7 @@ def test_configure_scan_on_sdp_subarray_in_low():
 )
 def test_abort_configuring_in_mid():
     """Configure scan on sdp subarray in mid."""
+
 
 @pytest.mark.skip(reason="temporary")
 @pytest.mark.skamid

@@ -3,7 +3,7 @@ import copy
 import json
 import logging
 from time import sleep
-from typing import  List, ParamSpec, TypeVar
+from typing import List, ParamSpec, TypeVar
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
@@ -22,7 +22,6 @@ from ...csp_model.entry_point import (
     StartUpStep,
 )
 from ...obsconfig.config import Observation
-
 from .utils import retry
 
 logger = logging.getLogger(__name__)
@@ -88,9 +87,11 @@ class CspLnAssignResourcesStep(CspAssignResourcesStep):
                 config = json.dumps(config_json)
             # we retry this command three times in case there is a transitory race
             # condition
+
             @retry(nr_of_reties=3)
             def command():
                 csp_subarray_ln.command_inout("AssignResources", config)
+
             logger.info(f"commanding {csp_subarray_ln_name} with AssignResources:" f" {config} ")
             command()
 
@@ -109,12 +110,13 @@ class CspLnAssignResourcesStep(CspAssignResourcesStep):
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             csp_subarray_ln.command_inout("ReleaseAllResources")
+
         self._log(f"Commanding {csp_subarray_ln_name} to ReleaseAllResources")
         command()
-        
 
 
 class CspLnConfigureStep(CspConfigureStep):
@@ -148,13 +150,13 @@ class CspLnConfigureStep(CspConfigureStep):
             config = json.dumps(config_json)
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             csp_subarray_ln.command_inout("Configure", config)
-        
+
         logger.info(f"commanding {csp_subarray_ln_name} with Configure: {config}")
         command()
-        
 
     def undo_configure(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in csp LN.
@@ -201,11 +203,13 @@ class CSPLnScanStep(CspScanStep):
         self._log(f"Commanding {csp_subarray_ln_name} to Scan with" f" {csp_run_scan_config}")
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             csp_subarray_ln.command_inout("Scan", json.dumps(csp_run_scan_config))
             sleep(scan_duration)
             csp_subarray_ln.command_inout("EndScan")
+
         try:
             command()
         except Exception as exception:

@@ -58,7 +58,9 @@ def update_skampi_charts():
                 filename=file_absolute_path,
                 name=image_name,
                 #content_type=mime_type,
-                content_type="image/png", #currently on skampi libmagic library is not installed, so directly providing the value o mime_type
+                #currently on SKAMPI libmagic library is not installed, 
+                # so directly providing the value of mime_type
+                content_type="image/png", 
                 page_id=PAGE_ID,
                 space=SPACE
             )

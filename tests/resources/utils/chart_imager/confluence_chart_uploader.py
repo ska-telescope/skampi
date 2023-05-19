@@ -1,7 +1,5 @@
-# coding=utf-8
 """
-This is example to attach file with mimetype
-
+The python script will upload the images to the provided confluence page id and page title.
 """
 import logging
 import os
@@ -21,7 +19,7 @@ confluence = Confluence(
 
 def update_skampi_charts():
     PAGE_ID = "221065346"
-    PAGE_TITLE = f"SKAMPI Chart Dependencies"
+    PAGE_TITLE = "SKAMPI Chart Dependencies"
     TYPE = "page"
     REPRESENTATION = "storage"
     BODY = """
@@ -45,7 +43,7 @@ def update_skampi_charts():
         response = confluence.update_page(
             page_id=PAGE_ID, title=PAGE_TITLE, body=BODY, type=TYPE, representation=REPRESENTATION, 
         )
-        print(f"Confluence Page: https://confluence.skatelescope.org{response['_links']['webui']} Updated Successfully.")
+        print(f"SKAMPI Chart Dependencies Confluence Page: https://confluence.skatelescope.org{response['_links']['webui']}")
 
     except Exception:
         return 1

@@ -15,7 +15,7 @@ variables:
   CONFIG: "common"
 
 stages:
-  - test-on-demand
+  - test-chart-uploader
   - on-demand
   - build
   - test

@@ -70,6 +70,7 @@ def fxt_set_csp_online_from_csp(
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
     :param set_session_exec_settings: A fixture to set session execution settings.
+    :param wait_sut_ready_for_session: callable fixture to wait for sut.
     :type set_session_exec_settings: fxt_types.session_exec_settings
     """
     # we first wait in case csp is not ready

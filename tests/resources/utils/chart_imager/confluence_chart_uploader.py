@@ -2,13 +2,15 @@
 The python script will upload the images to the provided confluence page id and page title.
 """
 import logging
-import os
+import sys,os
 
 from atlassian import Confluence
 
 logging.basicConfig(level=logging.DEBUG)
 
 API_TOKEN = os.environ['RT_API_TOKEN']
+DIR_NAME = os.path.dirname(sys.argv[0])
+DIR_PATH = os.path.abspath(DIR_NAME)
 
 confluence = Confluence(
     url="https://confluence.skatelescope.org",
@@ -22,7 +24,7 @@ def update_skampi_charts():
     PAGE_TITLE = "SKAMPI Chart Dependencies"
     TYPE = "page"
     REPRESENTATION = "storage"
-    BODY = """
+    BODY = f"""
    <h2>Overview</h2>
     <p>
         <br />The below graphs shows a view of helm charts decomposition in SKAMPI mid and low.
@@ -30,11 +32,11 @@ def update_skampi_charts():
     </p>
     <h2>SKAMPI Mid Chart</h2>
     <h2><ac:image ac:style="max-height: 250.0px;" ac:height="400">
-        <ri:attachment ri:filename="images/ska_mid_charts.png" />
+        <ri:attachment ri:filename="{DIR_PATH}/images/ska_mid_charts.png" />
     </ac:image>
     <br />SKAMPI Low Chart</h2>
     <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<ac:image ac:style="max-height: 250.0px;" ac:height="250">
-        <ri:attachment ri:filename="images/ska_low_charts.jpg" />
+        <ri:attachment ri:filename="{DIR_PATH}/images/ska_low_charts.jpg" />
     </ac:image>
     </p>
     """

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 # log capturing
 
-@pytest.mark.skip(reason="Bug discovered at-489")
+@pytest.mark.skip(reason="Bug discovered at-489, bug issue key SKB-224")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

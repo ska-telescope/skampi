@@ -13,6 +13,8 @@ variables:
   EXPOSE_All_DS: "true"
   CONFIG: "common"
   CI_IMAGE: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.7
+  ADDMARKS: "XTP-16191"
+  COUNT: "20"
 
 image: $CI_IMAGE
 

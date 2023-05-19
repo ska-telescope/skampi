@@ -67,9 +67,11 @@ def fxt_nr_of_subarrays() -> int:
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online_from_tmc(
+    set_session_exec_settings: fxt_types.session_exec_settings,
     online: conftest.OnlineFlag,
     set_subsystem_online: Callable[[EntryPoint], None],
     nr_of_subarrays,
+    wait_sut_ready_for_session: Callable[[EntryPoint], None],
 ):
     """_summary_
 
@@ -80,6 +82,11 @@ def fxt_set_csp_online_from_tmc(
     :param online: An object for online flag
     """
     if not online:
+        TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+        set_session_exec_settings.time_out = 300
+        entry_point = TMCEntryPoint()
+        logging.info("wait for sut to be ready in the context of tmc")
+        wait_sut_ready_for_session(entry_point)
         logging.info("setting csp components online within tmc context")
         TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
         entry_point = TMCEntryPoint()

@@ -30,11 +30,11 @@ def update_skampi_charts():
     </p>
     <h2>SKAMPI Mid Chart</h2>
     <h2><ac:image ac:style="max-height: 250.0px;" ac:height="400">
-        <ri:attachment ri:filename="ska_mid_charts.png" />
+        <ri:attachment ri:filename="images/ska_mid_charts.png" />
     </ac:image>
     <br />SKAMPI Low Chart</h2>
     <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<ac:image ac:style="max-height: 250.0px;" ac:height="250">
-        <ri:attachment ri:filename="ska_low_charts.png" />
+        <ri:attachment ri:filename="images/ska_low_charts.jpg" />
     </ac:image>
     </p>
     """

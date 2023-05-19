@@ -1,5 +1,4 @@
 # TODO: Make this image version dynamic per pipeline as it's hard-coded here
-image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.7
 
 variables:
   MINIKUBE: "false"
@@ -13,6 +12,9 @@ variables:
   DOMAIN: "branch"
   EXPOSE_All_DS: "true"
   CONFIG: "common"
+  CI_IMAGE: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.7
+
+image: $CI_IMAGE
 
 stages:
   - on-demand
@@ -94,4 +96,4 @@ include:
     file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
 
 python-lint:
-  image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
+  image: $CI_IMAGE

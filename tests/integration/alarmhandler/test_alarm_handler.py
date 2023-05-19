@@ -8,7 +8,6 @@ Test Elettra Alarm Handler
 """
 
 
-@pytest.mark.skip(reason="temporary")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

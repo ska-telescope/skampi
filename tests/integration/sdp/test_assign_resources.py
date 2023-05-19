@@ -54,7 +54,6 @@ def test_assign_resources_to_sdp_subarray_in_low(
     """
 
 
-@pytest.mark.skip(reason="temporary")
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -72,7 +71,6 @@ def test_assign_resources_to_sdp_subarray_in_mid(
     """
 
 
-@pytest.mark.skip(reason="temporary")
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
@@ -88,7 +86,6 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
     """
 
 
-@pytest.mark.skip(reason="temporary")
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp

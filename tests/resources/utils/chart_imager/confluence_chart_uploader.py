@@ -53,20 +53,26 @@ def update_skampi_charts():
         file_absolute_path = f"{DIR_PATH}/images/{image_name}"
         #mime_type = magic.from_file(file_absolute_path, mime=True)
         #upload the images to confluence page first.
-        confluence.attach_file(
-            filename=file_absolute_path,
-            name=image_name,
-            #content_type=mime_type,
-            content_type="image/png", #currently on skampi libmagic library is not installed, so directly providing the value o mime_type
-            page_id=PAGE_ID,
-            space=SPACE
-        )
+        try:
+            confluence.attach_file(
+                filename=file_absolute_path,
+                name=image_name,
+                #content_type=mime_type,
+                content_type="image/png", #currently on skampi libmagic library is not installed, so directly providing the value o mime_type
+                page_id=PAGE_ID,
+                space=SPACE
+            )
+        except Exception as err:
+            logging.error(f"Error: {err}")
     
     #Update the confluence page
-    response = confluence.update_page(
-        page_id=PAGE_ID, title=PAGE_TITLE, body=BODY, type=TYPE, representation=REPRESENTATION, 
-    )
-    print(f"SKAMPI Chart Dependencies Confluence Page: https://confluence.skatelescope.org{response['_links']['webui']}")
-
+    try:
+        response = confluence.update_page(
+            page_id=PAGE_ID, title=PAGE_TITLE, body=BODY, type=TYPE, representation=REPRESENTATION, 
+        )
+        print(f"SKAMPI Chart Dependencies Confluence Page: https://confluence.skatelescope.org{response['_links']['webui']}")
+    
+    except Exception as err:
+        logging.error(f"Error: {err}")
 
 update_skampi_charts()

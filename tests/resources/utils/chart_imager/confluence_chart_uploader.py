@@ -2,12 +2,14 @@
 The python script will upload the images to the provided confluence page id and page title.
 """
 import logging
-#import magic  commented as libmagic library not available on SKAMPI
-import sys,os
+import os
+
+#import magic commented as libmagic library not available on SKAMPI
+import sys
 
 from atlassian import Confluence
 
-#logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 API_TOKEN = os.environ['RT_API_TOKEN']
 DIR_NAME = os.path.dirname(sys.argv[0])
@@ -55,7 +57,7 @@ def update_skampi_charts():
             filename=file_absolute_path,
             name=image_name,
             #content_type=mime_type,
-            content_type="image/png", #currently on skampi libmagic library is not installed, so directly providing the value
+            content_type="image/png", #currently on skampi libmagic library is not installed, so directly providing the value o mime_type
             page_id=PAGE_ID,
             space=SPACE
         )

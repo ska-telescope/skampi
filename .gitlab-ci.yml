@@ -15,7 +15,6 @@ variables:
   CONFIG: "common"
 
 stages:
-  - test-chart-uploader
   - on-demand
   - build
   - test
@@ -31,12 +30,6 @@ stages:
   - release
   - deploy_staging
   - clean_staging
-
-test-on-demand:
-  stage: test-chart-uploader
-  script:
-    - python3 -m pip install atlassian-python-api
-    - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py
 
 # Globally reused tags declaration for jobs
 .tags_default:

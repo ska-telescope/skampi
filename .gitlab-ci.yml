@@ -1,5 +1,5 @@
 # TODO: Make this image version dynamic per pipeline as it's hard-coded here
-image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.6
+image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.7
 
 variables:
   MINIKUBE: "false"

@@ -36,7 +36,7 @@ def update_skampi_charts():
     </ac:image>
     <br />SKAMPI Low Chart</h2>
     <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<ac:image ac:style="max-height: 250.0px;" ac:height="250">
-        <ri:attachment ri:filename="{DIR_PATH}/images/ska_low_charts.jpg" />
+        <ri:attachment ri:filename="{DIR_PATH}/images/ska_low_charts.png" />
     </ac:image>
     </p>
     """

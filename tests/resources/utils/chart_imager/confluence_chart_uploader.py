@@ -39,15 +39,10 @@ def update_skampi_charts():
     </p>
     """
 
-    try:
-        response = confluence.update_page(
-            page_id=PAGE_ID, title=PAGE_TITLE, body=BODY, type=TYPE, representation=REPRESENTATION, 
-        )
-        print(f"SKAMPI Chart Dependencies Confluence Page: https://confluence.skatelescope.org{response['_links']['webui']}")
-
-    except Exception:
-        return 1
-    return 0
+    response = confluence.update_page(
+        page_id=PAGE_ID, title=PAGE_TITLE, body=BODY, type=TYPE, representation=REPRESENTATION, 
+    )
+    print(f"SKAMPI Chart Dependencies Confluence Page: https://confluence.skatelescope.org{response['_links']['webui']}")
 
 
 update_skampi_charts()

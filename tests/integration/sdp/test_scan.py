@@ -46,6 +46,14 @@ def test_abort_scanning_low(disable_clear):
     """
 
 
+@pytest.mark.skalow
+@pytest.mark.scan
+@pytest.mark.sdp
+@scenario("features/sdp_scan.feature", "Abort scanning SDP Low")
+def test_abort_scanning_low(disable_clear):
+    """Abort scanning."""
+
+
 # use from local conftest
 # @given("an SDP subarray in READY state")
 

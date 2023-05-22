@@ -49,6 +49,14 @@ def test_abort_scanning_low(disable_clear):
     """
 
 
+@pytest.mark.skalow
+@pytest.mark.scan
+@pytest.mark.csp
+@scenario("features/csp_scan.feature", "Abort scanning on CSP Low")
+def test_abort_scanning_low(disable_clear):
+    """Abort scanning."""
+
+
 @given("an CSP subarray in READY state")
 def an_csp_subarray_in_ready_state(
     set_up_subarray_log_checking_for_csp,

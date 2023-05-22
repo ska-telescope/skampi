@@ -586,7 +586,7 @@ reference = 'ska'
 
 [[package]]
 name = "flask"
-version = "2.3.2"
+version = "2.2.5"
 description = "A simple framework for building complex web applications."
 category = "main"
 optional = false

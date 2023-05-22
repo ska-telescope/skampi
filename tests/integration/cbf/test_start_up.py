@@ -47,9 +47,9 @@ def fxt_set_up_transit_checking_for_cbf(
             # can lead to false positives
             devices_to_follow = cast(List, [tel.csp.cbf.subarray(1)])
             subject_device = tel.csp.cbf.controller
-            transit_checking.check_that(subject_device).transits_according_to(
-                ["ON"]
-            ).on_attr("state").when_transit_occur_on(
+            transit_checking.check_that(subject_device).transits_according_to(["ON"]).on_attr(
+                "state"
+            ).when_transit_occur_on(
                 devices_to_follow,
                 ignore_first=True,
                 devices_to_follow_attr="state",

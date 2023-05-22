@@ -32,9 +32,7 @@ DATA_POD_DEF = {
     "kind": "Pod",
     "metadata": {"name": "receive-data"},
     "spec": {
-        "securityContext": {
-            "runAsUser": 0
-        },  # run as root so that we can download data
+        "securityContext": {"runAsUser": 0},  # run as root so that we can download data
         "containers": [
             {
                 "image": "artefact.skao.int/ska-sdp-realtime-receive-modules:3.5.0",  # noqa: E501
@@ -43,9 +41,7 @@ DATA_POD_DEF = {
                 "volumeMounts": [{"mountPath": "/mnt/data", "name": "data"}],
             }
         ],
-        "volumes": [
-            {"name": "data", "persistentVolumeClaim": {"claimName": "testing"}}
-        ],
+        "volumes": [{"name": "data", "persistentVolumeClaim": {"claimName": "testing"}}],
     },
 }
 
@@ -132,9 +128,7 @@ class K8sElementManager:
 
         # Update the name of the pod and the data PVC
         pod_spec["metadata"]["name"] = pod_name
-        pod_spec["spec"]["volumes"][0]["persistentVolumeClaim"][
-            "claimName"
-        ] = pvc_name
+        pod_spec["spec"]["volumes"][0]["persistentVolumeClaim"]["claimName"] = pvc_name
 
         # Check Pod does not already exist
         k8s_pods = core_api.list_namespaced_pod(namespace)
@@ -157,13 +151,9 @@ class K8sElementManager:
         """
         core_api = client.CoreV1Api()
         core_api.delete_namespaced_pod(pod_name, namespace, async_req=False)
-        wait_for_predicate(pod_deleted, f"Pod {pod_name} delete", timeout=100)(
-            pod_name, namespace
-        )
+        wait_for_predicate(pod_deleted, f"Pod {pod_name} delete", timeout=100)(pod_name, namespace)
 
-    def helm_install(
-        self, release: str, chart: str, namespace: str, values_file: str
-    ):
+    def helm_install(self, release: str, chart: str, namespace: str, values_file: str):
         """
         Install the requested Helm chart and keep track of it for later
         deletion.
@@ -316,9 +306,7 @@ def wait_for_pod(
 
         def check_condition(k8s_pod):
             return any(
-                c.status == "True"
-                for c in k8s_pod.status.conditions
-                if c.type == pod_condition
+                c.status == "True" for c in k8s_pod.status.conditions if c.type == pod_condition
             )
 
     else:
@@ -335,11 +323,7 @@ def wait_for_pod(
     ):
         pod = event["object"]
 
-        if (
-            pod_name in pod.metadata.name
-            and pod.status.phase == phase
-            and check_condition(pod)
-        ):
+        if pod_name in pod.metadata.name and pod.status.phase == phase and check_condition(pod):
             watch_pod.stop()
             return True
 
@@ -361,9 +345,7 @@ def _consume_response(api_response):
     api_response.close()
 
 
-def check_data_present(
-    pod_name: str, container_name: str, namespace: str, mount_location: str
-):
+def check_data_present(pod_name: str, container_name: str, namespace: str, mount_location: str):
     """
     Check if the data are present in pod
 
@@ -409,17 +391,13 @@ def wait_for_predicate(
             if func(*args, **kwargs):
                 break
             if time.time() >= start + timeout:
-                pytest.fail(
-                    f"{description} not achieved after {timeout} seconds"
-                )
+                pytest.fail(f"{description} not achieved after {timeout} seconds")
             time.sleep(interval)
 
     return wrapper
 
 
-def compare_data(
-    pod_name: str, container_name: str, namespace: str, measurement_set: str
-):
+def compare_data(pod_name: str, container_name: str, namespace: str, measurement_set: str):
     """
     Compare the data sent with the data received using ms-assert.
     This compares two Measurement Sets.
@@ -443,9 +421,7 @@ def compare_data(
     return resp
 
 
-def deploy_cbf_emulator(
-    host: str, scan_id: int, k8s_element_manager: K8sElementManager
-):
+def deploy_cbf_emulator(host: str, scan_id: int, k8s_element_manager: K8sElementManager):
     """
     Deploy the CBF emulator and check that it finished sending the data.
 
@@ -479,18 +455,14 @@ def deploy_cbf_emulator(
         "pvc": {"name": os.environ.get("SDP_DATA_PVC_NAME", "shared")},
     }
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".yaml", delete=False
-    ) as file:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as file:
         file.write(yaml.dump(values))
 
     filename = file.name
     namespace = os.environ.get("KUBE_NAMESPACE")
     sender_name = f"cbf-send-scan-{scan_id}"
 
-    LOG.info(
-        "Deploying CBF sender for Scan %d on chart %s", scan_id, sender_name
-    )
+    LOG.info("Deploying CBF sender for Scan %d on chart %s", scan_id, sender_name)
     k8s_element_manager.helm_install(
         sender_name,
         "tests/resources/charts/cbf-sender",

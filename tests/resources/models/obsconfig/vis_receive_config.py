@@ -12,14 +12,9 @@ from resources.models.obsconfig.channelisation import DEFAULT_CHANNELS
 from resources.models.obsconfig.sdp_config import ProcessingSpec
 from resources.models.obsconfig.target_spec import TargetSpec
 from ska_tmc_cdm.messages.central_node.sdp import ScriptConfiguration
-from ska_tmc_cdm.messages.subarray_node.configure.core import (
-    ReceiverBand,
-    Target,
-)
+from ska_tmc_cdm.messages.subarray_node.configure.core import ReceiverBand, Target
 
-VIS_RECEIVE_SCRIPT = ScriptConfiguration(
-    kind="realtime", name="vis-receive", version="0.8.1"
-)
+VIS_RECEIVE_SCRIPT = ScriptConfiguration(kind="realtime", name="vis-receive", version="0.8.1")
 
 # The current set up for the vis-receive test is a mish-mash of
 # parameters for Mid and for Low. The code is set up to run
@@ -66,8 +61,7 @@ VIS_REC_CHANNELS = DEFAULT_CHANNELS.copy()
 VIS_REC_CHANNELS["vis_channels"].spectral_windows[0].count = 13824
 
 VIS_PARAMS_FILE = (
-    f"{os.path.dirname(os.path.abspath(__file__))}"
-    "/../sdp_model/vis_rec_params.json"
+    f"{os.path.dirname(os.path.abspath(__file__))}" "/../sdp_model/vis_rec_params.json"
 )
 
 

@@ -88,9 +88,7 @@ def test_abort_configuring_on_mid_tmc_subarray(
     """
 
 
-@pytest.mark.skip(
-    reason="This functionality not tested at CSP/CBF, raised SKB-221"
-)
+@pytest.mark.skip(reason="This functionality not tested at CSP/CBF, raised SKB-221")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -159,8 +157,6 @@ def the_subarray_must_be_in_the_ready_state(
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.subarray(sut_settings.subarray_id)), time_source="local"
     )
-    tmc_subarray = con_config.get_device_proxy(
-        tel.tm.subarray(sut_settings.subarray_id)
-    )
+    tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = tmc_subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.READY)

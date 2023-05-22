@@ -71,9 +71,9 @@ def i_command_it_to_scan_low(
     """
     subarray_id = sut_settings.subarray_id
     tel = names.TEL()
-    context_monitoring.set_waiting_on(
-        tel.tm.subarray(subarray_id)
-    ).for_attribute("obsstate").to_change_in_order(["SCANNING", "READY"])
+    context_monitoring.set_waiting_on(tel.tm.subarray(subarray_id)).for_attribute(
+        "obsstate"
+    ).to_change_in_order(["SCANNING", "READY"])
     integration_test_exec_settings.attr_synching = False
     logging.info(
         "context_monitoring._wait_after_setting_builder ="
@@ -106,13 +106,9 @@ def the_subarray_must_be_in_the_scanning_state(
     tel = names.TEL()
     tmc_subarray_name = str(tel.tm.subarray(configured_subarray.id))
     tmc_subarray = con_config.get_device_proxy(tmc_subarray_name)
-    tmc_state_changes = recorder.get_transitions_for(
-        tmc_subarray_name, "obsstate"
-    )
+    tmc_state_changes = recorder.get_transitions_for(tmc_subarray_name, "obsstate")
     try:
-        assert_that(tmc_state_changes).is_equal_to(
-            ["READY", "SCANNING", "READY"]
-        )
+        assert_that(tmc_state_changes).is_equal_to(["READY", "SCANNING", "READY"])
     except AssertionError as error:
         logging.info(f"events recorded not correct: {recorder._occurrences}")
         raise error

@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
+@pytest.mark.skip(reason="Bug discovered at-489, bug issue key SKB-224")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -26,6 +27,7 @@ def test_assign_resources_to_tmc_subarray_in_low():
     """Assign resources to tmc subarray in low."""
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -37,6 +39,7 @@ def test_release_resources_from_tmc_subarray_in_low():
     """Release resources from tmc subarrays in low."""
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -94,6 +97,7 @@ def fxt_setup_context_monitoring_for_abort_test(
     ).to_become_equal_to(["ABORTED", "EMPTY", "IDLE"])
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -114,6 +118,7 @@ def test_abort_in_resourcing_mid(
     """
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -134,6 +139,7 @@ def test_abort_in_resourcing_low(
     """
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

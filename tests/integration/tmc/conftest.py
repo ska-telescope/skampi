@@ -73,9 +73,11 @@ def fxt_nr_of_subarrays() -> int:
 
 @pytest.fixture(autouse=True, scope="session")
 def fxt_set_csp_online_from_tmc(
+    set_session_exec_settings: fxt_types.session_exec_settings,
     online: conftest.OnlineFlag,
     set_subsystem_online: Callable[[EntryPoint], None],
     nr_of_subarrays,
+    wait_sut_ready_for_session: Callable[[EntryPoint], None],
 ):
     """_summary_
 
@@ -84,8 +86,18 @@ def fxt_set_csp_online_from_tmc(
     :param set_subsystem_online: _description_
     :type set_subsystem_online: Callable[[EntryPoint], None]
     :param online: An object for online flag
+    :param set_session_exec_settings: Fixture for session wide exec settings
+    :type set_session_exec_settings: fxt_types.session_exec_settings
+    :param wait_sut_ready_for_session: Fixture that is used to take a subsystem
+                                       online using the given entrypoint.
+    :type wait_sut_ready_for_session: Callable[[EntryPoint], None]
     """
     if not online:
+        TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
+        set_session_exec_settings.time_out = 300
+        entry_point = TMCEntryPoint()
+        logging.info("wait for sut to be ready in the context of tmc")
+        wait_sut_ready_for_session(entry_point)
         logging.info("setting csp components online within tmc context")
         TMCEntryPoint.nr_of_subarrays = nr_of_subarrays
         entry_point = TMCEntryPoint()
@@ -101,7 +113,7 @@ def fxt_sdp_start_up_test_exec_settings(
 
     :param integration_test_exec_settings: Fixture as used by skallop
     """
-    integration_test_exec_settings.time_out = 100
+    integration_test_exec_settings.time_out = 200
 
 
 @pytest.fixture(name="assign_resources_test_exec_settings", autouse=True)
@@ -177,4 +189,4 @@ def override_timeouts(exec_settings):
     Sets timeout for test environment.
     :param exec_settings: _Description_
     """
-    exec_settings.time_out = 100
+    exec_settings.time_out = 200

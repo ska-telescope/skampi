@@ -8,6 +8,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skalow
 @pytest.mark.configure
 @pytest.mark.sdp

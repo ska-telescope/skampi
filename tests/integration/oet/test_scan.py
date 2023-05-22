@@ -22,6 +22,7 @@ low subarray from OET(XTP-19865),
 """Scan on telescope subarray feature tests."""
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

@@ -1,5 +1,0 @@
-Filters = [
-    "E: no-signature",
-    "W: non-coherent-filename"
-]
-UseEnchant = false

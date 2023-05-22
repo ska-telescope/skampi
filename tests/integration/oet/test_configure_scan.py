@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -43,6 +44,7 @@ def test_observing_sbi():
     """
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

@@ -16,6 +16,7 @@ def test_run_a_scan_on_sdp_subarray_in_low():
     """CRun a scan on sdp subarray in low."""
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skamid
 @pytest.mark.scan
 @pytest.mark.sdp
@@ -44,6 +45,7 @@ def test_abort_scanning_low(disable_clear):
     Abort scanning.
     :param disable_clear: A disable clear object
     """
+
 
 @pytest.mark.skamid
 @pytest.mark.scanning

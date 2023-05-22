@@ -1,9 +1,0 @@
-style: gitlab
-info:
-  title: CHANGELOG
-options:
-  header:
-    pattern: "^([A-Z][A-Z0-9_]+-\\d+)(?:\\:\\s*|\\s+)(.*)$"
-    pattern_maps:
-      - JiraIssueID
-      - Subject

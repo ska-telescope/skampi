@@ -44,7 +44,9 @@ def test_abort_scanning(disable_clear):
 @pytest.mark.csp
 @scenario("features/csp_scan.feature", "Abort scanning on CSP Low")
 def test_abort_scanning_low(disable_clear):
-    """Abort scanning."""
+    """Abort scanning.
+    :param disable_clear: A disable clear object
+    """
 
 
 @given("an CSP subarray in READY state")

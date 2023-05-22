@@ -36,9 +36,8 @@ stages:
 test-uploader:
   stage: test-on-demand
   only:
-    refs:
-      - main
-      - hm-221
+    variables:
+      - ($CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "hm-221")
   script: 
     - python3 -m pip install atlassian-python-api
     - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py
@@ -108,9 +107,6 @@ python-lint:
   image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
 
 create-ci-metrics:
-  only:
-    - hm-221
-    - master
   before_script:
     - python3 -m pip install atlassian-python-api
     - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py

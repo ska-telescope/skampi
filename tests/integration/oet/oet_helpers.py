@@ -5,7 +5,10 @@ from typing import List, Optional
 
 from ska_db_oda.unit_of_work.restunitofwork import RESTUnitOfWork
 from ska_oso_oet_client.activityclient import ActivityAdapter
-from ska_oso_oet_client.procedureclient import ProcedureAdapter, ProcedureSummary
+from ska_oso_oet_client.procedureclient import (
+    ProcedureAdapter,
+    ProcedureSummary,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,13 +38,17 @@ def add_sb_to_oda(test_sbd):
 
 class ScriptExecutor:
     @staticmethod
-    def init_script(script_uri: str, create_kwargs, *args, **kwargs) -> ProcedureSummary:
+    def init_script(
+        script_uri: str, create_kwargs, *args, **kwargs
+    ) -> ProcedureSummary:
         if not kwargs:
             kwargs = dict()
         if "subarray_id" not in kwargs:
             kwargs["subarray_id"] = 1
         init_args = dict(args=args, kwargs=kwargs)
-        return REST_ADAPTER.create(script_uri=script_uri, init_args=init_args, **create_kwargs)
+        return REST_ADAPTER.create(
+            script_uri=script_uri, init_args=init_args, **create_kwargs
+        )
 
     @staticmethod
     def start_script(pid: int, *args, **kwargs) -> ProcedureSummary:
@@ -103,7 +110,8 @@ class ScriptExecutor:
 
             if procedure.state == state:
                 LOGGER.info(
-                    f"Script {procedure.script['script_uri']} state changed to" f" {state}"
+                    f"Script {procedure.script['script_uri']} state changed to"
+                    f" {state}"
                 )
                 return procedure.state
 
@@ -116,11 +124,15 @@ class ScriptExecutor:
         )
         ScriptExecutor.stop_script(pid)
         procedure = ScriptExecutor.get_script_by_id(pid)
-        LOGGER.info(f"Script {procedure.script['script_uri']} state: {procedure.state}")
+        LOGGER.info(
+            f"Script {procedure.script['script_uri']} state: {procedure.state}"
+        )
         return procedure.state
 
     @staticmethod
-    def execute_script(script: str, *script_run_args, timeout=60, script_create_kwargs={}) -> str:
+    def execute_script(
+        script: str, *script_run_args, timeout=60, script_create_kwargs={}
+    ) -> str:
         """
         Execute the given script using OET REST client.
 
@@ -141,7 +153,9 @@ class ScriptExecutor:
         """
         LOGGER.info(f"Running script {script}")
 
-        procedure = ScriptExecutor.init_script(script, create_kwargs=script_create_kwargs)
+        procedure = ScriptExecutor.init_script(
+            script, create_kwargs=script_create_kwargs
+        )
         pid = procedure.uri.split("/")[-1]
 
         # confirm that creating the script worked and we have a valid ID

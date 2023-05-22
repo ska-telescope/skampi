@@ -67,7 +67,9 @@ def the_subarray_must_be_in_the_ready_state(
 # mocking
 
 
-@pytest.mark.skip(reason="only run this test for diagnostic purposes during dev")
+@pytest.mark.skip(
+    reason="only run this test for diagnostic purposes during dev"
+)
 @pytest.mark.usefixtures("setup_sdp_mock")
 def test_test_sdp_configure_scan(run_mock):
     """

@@ -39,7 +39,9 @@ class Channelization(TargetSpecs):
                 },
             }
 
-    def add_channel_configuration(self, config_name: str, spectral_windows: list[Channel]):
+    def add_channel_configuration(
+        self, config_name: str, spectral_windows: list[Channel]
+    ):
         assert (
             self._channel_configurations.get(config_name) is None
         ), f"configuration {config_name} already exists."
@@ -57,7 +59,9 @@ class Channelization(TargetSpecs):
             raise ValueError("Channel configuration needs to be a dictionary")
         self._channel_configurations = new_config
 
-    def get_channel_configuration(self, config_name: str) -> ChannelConfiguration:
+    def get_channel_configuration(
+        self, config_name: str
+    ) -> ChannelConfiguration:
         assert (
             self._channel_configurations.get(config_name) is not None
         ), f"configuration {config_name} does not exist."
@@ -72,6 +76,8 @@ class Channelization(TargetSpecs):
         unique_keys = self.target_spec_channels
         return [
             channel_config
-            for channel_config in [self._channel_configurations.get(key) for key in unique_keys]
+            for channel_config in [
+                self._channel_configurations.get(key) for key in unique_keys
+            ]
             if channel_config
         ]

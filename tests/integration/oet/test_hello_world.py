@@ -48,7 +48,8 @@ def hello_world_sb_in_oda(activity_name, test_sbd):
     :param test_sbd: An object for test_sbd
     """
     assert activity_name in test_sbd.activities, (
-        f"Activity test setup failed, no activity called {activity_name} in" " test SB"
+        f"Activity test setup failed, no activity called {activity_name} in"
+        " test SB"
     )
 
     add_sb_to_oda(test_sbd)
@@ -59,7 +60,11 @@ def hello_world_script_ran(script):
     EXECUTOR.execute_script(script)
 
 
-@when(parsers.parse("I tell the OET to run {activity_name} activity on the test SB"))
+@when(
+    parsers.parse(
+        "I tell the OET to run {activity_name} activity on the test SB"
+    )
+)
 def when_allocate_resources_from_activity(
     activity_name,
     test_sbd,
@@ -84,7 +89,9 @@ def hello_world_script_complete_activity():
 
     summaries = ACTIVITY_ADAPTER.list()
     pid = summaries[0].procedure_id
-    procedure_status = EXECUTOR.wait_for_script_state(pid, "COMPLETE", timeout=20)
+    procedure_status = EXECUTOR.wait_for_script_state(
+        pid, "COMPLETE", timeout=20
+    )
 
     assert procedure_status == "COMPLETE"
 

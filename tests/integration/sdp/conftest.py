@@ -63,7 +63,9 @@ def fxt_set_entry_point(
     else:
         exec_env.entrypoint = "mock"
     exec_env.scope = ["sdp"]
-    sut_settings.default_subarray_name = sut_settings.tel.sdp.subarray(sut_settings.subarray_id)
+    sut_settings.default_subarray_name = sut_settings.tel.sdp.subarray(
+        sut_settings.subarray_id
+    )
 
 
 @pytest.fixture(name="setup_sdp_mock")
@@ -129,7 +131,9 @@ def fxt_sdp_base_composition(tmp_path) -> conf_types.Composition:
     :param tmp_path: a temporary path for sending configuration as a file.
     :return: the configuration settings.
     """
-    composition = conf_types.CompositionByFile(tmp_path, conf_types.CompositionType.STANDARD)
+    composition = conf_types.CompositionByFile(
+        tmp_path, conf_types.CompositionType.STANDARD
+    )
     return composition
 
 

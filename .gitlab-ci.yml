@@ -38,6 +38,7 @@ test-uploader:
   only:
     refs:
       - main
+      - hm-221
   script: 
     - python3 -m pip install atlassian-python-api
     - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py

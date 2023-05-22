@@ -277,7 +277,8 @@ k8s-post-test: # post test hook for processing received reports
 		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
 		exit 1; \
 	fi;
-	@[[ $$(cat build/status) == 0 ]] || KUBE_NAMESPACE=$(KUBE_NAMESPACE) source scripts/were_pods_throttled.sh;
+	KUBE_NAMESPACE=$(KUBE_NAMESPACE) source scripts/were_pods_throttled.sh > build/throttling_info.txt;
+	@[[ $$(cat build/status) == 0 ]] || WARNING! Device Servers were throttled! Check 
 
 foo:
 	@echo $(CASED_CONFIG)

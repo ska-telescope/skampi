@@ -1,0 +1,455 @@
+{
+    "title": "ReportModel",
+    "type": "object",
+    "properties": {
+        "created": {
+            "title": "Created",
+            "type": "number"
+        },
+        "duration": {
+            "title": "Duration",
+            "type": "number"
+        },
+        "exitcode": {
+            "title": "Exitcode",
+            "type": "integer"
+        },
+        "root": {
+            "title": "Root",
+            "type": "string"
+        },
+        "environment": {
+            "$ref": "#/definitions/Environment"
+        },
+        "summary": {
+            "$ref": "#/definitions/Summary"
+        },
+        "collectors": {
+            "title": "Collectors",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Collector"
+            }
+        },
+        "tests": {
+            "title": "Tests",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Test"
+            }
+        },
+        "warnings": {
+            "title": "Warnings",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Warning"
+            }
+        }
+    },
+    "required": [
+        "created",
+        "duration",
+        "tests",
+        "summary"
+    ],
+    "definitions": {
+        "Packages": {
+            "title": "Packages",
+            "type": "object",
+            "properties": {
+                "pytest": {
+                    "title": "Pytest",
+                    "type": "string"
+                },
+                "py": {
+                    "title": "Py",
+                    "type": "string"
+                },
+                "pluggy": {
+                    "title": "Pluggy",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pytest"
+            ]
+        },
+        "Plugins": {
+            "title": "Plugins",
+            "type": "object",
+            "properties": {
+                "cov": {
+                    "title": "Cov",
+                    "type": "string"
+                },
+                "json-report": {
+                    "title": "Json-Report",
+                    "type": "string"
+                },
+                "pycodestyle": {
+                    "title": "Pycodestyle",
+                    "type": "string"
+                },
+                "bdd": {
+                    "title": "Bdd",
+                    "type": "string"
+                },
+                "forked": {
+                    "title": "Forked",
+                    "type": "string"
+                },
+                "metadata": {
+                    "title": "Metadata",
+                    "type": "string"
+                },
+                "pylint": {
+                    "title": "Pylint",
+                    "type": "string"
+                },
+                "pydocstyle": {
+                    "title": "Pydocstyle",
+                    "type": "string"
+                },
+                "mock": {
+                    "title": "Mock",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "json-report",
+                "bdd"
+            ]
+        },
+        "Environment": {
+            "title": "Environment",
+            "type": "object",
+            "properties": {
+                "Python": {
+                    "title": "Python",
+                    "type": "string"
+                },
+                "Platform": {
+                    "title": "Platform",
+                    "type": "string"
+                },
+                "Packages": {
+                    "$ref": "#/definitions/Packages"
+                },
+                "Plugins": {
+                    "$ref": "#/definitions/Plugins"
+                },
+                "CI": {
+                    "title": "Ci",
+                    "type": "string"
+                },
+                "CI_COMMIT_REF_NAME": {
+                    "title": "Ci Commit Ref Name",
+                    "type": "string"
+                },
+                "CI_COMMIT_REF_SLUG": {
+                    "title": "Ci Commit Ref Slug",
+                    "type": "string"
+                },
+                "CI_COMMIT_SHA": {
+                    "title": "Ci Commit Sha",
+                    "type": "string"
+                },
+                "CI_JOB_ID": {
+                    "title": "Ci Job Id",
+                    "type": "string"
+                },
+                "CI_JOB_MANUAL": {
+                    "title": "Ci Job Manual",
+                    "type": "string"
+                },
+                "CI_JOB_NAME": {
+                    "title": "Ci Job Name",
+                    "type": "string"
+                },
+                "CI_JOB_STAGE": {
+                    "title": "Ci Job Stage",
+                    "type": "string"
+                },
+                "CI_RUNNER_DESCRIPTION": {
+                    "title": "Ci Runner Description",
+                    "type": "string"
+                },
+                "CI_RUNNER_ID": {
+                    "title": "Ci Runner Id",
+                    "type": "string"
+                },
+                "CI_RUNNER_TAGS": {
+                    "title": "Ci Runner Tags",
+                    "type": "string"
+                },
+                "CI_PIPELINE_ID": {
+                    "title": "Ci Pipeline Id",
+                    "type": "string"
+                },
+                "CI_PROJECT_DIR": {
+                    "title": "Ci Project Dir",
+                    "type": "string"
+                },
+                "CI_PROJECT_ID": {
+                    "title": "Ci Project Id",
+                    "type": "string"
+                },
+                "CI_PROJECT_NAME": {
+                    "title": "Ci Project Name",
+                    "type": "string"
+                },
+                "CI_PROJECT_NAMESPACE": {
+                    "title": "Ci Project Namespace",
+                    "type": "string"
+                },
+                "CI_PROJECT_PATH": {
+                    "title": "Ci Project Path",
+                    "type": "string"
+                },
+                "CI_PROJECT_URL": {
+                    "title": "Ci Project Url",
+                    "type": "string"
+                },
+                "CI_REGISTRY": {
+                    "title": "Ci Registry",
+                    "type": "string"
+                },
+                "CI_REGISTRY_IMAGE": {
+                    "title": "Ci Registry Image",
+                    "type": "string"
+                },
+                "CI_REGISTRY_USER": {
+                    "title": "Ci Registry User",
+                    "type": "string"
+                },
+                "CI_SERVER": {
+                    "title": "Ci Server",
+                    "type": "string"
+                },
+                "CI_SERVER_NAME": {
+                    "title": "Ci Server Name",
+                    "type": "string"
+                },
+                "CI_SERVER_REVISION": {
+                    "title": "Ci Server Revision",
+                    "type": "string"
+                },
+                "CI_SERVER_VERSION": {
+                    "title": "Ci Server Version",
+                    "type": "string"
+                },
+                "GITLAB_CI": {
+                    "title": "Gitlab Ci",
+                    "type": "string"
+                },
+                "GITLAB_USER_ID": {
+                    "title": "Gitlab User Id",
+                    "type": "string"
+                },
+                "GITLAB_USER_EMAIL": {
+                    "title": "Gitlab User Email",
+                    "type": "string"
+                }
+            }
+        },
+        "Summary": {
+            "title": "Summary",
+            "type": "object",
+            "properties": {
+                "passed": {
+                    "title": "Passed",
+                    "type": "integer"
+                },
+                "total": {
+                    "title": "Total",
+                    "type": "integer"
+                },
+                "collected": {
+                    "title": "Collected",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "collected"
+            ]
+        },
+        "ResultItem": {
+            "title": "ResultItem",
+            "type": "object",
+            "properties": {
+                "nodeid": {
+                    "title": "Nodeid",
+                    "type": "string"
+                },
+                "type": {
+                    "title": "Type",
+                    "type": "string"
+                },
+                "lineno": {
+                    "title": "Lineno",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "nodeid",
+                "type"
+            ]
+        },
+        "Collector": {
+            "title": "Collector",
+            "type": "object",
+            "properties": {
+                "nodeid": {
+                    "title": "Nodeid",
+                    "type": "string"
+                },
+                "outcome": {
+                    "title": "Outcome",
+                    "type": "string"
+                },
+                "result": {
+                    "title": "Result",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ResultItem"
+                    }
+                }
+            },
+            "required": [
+                "nodeid",
+                "outcome",
+                "result"
+            ]
+        },
+        "Setup": {
+            "title": "Setup",
+            "type": "object",
+            "properties": {
+                "duration": {
+                    "title": "Duration",
+                    "type": "number"
+                },
+                "outcome": {
+                    "title": "Outcome",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "duration",
+                "outcome"
+            ]
+        },
+        "Call": {
+            "title": "Call",
+            "type": "object",
+            "properties": {
+                "duration": {
+                    "title": "Duration",
+                    "type": "number"
+                },
+                "outcome": {
+                    "title": "Outcome",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "duration",
+                "outcome"
+            ]
+        },
+        "Teardown": {
+            "title": "Teardown",
+            "type": "object",
+            "properties": {
+                "duration": {
+                    "title": "Duration",
+                    "type": "number"
+                },
+                "outcome": {
+                    "title": "Outcome",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "duration",
+                "outcome"
+            ]
+        },
+        "Test": {
+            "title": "Test",
+            "type": "object",
+            "properties": {
+                "nodeid": {
+                    "title": "Nodeid",
+                    "type": "string"
+                },
+                "lineno": {
+                    "title": "Lineno",
+                    "type": "integer"
+                },
+                "outcome": {
+                    "title": "Outcome",
+                    "type": "string"
+                },
+                "keywords": {
+                    "title": "Keywords",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "setup": {
+                    "$ref": "#/definitions/Setup"
+                },
+                "call": {
+                    "$ref": "#/definitions/Call"
+                },
+                "teardown": {
+                    "$ref": "#/definitions/Teardown"
+                }
+            },
+            "required": [
+                "nodeid",
+                "lineno",
+                "outcome",
+                "keywords",
+                "setup",
+                "call",
+                "teardown"
+            ]
+        },
+        "Warning": {
+            "title": "Warning",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "title": "Message",
+                    "type": "string"
+                },
+                "category": {
+                    "title": "Category",
+                    "type": "string"
+                },
+                "when": {
+                    "title": "When",
+                    "type": "string"
+                },
+                "filename": {
+                    "title": "Filename",
+                    "type": "string"
+                },
+                "lineno": {
+                    "title": "Lineno",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "message",
+                "category",
+                "when",
+                "filename",
+                "lineno"
+            ]
+        }
+    }
+}

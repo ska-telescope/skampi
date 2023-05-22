@@ -1,3 +1,6 @@
+[submodule ".make"]
+	path = .make
+	url = https://gitlab.com/ska-telescope/sdi/ska-cicd-makefile.git
 [submodule "docs/src/ska-ser-sphinx-templates"]
 	path = docs/src/ska-ser-sphinx-templates
 	url = https://gitlab.com/ska-telescope/templates/ska-ser-sphinx-templates.git

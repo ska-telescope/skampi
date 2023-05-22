@@ -36,9 +36,7 @@ stages:
 test-uploader:
   stage: test-on-demand
   rules:
-    - if: ( $CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "hm-221")
-
-
+    - if: ( $CI_COMMIT_REF_NAME == "master" )
   script: 
     - python3 -m pip install atlassian-python-api
     - python3 tests/resources/utils/chart_imager/confluence_chart_uploader.py

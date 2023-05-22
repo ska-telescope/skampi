@@ -3,78 +3,70 @@ The python script will upload the images to the provided confluence page id and 
 """
 import logging
 import os
-
-#import magic commented as libmagic library not available on SKAMPI
 import sys
 
 from atlassian import Confluence
 
-logging.basicConfig(level=logging.DEBUG)
+# import magic commented as libmagic library not available on SKAMPI
 
-API_TOKEN = os.environ['RT_API_TOKEN']
+
+# Enable below instruction for debugging
+# logging.basicConfig(level=logging.DEBUG)
+
+logging.basicConfig(level=logging.INFO)
+
+API_TOKEN = os.environ["RT_API_TOKEN"]
 DIR_NAME = os.path.dirname(sys.argv[0])
 DIR_PATH = os.path.abspath(DIR_NAME)
 
+# Get access to confluence
 confluence = Confluence(
     url="https://confluence.skatelescope.org",
-    token = API_TOKEN,
+    token=API_TOKEN,
 )
 
 
 def update_skampi_charts():
-    BODY = """
-    <h2>Overview</h2>
-    <p>
-        <br />The below graphs shows a view of helm charts decomposition in SKAMPI mid and low. 
-        <br />The graphs created to make it easier to understand the helm charts used in SKAMPI mid and low are dependent on, their current versions, the flow/control.
-    </p>
-    <h2>SKAMPI Mid Chart</h2>
-    <h2><ac:image ac:height="400">
-        <ri:attachment ri:filename="ska_mid_charts.png" />
-        </ac:image>
-    </h2>
-    <h2><br />SKAMPI Low Chart</h2>
-    <p><br /></p>
-    <p><ac:image ac:height="250">
-        <ri:attachment ri:filename="ska_low_charts.png" />
-        </ac:image>
-    </p>
-    <p><br /></p>
     """
-
+    Function to Upload the SKAMPI chart images
+    :param PAGE_ID: Confluence url page id
+    :type  PAGE_ID: ``integer constant``
+    :param PAGE_TITLE: Confluence page url
+    :type  PAGE_TITLE: ``string constant``
+    :param SPACE: Confluence page space
+    :type SPACE: ``string constant``
+    :param image_names: list of image names
+    :type image_names: ``list``
+    """
     PAGE_ID = "221065346"
     PAGE_TITLE = "SKAMPI Chart Dependencies"
-    TYPE = "page"
-    REPRESENTATION = "storage"
     SPACE = "TS"
-    image_names = ["ska_low_charts.png","ska_mid_charts.png"]
+    image_names = ["ska_low_charts.png", "ska_mid_charts.png"]
 
     for image_name in image_names:
         file_absolute_path = f"{DIR_PATH}/images/{image_name}"
-        #mime_type = magic.from_file(file_absolute_path, mime=True)
-        #upload the images to confluence page first.
+        # mime_type = magic.from_file(file_absolute_path, mime=True)
+
+        # Upload the images to confluence page.
         try:
-            confluence.attach_file(
+            response = confluence.attach_file(
                 filename=file_absolute_path,
                 name=image_name,
-                #content_type=mime_type,
-                #currently on SKAMPI libmagic library is not installed, 
+                # content_type=mime_type,
+                # currently on SKAMPI libmagic library is not installed,
                 # so directly providing the value of mime_type
-                content_type="image/png", 
+                content_type="image/png",
                 page_id=PAGE_ID,
-                space=SPACE
+                title=PAGE_TITLE,
+                space=SPACE,
+                comment=f"Uploaded SKAMPI {image_name.split('_')[1]} chart {image_name} ",
             )
+            logging.info(
+                f"{response['version']['message']} at {response['version']['when']}"
+            )
+
         except Exception as err:
-            logging.error(f"Error: {err}")
-    
-    #Update the confluence page
-    try:
-        response = confluence.update_page(
-            page_id=PAGE_ID, title=PAGE_TITLE, body=BODY, type=TYPE, representation=REPRESENTATION, 
-        )
-        print(f"SKAMPI Chart Dependencies Confluence Page: https://confluence.skatelescope.org{response['_links']['webui']}")
-    
-    except Exception as err:
-        logging.error(f"Error: {err}")
+            logging.error(f"File Upload Error: {err}")
+
 
 update_skampi_charts()

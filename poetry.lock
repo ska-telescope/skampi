@@ -3620,6 +3620,10 @@ python-versions = ">=3.9,<4.0"
 files = [
     {file = "ska-ser-skallop-2.27.2.tar.gz", hash = "sha256:edd4566b5e51d42ef32ac55d4dcc46a0267a1f8c479bbcfaf9f5eee3fa2df500"},
     {file = "ska_ser_skallop-2.27.2-py3-none-any.whl", hash = "sha256:3714378d097a2d525e036d90d431dd32890470029a26cfd8c492e43f1b7387c3"},
+]
+
+[package.dependencies]
+assertpy = ">=1.1,<2.0"
 darglint = ">=1.8.1,<2.0.0"
 flake8 = ">=6.0.0,<7.0.0"
 kubernetes = ">=21.7.0,<22.0.0"

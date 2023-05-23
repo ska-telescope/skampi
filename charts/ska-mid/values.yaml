@@ -105,6 +105,8 @@ ska-db-oda:
 ## mid-cbf
 ska-mid-cbf-mcs:
   enabled: true
+ska-mid-cbf-tmleafnode:
+  enabled: true
 
 ## mid-csp
 ska-csp-lmc-mid:

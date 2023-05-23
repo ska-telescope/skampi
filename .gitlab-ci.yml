@@ -13,6 +13,7 @@ variables:
   EXPOSE_All_DS: "true"
   CONFIG: "common"
   CI_IMAGE: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.7
+  MARK: "not infra and skalow and (csp_startup or sdp)"
 
 image: $CI_IMAGE
 

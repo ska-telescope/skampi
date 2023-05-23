@@ -142,6 +142,9 @@ ska-sdp:
             cpu: 100m
   ska-tango-base:
     enabled: false
+  ska-sdp-dataproduct-dashboard:
+    api:
+      storagePath: "/mnt/data/"
 
 ## tmc
 tmc-mid:

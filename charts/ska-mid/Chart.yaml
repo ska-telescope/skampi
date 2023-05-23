@@ -17,6 +17,10 @@ dependencies:
     version: 0.8.5
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-mid-cbf-mcs.enabled
+  - name: ska-mid-cbf-tmleafnode # CIPA team
+    version: 0.8.5
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-mid-cbf-tmleafnode.enabled
   - name: ska-log-consumer
     version: 0.1.6
     repository: https://artefact.skao.int/repository/helm-internal

@@ -12,7 +12,6 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.sdp_startup
 @pytest.mark.skamid
 @pytest.mark.startup
 @pytest.mark.sdp
@@ -24,7 +23,6 @@ def test_sdp_start_up_telescope_mid(sdp_start_up_test_exec_settings):
     """
 
 
-@pytest.mark.sdp_startup
 @pytest.mark.skalow
 @pytest.mark.startup
 @pytest.mark.sdp

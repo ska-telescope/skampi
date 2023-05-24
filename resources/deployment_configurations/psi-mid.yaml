@@ -1,6 +1,6 @@
 # This values file is used when deploying to PSI Mid from GitLab CI. See .gitlab/ci/psi-mid.gitlab-ci.yml
 ska-mid-cbf-mcs:
   engineeringConsoleVersion: 0.6.6
-  signalVerificationVersion: 0.5.5
+  signalVerificationVersion: 0.0.5
   hostInfo:
     environment: "mid-psi"

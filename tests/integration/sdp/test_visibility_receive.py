@@ -32,7 +32,6 @@ from integration.sdp.vis_receive_utils import (
     wait_for_predicate,
 )
 from pytest_bdd import given, scenario, then, when
-from requests.models import Response
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -105,6 +104,9 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
     LOG.info("Create Pod for receiver and sender")
     k8s_element_manager.create_pod(receive_pod, NAMESPACE_SDP, PVC_NAME)
     k8s_element_manager.create_pod(sender_pod, NAMESPACE, PVC_NAME)
+
+    wait_for_pod(receive_pod, NAMESPACE_SDP, "Running", timeout=300)
+    wait_for_pod(sender_pod, NAMESPACE, "Running", timeout=300)
 
     ms_file_mount_location = "/mnt/data/AA05LOW.ms/"
 

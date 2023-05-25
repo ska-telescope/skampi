@@ -111,8 +111,23 @@ class K8sElementManager:
         were created.
         """
         LOG.info("Run cleanup")
+
+        # wait for pods to be deleted after deletion starts;
+        # this should spead up as compared to when one pod has to be
+        # completely deleted before the deletion of the next one could start
+        to_wait = []
+
         for cleanup_function, data in self.to_remove[::-1]:
             cleanup_function(*data)
+
+            if cleanup_function == self.delete_pod:
+                to_wait.append(data)
+
+        for data in to_wait:
+            pod_name, namespace = data
+            wait_for_predicate(pod_deleted, f"Pod {pod_name} delete", timeout=100)(
+                pod_name, namespace
+            )
 
     def create_pod(self, pod_name: str, namespace: str, pvc_name: str):
         """
@@ -139,7 +154,6 @@ class K8sElementManager:
 
         core_api.create_namespaced_pod(namespace, pod_spec)
         self.to_remove.append((self.delete_pod, (pod_name, namespace)))
-        wait_for_pod(pod_name, namespace, "Running", timeout=300)
 
     @staticmethod
     def delete_pod(pod_name: str, namespace: str):
@@ -151,7 +165,6 @@ class K8sElementManager:
         """
         core_api = client.CoreV1Api()
         core_api.delete_namespaced_pod(pod_name, namespace, async_req=False)
-        wait_for_predicate(pod_deleted, f"Pod {pod_name} delete", timeout=100)(pod_name, namespace)
 
     def helm_install(self, release: str, chart: str, namespace: str, values_file: str):
         """
@@ -426,7 +439,7 @@ def deploy_cbf_emulator(endpoint: tuple, scan_id: int, k8s_element_manager: K8sE
     Deploy the CBF emulator and check that it finished sending the data.
 
     :param endpoint: A 2-tuple `(host, port)` indicating the first endpoint
-     where the receiver is expected to be listening on
+        where the receiver is expected to be listening on
     :param scan_id: ID of the scan that is being executed
     :param k8s_element_manager: Kubernetes element manager
     """

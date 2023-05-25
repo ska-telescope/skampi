@@ -32,6 +32,7 @@ CONFIGURATION_MANAGER = f"{CONFIG}-eda/cm/01"
 DB_HOST = f"timescaledb.ska-eda-{CONFIG}-db.svc.cluster.local"
 TANGO_DATABASE_DS = "databaseds-tango-base"
 
+
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -39,6 +40,7 @@ TANGO_DATABASE_DS = "databaseds-tango-base"
 @scenario("features/archiver.feature", "Configure an EDA database instance for Mid")
 def test_archiver_configuration_in_mid():
     """Configure an EDA database instance for Mid"""
+
 
 @pytest.mark.eda
 @pytest.mark.k8s
@@ -48,6 +50,7 @@ def test_archiver_configuration_in_mid():
 def test_archiver_in_mid():
     """Archive an change event on EDA database instance for Mid"""
 
+
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -55,6 +58,7 @@ def test_archiver_in_mid():
 @scenario("features/archiver.feature", "Configure an EDA database instance for Low")
 def test_archiver_configuration_in_low():
     """Configure an EDA database instance for Low"""
+
 
 @pytest.mark.eda
 @pytest.mark.k8s

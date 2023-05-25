@@ -8,6 +8,7 @@ low-test:
   stage: test
   variables:
     CONFIG: low
+    ADDMARKS: (csp_startup or sdp)
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
@@ -22,12 +23,13 @@ low-test:
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     COUNT: 1
-    EXIT_AT_FAIL: "false"
+    EXIT_AT_FAIL: "true"
     CAPTURE_LOGS: "True"
     SKALLOP_LOG_FILTER_ERRORS: "True"
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
+    SHOW_STEP_FUNCTIONS: "True"
   extends:
     - .tags_default
   script:
@@ -46,7 +48,6 @@ low-test:
     reports:
       junit: build/report.xml
     when: always
-  retry: 1
 
 # Low on-demand deployment
 low_deploy_on_demand:

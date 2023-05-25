@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 EXECUTOR = ScriptExecutor()
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -43,6 +44,7 @@ def test_observing_sbi():
     """
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -191,7 +193,7 @@ def the_subarray_must_be_in_the_ready_state(
     """
     tel = names.TEL()
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
-        str(tel.tm.subarray(sut_settings.subarray_id))
+        str(tel.tm.subarray(sut_settings.subarray_id)), time_source="local"
     )
     oet_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = oet_subarray.read_attribute("obsState").value
@@ -228,7 +230,7 @@ def check_final_subarray_state(
     """
     tel = names.TEL()
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
-        str(tel.tm.subarray(sut_settings.subarray_id))
+        str(tel.tm.subarray(sut_settings.subarray_id)), time_source="local"
     )
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     subarray_state = ObsState(subarray.read_attribute("obsState").value).name

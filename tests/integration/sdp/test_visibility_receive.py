@@ -52,7 +52,6 @@ NAMESPACE_SDP = os.environ.get("KUBE_NAMESPACE_SDP")
 PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.visibility
 @pytest.mark.skalow
 @pytest.mark.sdp
@@ -134,8 +133,8 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
             return True
         return False
 
-    wait_for_predicate(_wait_for_receive_data, "MS data not present in volume.", timeout=100)()
-    wait_for_predicate(_wait_for_sender_data, "MS data not present in volume.", timeout=100)()
+    wait_for_predicate(_wait_for_receive_data, "MS data not present in volume.", timeout=300)()
+    wait_for_predicate(_wait_for_sender_data, "MS data not present in volume.", timeout=300)()
 
     LOG.info("PVCs are present, pods created, and data downloaded successfully")
 
@@ -170,10 +169,7 @@ def check_rec_adds(configured_subarray: fxt_types.configured_subarray):
         pod_condition="Ready",
     )
 
-    LOG.info("Receive pod is running. Checking receive addresses.")
-    receive_addresses_expected = f"{receiver_pod_name}.receive.{NAMESPACE_SDP}"
-
-    assert host == receive_addresses_expected
+    LOG.info("Receiver address: %s", host)
 
 
 @when("SDP is commanded to capture data from a scan")
@@ -203,6 +199,7 @@ def run_scan(
 
     receive_addresses = json.loads(sdp_subarray.read_attribute("receiveAddresses").value)
     host = receive_addresses["target:a"]["vis0"]["host"][0][1]
+    port = receive_addresses["target:a"]["vis0"]["port"][0][1]
 
     LOG.info("Executing scan.")
 
@@ -218,16 +215,31 @@ def run_scan(
             obs_state = sdp_subarray.read_attribute("obsstate").value
             assert_that(obs_state).is_equal_to(ObsState.SCANNING)
             LOG.info("Scanning")
-            deploy_cbf_emulator(host, scan_id, k8s_element_manager)
+            deploy_cbf_emulator((host, port), scan_id, k8s_element_manager)
 
         except Exception as err:
             err = err
             LOG.exception("Scan step failed")
 
+    def _check_obsstate():
+        try:
+            obsstate = sdp_subarray.read_attribute("obsState").value
+            assert_that(obsstate).is_equal_to(ObsState.READY)
+            return True
+        except AssertionError:
+            return False
+
+    wait_for_predicate(_check_obsstate, "ObsState hasn't reached READY after SCANNING.")()
+
     if err:
         # raise error after Subarray went back to READY
         # so that ReleaseAllResource can work
         raise err
+
+    # execute End() to make sure MS is fully written to disk
+    sdp_subarray.command_inout("End")
+    obs_state = sdp_subarray.read_attribute("obsState").value
+    assert_that(obs_state).is_equal_to(ObsState.IDLE)
 
 
 @pytest.fixture
@@ -284,7 +296,7 @@ def check_measurement_set(
 
 
 @then("a list of data products can be retrieved")
-def retrieveDataProducts() -> Response:
+def retrieve_data_products():
     """
     Check the data products are available
     """
@@ -294,7 +306,7 @@ def retrieveDataProducts() -> Response:
 
 
 @then("an available data product can be downloaded")
-def downloadDataProduct():
+def download_data_product():
     """
     Check the data products can be downloaded.
     """

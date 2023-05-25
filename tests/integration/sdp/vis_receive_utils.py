@@ -421,14 +421,16 @@ def compare_data(pod_name: str, container_name: str, namespace: str, measurement
     return resp
 
 
-def deploy_cbf_emulator(host: str, scan_id: int, k8s_element_manager: K8sElementManager):
+def deploy_cbf_emulator(endpoint: tuple, scan_id: int, k8s_element_manager: K8sElementManager):
     """
     Deploy the CBF emulator and check that it finished sending the data.
 
-    :param host: receiver's host
+    :param endpoint: A 2-tuple `(host, port)` indicating the first endpoint
+     where the receiver is expected to be listening on
     :param scan_id: ID of the scan that is being executed
     :param k8s_element_manager: Kubernetes element manager
     """
+    host, port = endpoint
 
     # Construct command for the sender
     command = [
@@ -439,7 +441,7 @@ def deploy_cbf_emulator(host: str, scan_id: int, k8s_element_manager: K8sElement
         "-o",
         "transmission.method=spead2_transmitters",
         "-o",
-        "transmission.channels_per_stream=6912",
+        "transmission.num_streams=2",
         "-o",
         "transmission.rate=10416667",
         "-o",
@@ -447,7 +449,11 @@ def deploy_cbf_emulator(host: str, scan_id: int, k8s_element_manager: K8sElement
         "-o",
         f"transmission.target_host={host}",
         "-o",
+        f"transmission.target_port_start={port}",
+        "-o",
         f"transmission.scan_id={scan_id}",
+        "-o",
+        "transmission.telescope=low",
     ]
     values = {
         "command": command,

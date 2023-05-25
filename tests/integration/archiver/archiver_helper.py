@@ -29,8 +29,9 @@ class ArchiverHelper:
             self.conf_manager_proxy.write_attribute("SetAttributeName", fqdn)
             self.conf_manager_proxy.write_attribute("SetArchiver", self.eventsubscriber)
             self.conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
-            self.conf_manager_proxy.write_attribute("SetPollingPeriod", int(polling_period))
             self.conf_manager_proxy.write_attribute(strategy, value)
+            if polling_period:
+                self.conf_manager_proxy.write_attribute("SetPollingPeriod", int(polling_period))
             self.conf_manager_proxy.AttributeAdd()
             return True
         return False

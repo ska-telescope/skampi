@@ -144,7 +144,7 @@ ska-sdp:
     enabled: false
   ska-sdp-dataproduct-dashboard:
     api:
-      storagePath: "/mnt/data/product/"
+      storagePath: "/mnt/data/"
 
 ## tmc
 tmc-mid:

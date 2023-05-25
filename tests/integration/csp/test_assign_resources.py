@@ -20,7 +20,8 @@ def fxt_default_composition(csp_base_composition: conf_types.Composition):
     """
     return csp_base_composition
 
-@pytest.mark.skip(reason="temp skip for at-489")
+
+@pytest.mark.csprelated
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign
@@ -32,7 +33,7 @@ def test_assign_resources_to_csp_low_subarray():
     """Assign resources to CSP low subarray."""
 
 
-#@pytest.mark.skip(reason="temp skip for at-489")
+@pytest.mark.csp_related
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.assign
@@ -43,7 +44,8 @@ def test_assign_resources_to_csp_low_subarray():
 def test_assign_resources_to_csp_mid_subarray():
     """Assign resources to CSP mid subarray."""
 
-@pytest.mark.skip(reason="temp skip for at-489")
+
+@pytest.mark.csp_related
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.assign
@@ -55,7 +57,7 @@ def test_release_resources_to_csp_low_subarray():
     """Release resources assigned to an CSP low subarray"""
 
 
-#@pytest.mark.skip(reason="temp skip for at-489")
+@pytest.mark.csp_related
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.assign

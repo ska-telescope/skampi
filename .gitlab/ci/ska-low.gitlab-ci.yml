@@ -8,7 +8,7 @@ low-test:
   stage: test
   variables:
     CONFIG: low
-    #ADDMARKS: ""
+    ADDMARKS: (csp_startup or sdp)
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"

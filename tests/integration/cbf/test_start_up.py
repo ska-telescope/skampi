@@ -13,7 +13,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="atlas tacking problems")
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.startup
@@ -22,6 +22,7 @@ def test_cbf_start_up_telescope_mid():
     """Start up the cbf in mid."""
 
 
+@pytest.mark.csp_related
 @pytest.mark.skalow
 @pytest.mark.cbf
 @pytest.mark.startup

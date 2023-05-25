@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.mark.skip(reason="temp skip for at-489")
+@pytest.mark.csp_startup
+@pytest.mark.csp_related
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.startup
@@ -23,7 +25,8 @@ def test_csp_start_up_telescope_mid():
     """Start up the csp in mid."""
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
+@pytest.mark.csp_startup
+@pytest.mark.csp_related
 @pytest.mark.skalow
 @pytest.mark.csp
 @pytest.mark.startup

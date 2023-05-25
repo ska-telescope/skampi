@@ -20,7 +20,6 @@ from ...sdp_model.entry_point import (
     SDPScanStep,
     StartUpStep,
 )
-
 from .utils import retry
 
 logger = logging.getLogger(__name__)
@@ -84,12 +83,13 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         config = self.observation.generate_sdp_assign_resources_config().as_json
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("AssignResources", config)
+
         self._log(f"commanding {subarray_name} with AssignResources: {config} ")
         command()
-        
 
     def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -100,15 +100,16 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         """
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
-        
+
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("ReleaseResources", "[]")
+
         self._log(f"Commanding {subarray_name} to ReleaseResources")
         command()
-        
 
 
 class SdpLnConfigureStep(SdpConfigureStep):
@@ -138,9 +139,11 @@ class SdpLnConfigureStep(SdpConfigureStep):
         config = self.observation.generate_sdp_scan_config().as_json
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("Configure", config)
+
         self._log(f"commanding {subarray_name} with Configure: {config} ")
         command()
 
@@ -155,9 +158,11 @@ class SdpLnConfigureStep(SdpConfigureStep):
         subarray = con_config.get_device_proxy(subarray_name)
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("End")
+
         self._log(f"commanding {subarray_name} with End command")
         command()
 
@@ -181,11 +186,13 @@ class SDPLnScanStep(SDPScanStep):
         subarray = con_config.get_device_proxy(subarray_name)
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)
             subarray.command_inout("EndScan")
+
         self._log(f"commanding {subarray_name} with End command")
         self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
         try:

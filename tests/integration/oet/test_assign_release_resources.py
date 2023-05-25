@@ -276,6 +276,7 @@ def test_oet__scripting_resource_allocation():
                 Then the sub-array goes to ObsState IDLE
     """
 
+
 @pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.scripting
 @pytest.mark.skalow

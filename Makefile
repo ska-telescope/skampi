@@ -44,7 +44,7 @@ else
 DASHMARK ?= ska$(CONFIG)
 endif
 
-TELESCOPE_ENVIRONMENT = "$(CONFIG) STFC" # For configurator tool display
+TELESCOPE_ENVIRONMENT = "$(CONFIG)-STFC" # For configurator tool display
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
 EVENT_SUBSCRIBER = "$(CONFIG)-eda/es/01"
 
@@ -99,6 +99,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	--set ska-tango-archiver.telescope_environment=$(TELESCOPE_ENVIRONMENT)\
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
 	--set ska-tango-archiver.archwizard_config=$(ARCHWIZARD_CONFIG) \
 	--set ska-sdp.ska-sdp-qa.zookeeper.clusterDomain=$(CLUSTER_DOMAIN) \

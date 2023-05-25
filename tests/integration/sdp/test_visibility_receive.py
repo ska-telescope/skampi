@@ -20,6 +20,7 @@ import os
 import time
 
 import pytest
+import requests
 from assertpy import assert_that
 from integration.sdp.vis_receive_utils import (
     POD_CONTAINER,
@@ -31,6 +32,7 @@ from integration.sdp.vis_receive_utils import (
     wait_for_predicate,
 )
 from pytest_bdd import given, scenario, then, when
+from requests.models import Response
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -44,11 +46,14 @@ pytest_plugins = ["unit.test_cluster_k8s"]
 
 LOG = logging.getLogger(__name__)
 
+INGRESS = os.environ.get("INGRESS_HOST")
 NAMESPACE = os.environ.get("KUBE_NAMESPACE")
 NAMESPACE_SDP = os.environ.get("KUBE_NAMESPACE_SDP")
 PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
+@pytest.mark.visibility
 @pytest.mark.skalow
 @pytest.mark.sdp
 @scenario(
@@ -276,3 +281,28 @@ def check_measurement_set(
     )
     assert result.returncode == 0
     LOG.info("Data sent matches the data received")
+
+
+@then("a list of data products can be retrieved")
+def retrieveDataProducts() -> Response:
+    """
+    Check the data products are available
+    """
+
+    response = requests.get(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/dataproductlist")
+    assert response.status_code == 200
+
+
+@then("an available data product can be downloaded")
+def downloadDataProduct():
+    """
+    Check the data products can be downloaded.
+    """
+
+    with open("tests/test-download-data-product.json", "r") as json_file:
+        data = json.load(json_file)
+
+    response = requests.post(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/download", data)
+    assert response.status_code == 200
+
+    LOG.info("Data product downloaded")

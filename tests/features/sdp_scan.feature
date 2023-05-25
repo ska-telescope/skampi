@@ -1,7 +1,6 @@
 @XTP-4782
 Feature: Run a scan on sdp subarray
 
-
 	@XTP-4774 @XTP-4773 @XTP-4679 @XTP-4676 @XTP-3324
 	Scenario: Run a scan on sdp subarray in mid
 		Given an SDP subarray in READY state
@@ -21,3 +20,8 @@ Feature: Run a scan on sdp subarray
         When I command it to Abort
         Then the subarray should go into an aborted state
 
+	@XTP-20121
+	Scenario: Abort scanning SDP Low
+        Given an subarray busy scanning
+        When I command it to Abort
+        Then the subarray should go into an aborted state

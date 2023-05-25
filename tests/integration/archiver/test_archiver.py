@@ -43,39 +43,8 @@ def configure_attribute(
     archiver_helper.stop_archiving(attribute)
 
 
-def test_configure_attribute(
-    configuration_manager, event_subscriber, attribute, strategy, polling_period, value
-):
-    attribute = attribute
-    sleep_time = 20
-    max_retries = 3
-    total_slept = 0
-    for x in range(0, max_retries):
-        try:
-            ApiUtil.cleanup()
-            configure_attribute(
-                attribute, configuration_manager, event_subscriber, strategy, polling_period, value
-            )
-            break
-        except DevFailed as df:
-            logging.error("configure_attribute exception: " + str(sys.exc_info()))
-            try:
-                deviceAdm = DeviceProxy(CM_SERVER)
-                deviceAdm.RestartServer()
-            except Exception:
-                logging.error("reset_conf_manager exception: " + str(sys.exc_info()[0]))
-            if x == (max_retries - 1):
-                raise df
 
-        sleep(sleep_time)
-        total_slept += 1
-
-    if total_slept > 0:
-        logging.info(
-            "Slept for " + str(total_slept * sleep_time) + "s for the test configuration!"
-        )
-
-
+@pytest.mark.eda
 @pytest.mark.post_deployment
 @pytest.mark.skamid
 @pytest.mark.skalow
@@ -89,6 +58,6 @@ def test_configure_attribute(
     ],
 )
 def test_config_attribute(attribute, strategy, polling_period, value):
-    test_configure_attribute(
-        CONF_MANAGER, EVENT_SUBSCRIBER, attribute, strategy, polling_period, value
+    configure_attribute(
+        attribute, CONF_MANAGER, EVENT_SUBSCRIBER, strategy, polling_period, value
     )

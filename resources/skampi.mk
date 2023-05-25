@@ -30,6 +30,7 @@ skampi-vars: k8s-vars ## Display Skampi deployment context variables
 	@echo "CONFIG:                     $(CONFIG)"
 	@echo "TEL:                        $(TEL)"
 	@echo "TEST_ENV:                   $(TEST_ENV)"
+	@echo "CLUSTER_DOMAIN			   $(CLUSTER_DOMAIN)"
 
 ## TARGET: skampi-update-chart-versions
 ## SYNOPSIS: make skampi-update-chart-versions

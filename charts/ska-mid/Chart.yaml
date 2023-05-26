@@ -92,6 +92,3 @@ dependencies:
     version: 1.6.1
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-db-oda.enabled
-  - name: ska-sdp-qa
-    version: 0.16.0
-    repository: https://artefact.skao.int/repository/helm-internal

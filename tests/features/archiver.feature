@@ -20,7 +20,7 @@ Feature: Update the EDA deployment solution as per the outcome of SP-3254
 	#TBD: add more description
 
 	
-	@XTP-20577 @XTP-20576 @COM @EDA @Entry_point @TMC
+	@XTP-20577 @XTP-20576 @COM @EDA @Entry_point @TMC @XTP-3324
 	Scenario: Configure an EDA database instance for Mid
 		Given a EDA database instance
 		Given an EDA configuration service
@@ -31,7 +31,7 @@ Feature: Update the EDA deployment solution as per the outcome of SP-3254
 		Then the subarray went to obststate to IDLE event must be archived
 
 	
-	@XTP-20578 @XTP-20576 @COM @EDA @Entry_point @TMC
+	@XTP-20578 @XTP-20576 @COM @EDA @Entry_point @TMC @XTP-3324
 	Scenario: Archive an change event on EDA database instance for Mid
 		Given an telescope subarray
 		Given a EDA database instance configured to archive an change event on the subarray obsstate
@@ -39,7 +39,7 @@ Feature: Update the EDA deployment solution as per the outcome of SP-3254
 		Then the subarray went to obststate to IDLE event must be archived
 
 	
-	@XTP-20579 @XTP-20576 @COM @EDA @Entry_point @TMC @configuration
+	@XTP-20579 @XTP-20576 @COM @EDA @Entry_point @TMC @configuration @XTP-3325
 	Scenario: Configure an EDA database instance for Low
 		Given a EDA database instance
 		Given an EDA configuration service
@@ -50,7 +50,7 @@ Feature: Update the EDA deployment solution as per the outcome of SP-3254
 		Then the subarray went to obststate to IDLE event must be archived
 
 	
-	@XTP-20580 @XTP-20576 @TMC_low
+	@XTP-20580 @XTP-20576 @TMC_low @XTP-3325
 	Scenario: Archive an change event on EDA database instance for Low
 		Given an telescope subarray
 		Given a EDA database instance configured to archive an change event on the subarray obsstate

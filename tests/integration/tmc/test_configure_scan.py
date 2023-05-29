@@ -11,7 +11,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ..conftest import SutTestSettings
 
 
-@pytest.mark.tmc
+@pytest.mark.skip(reason="raised SKB-227 for this issue")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

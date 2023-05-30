@@ -44,6 +44,7 @@ else
 DASHMARK ?= ska$(CONFIG)
 endif
 
+ARCHIVER_ENABLED ?= true
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
 CONFIG_MANAGER= $(CONFIG)-eda/cm/01
 ATTR_CONFIG_FILE = attribute_config_$(CONFIG).yaml
@@ -91,6 +92,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.device_server_port=$(TANGO_SERVER_PORT) \
 	--set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) \
 	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+	--set ska-tango-archiver.enabled=$(ARCHIVER_ENABLED) \
 	--set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) \
 	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
@@ -276,7 +278,8 @@ k8s-post-test: # post test hook for processing received reports
 	@if ! [[ -f build/status ]]; then \
 		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
 		exit 1; \
-	fi
+	fi;
+	@[[ $$(cat build/status) == 0 ]] || KUBE_NAMESPACE=$(KUBE_NAMESPACE) source scripts/were_pods_throttled.sh;
 
 foo:
 	@echo $(CASED_CONFIG)

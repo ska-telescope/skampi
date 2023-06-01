@@ -103,7 +103,7 @@ ska-db-oda:
 
 #telescope control
 ## mid-cbf
-ska-mid-cbf:
+ska-mid-cbf-mcs:
   enabled: true
 
 ## mid-csp
@@ -153,7 +153,7 @@ ska-tango-archiver:
   dbname: default_mvp_archiver_db
 
 ## dishmasters
-ska-sim-dishmaster:
+ska-dish-lmc:
   enabled: true
 
 # alarm-handler

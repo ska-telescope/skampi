@@ -628,7 +628,7 @@ class CSPEntryPoint(CompositeEntryPoint):
 csp_mid_assign_resources_template = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
     "subarray_id": 1,
-    "dish": {"receptor_ids": ["001", "002"]},
+    "dish": {"receptor_ids": ["MKT001", "MKT002"]},
 }
 
 csp_mid_configure_scan_template = {

@@ -11,12 +11,12 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-base.enabled
   - name: ska-tango-util
-    version: 0.3.16
+    version: 0.3.23
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-mid-cbf-mcs # CIPA team
     version: 0.7.0
     repository: https://artefact.skao.int/repository/helm-internal
-    condition: ska-mid-cbf.enabled
+    condition: ska-mid-cbf-mcs.enabled
   - name: ska-csp-lmc-mid
     version: 0.16.1
     repository: https://artefact.skao.int/repository/helm-internal
@@ -64,10 +64,10 @@ dependencies:
     version: 0.8.3
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
-  - name: ska-sim-dishmaster
-    version: 2.0.2
+  - name: ska-dish-lmc
+    version: 2.1.1
     repository: https://artefact.skao.int/repository/helm-internal
-    condition: ska-sim-dishmaster.enabled
+    condition: ska-dish-lmc.enabled
   - name: ska-tango-archiver
     version: 2.2.1
     repository: https://artefact.skao.int/repository/helm-internal
@@ -81,7 +81,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
   - name: ska-oso-oet
-    version: 5.0.0
+    version: 5.1.1
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-oso-oet.enabled
   - name: ska-tango-alarmhandler

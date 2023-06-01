@@ -164,7 +164,9 @@ class K8sElementManager:
         :param namespace: namespace where pod exists
         """
         core_api = client.CoreV1Api()
-        core_api.delete_namespaced_pod(pod_name, namespace, async_req=False)
+        core_api.delete_namespaced_pod(
+            pod_name, namespace, async_req=False, grace_period_seconds=0
+        )
 
     def helm_install(self, release: str, chart: str, namespace: str, values_file: str):
         """
@@ -206,7 +208,6 @@ class K8sElementManager:
             release,
             "-n",
             namespace,
-            "--wait",
             "--no-hooks",
         ]
         subprocess.run(cmd, check=True)

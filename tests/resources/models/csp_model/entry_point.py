@@ -253,7 +253,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled):
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            csp_mid_configuration = self.observation.generate_csp_scan_config().as_json
+            csp_mid_configuration = json.dumps(csp_mid_configure_scan_template)
             self._log(f"commanding {subarray_name} with Configure:" f" {csp_mid_configuration} ")
             subarray.set_timeout_millis(6000)
             subarray.command_inout("Configure", csp_mid_configuration)
@@ -633,52 +633,77 @@ csp_mid_assign_resources_template = {
 
 csp_mid_configure_scan_template = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
-    "subarray": {"subarray_name": "science period 23"},
+    "subarray": {
+      "subarray_name": "science period 23"
+    },
     "common": {
-        "config_id": "sbi-mvp01-20200325-00001-science_A",
-        "frequency_band": "1",
-        "subarray_id": "1",
+      "config_id": "sbi-mvp01-20200325-00001-science_A",
+      "frequency_band": "1",
+      "subarray_id": 1
     },
     "cbf": {
-        "delay_model_subscription_point": "sys/tg_test/1/string_scalar",
-        "fsp": [
-            {
-                "fsp_id": 1,
-                "function_mode": "CORR",
-                "frequency_slice_id": 1,
-                "integration_factor": 1,
-                "zoom_factor": 0,
-                "channel_averaging_map": [[0, 2], [744, 0]],
-                "channel_offset": 0,
-                "output_link_map": [[0, 0], [200, 1]],
-            },
-            {
-                "fsp_id": 2,
-                "function_mode": "CORR",
-                "frequency_slice_id": 2,
-                "integration_factor": 1,
-                "zoom_factor": 1,
-                "zoom_window_tuning": 650000,
-                "channel_averaging_map": [[0, 2], [744, 0]],
-                "channel_offset": 744,
-                "output_link_map": [[0, 4], [200, 5]],
-                "output_host": [[0, "192.168.1.1"]],
-                "output_port": [[0, 9744, 1]],
-            },
+      "delay_model_subscription_point": "ska_mid/tm_leaf_node/csp_subarray_01/delayModel",
+      "fsp": [
+          {
+            "fsp_id": 1,
+            "function_mode": "CORR",
+            "frequency_slice_id": 1,
+            "integration_factor": 1,
+            "zoom_factor": 0,
+            "channel_averaging_map": [
+              [0, 2],
+              [744, 0]
+            ],
+            "channel_offset": 0,
+            "output_link_map": [
+              [0, 0],
+              [200, 1]
+            ]
+          },
+          {
+            "fsp_id": 2,
+            "function_mode": "CORR",
+            "frequency_slice_id": 2,
+            "integration_factor": 1,
+            "zoom_factor": 1,
+            "zoom_window_tuning": 650000,
+            "channel_averaging_map": [
+              [0, 2],
+              [744, 0]
+            ],
+            "channel_offset": 744,
+            "output_link_map": [
+              [0, 4],
+              [200, 5]
+            ],
+            "output_host": [
+              [0, "192.168.1.1"]
+            ],
+            "output_port": [
+              [0, 9744, 1]
+            ]
+          }
         ],
-        "vlbi": {},
-    },
-    "pss": {},
-    "pst": {},
-    "pointing": {
-        "target": {
-            "system": "ICRS",
-            "target_name": "Polaris Australis",
-            "ra": "21:08:47.92",
-            "dec": "-88:57:22.9",
+        "vlbi": {
+
         }
     },
-}
+    "pss": {
+       
+    },
+    "pst": {
+       
+    },
+    "pointing": {
+      "target": {
+        "system": "ICRS",
+        "target_name": "Polaris Australis",
+        "ra": "21:08:47.92",
+        "dec": "-88:57:22.9"
+      }
+    }
+  }
+
 
 csp_low_assign_resources = {
     "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",

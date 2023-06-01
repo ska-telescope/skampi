@@ -67,7 +67,7 @@ def test_visibility_receive_in_low(assign_resources_test_exec_settings):
 
 
 @pytest.fixture
-def k8s_element_manager():
+def k8s_element_manager(sut_settings: conftest.SutTestSettings):
     """
     Allow easy creation, and later automatic destruction, of k8s elements
 

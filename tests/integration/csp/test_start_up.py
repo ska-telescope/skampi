@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.csp_startup
 @pytest.mark.csp_related
 @pytest.mark.skamid
-@pytest.mark.csp
+@pytest.mark.csplmc
 @pytest.mark.startup
 @scenario("features/csp_start_up_telescope.feature", "Start up the csp in mid")
 def test_csp_start_up_telescope_mid():
@@ -28,7 +28,7 @@ def test_csp_start_up_telescope_mid():
 @pytest.mark.csp_startup
 @pytest.mark.csp_related
 @pytest.mark.skalow
-@pytest.mark.csp
+@pytest.mark.csplmc
 @pytest.mark.startup
 @scenario("features/csp_start_up_telescope.feature", "Start up the csp in low")
 def test_csp_start_up_telescope_low():

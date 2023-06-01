@@ -23,7 +23,7 @@ def fxt_default_composition(csp_base_composition: conf_types.Composition):
 
 @pytest.mark.csprelated
 @pytest.mark.skalow
-@pytest.mark.csp
+@pytest.mark.csplmc
 @pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature",
@@ -35,7 +35,7 @@ def test_assign_resources_to_csp_low_subarray():
 
 @pytest.mark.csp_related
 @pytest.mark.skamid
-@pytest.mark.csp
+@pytest.mark.csplmc
 @pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature",
@@ -47,7 +47,7 @@ def test_assign_resources_to_csp_mid_subarray():
 
 @pytest.mark.csp_related
 @pytest.mark.skalow
-@pytest.mark.csp
+@pytest.mark.csplmc
 @pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature",
@@ -59,7 +59,7 @@ def test_release_resources_to_csp_low_subarray():
 
 @pytest.mark.csp_related
 @pytest.mark.skamid
-@pytest.mark.csp
+@pytest.mark.csplmc
 @pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature",

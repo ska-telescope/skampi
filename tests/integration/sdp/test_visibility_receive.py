@@ -66,6 +66,18 @@ def test_visibility_receive_in_low(assign_resources_test_exec_settings):
     """
 
 
+@pytest.fixture
+def k8s_element_manager():
+    """
+    Allow easy creation, and later automatic destruction, of k8s elements
+
+    :yields: K8sElementManager object
+    """
+    manager = K8sElementManager()
+    yield manager
+    manager.cleanup()
+
+
 @pytest.fixture(name="update_sut_settings")
 def fxt_update_sut_settings_vis_rec(sut_settings: conftest.SutTestSettings):
     """

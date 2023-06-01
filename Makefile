@@ -60,7 +60,7 @@ else
 DASHCOUNT ?=
 COUNT ?= 1
 endif
-PYTHON_VARS_AFTER_PYTEST ?= -m "$(DASHMARK)" $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
+PYTHON_VARS_AFTER_PYTEST ?= -m "$(DASHMARK)" $(DASHCOUNT) --no-cov -v -r fEx ## use to setup a particular pytest session
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
 
 # Some environments need HTTP(s) requests to go through a proxy server. If http_proxy
